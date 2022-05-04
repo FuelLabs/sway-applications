@@ -1,0 +1,2 @@
+# sway-applications
+Swaypplications
