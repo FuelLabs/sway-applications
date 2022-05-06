@@ -1,15 +1,6 @@
 contract;
 
-use std::{
-    address::Address,
-    assert::assert,
-    chain::auth::{AuthError, Sender, msg_sender},
-    contract_id::ContractId,
-    hash::{HashMethod, hash_u64, hash_pair},
-    panic::panic, 
-    result::*,
-    storage::{store, get},
-};
+use std::{address::Address, assert::assert, chain::auth::{AuthError, Sender, msg_sender}, contract_id::ContractId, hash::{HashMethod, hash_pair, hash_u64}, panic::panic, result::*, storage::{get, store}};
 
 abi MultiSignatureWallet {
     fn constructor(owner1: Address, owner2: Address, threshold: u64) -> bool;
@@ -26,7 +17,7 @@ struct SentinelTransaction {
     value: b256,
     data: b256,
     executed: b256,
-    approvals: b256
+    approvals: b256,
 }
 
 // TODO: add logging events
@@ -39,7 +30,6 @@ storage {
 }
 
 impl MultiSignatureWallet for Contract {
-    
     fn constructor(owner1: Address, owner2: Address, threshold: u64) -> bool {
         assert(storage.state == 0);
 
@@ -48,11 +38,7 @@ impl MultiSignatureWallet for Contract {
         store(owner2.value, true);
 
         storage.sentinel = SentinelTransaction {
-            to:        hash_u64(1, HashMethod::Sha256),
-            value:     hash_u64(2, HashMethod::Sha256),
-            data:      hash_u64(3, HashMethod::Sha256),
-            executed:  hash_u64(4, HashMethod::Sha256),
-            approvals: hash_u64(5, HashMethod::Sha256)
+            to: hash_u64(1, HashMethod::Sha256), value: hash_u64(2, HashMethod::Sha256), data: hash_u64(3, HashMethod::Sha256), executed: hash_u64(4, HashMethod::Sha256), approvals: hash_u64(5, HashMethod::Sha256)
         };
 
         storage.threshold = threshold;
@@ -145,10 +131,8 @@ impl MultiSignatureWallet for Contract {
             // TODO: check approvals against threshold
 
             assert(!get(executed_hash));
-            
-            // TODO: execute
-            
             store(executed_hash, true);
+            // TODO: execute
         } else {
             panic(0);
         };
