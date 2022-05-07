@@ -61,8 +61,15 @@ jobs:
       - name: Init cache
         uses: Swatinem/rust-cache@v1
       
-      - name: Change linker to mold
+      - name: Install a modern linker (mold)
         uses: rui314/setup-mold@v1
+
+      - name: Force Rust to use mold globally for compilation
+        run: |
+                touch ~/.cargo/config.toml
+                echo "[target.x86_64-unknown-linux-gnu]" > ~/.cargo/config.toml
+                echo 'linker = "clang"' >> ~/.cargo/config.toml
+                echo 'rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/mold"]' >> ~/.cargo/config.toml
 
       - name: Install rustfmt
         run: rustup component add rustfmt
