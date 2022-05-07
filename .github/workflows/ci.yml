@@ -60,11 +60,6 @@ jobs:
 
       - name: Init cache
         uses: Swatinem/rust-cache@v1
-      
-      - name: Change linker to mold
-        uses: warchant/setup-mold@v1
-        with:
-          make_default: true
 
       - name: Install rustfmt
         run: rustup component add rustfmt
