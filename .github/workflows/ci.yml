@@ -64,7 +64,7 @@ jobs:
       - name: Change linker to mold
         uses: warchant/setup-mold@v1
         with:
-          version: "1.1.0"
+          version: "1.1"
           make_default: true
 
       - name: Install rustfmt
