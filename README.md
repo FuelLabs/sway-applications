@@ -1,2 +1,1 @@
-# sway-applications
-Swaypplications
+# Sway Example Applications
