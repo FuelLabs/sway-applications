@@ -68,13 +68,13 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: install
-          args: forc --version $FORC_VERSION
+          args: forc --version ${{ env.FORC_VERSION }}
 
       - name: Install forc-fmt
         uses: actions-rs/cargo@v1
         with:
           command: install
-          args: forc-fmt --version $FORC_VERSION
+          args: forc-fmt --version ${{ env.FORC_VERSION }}
 
       - name: Check Rust formatting
         run: |
