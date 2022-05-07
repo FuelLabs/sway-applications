@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  release:
+    types: [published]
+
+env:
+  CARGO_TERM_COLOR: always
+  FORC_VERSION: 0.12.1
+  REGISTRY: ghcr.io
+  RUST_VERSION: 1.58.0
+
+jobs:
+  cancel-previous-runs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
+  lint-toml-files:
+    needs: cancel-previous-runs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ RUST_VERSION }}
+      - name: Install Cargo.toml linter
+        uses: baptiste0928/cargo-install@v1
+        with:
+          crate: cargo-toml-lint
+          version: "0.1"
+      - name: Run Cargo.toml linter
+        run: git ls-files | grep Cargo.toml$ | xargs --verbose -n 1 cargo-toml-lint
+
+  build:
+    needs: cancel-previous-runs
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        project: ["multisig-wallet"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Init cache
+        uses: Swatinem/rust-cache@v1
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ RUST_VERSION }}
+          override: true
+
+      - name: Install rustfmt
+        run: rustup component add rustfmt
+
+      - name: Install forc
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: forc --version $FORC_VERSION
+
+      - name: Install forc-fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: forc-fmt --version $FORC_VERSION
+
+      - name: Check Rust formatting
+        run: |
+          cd ${{ matrix.project }}
+          cargo fmt --verbose --check
+
+      - name: Build Sway
+        run: forc build --path ${{ matrix.project }}
+
+      - name: Check Sway formatting
+        run: forc fmt --path ${{ matrix.project }} --check
+
+      - name: Run Forc tests
+        run: |
+          cd ${{ matrix.project }}
+          forc test
