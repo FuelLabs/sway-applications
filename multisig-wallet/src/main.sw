@@ -17,11 +17,23 @@ abi MultiSignatureWallet {
 storage {
     /// The state is used as a gatekeeper for unlocking functionality post initialization
     state: u64,
-    /// The sentinel is used as a dummy value to store under a newly submitted tx hash
+    /// The sentinel is used as a dummy value to store a newly submitted tx hash
     /// so that we can
     ///     - use the tx in other functions
     ///     - prevent a resubmission of the same tx
     tx_sentinel: u64,
+}
+
+// TODO: move to the bottom after bug is fixed
+/// Assertion used to ensure that the value stored for the owner is true i.e. they are an owner in the contract
+fn _is_owner(state: bool) {
+    assert(state);
+}
+
+// TODO: move to the bottom after bug is fixed
+/// Assertion used to make sure that the last bit is still 0 i.e. has not been executed
+fn _tx_not_executed(tx_data: u64) {
+    assert(tx_data % 2 == 0);
 }
 
 /// TODO: proper documentation instead of temporary filler comments
@@ -36,7 +48,8 @@ impl MultiSignatureWallet for Contract {
         store(owner2.value, true);
 
         storage.state = 1;
-        storage.tx_sentinel = 1;
+        // 1111111111111111111111111111111111111111111111111111111111111110
+        storage.tx_sentinel = 18446744073709551615 - 1; // Is (2 ^ 64) - 1 equal in sway (question about the ^)?
         true
     }
 
@@ -50,12 +63,12 @@ impl MultiSignatureWallet for Contract {
             _is_owner(status);
 
             // When a Tx has not been submitted its default value should be 0.
-            // Make sure we are not overwritting a previous Tx
             let tx_data: u64 = get(tx_hash);
             assert(tx_data == 0);
 
             // Mark the first submission as a non-zero value
             store(tx_hash, storage.tx_sentinel);
+
             log_b256(tx_hash);
         } else {
             panic(0);
@@ -66,7 +79,7 @@ impl MultiSignatureWallet for Contract {
 
     /// Takes a transaction hash and changes the approval to true for the owner while incrementing the approval count
     fn approveTransaction(tx_hash: b256) -> bool {
-        // TODO: signature authentication? ec_recover == signer(s)?
+        // TODO: signature authentication? ec_recover == signer(s)? https://github.com/FuelLabs/sway-applications/issues/10
         _is_initialized(storage.state);
 
         let sender: Result<Sender, AuthError> = msg_sender();
@@ -75,15 +88,27 @@ impl MultiSignatureWallet for Contract {
 
             let tx_data: u64 = get(tx_hash);
             _tx_exists(tx_data);
+            _tx_not_executed(tx_data);
 
             let approval_hash = _owner_approval_hash(tx_hash, address);
             let approved: bool = get(approval_hash);
 
             assert(!approved);
 
-            // TODO: Increment Tx approval if not executed then store it again
+            if tx_data == storage.tx_sentinel {
+                // Set the first approval by setting it to 2 (first bit is used for execution status)
+                store(tx_hash, 2);
+            } else if tx_data == storage.tx_sentinel - 2 {
+                // Reached conditional limit, cannot increment without looping to condition above after another approval
+                panic(0);
+            } else {
+                // Increment in 2s for approval to keep the execution bit untouched
+                store(tx_hash, tx_data + 2);
+            }
 
+            // Update owner approval to "has approved"
             store(approval_hash, true);
+
             log_b256(address.value);
         } else {
             panic(0);
@@ -94,7 +119,7 @@ impl MultiSignatureWallet for Contract {
 
     /// Takes a transaction hash and changes the approval to false for the owner while decrementing the approval count
     fn revokeTransaction(tx_hash: b256) -> bool {
-        // TODO: signature authentication? ec_recover == signer(s)?
+        // TODO: signature authentication? ec_recover == signer(s)? https://github.com/FuelLabs/sway-applications/issues/10
         _is_initialized(storage.state);
 
         let sender: Result<Sender, AuthError> = msg_sender();
@@ -103,15 +128,24 @@ impl MultiSignatureWallet for Contract {
 
             let tx_data: u64 = get(tx_hash);
             _tx_exists(tx_data);
+            _tx_not_executed(tx_data);
 
             let approval_hash = _owner_approval_hash(tx_hash, address);
             let approved: bool = get(approval_hash);
 
             assert(approved);
 
-            // TODO: Decrement Tx approval if not executed then store it again
+            if tx_data == 2 {
+                // Reset back to original "zero" value i.e. the sentinel
+                store(tx_hash, storage.tx_sentinel);
+            } else {
+                // Decrement in 2s for approval to keep the execution bit untouched
+                store(tx_hash, tx_data - 2);
+            }
 
+            // Update owner approval to "has not approved"
             store(approval_hash, false);
+
             log_b256(address.value);
         } else {
             panic(0);
@@ -128,12 +162,17 @@ impl MultiSignatureWallet for Contract {
         if let Sender::Address(address) = sender.unwrap() {
             let tx_data: u64 = get(tx_hash);
             _tx_exists(tx_data);
+            _tx_not_executed(tx_data);
 
-            // Check approval threshold and if not executed then execute, mark as executed
+            // TODO: Check approval threshold: https://github.com/FuelLabs/sway-applications/issues/3
+
+            // Mark as executed
+            store(tx_hash, tx_data + 1);
 
             log_b256(tx_hash);
 
-            // TODO: execute
+            // TODO: https://github.com/FuelLabs/sway-applications/issues/6 and/or https://github.com/FuelLabs/sway-applications/issues/22
+            // execute
         } else {
             panic(0);
         };
@@ -175,21 +214,25 @@ impl MultiSignatureWallet for Contract {
         let tx_data: u64 = get(tx_hash);
         _tx_exists(tx_data);
 
-        // TODO: extract the approval and execution values
+        let executed = tx_data % 2 == 1;
+        let mut approvals = 0;
+        if executed {
+            if tx_data != storage.tx_sentinel + 1 {
+                approvals = (tx_data - 1) / 2;
+            };
+        } else {
+            if tx_data != storage.tx_sentinel {
+                approvals = tx_data / 2;
+            };
+        };
 
-        // return (current approval count, execution state)
-        (1, true) // make the compiler happy for now
+        (approvals, executed)
     }
 }
 
 /// Assertion used to ensure that the contract has called the constructor and initialized the values
 fn _is_initialized(state: u64) {
     assert(state == 1);
-}
-
-/// Assertion used to ensure that the value stored for the owner is true i.e. they are an owner in the contract
-fn _is_owner(state: bool) {
-    assert(state);
 }
 
 /// Returns the hash where the boolean value indicating the approval of the owner is stored
