@@ -1,12 +1,14 @@
 contract;
 
-use std::{address::Address, assert::assert, chain::{auth::{AuthError, Sender, msg_sender}, log_b256}, context::call_frames::contract_id, contract_id::ContractId, hash::{HashMethod, hash_pair, hash_u64, hash_value}, panic::panic, result::*, storage::{get, store}};
+use std::{address::Address, assert::assert, b512::B512, chain::{auth::{AuthError, Sender, msg_sender}, log_b256}, context::call_frames::contract_id, contract_id::ContractId, ecr::{EcRecoverError, ec_recover_address}, hash::{HashMethod, hash_pair, hash_u64, hash_value}, panic::panic, result::*, storage::{get, store}};
 
 abi MultiSignatureWallet {
     fn constructor(owner1: Address, owner2: Address) -> bool;
     fn submitTransaction(tx_hash: b256) -> bool;
-    fn approveTransaction(tx_hash: b256) -> bool;
-    fn revokeTransaction(tx_hash: b256) -> bool;
+    fn approveTransaction(tx_hash: b256, signatures: [B512;
+    2]) -> bool;
+    fn revokeTransaction(tx_hash: b256, signatures: [B512;
+    2]) -> bool;
     fn executeTransaction(tx_hash: b256) -> bool;
     fn is_owner(owner: Address) -> bool;
     fn has_approved(tx_hash: b256, owner: Address) -> bool;
@@ -22,18 +24,6 @@ storage {
     ///     - use the tx in other functions
     ///     - prevent a resubmission of the same tx
     tx_sentinel: u64,
-}
-
-// TODO: move to the bottom after bug is fixed
-/// Assertion used to ensure that the value stored for the owner is true i.e. they are an owner in the contract
-fn _is_owner(state: bool) {
-    assert(state);
-}
-
-// TODO: move to the bottom after bug is fixed
-/// Assertion used to make sure that the last bit is still 0 i.e. has not been executed
-fn _tx_not_executed(tx_data: u64) {
-    assert(tx_data % 2 == 0);
 }
 
 /// TODO: proper documentation instead of temporary filler comments
@@ -58,13 +48,12 @@ impl MultiSignatureWallet for Contract {
         _is_initialized(storage.state);
 
         let sender: Result<Sender, AuthError> = msg_sender();
+
         if let Sender::Address(address) = sender.unwrap() {
-            let status: bool = get(address.value);
-            _is_owner(status);
+            _is_owner(get(address.value));
 
             // When a Tx has not been submitted its default value should be 0.
-            let tx_data: u64 = get(tx_hash);
-            assert(tx_data == 0);
+            assert(get::<u64>(tx_hash) == 0);
 
             // Mark the first submission as a non-zero value
             store(tx_hash, storage.tx_sentinel);
@@ -78,20 +67,27 @@ impl MultiSignatureWallet for Contract {
     }
 
     /// Takes a transaction hash and changes the approval to true for the owner while incrementing the approval count
-    fn approveTransaction(tx_hash: b256) -> bool {
-        // TODO: signature authentication? ec_recover == signer(s)? https://github.com/FuelLabs/sway-applications/issues/10
+    fn approveTransaction(tx_hash: b256, signatures: [B512;
+    2]) -> bool {
         _is_initialized(storage.state);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
-        if let Sender::Address(address) = sender.unwrap() {
-            _is_owner(get(address.value));
+        let tx_data = get::<u64>(tx_hash);
+        _tx_exists(tx_data);
+        _tx_not_executed(tx_data);
 
-            let tx_data: u64 = get(tx_hash);
-            _tx_exists(tx_data);
-            _tx_not_executed(tx_data);
+        let mut index = 0;
+        // Hardcode signature len
+        while index < 2 {
+            let signer: Result<Address, EcRecoverError> = ec_recover_address(signatures[index], tx_hash);
+            if let Result::Err = signer {
+                panic(0);
+            };
 
-            let approval_hash = _owner_approval_hash(tx_hash, address);
-            let approved: bool = get(approval_hash);
+            let signer = signer.unwrap();
+            _is_owner(get(signer.value));
+
+            let approval_hash = _owner_approval_hash(tx_hash, signer);
+            let approved = get::<bool>(approval_hash);
 
             assert(!approved);
 
@@ -109,29 +105,36 @@ impl MultiSignatureWallet for Contract {
             // Update owner approval to "has approved"
             store(approval_hash, true);
 
-            log_b256(address.value);
-        } else {
-            panic(0);
+            log_b256(signer.value);
+
+            index = index + 1;
         };
 
         true
     }
 
     /// Takes a transaction hash and changes the approval to false for the owner while decrementing the approval count
-    fn revokeTransaction(tx_hash: b256) -> bool {
-        // TODO: signature authentication? ec_recover == signer(s)? https://github.com/FuelLabs/sway-applications/issues/10
+    fn revokeTransaction(tx_hash: b256, signatures: [B512;
+    2]) -> bool {
         _is_initialized(storage.state);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
-        if let Sender::Address(address) = sender.unwrap() {
-            _is_owner(get(address.value));
+        let tx_data = get::<u64>(tx_hash);
+        _tx_exists(tx_data);
+        _tx_not_executed(tx_data);
 
-            let tx_data: u64 = get(tx_hash);
-            _tx_exists(tx_data);
-            _tx_not_executed(tx_data);
+        let mut index = 0;
+        // Hardcode signature len
+        while index < 2 {
+            let signer: Result<Address, EcRecoverError> = ec_recover_address(signatures[index], tx_hash);
+            if let Result::Err = signer {
+                panic(0);
+            };
 
-            let approval_hash = _owner_approval_hash(tx_hash, address);
-            let approved: bool = get(approval_hash);
+            let signer = signer.unwrap();
+            _is_owner(get(signer.value));
+
+            let approval_hash = _owner_approval_hash(tx_hash, signer);
+            let approved = get::<bool>(approval_hash);
 
             assert(approved);
 
@@ -146,9 +149,9 @@ impl MultiSignatureWallet for Contract {
             // Update owner approval to "has not approved"
             store(approval_hash, false);
 
-            log_b256(address.value);
-        } else {
-            panic(0);
+            log_b256(signer.value);
+
+            index = index + 1;
         };
 
         true
@@ -189,8 +192,7 @@ impl MultiSignatureWallet for Contract {
     /// Returns a boolean value indicating if the given address hash approved the specified transaction
     fn has_approved(tx_hash: b256, owner: Address) -> bool {
         _is_initialized(storage.state);
-        let tx_data: u64 = get(tx_hash);
-        _tx_exists(tx_data);
+        _tx_exists(get::<u64>(tx_hash));
         get(_owner_approval_hash(tx_hash, owner))
     }
 
@@ -211,7 +213,7 @@ impl MultiSignatureWallet for Contract {
     fn get_transaction_data(tx_hash: b256) -> (u64, bool) {
         _is_initialized(storage.state);
 
-        let tx_data: u64 = get(tx_hash);
+        let tx_data = get::<u64>(tx_hash);
         _tx_exists(tx_data);
 
         let executed = tx_data % 2 == 1;
@@ -228,6 +230,16 @@ impl MultiSignatureWallet for Contract {
 
         (approvals, executed)
     }
+}
+
+/// Assertion used to ensure that the value stored for the owner is true i.e. they are an owner in the contract
+fn _is_owner(state: bool) {
+    assert(state);
+}
+
+/// Assertion used to make sure that the last bit is still 0 i.e. has not been executed
+fn _tx_not_executed(tx_data: u64) {
+    assert(tx_data % 2 == 0);
 }
 
 /// Assertion used to ensure that the contract has called the constructor and initialized the values
