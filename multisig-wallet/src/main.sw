@@ -1,6 +1,18 @@
 contract;
 
-use std::{address::Address, assert::assert, b512::B512, chain::log_b256, context::call_frames::contract_id, contract_id::ContractId, ecr::{EcRecoverError, ec_recover_address}, hash::{HashMethod, hash_pair, hash_u64, hash_value}, result::*, revert::revert, storage::{get, store}};
+use std::{
+    address::Address,
+    assert::assert,
+    b512::B512,
+    chain::log_b256,
+    context::call_frames::contract_id,
+    contract_id::ContractId,
+    ecr::{EcRecoverError, ec_recover_address},
+    hash::{HashMethod, hash_pair, hash_u64, hash_value},
+    result::*,
+    revert::revert,
+    storage::{get, store}
+};
 
 abi MultiSignatureWallet {
     fn constructor(owner1: Address, owner2: Address) -> bool;
