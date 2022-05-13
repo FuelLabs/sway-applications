@@ -60,7 +60,7 @@ impl MultiSignatureWallet for Contract {
     /// let destination_contract = ~Contract::from(/* some b256 here */);
     /// let value = 100;
     /// let data = /* some b256 here? */;
-    /// let tx_hash = contract.get_transaction_hash(destination_contract, value, data).call.await.unwrap();
+    /// let tx_hash = contract.get_transaction_hash(destination_contract, value, data).call().await.unwrap();
     ///
     /// let signatures = [~B512::new(), ~B512::new()];
     /// contract.executeTransaction(tx_hash, signatures).call().await.unwrap();
@@ -112,7 +112,7 @@ impl MultiSignatureWallet for Contract {
     /// let destination_contract = ~Contract::from(/* some b256 here */);
     /// let value = 100;
     /// let data = /* some b256 here? */;
-    /// let tx_hash = contract.get_transaction_hash(destination_contract, value, data).call.await.unwrap();
+    /// let tx_hash = contract.get_transaction_hash(destination_contract, value, data).call().await.unwrap();
     /// ```
     fn get_transaction_hash(to: ContractId, value: u64, data: b256) -> b256 {
         _assert_is_initialized(storage.nonce);
