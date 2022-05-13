@@ -118,13 +118,13 @@ impl MultiSignatureWallet for Contract {
         _assert_is_initialized(storage.nonce);
         // TODO: data > b256?
         // TODO: this is probably not following the EIP-191 signing standard. What do?
-        let to_hash = hash_value(to.value, HashMethod::Keccak256);
-        let data_hash = hash_value(data, HashMethod::Keccak256);
-        let value_hash = hash_u64(value, HashMethod::Keccak256);
-        let nonce_hash = hash_u64(storage.nonce, HashMethod::Keccak256);
+        let to_hash = hash_value(to.value, HashMethod::Sha256);
+        let data_hash = hash_value(data, HashMethod::Sha256);
+        let value_hash = hash_u64(value, HashMethod::Sha256);
+        let nonce_hash = hash_u64(storage.nonce, HashMethod::Sha256);
 
         let id = contract_id();
-        hash_pair(id.value, hash_pair(to_hash, hash_pair(value_hash, hash_pair(data_hash, nonce_hash, HashMethod::Keccak256), HashMethod::Keccak256), HashMethod::Keccak256), HashMethod::Keccak256)
+        hash_pair(id.value, hash_pair(to_hash, hash_pair(value_hash, hash_pair(data_hash, nonce_hash, HashMethod::Sha256), HashMethod::Sha256), HashMethod::Sha256), HashMethod::Sha256)
     }
 
     /// Returns a boolean value indicating if the given address is an owner in the contract
