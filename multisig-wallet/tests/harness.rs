@@ -1,4 +1,4 @@
-use fuel_tx::{ContractId};
+use fuel_tx::ContractId;
 use fuels::prelude::*;
 use fuels::test_helpers;
 use fuels_abigen_macro::abigen;
