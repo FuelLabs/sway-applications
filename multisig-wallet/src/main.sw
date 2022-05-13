@@ -2,7 +2,7 @@ contract;
 
 use std::{
     address::Address,
-    assert::assert,
+    assert::require,
     b512::B512,
     chain::log_b256,
     context::call_frames::contract_id,
@@ -20,6 +20,14 @@ abi MultiSignatureWallet {
     2]) -> bool;
     fn is_owner(owner: Address) -> bool;
     fn get_transaction_hash(to: ContractId, value: u64, data: b256) -> b256;
+}
+
+enum Error {
+    CannotReinitialize: (),
+    DuplicateTxExecution: (),
+    IncorrectSignerOrdering: (),
+    NotAnOwner: (),
+    NotInitialized: (),
 }
 
 storage {
@@ -40,7 +48,7 @@ impl MultiSignatureWallet for Contract {
     /// contract.constructor(owner1, owner2).call().await.unwrap();
     /// ```
     fn constructor(owner1: Address, owner2: Address) -> bool {
-        assert(storage.nonce == 0);
+        require(storage.nonce == 0, Error::CannotReinitialize);
 
         // TODO: when vectors are implemented change owners to be a Vec<Address>
         store(owner1.value, true);
@@ -67,8 +75,8 @@ impl MultiSignatureWallet for Contract {
     /// ```
     fn executeTransaction(tx_hash: b256, signatures: [B512;
     2]) -> bool {
-        _assert_is_initialized(storage.nonce);
-        _assert_not_executed(get::<bool>(tx_hash));
+        require(storage.nonce != 0, Error::NotInitialized);
+        require(get::<bool>(tx_hash), Error::DuplicateTxExecution);
 
         // The signers must have increasing values in order to check for duplicates or a zero-value
         let mut previous_signer: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
@@ -78,12 +86,13 @@ impl MultiSignatureWallet for Contract {
         while index < 2 {
             let signer: Result<Address, EcRecoverError> = ec_recover_address(signatures[index], tx_hash);
             if let Result::Err = signer {
+                // TODO: it would be nice to use a "require()" with the enum log from EcRecoverError::UnrecoverablePublicKey
                 revert(0);
             };
 
             let signer = signer.unwrap();
-            _assert_is_owner(get(signer.value));
-            // assert(previous_signer < signer.value);  // TODO: "lt" is not implemented for b256 atm
+            require(get::<bool>(signer.value), Error::NotAnOwner);
+            // require(previous_signer < signer.value, Error::IncorrectSignerOrdering);  // TODO: "lt" is not implemented for b256 atm
             previous_signer = signer.value;
         }
 
@@ -115,9 +124,9 @@ impl MultiSignatureWallet for Contract {
     /// let tx_hash = contract.get_transaction_hash(destination_contract, value, data).call().await.unwrap();
     /// ```
     fn get_transaction_hash(to: ContractId, value: u64, data: b256) -> b256 {
-        _assert_is_initialized(storage.nonce);
+        require(storage.nonce != 0, Error::NotInitialized);
+
         // TODO: data > b256?
-        // TODO: this is probably not following the EIP-191 signing standard. What do?
         let to_hash = hash_value(to.value, HashMethod::Sha256);
         let data_hash = hash_value(data, HashMethod::Sha256);
         let value_hash = hash_u64(value, HashMethod::Sha256);
@@ -129,23 +138,7 @@ impl MultiSignatureWallet for Contract {
 
     /// Returns a boolean value indicating if the given address is an owner in the contract
     fn is_owner(address: Address) -> bool {
-        _assert_is_initialized(storage.nonce);
+        require(storage.nonce != 0, Error::NotInitialized);
         get(address.value)
     }
-}
-
-/// Assertion used to ensure that the value stored for the owner is true i.e. they are an owner in the contract
-fn _assert_is_owner(state: bool) {
-    assert(state);
-}
-
-/// Assertion used to ensure that the contract has called the constructor to initialize the values
-fn _assert_is_initialized(nonce: u64) {
-    assert(nonce != 0);
-}
-
-/// Assertion used to ensure that a Tx has not been submitted and executed in executeTransaction()
-/// This prevents multiple uses of the same Tx
-fn _assert_not_executed(executed: bool) {
-    assert(!executed);
 }
