@@ -12,7 +12,7 @@ env:
   CARGO_TERM_COLOR: always
   FORC_VERSION: 0.12.2
   REGISTRY: ghcr.io
-  RUST_VERSION: 1.58.0
+  RUST_VERSION: 1.6.0
 
 jobs:
   cancel-previous-runs:
