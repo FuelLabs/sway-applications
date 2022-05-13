@@ -1,4 +1,4 @@
-use fuel_tx::{ContractId, Salt};
+use fuel_tx::{ContractId};
 use fuels::prelude::*;
 use fuels::test_helpers;
 use fuels_abigen_macro::abigen;
@@ -8,8 +8,7 @@ abigen!(MyContract, "out/debug/multisig-wallet-abi.json");
 
 async fn get_contract_instance() -> (MyContract, ContractId) {
     // Deploy the compiled contract
-    let salt = Salt::from([0u8; 32]);
-    let compiled = Contract::load_sway_contract("./out/debug/multisig-wallet.bin", salt).unwrap();
+    let compiled = Contract::load_sway_contract("./out/debug/multisig-wallet.bin").unwrap();
 
     // Launch a local network and deploy the contract
     let (provider, wallet) = test_helpers::setup_test_provider_and_wallet().await;
