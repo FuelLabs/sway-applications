@@ -17,7 +17,7 @@ use std::{
 
 abi MultiSignatureWallet {
     fn constructor(owner1: Address, owner2: Address) -> bool;
-    fn executeTransaction(to: ContractId, value: u64, data: b256, signatures: [B512;
+    fn execute_transaction(to: ContractId, value: u64, data: b256, signatures: [B512;
     2]) -> bool;
     fn is_owner(owner: Address) -> bool;
     fn get_transaction_hash(to: ContractId, value: u64, data: b256, nonce: u64) -> b256;
@@ -86,9 +86,9 @@ impl MultiSignatureWallet for Contract {
     /// // Dummy signatures here, use real ones for it to work
     /// let signatures = [~B512::new(), ~B512::new()];
     ///
-    /// contract.executeTransaction(destination_contract, value, data, signatures).call().await.unwrap();
+    /// contract.execute_transaction(destination_contract, value, data, signatures).call().await.unwrap();
     /// ```
-    fn executeTransaction(to: ContractId, value: u64, data: b256, signatures: [B512;
+    fn execute_transaction(to: ContractId, value: u64, data: b256, signatures: [B512;
     2]) -> bool {
         require(storage.nonce != 0, Error::NotInitialized);
 
