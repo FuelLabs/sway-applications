@@ -4,16 +4,17 @@ use std::{
     address::Address,
     assert::require,
     b512::B512,
-    chain::log_b256,
-    constants::ZERO,
     context::call_frames::contract_id,
     contract_id::ContractId,
     ecr::{EcRecoverError, ec_recover_address},
     hash::sha256,
+    logging::log,
     result::*,
     revert::revert,
     storage::{get, store}
 };
+
+use core::num::*;
 
 abi MultiSignatureWallet {
     fn constructor(owner1: Address, owner2: Address) -> bool;
@@ -95,7 +96,7 @@ impl MultiSignatureWallet for Contract {
         let tx_hash = _get_transaction_hash(to, value, data, storage.nonce, contract_id());
 
         // The signers must have increasing values in order to check for duplicates or a zero-value
-        let mut previous_signer: b256 = ZERO;
+        let mut previous_signer: b256 = ~b256::min();
 
         // TODO: change to Vec<B512> once implemented and then iterate instead of hardcoding length
         let mut index = 0;
@@ -115,7 +116,7 @@ impl MultiSignatureWallet for Contract {
         // TODO: Approval threshold https://github.com/FuelLabs/sway-applications/issues/3
 
         storage.nonce = storage.nonce + 1;
-        log_b256(tx_hash);
+        log(tx_hash);
 
         // TODO: Execute (https://github.com/FuelLabs/sway-applications/issues/6 and/or https://github.com/FuelLabs/sway-applications/issues/22)
 
