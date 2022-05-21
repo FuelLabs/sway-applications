@@ -12,11 +12,28 @@ body {
   background-color: #23262d;
 }
 
+.header {
+  height: 4.5em;
+  width: 100vw;
+  position: absolute;
+  top: 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+h1 {
+  position: absolute;
+  top: 0;
+  font-family: "Fira Code";
+  font-weight: 500;
+  color: rgb(227, 242, 241);
+}
+
 .board {
   width: 500px;
   height: 500px;
-  background-color: #1e9071;
-
+  background-color: rgb(133, 170, 148);
   border: transparent;
   box-shadow: 0 0 40px #000000;
   display: flex;
@@ -32,13 +49,22 @@ body {
 .square {
   flex: 1;
   height: 100%;
-  border: 2px solid #23262d;
+  border: 3px solid #17191c;
   cursor: pointer;
   display: grid;
   place-items: center;
-  font-size: 35px;
+  font-family: "Fira Code";
+  font-weight: 700;
+  color: rgb(227, 242, 241);
+  font-size: 48px;
 }
 
 .square:active {
-  background-color: #197c62;
+  background-color: #349f82;
+}
+
+#header-logo {
+  height: 40px;
+  width: 40px;
+  margin-left: 16px;
 }
