@@ -1,7 +1,7 @@
 use fuel_tx::ContractId;
+use fuels_abigen_macro::abigen;
 use fuels::prelude::*;
 use fuels::test_helpers;
-use fuels_abigen_macro::abigen;
 
 // Load abi from json
 abigen!(MyContract, "out/debug/multisig-wallet-abi.json");
