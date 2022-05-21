@@ -4,6 +4,8 @@ import Square from "./Components/Square";
 import { Patterns } from "./Patterns";
 
 function App() {
+  // TODO: write this functionality in Sway.
+
   // board
   const emptySquare = "";
   const emptyBoard = Array(9).fill(emptySquare);
