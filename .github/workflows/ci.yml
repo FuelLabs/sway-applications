@@ -39,11 +39,18 @@ jobs:
       - name: Run Cargo.toml linter
         run: git ls-files | grep Cargo.toml$ | xargs --verbose -n 1 cargo-toml-lint
 
-  setup:
+  build:
     needs: cancel-previous-runs
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        project: ["escrow"]
+
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -51,6 +58,9 @@ jobs:
           toolchain: ${{ env.RUST_VERSION }}
           override: true
 
+      - name: Init cache
+        uses: Swatinem/rust-cache@v1
+      
       - name: Install a modern linker (mold)
         uses: rui314/setup-mold@v1
 
@@ -75,18 +85,6 @@ jobs:
         with:
           command: install
           args: forc-fmt --version ${{ env.FORC_VERSION }}
-
-  build:
-    needs: setup
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        project: ["escrow"]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
 
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
