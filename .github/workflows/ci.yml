@@ -44,9 +44,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -54,9 +51,6 @@ jobs:
           toolchain: ${{ env.RUST_VERSION }}
           override: true
 
-      - name: Init cache
-        uses: Swatinem/rust-cache@v1
-      
       - name: Install a modern linker (mold)
         uses: rui314/setup-mold@v1
 
@@ -91,6 +85,12 @@ jobs:
         project: ["escrow"]
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Init cache
+        uses: Swatinem/rust-cache@v1
+
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
 
