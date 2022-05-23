@@ -45,7 +45,7 @@ jobs:
 
     strategy:
       matrix:
-        project: []
+        project: ["escrow"]
 
     steps:
       - name: Checkout repository
