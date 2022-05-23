@@ -1,2 +1,3 @@
 # sway-applications
+
 Swaypplications
