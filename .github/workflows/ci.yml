@@ -39,13 +39,9 @@ jobs:
       - name: Run Cargo.toml linter
         run: git ls-files | grep Cargo.toml$ | xargs --verbose -n 1 cargo-toml-lint
 
-  build:
+  setup:
     needs: cancel-previous-runs
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        project: ["escrow"]
 
     steps:
       - name: Checkout repository
@@ -86,16 +82,25 @@ jobs:
           command: install
           args: forc-fmt --version ${{ env.FORC_VERSION }}
 
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        project: ["escrow"]
+
+    steps:
+      - name: Check Sway formatting
+        run: forc fmt --path ${{ matrix.project }} --check
+
       - name: Check Rust formatting
         run: |
           cd ${{ matrix.project }}
           cargo fmt --verbose --check
 
       - name: Build Sway
-        run: forc build --path ${{ matrix.project }}
-
-      - name: Check Sway formatting
-        run: forc fmt --path ${{ matrix.project }} --check
+        run: sh build.sh ${{ matrix.project }}
 
       - name: Run Forc tests
         run: |
