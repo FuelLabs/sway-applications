@@ -88,9 +88,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Init cache
-        uses: Swatinem/rust-cache@v1
-
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
 
