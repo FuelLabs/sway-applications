@@ -86,16 +86,16 @@ jobs:
           command: install
           args: forc-fmt --version ${{ env.FORC_VERSION }}
 
+      - name: Check Sway formatting
+        run: forc fmt --path ${{ matrix.project }} --check
+
       - name: Check Rust formatting
         run: |
           cd ${{ matrix.project }}
           cargo fmt --verbose --check
 
       - name: Build Sway
-        run: forc build --path ${{ matrix.project }}
-
-      - name: Check Sway formatting
-        run: forc fmt --path ${{ matrix.project }} --check
+        run: sh build.sh ${{ matrix.project }}
 
       - name: Run Forc tests
         run: |
