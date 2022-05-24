@@ -29,7 +29,12 @@ async fn setup() -> (Multisig, LocalWallet, LocalWallet, LocalWallet) {
     .await
     .unwrap();
 
-    (Multisig::new(id.to_string(), wallet1.clone()), wallet1, wallet2, wallet3)
+    (
+        Multisig::new(id.to_string(), wallet1.clone()),
+        wallet1,
+        wallet2,
+        wallet3,
+    )
 }
 
 #[tokio::test]
