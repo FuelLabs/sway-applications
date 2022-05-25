@@ -17,13 +17,14 @@ use std::{
 use core::num::*;
 
 abi MultiSignatureWallet {
-    fn constructor(owner1: Address, owner2: Address) -> bool;
+    fn constructor(owner1: Address, owner2: Address, threshold: u64) -> bool;
     fn execute_transaction(to: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool;
     fn is_owner(owner: Address) -> bool;
     fn get_transaction_hash(to: ContractId, value: u64, data: b256, nonce: u64) -> b256;
 }
 
 enum Error {
+    ApprovalThresholdNotReached: (),
     CannotReinitialize: (),
     IncorrectSignerOrdering: (),
     NotAnOwner: (),
@@ -114,7 +115,7 @@ impl MultiSignatureWallet for Contract {
         //     approval_count = approval_count + 1;
         // }
 
-        require(storage.threshold <= approval_count);
+        require(storage.threshold <= approval_count, Error::ApprovalThresholdNotReached);
 
         storage.nonce = storage.nonce + 1;
         log(tx_hash);
