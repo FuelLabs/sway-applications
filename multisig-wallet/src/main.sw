@@ -28,6 +28,7 @@ enum Error {
     IncorrectSignerOrdering: (),
     NotAnOwner: (),
     NotInitialized: (),
+    ThresholdCannotBeZero: (),
 }
 
 struct Tx {
@@ -35,7 +36,7 @@ struct Tx {
     value: u64,
     data: b256,
     nonce: u64,
-    contact_identifier: b256,
+    contract_identifier: b256,
 }
 
 storage {
@@ -52,8 +53,9 @@ impl MultiSignatureWallet for Contract {
     /// # Panics
     ///
     /// - When the constructor is called more than once
-    fn constructor(owner1: Address, owner2: Address) -> bool {
+    fn constructor(owner1: Address, owner2: Address, threshold: u64) -> bool {
         require(storage.nonce == 0, Error::CannotReinitialize);
+        require(storage.threshold != 0, Error::ThresholdCannotBeZero);
 
         // TODO: when vectors are implemented change owners to be a Vec<Address>
         store(owner1.value, true);
@@ -62,6 +64,7 @@ impl MultiSignatureWallet for Contract {
         // TODO: Weighted signers https://github.com/FuelLabs/sway-applications/issues/4
 
         storage.nonce = 1;
+        storage.threshold = threshold;
         true
     }
 
@@ -91,9 +94,13 @@ impl MultiSignatureWallet for Contract {
         require(get::<bool>(signer1.value) && get::<bool>(signer2.value), Error::NotAnOwner);
         require(~b256::min() < signer1.value && signer1.value < signer2.value, Error::IncorrectSignerOrdering);
 
+        // Hardcoded value, that passes the checks above, until the loop below is unblocked
+        let approval_count = 2;
+
         // The signers must have increasing values in order to check for duplicates or a zero-value
         // let mut previous_signer: b256 = ~b256::min();
 
+        // let approval_count = 0;
         // let mut index = 0;
         // while index < 2 {
         //     let signer_result: Result<Address, EcRecoverError> = ec_recover_address(signatures[index], tx_hash);
@@ -104,9 +111,10 @@ impl MultiSignatureWallet for Contract {
         //     require(get::<bool>(signer.value), Error::NotAnOwner);
         //     require(previous_signer < signer.value, Error::IncorrectSignerOrdering);
         //     previous_signer = signer.value;
+        //     approval_count = approval_count + 1;
         // }
 
-        // TODO: Approval threshold https://github.com/FuelLabs/sway-applications/issues/3
+        require(storage.threshold <= approval_count);
 
         storage.nonce = storage.nonce + 1;
         log(tx_hash);
@@ -136,6 +144,6 @@ impl MultiSignatureWallet for Contract {
 
 fn _get_transaction_hash(to: ContractId, value: u64, data: b256, nonce: u64, self_id: ContractId) -> b256 {
     sha256(Tx {
-        contact_identifier: self_id.value, destination: to.value, value, data, nonce
+        contract_identifier: self_id.value, destination: to.value, value, data, nonce
     })
 }
