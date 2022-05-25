@@ -1,3 +1,5 @@
+#![allow(unused_variables)]
+
 use fuels::prelude::*;
 use fuels_abigen_macro::abigen;
 
@@ -22,7 +24,7 @@ async fn setup() -> (Multisig, LocalWallet, LocalWallet, LocalWallet) {
     let wallet3 = LocalWallet::new_from_private_key(pk3, provider);
 
     let id = Contract::deploy(
-        "./out/debug/multisig.bin",
+        "./out/debug/multisig-wallet.bin",
         &wallet1,
         TxParameters::default(),
     )
@@ -37,7 +39,42 @@ async fn setup() -> (Multisig, LocalWallet, LocalWallet, LocalWallet) {
     )
 }
 
-#[tokio::test]
-async fn can_get_contract_id() {
-    let (multisig, wallet1, wallet2, wallet3) = setup().await;
+mod constructor {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn placeholder() {
+        let (multisig, wallet1, wallet2, wallet3) = setup().await;
+    }
+}
+
+mod execute_transaction {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn placeholder() {
+        let (multisig, wallet1, wallet2, wallet3) = setup().await;
+    }
+}
+
+mod is_owner {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn placeholder() {
+        let (multisig, wallet1, wallet2, wallet3) = setup().await;
+    }
+}
+
+mod get_transaction_hash {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn placeholder() {
+        let (multisig, wallet1, wallet2, wallet3) = setup().await;
+    }
 }

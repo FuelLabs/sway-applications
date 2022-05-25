@@ -18,8 +18,7 @@ use core::num::*;
 
 abi MultiSignatureWallet {
     fn constructor(owner1: Address, owner2: Address) -> bool;
-    fn execute_transaction(to: ContractId, value: u64, data: b256, signatures: [B512;
-    2]) -> bool;
+    fn execute_transaction(to: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool;
     fn is_owner(owner: Address) -> bool;
     fn get_transaction_hash(to: ContractId, value: u64, data: b256, nonce: u64) -> b256;
 }
@@ -50,16 +49,9 @@ storage {
 impl MultiSignatureWallet for Contract {
     /// Initializes the contract by setting the owners, owner weightings and initializes the nonce
     ///
-    /// # Example
+    /// # Panics
     ///
-    /// ```
-    /// // Init contract here ...
-    ///
-    /// let owner1 = ~Address::from(/* some b256 here */);
-    /// let owner2 = ~Address::from(/* some b256 here */);
-    ///
-    /// contract.constructor(owner1, owner2).call().await.unwrap();
-    /// ```
+    /// - When the constructor is called more than once
     fn constructor(owner1: Address, owner2: Address) -> bool {
         require(storage.nonce == 0, Error::CannotReinitialize);
 
@@ -75,43 +67,44 @@ impl MultiSignatureWallet for Contract {
 
     /// Executes a Tx if the required signatures meet the restrictions on ownership and threshold approval
     ///
-    /// # Example
+    /// # Panics
     ///
-    /// ```
-    /// // Init contract here ...
-    ///
-    /// let destination_contract = ~Contract::from(/* some b256 here */);
-    /// let value = 100;
-    /// let data = /* some b256 here? */;
-    ///
-    /// // Dummy signatures here, use real ones for it to work
-    /// let signatures = [~B512::new(), ~B512::new()];
-    ///
-    /// contract.execute_transaction(destination_contract, value, data, signatures).call().await.unwrap();
-    /// ```
-    fn execute_transaction(to: ContractId, value: u64, data: b256, signatures: [B512;
-    2]) -> bool {
+    /// - When the constructor has not been called to initialize the contract
+    /// - When the public key cannot be recovered from a signature
+    /// - When the signer is not an owner
+    /// - When the signatures are not in ascending order (0x1 < 0x2 < 0x3...)
+    fn execute_transaction(to: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool {
         require(storage.nonce != 0, Error::NotInitialized);
 
         let tx_hash = _get_transaction_hash(to, value, data, storage.nonce, contract_id());
 
-        // The signers must have increasing values in order to check for duplicates or a zero-value
-        let mut previous_signer: b256 = ~b256::min();
-
         // TODO: change to Vec<B512> once implemented and then iterate instead of hardcoding length
-        let mut index = 0;
-        while index < 2 {
-            let signer: Result<Address, EcRecoverError> = ec_recover_address(signatures[index], tx_hash);
-            if let Result::Err = signer {
-                // TODO: it would be nice to use a "require()" with the enum log from EcRecoverError::UnrecoverablePublicKey
-                revert(0);
-            };
+        let signer1_result: Result<Address, EcRecoverError> = ec_recover_address(signature1, tx_hash);
+        let signer2_result: Result<Address, EcRecoverError> = ec_recover_address(signature2, tx_hash);
 
-            let signer = signer.unwrap();
-            require(get::<bool>(signer.value), Error::NotAnOwner);
-            require(previous_signer < signer.value, Error::IncorrectSignerOrdering);
-            previous_signer = signer.value;
-        }
+        require(signer1_result.is_ok(), EcRecoverError::UnrecoverablePublicKey);
+        require(signer2_result.is_ok(), EcRecoverError::UnrecoverablePublicKey);
+
+        let signer1 = signer1_result.unwrap();
+        let signer2 = signer2_result.unwrap();
+
+        require(get::<bool>(signer1.value) && get::<bool>(signer2.value), Error::NotAnOwner);
+        require(~b256::min() < signer1.value && signer1.value < signer2.value, Error::IncorrectSignerOrdering);
+
+        // The signers must have increasing values in order to check for duplicates or a zero-value
+        // let mut previous_signer: b256 = ~b256::min();
+
+        // let mut index = 0;
+        // while index < 2 {
+        //     let signer_result: Result<Address, EcRecoverError> = ec_recover_address(signatures[index], tx_hash);
+        //     require(signer_result.is_ok(), EcRecoverError::UnrecoverablePublicKey);
+
+        //     let signer = signer.unwrap();
+
+        //     require(get::<bool>(signer.value), Error::NotAnOwner);
+        //     require(previous_signer < signer.value, Error::IncorrectSignerOrdering);
+        //     previous_signer = signer.value;
+        // }
 
         // TODO: Approval threshold https://github.com/FuelLabs/sway-applications/issues/3
 
@@ -124,27 +117,17 @@ impl MultiSignatureWallet for Contract {
     }
 
     /// Takes in transaction data and hashes it into a unique tx hash
-    ///
     /// Used for verification of message
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// // Init contract here ...
-    ///
-    /// let destination_contract = ~Contract::from(/* some b256 here */);
-    /// let value = 100;
-    /// let data = /* some b256 here? */;
-    /// let nonce = 42;
-    ///
-    /// let tx_hash = contract.get_transaction_hash(destination_contract, value, data, nonce).call().await.unwrap();
-    /// ```
     fn get_transaction_hash(to: ContractId, value: u64, data: b256, nonce: u64) -> b256 {
         // TODO: data > b256?
         _get_transaction_hash(to, value, data, nonce, contract_id())
     }
 
     /// Returns a boolean value indicating if the given address is an owner in the contract
+    ///
+    /// # Panics
+    ///
+    /// - When the constructor has not been called to initialize the contract
     fn is_owner(address: Address) -> bool {
         require(storage.nonce != 0, Error::NotInitialized);
         get(address.value)
