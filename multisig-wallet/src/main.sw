@@ -76,24 +76,25 @@ impl MultiSignatureWallet for Contract {
     /// - When the constructor has not been called to initialize the contract
     /// - When the public key cannot be recovered from a signature
     /// - When the signer is not an owner
-    /// - When the signatures are not in ascending order (0x1 < 0x2 < 0x3...)
+    /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
     fn execute_transaction(to: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool {
         require(storage.nonce != 0, Error::NotInitialized);
 
         let tx_hash = _get_transaction_hash(to, value, data, storage.nonce, contract_id());
 
         // TODO: change to Vec<B512> once implemented and then iterate instead of hardcoding length
-        let signer1_result: Result<Address, EcRecoverError> = ec_recover_address(signature1, tx_hash);
-        let signer2_result: Result<Address, EcRecoverError> = ec_recover_address(signature2, tx_hash);
+        let signer1: b256 = match ec_recover_address(signature1, tx_hash) {
+            Result::Ok(address) => address.value,
+            _ => revert(42),
+        };
 
-        require(signer1_result.is_ok(), EcRecoverError::UnrecoverablePublicKey);
-        require(signer2_result.is_ok(), EcRecoverError::UnrecoverablePublicKey);
+        let signer2: b256 = match ec_recover_address(signature2, tx_hash) {
+            Result::Ok(address) => address.value,
+            _ => revert(42),
+        };
 
-        let signer1 = signer1_result.unwrap();
-        let signer2 = signer2_result.unwrap();
-
-        require(get::<bool>(signer1.value) && get::<bool>(signer2.value), Error::NotAnOwner);
-        require(~b256::min() < signer1.value && signer1.value < signer2.value, Error::IncorrectSignerOrdering);
+        require(get::<bool>(signer1) && get::<bool>(signer2), Error::NotAnOwner);
+        require(~b256::min() < signer1 && signer1 < signer2, Error::IncorrectSignerOrdering);
 
         // Hardcoded value, that passes the checks above, until the loop below is unblocked
         let approval_count = 2;
@@ -104,14 +105,14 @@ impl MultiSignatureWallet for Contract {
         // let approval_count = 0;
         // let mut index = 0;
         // while index < 2 {
-        //     let signer_result: Result<Address, EcRecoverError> = ec_recover_address(signatures[index], tx_hash);
-        //     require(signer_result.is_ok(), EcRecoverError::UnrecoverablePublicKey);
+        //     let signer: b256 = match ec_recover_address(signatures[index], tx_hash) {
+        //         Result::Ok(address) => address.value,
+        //         _ => revert(42),
+        //     };
 
-        //     let signer = signer.unwrap();
-
-        //     require(get::<bool>(signer.value), Error::NotAnOwner);
-        //     require(previous_signer < signer.value, Error::IncorrectSignerOrdering);
-        //     previous_signer = signer.value;
+        //     require(get::<bool>(signer), Error::NotAnOwner);
+        //     require(previous_signer < signer, Error::IncorrectSignerOrdering);
+        //     previous_signer = signer;
         //     approval_count = approval_count + 1;
         // }
 
