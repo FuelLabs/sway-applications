@@ -4,29 +4,34 @@ use std::{
     address::Address,
     assert::require,
     b512::B512,
-    context::call_frames::contract_id,
+    chain::auth::Sender,
+    context::{call_frames::contract_id, this_balance},
     contract_id::ContractId,
     ecr::{EcRecoverError, ec_recover_address},
     hash::sha256,
     logging::log,
     result::*,
     revert::revert,
-    storage::{get, store}
+    storage::{get, store},
+    token::{force_transfer, transfer_to_output}
 };
 
 use core::num::*;
 
 abi MultiSignatureWallet {
     fn constructor(owner1: Address, owner2: Address, threshold: u64) -> bool;
-    fn execute_transaction(to: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool;
+    fn execute_transaction(to: Sender, value: u64, data: b256, signature1: B512, signature2: B512) -> bool;
+    fn transfer(to: Sender, asset_id: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool;
     fn is_owner(owner: Address) -> bool;
-    fn get_transaction_hash(to: ContractId, value: u64, data: b256, nonce: u64) -> b256;
+    fn balance(asset_id: ContractId) -> u64;
+    fn get_transaction_hash(to: Sender, value: u64, data: b256, nonce: u64) -> b256;
 }
 
 enum Error {
     ApprovalThresholdNotReached: (),
     CannotReinitialize: (),
     IncorrectSignerOrdering: (),
+    InsufficientAssetAmount: (),
     NotAnOwner: (),
     NotInitialized: (),
     ThresholdCannotBeZero: (),
@@ -77,7 +82,7 @@ impl MultiSignatureWallet for Contract {
     /// - When the public key cannot be recovered from a signature
     /// - When the signer is not an owner
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
-    fn execute_transaction(to: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool {
+    fn execute_transaction(to: Sender, value: u64, data: b256, signature1: B512, signature2: B512) -> bool {
         require(storage.nonce != 0, Error::NotInitialized);
 
         let tx_hash = _get_transaction_hash(to, value, data, storage.nonce, contract_id());
@@ -124,11 +129,51 @@ impl MultiSignatureWallet for Contract {
         true
     }
 
-    /// Takes in transaction data and hashes it into a unique tx hash
-    /// Used for verification of message
-    fn get_transaction_hash(to: ContractId, value: u64, data: b256, nonce: u64) -> b256 {
-        // TODO: data > b256?
-        _get_transaction_hash(to, value, data, nonce, contract_id())
+    /// Transfers assets to outputs & contracts
+    ///
+    /// # Panics
+    ///
+    /// - When the constructor has not been called to initialize the contract
+    /// - When the balance of the asset being sent is less than the balance in the contract
+    /// - When the public key cannot be recovered from a signature
+    /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
+    /// - When the signer is not an owner
+    /// - When the total approval count is less than the required threshold for execution
+    fn transfer(to: Sender, asset_id: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool {
+        require(storage.nonce != 0, Error::NotInitialized);
+        require(value <= this_balance(asset_id), Error::InsufficientAssetAmount);
+
+        let tx_hash = _get_transaction_hash(to, value, data, storage.nonce, contract_id());
+
+        // TODO: change to Vec<B512> once implemented and then iterate instead of hardcoding length
+        let signer1: b256 = match ec_recover_address(signature1, tx_hash) {
+            Result::Ok(address) => address.value, _ => revert(42), 
+        };
+
+        let signer2: b256 = match ec_recover_address(signature2, tx_hash) {
+            Result::Ok(address) => address.value, _ => revert(42), 
+        };
+
+        require(~b256::min() < signer1 && signer1 < signer2, Error::IncorrectSignerOrdering);
+
+        let signer1_weight = get::<u64>(signer1);
+        let signer2_weight = get::<u64>(signer2);
+
+        require(signer1_weight != 0 && signer2_weight != 0, Error::NotAnOwner);
+
+        // Hardcoded value, that passes the checks above, until the loop below is unblocked
+        let approval_count = signer1_weight + signer2_weight;
+
+        require(storage.threshold <= approval_count, Error::ApprovalThresholdNotReached);
+
+        storage.nonce = storage.nonce + 1;
+        log(tx_hash);
+
+        match to {
+            Sender::Address(address) => transfer_to_output(value, asset_id, address), Sender::ContractId(contract) => force_transfer(value, asset_id, contract), 
+        };
+
+        true
     }
 
     /// Returns a boolean value indicating if the given address is an owner in the contract
@@ -140,10 +185,25 @@ impl MultiSignatureWallet for Contract {
         require(storage.nonce != 0, Error::NotInitialized);
         get(address.value)
     }
+
+    fn balance(asset_id: ContractId) -> u64 {
+        this_balance(asset_id)
+    }
+
+    /// Takes in transaction data and hashes it into a unique tx hash
+    /// Used for verification of message
+    fn get_transaction_hash(to: Sender, value: u64, data: b256, nonce: u64) -> b256 {
+        // TODO: data > b256?
+        _get_transaction_hash(to, value, data, nonce, contract_id())
+    }
 }
 
-fn _get_transaction_hash(to: ContractId, value: u64, data: b256, nonce: u64, self_id: ContractId) -> b256 {
-    sha256(Tx {
-        contract_identifier: self_id.value, destination: to.value, value, data, nonce
-    })
+fn _get_transaction_hash(to: Sender, value: u64, data: b256, nonce: u64, self_id: ContractId) -> b256 {
+    match to {
+        Sender::Address(address) => sha256(Tx {
+            contract_identifier: self_id.value, destination: address.value, value, data, nonce
+        }), Sender::ContractId(asset_id) => sha256(Tx {
+            contract_identifier: self_id.value, destination: asset_id.value, value, data, nonce
+        }), 
+    }
 }
