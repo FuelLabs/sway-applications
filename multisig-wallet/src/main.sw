@@ -20,7 +20,7 @@ use core::num::*;
 
 abi MultiSignatureWallet {
     fn constructor(owner1: Address, owner2: Address, owner1_weight: u64, owner2_weight: u64, threshold: u64) -> bool;
-    fn execute_transaction(to: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool;
+    fn execute_transaction(to: Sender, value: u64, data: b256, signature1: B512, signature2: B512) -> bool;
     fn transfer(to: Sender, asset_id: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool;
     fn is_owner(owner: Address) -> bool;
     fn balance(asset_id: ContractId) -> u64;
@@ -204,6 +204,7 @@ impl MultiSignatureWallet for Contract {
         get::<u64>(address.value) != 0
     }
 
+    /// Returns the balance of the specified asset_id for this contract
     fn balance(asset_id: ContractId) -> u64 {
         this_balance(asset_id)
     }
