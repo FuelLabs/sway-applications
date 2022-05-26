@@ -65,7 +65,7 @@ impl MultiSignatureWallet for Contract {
     fn constructor(owner1: Address, owner2: Address, owner1_weight: u64, owner2_weight: u64, threshold: u64) -> bool {
         require(storage.nonce == 0, Error::CannotReinitialize);
         require(storage.threshold != 0, Error::ThresholdCannotBeZero);
-        
+
         // TODO: when vectors are implemented change owners to be a Vec<Address>
         require(owner1_weight != 0, Error::WeightingCannotBeZero);
         require(owner2_weight != 0, Error::WeightingCannotBeZero);
