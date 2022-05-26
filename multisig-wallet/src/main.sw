@@ -30,7 +30,7 @@ enum Error {
     NotAnOwner: (),
     NotInitialized: (),
     ThresholdCannotBeZero: (),
-    WeightingCannotBeZero: ()
+    WeightingCannotBeZero: (),
 }
 
 struct Tx {
@@ -43,7 +43,7 @@ struct Tx {
 
 struct User {
     address: Address,
-    weight: u64
+    weight: u64,
 }
 
 storage {
@@ -118,7 +118,7 @@ impl MultiSignatureWallet for Contract {
         // let mut index = 0;
         // while index < 2 {
         //     let signer: b256 = match ec_recover_address(signatures[index], tx_hash) {
-        //         Result::Ok(address) => address.value, _ => revert(42), 
+        //         Result::Ok(address) => address.value, _ => revert(42),
         //     };
 
         //     require(previous_signer < signer, Error::IncorrectSignerOrdering);
