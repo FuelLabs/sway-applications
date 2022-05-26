@@ -84,13 +84,11 @@ impl MultiSignatureWallet for Contract {
 
         // TODO: change to Vec<B512> once implemented and then iterate instead of hardcoding length
         let signer1: b256 = match ec_recover_address(signature1, tx_hash) {
-            Result::Ok(address) => address.value,
-            _ => revert(42),
+            Result::Ok(address) => address.value, _ => revert(42),
         };
 
         let signer2: b256 = match ec_recover_address(signature2, tx_hash) {
-            Result::Ok(address) => address.value,
-            _ => revert(42),
+            Result::Ok(address) => address.value, _ => revert(42),
         };
 
         require(get::<bool>(signer1) && get::<bool>(signer2), Error::NotAnOwner);
