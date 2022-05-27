@@ -23,6 +23,12 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
+  check-forc-badge-version:
+    needs: cancel-previous-runs
+    runs-on: ubuntu-latest
+    steps:
+      run: sh forc_badge_check.sh
+
   lint-toml-files:
     needs: cancel-previous-runs
     runs-on: ubuntu-latest
