@@ -27,6 +27,7 @@ jobs:
     needs: cancel-previous-runs
     runs-on: ubuntu-latest
     steps:
+      name: Check versions
       run: sh forc_badge_check.sh
 
   lint-toml-files:
