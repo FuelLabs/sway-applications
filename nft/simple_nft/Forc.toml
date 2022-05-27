@@ -1,0 +1,8 @@
+[project]
+name = "simple_nft"
+authors = ["Cam Fuel"]
+entry = "main.sw"
+license = "Apache-2.0"
+
+[dependencies]
+nft_lib = { path = "../nft_lib" }
