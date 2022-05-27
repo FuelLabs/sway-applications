@@ -26,7 +26,8 @@ jobs:
   check-forc-badge-version:
     needs: cancel-previous-runs
     runs-on: ubuntu-latest
-    run: sh forc_badge_check.sh
+    steps:
+      run: sh forc_badge_check.sh
 
   lint-toml-files:
     needs: cancel-previous-runs
