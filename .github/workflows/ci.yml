@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Checking versions
-        run: pwd && ls -la && sh forc_badge_check.sh
+        run: sh forc_badge_check.sh
 
   lint-toml-files:
     needs: cancel-previous-runs
