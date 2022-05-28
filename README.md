@@ -53,4 +53,4 @@ Any instructions related to running a specific project should be found within th
 
 ## Contributing
 
-Check [CONTRIBUTING.md](./CONTRIBUING.md) for more info!
+Check [CONTRIBUTING.md](./CONTRIBUTING.md) for more info!
