@@ -20,7 +20,8 @@ The purpose of this repository is to contain end-to-end applications that are wr
 
 This means that a project will generally consist of a Sway contract and a user interface in order to interact with the contract however that is not a hard rule.
 
-> **NOTE:** Sway is a language under heavy development therefore the applications may not be the most ergonomic. Over time they should receive updates / improvements in order to demonstrate how Sway can be used in real use cases.
+> **Note**
+> Sway is a language under heavy development therefore the applications may not be the most ergonomic. Over time they should receive updates / improvements in order to demonstrate how Sway can be used in real use cases.
 
 ## Repository Structure
 
