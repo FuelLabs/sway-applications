@@ -10,7 +10,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  FORC_VERSION: 0.13.2
+  FORC_VERSION: 0.14.2
   REGISTRY: ghcr.io
   RUST_VERSION: 1.61.0
 
