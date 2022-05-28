@@ -7,19 +7,21 @@ assignees: ''
 
 ---
 
-**Is this a new feature or an improvement to something that already exists?**
+# Is this a new feature or an improvement to something that already exists?
 Select 1 checkbox
 - [ ] New feature
 - [ ] Improvement
 
-**Describe _what_ your feature accomplishes**
+# Description
+
+## _What_ does your feature accomplish?
 Example: It reduces the bytecode and improves the code quality while making the workflow more ergonomic.
 
-**Describe _how_ your feature accomplishes your goal**
+## _How_ does your feature accomplishes your goal?
 Example: Removing redundant code and separating the functions into distinct units makes the code more legible.
 
-**Draft implementation**
+# Draft implementation
 Write some pseudo-code, outline the design or show the "before" vs "after" changes.
 
-**Additional context**
+# Additional context
 Add any other context or screenshots about the feature request here.

@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-**Summarize your changes**
+# Summarize your changes
 Example: 
 * Updated code to follow new syntax and bumped forc version in CI
 * Fixed a logical flaw in the minting function that allowed a user to mint more than once
@@ -19,9 +19,9 @@ Select any that apply
 - [ ] Quality of life (code quality, restructoring repository...)
 - [ ] Other
 
-**Related Issues**
+# Related Issues
 
 Closes #(issue number)
 
-**Additional context**
+# Additional context
 Add any other context or screenshots about the feature request here.
