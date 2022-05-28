@@ -19,7 +19,7 @@ async fn setup() -> (Metadata, Metadata, Metadata, ContractId, u64) {
     let config = WalletsConfig::new(
         Some(num_wallets),
         Some(coins_per_wallet),
-        Some(amount_per_coin)
+        Some(amount_per_coin),
     );
 
     let mut wallets = launch_provider_and_get_wallets(config).await;
@@ -205,7 +205,8 @@ mod deposit {
         let another_asset = Asset::new(another_asset_id.to_string(), deployer.wallet.clone());
 
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*another_asset_id)));
+        let call_params =
+            CallParameters::new(Some(asset_amount), Some(AssetId::from(*another_asset_id)));
 
         // Init conditions
         init(
