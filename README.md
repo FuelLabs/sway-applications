@@ -1,16 +1,35 @@
-# Sway Applications
+<p align="center">
+    <img src="./logo.png" height="120">
+</p>
 
-## Introduction
+<p align="center">
+    <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
+        <img src="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml/badge.svg" />
+    </a>
+    <a href="https://crates.io/crates/forc/0.13.2" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.13.2-orange" />
+    </a>
+    <a href="https://discord.gg/xfpK4Pe">
+        <img src="https://img.shields.io/discord/732892373507375164?color=blue&logo=discord&logoColor=ffffff&labelColor=6A7EC2&label=Discord" />
+    </a>
+</p>
+
+## Overview
 
 The purpose of this repository is to contain end-to-end applications that are written in Sway in order to demonstrate what can be built.
 
-This means that generally a project will consist of a Sway contract and a user interface in order to interact with the contract however that is not a hard rule.
+This means that a project will generally consist of a Sway contract and a user interface in order to interact with the contract however that is not a hard rule.
 
-> **NOTE:** Sway is a language under heavy development therefore the applications may not be the most ergonomic however over time they should receive updates / improvements in order to demonstrate how Sway can be used in real use cases.
+> **Note**
+> Sway is a language under heavy development therefore the applications may not be the most ergonomic. Over time they should receive updates / improvements in order to demonstrate how Sway can be used in real use cases.
 
-## Project Structure
+## Repository Structure
 
-Each project is independent of the other projects and thus every project has its own directory with all of the files required to make it work.
+Each project within this repository is independent of the other projects and thus every project has its own directory with all of the files required to make it work.
+
+That being said they are all under the same [CI](.github/workflows/ci.yml) so any updates to a project must make sure that the other projects continue to pass.
+
+The following is a visual sample of how the repository is structured.
 
 ```
 sway-applications/
@@ -22,20 +41,17 @@ sway-applications/
 └── README.md
 ```
 
-## Contributions
+### Projects
 
-### Issues
+- [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
+- [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
 
-If there is a bug, something seems to not work as expected or you have an idea of how something can be improved then make sure to check the existing issues first and if you do not find one related to your issue then raise a new issue and describe your thoughts in detail.
+## Running a project
 
-The greater the amount of detail the quicker something can be done to address the issue.
+If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/latest/introduction/installation.html) steps required to use our tools.
 
-### Adding New Projects
+Any instructions related to running a specific project should be found within the README.md of that project.
 
-If there is a project that does not exist in the repository and you would like to add it to the list of examples then raise an issue to get some preliminary discussion and fork the repository so that you can work locally.
+## Contributing
 
-Make sure to document your code and produce documentation on how to install / run your application.
-
-Before you attempt to create a pull request make sure that you mark it as a draft and that everything works as expected.
-
-Your project should not affect any of the other projects and thus should pass the GitHub CI.
+Check [CONTRIBUTING.md](./CONTRIBUTING.md) for more info!
