@@ -16,8 +16,8 @@ Select any that apply
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Documentation
-- [ ] Quality of life (code quality, restructoring repository...)
-- [ ] Other
+- [ ] Quality of life (refactoring, restructoring repository, deprecating old feature...)
+- [ ] Other (describe below)
 
 # Related Issues
 
