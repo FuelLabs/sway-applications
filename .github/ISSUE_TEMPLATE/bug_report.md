@@ -1,7 +1,6 @@
 ---
 name: Bug report
-about: Make sure to delete the guiding comments as you fill in the report so that
-  only your comments remain under each heading!
+about: If something seems to be broken then tell us here!
 title: ''
 labels: bug
 assignees: ''
