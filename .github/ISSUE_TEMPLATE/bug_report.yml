@@ -23,7 +23,7 @@ body:
     validations:
       required: true
   - type: textarea
-    id: logs
+    id: codeblock
     attributes:
       label: Minimal reproducible code example
       description: Copy and paste your Sway / Rust code here, it will automatically be formatted so no need for backticks.
