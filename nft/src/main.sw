@@ -49,8 +49,7 @@ storage {
     balances: StorageMap<Address, u64>,
     meta_data: StorageMap<b256, MetaData>,
     allowed_minters: StorageMap<Address, bool>,
-    // TODO: This could be a vec to allow for mutliple operators
-    operator_approval: StorageMap<Address, Address>,
+    operator_approval: StorageMap<Address, StorageMap<Address, bool>>,
     owners: StorageMap<Address, b256>,
     state: u64,
     token_count: u64,
@@ -146,7 +145,7 @@ impl NFT for Contract {
         storage.balances = ~StorageMap::new::<Address, u64>();
         storage.meta_data = ~StorageMap::new::<b256, MetaData>();
         storage.allowed_minters =  ~StorageMap::new::<Address, bool>();
-        storage.operator_approval = ~StorageMap::new::<Address, Address>();
+        storage.operator_approval = ~StorageMap::new::<Address, StorageMap<Address, bool>>();
         storage.owners = ~StorageMap::new::<Address, b256>();
 
         storage.token_count = token_count;
@@ -189,16 +188,8 @@ impl NFT for Contract {
     fn is_approved_for_all(owner: Address, operator: Address) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
 
-        let address: Address = storage.operator_approval.get(owner);
-        // There has to be a better way to do this in sway
-        // Looking for something like 'case ? true : false' in C++
-        if address.value == operator.value {
-            true
-        }
-        else
-        {
-            false
-        }
+        let operator_storage: StorageMap<Address, bool> = storage.operator_approval.get(owner);
+        operator_storage.get(operator)
     }
 
     fn mint(to: Address, amount: u64) -> bool {
@@ -230,13 +221,16 @@ impl NFT for Contract {
     fn set_approval_for_all(owner: Address, operator: Address) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
         require(operator.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
-        require(operator != storage.operator_approval.get(owner), Error::AddressAlreadyGivenApproval);
+
+        let mut operator_storage: StorageMap<Address, bool> = storage.operator_approval.get(owner);
+        require(!operator_storage.get(owner), Error::AddressAlreadyGivenApproval);
 
         let sender: Result<Sender, AuthError> = msg_sender();
         if let Sender::Address(address) = sender.unwrap() {
             require(owner != address, Error::SenderNotOwner);
   
-            storage.operator_approval.insert(owner, operator);
+            operator_storage.insert(operator, true); 
+            storage.operator_approval.insert(owner, operator_storage);
         } else {
             revert(0);
         };
