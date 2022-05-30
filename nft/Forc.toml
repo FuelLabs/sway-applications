@@ -1,5 +1,5 @@
 [project]
-name = "nft_lib"
+name = "nft"
 authors = ["Fuel Labs <contact@fuel.sh>"]
 entry = "main.sw"
 license = "Apache-2.0"

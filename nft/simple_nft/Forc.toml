@@ -1,8 +1,0 @@
-[project]
-name = "simple_nft"
-authors = ["Fuel Labs <contact@fuel.sh>"]
-entry = "main.sw"
-license = "Apache-2.0"
-
-[dependencies]
-nft_lib = { path = "../nft_lib" }
