@@ -34,6 +34,7 @@ enum Error {
     NFTNotInitalized: (),
     SenderDoesNotHaveAccessControl: (),
     SenderNotOwner: (),
+    SenderNotOwnerOrApproved: (),
     TokenCountCannotBeZero: (),
 }
 
@@ -50,7 +51,6 @@ storage {
     meta_data: StorageMap<b256, MetaData>,
     allowed_minters: StorageMap<Address, bool>,
     operator_approval: StorageMap<Address, StorageMap<Address, bool>>,
-    owners: StorageMap<Address, b256>,
     state: u64,
     token_count: u64,
 }
@@ -146,7 +146,6 @@ impl NFT for Contract {
         storage.meta_data = ~StorageMap::new::<b256, MetaData>();
         storage.allowed_minters =  ~StorageMap::new::<Address, bool>();
         storage.operator_approval = ~StorageMap::new::<Address, StorageMap<Address, bool>>();
-        storage.owners = ~StorageMap::new::<Address, b256>();
 
         storage.token_count = token_count;
         storage.access_control = access_control;
@@ -238,7 +237,40 @@ impl NFT for Contract {
         true
     }
 
+    /// Transfers ownership from one address to another
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The NFT contract has not be initalized
+    /// - The to address provided is the 0 address
+    /// - The sender is not the owner
+    /// - The sender is not approved
+    /// - The sender is not an operator for the owner
     fn transfer_from(from: Address, to: Address, token_id: b256) -> bool {
+        require(storage.state != 0, Error::NFTNotInitalized);
+        require(to.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
+        
+        let sender: Result<Sender, AuthError> = msg_sender();
+        if let Sender::Address(address) = sender.unwrap() {
+            let mut meta_data: MetaData = storage.meta_data.get(token_id);
+            let operator_storage = storage.operator_approval.get(from);
+
+            require(address == meta_data.owner 
+                || address == meta_data.approved 
+                || operator_storage.get(address)
+                , Error::SenderNotOwnerOrApproved);
+
+            meta_data.owner = to;
+            meta_data.approved = ~Address::from(NATIVE_ASSET_ID);
+            storage.meta_data.insert(token_id, meta_data);
+
+            let mut balance = storage.balances.get(from);
+            storage.balances.insert(from, balance - 1);
+        } else {
+            revert(0);
+        };
+
         true
     }
 }
