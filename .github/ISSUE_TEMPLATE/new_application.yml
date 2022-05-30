@@ -1,0 +1,36 @@
+name: Specification for a new application
+description: "Designing a new application? Pick this template!"
+title: "Application Name: <title>"
+labels: ["New Application"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Application Description
+      description: Tell us what application you are building!
+      placeholder: Is it a smart contract with a user interface or a command line tool, perhaps a plugin?
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why are you interested in this application?
+    validations:
+      required: true
+  - type: textarea
+    id: features
+    attributes:
+      label: Features
+      description: After you create this issue update the checklist below to track the progress of the sub tasks!
+      placeholder: |
+        - [ ] #(issue number 1)
+        - [ ] #(issue number 2)
+        - [ ] #(issue number 3)
+    validations:
+      required: true
+  - type: textarea
+    id: misc
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots about the feature request here.

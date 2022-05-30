@@ -1,0 +1,26 @@
+name: Requesting New Feature
+description: If you are adding something completely new then use this template!
+title: "New Feature Request: <title>"
+labels: ["New Feature"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Why should this feature be added?
+      description: Describe "what" your feature will accomplish and why it is needed.
+      placeholder: By providing common contract templates for the developer it bootstraps the development process.
+    validations:
+      required: true
+  - type: textarea
+    id: draft
+    attributes:
+      label: Specification
+      description: Tell us a bit about how your feature will work.
+      placeholder: Write some pseudo-code, outline the design or show the "before" vs "after" changes.
+    validations:
+      required: true
+  - type: textarea
+    id: misc
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots about the feature request here.

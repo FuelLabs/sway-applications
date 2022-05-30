@@ -1,0 +1,19 @@
+---
+name: Other
+about: Use this template if the other templates do not fit your use case!
+title: 'Other: <title>'
+labels:
+---
+
+# Summary
+
+Changes:
+* Change 1
+* Change 2
+
+# Related Issues
+
+Closes #(issue number)
+
+# Additional context
+Add any other context or screenshots about the PR here or delete this entire section.
