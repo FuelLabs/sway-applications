@@ -34,11 +34,12 @@ enum Error {
 
 struct MetaData {
     // NFT Metadata
+    owner: Address,
+    approved: Address,
 }
 
 storage {
     access_control: bool,
-    approvals: StorageMap<b256, Address>,
     balances: StorageMap<Address, u64>,
     metaData: StorageMap<b256, MetaData>,
     minters: StorageMap<Address, bool>,
@@ -57,8 +58,15 @@ impl NFT for Contract {
         true
     }
 
+    /// Returns the balance of the specified owner
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The NFT contract has not be initalized
     fn balance_of(owner: Address) -> u64 {
-        0
+        require(storage.state != 0, Error::NFTNotInitalized);
+        storage.balances.get(owner)
     }
 
     fn burn(token_id: b256) -> bool {
@@ -78,7 +86,6 @@ impl NFT for Contract {
         require(owner.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
         require(token_count != 0, Error::TokenCountCannotBeZero);
 
-        storage.approvals = ~StorageMap::new::<b256, Address>();
         storage.balances = ~StorageMap::new::<Address, u64>();
         storage.metaData = ~StorageMap::new::<b256, MetaData>();
         storage.minters =  ~StorageMap::new::<Address, bool>();
@@ -92,24 +99,66 @@ impl NFT for Contract {
         true
     }
 
+    /// Returns the approved address
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The NFT contract has not be initalized
     fn getApproved(token_id: b256) -> Address {
-        ~Address::from(NATIVE_ASSET_ID)
+        require(storage.state != 0, Error::NFTNotInitalized);
+
+        let metaData: MetaData = storage.metaData.get(token_id);
+        metaData.approved
     }
 
+    /// Returns the total supply for the NFT contract
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The NFT contract has not be initalized
     fn getTotalSupply() -> u64 {
-        0
+        require(storage.state != 0, Error::NFTNotInitalized);
+        storage.token_count
     }
 
+    /// Returns whether the address is approved for all tokens
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The NFT contract has not be initalized
     fn isApprovedForAll(owner: Address, operator: Address) -> bool {
-        true
+        require(storage.state != 0, Error::NFTNotInitalized);
+
+        let address: Address = storage.operatorApproval.get(owner);
+        // There has to be a better way to do this in sway
+        // Looking for something like 'case ? true : false' in C++
+        if address.value == operator.value {
+            true
+        }
+        else
+        {
+            false
+        }
     }
 
     fn mint(to: Address, amount: u64) -> bool {
         true
     }
 
+    /// Returns the owner of a given token id
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The NFT contract has not be initalized
     fn owner_of(token_id: b256) -> Address {
-        ~Address::from(NATIVE_ASSET_ID)
+        require(storage.state != 0, Error::NFTNotInitalized);
+
+        let metaData: MetaData = storage.metaData.get(token_id);
+        metaData.owner
     }
 
     fn setApprovalForAll(owner: Address, operator: Address) -> bool {
