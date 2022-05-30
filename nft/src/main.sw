@@ -26,9 +26,14 @@ abi NFT {
 }
 
 enum Error {
+    AccessControlNotSet: (),
+    AddressAlreadyGivenAccess: (),
+    AddressAlreadyGivenApproval: (),
     CannotReinitialize: (),
     InputAddressCannotBeZero: (),
     NFTNotInitalized: (),
+    SenderDoesNotHaveAccessControl: (),
+    SenderNotOwner: (),
     TokenCountCannotBeZero: (),
 }
 
@@ -40,17 +45,42 @@ struct MetaData {
 
 storage {
     access_control: bool,
+    access_control_address: Address,
     balances: StorageMap<Address, u64>,
-    metaData: StorageMap<b256, MetaData>,
-    minters: StorageMap<Address, bool>,
-    operatorApproval: StorageMap<Address, Address>,
+    meta_data: StorageMap<b256, MetaData>,
+    allowed_minters: StorageMap<Address, bool>,
+    operator_approval: StorageMap<Address, Address>,
     owners: StorageMap<Address, b256>,
     state: u64,
     token_count: u64,
 }
 
 impl NFT for Contract {
+
+    /// Allows access to mint any NFT
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The NFT contract has not be initalized
+    /// - The NFT contract does not have access control set
+    /// - The address provided is the 0 address
+    /// - The address has already been allowed access
+    /// - The address is not the access control address
     fn allow_mint(minter: Address) -> bool {
+        require(storage.state != 0, Error::NFTNotInitalized);
+        require(storage.access_control, Error::AccessControlNotSet);
+        require(minter.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
+        require(storage.allowed_minters.get(minter) == false, Error::AddressAlreadyGivenAccess);
+        
+        let sender: Result<Sender, AuthError> = msg_sender();
+        if let Sender::Address(address) = sender.unwrap() {
+            require(storage.access_control_address == address, Error::SenderDoesNotHaveAccessControl);
+            storage.allowed_minters.insert(minter, true);
+        } else {
+            revert(0);
+        }
+
         true
     }
 
@@ -87,14 +117,14 @@ impl NFT for Contract {
         require(token_count != 0, Error::TokenCountCannotBeZero);
 
         storage.balances = ~StorageMap::new::<Address, u64>();
-        storage.metaData = ~StorageMap::new::<b256, MetaData>();
-        storage.minters =  ~StorageMap::new::<Address, bool>();
-        storage.operatorApproval = ~StorageMap::new::<Address, Address>();
+        storage.meta_data = ~StorageMap::new::<b256, MetaData>();
+        storage.allowed_minters =  ~StorageMap::new::<Address, bool>();
+        storage.operator_approval = ~StorageMap::new::<Address, Address>();
         storage.owners = ~StorageMap::new::<Address, b256>();
 
         storage.token_count = token_count;
         storage.access_control = access_control;
-        storage.minters.insert(owner, true);
+        storage.access_control_address = owner;
 
         true
     }
@@ -108,8 +138,8 @@ impl NFT for Contract {
     fn get_approved(token_id: b256) -> Address {
         require(storage.state != 0, Error::NFTNotInitalized);
 
-        let metaData: MetaData = storage.metaData.get(token_id);
-        metaData.approved
+        let meta_data: MetaData = storage.meta_data.get(token_id);
+        meta_data.approved
     }
 
     /// Returns the total supply for the NFT contract
@@ -132,7 +162,7 @@ impl NFT for Contract {
     fn is_approved_for_all(owner: Address, operator: Address) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
 
-        let address: Address = storage.operatorApproval.get(owner);
+        let address: Address = storage.operator_approval.get(owner);
         // There has to be a better way to do this in sway
         // Looking for something like 'case ? true : false' in C++
         if address.value == operator.value {
@@ -157,8 +187,8 @@ impl NFT for Contract {
     fn owner_of(token_id: b256) -> Address {
         require(storage.state != 0, Error::NFTNotInitalized);
 
-        let metaData: MetaData = storage.metaData.get(token_id);
-        metaData.owner
+        let meta_data: MetaData = storage.meta_data.get(token_id);
+        meta_data.owner
     }
 
     fn set_approval_for_all(owner: Address, operator: Address) -> bool {
