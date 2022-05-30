@@ -1,5 +1,5 @@
 [project]
-name = "nft"
+name = "temp_project"
 version = "0.1.0"
 authors = ["Fuel Labs <contact@fuel.sh>"]
 edition = "2021"
