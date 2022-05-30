@@ -6,8 +6,8 @@
     <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
         <img src="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml/badge.svg" />
     </a>
-    <a href="https://crates.io/crates/forc/0.13.2" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.13.2-orange" />
+    <a href="https://crates.io/crates/forc/0.14.2" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.14.2-orange" />
     </a>
     <a href="https://discord.gg/xfpK4Pe">
         <img src="https://img.shields.io/discord/732892373507375164?color=blue&logo=discord&logoColor=ffffff&labelColor=6A7EC2&label=Discord" />
