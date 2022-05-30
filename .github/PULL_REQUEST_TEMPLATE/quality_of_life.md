@@ -2,7 +2,7 @@
 name: Quality of Life Update
 about: Use this template if have improved the quality of something that already exists!
 title: 'Quality of Life: <title>'
-labels: ["Quality of Life"]
+labels: ["Improvement"]
 ---
 
 # Summary
