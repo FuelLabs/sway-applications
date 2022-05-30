@@ -11,18 +11,18 @@ use std::{
 };
 
 abi NFT {
-    fn allowMint(minter: Address) -> bool;
+    fn allow_mint(minter: Address) -> bool;
     fn approve(to: Address, token_id: b256) -> bool;
     fn balance_of(owner: Address) -> u64;
     fn burn(token_id: b256) -> bool ;
     fn constructor(owner: Address, access_control: bool, token_count: u64) -> bool;
-    fn getApproved(token_id: b256) -> Address;
-    fn getTotalSupply() -> u64;
-    fn isApprovedForAll(owner: Address, operator: Address) -> bool;
+    fn get_approved(token_id: b256) -> Address;
+    fn get_total_supply() -> u64;
+    fn is_approved_for_all(owner: Address, operator: Address) -> bool;
     fn mint(to: Address, amount: u64) -> bool ;
     fn owner_of(token_id: b256) -> Address;
-    fn setApprovalForAll(owner: Address, operator: Address) -> bool;
-    fn transferFrom(from: Address, to: Address, token_id: b256) -> bool;
+    fn set_approval_for_all(owner: Address, operator: Address) -> bool;
+    fn transfer_from(from: Address, to: Address, token_id: b256) -> bool;
 }
 
 enum Error {
@@ -50,7 +50,7 @@ storage {
 }
 
 impl NFT for Contract {
-    fn allowMint(minter: Address) -> bool {
+    fn allow_mint(minter: Address) -> bool {
         true
     }
 
@@ -105,7 +105,7 @@ impl NFT for Contract {
     ///
     /// The function will panic when:
     /// - The NFT contract has not be initalized
-    fn getApproved(token_id: b256) -> Address {
+    fn get_approved(token_id: b256) -> Address {
         require(storage.state != 0, Error::NFTNotInitalized);
 
         let metaData: MetaData = storage.metaData.get(token_id);
@@ -118,7 +118,7 @@ impl NFT for Contract {
     ///
     /// The function will panic when:
     /// - The NFT contract has not be initalized
-    fn getTotalSupply() -> u64 {
+    fn get_total_supply() -> u64 {
         require(storage.state != 0, Error::NFTNotInitalized);
         storage.token_count
     }
@@ -129,7 +129,7 @@ impl NFT for Contract {
     ///
     /// The function will panic when:
     /// - The NFT contract has not be initalized
-    fn isApprovedForAll(owner: Address, operator: Address) -> bool {
+    fn is_approved_for_all(owner: Address, operator: Address) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
 
         let address: Address = storage.operatorApproval.get(owner);
@@ -161,11 +161,11 @@ impl NFT for Contract {
         metaData.owner
     }
 
-    fn setApprovalForAll(owner: Address, operator: Address) -> bool {
+    fn set_approval_for_all(owner: Address, operator: Address) -> bool {
         true
     }
 
-    fn transferFrom(from: Address, to: Address, token_id: b256) -> bool {
+    fn transfer_from(from: Address, to: Address, token_id: b256) -> bool {
         true
     }
 }
