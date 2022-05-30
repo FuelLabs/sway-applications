@@ -49,6 +49,7 @@ storage {
     balances: StorageMap<Address, u64>,
     meta_data: StorageMap<b256, MetaData>,
     allowed_minters: StorageMap<Address, bool>,
+    // TODO: This could be a vec to allow for mutliple operators
     operator_approval: StorageMap<Address, Address>,
     owners: StorageMap<Address, b256>,
     state: u64,
@@ -76,6 +77,7 @@ impl NFT for Contract {
         let sender: Result<Sender, AuthError> = msg_sender();
         if let Sender::Address(address) = sender.unwrap() {
             require(storage.access_control_address == address, Error::SenderDoesNotHaveAccessControl);
+            
             storage.allowed_minters.insert(minter, true);
         } else {
             revert(0);
@@ -84,7 +86,32 @@ impl NFT for Contract {
         true
     }
 
+    /// Gives approval to the to address to transfer the specified token
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The NFT contract has not be initalized
+    /// - The address provided is the 0 address
+    /// - The address has already been approved
+    /// - The sender is not the owner
     fn approve(to: Address, token_id: b256) -> bool {
+        require(storage.state != 0, Error::NFTNotInitalized);
+        require(to.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
+
+        let mut meta_data = storage.meta_data.get(token_id);
+        require(meta_data.approved != to, Error::AddressAlreadyGivenApproval);
+
+        let sender: Result<Sender, AuthError> = msg_sender();
+        if let Sender::Address(address) = sender.unwrap() {
+            require(meta_data.owner == address, Error::SenderNotOwner);
+
+            meta_data.approved = to;
+            storage.meta_data.insert(token_id, meta_data);
+        } else {
+            revert(0);
+        };
+
         true
     }
 
@@ -191,7 +218,29 @@ impl NFT for Contract {
         meta_data.owner
     }
 
+    /// Gives operator approval to the to address to transfer
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The NFT contract has not be initalized
+    /// - The operator address provided is the 0 address
+    /// - The address has already been approved
+    /// - The sender is not the owner
     fn set_approval_for_all(owner: Address, operator: Address) -> bool {
+        require(storage.state != 0, Error::NFTNotInitalized);
+        require(operator.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
+        require(operator != storage.operator_approval.get(owner), Error::AddressAlreadyGivenApproval);
+
+        let sender: Result<Sender, AuthError> = msg_sender();
+        if let Sender::Address(address) = sender.unwrap() {
+            require(owner != address, Error::SenderNotOwner);
+  
+            storage.operator_approval.insert(owner, operator);
+        } else {
+            revert(0);
+        };
+
         true
     }
 
