@@ -1,8 +1,5 @@
-// Uncomment when https://github.com/FuelLabs/fuels-rs/pull/305 (deploy_with_salt) lands in a new release
-// use fuel_tx::{AssetId, ContractId, Salt};
-
-use fuel_tx::{AssetId, ContractId};
 use fuels::prelude::*;
+use fuels::tx::{AssetId, ContractId, Salt};
 use fuels_abigen_macro::abigen;
 
 abigen!(Escrow, "out/debug/escrow-abi.json");
@@ -15,21 +12,21 @@ struct Metadata {
 }
 
 async fn setup() -> (Metadata, Metadata, Metadata, ContractId, u64) {
-    // Create some addresses with the minimum amount of asset: 1 Million
-    let (pk1, mut coins1) = setup_address_and_coins(1, 1000000);
-    let (pk2, coins2) = setup_address_and_coins(1, 1000000);
-    let (pk3, coins3) = setup_address_and_coins(1, 1000000);
+    let num_wallets = 3;
+    let coins_per_wallet = 1;
+    let amount_per_coin = 1_000_000;
 
-    coins1.extend(coins2);
-    coins1.extend(coins3);
+    let config = WalletsConfig::new(
+        Some(num_wallets),
+        Some(coins_per_wallet),
+        Some(amount_per_coin),
+    );
 
-    // Launch a provider with those coins
-    let (provider, _) = setup_test_provider(coins1).await;
+    let mut wallets = launch_provider_and_get_wallets(config).await;
 
-    // Get the wallets from that provider
-    let deployer_wallet = LocalWallet::new_from_private_key(pk1, provider.clone());
-    let buyer_wallet = LocalWallet::new_from_private_key(pk2, provider.clone());
-    let seller_wallet = LocalWallet::new_from_private_key(pk3, provider);
+    let deployer_wallet = wallets.pop().unwrap();
+    let buyer_wallet = wallets.pop().unwrap();
+    let seller_wallet = wallets.pop().unwrap();
 
     let escrow_id = Contract::deploy(
         "./out/debug/escrow.bin",
@@ -191,52 +188,53 @@ mod deposit {
     }
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/pull/305 (deploy_with_salt) lands in a new release
-    // #[tokio::test]
-    // #[should_panic(expected = "Revert(42)")]
-    // async fn panics_with_incorrect_asset() {
-    //     let (deployer, buyer, seller, asset_id, asset_amount) = setup().await;
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn panics_with_incorrect_asset() {
+        let (deployer, buyer, seller, asset_id, asset_amount) = setup().await;
 
-    //     let another_asset_id = Contract::deploy_with_salt(
-    //         "./tests/artifacts/asset/out/debug/asset.bin",
-    //         &deployer.wallet,
-    //         TxParameters::default(),
-    //         Salt::from([1u8; 32]),
-    //     )
-    //     .await
-    //     .unwrap();
+        let another_asset_id = Contract::deploy_with_salt(
+            "./tests/artifacts/asset/out/debug/asset.bin",
+            &deployer.wallet,
+            TxParameters::default(),
+            Salt::from([1u8; 32]),
+        )
+        .await
+        .unwrap();
 
-    //     let another_asset = Asset::new(another_asset_id.to_string(), deployer.wallet.clone());
+        let another_asset = Asset::new(another_asset_id.to_string(), deployer.wallet.clone());
 
-    //     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    //     let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*another_asset_id)));
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params =
+            CallParameters::new(Some(asset_amount), Some(AssetId::from(*another_asset_id)));
 
-    //     // Init conditions
-    //     init(
-    //         &deployer,
-    //         &buyer.wallet,
-    //         &seller.wallet,
-    //         asset_id,
-    //         asset_amount,
-    //     )
-    //     .await;
+        // Init conditions
+        init(
+            &deployer,
+            &buyer.wallet,
+            &seller.wallet,
+            asset_id,
+            asset_amount,
+        )
+        .await;
 
-    //     another_asset
-    //         .mint_and_send_to_address(asset_amount, buyer.wallet.address())
-    //         .append_variable_outputs(1)
-    //         .call()
-    //         .await
-    //         .unwrap();
+        another_asset
+            .mint_and_send_to_address(asset_amount, buyer.wallet.address())
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap();
 
-    //     // Should panic
-    //     buyer
-    //         .escrow
-    //         .deposit()
-    //         .tx_params(tx_params)
-    //         .call_params(call_params)
-    //         .call()
-    //         .await
-    //         .unwrap();
-    // }
+        // Should panic
+        buyer
+            .escrow
+            .deposit()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap();
+    }
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
