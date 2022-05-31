@@ -4,7 +4,7 @@ use std::{
     address::Address,
     assert::require,
     chain::auth::{AuthError, Sender, msg_sender},
-    context::{call_frames::{contract_id, msg_asset_id}, msg_amount, this_balance},
+    context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
     result::*,
     revert::revert,
@@ -12,21 +12,14 @@ use std::{
 };
 
 abi Escrow {
-    fn constructor(buyer: Address, seller: Address, asset: ContractId, asset_amount: u64) -> bool;
+    fn constructor(buyer: Address, seller: Address, buyer_asset: Asset, seller_asset: Asset) -> bool;
     fn deposit() -> bool;
     fn approve() -> bool;
     fn withdraw() -> bool;
-    fn get_balance() -> u64;
+    fn get_balance() -> (Asset, Asset);
     fn get_user_data(user: Address) -> (bool, bool);
     fn get_state() -> u64;
 }
-
-// TODO: add enums back in when they are supported in storage and "matching" them is implemented
-// enum State {
-//     Void: (),
-//     Pending: (),
-//     Completed: (),
-// }
 
 enum Error {
     CannotReinitialize: (),
@@ -39,17 +32,28 @@ enum Error {
     UserHasAlreadyDeposited: (),
 }
 
+// TODO: add enums back in when they are supported in storage and "matching" them is implemented
+// enum State {
+//     Void: (),
+//     Pending: (),
+//     Completed: (),
+// }
+
+struct Asset {
+    amount: u64,
+    id: ContractId,
+}
+
 struct User {
     address: Address,
+    asset: Asset,
     approved: bool,
     deposited: bool,
 }
 
 storage {
-    asset_amount: u64,
     buyer: User,
     seller: User,
-    asset: ContractId,
     // state: State,
     state: u64,
 }
@@ -61,18 +65,16 @@ impl Escrow for Contract {
     ///
     /// The function will panic when
     /// - The constructor is called more than once
-    fn constructor(buyer: Address, seller: Address, asset: ContractId, asset_amount: u64) -> bool {
+    fn constructor(buyer: Address, seller: Address, buyer_asset: Asset, seller_asset: Asset) -> bool {
         // require(storage.state == State::Void, Error::CannotReinitialize);
         require(storage.state == 0, Error::CannotReinitialize);
 
-        storage.asset_amount = asset_amount;
         storage.buyer = User {
-            address: buyer, approved: false, deposited: false
+            address: buyer, asset: buyer_asset, approved: false, deposited: false
         };
         storage.seller = User {
-            address: seller, approved: false, deposited: false
+            address: seller, asset: seller_asset, approved: false, deposited: false
         };
-        storage.asset = asset;
         storage.state = 1;
         // storage.state = State::Pending;
 
@@ -93,26 +95,29 @@ impl Escrow for Contract {
     fn deposit() -> bool {
         // require(storage.state == State::Pending, Error::StateNotPending);
         require(storage.state == 1, Error::StateNotPending);
-        require(storage.asset == msg_asset_id(), Error::IncorrectAssetId);
-        require(storage.asset_amount == msg_amount(), Error::IncorrectAssetAmount);
 
         let sender: Result<Sender, AuthError> = msg_sender();
 
-        if let Sender::Address(address) = sender.unwrap() {
-            require(address == storage.buyer.address || address == storage.seller.address, Error::UnauthorizedUser);
+        match sender.unwrap() {
+            Sender::Address(address) => {
+                require(address == storage.buyer.address || address == storage.seller.address, Error::UnauthorizedUser);
 
-            if address == storage.buyer.address {
-                require(!storage.buyer.deposited, Error::UserHasAlreadyDeposited);
+                if address == storage.buyer.address {
+                    require(!storage.buyer.deposited, Error::UserHasAlreadyDeposited);
+                    require(storage.buyer.asset.id == msg_asset_id(), Error::IncorrectAssetId);
+                    require(storage.buyer.asset.amount == msg_amount(), Error::IncorrectAssetAmount);
 
-                storage.buyer.deposited = true;
-            } else if address == storage.seller.address {
-                require(!storage.seller.deposited, Error::UserHasAlreadyDeposited);
+                    storage.buyer.deposited = true;
+                } else {
+                    require(!storage.seller.deposited, Error::UserHasAlreadyDeposited);
+                    require(storage.seller.asset.id == msg_asset_id(), Error::IncorrectAssetId);
+                    require(storage.seller.asset.amount == msg_amount(), Error::IncorrectAssetAmount);
 
-                storage.seller.deposited = true;
-            }
-        } else {
-            revert(0);
-        };
+                    storage.seller.deposited = true;
+                }
+            },
+            _ => revert(0), 
+        }
 
         true
     }
@@ -133,29 +138,28 @@ impl Escrow for Contract {
 
         let sender: Result<Sender, AuthError> = msg_sender();
 
-        if let Sender::Address(address) = sender.unwrap() {
-            require(address == storage.buyer.address || address == storage.seller.address, Error::UnauthorizedUser);
+        match sender.unwrap() {
+            Sender::Address(address) => {
+                require(address == storage.buyer.address || address == storage.seller.address, Error::UnauthorizedUser);
 
-            if address == storage.buyer.address {
-                require(storage.buyer.deposited, Error::DepositRequired);
+                if address == storage.buyer.address {
+                    require(storage.buyer.deposited, Error::DepositRequired);
+                    storage.buyer.approved = true;
+                } else {
+                    require(storage.seller.deposited, Error::DepositRequired);
+                    storage.seller.approved = true;
+                }
 
-                storage.buyer.approved = true;
-            } else if address == storage.seller.address {
-                require(storage.seller.deposited, Error::DepositRequired);
+                if storage.buyer.approved && storage.seller.approved {
+                    // storage.state = State::Completed;
+                    storage.state = 2;
 
-                storage.seller.approved = true;
-            }
-
-            if storage.buyer.approved && storage.seller.approved {
-                // storage.state = State::Completed;
-                storage.state = 2;
-
-                transfer_to_output(storage.asset_amount, storage.asset, storage.buyer.address);
-                transfer_to_output(storage.asset_amount, storage.asset, storage.seller.address);
-            }
-        } else {
-            revert(0);
-        };
+                    transfer_to_output(storage.buyer.asset.amount, storage.buyer.asset.id, storage.buyer.address);
+                    transfer_to_output(storage.seller.asset.amount, storage.seller.asset.id, storage.seller.address);
+                }
+            },
+            _ => revert(0), 
+        }
 
         true
     }
@@ -174,34 +178,35 @@ impl Escrow for Contract {
 
         let sender: Result<Sender, AuthError> = msg_sender();
 
-        if let Sender::Address(address) = sender.unwrap() {
-            require(address == storage.buyer.address || address == storage.seller.address, Error::UnauthorizedUser);
+        match sender.unwrap() {
+            Sender::Address(address) => {
+                require(address == storage.buyer.address || address == storage.seller.address, Error::UnauthorizedUser);
 
-            if address == storage.buyer.address {
-                require(storage.buyer.deposited, Error::DepositRequired);
+                if address == storage.buyer.address {
+                    require(storage.buyer.deposited, Error::DepositRequired);
 
-                storage.buyer.deposited = false;
-                storage.buyer.approved = false;
+                    storage.buyer.deposited = false;
+                    storage.buyer.approved = false;
 
-                transfer_to_output(storage.asset_amount, storage.asset, storage.buyer.address);
-            } else if address == storage.seller.address {
-                require(storage.seller.deposited, Error::DepositRequired);
+                    transfer_to_output(storage.buyer.asset.amount, storage.buyer.asset.id, storage.buyer.address);
+                } else {
+                    require(storage.seller.deposited, Error::DepositRequired);
 
-                storage.seller.deposited = false;
-                storage.seller.approved = false;
+                    storage.seller.deposited = false;
+                    storage.seller.approved = false;
 
-                transfer_to_output(storage.asset_amount, storage.asset, storage.seller.address);
-            }
-        } else {
-            revert(0);
-        };
+                    transfer_to_output(storage.seller.asset.amount, storage.seller.asset.id, storage.seller.address);
+                }
+            },
+            _ => revert(0), 
+        }
 
         true
     }
 
     /// Returns the amount of the specified asset in this contract
-    fn get_balance() -> u64 {
-        this_balance(storage.asset)
+    fn get_balance() -> (u64, u64) {
+        (this_balance(storage.buyer.asset.id), this_balance(storage.seller.asset.id))
     }
 
     /// Returns data regarding the state of a user i.e. whether they have (deposited, approved)
