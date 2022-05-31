@@ -7,6 +7,7 @@ use std::{
     constants::NATIVE_ASSET_ID,
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount, this_balance},
     contract_id::ContractId,
+    hash::sha256,
     result::*,
     revert::revert,
     storage::StorageMap,
@@ -42,6 +43,7 @@ enum Error {
     SenderDoesNotHaveAccessControl: (),
     SenderNotOwner: (),
     SenderNotOwnerOrApproved: (),
+    TokenDoesNotExist: (),
     TokenSupplyCannotBeZero: (),
 }
 
@@ -135,7 +137,34 @@ impl NFT for Contract {
         storage.balances.get(owner)
     }
 
+    /// Burns the specified token
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The NFT contract has not been initalized
+    /// - The token id does not exist
+    /// - The sender is not the owner
     fn burn(token_id: b256) -> bool {
+        require(storage.state != 0, Error::NFTNotInitalized);
+
+        let mut meta_data: MetaData = storage.meta_data.get(token_id);
+        require(meta_data.owner.value != NATIVE_ASSET_ID, Error::TokenDoesNotExist);
+
+        let sender: Result<Sender, AuthError> = msg_sender();
+        if let Sender::Address(address) = sender.unwrap() {
+            require(meta_data.owner == address, Error::SenderNotOwner);
+
+            meta_data.owner = ~Address::from(NATIVE_ASSET_ID);
+            meta_data.approved = ~Address::from(NATIVE_ASSET_ID);
+            storage.meta_data.insert(token_id, meta_data);
+
+            let balance = storage.balances.get(address);
+            storage.balances.insert(address, balance - 1);
+        } else {
+            revert(0);
+        };
+
         true
     }
 
@@ -232,8 +261,7 @@ impl NFT for Contract {
 
         let mut i = 0;
         while i < amount {
-            // TODO: Generate new token id
-            let token_id: b256 = NATIVE_ASSET_ID;
+            let token_id: b256 = sha256(storage.token_count);
 
             let meta_data: MetaData = MetaData {
                 owner: to, approved: ~Address::from(NATIVE_ASSET_ID)
