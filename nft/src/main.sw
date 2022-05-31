@@ -5,6 +5,8 @@ use std::{
     assert::require,
     chain::auth::{AuthError, Sender, msg_sender},
     constants::NATIVE_ASSET_ID,
+    context::{call_frames::{contract_id, msg_asset_id}, msg_amount, this_balance},
+    contract_id::ContractId,
     result::*,
     revert::revert,
     storage::StorageMap,
@@ -15,7 +17,7 @@ abi NFT {
     fn approve(to: Address, token_id: b256) -> bool;
     fn balance_of(owner: Address) -> u64;
     fn burn(token_id: b256) -> bool ;
-    fn constructor(owner: Address, access_control: bool, token_count: u64) -> bool;
+    fn constructor(owner: Address, access_control: bool, token_supply: u64, token_price: u64, asset: ContractId) -> bool;
     fn get_approved(token_id: b256) -> Address;
     fn get_total_supply() -> u64;
     fn is_approved_for_all(owner: Address, operator: Address) -> bool;
@@ -30,12 +32,17 @@ enum Error {
     AddressAlreadyGivenAccess: (),
     AddressAlreadyGivenApproval: (),
     CannotReinitialize: (),
+    IncorrectAssetAmount: (),
+    IncorrectAssetId: (),
     InputAddressCannotBeZero: (),
+    MintAmountCannotBeZero: (),
     NFTNotInitalized: (),
+    NotEnoughTokensToMint: (),
+    SenderCannotSetAccessControl: (),
     SenderDoesNotHaveAccessControl: (),
     SenderNotOwner: (),
     SenderNotOwnerOrApproved: (),
-    TokenCountCannotBeZero: (),
+    TokenSupplyCannotBeZero: (),
 }
 
 struct MetaData {
@@ -47,12 +54,15 @@ struct MetaData {
 storage {
     access_control: bool,
     access_control_address: Address,
-    balances: StorageMap<Address, u64>,
-    meta_data: StorageMap<b256, MetaData>,
     allowed_minters: StorageMap<Address, bool>,
+    balances: StorageMap<Address, u64>,
+    asset: ContractId,
+    meta_data: StorageMap<b256, MetaData>,
     operator_approval: StorageMap<Address, StorageMap<Address, bool>>,
     state: u64,
     token_count: u64,
+    token_price: u64,
+    token_supply: u64,
 }
 
 impl NFT for Contract {
@@ -62,7 +72,7 @@ impl NFT for Contract {
     /// # Panics
     ///
     /// The function will panic when:
-    /// - The NFT contract has not be initalized
+    /// - The NFT contract has not been initalized
     /// - The NFT contract does not have access control set
     /// - The address provided is the 0 address
     /// - The address has already been allowed access
@@ -75,7 +85,7 @@ impl NFT for Contract {
         
         let sender: Result<Sender, AuthError> = msg_sender();
         if let Sender::Address(address) = sender.unwrap() {
-            require(storage.access_control_address == address, Error::SenderDoesNotHaveAccessControl);
+            require(storage.access_control_address == address, Error::SenderCannotSetAccessControl);
             
             storage.allowed_minters.insert(minter, true);
         } else {
@@ -90,7 +100,7 @@ impl NFT for Contract {
     /// # Panics
     ///
     /// The function will panic when:
-    /// - The NFT contract has not be initalized
+    /// - The NFT contract has not been initalized
     /// - The address provided is the 0 address
     /// - The address has already been approved
     /// - The sender is not the owner
@@ -119,7 +129,7 @@ impl NFT for Contract {
     /// # Panics
     ///
     /// The function will panic when:
-    /// - The NFT contract has not be initalized
+    /// - The NFT contract has not been initalized
     fn balance_of(owner: Address) -> u64 {
         require(storage.state != 0, Error::NFTNotInitalized);
         storage.balances.get(owner)
@@ -137,19 +147,21 @@ impl NFT for Contract {
     /// - The constructor has already been called
     /// - The owner is the 0 address
     /// - The token count is 0
-    fn constructor(owner: Address, access_control: bool, token_count: u64) -> bool {
+    fn constructor(owner: Address, access_control: bool, token_supply: u64, token_price: u64, asset: ContractId) -> bool {
         require(storage.state == 0, Error::CannotReinitialize);
         require(owner.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
-        require(token_count != 0, Error::TokenCountCannotBeZero);
+        require(token_supply != 0, Error::TokenSupplyCannotBeZero);
 
         storage.balances = ~StorageMap::new::<Address, u64>();
         storage.meta_data = ~StorageMap::new::<b256, MetaData>();
         storage.allowed_minters =  ~StorageMap::new::<Address, bool>();
         storage.operator_approval = ~StorageMap::new::<Address, StorageMap<Address, bool>>();
 
-        storage.token_count = token_count;
-        storage.access_control = access_control;
         storage.access_control_address = owner;
+        storage.access_control = access_control;
+        storage.token_supply = token_supply;
+        storage.token_price = token_price;
+        storage.asset = asset;
 
         true
     }
@@ -159,7 +171,7 @@ impl NFT for Contract {
     /// # Panics
     ///
     /// The function will panic when:
-    /// - The NFT contract has not be initalized
+    /// - The NFT contract has not been initalized
     fn get_approved(token_id: b256) -> Address {
         require(storage.state != 0, Error::NFTNotInitalized);
 
@@ -172,10 +184,10 @@ impl NFT for Contract {
     /// # Panics
     ///
     /// The function will panic when:
-    /// - The NFT contract has not be initalized
+    /// - The NFT contract has not been initalized
     fn get_total_supply() -> u64 {
         require(storage.state != 0, Error::NFTNotInitalized);
-        storage.token_count
+        storage.token_supply
     }
 
     /// Returns whether the address is approved for all tokens
@@ -183,7 +195,7 @@ impl NFT for Contract {
     /// # Panics
     ///
     /// The function will panic when:
-    /// - The NFT contract has not be initalized
+    /// - The NFT contract has not been initalized
     fn is_approved_for_all(owner: Address, operator: Address) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
 
@@ -191,7 +203,50 @@ impl NFT for Contract {
         operator_storage.get(operator)
     }
 
+    /// Mints an NFT
+    ///
+    /// # Panics
+    /// 
+    /// The function will panic when:
+    /// - The NFT contract has not been initalized 
+    /// - The amount is set to 0
+    /// - More NFTs than supply is minted
+    /// - The sender is not approved to mint
+    /// - The sender sent the wrong asset
+    /// - The sender did not pay enough tokens
     fn mint(to: Address, amount: u64) -> bool {
+        require(storage.state != 0, Error::NFTNotInitalized);
+        require(amount != 0, Error::MintAmountCannotBeZero);
+        require(storage.token_supply <= (storage.token_count + amount), Error::NotEnoughTokensToMint);
+
+        let sender: Result<Sender, AuthError> = msg_sender();
+        if let Sender::Address(address) = sender.unwrap() {
+            require(!storage.access_control || (storage.access_control && !storage.allowed_minters.get(address)), Error::SenderDoesNotHaveAccessControl);
+        } else {
+            revert(0);
+        }
+
+        let cost = storage.token_price * amount;
+        require(msg_asset_id() == storage.asset, Error::IncorrectAssetId);
+        require(msg_amount() == cost, Error::IncorrectAssetAmount);
+
+        let mut i = 0;
+        while i < amount {
+            // TODO: Generate new token id
+            let token_id: b256 = NATIVE_ASSET_ID;
+
+            let meta_data: MetaData = MetaData {
+                owner: to, approved: ~Address::from(NATIVE_ASSET_ID)
+            };
+            storage.meta_data.insert(token_id, meta_data);
+            
+            let mut balance = storage.balances.get(to);
+            storage.balances.insert(to, balance + 1);
+
+            storage.token_count = storage.token_count + 1;
+            i = i + 1;
+        }
+
         true
     }
 
@@ -200,7 +255,7 @@ impl NFT for Contract {
     /// # Panics
     ///
     /// The function will panic when:
-    /// - The NFT contract has not be initalized
+    /// - The NFT contract has not been initalized
     fn owner_of(token_id: b256) -> Address {
         require(storage.state != 0, Error::NFTNotInitalized);
 
@@ -213,7 +268,7 @@ impl NFT for Contract {
     /// # Panics
     ///
     /// The function will panic when:
-    /// - The NFT contract has not be initalized
+    /// - The NFT contract has not been initalized
     /// - The operator address provided is the 0 address
     /// - The address has already been approved
     /// - The sender is not the owner
@@ -242,7 +297,7 @@ impl NFT for Contract {
     /// # Panics
     ///
     /// The function will panic when:
-    /// - The NFT contract has not be initalized
+    /// - The NFT contract has not been initalized
     /// - The to address provided is the 0 address
     /// - The sender is not the owner
     /// - The sender is not approved
@@ -256,10 +311,11 @@ impl NFT for Contract {
             let mut meta_data: MetaData = storage.meta_data.get(token_id);
             let operator_storage = storage.operator_approval.get(from);
 
-            require(address == meta_data.owner 
+            require(
+                (address == meta_data.owner 
                 || address == meta_data.approved 
                 || operator_storage.get(address)
-                , Error::SenderNotOwnerOrApproved);
+                ), Error::SenderNotOwnerOrApproved);
 
             meta_data.owner = to;
             meta_data.approved = ~Address::from(NATIVE_ASSET_ID);
