@@ -28,13 +28,6 @@ abi Escrow {
     #[storage(read)]fn get_balance() -> u64;
 }
 
-// TODO: add enums back in when they are supported in storage and "matching" them is implemented
-// enum State {
-//     Void: (),
-//     Pending: (),
-//     Completed: (),
-// }
-
 enum Error {
     CannotReinitialize: (),
     DepositRequired: (),
@@ -46,17 +39,28 @@ enum Error {
     UserHasAlreadyDeposited: (),
 }
 
+// TODO: add enums back in when they are supported in storage and "matching" them is implemented
+// enum State {
+//     Void: (),
+//     Pending: (),
+//     Completed: (),
+// }
+
+struct Asset {
+    amount: u64,
+    id: ContractId,
+}
+
 struct User {
     address: Address,
+    asset: Asset,
     approved: bool,
     deposited: bool,
 }
 
 storage {
-    asset_amount: u64,
     buyer: User,
     seller: User,
-    asset: ContractId,
     // state: State,
     state: u64,
 }
@@ -72,14 +76,12 @@ impl Escrow for Contract {
         // require(storage.state == State::Void, Error::CannotReinitialize);
         require(storage.state == 0, Error::CannotReinitialize);
 
-        storage.asset_amount = asset_amount;
         storage.buyer = User {
-            address: buyer, approved: false, deposited: false
+            address: buyer, asset: buyer_asset, approved: false, deposited: false
         };
         storage.seller = User {
-            address: seller, approved: false, deposited: false
+            address: seller, asset: seller_asset, approved: false, deposited: false
         };
-        storage.asset = asset;
         storage.state = 1;
         // storage.state = State::Pending;
 
@@ -100,8 +102,6 @@ impl Escrow for Contract {
     #[storage(read, write)]fn deposit() -> bool {
         // require(storage.state == State::Pending, Error::StateNotPending);
         require(storage.state == 1, Error::StateNotPending);
-        require(storage.asset == msg_asset_id(), Error::IncorrectAssetId);
-        require(storage.asset_amount == msg_amount(), Error::IncorrectAssetAmount);
 
         let sender: Result<Identity, AuthError> = msg_sender();
 
@@ -184,24 +184,24 @@ impl Escrow for Contract {
         if let Identity::Address(address) = sender.unwrap() {
             require(address == storage.buyer.address || address == storage.seller.address, Error::UnauthorizedUser);
 
-            if address == storage.buyer.address {
-                require(storage.buyer.deposited, Error::DepositRequired);
+                if address == storage.buyer.address {
+                    require(storage.buyer.deposited, Error::DepositRequired);
 
-                storage.buyer.deposited = false;
-                storage.buyer.approved = false;
+                    storage.buyer.deposited = false;
+                    storage.buyer.approved = false;
 
-                transfer_to_output(storage.asset_amount, storage.asset, storage.buyer.address);
-            } else if address == storage.seller.address {
-                require(storage.seller.deposited, Error::DepositRequired);
+                    transfer_to_output(storage.buyer.asset.amount, storage.buyer.asset.id, storage.buyer.address);
+                } else {
+                    require(storage.seller.deposited, Error::DepositRequired);
 
-                storage.seller.deposited = false;
-                storage.seller.approved = false;
+                    storage.seller.deposited = false;
+                    storage.seller.approved = false;
 
-                transfer_to_output(storage.asset_amount, storage.asset, storage.seller.address);
+                    transfer_to_output(storage.seller.asset.amount, storage.seller.asset.id, storage.seller.address);
+                }
+            } else {
+                revert(0)
             }
-        } else {
-            revert(0);
-        };
 
         true
     }
