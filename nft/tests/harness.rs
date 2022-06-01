@@ -487,7 +487,7 @@ mod allow_mint {
     async fn panics_when_given_access_twice() {
         let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
 
-        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        init(&deploy_wallet, &owner1, true, 1, 1, asset_id).await;
 
         owner1.nft.allow_mint(owner1.wallet.address()).await;
 
@@ -505,9 +505,9 @@ mod allow_mint {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_not_access_control_address() {
-        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
 
-        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        init(&deploy_wallet, &owner1, true, 1, 1, asset_id).await;
 
         assert! {
             owner2
@@ -519,5 +519,156 @@ mod allow_mint {
             .value
         };
     }
+}
 
+mod approve {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn approves() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        owner1
+            .nft
+            .mint(owner1.wallet.address(), 1)
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await;
+
+        let token_id = owner1.nft.get_tokens_owned(owner1.wallet.address).await;
+
+        assert!{
+            owner1
+            .nft
+            .approve(owner2.wallet.address(), token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+        };
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        let token_id = owner1.nft.get_tokens_owned(owner1.wallet.address).await;
+
+        assert!{
+            owner1
+            .nft
+            .approve(owner2.wallet.address(), token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+        };
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_approval_given_twice() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        owner1
+            .nft
+            .mint(owner1.wallet.address(), 1)
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await;
+
+        let token_id = owner1.nft.get_tokens_owned(owner1.wallet.address).await;
+
+        owner1.nft.approve(owner2.wallet.address(), token_id).await;
+
+        assert!{
+            owner1
+            .nft
+            .approve(owner2.wallet.address(), token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+        };
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_sender_is_not_owner() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        owner1
+            .nft
+            .mint(owner1.wallet.address(), 1)
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await;
+
+        let token_id = owner1.nft.get_tokens_owned(owner1.wallet.address).await;
+
+        assert!{
+            owner2
+            .nft
+            .approve(owner2.wallet.address(), token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+        };
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_approver_is_owner() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        owner1
+            .nft
+            .mint(owner1.wallet.address(), 1)
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await;
+
+        let token_id = owner1.nft.get_tokens_owned(owner1.wallet.address).await;
+
+        assert!{
+            owner1
+            .nft
+            .approve(owner1.wallet.address(), token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+        };
+    }
 }

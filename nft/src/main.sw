@@ -20,6 +20,7 @@ abi NFT {
     fn burn(token_id: b256) -> bool ;
     fn constructor(owner: Address, access_control: bool, token_supply: u64, token_price: u64, asset: ContractId) -> bool;
     fn get_approved(token_id: b256) -> Address;
+    fn get_tokens_owned(address: Address) -> b256;
     fn get_total_supply() -> u64;
     fn is_approved_for_all(owner: Address, operator: Address) -> bool;
     fn mint(to: Address, amount: u64) -> bool ;
@@ -32,6 +33,7 @@ enum Error {
     AccessControlNotSet: (),
     AddressAlreadyGivenAccess: (),
     AddressAlreadyGivenApproval: (),
+    ApproverCannotBeOwner: (),
     CannotReinitialize: (),
     IncorrectAssetAmount: (),
     IncorrectAssetId: (),
@@ -61,6 +63,8 @@ storage {
     asset: ContractId,
     meta_data: StorageMap<b256, MetaData>,
     operator_approval: StorageMap<Address, StorageMap<Address, bool>>,
+    // TODO: This will need to be Vec to support returning multiple ownership
+    owners: StorageMap<Address, b256>,
     state: u64,
     token_count: u64,
     token_price: u64,
@@ -106,6 +110,7 @@ impl NFT for Contract {
     /// - The address provided is the 0 address
     /// - The address has already been approved
     /// - The sender is not the owner
+    /// - The appover is the owner
     fn approve(to: Address, token_id: b256) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
         require(to.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
@@ -116,6 +121,7 @@ impl NFT for Contract {
         let sender: Result<Sender, AuthError> = msg_sender();
         if let Sender::Address(address) = sender.unwrap() {
             require(meta_data.owner == address, Error::SenderNotOwner);
+            require(meta_data.owner != to, Error::ApproverCannotBeOwner);
 
             meta_data.approved = to;
             storage.meta_data.insert(token_id, meta_data);
@@ -161,6 +167,8 @@ impl NFT for Contract {
 
             let balance = storage.balances.get(address);
             storage.balances.insert(address, balance - 1);
+
+            storage.owners.insert(address, NATIVE_ASSET_ID);
         } else {
             revert(0);
         };
@@ -185,6 +193,7 @@ impl NFT for Contract {
         storage.meta_data = ~StorageMap::new::<b256, MetaData>();
         storage.allowed_minters =  ~StorageMap::new::<Address, bool>();
         storage.operator_approval = ~StorageMap::new::<Address, StorageMap<Address, bool>>();
+        storage.owners = ~StorageMap::new::<Address, b256>();
 
         storage.access_control_address = owner;
         storage.access_control = access_control;
@@ -207,6 +216,17 @@ impl NFT for Contract {
 
         let meta_data: MetaData = storage.meta_data.get(token_id);
         meta_data.approved
+    }
+
+    /// Returns the tokens owned by the address
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The NFT contract has not been intialized
+    fn get_tokens_owned(address: Address) -> b256 {
+        require(storage.state != 0, Error::NFTNotInitalized);
+        storage.owners[address]
     }
 
     /// Returns the total supply for the NFT contract
@@ -271,6 +291,8 @@ impl NFT for Contract {
             
             let mut balance = storage.balances.get(to);
             storage.balances.insert(to, balance + 1);
+
+            storage.owners.insert(to, token_id);
 
             storage.token_count = storage.token_count + 1;
             i = i + 1;
@@ -352,6 +374,9 @@ impl NFT for Contract {
 
             let mut balance = storage.balances.get(from);
             storage.balances.insert(from, balance - 1);
+
+            storage.owners.insert(from, NATIVE_ASSET_ID);
+            storage.owners.insert(to, b256);
         } else {
             revert(0);
         };
