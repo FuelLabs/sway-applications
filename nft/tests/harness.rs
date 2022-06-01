@@ -924,3 +924,29 @@ mod get_tokens_owned {
     }
 }
 
+mod get_total_supply {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn gets_total_supply() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 10, 1, asset_id).await;
+
+        assert_eq!(
+            owner1.nft.get_total_supply().call().await.unwrap().value,
+            10
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        assert!(
+            owner1.nft.get_total_supply().call().await.unwrap().value
+        );
+    }
+}
