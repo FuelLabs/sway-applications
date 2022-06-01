@@ -1,20 +1,56 @@
-use fuels::{prelude::*, tx::ContractId};
+use fuel_tx::{AssetId, ContractId};
+use fuels::prelude::*;
 use fuels_abigen_macro::abigen;
 
 // Load abi from json
-abigen!(MyContract, "out/debug/nft-abi.json");
+abigen!(Nft, "out/debug/nft-abi.json");
 
-async fn get_contract_instance() -> (MyContract, ContractId) {
-    // Launch a local network and deploy the contract
-    let wallet = launch_provider_and_get_single_wallet().await;
+struct Metadata {
+    nft: Nft,
+    wallet: LocalWallet,
+}
 
-    let id = Contract::deploy("./out/debug/nft.bin", &wallet, TxParameters::default())
-        .await
-        .unwrap();
+async fn setup() -> (Metadata, Metadata, Metadata) {
+    // Create some addresses with the minimum amount of asset: 1 Million
+    let (pk1, mut coins1) = setup_address_and_coins(1, 1000000);
+    let (pk2, coins2) = setup_address_and_coins(1, 1000000);
+    let (pk3, coins3) = setup_address_and_coins(1, 1000000);
 
-    let instance = MyContract::new(id.to_string(), wallet);
+    coins1.extend(coins2);
+    coins1.extend(coins3);
 
-    (instance, id)
+    // Launch a provider with those coins
+    let (provider, _) = setup_test_provider(coins1).await;
+
+    // Get the wallets from that provider
+    let wallet1 = LocalWallet::new_from_private_key(pk1, provider.clone());
+    let wallet2 = LocalWallet::new_from_private_key(pk2, provider.clone());
+    let wallet3 = LocalWallet::new_from_private_key(pk3, provider);
+
+    let id = Contract::deploy(
+        "./out/debug/NFT.bin", 
+        &wallet1, 
+        TxParameters::default()
+    )
+    .await
+    .unwrap();
+
+    let deploy_wallet = Metadata {
+        nft: Nft::new(id.to_string(), wallet1.clone()),
+        wallet: wallet1,
+    };
+
+    let owner1 = Metadata {
+        nft: Nft::new(id.to_string(), wallet2.clone()),
+        wallet: wallet2,
+    };
+
+    let owner2 = Metadata {
+        nft: Nft::new(id.to_string(), wallet3.clone()),
+        wallet: wallet3,
+    };
+
+    (deploy_wallet, owner1, owner2)
 }
 
 #[tokio::test]
