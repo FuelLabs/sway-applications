@@ -426,3 +426,98 @@ mod mint {
         );
     }
 }
+
+mod allow_mint {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn allows_mint() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, true, 1, 1, asset_id).await;
+
+        assert! {
+            owner1
+            .nft
+            .allow_mint(owner1.wallet.address())
+            call()
+            .await
+            .unwrap()
+            .value
+        };
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        assert! {
+            owner1
+            .nft
+            .allow_mint(owner1.wallet.address())
+            call()
+            .await
+            .unwrap()
+            .value
+        };
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_access_control_not_set() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+
+        assert! {
+            owner1
+            .nft
+            .allow_mint(owner1.wallet.address())
+            call()
+            .await
+            .unwrap()
+            .value
+        };
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_given_access_twice() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+
+        owner1.nft.allow_mint(owner1.wallet.address()).await;
+
+        assert! {
+            owner1
+            .nft
+            .allow_mint(owner1.wallet.address())
+            call()
+            .await
+            .unwrap()
+            .value
+        };
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_access_control_address() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+
+        assert! {
+            owner2
+            .nft
+            .allow_mint(owner2.wallet.address())
+            call()
+            .await
+            .unwrap()
+            .value
+        };
+    }
+
+}
