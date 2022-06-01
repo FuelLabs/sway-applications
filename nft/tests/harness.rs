@@ -75,7 +75,38 @@ async fn init(
 ) -> bool {
     deploy_wallet
         .nft
-        .constructor(owner.address(), access_control, token_supply, token_price, asset)
+        .constructor(owner.wallet.address(), access_control, token_supply, token_price, asset)
+        .call()
+        .await
+        .unwrap()
+        .value
+}
+
+async fn deploy_funds(
+    deploy_wallet: &Metadata,
+    owner: &LocalWallet,
+    asset_amount: u64
+) {
+    deploy_wallet
+        .asset
+        .as_ref()
+        .unwrap()
+        .mint_and_send_to_address(asset_amount, owner.address())
+        .append_variable_outputs(1)
+        .call()
+        .await
+        .unwrap()
+        .value;
+}
+
+async fn mint(
+    deploy_wallet: &Metadata,
+    owner1: &Metadata,
+    amount: u64
+) -> bool {
+    deploy_wallet
+        .nft
+        .mint(owner1.wallet.address(), amount)
         .call()
         .await
         .unwrap()
@@ -138,6 +169,260 @@ mod constructor {
                 asset_id
             )
             .await
+        );
+    }
+}
+
+mod mint {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn mints() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        assert!(
+            owner1
+                .nft
+                .mint(owner1.wallet.address(), 1)
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+
+        assert_eq!(
+            owner1.nft.balance_of(owner1.wallet.address()).call().await.unwrap().value,
+            1
+        );
+    }
+
+    #[tokio::test]
+    async fn mints_with_access() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, true, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        owner1.nft.allow_mint(owner1.wallet.address()).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        assert!(
+            owner1
+                .nft
+                .mint(owner1.wallet.address(), 1)
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+
+        assert_eq!(
+            owner1.nft.balance_of(owner1.wallet.address()).call().await.unwrap().value,
+            1
+        );
+    }
+
+    #[tokio::test]
+    async fn mints_multiple() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, true, 5, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 3).await;
+
+        owner1.nft.allow_mint(owner1.wallet.address()).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(3), Some(AssetId::from(*asset_id)));
+
+        assert!(
+            owner1
+                .nft
+                .mint(owner1.wallet.address(), 3)
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+
+        assert_eq!(
+            owner1.nft.balance_of(owner1.wallet.address()).call().await.unwrap().value,
+            3
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, true, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        assert!(
+            owner1
+                .nft
+                .mint(owner1.wallet.address(), 1)
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_mint_amount_is_zero() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        assert!(
+            owner1
+                .nft
+                .mint(owner1.wallet.address(), 0)
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_minting_more_tokens_than_supply() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        assert!(
+            owner1
+                .nft
+                .mint(owner1.wallet.address(), 2)
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_minter_does_not_have_access() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, true, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        assert!(
+            owner1
+                .nft
+                .mint(owner1.wallet.address(), 1)
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    // #[tokio::test]
+    // #[should_panic]
+    // async fn panics_when_paying_incorrect_asset() {
+    //     let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+    //     init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        
+    //     let another_asset_id = Contract::deploy_with_salt(
+    //         "./tests/artifacts/asset/out/debug/asset.bin",
+    //         &deployer.wallet,
+    //         TxParameters::default(),
+    //         Salt::from([1u8; 32]),
+    //     )
+    //     .await
+    //     .unwrap();
+
+    //     let another_asset = Asset::new(another_asset_id.to_string(), deployer.wallet.clone());
+
+    //     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+    //     let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*another_asset_id)));
+
+    //     another_asset
+    //         .mint_and_send_to_address(asset_amount, buyer.wallet.address())
+    //         .append_variable_outputs(1)
+    //         .call()
+    //         .await
+    //         .unwrap();
+  
+    //     assert!(
+    //         owner1
+    //             .nft
+    //             .mint(owner1.wallet.address(), 1)
+    //             .tx_params(tx_params)
+    //             .call_params(call_params)
+    //             .call()
+    //             .await
+    //             .unwrap()
+    //             .value
+    //     );
+    // }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_paying_incorrect_asset_amount() {
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 2, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        assert!(
+            owner1
+                .nft
+                .mint(owner1.wallet.address(), 1)
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
         );
     }
 }

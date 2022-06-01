@@ -247,7 +247,7 @@ impl NFT for Contract {
     fn mint(to: Address, amount: u64) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
         require(amount != 0, Error::MintAmountCannotBeZero);
-        require(storage.token_supply <= (storage.token_count + amount), Error::NotEnoughTokensToMint);
+        require(storage.token_supply >= (storage.token_count + amount), Error::NotEnoughTokensToMint);
 
         let sender: Result<Sender, AuthError> = msg_sender();
         if let Sender::Address(address) = sender.unwrap() {
