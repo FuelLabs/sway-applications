@@ -950,3 +950,45 @@ mod get_total_supply {
         );
     }
 }
+
+mod is_approved_for_all {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn gets_approval_for_all() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+
+        owner1.nft.set_approval_for_all(owner1.wallet.address(), owner2.wallet.address()).await;
+
+        assert_eq!{
+            owner1
+                .nft
+                .is_approved_for_all(owner1.wallet.address(), owner2.wallet.address())
+                .call()
+                .await
+                .unwrap()
+                .value,
+            true
+        };
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        assert_eq!{
+            owner1
+                .nft
+                .is_approved_for_all(owner1.wallet.address(), owner2.wallet.address())
+                .call()
+                .await
+                .unwrap()
+                .value,
+            true
+        };
+    }
+}
