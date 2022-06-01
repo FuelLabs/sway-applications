@@ -1034,3 +1034,93 @@ mod owner_of {
         );
     }
 }
+
+mod set_approval_for_all {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn sets_approval_for_all() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+
+        assert!(
+            owner1
+            .nft
+            .set_approval_for_all(owner1.wallet.address(), owner2.wallet.address())
+            .call()
+            .await
+            .unwrap()
+            .value;
+        );
+
+        assert_eq!(
+            owner1
+            .nft
+            .is_approved_for_all(owner1.wallet.address(), owner2.wallet.address())
+            .call()
+            .await
+            .unwrap()
+            .value,
+            true
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        assert!(
+            owner1
+            .nft
+            .set_approval_for_all(owner1.wallet.address(), owner2.wallet.address())
+            .call()
+            .await
+            .unwrap()
+            .value;
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_approval_given_twice() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+
+        owner1
+            .nft
+            .set_approval_for_all(owner1.wallet.address(), owner2.wallet.address())
+            .await;
+
+        assert!(
+            owner1
+            .nft
+            .set_approval_for_all(owner1.wallet.address(), owner2.wallet.address())
+            .call()
+            .await
+            .unwrap()
+            .value;
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_sender_is_not_owner() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+
+        assert!(
+            owner2
+            .nft
+            .set_approval_for_all(owner1.wallet.address(), owner2.wallet.address())
+            .call()
+            .await
+            .unwrap()
+            .value;
+        );
+    }
+}
