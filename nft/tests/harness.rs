@@ -1124,3 +1124,230 @@ mod set_approval_for_all {
         );
     }
 }
+
+mod transfer_from {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn transfers() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        owner1
+            .nft
+            .mint(owner1.wallet.address(), 1)
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await;
+
+        let token_id = owner1.nft.get_tokens_owned(owner1.wallet.address()).await;
+
+        assert!(
+            owner1
+            .nft
+            .transfer_from(owner1.wallet.address(), owner2.wallet.address(), token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+        );  
+
+        assert_eq!(
+            owner2
+                .nft
+                .owner_of(token_id)
+                .call()
+                .await
+                .unwrap()
+                .value,
+            owner2.wallet.address()
+        );
+
+        assert_eq!(
+            owner1
+                .nft
+                .balance_of(owner1.wallet.address())
+                .call()
+                .await
+                .unwrap()
+                .value,
+            0
+        );
+
+        assert_eq!(
+            owner2
+                .nft
+                .balance_of(owner2.wallet.address())
+                .call()
+                .await
+                .unwrap()
+                .value,
+            1
+        );
+
+        assert_eq!(
+            owner2
+                .nft
+                .get_tokens_owned(owner2.wallet.address())
+                .call()
+                .await
+                .unwrap()
+                .value,
+            token_id
+        );
+
+        assert_eq!(
+            owner1
+                .nft
+                .get_tokens_owned(owner1.wallet.address())
+                .call()
+                .await
+                .unwrap()
+                .value,
+            0x0000000000000000000000000000000000000000000000000000000000000000
+        );
+    }
+
+    #[tokio::test]
+    async fn transfers_by_approval() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        owner1
+            .nft
+            .mint(owner1.wallet.address(), 1)
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await;
+
+        let token_id = owner1.nft.get_tokens_owned(owner1.wallet.address()).await;
+
+        owner1.nft.approve(owner2.wallet.address(), token_id).await;
+
+        assert!(
+            owner2
+            .nft
+            .transfer_from(owner1.wallet.address(), owner2.wallet.address(), token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+        );  
+
+        assert_eq!(
+            owner2
+                .nft
+                .owner_of(token_id)
+                .call()
+                .await
+                .unwrap()
+                .value,
+            owner2.wallet.address()
+        );
+    }
+
+    #[tokio::test]
+    async fn transfers_by_operator() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        owner1
+            .nft
+            .mint(owner1.wallet.address(), 1)
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await;
+
+        let token_id = owner1.nft.get_tokens_owned(owner1.wallet.address()).await;
+
+        owner1.nft.set_approval_for_all(owner1.wallet.address(), owner2.wallet.address()).await;
+
+        assert!(
+            owner2
+            .nft
+            .transfer_from(owner1.wallet.address(), owner2.wallet.address(), token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+        );  
+
+        assert_eq!(
+            owner2
+                .nft
+                .owner_of(token_id)
+                .call()
+                .await
+                .unwrap()
+                .value,
+            owner2.wallet.address()
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        assert!(
+            owner1
+            .nft
+            .transfer_from(owner1.wallet.address(), owner2.wallet.address(), token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+        );  
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_sender_is_not_owner() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        owner1
+            .nft
+            .mint(owner1.wallet.address(), 1)
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await;
+
+        let token_id = owner1.nft.get_tokens_owned(owner1.wallet.address()).await;
+
+        assert!(
+            owner2
+            .nft
+            .transfer_from(owner1.wallet.address(), owner2.wallet.address(), token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+        );  
+    }
+}
