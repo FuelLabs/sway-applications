@@ -992,3 +992,45 @@ mod is_approved_for_all {
         };
     }
 }
+
+mod owner_of {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn gets_owner_of() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
+        deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
+
+        owner1
+            .nft
+            .mint(owner1.wallet.address(), 1)
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await;
+
+        let token_id = owner1.nft.get_tokens_owned(owner1.wallet.address()).await;
+
+        assert_eq!(
+            owner1.nft.owner_of(token_id).call().await.unwrap().value,
+            owner1.wallet.address()
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+
+        assert_eq!(
+            owner1.nft.owner_of(token_id).call().await.unwrap().value,
+            owner1.wallet.address()
+        );
+    }
+}
