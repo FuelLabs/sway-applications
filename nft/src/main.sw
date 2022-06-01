@@ -191,6 +191,7 @@ impl NFT for Contract {
         storage.token_supply = token_supply;
         storage.token_price = token_price;
         storage.asset = asset;
+        storage.state = 1;
 
         true
     }
