@@ -14,8 +14,8 @@
 
 The following changes have been made:
 
-* Change 1
-* Change 2
+- Change 1
+- Change 2
 
 # Related Issues
 
