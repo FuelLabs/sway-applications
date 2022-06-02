@@ -266,7 +266,7 @@ impl NFT for Contract {
 
         let sender: Result<Sender, AuthError> = msg_sender();
         if let Sender::Address(address) = sender.unwrap() {
-            require(!storage.access_control || (storage.access_control && !storage.allowed_minters.get(address)), Error::SenderDoesNotHaveAccessControl);
+            require(!storage.access_control || (storage.access_control && storage.allowed_minters.get(address)), Error::SenderDoesNotHaveAccessControl);
         } else {
             revert(0);
         }
@@ -327,7 +327,7 @@ impl NFT for Contract {
 
         let sender: Result<Sender, AuthError> = msg_sender();
         if let Sender::Address(address) = sender.unwrap() {
-            require(owner != address, Error::SenderNotOwner);
+            require(owner == address, Error::SenderNotOwner);
   
             storage.operator_approval.insert(hash, true);
         } else {
@@ -366,8 +366,11 @@ impl NFT for Contract {
             meta_data.approved = ~Address::from(NATIVE_ASSET_ID);
             storage.meta_data.insert(token_id, meta_data);
 
-            let mut balance = storage.balances.get(from);
-            storage.balances.insert(from, balance - 1);
+            let mut balance_from = storage.balances.get(from);
+            storage.balances.insert(from, balance_from - 1);
+
+            let mut balance_to = storage.balances.get(to);
+            storage.balances.insert(to, balance_to + 1);
 
             // storage.owners.insert(from, NATIVE_ASSET_ID);
             // storage.owners.insert(to, token_id);

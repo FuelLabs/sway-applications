@@ -223,10 +223,8 @@ mod mint {
     async fn mints_multiple() {
         let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
 
-        init(&deploy_wallet, &owner1, true, 5, 1, asset_id).await;
+        init(&deploy_wallet, &owner1, false, 5, 1, asset_id).await;
         deploy_funds(&deploy_wallet, &owner1.wallet, 3).await;
-
-        let _allowed_mint = owner1.nft.allow_mint(owner1.wallet.address()).call().await;
 
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(3), Some(AssetId::from(*asset_id)));
@@ -254,7 +252,6 @@ mod mint {
     async fn panics_when_not_initalized() {
         let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
 
-        init(&deploy_wallet, &owner1, true, 1, 1, asset_id).await;
         deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
 
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
@@ -1215,7 +1212,7 @@ mod transfer_from {
         //         .await
         //         .unwrap()
         //         .value,
-        //     0x0000000000000000000000000000000000000000000000000000000000000000
+        //     token_id
         // );
     }
 
