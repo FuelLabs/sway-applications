@@ -1,6 +1,6 @@
 name: Requesting New Feature
 description: If you are adding something completely new then use this template!
-title: "New Feature Request: <title>"
+title: "<title>"
 labels: ["New Feature"]
 body:
   - type: textarea
