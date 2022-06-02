@@ -97,20 +97,6 @@ async fn deploy_funds(
         .value;
 }
 
-async fn mint(
-    deploy_wallet: &Metadata,
-    owner1: &Metadata,
-    amount: u64
-) -> bool {
-    deploy_wallet
-        .nft
-        .mint(owner1.wallet.address(), amount)
-        .call()
-        .await
-        .unwrap()
-        .value
-}
-
 mod constructor {
 
     use super::*;
@@ -210,7 +196,7 @@ mod mint {
         init(&deploy_wallet, &owner1, true, 1, 1, asset_id).await;
         deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
 
-        owner1.nft.allow_mint(owner1.wallet.address()).call().await;
+        let _allowed_mint = owner1.nft.allow_mint(owner1.wallet.address()).call().await;
 
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
@@ -240,7 +226,7 @@ mod mint {
         init(&deploy_wallet, &owner1, true, 5, 1, asset_id).await;
         deploy_funds(&deploy_wallet, &owner1.wallet, 3).await;
 
-        owner1.nft.allow_mint(owner1.wallet.address()).call().await;
+        let _allowed_mint = owner1.nft.allow_mint(owner1.wallet.address()).call().await;
 
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(3), Some(AssetId::from(*asset_id)));
@@ -450,7 +436,7 @@ mod allow_mint {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_not_initalized() {
-        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
+        let (_deploy_wallet, owner1, _owner2, _asset_id) = setup().await;
 
         assert! {
             owner1
@@ -488,7 +474,7 @@ mod allow_mint {
 
         init(&deploy_wallet, &owner1, true, 1, 1, asset_id).await;
 
-        owner1.nft.allow_mint(owner1.wallet.address()).call().await;
+        let _allowed_mint = owner1.nft.allow_mint(owner1.wallet.address()).call().await;
 
         assert! {
             owner1
@@ -534,7 +520,7 @@ mod approve {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -559,7 +545,7 @@ mod approve {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_not_initalized() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (_deploy_wallet, owner1, owner2, _asset_id) = setup().await;
 
         let token_id = 0;
 
@@ -585,7 +571,7 @@ mod approve {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -596,7 +582,7 @@ mod approve {
         //let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
         let token_id = 0;
 
-        owner1.nft.approve(owner2.wallet.address(), token_id).call().await;
+        let _approved = owner1.nft.approve(owner2.wallet.address(), token_id).call().await;
 
         assert!{
             owner1
@@ -620,7 +606,7 @@ mod approve {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -645,7 +631,7 @@ mod approve {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_approver_is_owner() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
         deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
@@ -653,7 +639,7 @@ mod approve {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -682,7 +668,7 @@ mod balance_of {
 
     #[tokio::test]
     async fn gets_balance() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
         deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
@@ -690,7 +676,7 @@ mod balance_of {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -707,7 +693,7 @@ mod balance_of {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_not_initalized() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (_deploy_wallet, owner1, _owner2, _asset_id) = setup().await;
 
         assert_eq!(
             owner1.nft.balance_of(owner1.wallet.address()).call().await.unwrap().value,
@@ -722,7 +708,7 @@ mod burn {
 
     #[tokio::test]
     async fn burns() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
         deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
@@ -730,7 +716,7 @@ mod burn {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -760,7 +746,7 @@ mod burn {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_not_initalized() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (_deploy_wallet, owner1, _owner2, _asset_id) = setup().await;
 
         let token_id = 0;
 
@@ -778,7 +764,7 @@ mod burn {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_token_does_not_exist() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
         deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
@@ -786,7 +772,7 @@ mod burn {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -818,7 +804,7 @@ mod burn {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -855,7 +841,7 @@ mod get_approved {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -866,7 +852,7 @@ mod get_approved {
         //let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
         let token_id = 0;
 
-        owner1
+        let _approved = owner1
             .nft
             .approve(owner2.wallet.address(), token_id)
             .call()
@@ -881,7 +867,7 @@ mod get_approved {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_not_initalized() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (_deploy_wallet, owner1, _owner2, _asset_id) = setup().await;
         let token_id = 0;
 
         assert_eq!(
@@ -939,7 +925,7 @@ mod get_total_supply {
 
     #[tokio::test]
     async fn gets_total_supply() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 10, 1, asset_id).await;
 
@@ -952,7 +938,7 @@ mod get_total_supply {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_not_initalized() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (_deploy_wallet, owner1, _owner2, _asset_id) = setup().await;
 
         assert_eq!(
             owner1.nft.get_total_supply().call().await.unwrap().value,
@@ -971,7 +957,11 @@ mod is_approved_for_all {
 
         init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
 
-        owner1.nft.set_approval_for_all(owner1.wallet.address(), owner2.wallet.address()).call().await;
+        let _set_approval = owner1
+            .nft
+            .set_approval_for_all(owner1.wallet.address(), owner2.wallet.address())
+            .call()
+            .await;
 
         assert_eq!{
             owner1
@@ -988,7 +978,7 @@ mod is_approved_for_all {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_not_initalized() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (_deploy_wallet, owner1, owner2, _asset_id) = setup().await;
 
         assert_eq!{
             owner1
@@ -1009,7 +999,7 @@ mod owner_of {
 
     #[tokio::test]
     async fn gets_owner_of() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (deploy_wallet, owner1, _owner2, asset_id) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
         deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
@@ -1017,7 +1007,7 @@ mod owner_of {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -1037,7 +1027,7 @@ mod owner_of {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_not_initalized() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (_deploy_wallet, owner1, _owner2, _asset_id) = setup().await;
         let token_id = 0;
 
         assert_eq!(
@@ -1082,7 +1072,7 @@ mod set_approval_for_all {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_not_initalized() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (_deploy_wallet, owner1, owner2, _asset_id) = setup().await;
 
         assert!(
             owner1
@@ -1102,7 +1092,7 @@ mod set_approval_for_all {
 
         init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
 
-        owner1
+        let _minted = owner1
             .nft
             .set_approval_for_all(owner1.wallet.address(), owner2.wallet.address())
             .call()
@@ -1152,7 +1142,7 @@ mod transfer_from {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -1239,7 +1229,7 @@ mod transfer_from {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -1250,7 +1240,7 @@ mod transfer_from {
         // let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
         let token_id = 0;
 
-        owner1.nft.approve(owner2.wallet.address(), token_id).call().await;
+        let _approved = owner1.nft.approve(owner2.wallet.address(), token_id).call().await;
 
         assert!(
             owner2
@@ -1284,7 +1274,7 @@ mod transfer_from {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
@@ -1295,7 +1285,11 @@ mod transfer_from {
         // let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
         let token_id = 0;
 
-        owner1.nft.set_approval_for_all(owner1.wallet.address(), owner2.wallet.address()).call().await;
+        let _set_approval = owner1
+            .nft
+            .set_approval_for_all(owner1.wallet.address(), owner2.wallet.address())
+            .call()
+            .await;
 
         assert!(
             owner2
@@ -1322,7 +1316,7 @@ mod transfer_from {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_not_initalized() {
-        let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let (_deploy_wallet, owner1, owner2, _asset_id) = setup().await;
         let token_id = 0;
 
         assert!(
@@ -1347,7 +1341,7 @@ mod transfer_from {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
 
-        owner1
+        let _minted = owner1
             .nft
             .mint(owner1.wallet.address(), 1)
             .tx_params(tx_params)
