@@ -22,4 +22,5 @@ The following changes have been made:
 Closes #(issue number)
 
 # Additional context
-Add any other context or screenshots about the PR here or delete this entire section.
+
+<!--Add any other context or screenshots about the PR here or delete this entire section.-->
