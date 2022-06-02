@@ -11,7 +11,8 @@
 - Other (describe below)
 
 ## Changes
-The following changes have been made
+
+The following changes have been made:
 
 * Change 1
 * Change 2
