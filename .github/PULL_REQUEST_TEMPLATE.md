@@ -1,7 +1,8 @@
 # Summary
 
 ## Type of change
-Delete points that do not apply
+
+<!--Delete points that do not apply-->
 
 - Bug fix
 - New feature
