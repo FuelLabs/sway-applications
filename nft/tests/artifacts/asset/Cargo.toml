@@ -1,15 +1,16 @@
 [project]
-name = "NFT"
-version = "0.1.0"
+name = "asset"
+version = "0.0.0"
 authors = ["Fuel Labs <contact@fuel.sh>"]
 edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-fuels = "0.14"
-fuels-abigen-macro = "0.14"
+fuel-gql-client = { version = "0.6", default-features = false }
+fuel-tx = "0.9"
+fuels = "0.13"
+fuels-abigen-macro = "0.13"
 tokio = { version = "1.12", features = ["rt", "macros"] }
-fuel-tx = "0.12.1"
 
 [[test]]
 harness = true

@@ -15,18 +15,18 @@ use std::{
 
 abi NFT {
     fn allow_mint(minter: Address) -> bool;
-    fn approve(to: Address, token_id: b256) -> bool;
+    fn approve(to: Address, token_id: u64) -> bool;
     fn balance_of(owner: Address) -> u64;
-    fn burn(token_id: b256) -> bool ;
+    fn burn(token_id: u64) -> bool ;
     fn constructor(owner: Address, access_control: bool, token_supply: u64, token_price: u64, asset: ContractId) -> bool;
-    fn get_approved(token_id: b256) -> Address;
-    // fn get_tokens(address: Address) -> b256;
+    fn get_approved(token_id: u64) -> Address;
+    // fn get_tokens(address: Address) -> u64;
     fn get_total_supply() -> u64;
     fn is_approved_for_all(owner: Address, operator: Address) -> bool;
     fn mint(to: Address, amount: u64) -> bool ;
-    fn owner_of(token_id: b256) -> Address;
+    fn owner_of(token_id: u64) -> Address;
     fn set_approval_for_all(owner: Address, operator: Address) -> bool;
-    fn transfer_from(from: Address, to: Address, token_id: b256) -> bool;
+    fn transfer_from(from: Address, to: Address, token_id: u64) -> bool;
 }
 
 enum Error {
@@ -61,11 +61,11 @@ storage {
     allowed_minters: StorageMap<Address, bool>,
     balances: StorageMap<Address, u64>,
     asset: ContractId,
-    meta_data: StorageMap<b256, MetaData>,
+    meta_data: StorageMap<u64, MetaData>,
     operator_approval: StorageMap<b256, bool>,
     // TODO: This will need to support returning multiple token ownerships
     //       As of v0.14 this causes the compiler to panic
-    // owners: StorageMap<Address, b256>,
+    // owners: StorageMap<Address, u64>,
     state: u64,
     token_count: u64,
     token_price: u64,
@@ -112,7 +112,7 @@ impl NFT for Contract {
     /// - The address has already been approved
     /// - The sender is not the owner
     /// - The appover is the owner
-    fn approve(to: Address, token_id: b256) -> bool {
+    fn approve(to: Address, token_id: u64) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
         require(to.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
 
@@ -152,7 +152,7 @@ impl NFT for Contract {
     /// - The NFT contract has not been initalized
     /// - The token id does not exist
     /// - The sender is not the owner
-    fn burn(token_id: b256) -> bool {
+    fn burn(token_id: u64) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
 
         let mut meta_data: MetaData = storage.meta_data.get(token_id);
@@ -206,7 +206,7 @@ impl NFT for Contract {
     ///
     /// The function will panic when:
     /// - The NFT contract has not been initalized
-    fn get_approved(token_id: b256) -> Address {
+    fn get_approved(token_id: u64) -> Address {
         require(storage.state != 0, Error::NFTNotInitalized);
 
         let meta_data: MetaData = storage.meta_data.get(token_id);
@@ -277,7 +277,7 @@ impl NFT for Contract {
 
         let mut i = 0;
         while i < amount {
-            let token_id: b256 = sha256(storage.token_count);
+            let token_id: u64 = storage.token_count;
 
             let meta_data: MetaData = MetaData {
                 owner: to, approved: ~Address::from(NATIVE_ASSET_ID)
@@ -302,7 +302,7 @@ impl NFT for Contract {
     ///
     /// The function will panic when:
     /// - The NFT contract has not been initalized
-    fn owner_of(token_id: b256) -> Address {
+    fn owner_of(token_id: u64) -> Address {
         require(storage.state != 0, Error::NFTNotInitalized);
 
         let meta_data: MetaData = storage.meta_data.get(token_id);
@@ -347,7 +347,7 @@ impl NFT for Contract {
     /// - The sender is not the owner
     /// - The sender is not approved
     /// - The sender is not an operator for the owner
-    fn transfer_from(from: Address, to: Address, token_id: b256) -> bool {
+    fn transfer_from(from: Address, to: Address, token_id: u64) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
         require(to.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
         

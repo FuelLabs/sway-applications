@@ -3,7 +3,8 @@ use fuels::prelude::*;
 use fuels_abigen_macro::abigen;
 
 // Load abi from json
-abigen!(Nft, "out/debug/nft-abi.json");
+abigen!(Nft, "out/debug/NFT-abi.json");
+abigen!(Asset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
 struct Metadata {
     asset: Option<Asset>,
@@ -12,21 +13,18 @@ struct Metadata {
 }
 
 async fn setup() -> (Metadata, Metadata, Metadata, ContractId) {
-    // Create some addresses with the minimum amount of asset: 1 Million
-    let (pk1, mut coins1) = setup_address_and_coins(1, 1000000);
-    let (pk2, coins2) = setup_address_and_coins(1, 1000000);
-    let (pk3, coins3) = setup_address_and_coins(1, 1000000);
-
-    coins1.extend(coins2);
-    coins1.extend(coins3);
-
-    // Launch a provider with those coins
-    let (provider, _) = setup_test_provider(coins1).await;
+    // Setup 3 test wallets
+    let wallets = launch_provider_and_get_wallets(WalletsConfig {
+        num_wallets: 3,
+        coins_per_wallet: 1,
+        coin_amount: 1000000,
+    })
+    .await;
 
     // Get the wallets from that provider
-    let wallet1 = LocalWallet::new_from_private_key(pk1, provider.clone());
-    let wallet2 = LocalWallet::new_from_private_key(pk2, provider.clone());
-    let wallet3 = LocalWallet::new_from_private_key(pk3, provider);
+    let wallet1 = &wallets[0];
+    let wallet2 = &wallets[1];
+    let wallet3 = &wallets[2];
 
     let nft_id = Contract::deploy(
         "./out/debug/NFT.bin", 
@@ -47,19 +45,19 @@ async fn setup() -> (Metadata, Metadata, Metadata, ContractId) {
     let deploy_wallet = Metadata {
         asset: Some(Asset::new(asset_id.to_string(), wallet1.clone())),
         nft: Nft::new(nft_id.to_string(), wallet1.clone()),
-        wallet: wallet1,
+        wallet: wallet1.clone(),
     };
 
     let owner1 = Metadata {
         asset: Some(Asset::new(asset_id.to_string(), wallet2.clone())),
         nft: Nft::new(nft_id.to_string(), wallet2.clone()),
-        wallet: wallet2,
+        wallet: wallet2.clone(),
     };
 
     let owner2 = Metadata {
         asset: Some(Asset::new(asset_id.to_string(), wallet3.clone())),
         nft: Nft::new(nft_id.to_string(), wallet3.clone()),
-        wallet: wallet3,
+        wallet: wallet3.clone(),
     };
 
     (deploy_wallet, owner1, owner2, asset_id)
@@ -212,7 +210,7 @@ mod mint {
         init(&deploy_wallet, &owner1, true, 1, 1, asset_id).await;
         deploy_funds(&deploy_wallet, &owner1.wallet, 1).await;
 
-        owner1.nft.allow_mint(owner1.wallet.address()).await;
+        owner1.nft.allow_mint(owner1.wallet.address()).call().await;
 
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(1), Some(AssetId::from(*asset_id)));
@@ -242,7 +240,7 @@ mod mint {
         init(&deploy_wallet, &owner1, true, 5, 1, asset_id).await;
         deploy_funds(&deploy_wallet, &owner1.wallet, 3).await;
 
-        owner1.nft.allow_mint(owner1.wallet.address()).await;
+        owner1.nft.allow_mint(owner1.wallet.address()).call().await;
 
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(3), Some(AssetId::from(*asset_id)));
@@ -442,7 +440,7 @@ mod allow_mint {
             owner1
             .nft
             .allow_mint(owner1.wallet.address())
-            call()
+            .call()
             .await
             .unwrap()
             .value
@@ -458,7 +456,7 @@ mod allow_mint {
             owner1
             .nft
             .allow_mint(owner1.wallet.address())
-            call()
+            .call()
             .await
             .unwrap()
             .value
@@ -476,7 +474,7 @@ mod allow_mint {
             owner1
             .nft
             .allow_mint(owner1.wallet.address())
-            call()
+            .call()
             .await
             .unwrap()
             .value
@@ -490,13 +488,13 @@ mod allow_mint {
 
         init(&deploy_wallet, &owner1, true, 1, 1, asset_id).await;
 
-        owner1.nft.allow_mint(owner1.wallet.address()).await;
+        owner1.nft.allow_mint(owner1.wallet.address()).call().await;
 
         assert! {
             owner1
             .nft
             .allow_mint(owner1.wallet.address())
-            call()
+            .call()
             .await
             .unwrap()
             .value
@@ -514,7 +512,7 @@ mod allow_mint {
             owner2
             .nft
             .allow_mint(owner2.wallet.address())
-            call()
+            .call()
             .await
             .unwrap()
             .value
@@ -545,7 +543,7 @@ mod approve {
             .await;
 
         //let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
         assert!{
             owner1
@@ -563,7 +561,7 @@ mod approve {
     async fn panics_when_not_initalized() {
         let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
 
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
         assert!{
             owner1
@@ -596,9 +594,9 @@ mod approve {
             .await;
 
         //let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
-        owner1.nft.approve(owner2.wallet.address(), token_id).await;
+        owner1.nft.approve(owner2.wallet.address(), token_id).call().await;
 
         assert!{
             owner1
@@ -631,7 +629,7 @@ mod approve {
             .await;
 
         // let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
         assert!{
             owner2
@@ -664,7 +662,7 @@ mod approve {
             .await;
 
         // let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
         assert!{
             owner1
@@ -741,7 +739,7 @@ mod burn {
             .await;
 
         // let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
         assert!(
             owner1
@@ -754,7 +752,7 @@ mod burn {
         );
 
         assert_eq!(
-            owner1.nft.get_balance(owner1.wallet.address()).call().await.unwrap().value,
+            owner1.nft.balance_of(owner1.wallet.address()).call().await.unwrap().value,
             0
         );
     }
@@ -764,7 +762,7 @@ mod burn {
     async fn panics_when_not_initalized() {
         let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
 
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
         assert!(
             owner1
@@ -796,7 +794,7 @@ mod burn {
             .call()
             .await;
 
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 1;
 
         assert!(
             owner1
@@ -829,7 +827,7 @@ mod burn {
             .await;
 
         // let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
         assert!(
             owner2
@@ -866,11 +864,12 @@ mod get_approved {
             .await;
 
         //let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
         owner1
             .nft
             .approve(owner2.wallet.address(), token_id)
+            .call()
             .await;
 
         assert_eq!(
@@ -883,10 +882,11 @@ mod get_approved {
     #[should_panic]
     async fn panics_when_not_initalized() {
         let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
-        assert!(
-            owner1.nft.get_approved(token_id).call().await.unwrap().value
+        assert_eq!(
+            owner1.nft.get_approved(token_id).call().await.unwrap().value,
+            owner1.wallet.address()
         );
     }
 }
@@ -914,7 +914,7 @@ mod get_approved {
 //             .await;
 
 //         let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-//         let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+//         let token_id = 0;
 
 //         assert_eq!(
 //             owner1.nft.get_tokens(owner1.wallet.address()).call().await.unwrap().value,
@@ -954,8 +954,9 @@ mod get_total_supply {
     async fn panics_when_not_initalized() {
         let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
 
-        assert!(
-            owner1.nft.get_total_supply().call().await.unwrap().value
+        assert_eq!(
+            owner1.nft.get_total_supply().call().await.unwrap().value,
+            0
         );
     }
 }
@@ -970,7 +971,7 @@ mod is_approved_for_all {
 
         init(&deploy_wallet, &owner1, false, 1, 1, asset_id).await;
 
-        owner1.nft.set_approval_for_all(owner1.wallet.address(), owner2.wallet.address()).await;
+        owner1.nft.set_approval_for_all(owner1.wallet.address(), owner2.wallet.address()).call().await;
 
         assert_eq!{
             owner1
@@ -1025,7 +1026,7 @@ mod owner_of {
             .await;
 
         // let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
         assert_eq!(
             owner1.nft.owner_of(token_id).call().await.unwrap().value,
@@ -1037,6 +1038,7 @@ mod owner_of {
     #[should_panic]
     async fn panics_when_not_initalized() {
         let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let token_id = 0;
 
         assert_eq!(
             owner1.nft.owner_of(token_id).call().await.unwrap().value,
@@ -1062,7 +1064,7 @@ mod set_approval_for_all {
             .call()
             .await
             .unwrap()
-            .value;
+            .value
         );
 
         assert_eq!(
@@ -1089,7 +1091,7 @@ mod set_approval_for_all {
             .call()
             .await
             .unwrap()
-            .value;
+            .value
         );
     }
 
@@ -1103,6 +1105,7 @@ mod set_approval_for_all {
         owner1
             .nft
             .set_approval_for_all(owner1.wallet.address(), owner2.wallet.address())
+            .call()
             .await;
 
         assert!(
@@ -1112,7 +1115,7 @@ mod set_approval_for_all {
             .call()
             .await
             .unwrap()
-            .value;
+            .value
         );
     }
 
@@ -1130,7 +1133,7 @@ mod set_approval_for_all {
             .call()
             .await
             .unwrap()
-            .value;
+            .value
         );
     }
 }
@@ -1158,7 +1161,7 @@ mod transfer_from {
             .await;
 
         // let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
         assert!(
             owner1
@@ -1245,9 +1248,9 @@ mod transfer_from {
             .await;
 
         // let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
-        owner1.nft.approve(owner2.wallet.address(), token_id).await;
+        owner1.nft.approve(owner2.wallet.address(), token_id).call().await;
 
         assert!(
             owner2
@@ -1290,9 +1293,9 @@ mod transfer_from {
             .await;
 
         // let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
-        owner1.nft.set_approval_for_all(owner1.wallet.address(), owner2.wallet.address()).await;
+        owner1.nft.set_approval_for_all(owner1.wallet.address(), owner2.wallet.address()).call().await;
 
         assert!(
             owner2
@@ -1320,6 +1323,7 @@ mod transfer_from {
     #[should_panic]
     async fn panics_when_not_initalized() {
         let (deploy_wallet, owner1, owner2, asset_id) = setup().await;
+        let token_id = 0;
 
         assert!(
             owner1
@@ -1352,7 +1356,7 @@ mod transfer_from {
             .await;
 
         // let token_id = owner1.nft.get_tokens(owner1.wallet.address()).await;
-        let token_id = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let token_id = 0;
 
         assert!(
             owner2
