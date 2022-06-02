@@ -1,0 +1,60 @@
+name: Bug Report
+description: File a bug report
+title: "<title>"
+labels: ["Bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Tell us how to reproduce the bug
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: codeblock
+    attributes:
+      label: Minimal reproducible code example
+      description: Copy and paste your Sway / Rust code here, it will automatically be formatted so no need for backticks.
+      render: Rust
+    validations:
+      required: true
+  - type: input
+    id: rustc-version
+    attributes:
+      label: Rust Version
+      description: Run the command `rustc --version`
+      placeholder: ex. rustc 1.61.0 (fe5b13d68 2022-05-18)
+    validations:
+      required: true
+  - type: input
+    id: forc-version
+    attributes:
+      label: Forc Version
+      description: Run the command `forc --version`
+      placeholder: ex. forc 0.14.2
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: misc
+    attributes:
+      label: Additional context
+      description: Add any other context / screenshots about the problem go here
