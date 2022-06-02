@@ -1,36 +1,32 @@
 contract;
 
+// Our library dependencies
+dep abi;
+dep errors;
+dep events;
+dep data_structures;
+
+// Standard library code
 use std::{
+    //enumsnotsupportedinstorageresult::*,
+    //option::*,
     address::Address,
     assert::require,
     chain::auth::{AuthError, Sender, msg_sender},
+    constants::NATIVE_ASSET_ID,
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
-    result::*,
+    logging::log,
     revert::revert,
+    storage::StorageMap,
     token::{force_transfer, transfer_to_output}
 };
 
-abi Escrow {
-    fn constructor(user1: Sender, user2: Sender, user1_asset: Asset, user2_asset: Asset) -> bool;
-    fn deposit() -> bool;
-    fn approve() -> bool;
-    fn withdraw() -> bool;
-    fn get_balance() -> (Asset, Asset);
-    fn get_user_data(user: Sender) -> (bool, bool);
-    fn get_state() -> u64;
-}
-
-enum Error {
-    CannotReinitialize: (),
-    DepositRequired: (),
-    IncorrectAssetAmount: (),
-    IncorrectAssetId: (),
-    StateNotInitialized: (),
-    StateNotPending: (),
-    UnauthorizedUser: (),
-    UserHasAlreadyDeposited: (),
-}
+// Bring our code into scope
+use abi::Escrow;
+use errors::*;
+use events::{ApproveEvent, DepositEvent, ThresholdReachedEvent, WithdrawEvent};
+use data_structures::{Asset, User};
 
 // TODO: add enums when they are supported in storage
 // enum State {
@@ -39,116 +35,158 @@ enum Error {
 //     Completed: (),
 // }
 
-struct Asset {
-    amount: u64,
-    id: ContractId,
-}
-
-struct Identity {
-    address: b256,
-    approved: bool,
-    asset: Asset,
-    deposited: bool,
-}
-
 storage {
-    user1: Identity,
-    user2: Identity,
-    // state: State,
+    /// The asset and amount of asset the deposit() function will accept
+    assets: StorageMap<ContractId, u64>, 
+    
+    /// Current number of successful calls to approve(), used to lock the contract at completion
+    approval_count: u64,
+
+    /// Default value used to indicate that a user is not a valid user in the contract
+    sentinel: User,
+
+    /// Mechanism used to manage the control flow of the contract
+    // state: State // enums not supported in storage
     state: u64,
+
+    /// Required number of successful calls to approve() to mark the workflow as complete
+    threshold: u64,
+
+    /// State associated with the activity of each user
+    users: StorageMap<Sender, User>, 
 }
 
 impl Escrow for Contract {
-    /// Initializes the escrow with the users and their required asset and amount of asset
+    /// Initializes the escrow with the users and the assets that the contract will accept
     ///
     /// # Panics
     ///
     /// The function will panic when
     /// - The constructor is called more than once
-    fn constructor(user1: Sender, user2: Sender, user1_asset: Asset, user2_asset: Asset) -> bool {
-        // require(storage.state == State::Void, Error::CannotReinitialize);
-        require(storage.state == 0, Error::CannotReinitialize);
+    /// - The amount of any asset being set is equal to 0
+    /// - Any asset is the NATIVE_ASSET_ID
+    fn constructor(users: [Sender; 2], assets: [Asset; 2]) -> bool {
+        // require(storage.state == State::Void, Error::InitError(InitError::CannotReinitialize));
+        require(storage.state == 0, Error::InitError(InitError::CannotReinitialize));
 
-        storage.user1 = Identity {
-            approved: false, asset: user1_asset, deposited: false, address: _get_address(user1)
+        // Set the assets that this contract accepts
+        let mut asset_index = 0;
+        while asset_index < 2 {
+            require(0 < assets[asset_index].amount, Error::InitError(InitError::AssetAmountCannotBeZero));
+            require(~ContractId::from(NATIVE_ASSET_ID) != assets[asset_index].id, Error::InitError(InitError::AssetIdCannotBeZero));
+
+            storage.assets.insert(assets[asset_index].id, assets[asset_index].amount);
+        }
+
+        // Define a sentinel to distinguish users in the contract vs random users
+        storage.sentinel = User {
+            approved: false, 
+            asset: ~ContractId::from(NATIVE_ASSET_ID), // asset: Option::None::<ContractId>(), // enums not supported in storage
+            exists: false, 
+            deposited: false
         };
-        storage.user2 = Identity {
-            approved: false, asset: user2_asset, deposited: false, address: _get_address(user2)
-        };
+
+        // Set the users that can interact with the escrow
+        // Notice the "exists" field is different from the sentinel
+        let mut user_index = 0;
+        while user_index < 2 {
+            storage.users.insert(users[user_index], User {
+                approved: false, 
+                asset: ~ContractId::from(NATIVE_ASSET_ID), 
+                // asset: Option::None::<ContractId>(), // enums not supported in storage
+                exists: true, 
+                deposited: false
+            });
+        }
+
+        // TODO: when Vec is out, get its length and assign
+        // Set the threshold to be the number of users
+        // All users must approve
+        storage.threshold = 2;
+
+        // Flip the state to prevent future reinitialization
         storage.state = 1;
         // storage.state = State::Pending;
 
         true
     }
 
-    /// Updates the user state to indicate that they have deposited
+    /// Accepts a deposit from an authorized user for any of the specified assets
     /// A successful deposit unlocks the approval functionality for that user
     ///
     /// # Panics
     ///
     /// The function will panic when
     /// - The constructor has not been called to initialize
-    /// - The user is not an authorized user that has been set in the constructor
+    /// - The required number of approvals has been reached and another deposit is made
+    /// - The user is not an authorized user
     /// - The user deposits when they still have their previous deposit in the escrow
-    /// - The user deposits an asset that is not the specified asset in the constructor
-    /// - The user sends an incorrect amount of the asset that has been specified in the constructor
+    /// - The user deposits an asset that has not been specified in the constructor
+    /// - The user sends an incorrect amount of an asset for the specified asset in the constructor
     fn deposit() -> bool {
-        // require(storage.state == State::Pending, Error::StateNotPending);
-        require(storage.state == 1, Error::StateNotPending);
+        // require(storage.state == State::Pending, Error::StateError(StateError::StateNotPending));
+        require(storage.state == 1, Error::StateError(StateError::StateNotPending));
 
         let sender: Result<Sender, AuthError> = msg_sender();
-        let address = _get_address(sender.unwrap());
+        let mut user_data = storage.users.get(sender.unwrap());
 
-        _is_authorized(address);
+        require(user_data != storage.sentinel, Error::UnauthorizedUser);
+        require(!user_data.deposited, Error::DepositError(DepositError::AlreadyDeposited));
 
-        if address == storage.user1.address {
-            require(!storage.user1.deposited, Error::UserHasAlreadyDeposited);
-            require(storage.user1.asset.id == msg_asset_id(), Error::IncorrectAssetId);
-            require(storage.user1.asset.amount == msg_amount(), Error::IncorrectAssetAmount);
+        let deposited_asset = msg_asset_id();
+        let required_amount = storage.assets.get(deposited_asset);
 
-            storage.user1.deposited = true;
-        } else {
-            require(!storage.user2.deposited, Error::UserHasAlreadyDeposited);
-            require(storage.user2.asset.id == msg_asset_id(), Error::IncorrectAssetId);
-            require(storage.user2.asset.amount == msg_amount(), Error::IncorrectAssetAmount);
+        require(required_amount != 0, Error::DepositError(DepositError::IncorrectAssetDeposited));
+        require(required_amount == msg_amount(), Error::DepositError(DepositError::IncorrectAssetAmount));
 
-            storage.user2.deposited = true;
-        }
+        user_data.asset = deposited_asset;
+        user_data.deposited = true;
+
+        storage.users.insert(sender.unwrap(), user_data);
+
+        log(DepositEvent {
+            user: sender.unwrap(), asset: deposited_asset, amount: required_amount
+        });
 
         true
     }
 
-    /// Updates the user state to indicate that they have approved
-    /// Once both of the users approve the escrow will lock the approval and deposit functions leaving
-    /// withdrawal unlocked
+    /// Updates the user state to indicate a user has approved
+    /// Once all of the users approve the escrow will lock the approval and deposit functions leaving
+    /// withdrawal as the last function unlocked
     ///
     /// # Panics
     ///
     /// The function will panic when
     /// - The constructor has not been called to initialize
-    /// - The user is not an authorized user that has been set in the constructor
+    /// - The required number of approvals has been reached and another approval is made
+    /// - The user is not an authorized user
     /// - The user has not successfully deposited through the deposit() function
-    /// - The user approves again after both users have approved
+    /// - The user approves again after they have already approved
     fn approve() -> bool {
         // require(storage.state == State::Pending, Error::StateNotPending);
-        require(storage.state == 1, Error::StateNotPending);
+        require(storage.state == 1, Error::StateError(StateError::StateNotPending));
 
         let sender: Result<Sender, AuthError> = msg_sender();
-        let address = _get_address(sender.unwrap());
+        let mut user_data = storage.users.get(sender.unwrap());
 
-        _is_authorized(address);
+        require(user_data != storage.sentinel, Error::UnauthorizedUser);
+        require(user_data.deposited, Error::DepositError(DepositError::DepositRequired));
+        require(!user_data.approved, Error::ApproveError(ApproveError::AlreadyApproved));
 
-        if address == storage.user1.address {
-            require(storage.user1.deposited, Error::DepositRequired);
-            storage.user1.approved = true;
-        } else {
-            require(storage.user2.deposited, Error::DepositRequired);
-            storage.user2.approved = true;
-        }
+        user_data.approved = true;
 
-        if storage.user1.approved && storage.user2.approved {
+        storage.users.insert(sender.unwrap(), user_data);
+        storage.approval_count = storage.approval_count + 1;
+
+        log(ApproveEvent {
+            user: sender.unwrap(), count: storage.approval_count
+        });
+
+        if storage.threshold <= storage.approval_count {
             // storage.state = State::Completed;
             storage.state = 2;
+            log(ThresholdReachedEvent {});
         }
 
         true
@@ -160,82 +198,78 @@ impl Escrow for Contract {
     ///
     /// The function will panic when
     /// - The constructor has not been called to initialize
-    /// - The user is not an authorized user that has been set in the constructor
+    /// - The user is not an authorized user
     /// - The user has not successfully deposited through the deposit() function
+    /// - The user attemps to withdraw after they have withdrawn and/or the contract is locked
     fn withdraw() -> bool {
-        // require(storage.state == State::Pending, Error::StateNotPending);
-        require(storage.state == 1 || storage.state == 2, Error::StateNotPending);
+        // require(storage.state == State::Pending, Error::StateError(StateError::StateNotPending));
+        require(storage.state == 1 || storage.state == 2, Error::StateError(StateError::StateNotPending));
 
         let sender: Result<Sender, AuthError> = msg_sender();
-        let address = _get_address(sender.unwrap());
+        let mut user_data = storage.users.get(sender.unwrap());
 
-        _is_authorized(address);
+        require(user_data != storage.sentinel, Error::UnauthorizedUser);
+        require(user_data.deposited, Error::DepositError(DepositError::DepositRequired));
 
-        if address == storage.user1.address {
-            require(storage.user1.deposited, Error::DepositRequired);
+        let deposited_asset = user_data.asset;
+        let required_amount = storage.assets.get(deposited_asset);
 
-            storage.user1.deposited = false;
-            storage.user1.approved = false;
-        } else {
-            require(storage.user2.deposited, Error::DepositRequired);
+        user_data.asset = ~ContractId::from(NATIVE_ASSET_ID);
+        user_data.deposited = false;
+        user_data.approved = false;
 
-            storage.user2.deposited = false;
-            storage.user2.approved = false;
+        storage.users.insert(sender.unwrap(), user_data);
+
+        if storage.state == 1 {
+            storage.approval_count = storage.approval_count - 1;
         }
 
         match sender.unwrap() {
             Sender::Address(address) => {
-                if address.value == storage.user1.address {
-                    transfer_to_output(storage.user1.asset.amount, storage.user1.asset.id, ~Address::from(storage.user1.address));
-                } else {
-                    transfer_to_output(storage.user2.asset.amount, storage.user2.asset.id, ~Address::from(storage.user2.address));
-                }
+                transfer_to_output(storage.assets.get(user_data.asset), user_data.asset, address);
             },
             Sender::ContractId(address) => {
-                if address.value == storage.user1.address {
-                    force_transfer(storage.user1.asset.amount, storage.user1.asset.id, ~ContractId::from(storage.user1.address));
-                } else {
-                    force_transfer(storage.user2.asset.amount, storage.user2.asset.id, ~ContractId::from(storage.user2.address));
-                }
+                force_transfer(storage.assets.get(user_data.asset), user_data.asset, address);
             }
         }
+
+        log(WithdrawEvent {
+            user: sender.unwrap(), asset: deposited_asset, amount: required_amount, approval_count: storage.approval_count
+        });
 
         true
     }
 
-    /// Returns each asset specified in the constructor and the amount that has been deposited by anyone
-    fn get_balance() -> (Asset, Asset) {
-        (Asset {
-            amount: this_balance(storage.user1.asset.id), id: storage.user1.asset.id
-        },
-        Asset {
-            amount: this_balance(storage.user2.asset.id), id: storage.user2.asset.id
-        }
-        )
+    /// Returns a boolean indicating whether the asset has been specified in the constructor, a u64
+    /// indicating the amount of asset currently in the contract
+    fn get_balance(asset: ContractId) -> (bool, u64) {
+        // TODO: once Vec is implemented return a Vec of Asset structs where each asset contains
+        //       the asset ID and the amount of asset in the contract then remove param
+        (storage.assets.get(asset) == 0, this_balance(asset))
     }
 
-    /// Returns data regarding the state of a user i.e. whether they have (deposited, approved)
+    /// Returns data regarding the state of a user i.e. whether they have deposited, approved, their
+    /// chosen asset and whether they are a valid user
     ///
     /// # Panics
     ///
     /// The function will panic when
     /// - The constructor has not been called to initialize
-    /// - The user is not an authorized user that has been set in the constructor
-    fn get_user_data(user: Sender) -> (bool, bool) {
-        // require(storage.state != State::Void, Error::StateNotInitialized);
-        require(storage.state != 0, Error::StateNotInitialized);
+    fn get_user_data(user: Sender) -> User {
+        // require(storage.state != State::Void, Error::StateError(StateError::StateNotInitialized));
+        require(storage.state != 0, Error::StateError(StateError::StateNotInitialized));
 
-        let address = _get_address(user);
-        _is_authorized(address);
+        let user_data = storage.users.get(user);
 
-        if storage.state == 2 {
-            (true, true)
-        } else {
-            if address == storage.user1.address {
-                (storage.user1.deposited, storage.user1.approved)
-            } else {
-                (storage.user2.deposited, storage.user2.approved)
+        if storage.state == 2 && user_data.exists {
+            User {
+                approved: true,
+                asset: user_data.asset,
+                exists: user_data.exists,
+                deposited: true,
             }
+        } else {
+            user_data
         }
     }
 
@@ -244,19 +278,10 @@ impl Escrow for Contract {
     /// # State
     ///
     /// 0 = The constructor has yet to be called to initialize the contract state
-    /// 1 = The constructor has been called to initialize the contract and is pending the deposit & approval from both parties
-    /// 2 = Both parties have deposited and approved and the escrow has completed its purpose
+    /// 1 = The constructor has been called to initialize the contract and is pending the deposit &
+    ///     approval from both parties
+    /// 2 = All parties have deposited and approved and the escrow has completed its purpose
     fn get_state() -> u64 {
         storage.state
     }
-}
-
-fn _get_address(user: Sender) -> b256 {
-    match user {
-        Sender::Address(address) => address.value, Sender::ContractId(address) => address.value, 
-    }
-}
-
-fn _is_authorized(address: b256) {
-    require(address == storage.user1.address || address == storage.user2.address, Error::UnauthorizedUser);
 }
