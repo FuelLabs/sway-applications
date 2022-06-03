@@ -31,7 +31,7 @@ abi NFT {
     fn burn(token_id: u64) -> bool ;
     fn constructor(owner: Address, access_control: bool, token_supply: u64, token_price: u64, asset: ContractId) -> bool;
     fn get_approved(token_id: u64) -> Address;
-    // fn get_tokens(address: Address) -> u64;
+    fn get_tokens(address: Address) -> u64;
     fn get_total_supply() -> u64;
     fn is_approved_for_all(owner: Address, operator: Address) -> bool;
     fn mint(to: Address, amount: u64) -> bool ;
@@ -74,9 +74,7 @@ storage {
     asset: ContractId,
     meta_data: StorageMap<u64, MetaData>,
     operator_approval: StorageMap<b256, bool>,
-    // TODO: This will need to support returning multiple token ownerships
-    //       As of v0.14 this causes the compiler to panic
-    // owners: StorageMap<Address, u64>,
+    owners: StorageMap<Address, u64>,
     state: u64,
     token_count: u64,
     token_price: u64,
@@ -138,7 +136,7 @@ impl NFT for Contract {
             meta_data.approved = to;
             storage.meta_data.insert(token_id, meta_data);
 
-            log(ApprovalEvent{owner: address, approved: to, token_id: token_id});
+            log(ApprovalEvent{owner: address, approved: to, token_id});
         } else {
             revert(0);
         };
@@ -182,9 +180,11 @@ impl NFT for Contract {
             let balance = storage.balances.get(address);
             storage.balances.insert(address, balance - 1);
 
-            // storage.owners.insert(address, NATIVE_ASSET_ID);
+            // NOTE: Until we have a vec get_tokens will now return not
+            //       owning anything, even if mutliple tokens are owned
+            storage.owners.insert(address, 0);
 
-            log(BurnEvent{owner: address, token_id: token_id});
+            log(BurnEvent{owner: address, token_id});
         } else {
             revert(0);
         };
@@ -234,10 +234,10 @@ impl NFT for Contract {
     ///
     /// The function will panic when:
     /// - The NFT contract has not been intialized
-    // fn get_tokens(address: Address) -> b256 {
-    //     require(storage.state != 0, Error::NFTNotInitalized);
-    //     storage.owners.get(address)
-    // }
+    fn get_tokens(address: Address) -> u64 {
+        require(storage.state != 0, Error::NFTNotInitalized);
+        storage.owners.get(address)
+    }
 
     /// Returns the total supply for the NFT contract
     ///
@@ -292,7 +292,7 @@ impl NFT for Contract {
 
         let mut i = 0;
         while i < amount {
-            let token_id: u64 = storage.token_count;
+            let token_id: u64 = storage.token_count + 1;
 
             let meta_data: MetaData = MetaData {
                 owner: to, approved: ~Address::from(NATIVE_ASSET_ID)
@@ -302,12 +302,12 @@ impl NFT for Contract {
             let mut balance = storage.balances.get(to);
             storage.balances.insert(to, balance + 1);
 
-            // storage.owners.insert(to, token_id);
+            storage.owners.insert(to, token_id);
 
             storage.token_count = storage.token_count + 1;
             i = i + 1;
 
-            log(MintEvent{owner: to, token_id: token_id});
+            log(MintEvent{owner: to, token_id});
         }
 
         true
@@ -348,7 +348,7 @@ impl NFT for Contract {
   
             storage.operator_approval.insert(hash, true);
 
-            log(OperatorEvent{owner: owner, operator: operator});
+            log(OperatorEvent{owner, operator});
         } else {
             revert(0);
         };
@@ -391,10 +391,10 @@ impl NFT for Contract {
             let mut balance_to = storage.balances.get(to);
             storage.balances.insert(to, balance_to + 1);
 
-            // storage.owners.insert(from, NATIVE_ASSET_ID);
-            // storage.owners.insert(to, token_id);
+            storage.owners.insert(from, 0);
+            storage.owners.insert(to, token_id);
 
-            log(TransferEvent{from: from, to: to, token_id: token_id});
+            log(TransferEvent{from, to, token_id});
         } else {
             revert(0);
         };
