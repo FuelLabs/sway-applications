@@ -2,7 +2,7 @@
 
 <div align="center">
   <a href="https://github.com/FuelLabs/sway-applications">
-    <img src="../logo.png" alt="Logo" width="700" height="170">
+    <img src="../../logo.png" alt="Logo" width="700" height="170">
   </a>
 
   <h3 align="center">React Counter</h3>
@@ -10,7 +10,14 @@
   <p align="center">
     Sway Counter Smart Contract with React and Fuel v2 TypeScript SDK
     <br />
-    <a target="_blank" href="https://fuellabs.github.io/fuels-ts/"><strong>Explore the Fuel TypeScript SDK docs »</strong></a>
+    <a  href="https://fuellabs.github.io/fuels-ts/"><strong>Explore the Fuel TypeScript SDK docs »</strong></a>
+    <br />
+    Other Example Apps:
+    <br />
+    <br />
+    <a href="https://github.com/FuelLabs/swayswap"><strong>⚡️ SwaySwap ⚡️</strong></a>
+    <br />
+    <a href="https://github.com/FuelLabs/block-explorer-v2"><strong>Block explorer frontend for Fuel</strong></a>
   </p>
 </div>
 
@@ -68,7 +75,7 @@ git clone https://github.com/FuelLabs/sway-applications.git
 2. Open this demo application
 
 ```sh
-cd react-sway-counter
+cd tutorials/counter
 ```
 
 3. Install NPM packages
