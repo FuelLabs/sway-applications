@@ -1,5 +1,7 @@
 contract;
 
+dep events;
+
 use std::{
     address::Address,
     assert::require,
@@ -8,9 +10,18 @@ use std::{
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount, this_balance},
     contract_id::ContractId,
     hash::sha256,
+    logging::log,
     result::*,
     revert::revert,
     storage::StorageMap,
+};
+
+use events::{
+    ApprovalEvent,
+    BurnEvent,
+    MintEvent,
+    OperatorEvent,
+    TransferEvent
 };
 
 abi NFT {
@@ -126,6 +137,8 @@ impl NFT for Contract {
 
             meta_data.approved = to;
             storage.meta_data.insert(token_id, meta_data);
+
+            log(ApprovalEvent{owner: address, approved: to, token_id: token_id});
         } else {
             revert(0);
         };
@@ -170,6 +183,8 @@ impl NFT for Contract {
             storage.balances.insert(address, balance - 1);
 
             // storage.owners.insert(address, NATIVE_ASSET_ID);
+
+            log(BurnEvent{owner: address, token_id: token_id});
         } else {
             revert(0);
         };
@@ -291,6 +306,8 @@ impl NFT for Contract {
 
             storage.token_count = storage.token_count + 1;
             i = i + 1;
+
+            log(MintEvent{owner: to, token_id: token_id});
         }
 
         true
@@ -330,6 +347,8 @@ impl NFT for Contract {
             require(owner == address, Error::SenderNotOwner);
   
             storage.operator_approval.insert(hash, true);
+
+            log(OperatorEvent{owner: owner, operator: operator});
         } else {
             revert(0);
         };
@@ -374,6 +393,8 @@ impl NFT for Contract {
 
             // storage.owners.insert(from, NATIVE_ASSET_ID);
             // storage.owners.insert(to, token_id);
+
+            log(TransferEvent{from: from, to: to, token_id: token_id});
         } else {
             revert(0);
         };
