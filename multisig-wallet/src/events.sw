@@ -8,7 +8,7 @@ use std::{
 pub struct ExecutedEvent {
     to: Sender, 
     value: u64, 
-    data: b256,
+    data: b256, // TODO: change to vector when implemented
     nonce: u64
 }
 

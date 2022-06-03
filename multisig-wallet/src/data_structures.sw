@@ -16,10 +16,10 @@ pub struct Tx {
     /// The recipient (output / contract) regarding the Tx details
     destination: Sender,
 
-    /// 
+    /// Amount of asset
     value: u64,
 
-    /// 
+    /// Payload sent to destination  // TODO: change to vec when implemented
     data: b256,
 
     /// Value used to prevent double spending

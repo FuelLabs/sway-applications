@@ -18,4 +18,5 @@ abi MultiSignatureWallet {
     fn is_owner(owner: Address) -> bool;
     fn balance(asset_id: ContractId) -> u64;
     fn get_transaction_hash(to: Sender, value: u64, data: b256, nonce: u64) -> b256;
+    fn nonce() -> u64;
 }

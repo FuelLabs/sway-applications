@@ -1,6 +1,8 @@
 contract;
 
-// TODO: when vectors are implemented change all uses of arrays to vec
+// TODO: when vectors are implemented
+//      - change all uses of arrays to vec
+//      - change the "data" in the Tx hashing from b256 to vec
 
 // Our library dependencies
 dep abi;
@@ -145,8 +147,13 @@ impl MultiSignatureWallet for Contract {
     /// Takes in transaction data and hashes it into a unique tx hash
     /// Used for verification of message
     fn get_transaction_hash(to: Sender, value: u64, data: b256, nonce: u64) -> b256 {
-        // TODO: data > b256?
         _get_transaction_hash(to, value, data, nonce, contract_id())
+    }
+
+    /// Returns the current nonce in the contract
+    /// Used to check the nonce and create a Tx via get_transaction_hash()
+    fn nonce() -> u64 {
+        storage.nonce
     }
 }
 
