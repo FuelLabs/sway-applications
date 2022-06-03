@@ -16,7 +16,7 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "src": ["src"]
+      "~/*": ["./src/*"]
     },
     "sourceMap": true,
     "outDir": "dist",

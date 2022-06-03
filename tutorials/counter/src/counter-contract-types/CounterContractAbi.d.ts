@@ -10,83 +10,47 @@ import type {
   Overrides,
   BigNumberish,
   BytesLike,
-} from "fuels";
+} from 'fuels';
 
 interface CounterContractAbiInterface extends Interface {
   submit: {
-    init_counter: FunctionFragment;
     increment_counter: FunctionFragment;
     decrement_counter: FunctionFragment;
     get_counter: FunctionFragment;
   };
   submitResult: {
-    init_counter: FunctionFragment;
     increment_counter: FunctionFragment;
     decrement_counter: FunctionFragment;
     get_counter: FunctionFragment;
   };
   dryRun: {
-    init_counter: FunctionFragment;
     increment_counter: FunctionFragment;
     decrement_counter: FunctionFragment;
     get_counter: FunctionFragment;
   };
   dryRunResult: {
-    init_counter: FunctionFragment;
     increment_counter: FunctionFragment;
     decrement_counter: FunctionFragment;
     get_counter: FunctionFragment;
   };
   prepareCall: {
-    init_counter: FunctionFragment;
     increment_counter: FunctionFragment;
     decrement_counter: FunctionFragment;
     get_counter: FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "init_counter",
-    values: [BigNumberish]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "increment_counter",
-    values: [BigNumberish]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "decrement_counter",
-    values: [BigNumberish]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "get_counter",
-    values?: undefined
-  ): Uint8Array;
+  encodeFunctionData(functionFragment: 'increment_counter', values: [BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'decrement_counter', values: [BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'get_counter', values?: undefined): Uint8Array;
 
-  decodeFunctionData(
-    functionFragment: "init_counter",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "increment_counter",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "decrement_counter",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "get_counter",
-    data: BytesLike
-  ): DecodedValue;
+  decodeFunctionData(functionFragment: 'increment_counter', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'decrement_counter', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'get_counter', data: BytesLike): DecodedValue;
 }
 
 export class CounterContractAbi extends Contract {
   interface: CounterContractAbiInterface;
   submit: {
-    init_counter(
-      value: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<bigint>;
-
     increment_counter(
       value: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -97,16 +61,9 @@ export class CounterContractAbi extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    get_counter(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<bigint>;
+    get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
   };
   submitResult: {
-    init_counter(
-      value: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<bigint>;
-
     increment_counter(
       value: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -117,16 +74,9 @@ export class CounterContractAbi extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    get_counter(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<bigint>;
+    get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
   };
   dryRun: {
-    init_counter(
-      value: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<bigint>;
-
     increment_counter(
       value: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -137,16 +87,9 @@ export class CounterContractAbi extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    get_counter(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<bigint>;
+    get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
   };
   dryRunResult: {
-    init_counter(
-      value: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<bigint>;
-
     increment_counter(
       value: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -157,16 +100,9 @@ export class CounterContractAbi extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    get_counter(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<bigint>;
+    get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
   };
   prepareCall: {
-    init_counter(
-      value: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<bigint>;
-
     increment_counter(
       value: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -177,15 +113,8 @@ export class CounterContractAbi extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    get_counter(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<bigint>;
+    get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
   };
-
-  init_counter(
-    value: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<bigint>;
 
   increment_counter(
     value: BigNumberish,
@@ -197,7 +126,5 @@ export class CounterContractAbi extends Contract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<bigint>;
 
-  get_counter(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<bigint>;
+  get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
 }
