@@ -153,7 +153,7 @@ This will output a new `CONTRACT_ID` to save inside your `.env`. With that, your
 
 #### 5. Using your Sway contract in a React project
 
-Your generated Sway TypeScript bindings should be available inside `src/counter-contract-types`, which have a helpful Contract Factory. This is the most intuitive way to utilize a contract in a TypeScript project.
+Your generated Sway TypeScript bindings should be available inside `src/counter-contract-types`, which have a Contract Factory. This is the most intuitive way to utilize a contract in a TypeScript project.
 
 Import the Fuels Wallet class and contract factory:
 
@@ -162,7 +162,7 @@ import { Wallet } from "fuels";
 import { CounterContractAbi__factory as Factory } from "./counter-contract-types";
 ```
 
-Create a new Wallet instance using your generated Wallet Private Key, connecting to your local Fuel Node:
+Create a new Wallet instance using your Wallet Private Key, connecting to your local Fuel Node:
 
 ```javascript
 const wallet = new Wallet(
@@ -171,13 +171,13 @@ const wallet = new Wallet(
 );
 ```
 
-And finally, connect to your contract via the Factory, to obtain an instance of the Contract that you can then interact with using the created methods:
+Finally, connect to your contract via the Factory, to obtain an instance of the Contract that you can then interact with using the created methods:
 
 ```javascript
 const contractInstance = Factory.connect(process.env.CONTRACT_ID, wallet);
 ```
 
-A snippet of the Sway program methods for convenience:
+The contract instance has access to all of Smart Contracts methods created earlier. A snippet of the Sway program methods for convenience:
 
 ```rust
 fn increment_counter(value: u64) -> u64;
@@ -193,7 +193,7 @@ let newValue = await contractInstance.submit.decrement_counter();
 let newValue = await contractInstance.submit.get_counter();
 ```
 
-In a React app, we can leverage this data access just like any other function:
+In a React app, we can leverage this method access just like any other function:
 
 ```javascript
 const App = () => {
