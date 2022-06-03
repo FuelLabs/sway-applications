@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./.docs/multi-signature-logo.png.png" height="120">
+    <img src="./.docs/multi-signature-logo.png" height="120">
 </p>
 
 ## Overview
