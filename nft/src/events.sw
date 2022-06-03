@@ -1,30 +1,32 @@
 library events;
 
-use std::address::Address;
+dep entity;
+
+use entity::Entity;
 
 pub struct ApprovalEvent {
-    owner: Address,
-    approved: Address,
+    owner: Entity,
+    approved: Entity,
     token_id: u64
 }
 
 pub struct BurnEvent {
-    owner: Address,
+    owner: Entity,
     token_id: u64
 }
 
 pub struct MintEvent {
-    owner: Address,
+    owner: Entity,
     token_id: u64
 }
 
 pub struct OperatorEvent {
-    owner: Address,
-    operator: Address
+    owner: Entity,
+    operator: Entity
 }
 
 pub struct TransferEvent {
-    from: Address,
-    to: Address,
+    from: Entity,
+    to: Entity,
     token_id: u64
 }
