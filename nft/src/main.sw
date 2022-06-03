@@ -5,11 +5,12 @@ dep events;
 use std::{
     address::Address,
     assert::require,
-    chain::auth::{AuthError, Sender, msg_sender},
+    chain::auth::{AuthError, msg_sender},
     constants::NATIVE_ASSET_ID,
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount, this_balance},
     contract_id::ContractId,
     hash::sha256,
+    identity::Identity,
     logging::log,
     result::*,
     revert::revert,
@@ -99,14 +100,18 @@ impl NFT for Contract {
         require(minter.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
         require(storage.allowed_minters.get(minter) == false, Error::AddressAlreadyGivenAccess);
         
-        let sender: Result<Sender, AuthError> = msg_sender();
-        if let Sender::Address(address) = sender.unwrap() {
-            require(storage.access_control_address == address, Error::SenderCannotSetAccessControl);
-            
-            storage.allowed_minters.insert(minter, true);
-        } else {
-            revert(0);
-        }
+        let sender: Result<Identity, AuthError> = msg_sender();
+        let sender: Address = match sender.unwrap() {
+            Identity::Address(address) => {
+                address
+            },
+            _ => {
+                revert(0);
+            },
+        };
+        require(storage.access_control_address == sender, Error::SenderCannotSetAccessControl);
+
+        storage.allowed_minters.insert(minter, true);
 
         true
     }
@@ -119,28 +124,31 @@ impl NFT for Contract {
     /// - The NFT contract has not been initalized
     /// - The address provided is the 0 address
     /// - The address has already been approved
-    /// - The sender is not the owner
     /// - The appover is the owner
+    /// - The sender is not the owner
     fn approve(to: Address, token_id: u64) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
         require(to.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
 
         let mut meta_data = storage.meta_data.get(token_id);
         require(meta_data.approved != to, Error::AddressAlreadyGivenApproval);
+        require(meta_data.owner != to, Error::ApproverCannotBeOwner);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
-        if let Sender::Address(address) = sender.unwrap() {
-            require(meta_data.owner == address, Error::SenderNotOwner);
-            require(meta_data.owner != to, Error::ApproverCannotBeOwner);
-
-            meta_data.approved = to;
-            storage.meta_data.insert(token_id, meta_data);
-
-            log(ApprovalEvent{owner: address, approved: to, token_id});
-        } else {
-            revert(0);
+        let sender: Result<Identity, AuthError> = msg_sender();
+        let sender: Address = match sender.unwrap() {
+            Identity::Address(address) => {
+                address
+            },
+            _ => {
+                revert(0);
+            },
         };
+        require(meta_data.owner == sender, Error::SenderNotOwner);
 
+        meta_data.approved = to;
+        storage.meta_data.insert(token_id, meta_data);
+
+        log(ApprovalEvent{owner: sender, approved: to, token_id});
         true
     }
 
@@ -169,25 +177,29 @@ impl NFT for Contract {
         let mut meta_data: MetaData = storage.meta_data.get(token_id);
         require(meta_data.owner.value != NATIVE_ASSET_ID, Error::TokenDoesNotExist);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
-        if let Sender::Address(address) = sender.unwrap() {
-            require(meta_data.owner == address, Error::SenderNotOwner);
-
-            meta_data.owner = ~Address::from(NATIVE_ASSET_ID);
-            meta_data.approved = ~Address::from(NATIVE_ASSET_ID);
-            storage.meta_data.insert(token_id, meta_data);
-
-            let balance = storage.balances.get(address);
-            storage.balances.insert(address, balance - 1);
-
-            // NOTE: Until we have a vec get_tokens will now return not
-            //       owning anything, even if mutliple tokens are owned
-            storage.owners.insert(address, 0);
-
-            log(BurnEvent{owner: address, token_id});
-        } else {
-            revert(0);
+        let sender: Result<Identity, AuthError> = msg_sender();
+        let sender: Address = match sender.unwrap() {
+            Identity::Address(address) => {
+                address
+            },
+            _ => {
+                revert(0);
+            },
         };
+        require(meta_data.owner == sender, Error::SenderNotOwner);
+
+        meta_data.owner = ~Address::from(NATIVE_ASSET_ID);
+        meta_data.approved = ~Address::from(NATIVE_ASSET_ID);
+        storage.meta_data.insert(token_id, meta_data);
+
+        let balance = storage.balances.get(sender);
+        storage.balances.insert(sender, balance - 1);
+
+        // NOTE: Until we have a vec get_tokens will now return not
+        //       owning anything, even if mutliple tokens are owned
+        storage.owners.insert(sender, 0);
+
+        log(BurnEvent{owner: sender, token_id});
 
         true
     }
@@ -279,12 +291,21 @@ impl NFT for Contract {
         require(amount != 0, Error::MintAmountCannotBeZero);
         require(storage.token_supply >= (storage.token_count + amount), Error::NotEnoughTokensToMint);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
-        if let Sender::Address(address) = sender.unwrap() {
-            require(!storage.access_control || (storage.access_control && storage.allowed_minters.get(address)), Error::SenderDoesNotHaveAccessControl);
-        } else {
-            revert(0);
-        }
+        let sender: Result<Identity, AuthError> = msg_sender();
+        let sender: Address = match sender.unwrap() {
+            Identity::Address(address) => {
+                address
+            },
+            _ => {
+                revert(0);
+            },
+        };
+
+        require(
+            !storage.access_control 
+            || (storage.access_control && storage.allowed_minters.get(sender)), 
+            Error::SenderDoesNotHaveAccessControl
+            );
 
         let cost: u64 = storage.token_price * amount;
         require(msg_asset_id() == storage.asset, Error::IncorrectAssetId);
@@ -342,17 +363,20 @@ impl NFT for Contract {
         let hash: b256 = sha256(owner.value, operator.value);
         require(!storage.operator_approval.get(hash), Error::AddressAlreadyGivenApproval);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
-        if let Sender::Address(address) = sender.unwrap() {
-            require(owner == address, Error::SenderNotOwner);
-  
-            storage.operator_approval.insert(hash, true);
-
-            log(OperatorEvent{owner, operator});
-        } else {
-            revert(0);
+        let sender: Result<Identity, AuthError> = msg_sender();
+        let sender: Address = match sender.unwrap() {
+            Identity::Address(address) => {
+                address
+            },
+            _ => {
+                revert(0);
+            },
         };
 
+        require(owner == sender, Error::SenderNotOwner);
+
+        storage.operator_approval.insert(hash, true);
+        log(OperatorEvent{owner, operator});
         true
     }
 
@@ -370,34 +394,40 @@ impl NFT for Contract {
         require(storage.state != 0, Error::NFTNotInitalized);
         require(to.value != NATIVE_ASSET_ID, Error::InputAddressCannotBeZero);
         
-        let sender: Result<Sender, AuthError> = msg_sender();
-        if let Sender::Address(address) = sender.unwrap() {
-            let mut meta_data: MetaData = storage.meta_data.get(token_id);
-            let hash: b256 = sha256(from.value, address.value);
+        let mut meta_data: MetaData = storage.meta_data.get(token_id);
+        let hash: b256 = sha256(from.value, address.value);
 
-            require(
-                (address == meta_data.owner 
-                || address == meta_data.approved 
-                || storage.operator_approval.get(hash)
-                ), Error::SenderNotOwnerOrApproved);
-
-            meta_data.owner = to;
-            meta_data.approved = ~Address::from(NATIVE_ASSET_ID);
-            storage.meta_data.insert(token_id, meta_data);
-
-            let mut balance_from = storage.balances.get(from);
-            storage.balances.insert(from, balance_from - 1);
-
-            let mut balance_to = storage.balances.get(to);
-            storage.balances.insert(to, balance_to + 1);
-
-            storage.owners.insert(from, 0);
-            storage.owners.insert(to, token_id);
-
-            log(TransferEvent{from, to, token_id});
-        } else {
-            revert(0);
+        let sender: Result<Identity, AuthError> = msg_sender();
+        let sender: Address = match sender.unwrap() {
+            Identity::Address(address) => {
+                    address
+            },
+            _ => {
+                revert(0);
+            },
         };
+
+        require(
+            (sender == meta_data.owner 
+            || sender == meta_data.approved 
+            || storage.operator_approval.get(hash)), 
+            Error::SenderNotOwnerOrApproved
+            );
+
+        meta_data.owner = to;
+        meta_data.approved = ~Address::from(NATIVE_ASSET_ID);
+        storage.meta_data.insert(token_id, meta_data);
+
+        let mut balance_from = storage.balances.get(from);
+        storage.balances.insert(from, balance_from - 1);
+
+        let mut balance_to = storage.balances.get(to);
+        storage.balances.insert(to, balance_to + 1);
+
+        storage.owners.insert(from, 0);
+        storage.owners.insert(to, token_id);
+
+        log(TransferEvent{from, to, token_id});
 
         true
     }
