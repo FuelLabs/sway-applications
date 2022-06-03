@@ -102,40 +102,12 @@ impl NFT for Contract {
         require(storage.state != 0, Error::NFTNotInitalized);
         require(storage.access_control, Error::AccessControlNotSet);
 
-        match minter.identity {
-            1 => {
-                require(minter.address != ~Address::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            2 => {
-                require(minter.contract_id != ~ContractId::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            _ => {
-                revert(0);
-            },
-        };
+        _require_entity_is_valid(minter);
 
         require(storage.allowed_minters.get(minter) == false, 
             Error::AddressAlreadyGivenAccess);
         
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Entity = match sender.unwrap() {
-            Identity::Address(address) => {
-                Entity {
-                    address, 
-                    contract_id: ~ContractId::from(NATIVE_ASSET_ID), 
-                    identity: 1
-                }
-            },
-            Identity::ContractId(contractId) => {
-                Entity {
-                    address: ~Address::from(NATIVE_ASSET_ID), 
-                    contract_id: contractId, 
-                    identity: 2
-                }
-            },
-        };
+        let sender: Entity = _get_sender_entity();
         require(storage.access_control_address == sender, Error::SenderCannotSetAccessControl);
 
         storage.allowed_minters.insert(minter, true);
@@ -156,41 +128,13 @@ impl NFT for Contract {
     fn approve(to: Entity, token_id: u64) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
 
-        match to.identity {
-            1 => {
-                require(to.address != ~Address::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            2 => {
-                require(to.contract_id != ~ContractId::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            _ => {
-                revert(0);
-            },
-        };
+        _require_entity_is_valid(to);
 
         let mut meta_data = storage.meta_data.get(token_id);
         require(meta_data.approved != to, Error::AddressAlreadyGivenApproval);
         require(meta_data.owner != to, Error::ApproverCannotBeOwner);
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Entity = match sender.unwrap() {
-            Identity::Address(address) => {
-                Entity {
-                    address, 
-                    contract_id: ~ContractId::from(NATIVE_ASSET_ID), 
-                    identity: 1
-                }
-            },
-            Identity::ContractId(contractId) => {
-                Entity {
-                    address: ~Address::from(NATIVE_ASSET_ID), 
-                    contract_id: contractId, 
-                    identity: 2
-                }
-            },
-        };
+        let sender: Entity = _get_sender_entity();
         require(meta_data.owner == sender, Error::SenderNotOwner);
 
         meta_data.approved = to;
@@ -225,23 +169,7 @@ impl NFT for Contract {
         let mut meta_data: MetaData = storage.meta_data.get(token_id);
         require(meta_data.owner.identity != 0, Error::TokenDoesNotExist);
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Entity = match sender.unwrap() {
-            Identity::Address(address) => {
-                Entity {
-                    address,
-                    contract_id: ~ContractId::from(NATIVE_ASSET_ID),
-                    identity: 1
-                }
-            },
-            Identity::ContractId(contractId) => {
-                Entity {
-                    address: ~Address::from(NATIVE_ASSET_ID),
-                    contract_id: contractId,
-                    identity: 2
-                }
-            },
-        };
+        let sender: Entity = _get_sender_entity();
         require(meta_data.owner == sender, Error::SenderNotOwner);
 
         let empty_entity: Entity = Entity {
@@ -278,19 +206,7 @@ impl NFT for Contract {
         require(storage.state == 0, Error::CannotReinitialize);
         require(token_supply != 0, Error::TokenSupplyCannotBeZero);
 
-        match owner.identity {
-            1 => {
-                require(owner.address != ~Address::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            2 => {
-                require(owner.contract_id != ~ContractId::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            _ => {
-                revert(0);
-            },
-        };
+        _require_entity_is_valid(owner);
 
         storage.access_control_address = owner;
         storage.access_control = access_control;
@@ -346,38 +262,7 @@ impl NFT for Contract {
     fn is_approved_for_all(owner: Entity, operator: Entity) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
 
-        let hash: b256 = match owner.identity {
-            1 => {
-                match operator.identity {
-                    1 => {
-                        sha256(owner.address.value, operator.address.value)
-                    },
-                    2 => {
-                        sha256(owner.address.value, operator.contract_id.value)
-                    },
-                    _ => {
-                        revert(0);
-                    },
-                }
-            },
-            2 => {
-                match operator.identity {
-                    1 => {
-                        sha256(owner.contract_id.value, operator.address.value)
-                    },
-                    2 => {
-                        sha256(owner.contract_id.value, operator.contract_id.value)
-                    },
-                    _ => {
-                        revert(0);
-                    },
-                }
-            },
-            _ => {
-                revert(0);
-            },
-        };
-
+        let hash: b256 = _get_owner_operator_hash(owner, operator);
         storage.operator_approval.get(hash)
     }
 
@@ -398,37 +283,9 @@ impl NFT for Contract {
         require(amount != 0, Error::MintAmountCannotBeZero);
         require(storage.token_supply >= (storage.token_count + amount), Error::NotEnoughTokensToMint);
 
-        match to.identity {
-            1 => {
-                require(to.address != ~Address::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            2 => {
-                require(to.contract_id != ~ContractId::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            _ => {
-                revert(0);
-            },
-        };
+        _require_entity_is_valid(to);
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Entity = match sender.unwrap() {
-            Identity::Address(address) => {
-                Entity {
-                    address,
-                    contract_id: ~ContractId::from(NATIVE_ASSET_ID),
-                    identity: 1
-                }
-            },
-            Identity::ContractId(contractId) => {
-                Entity {
-                    address: ~Address::from(NATIVE_ASSET_ID),
-                    contract_id: contractId,
-                    identity: 2
-                }
-            },
-        };
+        let sender: Entity = _get_sender_entity();
 
         require(
             !storage.access_control 
@@ -491,71 +348,13 @@ impl NFT for Contract {
     /// - The sender is not the owner
     fn set_approval_for_all(owner: Entity, operator: Entity) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
+        
+        _require_entity_is_valid(operator);
 
-        match operator.identity {
-            1 => {
-                require(operator.address != ~Address::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            2 => {
-                require(operator.contract_id != ~ContractId::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            _ => {
-                revert(0);
-            },
-        };
-
-        let hash: b256 = match owner.identity {
-            1 => {
-                match operator.identity {
-                    1 => {
-                        sha256(owner.address.value, operator.address.value)
-                    },
-                    2 => {
-                        sha256(owner.address.value, operator.contract_id.value)
-                    },
-                    _ => {
-                        revert(0);
-                    },
-                }
-            },
-            2 => {
-                match operator.identity {
-                    1 => {
-                        sha256(owner.contract_id.value, operator.address.value)
-                    },
-                    2 => {
-                        sha256(owner.contract_id.value, operator.contract_id.value)
-                    },
-                    _ => {
-                        revert(0);
-                    },
-                }
-            },
-            _ => {
-                revert(0);
-            },
-        };
+        let hash: b256 = _get_owner_operator_hash(owner, operator);
         require(!storage.operator_approval.get(hash), Error::AddressAlreadyGivenApproval);
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Entity = match sender.unwrap() {
-            Identity::Address(address) => {
-                Entity {
-                    address,
-                    contract_id: ~ContractId::from(NATIVE_ASSET_ID),
-                    identity: 1
-                }
-            },
-            Identity::ContractId(contractId) => {
-                Entity {
-                    address: ~Address::from(NATIVE_ASSET_ID),
-                    contract_id: contractId,
-                    identity: 2
-                }
-            },
-        };
+        let sender: Entity = _get_sender_entity();
 
         require(owner == sender, Error::SenderNotOwner);
 
@@ -577,70 +376,12 @@ impl NFT for Contract {
     fn transfer_from(from: Entity, to: Entity, token_id: u64) -> bool {
         require(storage.state != 0, Error::NFTNotInitalized);
         
-        match to.identity {
-            1 => {
-                require(to.address != ~Address::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            2 => {
-                require(to.contract_id != ~ContractId::from(NATIVE_ASSET_ID), 
-                    Error::InputAddressCannotBeZero);
-            },
-            _ => {
-                revert(0);
-            },
-        };
+        _require_entity_is_valid(to);
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Entity = match sender.unwrap() {
-            Identity::Address(address) => {
-                Entity {
-                    address,
-                    contract_id: ~ContractId::from(NATIVE_ASSET_ID),
-                    identity: 1
-                }
-            },
-            Identity::ContractId(contractId) => {
-                Entity {
-                    address: ~Address::from(NATIVE_ASSET_ID),
-                    contract_id: contractId,
-                    identity: 2
-                }
-            },
-        };
+        let sender: Entity = _get_sender_entity();
 
         let mut meta_data: MetaData = storage.meta_data.get(token_id);
-        let hash: b256 = match from.identity {
-            1 => {
-                match sender.identity {
-                    1 => {
-                        sha256(from.address.value, sender.address.value)
-                    },
-                    2 => {
-                        sha256(from.address.value, sender.contract_id.value)
-                    },
-                    _ => {
-                        revert(0);
-                    },
-                }
-            },
-            2 => {
-                match sender.identity {
-                    1 => {
-                        sha256(from.contract_id.value, sender.address.value)
-                    },
-                    2 => {
-                        sha256(from.contract_id.value, sender.contract_id.value)
-                    },
-                    _ => {
-                        revert(0);
-                    },
-                }
-            },
-            _ => {
-                revert(0);
-            },
-        };
+        let hash: b256 = _get_owner_operator_hash(from, sender);
 
         require(
             (sender == meta_data.owner 
@@ -672,4 +413,77 @@ impl NFT for Contract {
 
         true
     }
+}
+
+// This function returns the hash value of the two given entity's b256 values
+fn _get_owner_operator_hash(owner: Entity, operator: Entity) -> b256 {
+    match owner.identity {
+        1 => {
+            match operator.identity {
+                1 => {
+                    sha256(owner.address.value, operator.address.value)
+                },
+                2 => {
+                    sha256(owner.address.value, operator.contract_id.value)
+                },
+                _ => {
+                    revert(0);
+                },
+            }
+        },
+        2 => {
+            match operator.identity {
+                1 => {
+                    sha256(owner.contract_id.value, operator.address.value)
+                },
+                2 => {
+                    sha256(owner.contract_id.value, operator.contract_id.value)
+                },
+                _ => {
+                    revert(0);
+                },
+            }
+        },
+        _ => {
+            revert(0);
+        },
+    }
+}
+
+// This function will returns the entity of the caller of the contract
+fn _get_sender_entity() -> Entity {
+    let sender: Result<Identity, AuthError> = msg_sender();
+    match sender.unwrap() {
+        Identity::Address(address) => {
+            Entity {
+                address,
+                contract_id: ~ContractId::from(NATIVE_ASSET_ID),
+                identity: 1
+            }
+        },
+        Identity::ContractId(contractId) => {
+            Entity {
+                address: ~Address::from(NATIVE_ASSET_ID),
+                contract_id: contractId,
+                identity: 2
+            }
+        },
+    }
+}
+
+// This function will panic if the given entity is not valid
+fn _require_entity_is_valid(entity: Entity) {
+    match entity.identity {
+        1 => {
+            require(entity.address != ~Address::from(NATIVE_ASSET_ID), 
+                Error::InputAddressCannotBeZero);
+        },
+        2 => {
+            require(entity.contract_id != ~ContractId::from(NATIVE_ASSET_ID), 
+                Error::InputAddressCannotBeZero);
+        },
+        _ => {
+            revert(0);
+        },
+    };
 }
