@@ -27,7 +27,7 @@
 - [Contributing](#contributing)
 - [License](#license)
 
-## About The Project
+## About
 
 ![Demo Screen Shot](img/preview.png)
 
@@ -57,7 +57,7 @@ Your machine will need to have a few things installed in order to run a local fu
 
 ### Installation
 
-0. Before beginning, verify that you have completed all [Prerequisites](#prerequisites) installations.
+0. Before beginning, verify that you have completed all [Prerequisite](#prerequisites) installations.
 
 1. Clone the repo
 
@@ -79,19 +79,19 @@ npm i
 
 ### Walkthrough
 
-This application demo consists of four main milestones on your journey to writing your first Sway + React app:
+This application tutorial consists of five main milestones on your journey to writing your first Sway + React app:
 
-1. Creating a deployable A Sway program - in this example we will create a [Smart Contract](https://fuellabs.github.io/sway/latest/sway-program-types/smart_contracts.html)
+1. Creating a deployable Sway program - in this example we will create a [Smart Contract](https://fuellabs.github.io/sway/latest/sway-program-types/smart_contracts.html)
 2. Compiling your Sway contract
 3. Generating TypeScript for Sway contract
 4. Deploying your Sway contract
 5. Using your Sway contract in a React project
 
-#### 1. Creating a deployable A Sway program
+#### 1. Creating a deployable Sway program
 
 Our demo application uses a counter contract with methods for interacting with a stored counter, based primarily off of this [example Sway counter program](https://fuellabs.github.io/sway/latest/examples/counter.html).
 
-In this demo, our Sway program has these four methods, [see main.sw](src/main.sw):
+In this demo, our Sway program has these methods, [see main.sw](src/main.sw):
 
 ```rust
 fn increment_counter(value: u64) -> u64;
@@ -119,35 +119,37 @@ For convenience this npm script will run `forc build` from the previous step and
 npm run build-contract
 ```
 
+The generated TypeScript will be available in `src/counter-contract-types`.
+
 #### 4. Deploying your Sway contract
 
-Your compiled Sway contract is now ready to be sent into a running Fuel Node!
+Your compiled Sway contract is now ready to be sent into a running Fuel node!
 
 When running `fuel-core` locally, it is useful to have it pre-configured using a chain config, one such example can be found on the [fuels-ts repo](https://github.com/FuelLabs/fuels-ts/blob/master/services/fuel-core/chainConfig.json), which includes a `wallet.privateKey` that you can utilize for a `GENESIS_SECRET` in your local `.env` file.
 
-Create and update `.env` file with relevant values, see [.env.example](.env.example)
+Create and update `.env` file with relevant values, (see [.env.example](.env.example)):
 
 ```
-GENESIS_SECRET="<YOUR SECRET>"
+GENESIS_SECRET="<YOUR SECRET>" # for easiest route, should match whats in your chain config
 PRIVATE_KEY="<YOUR WALLET PRIVATE KEY>" # generate one - see below
 FUEL_PROVIDER_URL="<YOUR FUEL CORE URL>" # will often be http://127.0.0.1:4000/graphql
 ### You will obtain a CONTRACT_ID below
 CONTRACT_ID="<YOUR CONTRACT ID>" # see below
 ```
 
-For your `PRIVATE_KEY`, you can use this helpful script to generate one:
+For `PRIVATE_KEY`, you can use this helpful script to generate one:
 
 ```sh
 npm run generate-private-key
 ```
 
-For your `CONTRACT_ID`, once you have your environment variables ready, you can then run this command to deploy your Sway contract to your local Fuel provider:
+For `CONTRACT_ID`, once you have your environment variables ready, run this command to deploy your Sway contract to your local Fuel provider:
 
 ```sh
 npm run deploy-contract
 ```
 
-Which will output a new `CONTRACT_ID` to save inside your `.env`. With that, your Sway contract is compiled, deployed, and available via a TypeScript interface.
+This will output a new `CONTRACT_ID` to save inside your `.env`. With that, your Sway contract is compiled, deployed, and available via a TypeScript interface.
 
 #### 5. Using your Sway contract in a React project
 
