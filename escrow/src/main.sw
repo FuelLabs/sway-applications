@@ -1,15 +1,6 @@
 contract;
 
-// Our library dependencies
-dep abi;
-dep errors;
-dep events;
-dep data_structures;
-
-// Standard library code
 use std::{
-    //enumsnotsupportedinstorageresult::*,
-    //option::*,
     address::Address,
     assert::require,
     chain::auth::{AuthError, msg_sender},
@@ -68,12 +59,6 @@ storage {
     asset: ContractId,
     // state: State,
     state: u64,
-
-    /// Required number of successful calls to approve() to mark the workflow as complete
-    threshold: u64,
-
-    /// State associated with the activity of each user
-    users: StorageMap<Sender, User>, 
 }
 
 impl Escrow for Contract {
@@ -146,13 +131,12 @@ impl Escrow for Contract {
     ///
     /// The function will panic when
     /// - The constructor has not been called to initialize
-    /// - The required number of approvals has been reached and another approval is made
-    /// - The user is not an authorized user
+    /// - The user is not an authorized user that has been set in the constructor
     /// - The user has not successfully deposited through the deposit() function
     /// - The user approves again after both users have approved and the escrow has completed its process
     #[storage(read, write)]fn approve() -> bool {
         // require(storage.state == State::Pending, Error::StateNotPending);
-        require(storage.state == 1, Error::StateError(StateError::StateNotPending));
+        require(storage.state == 1, Error::StateNotPending);
 
         let sender: Result<Identity, AuthError> = msg_sender();
 
@@ -189,7 +173,7 @@ impl Escrow for Contract {
     ///
     /// The function will panic when
     /// - The constructor has not been called to initialize
-    /// - The user is not an authorized user
+    /// - The user is not an authorized user that has been set in the constructor
     /// - The user has not successfully deposited through the deposit() function
     #[storage(read, write)]fn withdraw() -> bool {
         // require(storage.state == State::Pending, Error::StateNotPending);
@@ -219,10 +203,6 @@ impl Escrow for Contract {
             revert(0);
         };
 
-        log(WithdrawEvent {
-            user: sender.unwrap(), asset: deposited_asset, amount: required_amount, approval_count: storage.approval_count
-        });
-
         true
     }
 
@@ -231,8 +211,7 @@ impl Escrow for Contract {
         this_balance(storage.asset)
     }
 
-    /// Returns data regarding the state of a user i.e. whether they have deposited, approved, their
-    /// chosen asset and whether they are a valid user
+    /// Returns data regarding the state of a user i.e. whether they have (deposited, approved)
     ///
     /// # Panics
     ///
