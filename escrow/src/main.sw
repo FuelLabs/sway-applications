@@ -8,8 +8,6 @@ dep data_structures;
 
 // Standard library code
 use std::{
-    //enumsnotsupportedinstorageresult::*,
-    //option::*,
     address::Address,
     assert::require,
     chain::auth::{AuthError, Sender, msg_sender},
@@ -17,6 +15,8 @@ use std::{
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
     logging::log,
+    // option::*, // enums not supported in storage
+    result::*,
     revert::revert,
     storage::StorageMap,
     token::{force_transfer, transfer_to_output}

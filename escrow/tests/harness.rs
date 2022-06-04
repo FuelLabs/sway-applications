@@ -114,26 +114,39 @@ async fn setup() -> (Metadata, Metadata, Metadata, ContractId, u64) {
 //         .value
 // }
 
-// mod constructor {
+mod constructor {
 
-//     use super::*;
+    use super::*;
 
-//     #[tokio::test]
-//     async fn initializes() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
+    #[tokio::test]
+    async fn initializes() {
+        let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
 
-//         assert!(
-//             init(
-//                 &deployer,
-//                 &user1.wallet,
-//                 &user2.wallet,
-//                 asset_id,
-//                 asset_amount
-//             )
-//             .await
-//         );
-//     }
-// }
+        let users = [user1.wallet.address(), user1.wallet.address()];
+        let assets = [MetaAsset {id: [1u8; 32], amount: 100}, MetaAsset {id: [2u8; 32], amount: 200}];
+
+        assert!(
+            deployer
+                .escrow
+                .constructor(users, assets)
+                .call()
+                .await
+                .unwrap()
+                .value
+        )
+
+        // assert!(
+        //     init(
+        //         &deployer,
+        //         &user1.wallet,
+        //         &user2.wallet,
+        //         asset_id,
+        //         asset_amount
+        //     )
+        //     .await
+        // );
+    }
+}
 
 // mod deposit {
 

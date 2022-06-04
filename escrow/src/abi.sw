@@ -7,9 +7,7 @@ use std::{chain::auth::Sender, contract_id::ContractId};
 use data_structures::{Asset, User};
 
 abi Escrow {
-    fn constructor(users: [Sender;
-    2], assets: [Asset;
-    2]) -> bool;
+    fn constructor(users: [Sender; 2], assets: [Asset; 2]) -> bool;
     fn deposit() -> bool;
     fn approve() -> bool;
     fn withdraw() -> bool;
