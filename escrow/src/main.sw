@@ -65,7 +65,7 @@ impl Escrow for Contract {
     /// - The constructor is called more than once
     /// - The amount of any asset being set is equal to 0
     /// - Any asset is the NATIVE_ASSET_ID
-    fn constructor(users: [Sender; 2], assets: [Asset; 2]) -> bool {
+    fn constructor(users: [Sender; 2], assets: [Asset; 2]) {
         // require(storage.state == State::Void, Error::InitError(InitError::CannotReinitialize));
         require(storage.state == 0, InitError::CannotReinitialize);
 
@@ -107,8 +107,6 @@ impl Escrow for Contract {
         // Flip the state to prevent future reinitialization
         storage.state = 1;
         // storage.state = State::Pending;
-
-        true
     }
 
     /// Accepts a deposit from an authorized user for any of the specified assets
@@ -123,7 +121,7 @@ impl Escrow for Contract {
     /// - The user deposits when they still have their previous deposit in the escrow
     /// - The user deposits an asset that has not been specified in the constructor
     /// - The user sends an incorrect amount of an asset for the specified asset in the constructor
-    fn deposit() -> bool {
+    fn deposit() {
         // require(storage.state == State::Pending, Error::StateError(StateError::StateNotPending));
         require(storage.state == 1, StateError::StateNotPending);
 
@@ -145,8 +143,6 @@ impl Escrow for Contract {
         storage.users.insert(sender.unwrap(), user_data);
 
         log(DepositEvent {user: sender.unwrap(), asset: deposited_asset, amount: required_amount});
-
-        true
     }
 
     /// Updates the user state to indicate a user has approved
@@ -161,7 +157,7 @@ impl Escrow for Contract {
     /// - The user is not an authorized user
     /// - The user has not successfully deposited through the deposit() function
     /// - The user approves again after they have already approved
-    fn approve() -> bool {
+    fn approve() {
         // require(storage.state == State::Pending, Error::StateNotPending);
         require(storage.state == 1, StateError::StateNotPending);
 
@@ -184,8 +180,6 @@ impl Escrow for Contract {
             storage.state = 2;
             log(ThresholdReachedEvent {});
         }
-
-        true
     }
 
     /// Returns the deposited asset back to the user and resets their approval to false
@@ -197,7 +191,7 @@ impl Escrow for Contract {
     /// - The user is not an authorized user
     /// - The user has not successfully deposited through the deposit() function
     /// - The user attemps to withdraw after they have withdrawn and/or the contract is locked
-    fn withdraw() -> bool {
+    fn withdraw() {
         // require(storage.state == State::Pending, Error::StateError(StateError::StateNotPending));
         require(storage.state == 1 || storage.state == 2, StateError::StateNotPending);
 
@@ -235,8 +229,6 @@ impl Escrow for Contract {
             amount: required_amount, 
             approval_count: storage.approval_count
         });
-
-        true
     }
 
     /// Returns a boolean indicating whether the asset has been specified in the constructor, a u64
