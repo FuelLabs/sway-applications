@@ -1,9 +1,6 @@
 library events;
 
-use std::{
-    chain::auth::Sender,
-    contract_id::ContractId,
-};
+use std::{chain::auth::Sender, contract_id::ContractId};
 
 pub struct ExecutedEvent {
     to: Sender, 

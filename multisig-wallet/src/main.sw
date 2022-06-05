@@ -32,7 +32,7 @@ use core::num::*;
 // Our library imports
 use abi::MultiSignatureWallet;
 use data_structures::{User, Tx};
-use errors::*;
+use errors::{InitError, ExecutionError};
 use events::{ExecutedEvent, TransferEvent};
 
 storage {
@@ -57,13 +57,13 @@ impl MultiSignatureWallet for Contract {
     /// - When the threshold is set to 0
     /// - When an owner has an approval weight of 0
     fn constructor(users: [User; 2], threshold: u64) -> bool {
-        require(storage.nonce == 0, Error::InitError(InitError::CannotReinitialize));
-        require(storage.threshold != 0, Error::InitError(InitError::ThresholdCannotBeZero));
+        require(storage.nonce == 0, InitError::CannotReinitialize);
+        require(storage.threshold != 0, InitError::ThresholdCannotBeZero);
 
         let mut user_index = 0;
         while user_index < 2 {
-            require(~Address::from(NATIVE_ASSET_ID) != users[user_index].identity, Error::InitError(InitError::AddressCannotBeZero));
-            require(users[user_index].weight != 0, Error::InitError(InitError::WeightingCannotBeZero));
+            require(~Address::from(NATIVE_ASSET_ID) != users[user_index].identity, InitError::AddressCannotBeZero);
+            require(users[user_index].weight != 0, InitError::WeightingCannotBeZero);
             storage.weighting.insert(users[user_index].identity, users[user_index].weight);
             user_index = user_index + 1;
         }
@@ -83,12 +83,12 @@ impl MultiSignatureWallet for Contract {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
     /// - When the total approval count is less than the required threshold for execution
     fn execute_transaction(to: Sender, value: u64, data: b256, signatures: [B512; 2]) -> bool {
-        require(storage.nonce != 0, Error::InitError(InitError::NotInitialized));
+        require(storage.nonce != 0, InitError::NotInitialized);
 
         let tx_hash = _get_transaction_hash(to, value, data, storage.nonce, contract_id());
         let approval_count = _get_approval_count(tx_hash, signatures);
 
-        require(storage.threshold <= approval_count, Error::ExecutionError(ExecutionError::InsufficientApprovals));
+        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
         storage.nonce = storage.nonce + 1;
 
@@ -109,13 +109,13 @@ impl MultiSignatureWallet for Contract {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
     /// - When the total approval count is less than the required threshold for execution
     fn transfer(to: Sender, asset_id: ContractId, value: u64, data: b256, signatures: [B512; 2]) -> bool {
-        require(storage.nonce != 0, Error::InitError(InitError::NotInitialized));
-        require(value <= this_balance(asset_id), Error::ExecutionError(ExecutionError::InsufficientAssetAmount));
+        require(storage.nonce != 0, InitError::NotInitialized);
+        require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
         let tx_hash = _get_transaction_hash(to, value, data, storage.nonce, contract_id());
         let approval_count = _get_approval_count(tx_hash, signatures);
 
-        require(storage.threshold <= approval_count, Error::ExecutionError(ExecutionError::InsufficientApprovals));
+        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
         storage.nonce = storage.nonce + 1;
 
@@ -135,7 +135,7 @@ impl MultiSignatureWallet for Contract {
     ///
     /// - When the constructor has not been called to initialize the contract
     fn is_owner(user: Address) -> bool {
-        require(storage.nonce != 0, Error::InitError(InitError::NotInitialized));
+        require(storage.nonce != 0, InitError::NotInitialized);
         storage.weighting.get(user) != 0
     }
 
@@ -179,7 +179,7 @@ fn _get_approval_count(tx_hash: b256, signatures: [B512; 2]) -> u64 {
             _ => revert(42),
         };
 
-        require(previous_signer < signer, Error::ExecutionError(ExecutionError::IncorrectSignerOrdering));
+        require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
 
         previous_signer = signer;
         approval_count = approval_count + storage.weighting.get(~Address::from(signer));
