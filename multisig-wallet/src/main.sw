@@ -56,7 +56,7 @@ impl MultiSignatureWallet for Contract {
     /// - When the user address is the 0th address (0x00000...)
     /// - When the threshold is set to 0
     /// - When an owner has an approval weight of 0
-    fn constructor(users: [User; 2], threshold: u64) -> bool {
+    fn constructor(users: [User; 2], threshold: u64)  {
         require(storage.nonce == 0, InitError::CannotReinitialize);
         require(storage.threshold != 0, InitError::ThresholdCannotBeZero);
 
@@ -70,7 +70,6 @@ impl MultiSignatureWallet for Contract {
 
         storage.nonce = 1;
         storage.threshold = threshold;
-        true
     }
 
     /// Executes a Tx formed from the `to, `value` and `data` parameters if the signatures meet the
@@ -82,7 +81,7 @@ impl MultiSignatureWallet for Contract {
     /// - When the public key cannot be recovered from a signature
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
     /// - When the total approval count is less than the required threshold for execution
-    fn execute_transaction(to: Sender, value: u64, data: b256, signatures: [B512; 2]) -> bool {
+    fn execute_transaction(to: Sender, value: u64, data: b256, signatures: [B512; 2]) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
         let tx_hash = _get_transaction_hash(to, value, data, storage.nonce, contract_id());
@@ -95,8 +94,6 @@ impl MultiSignatureWallet for Contract {
         // TODO: Execute https://github.com/FuelLabs/sway-applications/issues/22
 
         log(ExecutedEvent { to, value, data, nonce: storage.nonce - 1 });
-
-        true
     }
 
     /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement
@@ -108,7 +105,7 @@ impl MultiSignatureWallet for Contract {
     /// - When the public key cannot be recovered from a signature
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
     /// - When the total approval count is less than the required threshold for execution
-    fn transfer(to: Sender, asset_id: ContractId, value: u64, data: b256, signatures: [B512; 2]) -> bool {
+    fn transfer(to: Sender, asset_id: ContractId, value: u64, data: b256, signatures: [B512; 2]) {
         require(storage.nonce != 0, InitError::NotInitialized);
         require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
@@ -125,8 +122,6 @@ impl MultiSignatureWallet for Contract {
         };
 
         log(TransferEvent { to, asset: asset_id, value, nonce: storage.nonce - 1 });
-
-        true
     }
 
     /// Returns a boolean value indicating if the given address is a user in the contract
