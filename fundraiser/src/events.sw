@@ -19,3 +19,8 @@ pub struct ClaimedEvent {
     amount: u64,
     campaign_identifier: u64
 }
+
+pub struct CancelledEvent {
+    user: Sender,
+    campaign_identifier: u64
+}

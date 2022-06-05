@@ -11,6 +11,7 @@ abi Fundraiser {
     fn pledge(campaign_identifier: u64);
     fn unpledge(campaign_identifier: u64, amount: u64);
     fn claim(campaign_identifier: u64);
+    fn cancel(campaign_identifier: u64);
     fn get_campaign(campaign_identifier: u64) -> Campaign;
     fn get_pledge(campaign_identifier: u64) -> u64;
 }
