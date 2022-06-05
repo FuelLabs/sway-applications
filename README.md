@@ -37,6 +37,7 @@ sway-applications/
 |    └── P-1 Directories & files
 ├── Project-2
 |    └── P-2 Directories & files
+├── CONTRIBUTING.md
 ├── LICENSE
 └── README.md
 ```
@@ -45,6 +46,7 @@ sway-applications/
 
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
+- [Crowdfund](./crowdfund/) is a fundrasing program allowing users to pledge towards a goal
 
 ## Running a project
 
