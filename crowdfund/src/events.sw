@@ -11,3 +11,8 @@ pub struct UnpledgedEvent {
     user: Sender,
     amount: u64
 }
+
+pub struct ClaimedEvent {
+    user: Sender,
+    amount: u64
+}

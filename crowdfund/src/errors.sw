@@ -1,5 +1,14 @@
 library errors;
 
-pub enum Error {
+pub enum UserError {
+    AlreadyClaimed: (),
+    IncorrectAssetSent: (),
+    UnauthorizedUser: (),
+}
 
+pub enum StateError {
+    CannotReinitialize: (),
+    CannotUnpledgeSuccessfulCrowdfund: (),
+    CrowdFundEnded: (),
+    CrowdFundNotSuccessful: (),
 }
