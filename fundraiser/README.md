@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./.docs/crowdfund-logo.png" height="120">
+    <img src="./.docs/fundraiser-logo.png" height="120">
 </p>
 
 ## Overview
