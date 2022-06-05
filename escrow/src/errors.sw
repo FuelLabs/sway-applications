@@ -1,10 +1,6 @@
 library errors;
 
-pub enum Error {
-    ApproveError: ApproveError,
-    DepositError: DepositError,
-    InitError: InitError,
-    StateError: StateError,
+pub enum AccessError {
     UnauthorizedUser: (),
 }
 

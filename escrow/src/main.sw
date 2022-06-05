@@ -24,7 +24,7 @@ use std::{
 
 // Bring our code into scope
 use abi::Escrow;
-use errors::*;
+use errors::{AccessError, ApproveError, DepositError, InitError, StateError};
 use events::{ApproveEvent, DepositEvent, ThresholdReachedEvent, WithdrawEvent};
 use data_structures::{Asset, User};
 
@@ -67,13 +67,13 @@ impl Escrow for Contract {
     /// - Any asset is the NATIVE_ASSET_ID
     fn constructor(users: [Sender; 2], assets: [Asset; 2]) -> bool {
         // require(storage.state == State::Void, Error::InitError(InitError::CannotReinitialize));
-        require(storage.state == 0, Error::InitError(InitError::CannotReinitialize));
+        require(storage.state == 0, InitError::CannotReinitialize);
 
         // Set the assets that this contract accepts
         let mut asset_index = 0;
         while asset_index < 2 {
-            require(0 < assets[asset_index].amount, Error::InitError(InitError::AssetAmountCannotBeZero));
-            require(~ContractId::from(NATIVE_ASSET_ID) != assets[asset_index].id, Error::InitError(InitError::AssetIdCannotBeZero));
+            require(0 < assets[asset_index].amount, InitError::AssetAmountCannotBeZero);
+            require(~ContractId::from(NATIVE_ASSET_ID) != assets[asset_index].id, InitError::AssetIdCannotBeZero);
 
             storage.assets.insert(assets[asset_index].id, assets[asset_index].amount);
         }
@@ -125,28 +125,26 @@ impl Escrow for Contract {
     /// - The user sends an incorrect amount of an asset for the specified asset in the constructor
     fn deposit() -> bool {
         // require(storage.state == State::Pending, Error::StateError(StateError::StateNotPending));
-        require(storage.state == 1, Error::StateError(StateError::StateNotPending));
+        require(storage.state == 1, StateError::StateNotPending);
 
         let sender: Result<Sender, AuthError> = msg_sender();
         let mut user_data = storage.users.get(sender.unwrap());
 
-        require(user_data != storage.sentinel, Error::UnauthorizedUser);
-        require(!user_data.deposited, Error::DepositError(DepositError::AlreadyDeposited));
+        require(user_data != storage.sentinel, AccessError::UnauthorizedUser);
+        require(!user_data.deposited, DepositError::AlreadyDeposited);
 
         let deposited_asset = msg_asset_id();
         let required_amount = storage.assets.get(deposited_asset);
 
-        require(required_amount != 0, Error::DepositError(DepositError::IncorrectAssetDeposited));
-        require(required_amount == msg_amount(), Error::DepositError(DepositError::IncorrectAssetAmount));
+        require(required_amount != 0, DepositError::IncorrectAssetDeposited);
+        require(required_amount == msg_amount(), DepositError::IncorrectAssetAmount);
 
         user_data.asset = deposited_asset;
         user_data.deposited = true;
 
         storage.users.insert(sender.unwrap(), user_data);
 
-        log(DepositEvent {
-            user: sender.unwrap(), asset: deposited_asset, amount: required_amount
-        });
+        log(DepositEvent {user: sender.unwrap(), asset: deposited_asset, amount: required_amount});
 
         true
     }
@@ -165,23 +163,21 @@ impl Escrow for Contract {
     /// - The user approves again after they have already approved
     fn approve() -> bool {
         // require(storage.state == State::Pending, Error::StateNotPending);
-        require(storage.state == 1, Error::StateError(StateError::StateNotPending));
+        require(storage.state == 1, StateError::StateNotPending);
 
         let sender: Result<Sender, AuthError> = msg_sender();
         let mut user_data = storage.users.get(sender.unwrap());
 
-        require(user_data != storage.sentinel, Error::UnauthorizedUser);
-        require(user_data.deposited, Error::DepositError(DepositError::DepositRequired));
-        require(!user_data.approved, Error::ApproveError(ApproveError::AlreadyApproved));
+        require(user_data != storage.sentinel, AccessError::UnauthorizedUser);
+        require(user_data.deposited, DepositError::DepositRequired);
+        require(!user_data.approved, ApproveError::AlreadyApproved);
 
         user_data.approved = true;
 
         storage.users.insert(sender.unwrap(), user_data);
         storage.approval_count = storage.approval_count + 1;
 
-        log(ApproveEvent {
-            user: sender.unwrap(), count: storage.approval_count
-        });
+        log(ApproveEvent {user: sender.unwrap(), count: storage.approval_count});
 
         if storage.threshold <= storage.approval_count {
             // storage.state = State::Completed;
@@ -203,13 +199,13 @@ impl Escrow for Contract {
     /// - The user attemps to withdraw after they have withdrawn and/or the contract is locked
     fn withdraw() -> bool {
         // require(storage.state == State::Pending, Error::StateError(StateError::StateNotPending));
-        require(storage.state == 1 || storage.state == 2, Error::StateError(StateError::StateNotPending));
+        require(storage.state == 1 || storage.state == 2, StateError::StateNotPending);
 
         let sender: Result<Sender, AuthError> = msg_sender();
         let mut user_data = storage.users.get(sender.unwrap());
 
-        require(user_data != storage.sentinel, Error::UnauthorizedUser);
-        require(user_data.deposited, Error::DepositError(DepositError::DepositRequired));
+        require(user_data != storage.sentinel, AccessError::UnauthorizedUser);
+        require(user_data.deposited, DepositError::DepositRequired);
 
         let deposited_asset = user_data.asset;
         let required_amount = storage.assets.get(deposited_asset);
@@ -234,7 +230,10 @@ impl Escrow for Contract {
         }
 
         log(WithdrawEvent {
-            user: sender.unwrap(), asset: deposited_asset, amount: required_amount, approval_count: storage.approval_count
+            user: sender.unwrap(), 
+            asset: deposited_asset, 
+            amount: required_amount, 
+            approval_count: storage.approval_count
         });
 
         true
@@ -257,7 +256,7 @@ impl Escrow for Contract {
     /// - The constructor has not been called to initialize
     fn get_user_data(user: Sender) -> User {
         // require(storage.state != State::Void, Error::StateError(StateError::StateNotInitialized));
-        require(storage.state != 0, Error::StateError(StateError::StateNotInitialized));
+        require(storage.state != 0, StateError::StateNotInitialized);
 
         let user_data = storage.users.get(user);
 
