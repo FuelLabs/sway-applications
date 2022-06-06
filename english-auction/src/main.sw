@@ -4,22 +4,26 @@ use std::{
     address::Address,
     assert::require,
     block::height,
+    chain::auth::{AuthError, msg_sender},
     constants::NATIVE_ASSET_ID,
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
     contract_id::ContractId,
+    result::*,
     storage::StorageMap,
+    token::transfer_to_output,
 };
 
 abi EnglishAuction {
     fn bid() -> bool;
     fn buy_reserve() -> bool;
     fn constructor(seller: Address, sell_asset: ContractId, sell_amount: u64, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool;
+    fn get_current_bid() -> u64;
+    fn get_end_time() -> u64;
+    fn get_highest_bidder() -> Address;
     fn get_sell_amount() -> u64;
     fn get_sell_asset() -> ContractId;
-    fn get_current_bid() -> u64;
     fn get_reserve() -> u64;
     fn get_state() -> u64;
-    fn get_end_time() -> u64;
     fn withdraw() -> bool;
 }
 
@@ -51,7 +55,7 @@ storage {
 }
 
 impl EnglishAuction for Contract {
-    
+
     /// Places a bid 
     ///
     /// # Panics
@@ -67,7 +71,7 @@ impl EnglishAuction for Contract {
         require(height() <= storage.end_time, Error::AuctionIsNotOpen);
         require(msg_asset_id() != storage.buy_asset, Error::IncorrectAssetProvided);
 
-        if (current_bid == 0) {
+        if (storage.current_bid == 0) {
             require(msg_amount() < storage.inital_price, Error::InitalPriceNotMet);
         }
 
@@ -86,7 +90,7 @@ impl EnglishAuction for Contract {
 
         storage.current_bidder = sender;
         storage.current_bid = deposit + msg_amount();
-        storage.deposits.insert(deposit + msg_amount());
+        storage.deposits.insert(sender, deposit + msg_amount());
 
         true
     }
@@ -138,7 +142,7 @@ impl EnglishAuction for Contract {
     fn constructor(seller: Address, sell_asset: ContractId, sell_amount: u64, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool {
         require(storage.state == 0, Error::CannotReinitialize);
         require(sell_asset == msg_asset_id(), Error::IncorrectAssetProvided);
-        require(sell_amount == msg_amount(), Error::IncorrectAmountDeposited);
+        require(sell_amount == msg_amount(), Error::IncorrectAmountProvided);
         require(buy_asset != ~ContractId::from(NATIVE_ASSET_ID), Error::BuyAssetNotProvided);
         require(reserve_price >= inital_price, Error::ReserveLessThanInitalPrice);
         require(time != 0, Error::AuctionTimeNotProvided);
@@ -154,6 +158,39 @@ impl EnglishAuction for Contract {
         storage.end_time = time + height();
 
         true
+    }
+
+    /// Returns the current bid of the auction
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The auction has not yet been initalized
+    fn get_current_bid() -> u64 {
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.current_bid
+    }
+
+    /// Returns the time remaining for the auction
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The auction has not yet been initalized
+    fn get_end_time() -> u64 {
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.end_time
+    }
+
+    /// Returns the current bidder of the auction
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The auction has not yet been initalized
+    fn get_highest_bidder() -> Address {
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.current_bidder
     }
 
     /// Returns the amount of asset that is being sold
@@ -178,17 +215,6 @@ impl EnglishAuction for Contract {
         storage.sell_asset
     }
 
-    /// Returns the current bid of the auction
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction has not yet been initalized
-    fn get_current_bid() -> u64 {
-        require(storage.state != 0, Error::AuctionNotInitalized);
-        storage.current_bid
-    }
-
     /// Returns the reserve price of the auction
     ///
     /// # Panics
@@ -209,17 +235,6 @@ impl EnglishAuction for Contract {
     fn get_state() -> u64 {
         require(storage.state != 0, Error::AuctionNotInitalized);
         storage.state
-    }
-
-    /// Returns the time remaining for the auction
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction has not yet been initalized
-    fn get_end_time() -> u64 {
-        require(storage.state != 0, Error::AuctionNotInitalized);
-        storage.end_time
     }
 
     fn withdraw() -> bool {
