@@ -13,6 +13,7 @@ abi EnglishAuction {
     fn bid() -> bool;
     fn buy_reserve() -> bool;
     fn constructor(seller: Address, sell_asset: ContractId, sell_amount: u64, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool;
+    fn get_sell_amount() -> u64;
     fn get_sell_asset() -> ContractId;
     fn get_current_bid() -> u64;
     fn get_reserve() -> u64;
@@ -22,6 +23,7 @@ abi EnglishAuction {
 }
 
 enum Error {
+    AuctionNotInitalized: (),
     AuctionTimeNotProvided: (),
     CannotReinitialize: (),
     BuyAssetNotProvided: (),
@@ -32,6 +34,7 @@ enum Error {
 
 storage {
     buy_asset: ContractId,
+    current_bid: u64,
     inital_price: u64,
     reserve_price: u64,
     sell_amount: u64,
@@ -82,24 +85,70 @@ impl EnglishAuction for Contract {
         true
     }
 
+    /// Returns the amount of asset that is being sold
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when
+    /// - The auction has not yet been initalized
+    fn get_sell_amount() -> u64 {
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.sell_amount
+    }
+
+    /// Returns the contract id of asset that is being sold
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when
+    /// - The auction has not yet been initalized
     fn get_sell_asset() -> ContractId {
-        ~ContractId::from(NATIVE_ASSET_ID)
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.sell_asset
     }
 
+    /// Returns the current bid of the auction
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when
+    /// - The auction has not yet been initalized
     fn get_current_bid() -> u64 {
-        0
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.current_bid
     }
 
+    /// Returns the reserve price of the auction
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when
+    /// - The auction has not yet been initalized
     fn get_reserve() -> u64 {
-        0
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.reserve_price
     }
 
+    /// Returns the current state of the function
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when
+    /// - The auction has not yet been initalized
     fn get_state() -> u64 {
-        0
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.state
     }
 
+    /// Returns the time remaining for the auction
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when
+    /// - The auction has not yet been initalized
     fn get_time_remaining() -> u64 {
-        0
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.end_time - height()
     }
 
     fn withdraw() -> bool {
