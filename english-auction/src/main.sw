@@ -28,6 +28,7 @@ abi EnglishAuction {
 }
 
 enum Error {
+    AuctionIsNotClosed: (),
     AuctionIsNotOpen: (),
     AuctionNotInitalized: (),
     AuctionTimeNotProvided: (),
@@ -38,6 +39,7 @@ enum Error {
     InitalPriceCannotBeZero: (),
     InitalPriceNotMet: (),
     ReserveLessThanInitalPrice: (),
+    UserHasAlreadyWithdrawn: (),
 }
 
 storage {
@@ -46,10 +48,12 @@ storage {
     current_bidder: Address,
     deposits: StorageMap<Address, u64>,
     inital_price: u64,
+    buyer_withdrawn: bool,
     reserve_price: u64,
     sell_amount: u64,
     sell_asset: ContractId,
     seller: Address,
+    seller_withdawn: bool,
     state: u64,
     end_time: u64,
 }
@@ -85,12 +89,12 @@ impl EnglishAuction for Contract {
             },
         };
 
-        let deposit = storage.deposits.get(sender);
-        require(msg_amount() + deposit <= storage.current_bid, Error::IncorrectAmountProvided);
+        let balance = storage.deposits.get(sender);
+        require(msg_amount() + balance <= storage.current_bid, Error::IncorrectAmountProvided);
 
         storage.current_bidder = sender;
-        storage.current_bid = deposit + msg_amount();
-        storage.deposits.insert(sender, deposit + msg_amount());
+        storage.current_bid = balance + msg_amount();
+        storage.deposits.insert(sender, balance + msg_amount());
 
         true
     }
@@ -107,10 +111,6 @@ impl EnglishAuction for Contract {
     fn buy_reserve() -> bool {
         require(storage.state == 1, Error::AuctionIsNotOpen);
         require(height() <= storage.end_time, Error::AuctionIsNotOpen);
-        require(msg_amount() != storage.reserve_price, Error::IncorrectAmountProvided);
-        require(msg_asset_id() != storage.buy_asset, Error::IncorrectAssetProvided);
-
-        storage.state = 2;
 
         let sender: Result<Identity, AuthError> = msg_sender();
         let sender: Address = match sender.unwrap() {
@@ -121,6 +121,16 @@ impl EnglishAuction for Contract {
                 revert(0);
             },
         };
+
+        let balance = storage.deposits.get(sender);
+        require(msg_amount() + balance != storage.reserve_price, Error::IncorrectAmountProvided);
+        require(msg_asset_id() != storage.buy_asset, Error::IncorrectAssetProvided);
+
+        storage.state = 2;
+
+        storage.current_bidder = sender;
+        storage.current_bid = msg_amount() + balance;
+        storage.buyer_withdrawn = true;
 
         transfer_to_output(storage.sell_amount, storage.sell_asset, sender);
         true
@@ -149,13 +159,15 @@ impl EnglishAuction for Contract {
         require(inital_price > 0, Error::InitalPriceCannotBeZero);
 
         storage.buy_asset = buy_asset;
+        storage.buyer_withdrawn = false;
+        storage.end_time = time + height();
         storage.inital_price = inital_price;
         storage.reserve_price = reserve_price;
         storage.sell_amount = sell_amount;
         storage.sell_asset = sell_asset;
         storage.seller = seller;
         storage.state = 1;
-        storage.end_time = time + height();
+        storage.seller_withdawn = false;
 
         true
     }
@@ -237,7 +249,56 @@ impl EnglishAuction for Contract {
         storage.state
     }
 
+    /// Withdraws after the end of the auction
+    ///
+    /// # Panics
+    /// 
+    /// The function will panic when:
+    /// - The auction time is not over
+    /// - The auction state is not over
+    /// - The buyer is the sender and already withdrew
+    /// - The seller is the sender and already withdrew
+    /// - The sender is not the buyer or seller and has nothing to withdraw
     fn withdraw() -> bool {
+        require(storage.state == 2 || height() >= storage.end_time, Error::AuctionIsNotClosed);
+
+        if (height() >= storage.end_time && storage.state == 1)
+        {
+            storage.state = 2;
+        }
+
+        let sender: Result<Identity, AuthError> = msg_sender();
+        let sender: Address = match sender.unwrap() {
+            Identity::Address(address) => {
+                address
+            },
+            _ => {
+                revert(0);
+            },
+        };
+
+        match sender {
+            storage.current_bidder => {
+                require(!storage.buyer_withdrawn, Error::UserHasAlreadyWithdrawn);
+                
+                storage.buyer_withdrawn = true;
+                transfer_to_output(storage.sell_amount, storage.sell_asset, sender);
+            },
+            storage.seller => {
+                require(!storage.seller_withdawn, Error::UserHasAlreadyWithdrawn);
+                
+                storage.seller_withdawn = true;
+                transfer_to_output(storage.current_bid, storage.buy_asset, sender);
+            },
+            _ => {
+                let amount = storage.deposits.get(sender);
+                require(amount > 0, Error::UserHasAlreadyWithdrawn);
+
+                storage.deposits.insert(sender, 0);
+                transfer_to_output(amount, storage.buy_asset, sender);
+            },
+        }
+
         true
     }
 }
