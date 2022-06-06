@@ -1,14 +1,14 @@
 library events;
 
-use std::{chain::auth::Sender, contract_id::ContractId};
+use std::{contract_id::ContractId, identity::Identity};
 
 pub struct ApproveEvent {
-    user: Sender,
+    user: Identity,
     count: u64,
 }
 
 pub struct DepositEvent {
-    user: Sender,
+    user: Identity,
     asset: ContractId,
     amount: u64,
 }
@@ -17,7 +17,7 @@ pub struct ThresholdReachedEvent {
 }
 
 pub struct WithdrawEvent {
-    user: Sender,
+    user: Identity,
     asset: ContractId,
     amount: u64,
     approval_count: u64,

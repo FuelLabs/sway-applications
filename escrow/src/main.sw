@@ -10,16 +10,17 @@ dep data_structures;
 use std::{
     address::Address,
     assert::require,
-    chain::auth::{AuthError, Sender, msg_sender},
+    chain::auth::{AuthError, msg_sender},
     constants::NATIVE_ASSET_ID,
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
+    identity::Identity,
     logging::log,
     // option::*, // enums not supported in storage
     result::*,
     revert::revert,
     storage::StorageMap,
-    token::{force_transfer, transfer_to_output}
+    token::{force_transfer_to_contract, transfer_to_output}
 };
 
 // Bring our code into scope
@@ -46,14 +47,14 @@ storage {
     sentinel: User,
 
     /// Mechanism used to manage the control flow of the contract
-    // state: State // enums not supported in storage
+    // state: State // enum Eq not implemented for self
     state: u64,
 
     /// Required number of successful calls to approve() to mark the workflow as complete
     threshold: u64,
 
     /// State associated with the activity of each user
-    users: StorageMap<Sender, User>, 
+    users: StorageMap<Identity, User>, 
 }
 
 impl Escrow for Contract {
@@ -65,7 +66,7 @@ impl Escrow for Contract {
     /// - The constructor is called more than once
     /// - The amount of any asset being set is equal to 0
     /// - Any asset is the NATIVE_ASSET_ID
-    fn constructor(users: [Sender; 2], assets: [Asset; 2]) {
+    fn constructor(users: [Identity; 2], assets: [Asset; 2]) {
         // require(storage.state == State::Void, Error::InitError(InitError::CannotReinitialize));
         require(storage.state == 0, InitError::CannotReinitialize);
 
@@ -125,7 +126,7 @@ impl Escrow for Contract {
         // require(storage.state == State::Pending, Error::StateError(StateError::StateNotPending));
         require(storage.state == 1, StateError::StateNotPending);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
+        let sender: Result<Identity, AuthError> = msg_sender();
         let mut user_data = storage.users.get(sender.unwrap());
 
         require(user_data != storage.sentinel, AccessError::UnauthorizedUser);
@@ -161,7 +162,7 @@ impl Escrow for Contract {
         // require(storage.state == State::Pending, Error::StateNotPending);
         require(storage.state == 1, StateError::StateNotPending);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
+        let sender: Result<Identity, AuthError> = msg_sender();
         let mut user_data = storage.users.get(sender.unwrap());
 
         require(user_data != storage.sentinel, AccessError::UnauthorizedUser);
@@ -195,7 +196,7 @@ impl Escrow for Contract {
         // require(storage.state == State::Pending, Error::StateError(StateError::StateNotPending));
         require(storage.state == 1 || storage.state == 2, StateError::StateNotPending);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
+        let sender: Result<Identity, AuthError> = msg_sender();
         let mut user_data = storage.users.get(sender.unwrap());
 
         require(user_data != storage.sentinel, AccessError::UnauthorizedUser);
@@ -215,11 +216,11 @@ impl Escrow for Contract {
         }
 
         match sender.unwrap() {
-            Sender::Address(address) => {
+            Identity::Address(address) => {
                 transfer_to_output(storage.assets.get(user_data.asset), user_data.asset, address);
             },
-            Sender::ContractId(address) => {
-                force_transfer(storage.assets.get(user_data.asset), user_data.asset, address);
+            Identity::ContractId(address) => {
+                force_transfer_to_contract(storage.assets.get(user_data.asset), user_data.asset, address);
             }
         }
 
@@ -246,7 +247,7 @@ impl Escrow for Contract {
     ///
     /// The function will panic when
     /// - The constructor has not been called to initialize
-    fn get_user_data(user: Sender) -> User {
+    fn get_user_data(user: Identity) -> User {
         // require(storage.state != State::Void, Error::StateError(StateError::StateNotInitialized));
         require(storage.state != 0, StateError::StateNotInitialized);
 
