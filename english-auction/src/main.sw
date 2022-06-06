@@ -262,9 +262,17 @@ impl EnglishAuction for Contract {
     fn withdraw() -> bool {
         require(storage.state == 2 || height() >= storage.end_time, Error::AuctionIsNotClosed);
 
+        // If time has run out set the contract state to 2
         if (height() >= storage.end_time && storage.state == 1)
         {
             storage.state = 2;
+        }
+
+        // No one placed a bid
+        if (current_bid == 0)
+        {
+            transfer_to_output(storage.sell_amount, storage.sell_asset, storage.seller);
+            true
         }
 
         let sender: Result<Identity, AuthError> = msg_sender();
@@ -278,18 +286,21 @@ impl EnglishAuction for Contract {
         };
 
         match sender {
+            // The buyer is withdrawing
             storage.current_bidder => {
                 require(!storage.buyer_withdrawn, Error::UserHasAlreadyWithdrawn);
                 
                 storage.buyer_withdrawn = true;
                 transfer_to_output(storage.sell_amount, storage.sell_asset, sender);
             },
+            // The seller is withdrawing
             storage.seller => {
                 require(!storage.seller_withdawn, Error::UserHasAlreadyWithdrawn);
                 
                 storage.seller_withdawn = true;
                 transfer_to_output(storage.current_bid, storage.buy_asset, sender);
             },
+            // Anyone with a failed bid is withdrawing
             _ => {
                 let amount = storage.deposits.get(sender);
                 require(amount > 0, Error::UserHasAlreadyWithdrawn);
