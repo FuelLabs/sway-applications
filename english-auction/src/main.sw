@@ -39,6 +39,7 @@ enum Error {
     IncorrectAmountProvided: (),
     InitalPriceCannotBeZero: (),
     InitalPriceNotMet: (),
+    NoReserveSet: (),
     ReserveLessThanInitalPrice: (),
     UserHasAlreadyWithdrawn: (),
 }
@@ -107,11 +108,13 @@ impl EnglishAuction for Contract {
     /// This function will panic when:
     /// - The auction is not in the bidding state
     /// - The auction is not open
+    /// - There is no reserve price set
     /// - The asset amount is not at the reserve price
     /// - The buy assest provided is the incorrect asset
     fn buy_reserve() -> bool {
         require(storage.state == 1, Error::AuctionIsNotOpen);
         require(height() <= storage.end_time, Error::AuctionIsNotOpen);
+        require(storage.reserve_price != 0, Error::NoReserveSet);
 
         let sender: Result<Identity, AuthError> = msg_sender();
         let sender: Address = match sender.unwrap() {
@@ -147,17 +150,15 @@ impl EnglishAuction for Contract {
     /// - The specified sell asset is not provided
     /// - The specified sell amount is not provided
     /// - The specified buy asset is the 0 address
-    /// - The inital price is higher than the reserve price
+    /// - The inital price is higher than the reserve price if a reserve price is set
     /// - The time for the auction to end it 0
-    /// - The inital price is zero
     fn constructor(seller: Address, sell_asset: ContractId, sell_amount: u64, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool {
         require(storage.state == 0, Error::CannotReinitialize);
         require(sell_asset == msg_asset_id(), Error::IncorrectAssetProvided);
         require(sell_amount == msg_amount(), Error::IncorrectAmountProvided);
         require(buy_asset != ~ContractId::from(NATIVE_ASSET_ID), Error::BuyAssetNotProvided);
-        require(reserve_price >= inital_price, Error::ReserveLessThanInitalPrice);
+        require(reserve_price >= inital_price && reserve_price != 0, Error::ReserveLessThanInitalPrice);
         require(time != 0, Error::AuctionTimeNotProvided);
-        require(inital_price > 0, Error::InitalPriceCannotBeZero);
 
         storage.buy_asset = buy_asset;
         storage.buyer_withdrawn = false;
