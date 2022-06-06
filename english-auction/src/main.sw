@@ -157,7 +157,7 @@ impl EnglishAuction for Contract {
         require(sell_asset == msg_asset_id(), Error::IncorrectAssetProvided);
         require(sell_amount == msg_amount(), Error::IncorrectAmountProvided);
         require(buy_asset != ~ContractId::from(NATIVE_ASSET_ID), Error::BuyAssetNotProvided);
-        require(reserve_price >= inital_price && reserve_price != 0, Error::ReserveLessThanInitalPrice);
+        require((reserve_price >= inital_price && reserve_price != 0) || reserve_price == 0, Error::ReserveLessThanInitalPrice);
         require(time != 0, Error::AuctionTimeNotProvided);
 
         storage.buy_asset = buy_asset;
