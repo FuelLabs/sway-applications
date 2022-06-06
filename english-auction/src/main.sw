@@ -17,6 +17,7 @@ abi EnglishAuction {
     fn bid() -> bool;
     fn buy_reserve() -> bool;
     fn constructor(seller: Address, sell_asset: ContractId, sell_amount: u64, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool;
+    fn get_balance(address: Address) -> u64;
     fn get_current_bid() -> u64;
     fn get_end_time() -> u64;
     fn get_highest_bidder() -> Address;
@@ -172,6 +173,17 @@ impl EnglishAuction for Contract {
         true
     }
 
+    /// Returns the balance of the Address's balance
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The auction has not yet been initalized
+    fn get_balance(address: Address) -> u64 {
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.deposits.get(address)
+    }
+
     /// Returns the current bid of the auction
     ///
     /// # Panics
@@ -268,13 +280,6 @@ impl EnglishAuction for Contract {
             storage.state = 2;
         }
 
-        // No one placed a bid
-        if (current_bid == 0)
-        {
-            transfer_to_output(storage.sell_amount, storage.sell_asset, storage.seller);
-            true
-        }
-
         let sender: Result<Identity, AuthError> = msg_sender();
         let sender: Address = match sender.unwrap() {
             Identity::Address(address) => {
@@ -285,20 +290,29 @@ impl EnglishAuction for Contract {
             },
         };
 
+        let current_bidder = storage.current_bidder;
+        let seller = storage.seller;
+
         match sender {
             // The buyer is withdrawing
-            storage.current_bidder => {
+            current_bidder => {
                 require(!storage.buyer_withdrawn, Error::UserHasAlreadyWithdrawn);
                 
                 storage.buyer_withdrawn = true;
                 transfer_to_output(storage.sell_amount, storage.sell_asset, sender);
             },
             // The seller is withdrawing
-            storage.seller => {
+            seller => {
                 require(!storage.seller_withdawn, Error::UserHasAlreadyWithdrawn);
                 
                 storage.seller_withdawn = true;
-                transfer_to_output(storage.current_bid, storage.buy_asset, sender);
+
+                // No one placed a bid
+                if (current_bid == 0) {
+                    transfer_to_output(storage.sell_amount, storage.sell_asset, storage.seller);
+                } else { 
+                    transfer_to_output(storage.current_bid, storage.buy_asset, sender);
+                }
             },
             // Anyone with a failed bid is withdrawing
             _ => {
