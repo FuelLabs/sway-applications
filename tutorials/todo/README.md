@@ -5,7 +5,7 @@
     <img src="../../logo.png" alt="Logo" width="700" height="170">
   </a>
 
-  <h3 align="center">React Todo</h3>
+  <h3 align="center">Sway Todo</h3>
 
   <p align="center">
     Sway Todo List Smart Contract with React and Fuel v2 TypeScript SDK
@@ -22,30 +22,22 @@
 
 ## Table of contents
 
-- [SDK documentation](https://fuellabs.github.io/fuels-ts/)
 - [About](#about)
-  - [Built With](#built-with)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
+  - [Usage](#usage)
   - [Walkthrough](#walkthrough)
-- [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## About
 
-![Demo Screen Shot](img/preview.png)
+In this tutorial, we create a moderately complex Sway Contract that implements the basic structures needed for a typical todo list application. This shows how a Sway program can store structured variable data and interact with it on the Fuel VM at runtime and on a React web app via the [TypeScript SDK](https://fuellabs.github.io/fuels-ts/).
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-### Built With
-
-- [Sway](https://fuellabs.github.io/sway/latest/)
-- [fuels-ts](https://fuellabs.github.io/fuels-ts/)
-- [React.js](https://reactjs.org/)
-- [TypeChain](https://github.com/dethcrypto/TypeChain)
-- [TypeScript](https://www.typescriptlang.org/)
+<p align="center">
+  ![Demo Screen Shot](img/preview.png)
+</p>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -60,29 +52,36 @@ This application continues building on top of the baseline [react counter applic
 Your machine will need to have a few things installed in order to run a local fuel node and this React application:
 
 - [The latest LTS version of Node.js](https://nodejs.org/)
-- [The latest stable Rust toolchain](https://fuellabs.github.io/sway/latest/introduction/installation.html#dependencies)
-- [forc and fuel-core binaries](https://fuellabs.github.io/sway/latest/introduction/installation.html)
+- [The latest forc and fuel-core binaries](https://fuellabs.github.io/sway/latest/introduction/installation.html#dependencies)
 
 ### Installation
 
-0. Before beginning, verify that you have completed all [Prerequisite](#prerequisites) installations.
-
-1. Clone the repo
-
-```sh
-git clone https://github.com/FuelLabs/sway-applications.git
-```
-
-2. Open this demo application
+Open this demo application
 
 ```sh
 cd tutorials/todo
 ```
 
-3. Install NPM packages
+Install NPM packages
 
 ```sh
 npm i
+```
+
+### Usage
+
+To quickly run this demo application, follow these steps, or see detailed tutorial below
+
+Run React application in dev mode, make sure to configure a new `.env` file.
+
+```sh
+npm run dev
+```
+
+View in local browser
+
+```sh
+open http://localhost:3000
 ```
 
 ### Walkthrough
@@ -99,13 +98,13 @@ In this tutorial, we will complete the following tasks:
 
 Our demo application uses a todo contract with methods for interacting with a stored todo list, read more about [contract storage here](https://fuellabs.github.io/sway/latest/blockchain-development/storage.html).
 
-In this demo, our Sway program has these methods, [see main.sw](src/main.sw):
+Take a look at the following [abi.sw](src/abi.sw) of the program:
 
 ```rust
 fn get_todos() -> [Todo; 5];
-fn add_todo(index: u8, value: str[20]) -> [Todo; 5];
-fn toggle_todo(index: u8) -> [Todo; 5];
-fn remove_todo(index: u8) -> [Todo; 5];
+fn add_todo(index: u64, value: str[20]) -> [Todo; 5];
+fn toggle_todo(index: u64) -> [Todo; 5];
+fn remove_todo(index: u64) -> [Todo; 5];
 ```
 
 This program utilizes a Sway struct, allowing storage of more advanced data structures.
@@ -137,7 +136,7 @@ FUEL_PROVIDER_URL="<YOUR FUEL CORE URL>"
 CONTRACT_ID="<YOUR CONTRACT ID>" # see below
 ```
 
-For `CONTRACT_ID`, once you have your environment variables ready, run this command to deploy your Sway contract to your local Fuel provider:
+For `CONTRACT_ID`, once you have your environment variables ready, run this command in your project folder to deploy your Sway contract to your local Fuel provider:
 
 ```sh
 npm run deploy-contract
@@ -169,16 +168,7 @@ Finally, connect to your contract via the Factory, to obtain an instance of the 
 const contractInstance = Factory.connect(process.env.CONTRACT_ID, wallet);
 ```
 
-The contract instance has access to all of Smart Contracts methods created earlier. A snippet of the Sway program methods for convenience:
-
-```rust
-fn get_todos() -> [Todo; 5];
-fn add_todo(index: u8, value: str[20]) -> [Todo; 5];
-fn toggle_todo(index: u8) -> [Todo; 5];
-fn remove_todo(index: u8) -> [Todo; 5];
-```
-
-And the same methods available in JavaScript:
+The contract instance has access to all of Smart Contracts methods created earlier, here are the same methods available in JavaScript:
 
 ```javascript
 let newValue = await contractInstance.submit.get_todos();
@@ -208,29 +198,13 @@ const App = () => {
 };
 ```
 
-To run the demo React application, use this command:
+To run the demo React application, use this command in the project folder:
 
 ```sh
 npm run dev
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-## Usage
-
-To quickly run this demo application, follow these steps, or see detailed tutorial above
-
-1. Run React application in dev mode, make sure to configure a new `.env` file.
-
-```sh
-npm run dev
-```
-
-2. View in local browser
-
-```sh
-open http://localhost:3000
-```
 
 ## Contributing
 
