@@ -1,5 +1,5 @@
 {
-  "name": "react-sway-counter",
+  "name": "sway-counter",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",

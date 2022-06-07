@@ -1,29 +1,25 @@
 contract;
 
-use std::*;
-use core::*;
-use std::storage::*;
+dep abi;
 
-abi CounterContract {
-    fn increment_counter(value: u64) -> u64;
-    fn decrement_counter(value: u64) -> u64;
-    fn get_counter() -> u64;
+use abi::Counter;
+
+storage {
+    counter: u64
 }
 
-const COUNTER_KEY = 0x0000000000000000000000000000000000000000000000000000000000000000;
+impl Counter for Contract {
+    fn increment() {
+        storage.counter = storage.counter + 1;
+    }
 
-impl CounterContract for Contract {
-    fn increment_counter(value: u64) -> u64 {
-        let new_value = get::<u64>(COUNTER_KEY) + value;
-        store(COUNTER_KEY, new_value);
-        new_value
+    fn decrement() {
+        if storage.counter != 0 {
+            storage.counter = storage.counter - 1;
+        }
     }
-    fn decrement_counter(value: u64) -> u64 {
-        let new_value = get::<u64>(COUNTER_KEY) - value;
-        store(COUNTER_KEY, new_value);
-        new_value
-    }
+
     fn get_counter() -> u64 {
-        get::<u64>(COUNTER_KEY)
+        storage.counter
     }
 }
