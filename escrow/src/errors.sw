@@ -4,10 +4,8 @@ pub enum AccessError {
     UnauthorizedUser: (),
 }
 
-pub enum InitError {
-    AssetAmountCannotBeZero: (),
-    AssetIdCannotBeZero: (),
-    CannotReinitialize: (),
+pub enum ApproveError {
+    AlreadyApproved: (),
 }
 
 pub enum DepositError {
@@ -17,8 +15,10 @@ pub enum DepositError {
     IncorrectAssetDeposited: (),
 }
 
-pub enum ApproveError {
-    AlreadyApproved: (),
+pub enum InitError {
+    AssetAmountCannotBeZero: (),
+    AssetIdCannotBeZero: (),
+    CannotReinitialize: (),
 }
 
 pub enum StateError {
