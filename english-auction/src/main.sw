@@ -8,19 +8,22 @@ use std::{
     constants::NATIVE_ASSET_ID,
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
     contract_id::ContractId,
+    identity::Identity,
+    option::Option,
     result::*,
+    revert::revert,
     storage::StorageMap,
-    token::transfer_to_output,
+    token::{force_transfer_to_contract, transfer_to_output}
 };
 
 abi EnglishAuction {
     fn bid() -> bool;
     fn buy_reserve() -> bool;
-    fn constructor(seller: Address, sell_asset: ContractId, sell_amount: u64, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool;
-    fn get_balance(address: Address) -> u64;
+    fn constructor(seller: Identity, sell_asset: ContractId, sell_amount: u64, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool;
+    fn get_balance(identity: Identity) -> u64;
     fn get_current_bid() -> u64;
     fn get_end_time() -> u64;
-    fn get_highest_bidder() -> Address;
+    fn get_highest_bidder() -> Identity;
     fn get_sell_amount() -> u64;
     fn get_sell_asset() -> ContractId;
     fn get_reserve() -> u64;
@@ -47,14 +50,14 @@ enum Error {
 storage {
     buy_asset: ContractId,
     current_bid: u64,
-    current_bidder: Address,
-    deposits: StorageMap<Address, u64>,
+    current_bidder: Identity,
+    deposits: StorageMap<Identity, u64>,
     inital_price: u64,
     buyer_withdrawn: bool,
     reserve_price: u64,
     sell_amount: u64,
     sell_asset: ContractId,
-    seller: Address,
+    seller: Identity,
     seller_withdawn: bool,
     state: u64,
     end_time: u64,
@@ -82,14 +85,7 @@ impl EnglishAuction for Contract {
         }
 
         let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Address = match sender.unwrap() {
-            Identity::Address(address) => {
-                address
-            },
-            _ => {
-                revert(0);
-            },
-        };
+        let sender: Identity = sender.unwrap();
 
         let balance = storage.deposits.get(sender);
         require(msg_amount() + balance <= storage.current_bid, Error::IncorrectAmountProvided);
@@ -117,14 +113,7 @@ impl EnglishAuction for Contract {
         require(storage.reserve_price != 0, Error::NoReserveSet);
 
         let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Address = match sender.unwrap() {
-            Identity::Address(address) => {
-                address
-            },
-            _ => {
-                revert(0);
-            },
-        };
+        let sender: Identity = sender.unwrap();
 
         let balance = storage.deposits.get(sender);
         require(msg_amount() + balance != storage.reserve_price, Error::IncorrectAmountProvided);
@@ -136,7 +125,14 @@ impl EnglishAuction for Contract {
         storage.current_bid = msg_amount() + balance;
         storage.buyer_withdrawn = true;
 
-        transfer_to_output(storage.sell_amount, storage.sell_asset, sender);
+        match sender {
+            Identity::Address(sender) => {
+                transfer_to_output(storage.sell_amount, storage.sell_asset, sender);    
+            },
+            Identity::ContractId(sender) => {
+                force_transfer_to_contract(storage.sell_amount, storage.sell_asset, sender);
+            },
+        };
         true
     }
 
@@ -152,7 +148,7 @@ impl EnglishAuction for Contract {
     /// - The specified buy asset is the 0 address
     /// - The inital price is higher than the reserve price if a reserve price is set
     /// - The time for the auction to end it 0
-    fn constructor(seller: Address, sell_asset: ContractId, sell_amount: u64, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool {
+    fn constructor(seller: Identity, sell_asset: ContractId, sell_amount: u64, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool {
         require(storage.state == 0, Error::CannotReinitialize);
         require(sell_asset == msg_asset_id(), Error::IncorrectAssetProvided);
         require(sell_amount == msg_amount(), Error::IncorrectAmountProvided);
@@ -174,15 +170,15 @@ impl EnglishAuction for Contract {
         true
     }
 
-    /// Returns the balance of the Address's balance
+    /// Returns the balance of the Address's buy asset deposits
     ///
     /// # Panics
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    fn get_balance(address: Address) -> u64 {
+    fn get_balance(identity: Identity) -> u64 {
         require(storage.state != 0, Error::AuctionNotInitalized);
-        storage.deposits.get(address)
+        storage.deposits.get(identity)
     }
 
     /// Returns the current bid of the auction
@@ -213,7 +209,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    fn get_highest_bidder() -> Address {
+    fn get_highest_bidder() -> Identity {
         require(storage.state != 0, Error::AuctionNotInitalized);
         storage.current_bidder
     }
@@ -282,14 +278,7 @@ impl EnglishAuction for Contract {
         }
 
         let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Address = match sender.unwrap() {
-            Identity::Address(address) => {
-                address
-            },
-            _ => {
-                revert(0);
-            },
-        };
+        let sender: Identity = sender.unwrap();
 
         let current_bidder = storage.current_bidder;
         let seller = storage.seller;
@@ -298,33 +287,60 @@ impl EnglishAuction for Contract {
             // The buyer is withdrawing
             current_bidder => {
                 require(!storage.buyer_withdrawn, Error::UserHasAlreadyWithdrawn);
-                
                 storage.buyer_withdrawn = true;
-                transfer_to_output(storage.sell_amount, storage.sell_asset, sender);
+
+                match sender {
+                    Identity::Address(sender) => {
+                        transfer_to_output(storage.sell_amount, storage.sell_asset, sender);    
+                    },
+                    Identity::ContractId(sender) => {
+                        force_transfer_to_contract(storage.sell_amount, storage.sell_asset, sender);
+                    },
+                };
             },
             // The seller is withdrawing
             seller => {
                 require(!storage.seller_withdawn, Error::UserHasAlreadyWithdrawn);
-                
                 storage.seller_withdawn = true;
 
                 // No one placed a bid
-                if (current_bid == 0) {
-                    transfer_to_output(storage.sell_amount, storage.sell_asset, storage.seller);
+                if (storage.current_bid == 0) {
+                    match sender {
+                        Identity::Address(sender) => {
+                            transfer_to_output(storage.sell_amount, storage.sell_asset, sender);    
+                        },
+                        Identity::ContractId(sender) => {
+                            force_transfer_to_contract(storage.sell_amount, storage.sell_asset, sender);
+                        },
+                    };
                 } else { 
-                    transfer_to_output(storage.current_bid, storage.buy_asset, sender);
+                    match sender {
+                        Identity::Address(sender) => {
+                            transfer_to_output(storage.current_bid, storage.buy_asset, sender);    
+                        },
+                        Identity::ContractId(sender) => {
+                            force_transfer_to_contract(storage.current_bid, storage.buy_asset, sender);
+                        },
+                    };
                 }
             },
             // Anyone with a failed bid is withdrawing
             _ => {
-                let amount = storage.deposits.get(sender);
-                require(amount > 0, Error::UserHasAlreadyWithdrawn);
+                let deposit_amount = storage.deposits.get(sender);
+                require(deposit_amount > 0, Error::UserHasAlreadyWithdrawn);
 
                 storage.deposits.insert(sender, 0);
-                transfer_to_output(amount, storage.buy_asset, sender);
+
+                match sender {
+                    Identity::Address(sender) => {
+                        transfer_to_output(deposit_amount, storage.buy_asset, sender);    
+                    },
+                    Identity::ContractId(sender) => {
+                        force_transfer_to_contract(deposit_amount, storage.buy_asset, sender);
+                    },
+                };
             },
         }
-
         true
     }
 }
