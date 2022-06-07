@@ -1,25 +1,71 @@
-use fuels::{prelude::*, tx::ContractId};
+use fuel_tx::ContractId;
+use fuels::prelude::*;
 use fuels_abigen_macro::abigen;
 
 // Load abi from json
-abigen!(MyContract, "out/debug/english-auction-abi.json");
+abigen!(EnglishAuction, "out/debug/english-auction-abi.json");
+abigen!(Asset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
-async fn get_contract_instance() -> (MyContract, ContractId) {
-    // Launch a local network and deploy the contract
-    let wallet = launch_provider_and_get_single_wallet().await;
-
-    let id = Contract::deploy("./out/debug/english-auction.bin", &wallet, TxParameters::default())
-        .await
-        .unwrap();
-
-    let instance = MyContract::new(id.to_string(), wallet);
-
-    (instance, id)
+struct Metadata {
+    asset: Option<Asset>,
+    auction: EnglishAuction,
+    wallet: LocalWallet,
 }
 
-#[tokio::test]
-async fn can_get_contract_id() {
-    let (_instance, _id) = get_contract_instance().await;
+async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId) {
+    // Setup 3 test wallets
+    let wallets = launch_provider_and_get_wallets(WalletsConfig {
+        num_wallets: 4,
+        coins_per_wallet: 1,
+        coin_amount: 1000000,
+    })
+    .await;
 
-    // Now you have an instance of your contract you can use to test each function
+    // Get the wallets from that provider
+    let wallet1 = &wallets[0];
+    let wallet2 = &wallets[1];
+    let wallet3 = &wallets[2];
+    let wallet4 = &wallets[3];
+
+    let auction_id = Contract::deploy(
+        "./out/debug/english-auction-abi.bin", 
+        &wallet1, 
+        TxParameters::default()
+    )
+    .await
+    .unwrap();
+
+    let asset_id = Contract::deploy(
+        "./tests/artifacts/asset/out/debug/asset.bin",
+        &wallet1,
+        TxParameters::default(),
+    )
+    .await
+    .unwrap();
+
+    let deploy_wallet = Metadata {
+        asset: Some(Asset::new(asset_id.to_string(), wallet1.clone())),
+        auction: EnglishAuction::new(auction_id.to_string(), wallet1.clone()),
+        wallet: wallet1.clone(),
+    };
+
+    let owner1 = Metadata {
+        asset: Some(Asset::new(asset_id.to_string(), wallet2.clone())),
+        auction: EnglishAuction::new(auction_id.to_string(), wallet2.clone()),
+        wallet: wallet2.clone(),
+    };
+
+    let owner2 = Metadata {
+        asset: Some(Asset::new(asset_id.to_string(), wallet3.clone())),
+        auction: EnglishAuction::new(auction_id.to_string(), wallet3.clone()),
+        wallet: wallet3.clone(),
+    };
+    
+    let owner3 = Metadata {
+        asset: Some(Asset::new(asset_id.to_string(), wallet4.clone())),
+        auction: EnglishAuction::new(auction_id.to_string(), wallet4.clone()),
+        wallet: wallet4.clone(),
+    };
+
+    (deploy_wallet, owner1, owner2, owner3, asset_id)
 }

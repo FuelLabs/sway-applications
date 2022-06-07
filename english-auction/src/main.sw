@@ -23,7 +23,7 @@ abi EnglishAuction {
     fn get_balance(identity: Identity) -> u64;
     fn get_current_bid() -> u64;
     fn get_end_time() -> u64;
-    fn get_highest_bidder() -> Identity;
+    fn get_highest_bidder() -> Option<Identity>;
     fn get_sell_amount() -> u64;
     fn get_sell_asset() -> ContractId;
     fn get_reserve() -> u64;
@@ -209,9 +209,9 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    fn get_highest_bidder() -> Identity {
+    fn get_highest_bidder() -> Option<Identity> {
         require(storage.state != 0, Error::AuctionNotInitalized);
-        storage.current_bidder
+        Option::Some(storage.current_bidder)
     }
 
     /// Returns the amount of asset that is being sold
