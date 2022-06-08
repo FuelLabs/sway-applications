@@ -22,8 +22,11 @@ use abi::DutchAuction;
 storage {
     /// Whether or not the constructor function has been called yet
     constructed: bool,
+    /// Price at the very start, usually higher than any expected price of sale
     startingPrice: u64,
+    /// The Price that the auction will eventually reach if no bids are recieved. Can also be used as the reserve price
     endingPrice: u64,
+    /// From what point will the bids be allowed + from what point the price will start to drop
     startTime: u64,
     /// Only used for calculation of the price, users can still bid past this time for endingPrice unless its ended by the admin
     endTime: u64,
@@ -48,6 +51,7 @@ enum Error {
     AuctionCannotEndInThePast: (),
     AuctionCannotStartInThePast: (),
     AuctionCannotEndBeforeItStarts: (),
+    AuctionNotYetStarted: (),
 }
 
 fn win() {
@@ -74,20 +78,26 @@ impl DutchAuction for Contract {
 
         require(storage.constructed == true, Error::ContractNotConstructedYet);
 
-    
+        /// Checks for correct asset_id being sent and high enough amount being sent
         require(msg_asset_id() == storage.asset_id, Error::WrongAssetSent);
         require(msg_amount() >= price(), Error::BidTooLow);
+
+        /// Cannot bid before auction starts
+        require(height() >= storage.startTime, Error::AuctionNotYetStarted)
         
+        /// If ended == true, someone already bid or the admin prematurely ended the auction
         require(!storage.ended, Error::AuctionAlreadyEnded);
 
-        //Disallows furthur bids
+        /// Disallows furthur bids
         storage.ended = true;
 
+        /// If someone sends more than the current price, refund the extra amount 
         if msg_amount() > price() {
             let return_amount = msg_amount() - price();
             transfer_to_output(return_amount, storage.asset_id, get_sender());
         }
 
+        /// Logic on win put into the win function
         win();
     }
 
