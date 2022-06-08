@@ -56,7 +56,7 @@ enum Error {
 
 impl DutchAuction for Contract {
     fn get_price() -> u64 {
-        return price();
+        price()
     }
 
     fn set_beneficiary(new_beneficiary: Address) {
