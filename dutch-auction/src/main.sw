@@ -38,6 +38,7 @@ storage {
 fn win() {
     // Do stuff on the win event
     transfer_to_output(price(), ~ContractId::from(storage.asset_id), storage.beneficiary);
+    storage.ended = true;
 }
 
 impl MyContract for Contract {
@@ -66,6 +67,20 @@ impl MyContract for Contract {
 
         win();
     }
+
+    fn setup_auction(startp: u64, endp: u64, startt: u64, endt: u64) {
+        assert(get_sender() == admin);
+        assert(startp > endp);
+        assert(endt > height());
+        assert(startt > height());
+        assert(endt > startt);
+
+        storage.startingPrice = startp;
+        storage.endingPrice = endp;
+        storage.startTime = startt;
+        storage.endTime = endtt;
+        storage.ended = false;
+    }
 }
 
 fn price() -> u64 {
@@ -75,6 +90,12 @@ fn price() -> u64 {
     let price_shift = price_difference / duration;
 
     let now = height() - storage.startTime; //Current block height - start will tell us how far we are into the auction now
+    //Cap how far we are into the auction by the duration, so price doesnt go into negative
+    let now = if now > duration {
+        duration
+    } else {
+        now
+    }
 
     //price_shift * now tells us how much the price has reduced by now
     return storage.startingPrice - (price_shift * now)
@@ -95,4 +116,8 @@ fn get_sender() -> Address {
         revert(0);
     };
     ad
+}
+
+fn endauc() {
+
 }
