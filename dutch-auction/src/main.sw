@@ -38,7 +38,11 @@ storage {
 
 fn win() {
     // Do stuff on the win event
+
+    //Currently just sends the bid amount to the beneficiary
     transfer_to_output(price(), ~ContractId::from(storage.asset_id), storage.beneficiary);
+
+    //Disallows furthur bids
     storage.ended = true;
 }
 
