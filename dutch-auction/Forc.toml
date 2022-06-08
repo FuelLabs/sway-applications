@@ -1,6 +1,6 @@
 [project]
 name = "dutch-auction"
-authors = ["Swaystar"]
+authors = ["Fuel Labs <contact@fuel.sh>"]
 entry = "main.sw"
 license = "Apache-2.0"
 
