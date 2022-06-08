@@ -55,6 +55,14 @@ enum Error {
 }
 
 impl DutchAuction for Contract {
+    fn constructor(admin: Address, asset: ContractId) {
+        storage.constructed = true;
+        storage.asset_id = asset;
+
+        storage.beneficiary = admin;
+        storage.admin = admin;
+    }
+
     fn get_price() -> u64 {
         price()
     }
@@ -95,7 +103,7 @@ impl DutchAuction for Contract {
         win();
     }
 
-    fn setup_auction(startp: u64, endp: u64, startt: u64, endt: u64) {
+    fn setup_auction(startprice: u64, endprice: u64, starttime: u64, endtime: u64) {
         require(storage.constructed == true, Error::ContractNotConstructedYet);
 
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
@@ -105,10 +113,10 @@ impl DutchAuction for Contract {
         require(startt > height(), Error::AuctionCannotStartInThePast);
         require(endt > startt, Error::AuctionCannotEndBeforeItStarts);
 
-        storage.startingPrice = startp;
-        storage.endingPrice = endp;
-        storage.startTime = startt;
-        storage.endTime = endt;
+        storage.startingPrice = startprice;
+        storage.endingPrice = endprice;
+        storage.startTime = starttime;
+        storage.endTime = endtime;
         storage.ended = false;
     }
 
@@ -122,13 +130,6 @@ impl DutchAuction for Contract {
         storage.ended = true;
     }
 
-    fn constructor(admin: Address, asset: ContractId) {
-        storage.constructed = true;
-        storage.asset_id = asset;
-
-        storage.beneficiary = admin;
-        storage.admin = admin;
-    }
 }
 
 fn win() {
