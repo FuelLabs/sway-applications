@@ -87,7 +87,7 @@ impl DutchAuction for Contract {
 
     fn setup_auction(startp: u64, endp: u64, startt: u64, endt: u64) {
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
-        require(storage.ended == true, Error::AuctionInProgress)
+        require(storage.ended == true, Error::AuctionInProgress);
         require(startp > endp, Error::EndPriceCannotBeLargerThanStartPrice);
         require(endt > height(), Error::AuctionCannotEndInThePast);
         require(startt > height(), Error::AuctionCannotStartInThePast);
