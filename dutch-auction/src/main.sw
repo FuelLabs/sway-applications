@@ -108,10 +108,10 @@ impl DutchAuction for Contract {
 
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
         require(storage.ended == true, Error::AuctionInProgress);
-        require(startp > endp, Error::EndPriceCannotBeLargerThanStartPrice);
-        require(endt > height(), Error::AuctionCannotEndInThePast);
-        require(startt >= height(), Error::AuctionCannotStartInThePast);
-        require(endt > startt, Error::AuctionCannotEndBeforeItStarts);
+        require(startprice > endprice, Error::EndPriceCannotBeLargerThanStartPrice);
+        require(endtime > height(), Error::AuctionCannotEndInThePast);
+        require(starttime >= height(), Error::AuctionCannotStartInThePast);
+        require(endtime > starttime, Error::AuctionCannotEndBeforeItStarts);
 
         storage.startingPrice = startprice;
         storage.endingPrice = endprice;
