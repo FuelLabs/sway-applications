@@ -83,7 +83,7 @@ impl DutchAuction for Contract {
         require(msg_amount() >= price(), Error::BidTooLow);
 
         /// Cannot bid before auction starts
-        require(height() >= storage.startTime, Error::AuctionNotYetStarted)
+        require(height() >= storage.startTime, Error::AuctionNotYetStarted);
         
         /// If ended == true, someone already bid or the admin prematurely ended the auction
         require(!storage.ended, Error::AuctionAlreadyEnded);
