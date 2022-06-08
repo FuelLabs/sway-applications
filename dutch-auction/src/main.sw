@@ -118,7 +118,3 @@ fn get_sender() -> Address {
     };
     ad
 }
-
-fn endauc() {
-
-}
