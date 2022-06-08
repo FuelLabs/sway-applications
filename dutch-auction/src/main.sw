@@ -25,11 +25,15 @@ storage {
     startingPrice: u64,
     endingPrice: u64,
     startTime: u64,
+    /// Only used for calculation of the price, users can still bid past this time for endingPrice unless its ended by the admin
     endTime: u64,
+    /// The beneficiary of the proceeds of the auction
     beneficiary: Address = ~Address::from(MY_ADDRESS),
+    /// The Admin Address
     admin: Address = ~Address::from(MY_ADDRESS),
+    /// Whether or not the auction has ended already (Different from endTime, admin can prematurely end the auction.)
     ended: bool,
-    //You can change this in the setup, by default its ETH/AssetId 0
+    /// You can change this in the setup, by default its ETH/AssetId 0
     asset_id: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
 }
 
@@ -96,6 +100,14 @@ impl DutchAuction for Contract {
         storage.endTime = endt;
         storage.ended = false;
         storage.asset_id = asset;
+    }
+
+    fn end_auction() {
+        /// Only the admin can end the auction (prematurely)
+        require(get_sender() == storage.admin, Error::SenderNotAdmin);
+
+        /// If there is no auction going on currently the ended value will already be true so no need to check for that case
+        storage.ended = true;
     }
 }
 
