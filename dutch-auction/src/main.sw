@@ -2,19 +2,19 @@ contract;
 
 use std::{
     address::Address,
-    contract_id::ContractId,
+    assert::assert,
     block::height,
     chain::auth::msg_sender,
-    assert::assert,
+    context::{msg_amount, call_frames::msg_asset_id},
+    result::*,
+    contract_id::ContractId,
+    identity::Identity,
     revert::revert,
     storage::StorageMap,
     token::transfer_to_output,
-    context::{msg_amount, call_frames::msg_asset_id},
-    result::*,
-    identity::Identity,
 };
 
-abi MyContract {
+abi DutchAuction {
     fn get_price() -> u64;
     fn set_beneficiary(new_beneficiary: Address);
     fn bid();
@@ -46,7 +46,7 @@ fn win() {
     storage.ended = true;
 }
 
-impl MyContract for Contract {
+impl DutchAuction for Contract {
     fn get_price() -> u64 {
         return price();
     }
