@@ -1,12 +1,10 @@
-//use fuel_tx::{AssetId, ContractId, Address};
-use fuel_tx::ContractId;
-use fuels::prelude::*;
+use fuels::{prelude::*, tx::ContractId};
 use fuels_abigen_macro::abigen;
 
 // Load abi from json
 abigen!(Nft, "out/debug/NFT-abi.json");
 abigen!(Asset, "tests/artifacts/asset/out/debug/asset-abi.json");
-
+/*
 struct Metadata {
     asset: Option<Asset>,
     nft: Nft,
@@ -1372,4 +1370,4 @@ mod transfer_from {
             .value
         );  
     }
-}
+}*/
