@@ -90,7 +90,7 @@ fn price() -> u64 {
     let price_shift = price_difference / duration;
 
     let now = height() - storage.startTime; //Current block height - start will tell us how far we are into the auction now
-    //Cap how far we are into the auction by the duration, so price doesnt go into negative
+    //Cap how far we are into the auction by the duration, so price doesnt go into negative or below endprice
     let now = if now > duration {
         duration
     } else {
