@@ -29,8 +29,8 @@ storage {
     beneficiary: Address = ~Address::from(MY_ADDRESS),
     admin: Address = ~Address::from(MY_ADDRESS),
     ended: bool,
-    //Enter the asset id of the currency you want the bid to be in
-    asset_id: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
+    //You can change this in the setup, by default its ETH/AssetId 0
+    asset_id: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
 }
 
 enum Error {
@@ -49,7 +49,7 @@ fn win() {
     // Do stuff on the win event
 
     //Currently just sends the bid amount to the beneficiary
-    transfer_to_output(price(), ~ContractId::from(storage.asset_id), storage.beneficiary);
+    transfer_to_output(price(), storage.asset_id, storage.beneficiary);
 }
 
 impl DutchAuction for Contract {
@@ -66,7 +66,7 @@ impl DutchAuction for Contract {
     fn bid() {
         //Since this is the dutch auction, first bid wins
 
-        require(msg_asset_id() == ~ContractId::from(storage.asset_id), Error::WrongAssetSent);
+        require(msg_asset_id() == storage.asset_id, Error::WrongAssetSent);
         require(msg_amount() >= price(), Error::BidTooLow);
         
         require(!storage.ended, Error::AuctionAlreadyEnded);
@@ -76,13 +76,13 @@ impl DutchAuction for Contract {
 
         if msg_amount() > price() {
             let return_amount = msg_amount() - price();
-            transfer_to_output(return_amount, ~ContractId::from(storage.asset_id), get_sender());
+            transfer_to_output(return_amount, storage.asset_id, get_sender());
         }
 
         win();
     }
 
-    fn setup_auction(startp: u64, endp: u64, startt: u64, endt: u64) {
+    fn setup_auction(startp: u64, endp: u64, startt: u64, endt: u64, asset: ContractId) {
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
         require(storage.ended == true, Error::AuctionInProgress);
         require(startp > endp, Error::EndPriceCannotBeLargerThanStartPrice);
@@ -95,6 +95,7 @@ impl DutchAuction for Contract {
         storage.startTime = startt;
         storage.endTime = endt;
         storage.ended = false;
+        storage.asset_id = asset;
     }
 }
 
