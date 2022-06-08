@@ -2,7 +2,7 @@ contract;
 
 use std::{
     address::Address,
-    assert::assert,
+    assert::require,
     block::height,
     chain::auth::msg_sender,
     context::{msg_amount, call_frames::msg_asset_id},
@@ -36,14 +36,23 @@ storage {
     asset_id: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
 }
 
+enum Error {
+    SenderNotAdmin: (),
+    AuctionInProgress: (),
+    AuctionAlreadyEnded: (),
+    BidTooLow: (),
+    WrongAssetSent: (),
+    EndPriceCannotBeLargerThanStartPrice: (),
+    AuctionCannotEndInThePast: (),
+    AuctionCannotStartInThePast: (),
+    AuctionCannotEndBeforeItStarts: (),
+}
+
 fn win() {
     // Do stuff on the win event
 
     //Currently just sends the bid amount to the beneficiary
     transfer_to_output(price(), ~ContractId::from(storage.asset_id), storage.beneficiary);
-
-    //Disallows furthur bids
-    storage.ended = true;
 }
 
 impl DutchAuction for Contract {
@@ -52,17 +61,20 @@ impl DutchAuction for Contract {
     }
 
     fn set_beneficiary(new_beneficiary: Address) {
-        assert(get_sender() == storage.admin);
+        require(get_sender() == storage.admin, Error::SenderNotAdmin);
 
         storage.beneficiary = new_beneficiary;
     }
 
     fn bid() {
         //Since this is the dutch auction, first bid wins
-        assert(msg_amount() >= price());
-        assert(msg_asset_id() == ~ContractId::from(storage.asset_id));
-        assert(!storage.ended);
 
+        require(msg_asset_id() == ~ContractId::from(storage.asset_id), Error::WrongAssetSent);
+        require(msg_amount() >= price(), Error::BidTooLow);
+        
+        require(!storage.ended, Error::AuctionAlreadyEnded);
+
+        //Disallows furthur bids
         storage.ended = true;
 
         if msg_amount() > price() {
@@ -74,11 +86,12 @@ impl DutchAuction for Contract {
     }
 
     fn setup_auction(startp: u64, endp: u64, startt: u64, endt: u64) {
-        assert(get_sender() == storage.admin);
-        assert(startp > endp);
-        assert(endt > height());
-        assert(startt > height());
-        assert(endt > startt);
+        require(get_sender() == storage.admin, Error::SenderNotAdmin);
+        require(storage.ended == true, Error::AuctionInProgress)
+        require(startp > endp, Error::EndPriceCannotBeLargerThanStartPrice);
+        require(endt > height(), Error::AuctionCannotEndInThePast);
+        require(startt > height(), Error::AuctionCannotStartInThePast);
+        require(endt > startt, Error::AuctionCannotEndBeforeItStarts);
 
         storage.startingPrice = startp;
         storage.endingPrice = endp;
