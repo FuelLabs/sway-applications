@@ -1,32 +1,30 @@
 library events;
 
-dep entity;
-
-use entity::Entity;
+use std::identity::Identity;
 
 pub struct ApprovalEvent {
-    owner: Entity,
-    approved: Entity,
+    owner: Identity,
+    approved: Identity,
     token_id: u64
 }
 
 pub struct BurnEvent {
-    owner: Entity,
+    owner: Identity,
     token_id: u64
 }
 
 pub struct MintEvent {
-    owner: Entity,
+    owner: Identity,
     token_id: u64
 }
 
 pub struct OperatorEvent {
-    owner: Entity,
-    operator: Entity
+    owner: Identity,
+    operator: Identity
 }
 
 pub struct TransferEvent {
-    from: Entity,
-    to: Entity,
+    from: Identity,
+    to: Identity,
     token_id: u64
 }
