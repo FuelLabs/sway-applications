@@ -18,26 +18,27 @@ use std::{
 
 use abi::DutchAuction;
 
-//Set this to your own address
-const MY_ADDRESS: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
 
 storage {
+    /// Whether or not the constructor function has been called yet
+    constructed: bool,
     startingPrice: u64,
     endingPrice: u64,
     startTime: u64,
     /// Only used for calculation of the price, users can still bid past this time for endingPrice unless its ended by the admin
     endTime: u64,
     /// The beneficiary of the proceeds of the auction
-    beneficiary: Address = ~Address::from(MY_ADDRESS),
+    beneficiary: Address,
     /// The Admin Address
-    admin: Address = ~Address::from(MY_ADDRESS),
+    admin: Address,
     /// Whether or not the auction has ended already (Different from endTime, admin can prematurely end the auction.)
     ended: bool,
-    /// You can change this in the setup, by default its ETH/AssetId 0
+    /// You can change this in the constructor, by default its ETH/AssetId 0
     asset_id: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
 }
 
 enum Error {
+    ContractNotConstructedYet: (),
     SenderNotAdmin: (),
     AuctionInProgress: (),
     AuctionAlreadyEnded: (),
@@ -62,14 +63,18 @@ impl DutchAuction for Contract {
     }
 
     fn set_beneficiary(new_beneficiary: Address) {
+        require(storage.constructed == true, Error::ContractNotConstructedYet);
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
 
         storage.beneficiary = new_beneficiary;
     }
 
     fn bid() {
-        //Since this is the dutch auction, first bid wins
+        /// Since this is a dutch auction, first bid wins
 
+        require(storage.constructed == true, Error::ContractNotConstructedYet);
+
+    
         require(msg_asset_id() == storage.asset_id, Error::WrongAssetSent);
         require(msg_amount() >= price(), Error::BidTooLow);
         
@@ -86,7 +91,9 @@ impl DutchAuction for Contract {
         win();
     }
 
-    fn setup_auction(startp: u64, endp: u64, startt: u64, endt: u64, asset: ContractId) {
+    fn setup_auction(startp: u64, endp: u64, startt: u64, endt: u64) {
+        require(storage.constructed == true, Error::ContractNotConstructedYet);
+
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
         require(storage.ended == true, Error::AuctionInProgress);
         require(startp > endp, Error::EndPriceCannotBeLargerThanStartPrice);
@@ -99,15 +106,24 @@ impl DutchAuction for Contract {
         storage.startTime = startt;
         storage.endTime = endt;
         storage.ended = false;
-        storage.asset_id = asset;
     }
 
     fn end_auction() {
+        require(storage.constructed == true, Error::ContractNotConstructedYet);
+
         /// Only the admin can end the auction (prematurely)
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
 
         /// If there is no auction going on currently the ended value will already be true so no need to check for that case
         storage.ended = true;
+    }
+
+    fn constructor(admin: Address, asset: ContractId) {
+        storage.constructed = true;
+        storage.asset_id = asset;
+
+        storage.beneficiary = admin;
+        storage.admin = admin;
     }
 }
 
