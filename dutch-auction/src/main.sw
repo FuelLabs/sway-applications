@@ -54,13 +54,6 @@ enum Error {
     AuctionNotYetStarted: (),
 }
 
-fn win() {
-    // Do stuff on the win event
-
-    //Currently just sends the bid amount to the beneficiary
-    transfer_to_output(price(), storage.asset_id, storage.beneficiary);
-}
-
 impl DutchAuction for Contract {
     fn get_price() -> u64 {
         return price();
@@ -97,7 +90,8 @@ impl DutchAuction for Contract {
             transfer_to_output(return_amount, storage.asset_id, get_sender());
         }
 
-        /// Logic on win put into the win function
+        /// Logic on win put into the win function. Using a function here so that its easier to modify the logic 
+        /// post-auction-win and so this contract template can be reused for multiple things
         win();
     }
 
@@ -135,6 +129,15 @@ impl DutchAuction for Contract {
         storage.beneficiary = admin;
         storage.admin = admin;
     }
+}
+
+fn win() {
+    ///  Do stuff on a winning bid, this function is called whenever a winning bid is recieved.
+
+    /// Add whatever logic you may want to execute on a win
+
+    //Currently just sends the bid amount to the beneficiary
+    transfer_to_output(price(), storage.asset_id, storage.beneficiary);
 }
 
 fn price() -> u64 {
