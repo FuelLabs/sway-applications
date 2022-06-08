@@ -3,13 +3,14 @@ contract;
 use std::{
     assert::require,
     chain::auth::{AuthError, msg_sender},
-    context::{call_frames::msg_asset_id, msg_amount},
+    context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
 };
 
 abi DaoVoting {
     fn constructor(gov_token: ContractId, voting_period: u64, approval_percentage: u64, proposal: b256) -> bool;
     fn deposit() -> bool;
+    fn get_balance() -> u64;
 }
 
 enum Error {
@@ -67,5 +68,10 @@ impl DaoVoting for Contract {
         require(msg_amount() > 0, Error::NoAssetsSent);
 
         true
+    }
+
+    /// Returns the amount of governance tokens in this contract
+    fn get_balance() -> u64 {
+        this_balance(storage.gov_token)
     }
 }
