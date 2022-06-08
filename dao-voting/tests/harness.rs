@@ -67,7 +67,25 @@ async fn panics_when_reinitialized() {
 }
 
 #[tokio::test]
-async fn panics_with_incorrect_voting_period() {}
+#[should_panic]
+async fn panics_with_incorrect_voting_period() {
+    let (dao_voting, dao_voting_id, gov_token_id) = setup().await;
+    dao_voting
+        .constructor(gov_token_id, 0, 10, [0; 32])
+        .call()
+        .await
+        .unwrap()
+        .value;
+}
 
 #[tokio::test]
-async fn panics_with_incorrect_approval_percentage() {}
+#[should_panic]
+async fn panics_with_incorrect_approval_percentage() {
+    let (dao_voting, dao_voting_id, gov_token_id) = setup().await;
+    dao_voting
+        .constructor(gov_token_id, 10, 0, [0; 32])
+        .call()
+        .await
+        .unwrap()
+        .value;
+}
