@@ -6,7 +6,7 @@ use std::{
     address::Address,
     assert::require,
     block::height,
-    chain::auth::msg_sender,
+    chain::auth::{msg_sender, AuthError},
     context::{msg_amount, call_frames::msg_asset_id},
     result::*,
     contract_id::ContractId,
@@ -159,19 +159,14 @@ fn calculate_price() -> u64 {
     return storage.opening_price - (price_shift * now);
 }
 
+/// Helper function to avoid having to repeat this code
 fn get_sender() -> Address {
-    // For some reason msg_sender().unwrap() doesnt work
-    let unwrapped = 
-    if let Result::Ok(inner_value) = msg_sender() {
-            inner_value
-    } else {
-            revert(0);
-    };
+    let a: Result<Identity, AuthError> = msg_sender();
+    let b = a.unwrap();
 
-    let ad = if let Identity::Address(addr) = unwrapped {
-        addr
-    } else {
-        revert(0);
+    let addy = match b {
+        Identity::Address(addr) => addr,
+        _ => revert(0),
     };
-    ad
+    addy
 }
