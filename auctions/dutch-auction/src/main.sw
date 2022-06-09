@@ -60,6 +60,7 @@ enum Error {
     AuctionCannotStartInThePast: (),
     AuctionCannotEndBeforeItStarts: (),
     AuctionNotYetStarted: (),
+    InvalidAuctionID: (),
 }
 
 impl DutchAuction for Contract {
@@ -69,16 +70,21 @@ impl DutchAuction for Contract {
         storage.initialized = true;
     }
 
-    fn get_price(auction_id: u64) -> u64 {
+    fn price(auction_id: u64) -> u64 {
+        /// If the given auction id is higher than the auction count, its an invalid auction_id
+        require(auction_id <= storage.auction_count, Error::InvalidAuctionID);
+
         calculate_price(auction_id)
     }
 
     fn bid(auction_id: u64) {
-        /// Since this is a dutch auction, first bid wins
+        /// In a Dutch auction the first bid wins
+        require(storage.initialized == true, Error::ContractNotYetInitialized);
+
+        /// If the given auction id is higher than the auction count, its an invalid auction_id
+        require(auction_id <= storage.auction_count, Error::InvalidAuctionID);
 
         let mut auction = storage.auctions.get(auction_id);
-
-        require(storage.initialized == true, Error::ContractNotYetInitialized);
 
         /// Checks for correct asset_id being sent and high enough amount being sent
         require(msg_asset_id() == auction.asset_id, Error::WrongAssetSent);
@@ -105,7 +111,7 @@ impl DutchAuction for Contract {
         win(auction_id);
     }
 
-    fn setup_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Address, asset: ContractId) -> u64 {
+    fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Address, asset: ContractId) -> u64 {
         require(storage.initialized == true, Error::ContractNotYetInitialized);
 
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
@@ -135,10 +141,12 @@ impl DutchAuction for Contract {
     fn end_auction(auction_id: u64) {
         require(storage.initialized == true, Error::ContractNotYetInitialized);
 
+        /// If the given auction id is higher than the auction count, its an invalid auction_id
+        require(auction_id <= storage.auction_count, Error::InvalidAuctionID);
+
         /// Only the admin can end the auction (prematurely)
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
 
-        /// If there is no auction going on currently the ended value will already be true so no need to check for that case
         let mut auction = storage.auctions.get(auction_id);
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
