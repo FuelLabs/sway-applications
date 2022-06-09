@@ -36,7 +36,7 @@ struct Auction {
 
 storage {
     /// Whether or not the constructor function has been called yet
-    constructed: bool,
+    initialized: bool,
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
     auctions: StorageMap<u64, Auction>,
     /// The Admin Address
@@ -48,7 +48,7 @@ storage {
 }
 
 enum Error {
-    ContractNotConstructedYet: (),
+    ContractNotYetInitialized: (),
     SenderNotAdmin: (),
     AuctionInProgress: (),
     AuctionAlreadyEnded: (),
@@ -63,7 +63,7 @@ enum Error {
 
 impl DutchAuction for Contract {
     fn constructor(admin: Address, asset: ContractId) {
-        storage.constructed = true;
+        storage.initialized = true;
         storage.asset_id = asset;
 
         storage.admin = admin;
@@ -74,7 +74,7 @@ impl DutchAuction for Contract {
     }
 
     fn set_beneficiary(new_beneficiary: Address, auction_id: u64) {
-        require(storage.constructed == true, Error::ContractNotConstructedYet);
+        require(storage.initialized == true, Error::ContractNotYetInitialized);
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
 
         let mut auction = storage.auctions.get(auction_id);
@@ -87,7 +87,7 @@ impl DutchAuction for Contract {
 
         let mut auction = storage.auctions.get(auction_id);
 
-        require(storage.constructed == true, Error::ContractNotConstructedYet);
+        require(storage.initialized == true, Error::ContractNotYetInitialized);
 
         /// Checks for correct asset_id being sent and high enough amount being sent
         require(msg_asset_id() == storage.asset_id, Error::WrongAssetSent);
@@ -115,7 +115,7 @@ impl DutchAuction for Contract {
     }
 
     fn setup_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64) -> u64 {
-        require(storage.constructed == true, Error::ContractNotConstructedYet);
+        require(storage.initialized == true, Error::ContractNotYetInitialized);
 
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
         require(opening_price > reserve_price, Error::EndPriceCannotBeLargerThanStartPrice);
@@ -140,7 +140,7 @@ impl DutchAuction for Contract {
     }
 
     fn end_auction(auction_id: u64) {
-        require(storage.constructed == true, Error::ContractNotConstructedYet);
+        require(storage.initialized == true, Error::ContractNotYetInitialized);
 
         /// Only the admin can end the auction (prematurely)
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
