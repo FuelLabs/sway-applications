@@ -193,3 +193,31 @@ async fn user_can_deposit() {
         asset_amount
     );
 }
+
+#[tokio::test]
+#[should_panic]
+async fn panics_when_not_initialized() {
+    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+
+    assert!(
+        deployer
+            .gov_token
+            .unwrap()
+            .mint_and_send_to_address(100, user.wallet.address())
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
+    user.dao_voting
+        .deposit()
+        .tx_params(tx_params)
+        .call_params(call_params)
+        .call()
+        .await
+        .unwrap();
+}
