@@ -23,18 +23,18 @@ storage {
     /// Whether or not the constructor function has been called yet
     constructed: bool,
     /// Price at the very start, usually higher than any expected price of sale
-    startingPrice: u64,
+    opening_price: u64,
     /// The Price that the auction will eventually reach if no bids are recieved. Can also be used as the reserve price
-    endingPrice: u64,
+    reserve_price: u64,
     /// From what point will the bids be allowed + from what point the price will start to drop
-    startTime: u64,
-    /// Only used for calculation of the price, users can still bid past this time for endingPrice unless its ended by the admin
-    endTime: u64,
+    start_time: u64,
+    /// Only used for calculation of the price, users can still bid past this time for reserve_price unless its ended by the admin
+    end_time: u64,
     /// The beneficiary of the proceeds of the auction
     beneficiary: Address,
     /// The Admin Address
     admin: Address,
-    /// Whether or not the auction has ended already (Different from endTime, admin can prematurely end the auction.)
+    /// Whether or not the auction has ended already (Different from end_time, admin can prematurely end the auction.)
     ended: bool,
     /// You can change this in the constructor, by default its ETH/AssetId 0
     asset_id: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
@@ -84,7 +84,7 @@ impl DutchAuction for Contract {
         require(msg_amount() >= calculate_price(), Error::BidTooLow);
 
         /// Cannot bid before auction starts
-        require(height() >= storage.startTime, Error::AuctionNotYetStarted);
+        require(height() >= storage.start_time, Error::AuctionNotYetStarted);
         
         /// If ended == true, someone already bid or the admin prematurely ended the auction
         require(!storage.ended, Error::AuctionAlreadyEnded);
@@ -103,20 +103,20 @@ impl DutchAuction for Contract {
         win();
     }
 
-    fn setup_auction(startprice: u64, endprice: u64, starttime: u64, endtime: u64) {
+    fn setup_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64) {
         require(storage.constructed == true, Error::ContractNotConstructedYet);
 
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
         require(storage.ended == true, Error::AuctionInProgress);
-        require(startprice > endprice, Error::EndPriceCannotBeLargerThanStartPrice);
-        require(endtime > height(), Error::AuctionCannotEndInThePast);
-        require(starttime >= height(), Error::AuctionCannotStartInThePast);
-        require(endtime > starttime, Error::AuctionCannotEndBeforeItStarts);
+        require(opening_price > reserve_price, Error::EndPriceCannotBeLargerThanStartPrice);
+        require(end_time > height(), Error::AuctionCannotEndInThePast);
+        require(start_time >= height(), Error::AuctionCannotStartInThePast);
+        require(end_time > start_time, Error::AuctionCannotEndBeforeItStarts);
 
-        storage.startingPrice = startprice;
-        storage.endingPrice = endprice;
-        storage.startTime = starttime;
-        storage.endTime = endtime;
+        storage.opening_price = opening_price;
+        storage.reserve_price = reserve_price;
+        storage.start_time = start_time;
+        storage.end_time = end_time;
         storage.ended = false;
     }
 
@@ -143,20 +143,20 @@ fn win() {
 
 fn calculate_price() -> u64 {
     /// How much the price will go down by, throughout the auction
-    let price_delta = storage.startingPrice - storage.endingPrice;
+    let price_delta = storage.opening_price - storage.reserve_price;
     /// How long the auction will last
-    let auction_duration = storage.endTime - storage.startTime;
+    let auction_duration = storage.end_time - storage.start_time;
     /// This is the amount the price will reduce by per block
     let price_shift = price_delta / auction_duration;
 
     /// Tells us how far we are into the auction (out of the auction_duration)
-    let now = height() - storage.startTime; 
+    let now = height() - storage.start_time; 
 
     /// Cap how far we are into the auction by the auction_duration, so price doesnt go into negative or below endprice
     let now = if now > auction_duration { auction_duration } else { now };
 
     /// price_shift * now tells us how much the price has reduced by now
-    return storage.startingPrice - (price_shift * now);
+    return storage.opening_price - (price_shift * now);
 }
 
 fn get_sender() -> Address {
