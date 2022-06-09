@@ -23,7 +23,7 @@ struct Auction {
     opening_price: u64,
     /// The Price that the auction will eventually reach if no bids are recieved. Can also be used as the reserve price
     reserve_price: u64,
-    /// From what point will the bids be allowed + from what point the price will start to drop
+    /// Point in time when bids can be placed and when the price will start to decrease
     start_time: u64,
     /// Only used for calculation of the price, users can still bid past this time for reserve_price unless its ended by the admin
     end_time: u64,
