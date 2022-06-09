@@ -25,7 +25,7 @@ struct Auction {
     reserve_price: u64,
     /// Point in time when bids can be placed and when the price will start to decrease
     start_time: u64,
-    /// Only used for calculation of the price, users can still bid past this time for reserve_price unless its ended by the admin
+    /// Only used for calculation of the price, users can still bid past this time for reserve_price unless it's ended by the admin
     end_time: u64,
     /// The beneficiary of the proceeds of the auction
     beneficiary: Address,
