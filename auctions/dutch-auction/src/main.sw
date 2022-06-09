@@ -23,9 +23,9 @@ struct Auction {
     opening_price: u64,
     /// The Price that the auction will eventually reach if no bids are recieved. Can also be used as the reserve price
     reserve_price: u64,
-    /// From what point will the bids be allowed + from what point the price will start to drop
+    /// Point in time when bids can be placed and when the price will start to decrease
     start_time: u64,
-    /// Only used for calculation of the price, users can still bid past this time for reserve_price unless its ended by the admin
+    /// Only used for calculation of the price, users can still bid past this time for reserve_price unless it's ended by the admin
     end_time: u64,
     /// The beneficiary of the proceeds of the auction
     beneficiary: Address,
@@ -35,8 +35,13 @@ struct Auction {
 
 
 storage {
+<<<<<<< HEAD
     /// Whether or not the constructor function has been called yet
     initialized: bool,
+=======
+    /// Flag indicating if the constructor() has been called to initialize the contract
+    constructed: bool,
+>>>>>>> 9137d4c65a9ef19bda7584323ae2251bc7d69640
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
     auctions: StorageMap<u64, Auction>,
     /// The Admin Address
