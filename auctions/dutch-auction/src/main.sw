@@ -79,19 +79,19 @@ impl DutchAuction for Contract {
 
     fn bid(auction_id: u64) {
         /// In a Dutch auction the first bid wins
-        require(storage.initialized == true, Error::ContractNotYetInitialized);
+        require(storage.initialized, Error::ContractNotYetInitialized);
 
         /// If the given auction id is higher than the auction count, its an invalid auction_id
         require(auction_id <= storage.auction_count, Error::InvalidAuctionID);
 
         let mut auction = storage.auctions.get(auction_id);
 
-        /// Checks for correct asset_id being sent and high enough amount being sent
-        require(msg_asset_id() == auction.asset_id, Error::WrongAssetSent);
-        require(msg_amount() >= calculate_price(auction_id), Error::BidTooLow);
-
         /// Cannot bid before auction starts
         require(height() >= auction.start_time, Error::AuctionNotYetStarted);
+
+        /// Checks for correct asset_id being sent and high enough amount being sent
+        require(msg_asset_id() == auction.asset_id, Error::WrongAssetSent);
+        require(calculate_price(auction_id) <= msg_amount(), Error::BidTooLow);
         
         /// If ended == true, someone already bid or the admin prematurely ended the auction
         require(!auction.ended, Error::AuctionAlreadyEnded);
@@ -112,10 +112,9 @@ impl DutchAuction for Contract {
     }
 
     fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Address, asset: ContractId) -> u64 {
-        require(storage.initialized == true, Error::ContractNotYetInitialized);
-
-        require(get_sender() == storage.admin, Error::SenderNotAdmin);
-        require(opening_price > reserve_price, Error::EndPriceCannotBeLargerThanStartPrice);
+        require(storage.initialized, Error::ContractNotYetInitialized);
+        require(storage.admin == get_sender(), Error::SenderNotAdmin);
+        require(reserve_price <= opening_price, Error::EndPriceCannotBeLargerThanStartPrice);
         require(height() < end_time, Error::AuctionCannotEndInThePast);
         require(height() <= start_time, Error::AuctionCannotStartInThePast);
         require(start_time < end_time, Error::AuctionCannotEndBeforeItStarts);
@@ -130,7 +129,6 @@ impl DutchAuction for Contract {
         auction.end_time = end_time;
         auction.beneficiary = beneficiary;
         auction.asset_id = asset;
-        auction.ended = false;
         
         storage.auctions.insert(current_auction_id, auction);
 
@@ -139,7 +137,7 @@ impl DutchAuction for Contract {
     }
 
     fn end_auction(auction_id: u64) {
-        require(storage.initialized == true, Error::ContractNotYetInitialized);
+        require(storage.initialized, Error::ContractNotYetInitialized);
 
         /// If the given auction id is higher than the auction count, its an invalid auction_id
         require(auction_id <= storage.auction_count, Error::InvalidAuctionID);
