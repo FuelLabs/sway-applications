@@ -1,3 +1,6 @@
+#![allow(unused_variables)]
+#![allow(unused_imports)]
+
 use fuels::{
     prelude::*,
     tx::{AssetId, ContractId},
@@ -11,9 +14,15 @@ abigen!(
     "tests/artifacts/gov_token/out/debug/gov_token-abi.json"
 );
 
-async fn setup() -> (DaoVoting, ContractId, GovToken, ContractId, LocalWallet) {
-    let num_wallets = 1;
-    let coins_per_wallet = 1000;
+struct Metadata {
+    dao_voting: DaoVoting,
+    gov_token: Option<GovToken>,
+    wallet: LocalWallet,
+}
+
+async fn setup() -> (ContractId, Metadata, Metadata) {
+    let num_wallets = 2;
+    let coins_per_wallet = 1;
     let amount_per_coin = 1_000_000;
     let config = WalletsConfig::new(
         Some(num_wallets),
@@ -22,13 +31,12 @@ async fn setup() -> (DaoVoting, ContractId, GovToken, ContractId, LocalWallet) {
     );
 
     let mut wallets = launch_provider_and_get_wallets(config).await;
-    let wallet = wallets.pop().unwrap();
-
-    //let wallet = launch_provider_and_get_single_wallet().await;
+    let deployer_wallet = wallets.pop().unwrap();
+    let user_wallet = wallets.pop().unwrap();
 
     let dao_voting_id = Contract::deploy(
         "./out/debug/dao-voting.bin",
-        &wallet,
+        &deployer_wallet,
         TxParameters::default(),
     )
     .await
@@ -36,22 +44,34 @@ async fn setup() -> (DaoVoting, ContractId, GovToken, ContractId, LocalWallet) {
 
     let gov_token_id = Contract::deploy(
         "./tests/artifacts/gov_token/out/debug/gov_token-abi.json",
-        &wallet,
+        &deployer_wallet,
         TxParameters::default(),
     )
     .await
     .unwrap();
 
-    let dao_voting = DaoVoting::new(dao_voting_id.to_string(), wallet.clone());
+    let deployer = Metadata {
+        dao_voting: DaoVoting::new(dao_voting_id.to_string(), deployer_wallet.clone()),
+        gov_token: Some(GovToken::new(
+            gov_token_id.to_string(),
+            deployer_wallet.clone(),
+        )),
+        wallet: deployer_wallet,
+    };
 
-    let gov_token = GovToken::new(gov_token_id.to_string(), wallet.clone());
+    let user = Metadata {
+        dao_voting: DaoVoting::new(dao_voting_id.to_string(), user_wallet.clone()),
+        gov_token: None,
+        wallet: user_wallet,
+    };
 
-    (dao_voting, dao_voting_id, gov_token, gov_token_id, wallet)
+    (gov_token_id, deployer, user)
 }
 
 async fn initialize() -> bool {
-    let (dao_voting, _dao_voting_id, _gov_token, gov_token_id, _wallet) = setup().await;
-    dao_voting
+    let (gov_token_id, deployer, _user) = setup().await;
+    deployer
+        .dao_voting
         .constructor(gov_token_id, 10, 10, [0; 32])
         .call()
         .await
@@ -67,14 +87,16 @@ async fn initializes() {
 #[tokio::test]
 #[should_panic]
 async fn panics_when_reinitialized() {
-    let (dao_voting, _dao_voting_id, _gov_token, gov_token_id, _wallet) = setup().await;
-    dao_voting
+    let (gov_token_id, deployer, user) = setup().await;
+    deployer
+        .dao_voting
         .constructor(gov_token_id, 10, 10, [0; 32])
         .call()
         .await
         .unwrap()
         .value;
-    dao_voting
+    deployer
+        .dao_voting
         .constructor(gov_token_id, 10, 10, [0; 32])
         .call()
         .await
@@ -85,8 +107,9 @@ async fn panics_when_reinitialized() {
 #[tokio::test]
 #[should_panic]
 async fn panics_with_incorrect_voting_period() {
-    let (dao_voting, _dao_voting_id, _gov_token, gov_token_id, _wallet) = setup().await;
-    dao_voting
+    let (gov_token_id, deployer, user) = setup().await;
+    deployer
+        .dao_voting
         .constructor(gov_token_id, 0, 10, [0; 32])
         .call()
         .await
@@ -97,8 +120,9 @@ async fn panics_with_incorrect_voting_period() {
 #[tokio::test]
 #[should_panic]
 async fn panics_with_incorrect_approval_percentage() {
-    let (dao_voting, _dao_voting_id, _gov_token, gov_token_id, _wallet) = setup().await;
-    dao_voting
+    let (gov_token_id, deployer, user) = setup().await;
+    deployer
+        .dao_voting
         .constructor(gov_token_id, 10, 0, [0; 32])
         .call()
         .await
@@ -108,46 +132,60 @@ async fn panics_with_incorrect_approval_percentage() {
 
 #[tokio::test]
 async fn user_can_deposit() {
-    let (dao_voting, _dao_voting_id, gov_token, gov_token_id, wallet) = setup().await;
+    let (gov_token_id, deployer, user) = setup().await;
 
-    let res = gov_token
-        .mint_and_send_to_address(100, wallet.address())
+    println!("{:?}", gov_token_id);
+
+    let res = deployer
+        .gov_token
+        .unwrap()
+        .mint_and_send_to_address(100, user.wallet.address())
         .append_variable_outputs(1)
         .call()
-        .await;
-    match res {
-        Ok(call_response) => {
-            print!("call response: {:?}", call_response.logs);
-        }
+        .await.unwrap();
+    // match res {
+    //     Ok(call_response) => {
+    //         print!("call response: {:?}", call_response.logs);
+    //     }
 
-        Err(Error::ContractCallError(reason)) => {
-            println!("Contract Call failed with reason : {}", reason);
-        }
+    //     Err(Error::ContractCallError(reason)) => {
+    //         println!("Contract Call failed with reason : {}", reason);
+    //     }
 
-        _ => {
-            println!("boo");
-        }
-    }
+    //     _ => {
+    //         println!("boo");
+    //     }
+    // }
 
-    dao_voting
-        .constructor(gov_token_id, 10, 10, [0; 32])
-        .call()
-        .await
-        .unwrap()
-        .value;
+    // deployer
+    //     .dao_voting
+    //     .constructor(gov_token_id, 10, 10, [0; 32])
+    //     .call()
+    //     .await
+    //     .unwrap()
+    //     .value;
 
-    assert_eq!(dao_voting.get_balance().call().await.unwrap().value, 0);
+    // assert_eq!(
+    //     deployer
+    //         .dao_voting
+    //         .get_balance()
+    //         .call()
+    //         .await
+    //         .unwrap()
+    //         .value,
+    //     0
+    // );
 
-    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(10), Some(AssetId::from(*gov_token_id)));
-    assert!(
-        dao_voting
-            .deposit()
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
+    // let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+    // let call_params = CallParameters::new(Some(10), Some(AssetId::from(*gov_token_id)));
+    // assert!(
+    //     dao_voting
+    //         .deposit()
+    //         .tx_params(tx_params)
+    //         .call_params(call_params)
+    //         .call()
+    //         .await
+    //         .unwrap()
+    //         .value
+    // );
 }
