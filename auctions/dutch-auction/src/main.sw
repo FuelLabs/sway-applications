@@ -44,7 +44,7 @@ storage {
     /// The Admin Address
     admin: Address,
     /// Tracking how many auctions have been made till now
-    latest_auction_id: u64
+    auction_count: u64
 }
 
 enum Error {
@@ -114,8 +114,8 @@ impl DutchAuction for Contract {
         require(height() <= start_time, Error::AuctionCannotStartInThePast);
         require(start_time < end_time, Error::AuctionCannotEndBeforeItStarts);
 
-        storage.latest_auction_id = storage.latest_auction_id + 1;
-        let current_auction_id = storage.latest_auction_id;
+        storage.auction_count = storage.auction_count + 1;
+        let current_auction_id = storage.auction_count;
 
         let mut auction = storage.auctions.get(current_auction_id);
         auction.opening_price = opening_price;
