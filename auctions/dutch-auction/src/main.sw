@@ -35,13 +35,8 @@ struct Auction {
 
 
 storage {
-<<<<<<< HEAD
     /// Whether or not the constructor function has been called yet
     initialized: bool,
-=======
-    /// Flag indicating if the constructor() has been called to initialize the contract
-    constructed: bool,
->>>>>>> 9137d4c65a9ef19bda7584323ae2251bc7d69640
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
     auctions: StorageMap<u64, Auction>,
     /// The Admin Address
