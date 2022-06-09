@@ -38,11 +38,11 @@ storage {
     /// Whether or not the constructor function has been called yet
     constructed: bool,
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
-    auctions: StorageMap<u64, Auction> = StorageMap::new(),
+    auctions: StorageMap<u64, Auction>,
     /// The Admin Address
     admin: Address,
     /// You can change this in the constructor, by default its ETH/AssetId 0
-    asset_id: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
+    asset_id: ContractId,
     /// Tracking how many auctions have been made till now
     latest_auction_id: u64
 }
@@ -66,7 +66,6 @@ impl DutchAuction for Contract {
         storage.constructed = true;
         storage.asset_id = asset;
 
-        storage.beneficiary = admin;
         storage.admin = admin;
     }
 
@@ -78,7 +77,9 @@ impl DutchAuction for Contract {
         require(storage.constructed == true, Error::ContractNotConstructedYet);
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
 
-        storage.auctions.get(auction_id).beneficiary = new_beneficiary;
+        let mut auction = storage.auctions.get(auction_id);
+        auction.beneficiary = new_beneficiary;
+        storage.auctions.insert(auction_id, auction);
     }
 
     fn bid(auction_id: u64) {
@@ -97,7 +98,9 @@ impl DutchAuction for Contract {
         require(!storage.auctions.get(auction_id).ended, Error::AuctionAlreadyEnded);
 
         /// Disallows furthur bids
-        storage.auctions.get(auction_id).ended = true;
+        let mut auction = storage.auctions.get(auction_id);
+        auction.ended = true;
+        storage.auctions.insert(auction_id, auction);
 
         /// If someone sends more than the current price, refund the extra amount 
         if msg_amount() > calculate_price(auction_id) {
@@ -114,33 +117,37 @@ impl DutchAuction for Contract {
         require(storage.constructed == true, Error::ContractNotConstructedYet);
 
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
-        require(storage.ended == true, Error::AuctionInProgress);
         require(opening_price > reserve_price, Error::EndPriceCannotBeLargerThanStartPrice);
         require(end_time > height(), Error::AuctionCannotEndInThePast);
         require(start_time >= height(), Error::AuctionCannotStartInThePast);
         require(end_time > start_time, Error::AuctionCannotEndBeforeItStarts);
 
-        let latest_auction = storage.latest_auction_id;
+        storage.latest_auction_id = storage.latest_auction_id + 1;
+        let current_auction_id = storage.latest_auction_id;
 
-        storage.auctions.get(latest_auction).opening_price = opening_price;
-        storage.auctions.get(latest_auction).reserve_price = reserve_price;
-        storage.auctions.get(latest_auction).start_time = start_time;
-        storage.auctions.get(latest_auction).end_time = end_time;
-
-        storage.latest_auction_id = latest_auction + 1;
+        let mut auction = storage.auctions.get(current_auction_id);
+        auction.opening_price = opening_price;
+        auction.reserve_price = reserve_price;
+        auction.start_time = start_time;
+        auction.end_time = end_time;
+        auction.ended = false;
+        
+        storage.auctions.insert(current_auction_id, auction);
 
         /// Returns the auction being setup's auction_id
-        storage.latest_auction_id
+        current_auction_id
     }
 
-    fn end_auction() {
+    fn end_auction(auction_id: u64) {
         require(storage.constructed == true, Error::ContractNotConstructedYet);
 
         /// Only the admin can end the auction (prematurely)
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
 
         /// If there is no auction going on currently the ended value will already be true so no need to check for that case
-        storage.ended = true;
+        let mut auction = storage.auctions.get(auction_id);
+        auction.ended = true;
+        storage.auctions.insert(auction_id, auction);
     }
 
 }
