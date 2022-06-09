@@ -142,20 +142,20 @@ fn win() {
 }
 
 fn calculate_price() -> u64 {
-    let price_difference = storage.startingPrice - storage.endingPrice;
-    let duration = storage.endTime - storage.startTime;
-    // This is the amount the price will reduce by per block
-    let price_shift = price_difference / duration;
+    /// How much the price will go down by, throughout the auction
+    let price_delta = storage.startingPrice - storage.endingPrice;
+    /// How long the auction will last
+    let auction_duration = storage.endTime - storage.startTime;
+    /// This is the amount the price will reduce by per block
+    let price_shift = price_delta / auction_duration;
 
-    let now = height() - storage.startTime; //Current block height - start will tell us how far we are into the auction now
-    //Cap how far we are into the auction by the duration, so price doesnt go into negative or below endprice
-    let now = if now > duration {
-        duration
-    } else {
-        now
-    };
+    /// (Current block height - start) will tell us how far we are into the auction now, out of the auction duration
+    let now = height() - storage.startTime; 
 
-    //price_shift * now tells us how much the price has reduced by now
+    /// Cap how far we are into the auction by the auction_duration, so price doesnt go into negative or below endprice
+    let now = if now > auction_duration { auction_duration } else { now };
+
+    /// price_shift * now tells us how much the price has reduced by now
     return storage.startingPrice - (price_shift * now);
 }
 
