@@ -149,7 +149,7 @@ fn calculate_price() -> u64 {
     /// This is the amount the price will reduce by per block
     let price_shift = price_delta / auction_duration;
 
-    /// (Current block height - start) will tell us how far we are into the auction now, out of the auction duration
+    /// Tells us how far we are into the auction (out of the auction_duration)
     let now = height() - storage.startTime; 
 
     /// Cap how far we are into the auction by the auction_duration, so price doesnt go into negative or below endprice
