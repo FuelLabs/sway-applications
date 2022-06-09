@@ -27,6 +27,8 @@ struct Auction {
     start_time: u64,
     /// Only used for calculation of the price, users can still bid past this time for reserve_price unless it's ended by the admin
     end_time: u64,
+    /// The asset the bidding will occur in
+    asset_id: ContractId,
     /// The beneficiary of the proceeds of the auction
     beneficiary: Address,
     /// Whether or not the auction has ended already (Different from end_time, admin can prematurely end the auction.)
@@ -41,14 +43,13 @@ storage {
     auctions: StorageMap<u64, Auction>,
     /// The Admin Address
     admin: Address,
-    /// You can change this in the constructor, by default its ETH/AssetId 0
-    asset_id: ContractId,
     /// Tracking how many auctions have been made till now
     latest_auction_id: u64
 }
 
 enum Error {
     ContractNotYetInitialized: (),
+    CannotReinitialize: (),
     SenderNotAdmin: (),
     AuctionInProgress: (),
     AuctionAlreadyEnded: (),
@@ -62,24 +63,14 @@ enum Error {
 }
 
 impl DutchAuction for Contract {
-    fn constructor(admin: Address, asset: ContractId) {
-        storage.initialized = true;
-        storage.asset_id = asset;
-
+    fn constructor(admin: Identity) {
+        require(!storage.initialized, Error::CannotReinitialize);
         storage.admin = admin;
+        storage.initialized = true;
     }
 
     fn get_price(auction_id: u64) -> u64 {
         calculate_price(auction_id)
-    }
-
-    fn set_beneficiary(new_beneficiary: Address, auction_id: u64) {
-        require(storage.initialized == true, Error::ContractNotYetInitialized);
-        require(get_sender() == storage.admin, Error::SenderNotAdmin);
-
-        let mut auction = storage.auctions.get(auction_id);
-        auction.beneficiary = new_beneficiary;
-        storage.auctions.insert(auction_id, auction);
     }
 
     fn bid(auction_id: u64) {
@@ -90,7 +81,7 @@ impl DutchAuction for Contract {
         require(storage.initialized == true, Error::ContractNotYetInitialized);
 
         /// Checks for correct asset_id being sent and high enough amount being sent
-        require(msg_asset_id() == storage.asset_id, Error::WrongAssetSent);
+        require(msg_asset_id() == auction.asset_id, Error::WrongAssetSent);
         require(msg_amount() >= calculate_price(auction_id), Error::BidTooLow);
 
         /// Cannot bid before auction starts
@@ -114,7 +105,7 @@ impl DutchAuction for Contract {
         win(auction_id);
     }
 
-    fn setup_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64) -> u64 {
+    fn setup_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Address, asset: ContractId) -> u64 {
         require(storage.initialized == true, Error::ContractNotYetInitialized);
 
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
@@ -131,6 +122,8 @@ impl DutchAuction for Contract {
         auction.reserve_price = reserve_price;
         auction.start_time = start_time;
         auction.end_time = end_time;
+        auction.beneficiary = beneficiary;
+        auction.asset_id = asset;
         auction.ended = false;
         
         storage.auctions.insert(current_auction_id, auction);
