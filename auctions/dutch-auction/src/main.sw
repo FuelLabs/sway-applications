@@ -111,8 +111,8 @@ impl DutchAuction for Contract {
         require(get_sender() == storage.admin, Error::SenderNotAdmin);
         require(opening_price > reserve_price, Error::EndPriceCannotBeLargerThanStartPrice);
         require(height() < end_time, Error::AuctionCannotEndInThePast);
-        require(start_time >= height(), Error::AuctionCannotStartInThePast);
-        require(end_time > start_time, Error::AuctionCannotEndBeforeItStarts);
+        require(height() <= start_time, Error::AuctionCannotStartInThePast);
+        require(start_time < end_time, Error::AuctionCannotEndBeforeItStarts);
 
         storage.latest_auction_id = storage.latest_auction_id + 1;
         let current_auction_id = storage.latest_auction_id;
