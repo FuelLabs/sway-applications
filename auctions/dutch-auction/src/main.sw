@@ -63,7 +63,7 @@ enum Error {
 }
 
 impl DutchAuction for Contract {
-    fn constructor(admin: Identity) {
+    fn constructor(admin: Address) {
         require(!storage.initialized, Error::CannotReinitialize);
         storage.admin = admin;
         storage.initialized = true;
@@ -97,7 +97,7 @@ impl DutchAuction for Contract {
         /// If someone sends more than the current price, refund the extra amount 
         if msg_amount() > calculate_price(auction_id) {
             let return_amount = msg_amount() - calculate_price(auction_id);
-            transfer_to_output(return_amount, storage.asset_id, get_sender());
+            transfer_to_output(return_amount, auction.asset_id, get_sender());
         }
 
         /// Logic on win put into the win function. Using a function here so that its easier to modify the logic 
@@ -153,7 +153,7 @@ fn win(auction_id: u64) {
 
     //Currently just sends the bid amount to the beneficiary
     let auction = storage.auctions.get(auction_id);
-    transfer_to_output(calculate_price(auction_id), storage.asset_id, auction.beneficiary);
+    transfer_to_output(calculate_price(auction_id), auction.asset_id, auction.beneficiary);
 }
 
 fn calculate_price(auction_id: u64) -> u64 {
