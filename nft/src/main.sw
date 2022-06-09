@@ -1,5 +1,6 @@
 contract;
 
+dep errors;
 dep events;
 
 use std::{
@@ -16,6 +17,13 @@ use std::{
     result::*,
     revert::revert,
     storage::StorageMap,
+};
+
+use errors::{
+    AccessError,
+    ApprovalError,
+    InitError,
+    InputError
 };
 
 use events::{
@@ -40,26 +48,6 @@ abi NFT {
     //fn owner_of(token_id: u64) -> Option<Identity>;
     fn set_approval_for_all(owner: Identity, operator: Identity) -> bool;
     fn transfer_from(from: Identity, to: Identity, token_id: u64) -> bool;
-}
-
-enum Error {
-    AccessControlNotSet: (),
-    AddressAlreadyGivenAccess: (),
-    AddressAlreadyGivenApproval: (),
-    ApproverCannotBeOwner: (),
-    CannotReinitialize: (),
-    IncorrectAssetAmount: (),
-    IncorrectAssetId: (),
-    InputAddressCannotBeZero: (),
-    MintAmountCannotBeZero: (),
-    NFTNotInitalized: (),
-    NotEnoughTokensToMint: (),
-    SenderCannotSetAccessControl: (),
-    SenderDoesNotHaveAccessControl: (),
-    SenderNotOwner: (),
-    SenderNotOwnerOrApproved: (),
-    TokenDoesNotExist: (),
-    TokenSupplyCannotBeZero: (),
 }
 
 struct MetaData {
@@ -97,17 +85,21 @@ impl NFT for Contract {
     /// - The Identity has already been allowed access
     /// - The Identity is not the access control address
     fn allow_mint(minter: Identity) -> bool {
-        require(storage.state != 0, Error::NFTNotInitalized);
-        require(storage.access_control, Error::AccessControlNotSet);
+        require(storage.state != 0, InitError::NFTNotInitalized);
+        require(storage.access_control, AccessError::AccessControlNotSet);
 
         _require_identity_is_valid(minter);
 
         require(storage.allowed_minters.get(minter) == false, 
-            Error::AddressAlreadyGivenAccess);
+            ApprovalError::AddressAlreadyGivenAccess
+        );
         
         let sender: Result<Identity, AuthError> = msg_sender();
         let sender: Identity = sender.unwrap();
-        require(_compare_identities(sender, storage.access_control_address), Error::SenderCannotSetAccessControl);
+        require(
+            _compare_identities(sender, storage.access_control_address), 
+            AccessError::SenderCannotSetAccessControl
+        );
 
         storage.allowed_minters.insert(minter, true);
 
@@ -125,17 +117,26 @@ impl NFT for Contract {
     /// - The appover is the owner
     /// - The sender is not the owner
     fn approve(to: Identity, token_id: u64) -> bool {
-        require(storage.state != 0, Error::NFTNotInitalized);
+        require(storage.state != 0, InitError::NFTNotInitalized);
 
         _require_identity_is_valid(to);
 
         let mut meta_data = storage.meta_data.get(token_id);
-        require(!_compare_identities(meta_data.approved, to), Error::AddressAlreadyGivenApproval);
-        require(!_compare_identities(meta_data.owner, to), Error::ApproverCannotBeOwner);
+        require(
+            !_compare_identities(meta_data.approved, to), 
+            ApprovalError::AddressAlreadyGivenApproval
+        );
+        require(
+            !_compare_identities(meta_data.owner, to), 
+            ApprovalError::ApproverCannotBeOwner
+        );
 
         let sender: Result<Identity, AuthError> = msg_sender();
         let sender: Identity = sender.unwrap();
-        require(_compare_identities(meta_data.owner, sender), Error::SenderNotOwner);
+        require(
+            _compare_identities(meta_data.owner, sender), 
+            AccessError::SenderNotOwner
+        );
 
         meta_data.approved = to;
         storage.meta_data.insert(token_id, meta_data);
@@ -151,7 +152,7 @@ impl NFT for Contract {
     /// The function will panic when:
     /// - The NFT contract has not been initalized
     fn balance_of(owner: Identity) -> u64 {
-        require(storage.state != 0, Error::NFTNotInitalized);
+        require(storage.state != 0, InitError::NFTNotInitalized);
         storage.balances.get(owner)
     }
 
@@ -164,15 +165,21 @@ impl NFT for Contract {
     /// - The token id does not exist
     /// - The sender is not the owner
     fn burn(token_id: u64) -> bool {
-        require(storage.state != 0, Error::NFTNotInitalized);
+        require(storage.state != 0, InitError::NFTNotInitalized);
 
         let empty_identity: Identity = Identity::Address(~Address::from(NATIVE_ASSET_ID));
         let mut meta_data: MetaData = storage.meta_data.get(token_id);
-        require(!_compare_identities(meta_data.owner, empty_identity), Error::TokenDoesNotExist);
+        require(
+            !_compare_identities(meta_data.owner, empty_identity), 
+            InputError::TokenDoesNotExist
+        );
 
         let sender: Result<Identity, AuthError> = msg_sender();
         let sender: Identity = sender.unwrap();
-        require(_compare_identities(meta_data.owner, sender), Error::SenderNotOwner);
+        require(
+            _compare_identities(meta_data.owner, sender), 
+            AccessError::SenderNotOwner
+        );
 
         meta_data.owner = empty_identity;
         meta_data.approved = empty_identity;
@@ -199,8 +206,8 @@ impl NFT for Contract {
     /// - The token count is 0
     /// - The owner is not a valid identity
     fn constructor(owner: Identity, access_control: bool, token_supply: u64, token_price: u64, asset: ContractId) -> bool {
-        require(storage.state == 0, Error::CannotReinitialize);
-        require(token_supply != 0, Error::TokenSupplyCannotBeZero);
+        require(storage.state == 0, InitError::CannotReinitialize);
+        require(token_supply != 0, InputError::TokenSupplyCannotBeZero);
 
         _require_identity_is_valid(owner);
 
@@ -222,7 +229,7 @@ impl NFT for Contract {
     /// The function will panic when:
     /// - The NFT contract has not been initalized
     // fn get_approved(token_id: u64) -> Option<Identity> {
-    //     require(storage.state != 0, Error::NFTNotInitalized);
+    //     require(storage.state != 0, InitError::NFTNotInitalized);
 
     //     let meta_data: MetaData = storage.meta_data.get(token_id);
     //     Option::Some(meta_data.approved)
@@ -235,7 +242,7 @@ impl NFT for Contract {
     /// The function will panic when:
     /// - The NFT contract has not been intialized
     fn get_tokens(identity: Identity) -> u64 {
-        require(storage.state != 0, Error::NFTNotInitalized);
+        require(storage.state != 0, InitError::NFTNotInitalized);
         storage.owners.get(identity)
     }
 
@@ -246,7 +253,7 @@ impl NFT for Contract {
     /// The function will panic when:
     /// - The NFT contract has not been initalized
     fn get_total_supply() -> u64 {
-        require(storage.state != 0, Error::NFTNotInitalized);
+        require(storage.state != 0, InitError::NFTNotInitalized);
         storage.token_supply
     }
 
@@ -257,7 +264,7 @@ impl NFT for Contract {
     /// The function will panic when:
     /// - The NFT contract has not been initalized
     fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
-        require(storage.state != 0, Error::NFTNotInitalized);
+        require(storage.state != 0, InitError::NFTNotInitalized);
 
         let hash: b256 = _get_owner_operator_hash(owner, operator);
         storage.operator_approval.get(hash)
@@ -276,9 +283,12 @@ impl NFT for Contract {
     /// - The sender sent the wrong asset
     /// - The sender did not pay enough tokens
     fn mint(to: Identity, amount: u64) -> bool {
-        require(storage.state != 0, Error::NFTNotInitalized);
-        require(amount != 0, Error::MintAmountCannotBeZero);
-        require(storage.token_supply >= (storage.token_count + amount), Error::NotEnoughTokensToMint);
+        require(storage.state != 0, InitError::NFTNotInitalized);
+        require(amount != 0, InputError::MintAmountCannotBeZero);
+        require(
+            storage.token_supply >= (storage.token_count + amount), 
+            InputError::NotEnoughTokensToMint
+        );
 
         _require_identity_is_valid(to);
 
@@ -286,13 +296,14 @@ impl NFT for Contract {
         let sender: Identity = sender.unwrap();
 
         require(
-            !storage.access_control 
-            || (storage.access_control && storage.allowed_minters.get(sender)), 
-            Error::SenderDoesNotHaveAccessControl);
+            !storage.access_control || 
+            (storage.access_control && storage.allowed_minters.get(sender)), 
+            AccessError::SenderDoesNotHaveAccessControl
+        );
 
         let cost: u64 = storage.token_price * amount;
-        require(msg_asset_id() == storage.asset, Error::IncorrectAssetId);
-        require(msg_amount() == cost, Error::IncorrectAssetAmount);
+        require(msg_asset_id() == storage.asset, InputError::IncorrectAssetId);
+        require(msg_amount() == cost, InputError::IncorrectAssetAmount);
 
         let mut i = 0;
         while i < amount {
@@ -326,7 +337,7 @@ impl NFT for Contract {
     /// The function will panic when:
     /// - The NFT contract has not been initalized
     // fn owner_of(token_id: u64) -> Option<Identity> {
-    //     require(storage.state != 0, Error::NFTNotInitalized);
+    //     require(storage.state != 0, InitError::NFTNotInitalized);
 
     //     let meta_data: MetaData = storage.meta_data.get(token_id);
     //     Option::Some(meta_data.owner)
@@ -342,17 +353,17 @@ impl NFT for Contract {
     /// - The address has already been approved
     /// - The sender is not the owner
     fn set_approval_for_all(owner: Identity, operator: Identity) -> bool {
-        require(storage.state != 0, Error::NFTNotInitalized);
+        require(storage.state != 0, InitError::NFTNotInitalized);
         
         _require_identity_is_valid(operator);
 
         let hash: b256 = _get_owner_operator_hash(owner, operator);
-        require(!storage.operator_approval.get(hash), Error::AddressAlreadyGivenApproval);
+        require(!storage.operator_approval.get(hash), ApprovalError::AddressAlreadyGivenApproval);
 
         let sender: Result<Identity, AuthError> = msg_sender();
         let sender: Identity = sender.unwrap();
 
-        require(_compare_identities(owner, sender), Error::SenderNotOwner);
+        require(_compare_identities(owner, sender), AccessError::SenderNotOwner);
 
         storage.operator_approval.insert(hash, true);
         log(OperatorEvent{owner, operator});
@@ -370,7 +381,7 @@ impl NFT for Contract {
     /// - The sender is not approved
     /// - The sender is not an operator for the owner
     fn transfer_from(from: Identity, to: Identity, token_id: u64) -> bool {
-        require(storage.state != 0, Error::NFTNotInitalized);
+        require(storage.state != 0, InitError::NFTNotInitalized);
         
         _require_identity_is_valid(to);
 
@@ -381,11 +392,11 @@ impl NFT for Contract {
         let hash: b256 = _get_owner_operator_hash(from, sender);
 
         require(
-            (_compare_identities(sender, meta_data.owner) 
-            || _compare_identities(sender, meta_data.approved) 
-            || storage.operator_approval.get(hash)), 
-            Error::SenderNotOwnerOrApproved
-            );
+            _compare_identities(sender, meta_data.owner) ||
+            _compare_identities(sender, meta_data.approved) ||
+            storage.operator_approval.get(hash), 
+            AccessError::SenderNotOwnerOrApproved
+        );
 
         let empty_identity: Identity = Identity::Address(~Address::from(NATIVE_ASSET_ID));
 
@@ -460,16 +471,16 @@ fn _get_owner_operator_hash(owner: Identity, operator: Identity) -> b256 {
     }
 }
 
-// This function will panic if the given entity is not valid
+// This function will panic if the given Identity points to the zero value
 fn _require_identity_is_valid(entity: Identity) {
     match entity {
         Identity::Address(entity) => {
             require(entity != ~Address::from(NATIVE_ASSET_ID), 
-                Error::InputAddressCannotBeZero);
+                InputError::InputAddressCannotBeZero);
         },
         Identity::ContractId(entity) => {
             require(entity != ~ContractId::from(NATIVE_ASSET_ID), 
-                Error::InputAddressCannotBeZero);
+                InputError::InputAddressCannotBeZero);
         },
     };
 }
