@@ -210,7 +210,7 @@ mod mint {
 
         let _allowed_mint = owner1
             .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()))
+            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
             .call()
             .await;
 
@@ -450,7 +450,7 @@ mod allow_mint {
         assert! {
             owner1
             .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()))
+            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
             .call()
             .await
             .unwrap()
@@ -466,7 +466,7 @@ mod allow_mint {
         assert! {
             owner1
             .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()))
+            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
             .call()
             .await
             .unwrap()
@@ -484,7 +484,7 @@ mod allow_mint {
         assert! {
             owner1
             .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()))
+            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
             .call()
             .await
             .unwrap()
@@ -501,14 +501,14 @@ mod allow_mint {
 
         let _allowed_mint = owner1
             .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()))
+            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
             .call()
             .await;
 
         assert! {
             owner1
             .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()))
+            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
             .call()
             .await
             .unwrap()
@@ -526,7 +526,7 @@ mod allow_mint {
         assert! {
             owner2
             .nft
-            .allow_mint(nft_mod::Identity::Address(owner2.wallet.address()))
+            .allow_mint(nft_mod::Identity::Address(owner2.wallet.address()), true)
             .call()
             .await
             .unwrap()

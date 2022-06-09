@@ -3,7 +3,7 @@ library abi;
 use std::{identity::Identity, contract_id::ContractId};
 
 abi NFT {
-    fn allow_mint(minter: Identity) -> bool;
+    fn allow_mint(minter: Identity, allow: bool) -> bool;
     fn approve(to: Identity, token_id: u64) -> bool;
     fn balance_of(owner: Identity) -> u64;
     fn burn(token_id: u64) -> bool ;

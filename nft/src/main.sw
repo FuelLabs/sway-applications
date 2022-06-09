@@ -4,6 +4,10 @@ dep abi;
 dep errors;
 dep events;
 
+use abi::NFT;
+use errors::{AccessError, ApprovalError, InitError, InputError};
+use events::{ApprovalEvent, BurnEvent, MintEvent, OperatorEvent, TransferEvent};
+
 use std::{
     address::Address,
     assert::require,
@@ -20,10 +24,6 @@ use std::{
     storage::StorageMap,
 };
 
-use abi::NFT;
-use errors::{AccessError, ApprovalError, InitError, InputError};
-use events::{ApprovalEvent, BurnEvent, MintEvent, OperatorEvent, TransferEvent};
-
 struct MetaData {
     // NFT Metadata
     owner: Identity,
@@ -31,56 +31,84 @@ struct MetaData {
 }
 
 storage {
+    /// Determines if there is a whitelist to mint. Only set on the
+    /// initalization of the contract
     access_control: bool,
+
+    /// The identity that has permission to add identities to the whitelist
     access_control_address: Identity,
+
+    /// Stores the identities that are on the whitelist
     allowed_minters: StorageMap<Identity, bool>,
+
+    /// Maintains the number of tokens owned by each of the identities
     balances: StorageMap<Identity, u64>,
+
+    /// The asset accepted as payment for minting a token
     asset: ContractId,
+
+    /// The metadata for each token based on token id
     meta_data: StorageMap<u64, MetaData>,
+
+    /// Stores a b256 hash of the (owner, operator) and stores whether the
+    /// operator is allowed to transfer ALL tokens on the owner's behalf 
     operator_approval: StorageMap<b256, bool>,
-    // TODO: Use a Vec here to support multiple ownerships
+
+    /// TODO: Use a Vec here to support multiple ownerships
+    /// Maintains the token ids owned by the specified identity
     owners: StorageMap<Identity, u64>,
+
+    /// The state of the contract. Can either be initalized or not
     state: u64,
+
+    /// The total number of tokens that have been minted
     token_count: u64,
+
+    /// The price to purchase a single token. Can only be set on
+    /// the initalization of the contract
     token_price: u64,
+
+    /// The total supply tokens that can be minted. Can only be set
+    /// on the initalization of the contract
     token_supply: u64,
 }
 
 impl NFT for Contract {
 
-    /// Allows access to mint any NFT
+    /// Allows or revokes permissions for an identity to mint
     ///
     /// # Panics
     ///
     /// The function will panic when:
     /// - The NFT contract has not been initalized
     /// - The NFT contract does not have access control set
-    /// - The Identity provided is valid
+    /// - The Identity provided is invalid
     /// - The Identity has already been allowed access
     /// - The Identity is not the access control address
-    fn allow_mint(minter: Identity) -> bool {
+    fn allow_mint(minter: Identity, allow: bool) -> bool {
         require(storage.state != 0, InitError::NFTNotInitalized);
         require(storage.access_control, AccessError::AccessControlNotSet);
 
-        _require_identity_is_valid(minter);
+        require_identity_is_valid(minter);
 
         require(storage.allowed_minters.get(minter) == false, 
             ApprovalError::AddressAlreadyGivenAccess
         );
         
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = sender.unwrap();
+        /// Ensure that the sender is allowed to add indetites to the approved list
+        let sender: Identity = unwrap_identity(msg_sender());
         require(
-            _compare_identities(sender, storage.access_control_address), 
+            compare_identities(sender, storage.access_control_address), 
             AccessError::SenderCannotSetAccessControl
         );
 
-        storage.allowed_minters.insert(minter, true);
+        /// Add the provided identity to the list of identities that are approved to mint
+        storage.allowed_minters.insert(minter, allow);
 
         true
     }
 
-    /// Gives approval to the to address to transfer the specified token
+    /// Gives approval to the 'to' Identity to transfer the specified token
     ///
     /// # Panics
     ///
@@ -93,25 +121,27 @@ impl NFT for Contract {
     fn approve(to: Identity, token_id: u64) -> bool {
         require(storage.state != 0, InitError::NFTNotInitalized);
 
-        _require_identity_is_valid(to);
+        require_identity_is_valid(to);
 
+        /// Ensure that the identity being approved is unique
         let mut meta_data = storage.meta_data.get(token_id);
         require(
-            !_compare_identities(meta_data.approved, to), 
+            !compare_identities(meta_data.approved, to), 
             ApprovalError::AddressAlreadyGivenApproval
         );
         require(
-            !_compare_identities(meta_data.owner, to), 
+            !compare_identities(meta_data.owner, to), 
             ApprovalError::ApproverCannotBeOwner
         );
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = sender.unwrap();
+        // Ensure that the sender is the owner of the token to be approved
+        let sender: Identity = unwrap_identity(msg_sender());
         require(
-            _compare_identities(meta_data.owner, sender), 
+            compare_identities(meta_data.owner, sender), 
             AccessError::SenderNotOwner
         );
 
+        /// Approve this identity for this token
         meta_data.approved = to;
         storage.meta_data.insert(token_id, meta_data);
 
@@ -141,29 +171,32 @@ impl NFT for Contract {
     fn burn(token_id: u64) -> bool {
         require(storage.state != 0, InitError::NFTNotInitalized);
 
+        /// Ensure this is a valid token that has already been minted and exists
         let empty_identity: Identity = Identity::Address(~Address::from(NATIVE_ASSET_ID));
         let mut meta_data: MetaData = storage.meta_data.get(token_id);
         require(
-            !_compare_identities(meta_data.owner, empty_identity), 
+            !compare_identities(meta_data.owner, empty_identity), 
             InputError::TokenDoesNotExist
         );
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = sender.unwrap();
+        /// Ensure the sender owns the token that is provided
+        let sender: Identity = unwrap_identity(msg_sender());
         require(
-            _compare_identities(meta_data.owner, sender), 
+            compare_identities(meta_data.owner, sender), 
             AccessError::SenderNotOwner
         );
 
+        /// Set the owner and approvers of the token to the 0 address
         meta_data.owner = empty_identity;
         meta_data.approved = empty_identity;
         storage.meta_data.insert(token_id, meta_data);
 
+        /// Reduce the balance of tokens for the owner
         let balance = storage.balances.get(sender);
         storage.balances.insert(sender, balance - 1);
 
-        // NOTE: Until we have a vec get_tokens will now return
-        //       owning nothing, even if mutliple tokens are owned
+        /// NOTE: Until we have a vec get_tokens will now return
+        ///       owning nothing, even if mutliple tokens are owned
         storage.owners.insert(sender, 0);
 
         log(BurnEvent{owner: sender, token_id});
@@ -182,8 +215,7 @@ impl NFT for Contract {
     fn constructor(owner: Identity, access_control: bool, token_supply: u64, token_price: u64, asset: ContractId) -> bool {
         require(storage.state == 0, InitError::CannotReinitialize);
         require(token_supply != 0, InputError::TokenSupplyCannotBeZero);
-
-        _require_identity_is_valid(owner);
+        require_identity_is_valid(owner);
 
         storage.access_control_address = owner;
         storage.access_control = access_control;
@@ -240,7 +272,7 @@ impl NFT for Contract {
     fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
         require(storage.state != 0, InitError::NFTNotInitalized);
 
-        let hash: b256 = _get_owner_operator_hash(owner, operator);
+        let hash: b256 = get_owner_operator_hash(owner, operator);
         storage.operator_approval.get(hash)
     }
 
@@ -263,37 +295,41 @@ impl NFT for Contract {
             storage.token_supply >= (storage.token_count + amount), 
             InputError::NotEnoughTokensToMint
         );
+        require_identity_is_valid(to);
 
-        _require_identity_is_valid(to);
+        let sender: Identity = unwrap_identity(msg_sender());
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = sender.unwrap();
-
+        /// Ensure that the sender is on the approved mint list
         require(
             !storage.access_control || 
             (storage.access_control && storage.allowed_minters.get(sender)), 
             AccessError::SenderDoesNotHaveAccessControl
         );
 
+        /// Ensure the correct asset and cost has been sent in the transaction
         let cost: u64 = storage.token_price * amount;
         require(msg_asset_id() == storage.asset, InputError::IncorrectAssetId);
         require(msg_amount() == cost, InputError::IncorrectAssetAmount);
 
+        /// Mint as many tokens as the sender has paid for
         let mut i = 0;
         while i < amount {
+            /// Create a new token id in sequential order
             let token_id: u64 = storage.token_count + 1;
             let empty_identity: Identity = Identity::Address(~Address::from(NATIVE_ASSET_ID));
 
+            /// Create the metadata for this new token with the owner 
             let meta_data: MetaData = MetaData {
                 owner: to, approved: empty_identity
             };
             storage.meta_data.insert(token_id, meta_data);
+            storage.owners.insert(to, token_id);
             
+            /// Increase the balance of the new owner
             let mut balance = storage.balances.get(to);
             storage.balances.insert(to, balance + 1);
 
-            storage.owners.insert(to, token_id);
-
+            /// Increment the token count and the number of tokens minted in this transaction
             storage.token_count = storage.token_count + 1;
             i = i + 1;
 
@@ -317,7 +353,8 @@ impl NFT for Contract {
     //     Option::Some(meta_data.owner)
     // }
 
-    /// Gives operator approval to the to address to transfer
+    /// Gives the operator identity approval to transfer any tokens owned by 
+    /// the owner identity. This can be dangerous.
     ///
     /// # Panics
     ///
@@ -328,18 +365,17 @@ impl NFT for Contract {
     /// - The sender is not the owner
     fn set_approval_for_all(owner: Identity, operator: Identity) -> bool {
         require(storage.state != 0, InitError::NFTNotInitalized);
-        
-        _require_identity_is_valid(operator);
+        require_identity_is_valid(operator);
 
-        let hash: b256 = _get_owner_operator_hash(owner, operator);
+        let hash: b256 = get_owner_operator_hash(owner, operator);
         require(!storage.operator_approval.get(hash), ApprovalError::AddressAlreadyGivenApproval);
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = sender.unwrap();
+        let sender: Identity = unwrap_identity(msg_sender());
+        require(compare_identities(owner, sender), AccessError::SenderNotOwner);
 
-        require(_compare_identities(owner, sender), AccessError::SenderNotOwner);
-
+        /// Set the identity to have approval on all tokens owned
         storage.operator_approval.insert(hash, true);
+
         log(OperatorEvent{owner, operator});
         true
     }
@@ -356,105 +392,97 @@ impl NFT for Contract {
     /// - The sender is not an operator for the owner
     fn transfer_from(from: Identity, to: Identity, token_id: u64) -> bool {
         require(storage.state != 0, InitError::NFTNotInitalized);
-        
-        _require_identity_is_valid(to);
+        require_identity_is_valid(to);
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = sender.unwrap();
+        let sender: Identity = unwrap_identity(msg_sender());
+        let hash: b256 = get_owner_operator_hash(from, sender);
 
         let mut meta_data: MetaData = storage.meta_data.get(token_id);
-        let hash: b256 = _get_owner_operator_hash(from, sender);
+        let empty_identity: Identity = Identity::Address(~Address::from(NATIVE_ASSET_ID));
 
+        /// Ensure that the sender is either the owner of the tokens, is approved
+        /// for transfer, or is an operator and the token is owned by the operator
         require(
-            _compare_identities(sender, meta_data.owner) ||
-            _compare_identities(sender, meta_data.approved) ||
-            storage.operator_approval.get(hash), 
+            compare_identities(sender, meta_data.owner) ||
+            compare_identities(sender, meta_data.approved) ||
+            (compare_identities(from, meta_data.owner) && storage.operator_approval.get(hash)), 
             AccessError::SenderNotOwnerOrApproved
         );
 
-        let empty_identity: Identity = Identity::Address(~Address::from(NATIVE_ASSET_ID));
-
+        /// Set the new owner of the token and reset the approver
         meta_data.owner = to;
         meta_data.approved = empty_identity;
         storage.meta_data.insert(token_id, meta_data);
-
-        let mut balance_from = storage.balances.get(from);
-        storage.balances.insert(from, balance_from - 1);
-
-        let mut balance_to = storage.balances.get(to);
-        storage.balances.insert(to, balance_to + 1);
-
+        /// Note: Until Vec is supported, getting the tokens owned by the old owner
+        //        will return nothing after transfer
         storage.owners.insert(from, 0);
         storage.owners.insert(to, token_id);
 
-        log(TransferEvent{from, to, token_id});
+        /// Decrease the previous owner's balance of tokens
+        let mut balance_from = storage.balances.get(from);
+        storage.balances.insert(from, balance_from - 1);
 
+        // Increase the new owner's balance of tokens
+        let mut balance_to = storage.balances.get(to);
+        storage.balances.insert(to, balance_to + 1);
+
+        log(TransferEvent{from, to, token_id});
         true
     }
 }
 
 // This function will take two identities and return true if they are the same
-fn _compare_identities(identity1: Identity, identity2: Identity) -> bool {
+fn compare_identities(identity1: Identity, identity2: Identity) -> bool {
     match identity1 {
         Identity::Address(identity1) => {
             match identity2 {
-                Identity::Address(identity2) => {
-                    identity1.value == identity2.value
-                },
-                _ => {
-                    false
-                }
+                Identity::Address(identity2) => identity1.value == identity2.value,
+                _ => false,
             }
         },
         Identity::ContractId(identity1) => {
             match identity2 {
-                Identity::ContractId(identity2) => {
-                    identity1.value == identity2.value
-                },
-                _ => {
-                    false
-                }
+                Identity::ContractId(identity2) => identity1.value == identity2.value,
+                _ => false,
             }
         }
     }
 }
 
 // This function returns the hash value of the two given idenity's b256 values
-fn _get_owner_operator_hash(owner: Identity, operator: Identity) -> b256 {
+fn get_owner_operator_hash(owner: Identity, operator: Identity) -> b256 {
     match owner {
         Identity::Address(owner) => {
             match operator {
-                Identity::Address(operator) => {
-                    sha256(owner.value, operator.value)
-                },
-                Identity::ContractId(operator) => {
-                    sha256(owner.value, operator.value)
-                }
+                Identity::Address(operator) => sha256(owner.value, operator.value),
+                Identity::ContractId(operator) => sha256(owner.value, operator.value),
             }
         },
         Identity::ContractId(owner) => {
             match operator {
-                Identity::Address(operator) => {
-                    sha256(owner.value, operator.value)
-                },
-                Identity::ContractId(operator) => {
-                    sha256(owner.value, operator.value)
-                }
+                Identity::Address(operator) => sha256(owner.value, operator.value),
+                Identity::ContractId(operator) =>sha256(owner.value, operator.value),
             }
         },
     }
 }
 
 // This function will panic if the given Identity points to the zero value
-fn _require_identity_is_valid(entity: Identity) {
+fn require_identity_is_valid(entity: Identity) {
     match entity {
         Identity::Address(entity) => {
             require(entity != ~Address::from(NATIVE_ASSET_ID), 
-                InputError::InputAddressCannotBeZero);
+                InputError::InputAddressCannotBeZero
+            );
         },
         Identity::ContractId(entity) => {
             require(entity != ~ContractId::from(NATIVE_ASSET_ID), 
-                InputError::InputAddressCannotBeZero);
+                InputError::InputAddressCannotBeZero
+            );
         },
     };
+}
+
+fn unwrap_identity(sender: Result<Identity, AuthError>) -> Identity {
+    sender.unwrap()
 }
