@@ -1,10 +1,10 @@
 <p align="center">
-    <img src="./.docs/multi-signature-logo.png" height="120">
+    <img src="./.docs/escrow-logo.png" height="120">
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.15.1" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.15.1-orange" />
+    <a href="https://crates.io/crates/forc/0.14.5" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.14.5-orange" />
     </a>
 </p>
 
