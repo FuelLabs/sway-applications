@@ -10,7 +10,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  FORC_VERSION: 0.15.1
+  ESCROW_FORC_VERSION: 0.14.5
+  MULTISIG_FORC_VERSION: 0.15.1
   REGISTRY: ghcr.io
   RUST_VERSION: 1.61.0
   PATH_TO_SCRIPTS: .github/scripts
@@ -50,14 +51,9 @@ jobs:
       - name: Run Cargo.toml linter
         run: git ls-files | grep Cargo.toml$ | xargs --verbose -n 1 cargo-toml-lint
 
-  build:
+  escrow:
     needs: cancel-previous-runs
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        project: ["escrow", "multisig-wallet"]
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -89,26 +85,84 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: install
-          args: forc --version ${{ env.FORC_VERSION }}
+          args: forc --version ${{ env.ESCROW_FORC_VERSION }}
 
       - name: Install forc-fmt
         uses: actions-rs/cargo@v1
         with:
           command: install
-          args: forc-fmt --version ${{ env.FORC_VERSION }}
+          args: forc-fmt --version ${{ env.ESCROW_FORC_VERSION }}
 
       - name: Check Sway formatting
-        run: forc fmt --path ${{ matrix.project }} --check
+        run: forc fmt --path escrow --check
 
       - name: Check Rust formatting
         run: |
-          cd ${{ matrix.project }}
+          cd escrow
           cargo fmt --verbose --check
 
       - name: Build Sway
-        run: sh ${{ env.PATH_TO_SCRIPTS }}/build.sh ${{ matrix.project }}
+        run: sh ${{ env.PATH_TO_SCRIPTS }}/build.sh escrow
 
       - name: Run Forc tests
         run: |
-          cd ${{ matrix.project }}
+          cd escrow
+          forc test
+
+  multisig:
+    needs: cancel-previous-runs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ env.RUST_VERSION }}
+          override: true
+
+      - name: Init cache
+        uses: Swatinem/rust-cache@v1
+      
+      - name: Install a modern linker (mold)
+        uses: rui314/setup-mold@v1
+
+      - name: Force Rust to use mold globally for compilation
+        run: |
+                touch ~/.cargo/config.toml
+                echo "[target.x86_64-unknown-linux-gnu]" > ~/.cargo/config.toml
+                echo 'linker = "clang"' >> ~/.cargo/config.toml
+                echo 'rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/mold"]' >> ~/.cargo/config.toml
+
+      - name: Install rustfmt
+        run: rustup component add rustfmt
+
+      - name: Install forc
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: forc --version ${{ env.MULTISIG_FORC_VERSION }}
+
+      - name: Install forc-fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: forc-fmt --version ${{ env.MULTISIG_FORC_VERSION }}
+
+      - name: Check Sway formatting
+        run: forc fmt --path multisig-wallet --check
+
+      - name: Check Rust formatting
+        run: |
+          cd multisig-wallet
+          cargo fmt --verbose --check
+
+      - name: Build Sway
+        run: sh ${{ env.PATH_TO_SCRIPTS }}/build.sh multisig-wallet
+
+      - name: Run Forc tests
+        run: |
+          cd multisig-wallet
           forc test
