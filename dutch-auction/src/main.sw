@@ -64,7 +64,7 @@ impl DutchAuction for Contract {
     }
 
     fn get_price() -> u64 {
-        price()
+        calculate_price()
     }
 
     fn set_beneficiary(new_beneficiary: Address) {
@@ -81,7 +81,7 @@ impl DutchAuction for Contract {
 
         /// Checks for correct asset_id being sent and high enough amount being sent
         require(msg_asset_id() == storage.asset_id, Error::WrongAssetSent);
-        require(msg_amount() >= price(), Error::BidTooLow);
+        require(msg_amount() >= calculate_price(), Error::BidTooLow);
 
         /// Cannot bid before auction starts
         require(height() >= storage.startTime, Error::AuctionNotYetStarted);
@@ -93,8 +93,8 @@ impl DutchAuction for Contract {
         storage.ended = true;
 
         /// If someone sends more than the current price, refund the extra amount 
-        if msg_amount() > price() {
-            let return_amount = msg_amount() - price();
+        if msg_amount() > calculate_price() {
+            let return_amount = msg_amount() - calculate_price();
             transfer_to_output(return_amount, storage.asset_id, get_sender());
         }
 
@@ -138,10 +138,10 @@ fn win() {
     /// Add whatever logic you may want to execute on a win
 
     //Currently just sends the bid amount to the beneficiary
-    transfer_to_output(price(), storage.asset_id, storage.beneficiary);
+    transfer_to_output(calculate_price(), storage.asset_id, storage.beneficiary);
 }
 
-fn price() -> u64 {
+fn calculate_price() -> u64 {
     let price_difference = storage.startingPrice - storage.endingPrice;
     let duration = storage.endTime - storage.startTime;
     // This is the amount the price will reduce by per block
