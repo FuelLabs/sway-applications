@@ -221,3 +221,96 @@ async fn panics_when_not_initialized() {
         .await
         .unwrap();
 }
+
+#[tokio::test]
+#[should_panic]
+async fn panics_with_incorrect_asset() {
+    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+
+    let another_asset_id = Contract::deploy_with_salt(
+        "./tests/artifacts/asset/out/debug/asset.bin",
+        &deployer.wallet,
+        TxParameters::default(),
+        Salt::from([1u8; 32]),
+    )
+    .await
+    .unwrap();
+
+    let another_asset = GovToken::new(another_asset_id.to_string(), deployer.wallet.clone());
+
+    assert!(
+        another_asset
+            .mint_and_send_to_address(100, user.wallet.address())
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    deployer
+        .dao_voting
+        .constructor(gov_token_id, 10, 10, [0; 32])
+        .call()
+        .await
+        .unwrap()
+        .value;
+
+    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+    let call_params =
+        CallParameters::new(Some(asset_amount), Some(AssetId::from(*another_asset_id)));
+    user.dao_voting
+        .deposit()
+        .tx_params(tx_params)
+        .call_params(call_params)
+        .call()
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+#[should_panic]
+async fn panics_with_incorrect_amount() {
+    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+
+    assert!(
+        deployer
+            .gov_token
+            .unwrap()
+            .mint_and_send_to_address(100, user.wallet.address())
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    deployer
+        .dao_voting
+        .constructor(gov_token_id, 10, 10, [0; 32])
+        .call()
+        .await
+        .unwrap()
+        .value;
+
+    assert_eq!(
+        deployer
+            .dao_voting
+            .get_balance()
+            .call()
+            .await
+            .unwrap()
+            .value,
+        0
+    );
+
+    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+    let call_params = CallParameters::new(Some(0), Some(AssetId::from(*gov_token_id)));
+    user.dao_voting
+        .deposit()
+        .tx_params(tx_params)
+        .call_params(call_params)
+        .call()
+        .await
+        .unwrap();
+}
