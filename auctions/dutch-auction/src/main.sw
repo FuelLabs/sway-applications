@@ -69,7 +69,7 @@ impl DutchAuction for Contract {
         storage.initialized = true;
     }
 
-    fn get_price(auction_id: u64) -> u64 {
+    fn price(auction_id: u64) -> u64 {
         calculate_price(auction_id)
     }
 
