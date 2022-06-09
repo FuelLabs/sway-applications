@@ -32,12 +32,12 @@ abi NFT {
     fn balance_of(owner: Identity) -> u64;
     fn burn(token_id: u64) -> bool ;
     fn constructor(owner: Identity, access_control: bool, token_supply: u64, token_price: u64, asset: ContractId) -> bool;
-    fn get_approved(token_id: u64) -> Option<Identity>;
+    //fn get_approved(token_id: u64) -> Option<Identity>;
     fn get_tokens(address: Identity) -> u64;
     fn get_total_supply() -> u64;
     fn is_approved_for_all(owner: Identity, operator: Identity) -> bool;
     fn mint(to: Identity, amount: u64) -> bool ;
-    fn owner_of(token_id: u64) -> Option<Identity>;
+    //fn owner_of(token_id: u64) -> Option<Identity>;
     fn set_approval_for_all(owner: Identity, operator: Identity) -> bool;
     fn transfer_from(from: Identity, to: Identity, token_id: u64) -> bool;
 }
@@ -214,18 +214,19 @@ impl NFT for Contract {
         true
     }
 
+    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
     /// Returns the approved address
     ///
     /// # Panics
     ///
     /// The function will panic when:
     /// - The NFT contract has not been initalized
-    fn get_approved(token_id: u64) -> Option<Identity> {
-        require(storage.state != 0, Error::NFTNotInitalized);
+    // fn get_approved(token_id: u64) -> Option<Identity> {
+    //     require(storage.state != 0, Error::NFTNotInitalized);
 
-        let meta_data: MetaData = storage.meta_data.get(token_id);
-        Option::Some(meta_data.approved)
-    }
+    //     let meta_data: MetaData = storage.meta_data.get(token_id);
+    //     Option::Some(meta_data.approved)
+    // }
 
     /// Returns the tokens owned by the address
     ///
@@ -317,18 +318,19 @@ impl NFT for Contract {
         true
     }
 
+    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
     /// Returns the owner of a given token id
     ///
     /// # Panics
     ///
     /// The function will panic when:
     /// - The NFT contract has not been initalized
-    fn owner_of(token_id: u64) -> Option<Identity> {
-        require(storage.state != 0, Error::NFTNotInitalized);
+    // fn owner_of(token_id: u64) -> Option<Identity> {
+    //     require(storage.state != 0, Error::NFTNotInitalized);
 
-        let meta_data: MetaData = storage.meta_data.get(token_id);
-        Option::Some(meta_data.owner)
-    }
+    //     let meta_data: MetaData = storage.meta_data.get(token_id);
+    //     Option::Some(meta_data.owner)
+    // }
 
     /// Gives operator approval to the to address to transfer
     ///
