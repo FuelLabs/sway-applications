@@ -31,7 +31,7 @@ struct Auction {
     asset_id: ContractId,
     /// The beneficiary of the proceeds of the auction
     beneficiary: Address,
-    /// Whether or not the auction has ended already (Different from end_time, admin can prematurely end the auction.)
+    /// Whether the auction has ended
     ended: bool,
 }
 
