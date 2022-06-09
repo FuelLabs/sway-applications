@@ -85,6 +85,8 @@ impl DutchAuction for Contract {
     fn bid(auction_id: u64) {
         /// Since this is a dutch auction, first bid wins
 
+        let mut auction = storage.auctions.get(auction_id);
+
         require(storage.constructed == true, Error::ContractNotConstructedYet);
 
         /// Checks for correct asset_id being sent and high enough amount being sent
@@ -92,13 +94,12 @@ impl DutchAuction for Contract {
         require(msg_amount() >= calculate_price(auction_id), Error::BidTooLow);
 
         /// Cannot bid before auction starts
-        require(height() >= storage.auctions.get(auction_id).start_time, Error::AuctionNotYetStarted);
+        require(height() >= auction.start_time, Error::AuctionNotYetStarted);
         
         /// If ended == true, someone already bid or the admin prematurely ended the auction
-        require(!storage.auctions.get(auction_id).ended, Error::AuctionAlreadyEnded);
+        require(!auction.ended, Error::AuctionAlreadyEnded);
 
         /// Disallows furthur bids
-        let mut auction = storage.auctions.get(auction_id);
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
 
@@ -158,25 +159,28 @@ fn win(auction_id: u64) {
     /// Add whatever logic you may want to execute on a win
 
     //Currently just sends the bid amount to the beneficiary
-    transfer_to_output(calculate_price(auction_id), storage.asset_id, storage.auctions.get(auction_id).beneficiary);
+    let auction = storage.auctions.get(auction_id);
+    transfer_to_output(calculate_price(auction_id), storage.asset_id, auction.beneficiary);
 }
 
 fn calculate_price(auction_id: u64) -> u64 {
+    let auction = storage.auctions.get(auction_id);
+    
     /// How much the price will go down by, throughout the auction
-    let price_delta = storage.auctions.get(auction_id).opening_price - storage.auctions.get(auction_id).reserve_price;
+    let price_delta = auction.opening_price - auction.reserve_price;
     /// How long the auction will last
-    let auction_duration = storage.auctions.get(auction_id).end_time - storage.auctions.get(auction_id).start_time;
+    let auction_duration = auction.end_time - auction.start_time;
     /// This is the amount the price will reduce by per block
     let price_shift = price_delta / auction_duration;
 
     /// Tells us how far we are into the auction (out of the auction_duration)
-    let now = height() - storage.auctions.get(auction_id).start_time; 
+    let now = height() - auction.start_time; 
 
     /// Cap how far we are into the auction by the auction_duration, so price doesnt go into negative or below endprice
     let now = if now > auction_duration { auction_duration } else { now };
 
     /// price_shift * now tells us how much the price has reduced by now
-    return storage.auctions.get(auction_id).opening_price - (price_shift * now);
+    return auction.opening_price - (price_shift * now);
 }
 
 /// Helper function to avoid having to repeat this code
