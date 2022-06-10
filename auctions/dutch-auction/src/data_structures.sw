@@ -1,6 +1,6 @@
 library data_structures;
 
-use std::address::Address;
+use std::identity::Identity;
 use std::contract_id::ContractId;
 
 pub struct Auction {
@@ -15,7 +15,7 @@ pub struct Auction {
     /// The asset the bidding will occur in
     asset_id: ContractId,
     /// The beneficiary of the proceeds of the auction
-    beneficiary: Address,
+    beneficiary: Identity,
     /// Whether the auction has ended
     ended: bool,
 }
