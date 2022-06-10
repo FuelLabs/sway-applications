@@ -76,7 +76,7 @@ async fn initialize() -> bool {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10, [0; 32])
+        .constructor(gov_token_id, 10, 10)
         .call()
         .await
         .unwrap()
@@ -94,14 +94,14 @@ async fn panics_when_reinitialized() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10, [0; 32])
+        .constructor(gov_token_id, 10, 10)
         .call()
         .await
         .unwrap()
         .value;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10, [0; 32])
+        .constructor(gov_token_id, 10, 10)
         .call()
         .await
         .unwrap()
@@ -114,7 +114,7 @@ async fn panics_with_incorrect_voting_period() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 0, 10, [0; 32])
+        .constructor(gov_token_id, 0, 10)
         .call()
         .await
         .unwrap()
@@ -127,7 +127,7 @@ async fn panics_with_incorrect_approval_percentage() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 0, [0; 32])
+        .constructor(gov_token_id, 10, 0)
         .call()
         .await
         .unwrap()
@@ -152,7 +152,7 @@ async fn user_can_deposit() {
 
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10, [0; 32])
+        .constructor(gov_token_id, 10, 10)
         .call()
         .await
         .unwrap()
@@ -250,7 +250,7 @@ async fn panics_with_incorrect_asset() {
 
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10, [0; 32])
+        .constructor(gov_token_id, 10, 10)
         .call()
         .await
         .unwrap()
@@ -287,7 +287,7 @@ async fn panics_with_incorrect_amount() {
 
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10, [0; 32])
+        .constructor(gov_token_id, 10, 10)
         .call()
         .await
         .unwrap()
@@ -313,4 +313,42 @@ async fn panics_with_incorrect_amount() {
         .call()
         .await
         .unwrap();
+}
+
+#[tokio::test]
+async fn user_can_add_proposal() {
+    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+    deployer
+        .dao_voting
+        .constructor(gov_token_id, 10, 10)
+        .call()
+        .await
+        .unwrap()
+        .value;
+    assert!(
+        user.dao_voting
+            .add_proposal([1; 32])
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    let proposal = user.dao_voting.get_proposal(0).call().await.unwrap().value;
+
+    assert_eq!(
+        proposal,
+        daovoting_mod::Proposal {
+            approved: false,
+            expired: false,
+            data: [1; 32]
+        }
+    );
+}
+
+#[tokio::test]
+#[should_panic]
+async fn panics_on_incorrect_proposal_id() {
+    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+    user.dao_voting.get_proposal(0).call().await.unwrap();
 }
