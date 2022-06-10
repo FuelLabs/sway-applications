@@ -1,36 +1,38 @@
 contract;
 
-use std::{
-    address::Address,
-    assert::require,
-    block::height,
-    chain::auth::{AuthError, msg_sender},
-    constants::NATIVE_ASSET_ID,
-    context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
-    contract_id::ContractId,
-    identity::Identity,
-    option::Option,
-    result::*,
-    revert::revert,
-    storage::StorageMap,
-    token::{force_transfer_to_contract, transfer_to_output}
-};
+// use std::{
+//     address::Address,
+//     assert::require,
+//     block::height,
+//     chain::auth::{AuthError, msg_sender},
+//     constants::NATIVE_ASSET_ID,
+//     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
+//     contract_id::ContractId,
+//     identity::Identity,
+//     option::Option,
+//     result::*,
+//     revert::revert,
+//     storage::StorageMap,
+//     token::{force_transfer_to_contract, transfer_to_output}
+// };
 
 abi EnglishAuction {
-    fn bid() -> bool;
-    fn buy_reserve() -> bool;
-    fn constructor(seller: Identity, sell_asset: ContractId, sell_amount: u64, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool;
-    fn get_balance(identity: Identity) -> u64;
-    fn get_current_bid() -> u64;
-    fn get_end_time() -> u64;
-    // fn get_highest_bidder() -> Option<Identity>;
-    fn get_sell_amount() -> u64;
-    fn get_sell_asset() -> ContractId;
-    fn get_reserve() -> u64;
-    fn get_state() -> u64;
-    fn withdraw() -> bool;
+    // fn bid() -> bool;
+    // fn buy_reserve() -> bool;
+    // fn constructor(seller: Identity, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool;
+    // fn get_balance(identity: Identity) -> u64;
+    // fn get_current_bid() -> u64;
+    // fn get_end_time() -> u64;
+    // // fn get_highest_bidder() -> Option<Identity>;
+    // fn get_sell_amount() -> u64;
+    // fn get_sell_asset() -> ContractId;
+    // fn get_reserve() -> u64;
+    // fn get_state() -> u64;
+    // fn withdraw() -> bool;
+    fn test_function() -> bool;
 }
 
+/*
 enum Error {
     AuctionIsNotClosed: (),
     AuctionIsNotOpen: (),
@@ -45,8 +47,9 @@ enum Error {
     NoReserveSet: (),
     ReserveLessThanInitalPrice: (),
     UserHasAlreadyWithdrawn: (),
-}
+}*/
 
+/*
 storage {
     buy_asset: ContractId,
     current_bid: u64,
@@ -61,10 +64,15 @@ storage {
     seller_withdawn: bool,
     state: u64,
     end_time: u64,
-}
+}*/
 
 impl EnglishAuction for Contract {
 
+    fn test_function() -> bool {
+        true
+    }
+
+/*
     /// Places a bid 
     ///
     /// # Panics
@@ -141,29 +149,29 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction has already been initalized
-    /// - The specified sell asset is not provided
-    /// - The specified sell amount is not provided
+    /// - The transaction did not have any sell asset
+    /// - The transaction's asset is not valid
     /// - The specified buy asset is the 0 address
     /// - The inital price is higher than the reserve price if a reserve price is set
     /// - The time for the auction to end it 0
-    fn constructor(seller: Identity, sell_asset: ContractId, sell_amount: u64, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool {
-        require(storage.state == 0, Error::CannotReinitialize);
-        require(sell_asset == msg_asset_id(), Error::IncorrectAssetProvided);
-        require(sell_amount == msg_amount(), Error::IncorrectAmountProvided);
-        require(buy_asset != ~ContractId::from(NATIVE_ASSET_ID), Error::BuyAssetNotProvided);
-        require((reserve_price >= inital_price && reserve_price != 0) || reserve_price == 0, Error::ReserveLessThanInitalPrice);
-        require(time != 0, Error::AuctionTimeNotProvided);
+    fn constructor(seller: Identity, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool {
+        //require(storage.state == 0, Error::CannotReinitialize);
+        //require(msg_amount() > 0, Error::IncorrectAmountProvided);
+        //require(msg_asset_id() != ~ContractId::from(NATIVE_ASSET_ID), Error::IncorrectAssetProvided);
+        //require(buy_asset != ~ContractId::from(NATIVE_ASSET_ID), Error::BuyAssetNotProvided);
+        //require((reserve_price >= inital_price && reserve_price != 0) || reserve_price == 0, Error::ReserveLessThanInitalPrice);
+        //require(time != 0, Error::AuctionTimeNotProvided);
 
-        storage.buy_asset = buy_asset;
-        storage.buyer_withdrawn = false;
-        storage.end_time = time + height();
-        storage.inital_price = inital_price;
-        storage.reserve_price = reserve_price;
-        storage.sell_amount = sell_amount;
-        storage.sell_asset = sell_asset;
-        storage.seller = seller;
-        storage.state = 1;
-        storage.seller_withdawn = false;
+        // storage.buy_asset = buy_asset;
+        // storage.buyer_withdrawn = false;
+        // storage.end_time = time + height();
+        // storage.inital_price = inital_price;
+        // storage.reserve_price = reserve_price;
+        // storage.sell_amount = msg_amount();
+        // storage.sell_asset = msg_asset_id();
+        // storage.seller = seller;
+        // storage.state = 1;
+        // storage.seller_withdawn = false;
 
         true
     }
@@ -336,8 +344,10 @@ impl EnglishAuction for Contract {
         };
         true
     }
+*/
 }
 
+/*
 // This function will take two identities and return true if they are the same
 fn compare_identities(identity1: Identity, identity2: Identity) -> bool {
     match identity1 {
@@ -359,3 +369,4 @@ fn compare_identities(identity1: Identity, identity2: Identity) -> bool {
 fn unwrap_identity(sender: Result<Identity, AuthError>) -> Identity {
     sender.unwrap()
 }
+*/
