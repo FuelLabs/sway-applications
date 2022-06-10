@@ -29,8 +29,8 @@ storage {
     /// Whether or not the constructor function has been called yet
     initialized: bool,
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
-    auctions: StorageMap<u64, Auction>, 
-    /// The Admin Address
+    auctions: StorageMap<u64,
+    Auction>, /// The Admin Address
     admin: Identity,
     /// Tracking how many auctions have been made till now
     auction_count: u64,
@@ -82,8 +82,7 @@ impl DutchAuction for Contract {
         on_win(auction_id, price);
 
         log(WinningBidEvent {
-            winner: get_sender_identity(), 
-            id: auction_id, 
+            winner: get_sender_identity(), id: auction_id, 
         });
     }
 
@@ -105,8 +104,7 @@ impl DutchAuction for Contract {
         storage.auctions.insert(storage.auction_count, auction);
 
         log(CreatedAuctionEvent {
-            id: storage.auction_count, 
-            auction, 
+            id: storage.auction_count, auction, 
         });
     }
 
