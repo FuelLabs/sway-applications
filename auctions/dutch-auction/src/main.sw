@@ -23,7 +23,7 @@ use std::{
 use abi::DutchAuction;
 use errors::Error;
 use data_structures::Auction;
-use events::*;
+use events::{AuctionEndedEvent, CreatedAuctionEvent, WinningBidEvent};
 
 storage {
     /// Whether or not the constructor function has been called yet
