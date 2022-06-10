@@ -7,7 +7,7 @@ abi NFT {
     fn approve(to: Identity, token_id: u64) -> bool;
     fn balance_of(owner: Identity) -> u64;
     fn burn(token_id: u64) -> bool ;
-    fn constructor(owner: Identity, access_control: bool, token_supply: u64, token_price: u64, asset: ContractId) -> bool;
+    fn constructor(owner: Identity, access_control: bool, token_supply: u64) -> bool;
     // fn get_approved(token_id: u64) -> Option<Identity>;
     fn get_tokens(address: Identity) -> u64;
     fn get_total_supply() -> u64;

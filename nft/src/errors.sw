@@ -20,8 +20,6 @@ pub enum InitError {
 }
 
 pub enum InputError {
-    IncorrectAssetAmount: (),
-    IncorrectAssetId: (),
     InputAddressCannotBeZero: (),
     MintAmountCannotBeZero: (),
     NotEnoughTokensToMint: (),

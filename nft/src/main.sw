@@ -44,9 +44,6 @@ storage {
     /// Maintains the number of tokens owned by each of the identities
     balances: StorageMap<Identity, u64>,
 
-    /// The asset accepted as payment for minting a token
-    asset: ContractId,
-
     /// The metadata for each token based on token id
     meta_data: StorageMap<u64, MetaData>,
 
@@ -63,10 +60,6 @@ storage {
 
     /// The total number of tokens that have been minted
     token_count: u64,
-
-    /// The price to purchase a single token. Can only be set on
-    /// the initalization of the contract
-    token_price: u64,
 
     /// The total supply tokens that can be minted. Can only be set
     /// on the initalization of the contract
@@ -212,7 +205,7 @@ impl NFT for Contract {
     /// - The constructor has already been called
     /// - The token count is 0
     /// - The owner is not a valid identity
-    fn constructor(owner: Identity, access_control: bool, token_supply: u64, token_price: u64, asset: ContractId) -> bool {
+    fn constructor(owner: Identity, access_control: bool, token_supply: u64) -> bool {
         require(storage.state == 0, InitError::CannotReinitialize);
         require(token_supply != 0, InputError::TokenSupplyCannotBeZero);
         require_identity_is_valid(owner);
@@ -220,8 +213,6 @@ impl NFT for Contract {
         storage.access_control_address = owner;
         storage.access_control = access_control;
         storage.token_supply = token_supply;
-        storage.token_price = token_price;
-        storage.asset = asset;
         storage.state = 1;
 
         true
@@ -305,11 +296,6 @@ impl NFT for Contract {
             (storage.access_control && storage.allowed_minters.get(sender)), 
             AccessError::SenderDoesNotHaveAccessControl
         );
-
-        /// Ensure the correct asset and cost has been sent in the transaction
-        let cost: u64 = storage.token_price * amount;
-        require(msg_asset_id() == storage.asset, InputError::IncorrectAssetId);
-        require(msg_amount() == cost, InputError::IncorrectAssetAmount);
 
         /// Mint as many tokens as the sender has paid for
         let mut i = 0;
