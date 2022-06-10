@@ -8,9 +8,9 @@ contract;
 
 // Our library dependencies
 dep abi;
+dep data_structures;
 dep errors;
 dep events;
-dep data_structures;
 
 // Standard library code
 use std::{
@@ -31,9 +31,9 @@ use std::{
 
 // Bring our code into scope
 use abi::Escrow;
+use data_structures::{Asset, EscrowData, State, User, UserEscrows};
 use errors::{AccessError, ApproveError, CreationError, DepositError, InitError, StateError};
 use events::{ApproveEvent, CreatedEscrowEvent, DepositEvent, ThresholdReachedEvent, WithdrawEvent};
-use data_structures::{Asset, EscrowData, Initialized, State, User, UserEscrows};
 
 // Note: mappings inside structs are not a thing therefore this mess exists
 storage {
@@ -54,7 +54,7 @@ storage {
     escrow_count: u64,
 
     /// Enum used to lock the constructor() to prevent re-initialization
-    initialized: Initialized,
+    initialized: bool,
 
     /// Owner of the contract - passed into the constructor()
     /// Only the owner can create new escrows via create_escrow()
@@ -72,9 +72,9 @@ impl Escrow for Contract {
     /// The function will panic when
     /// - The constructor is called more than once
     fn constructor(owner: Identity) {
-        // require(storage.initialized == Initialized::False, InitError::CannotReinitialize);
+        require(!storage.initialized, InitError::CannotReinitialize);
         storage.owner = owner;
-        storage.initialized = Initialized::True;
+        storage.initialized = true;
     }
 
     /// Creates an internal representation of an escrow by setting the users and assets

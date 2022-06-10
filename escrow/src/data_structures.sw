@@ -3,14 +3,6 @@ library data_structures;
 use std::{contract_id::ContractId, identity::Identity, option::*};
 use core::ops::Eq;
 
-pub enum Initialized {
-    /// Variant indicating that the constructor has been called
-    True: (),
-
-    /// Variant indicating that the constructor has not been called
-    False: (),
-}
-
 pub enum State {
     /// Escrow is awaiting calls to deposit() & approve() from all parties
     Pending: (),
