@@ -168,8 +168,8 @@ fn get_sender_identity() -> Identity {
 
 fn transfer_to_identity(amount: u64, asset_id: ContractId, reciever: Identity) {
     match reciever {
-        Identity::Address(addy) => {
-            transfer_to_output(amount, asset_id, addy);
+        Identity::Address(address) => {
+            transfer_to_output(amount, asset_id, address);
         },
         Identity::ContractId(contractid) => {
             force_transfer_to_contract(amount, asset_id, contractid);
