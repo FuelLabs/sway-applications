@@ -1,5 +1,4 @@
-use fuel_tx::ContractId;
-use fuels::prelude::*;
+use fuels::{prelude::*, tx::ContractId};
 use fuels_abigen_macro::abigen;
 
 // Load abi from json
@@ -14,7 +13,7 @@ struct Metadata {
 
 async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId) {
     // Setup 3 test wallets
-    let wallets = launch_provider_and_get_wallets(WalletsConfig {
+    let mut wallets = launch_provider_and_get_wallets(WalletsConfig {
         num_wallets: 4,
         coins_per_wallet: 1,
         coin_amount: 1000000,
@@ -22,10 +21,10 @@ async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId) {
     .await;
 
     // Get the wallets from that provider
-    let wallet1 = &wallets[0];
-    let wallet2 = &wallets[1];
-    let wallet3 = &wallets[2];
-    let wallet4 = &wallets[3];
+    let wallet1 = wallets.pop().unwrap();
+    let wallet2 = wallets.pop().unwrap();
+    let wallet3 = wallets.pop().unwrap();
+    let wallet4 = wallets.pop().unwrap();
 
     let auction_id = Contract::deploy(
         "./out/debug/english-auction-abi.bin", 
@@ -69,3 +68,16 @@ async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId) {
 
     (deploy_wallet, owner1, owner2, owner3, asset_id)
 }
+
+/*async fn get_contract_instance() -> (EnglishAuction, ContractId) {
+    // Launch a local network and deploy the contract
+    let wallet = launch_provider_and_get_single_wallet().await;
+
+    let id = Contract::deploy("./out/debug/test_project.bin", &wallet, TxParameters::default())
+        .await
+        .unwrap();
+
+    let instance = EnglishAuction::new(id.to_string(), wallet);
+
+    (instance, id)
+}*/
