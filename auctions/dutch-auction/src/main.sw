@@ -179,10 +179,10 @@ fn transfer_to_identity(amount: u64, asset_id: ContractId, reciever: Identity) {
 
 fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
     match id_1 {
-        Identity::Address(addy_1) => {
+        Identity::Address(address1) => {
             match id_2 {
-                Identity::Address(addy_2) => {
-                    addy_1 == addy_2
+                Identity::Address(address2) => {
+                    address1 == address2
                 },
                 _ => false, 
             }
