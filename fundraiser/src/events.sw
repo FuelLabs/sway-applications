@@ -1,26 +1,34 @@
 library events;
 
-use std::chain::auth::Sender;
+dep data_structures;
+
+use std::identity::Identity;
+use data_structures::Campaign;
 
 pub struct PledgedEvent {
-    user: Sender,
+    user: Identity,
     amount: u64,
-    campaign_identifier: u64
+    id: u64
 }
 
 pub struct UnpledgedEvent {
-    user: Sender,
+    user: Identity,
     amount: u64,
-    campaign_identifier: u64
+    id: u64
 }
 
 pub struct ClaimedEvent {
-    user: Sender,
+    user: Identity,
     amount: u64,
-    campaign_identifier: u64
+    id: u64
 }
 
 pub struct CancelledEvent {
-    user: Sender,
-    campaign_identifier: u64
+    user: Identity,
+    id: u64
+}
+
+pub struct CreatedCampaign {
+    campaign: Campaign,
+    id: u64
 }
