@@ -11,7 +11,7 @@ struct Metadata {
 
 async fn setup() -> (Metadata, Metadata, Metadata) {
     // Setup 3 test wallets
-    let wallets = launch_provider_and_get_wallets(WalletsConfig {
+    let mut wallets = launch_provider_and_get_wallets(WalletsConfig {
         num_wallets: 3,
         coins_per_wallet: 1,
         coin_amount: 1000000,
@@ -19,9 +19,9 @@ async fn setup() -> (Metadata, Metadata, Metadata) {
     .await;
 
     // Get the wallets from that provider
-    let wallet1 = &wallets[0];
-    let wallet2 = &wallets[1];
-    let wallet3 = &wallets[2];
+    let wallet1 = wallets.pop().unwrap();
+    let wallet2 = wallets.pop().unwrap();
+    let wallet3 = wallets.pop().unwrap();
 
     let nft_id = Contract::deploy(
         "./out/debug/NFT.bin", 
