@@ -86,7 +86,7 @@ jobs:
 
       - name: Install fuelup
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://fuellabs.github.io/fuelup/fuelup-init.sh | sh -s install
+          curl --proto '=https' --tlsv1.2 -sSf https://fuellabs.github.io/fuelup/fuelup-init.sh | sh -s -y install
           export PATH="$HOME/.fuelup/bin:$PATH"
 
       - name: Check Sway formatting
