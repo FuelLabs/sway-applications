@@ -169,6 +169,16 @@ async fn user_can_deposit() {
         0
     );
 
+    assert_eq!(
+        user.dao_voting
+            .get_user_balance(user.wallet.address())
+            .call()
+            .await
+            .unwrap()
+            .value,
+        0
+    );
+
     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
     let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
     assert!(
