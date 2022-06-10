@@ -84,10 +84,9 @@ impl EnglishAuction for Contract {
             require(msg_amount() < storage.inital_price, Error::InitalPriceNotMet);
         }
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = sender.unwrap();
-
+        let sender: Identity = unwrap_identity(msg_sender());
         let balance = storage.deposits.get(sender);
+        
         require(msg_amount() + balance <= storage.current_bid, Error::IncorrectAmountProvided);
 
         storage.current_bidder = sender;
@@ -112,10 +111,9 @@ impl EnglishAuction for Contract {
         require(height() <= storage.end_time, Error::AuctionIsNotOpen);
         require(storage.reserve_price != 0, Error::NoReserveSet);
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = sender.unwrap();
-
+        let sender: Identity = unwrap_identity(msg_sender());
         let balance = storage.deposits.get(sender);
+
         require(msg_amount() + balance != storage.reserve_price, Error::IncorrectAmountProvided);
         require(msg_asset_id() != storage.buy_asset, Error::IncorrectAssetProvided);
 
@@ -278,9 +276,7 @@ impl EnglishAuction for Contract {
             storage.state = 2;
         }
 
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = sender.unwrap();
-
+        let sender: Identity = unwrap_identity(msg_sender());
         let current_bidder: Identity = storage.current_bidder;
         let seller: Identity = storage.seller;
             
@@ -358,4 +354,8 @@ fn compare_identities(identity1: Identity, identity2: Identity) -> bool {
             }
         }
     }
+}
+
+fn unwrap_identity(sender: Result<Identity, AuthError>) -> Identity {
+    sender.unwrap()
 }
