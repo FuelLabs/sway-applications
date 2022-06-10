@@ -1,6 +1,8 @@
 contract;
 
 dep abi;
+dep errors;
+dep data_structures;
 
 use std::{
     address::Address,
@@ -17,24 +19,8 @@ use std::{
 };
 
 use abi::DutchAuction;
-
-struct Auction {
-    /// Price at the very start, usually higher than any expected price of sale
-    opening_price: u64,
-    /// The Price that the auction will eventually reach if no bids are recieved. Can also be used as the reserve price
-    reserve_price: u64,
-    /// Point in time when bids can be placed and when the price will start to decrease
-    start_time: u64,
-    /// Only used for calculation of the price, users can still bid past this time for reserve_price unless it's ended by the admin
-    end_time: u64,
-    /// The asset the bidding will occur in
-    asset_id: ContractId,
-    /// The beneficiary of the proceeds of the auction
-    beneficiary: Address,
-    /// Whether the auction has ended
-    ended: bool,
-}
-
+use errors::Error;
+use data_structures::Auction;
 
 storage {
     /// Whether or not the constructor function has been called yet
@@ -47,21 +33,6 @@ storage {
     auction_count: u64
 }
 
-enum Error {
-    ContractNotYetInitialized: (),
-    CannotReinitialize: (),
-    SenderNotAdmin: (),
-    AuctionInProgress: (),
-    AuctionAlreadyEnded: (),
-    BidTooLow: (),
-    WrongAssetSent: (),
-    EndPriceCannotBeLargerThanStartPrice: (),
-    AuctionCannotEndInThePast: (),
-    AuctionCannotStartInThePast: (),
-    AuctionCannotEndBeforeItStarts: (),
-    AuctionNotYetStarted: (),
-    InvalidAuctionID: (),
-}
 
 impl DutchAuction for Contract {
     fn constructor(admin: Address) {
