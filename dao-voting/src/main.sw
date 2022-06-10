@@ -6,6 +6,9 @@ use std::{
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
+    identity::Identity,
+    result::*,
+    revert::revert,
     storage::StorageMap,
 };
 
@@ -13,6 +16,8 @@ abi DaoVoting {
     fn constructor(gov_token: ContractId, voting_period: u64, approval_percentage: u64) -> bool;
     fn deposit() -> bool;
     fn get_balance() -> u64;
+    fn get_user_balance(user: Identity) -> u64;
+    fn get_user_votes(user: Identity) -> u64;
     fn add_proposal(proposal: b256) -> bool;
     fn get_proposal(id: u64) -> Proposal;
 }
@@ -40,9 +45,9 @@ storage {
     proposals: StorageMap<u64, Proposal>,
     proposal_count: u64,
     // The amount of governance tokens a user has deposited
-    balances: StorageMap<Address, u64>,
+    balances: StorageMap<Identity, u64>,
     // The amount of votes a user has
-    votes: StorageMap<Address, u64>,
+    votes: StorageMap<Identity, u64>,
     state: u64,
 }
 
@@ -83,6 +88,13 @@ impl DaoVoting for Contract {
         require(storage.gov_token == msg_asset_id(), Error::NotGovernanceToken);
         require(msg_amount() > 0, Error::NoAssetsSent);
 
+        let result: Result<Identity, AuthError> = msg_sender();
+        let sender: Identity = result.unwrap();
+
+        let prev_balance = storage.balances.get(sender);
+        let new_balance = prev_balance + msg_amount();
+        storage.balances.insert(sender, new_balance);
+
         true
     }
 
@@ -92,12 +104,12 @@ impl DaoVoting for Contract {
     }
 
     /// Return the amount of governance tokens a user has in this contract
-    fn get_user_balance(user: Address) -> u64 {
+    fn get_user_balance(user: Identity) -> u64 {
         storage.balances.get(user)
     }
 
     /// Return the amount of votes a user can use.
-    fn get_user_votes(user: Address) -> u64 {
+    fn get_user_votes(user: Identity) -> u64 {
         storage.votes.get(user)
     }
 
