@@ -3,6 +3,7 @@ contract;
 dep abi;
 dep errors;
 dep data_structures;
+dep events;
 
 use std::{
     address::Address,
@@ -12,6 +13,7 @@ use std::{
     context::{msg_amount, call_frames::msg_asset_id},
     contract_id::ContractId,
     identity::Identity,
+    logging::log,
     result::*,
     revert::revert,
     storage::StorageMap,
@@ -21,6 +23,7 @@ use std::{
 use abi::DutchAuction;
 use errors::Error;
 use data_structures::Auction;
+use events::*;
 
 storage {
     /// Whether or not the constructor function has been called yet
@@ -79,9 +82,14 @@ impl DutchAuction for Contract {
         }
 
         on_win(auction_id, price);
+
+        log(WinningBidEvent {
+            winner: get_sender_identity(),
+            id: auction_id,
+        });
     }
 
-    fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Identity, asset: ContractId) -> u64 {
+    fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Identity, asset: ContractId) {
         require(storage.initialized, Error::ContractNotYetInitialized);
         require(eq_identity(storage.admin, get_sender_identity()), Error::SenderNotAdmin);
         require(reserve_price <= opening_price, Error::EndPriceCannotBeLargerThanStartPrice);
@@ -90,19 +98,23 @@ impl DutchAuction for Contract {
         require(start_time < end_time, Error::AuctionCannotEndBeforeItStarts);
 
         storage.auction_count = storage.auction_count + 1;
-        let current_auction_id = storage.auction_count;
 
-        let mut auction = storage.auctions.get(current_auction_id);
-        auction.opening_price = opening_price;
-        auction.reserve_price = reserve_price;
-        auction.start_time = start_time;
-        auction.end_time = end_time;
-        auction.beneficiary = beneficiary;
-        auction.asset_id = asset;
+        let auction = Auction {
+            opening_price,
+            reserve_price,
+            start_time,
+            end_time,
+            beneficiary,
+            asset_id: asset,
+            ended: false,
+        };
         
-        storage.auctions.insert(current_auction_id, auction);
+        storage.auctions.insert(storage.auction_count, auction);
 
-        current_auction_id
+        log(CreatedAuctionEvent {
+            id: storage.auction_count,
+            auction,
+        });
     }
 
     fn end_auction(auction_id: u64) {
@@ -117,6 +129,10 @@ impl DutchAuction for Contract {
         let mut auction = storage.auctions.get(auction_id);
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
+
+        log(AuctionEndedEvent {
+            id: auction_id,
+        });
     }
 
 }
