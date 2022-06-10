@@ -45,7 +45,7 @@ impl DutchAuction for Contract {
     }
 
     fn price(auction_id: u64) -> u64 {
-        /// If the given auction id is higher than the auction count, its an invalid auction_id
+        // If the given auction id is higher than the auction count, its an invalid auction_id
         require(auction_id <= storage.auction_count, Error::InvalidAuctionID);
 
         calculate_price(auction_id)
