@@ -1,7 +1,6 @@
 library data_structures;
 
-use std::identity::Identity;
-use std::contract_id::ContractId;
+use std::{contract_id::ContractId, identity::Identity};
 
 pub struct Auction {
     /// Price at the very start, usually higher than any expected price of sale
