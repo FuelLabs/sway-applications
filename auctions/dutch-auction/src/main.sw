@@ -26,14 +26,15 @@ use data_structures::Auction;
 use events::{AuctionEndedEvent, CreatedAuctionEvent, WinningBidEvent};
 
 storage {
-    /// Whether or not the constructor function has been called yet
-    initialized: bool,
-    /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
-    auctions: StorageMap<u64,
-    Auction>, /// The Admin Address
+    /// The Admin Address
     admin: Identity,
+     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
+    auctions: StorageMap<u64,
+    Auction>,
     /// Tracking how many auctions have been made till now
     auction_count: u64,
+    /// Whether the constructor has been called
+    initialized: bool,
 }
 
 impl DutchAuction for Contract {
