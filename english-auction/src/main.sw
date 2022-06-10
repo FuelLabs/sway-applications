@@ -283,13 +283,27 @@ impl EnglishAuction for Contract {
 
         let current_bidder: Identity = storage.current_bidder;
         let seller: Identity = storage.seller;
-
-        match sender {
+            
+        if (compare_identities(current_bidder, sender)) {
             // The buyer is withdrawing
-            current_bidder => {
-                require(!storage.buyer_withdrawn, Error::UserHasAlreadyWithdrawn);
-                storage.buyer_withdrawn = true;
+            require(!storage.buyer_withdrawn, Error::UserHasAlreadyWithdrawn);
+            storage.buyer_withdrawn = true;
 
+            match sender {
+                Identity::Address(sender) => {
+                    transfer_to_output(storage.sell_amount, storage.sell_asset, sender);    
+                },
+                Identity::ContractId(sender) => {
+                    force_transfer_to_contract(storage.sell_amount, storage.sell_asset, sender);
+                },
+            };
+        } else if (compare_identities(seller, sender)) {
+            // The seller is withdrawing
+            require(!storage.seller_withdawn, Error::UserHasAlreadyWithdrawn);
+            storage.seller_withdawn = true;
+
+            // No one placed a bid
+            if (storage.current_bid == 0) {
                 match sender {
                     Identity::Address(sender) => {
                         transfer_to_output(storage.sell_amount, storage.sell_asset, sender);    
@@ -298,50 +312,50 @@ impl EnglishAuction for Contract {
                         force_transfer_to_contract(storage.sell_amount, storage.sell_asset, sender);
                     },
                 };
-            },
-            // The seller is withdrawing
-            seller => {
-                require(!storage.seller_withdawn, Error::UserHasAlreadyWithdrawn);
-                storage.seller_withdawn = true;
-
-                // No one placed a bid
-                if (storage.current_bid == 0) {
-                    match sender {
-                        Identity::Address(sender) => {
-                            transfer_to_output(storage.sell_amount, storage.sell_asset, sender);    
-                        },
-                        Identity::ContractId(sender) => {
-                            force_transfer_to_contract(storage.sell_amount, storage.sell_asset, sender);
-                        },
-                    };
-                } else { 
-                    match sender {
-                        Identity::Address(sender) => {
-                            transfer_to_output(storage.current_bid, storage.buy_asset, sender);    
-                        },
-                        Identity::ContractId(sender) => {
-                            force_transfer_to_contract(storage.current_bid, storage.buy_asset, sender);
-                        },
-                    };
-                }
-            },
-            // Anyone with a failed bid is withdrawing
-            _ => {
-                let deposit_amount = storage.deposits.get(sender);
-                require(deposit_amount > 0, Error::UserHasAlreadyWithdrawn);
-
-                storage.deposits.insert(sender, 0);
-
+            } else { 
                 match sender {
                     Identity::Address(sender) => {
-                        transfer_to_output(deposit_amount, storage.buy_asset, sender);    
+                        transfer_to_output(storage.current_bid, storage.buy_asset, sender);    
                     },
                     Identity::ContractId(sender) => {
-                        force_transfer_to_contract(deposit_amount, storage.buy_asset, sender);
+                        force_transfer_to_contract(storage.current_bid, storage.buy_asset, sender);
                     },
                 };
-            },
-        }
+            }
+        } else {
+            // Anyone with a failed bid is withdrawing
+            let deposit_amount = storage.deposits.get(sender);
+            require(deposit_amount > 0, Error::UserHasAlreadyWithdrawn);
+
+            storage.deposits.insert(sender, 0);
+
+            match sender {
+                Identity::Address(sender) => {
+                    transfer_to_output(deposit_amount, storage.buy_asset, sender);    
+                },
+                Identity::ContractId(sender) => {
+                    force_transfer_to_contract(deposit_amount, storage.buy_asset, sender);
+                },
+            };
+        };
         true
+    }
+}
+
+// This function will take two identities and return true if they are the same
+fn compare_identities(identity1: Identity, identity2: Identity) -> bool {
+    match identity1 {
+        Identity::Address(identity1) => {
+            match identity2 {
+                Identity::Address(identity2) => identity1.value == identity2.value,
+                _ => false,
+            }
+        },
+        Identity::ContractId(identity1) => {
+            match identity2 {
+                Identity::ContractId(identity2) => identity1.value == identity2.value,
+                _ => false,
+            }
+        }
     }
 }
