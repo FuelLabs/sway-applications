@@ -86,7 +86,7 @@ jobs:
 
       - name: Install fuelup
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf -y https://fuellabs.github.io/fuelup/fuelup-init.sh | sh -s -- -y install
+          curl --proto '=https' --tlsv1.2 -sSf https://fuellabs.github.io/fuelup/fuelup-init.sh | sh -s -- -y install
           echo "export PATH=\$HOME/.fuelup/bin:\$PATH" >> ~/.bashrc
           source ~/.bashrc
 
