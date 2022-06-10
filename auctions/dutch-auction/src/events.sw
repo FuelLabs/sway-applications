@@ -16,5 +16,5 @@ pub struct WinningBidEvent {
 }
 
 pub struct AuctionEndedEvent {
-    id: u64
+    id: u64,
 }

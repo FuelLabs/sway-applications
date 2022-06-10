@@ -9,15 +9,15 @@ use std::{
     address::Address,
     assert::require,
     block::height,
-    chain::auth::{msg_sender, AuthError},
-    context::{msg_amount, call_frames::msg_asset_id},
+    chain::auth::{AuthError, msg_sender},
+    context::{call_frames::msg_asset_id, msg_amount},
     contract_id::ContractId,
     identity::Identity,
     logging::log,
     result::*,
     revert::revert,
     storage::StorageMap,
-    token::{transfer_to_output, force_transfer_to_contract},
+    token::{force_transfer_to_contract, transfer_to_output}
 };
 
 use abi::DutchAuction;
@@ -29,13 +29,12 @@ storage {
     /// Whether or not the constructor function has been called yet
     initialized: bool,
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
-    auctions: StorageMap<u64, Auction>,
+    auctions: StorageMap<u64, Auction>, 
     /// The Admin Address
     admin: Identity,
     /// Tracking how many auctions have been made till now
     auction_count: u64,
 }
-
 
 impl DutchAuction for Contract {
     fn constructor(admin: Identity) {
@@ -67,7 +66,7 @@ impl DutchAuction for Contract {
         /// Checks for correct asset_id being sent and high enough amount being sent
         require(msg_asset_id() == auction.asset_id, Error::WrongAssetSent);
         require(price <= msg_amount(), Error::BidTooLow);
-        
+
         /// If ended == true, someone already bid or the admin prematurely ended the auction
         require(!auction.ended, Error::AuctionAlreadyEnded);
 
@@ -75,7 +74,7 @@ impl DutchAuction for Contract {
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
 
-        /// If someone sends more than the current price, refunds the extra amount 
+        /// If someone sends more than the current price, refunds the extra amount
         if msg_amount() > price {
             let return_amount = msg_amount() - price;
             transfer_to_identity(return_amount, auction.asset_id, get_sender_identity());
@@ -84,8 +83,8 @@ impl DutchAuction for Contract {
         on_win(auction_id, price);
 
         log(WinningBidEvent {
-            winner: get_sender_identity(),
-            id: auction_id,
+            winner: get_sender_identity(), 
+            id: auction_id, 
         });
     }
 
@@ -100,20 +99,15 @@ impl DutchAuction for Contract {
         storage.auction_count = storage.auction_count + 1;
 
         let auction = Auction {
-            opening_price,
-            reserve_price,
-            start_time,
-            end_time,
-            beneficiary,
-            asset_id: asset,
+            opening_price, reserve_price, start_time, end_time, beneficiary, asset_id: asset,
             ended: false,
         };
-        
+
         storage.auctions.insert(storage.auction_count, auction);
 
         log(CreatedAuctionEvent {
-            id: storage.auction_count,
-            auction,
+            id: storage.auction_count, 
+            auction, 
         });
     }
 
@@ -131,10 +125,9 @@ impl DutchAuction for Contract {
         storage.auctions.insert(auction_id, auction);
 
         log(AuctionEndedEvent {
-            id: auction_id,
+            id: auction_id, 
         });
     }
-
 }
 
 /// This function is called whenever a winning bid is recieved.
@@ -145,7 +138,7 @@ fn on_win(auction_id: u64, winning_amount: u64) {
 
 fn calculate_price(auction_id: u64) -> u64 {
     let auction = storage.auctions.get(auction_id);
-    
+
     /// How much the price will go down by, throughout the auction
     let price_delta = auction.opening_price - auction.reserve_price;
     /// How long the auction will last
@@ -154,10 +147,14 @@ fn calculate_price(auction_id: u64) -> u64 {
     let price_shift = price_delta / auction_duration;
 
     /// Tells us how far we are into the auction (out of the auction_duration)
-    let blocks_into_auction = height() - auction.start_time; 
+    let blocks_into_auction = height() - auction.start_time;
 
     /// Cap how far we are into the auction by the auction_duration, so price doesnt go into negative or below endprice
-    let blocks_into_auction = if blocks_into_auction > auction_duration { auction_duration } else { blocks_into_auction };
+    let blocks_into_auction = if blocks_into_auction > auction_duration {
+        auction_duration
+    } else {
+        blocks_into_auction
+    };
 
     /// price_shift * blocks_into_auction tells us how much the price has reduced by now
     auction.opening_price - (price_shift * blocks_into_auction)
@@ -189,7 +186,7 @@ fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
                 Identity::Address(addy_2) => {
                     addy_1 == addy_2
                 },
-                _ => false,
+                _ => false, 
             }
         },
         Identity::ContractId(contract_id_1) => {
@@ -197,7 +194,7 @@ fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
                 Identity::ContractId(contract_id_2) => {
                     contract_id_1 == contract_id_2
                 },
-                _ => false,
+                _ => false, 
             }
         },
     }

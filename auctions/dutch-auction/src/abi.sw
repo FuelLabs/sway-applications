@@ -1,9 +1,6 @@
 library abi;
 
-use std::{
-    contract_id::ContractId,
-    identity::Identity,
-};
+use std::{contract_id::ContractId, identity::Identity};
 
 abi DutchAuction {
     fn price(auction_id: u64) -> u64;
