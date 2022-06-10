@@ -1,6 +1,7 @@
 contract;
 
 use std::{
+    address::Address,
     assert::require,
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
@@ -38,6 +39,10 @@ storage {
     approval_percentage: u64,
     proposals: StorageMap<u64, Proposal>,
     proposal_count: u64,
+    // The amount of governance tokens a user has deposited
+    balances: StorageMap<Address, u64>,
+    // The amount of votes a user has
+    votes: StorageMap<Address, u64>,
     state: u64,
 }
 
@@ -81,9 +86,19 @@ impl DaoVoting for Contract {
         true
     }
 
-    /// Returns the amount of governance tokens in this contract
+    /// Return the amount of governance tokens in this contract
     fn get_balance() -> u64 {
         this_balance(storage.gov_token)
+    }
+
+    /// Return the amount of governance tokens a user has in this contract
+    fn get_user_balance(user: Address) -> u64 {
+        storage.balances.get(user)
+    }
+
+    /// Return the amount of votes a user can use.
+    fn get_user_votes(user: Address) -> u64 {
+        storage.votes.get(user)
     }
 
     /// Add proposal to be voted on
