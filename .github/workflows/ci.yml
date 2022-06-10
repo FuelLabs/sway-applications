@@ -24,16 +24,6 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-  check-forc-badge-version:
-    needs: cancel-previous-runs
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      
-      - name: Checking versions
-        run: sh ${{ env.PATH_TO_SCRIPTS }}/forc_badge_check.sh
-
   lint-toml-files:
     needs: cancel-previous-runs
     runs-on: ubuntu-latest
