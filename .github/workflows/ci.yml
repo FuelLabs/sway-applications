@@ -10,7 +10,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  FORC_VERSION: 0.15.1
+  FORC_VERSION: 0.15.2
   REGISTRY: ghcr.io
   RUST_VERSION: 1.61.0
   PATH_TO_SCRIPTS: .github/scripts
