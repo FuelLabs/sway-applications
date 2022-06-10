@@ -67,7 +67,6 @@ impl DutchAuction for Contract {
         require(msg_asset_id() == auction.asset_id, Error::WrongAssetSent);
         require(price <= msg_amount(), Error::BidTooLow);
 
-        /// If ended == true, someone already bid or the admin prematurely ended the auction
         require(!auction.ended, Error::AuctionAlreadyEnded);
 
         /// Disallows furthur bids
