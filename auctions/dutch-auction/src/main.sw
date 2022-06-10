@@ -62,7 +62,7 @@ impl DutchAuction for Contract {
         let price = calculate_price(auction_id);
 
         /// Cannot bid before auction starts
-        require(height() >= auction.start_time, Error::AuctionNotYetStarted);
+        require(auction.start_time <= height(), Error::AuctionNotYetStarted);
 
         /// Checks for correct asset_id being sent and high enough amount being sent
         require(msg_asset_id() == auction.asset_id, Error::WrongAssetSent);
