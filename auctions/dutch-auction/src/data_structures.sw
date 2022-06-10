@@ -11,7 +11,7 @@ pub struct Auction {
     start_time: u64,
     /// Only used for calculation of the price, users can still bid past this time for reserve_price unless it's ended by the admin
     end_time: u64,
-    /// The asset the bidding will occur in
+    /// The asset the auction accepts for placing bids
     asset_id: ContractId,
     /// The beneficiary of the proceeds of the auction
     beneficiary: Identity,
