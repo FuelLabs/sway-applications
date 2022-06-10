@@ -87,9 +87,9 @@ jobs:
       - name: Install fuelup
         run: |
           curl --proto '=https' --tlsv1.2 -sSf -y https://fuellabs.github.io/fuelup/fuelup-init.sh | sh -s install
-          echo export PATH="\$HOME/.fuelup/bin:\$PATH" >> ~/.bashrc
+          echo "export PATH=\$HOME/.fuelup/bin:\$PATH" >> ~/.bashrc
           source ~/.bashrc
-          cat ~/.bashrc
+          tail ~/.bashrc
 
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
