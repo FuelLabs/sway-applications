@@ -45,6 +45,7 @@ sway-applications/
 
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
+- [NFT](./nft) is a general purpose Non-Fungible Token contract 
 
 ## Running a project
 
