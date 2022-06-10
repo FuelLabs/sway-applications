@@ -1,8 +1,8 @@
 contract;
 
 dep abi;
-dep errors;
 dep data_structures;
+dep errors;
 dep events;
 
 use std::{
