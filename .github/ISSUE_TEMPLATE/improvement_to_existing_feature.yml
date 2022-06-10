@@ -1,0 +1,26 @@
+name: Improvement to Feature
+description: If you are improving something that already exists then use this template!
+title: "<title>"
+labels: ["Improvement"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: How does this improve a feature?
+      description: Describe "how" your changes improve the feature.
+      placeholder: It reduces the bytecode and improves the code quality by refactoring the contract which makes the workflow more ergonomic.
+    validations:
+      required: true
+  - type: textarea
+    id: draft
+    attributes:
+      label: Specification
+      description: Tell us a bit about how your feature will work.
+      placeholder: Write some pseudo-code, outline the design or show the "before" vs "after" changes.
+    validations:
+      required: true
+  - type: textarea
+    id: misc
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots about the feature request here.

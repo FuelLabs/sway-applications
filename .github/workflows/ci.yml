@@ -10,9 +10,10 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  FORC_VERSION: 0.13.2
+  FORC_VERSION: 0.14.4
   REGISTRY: ghcr.io
   RUST_VERSION: 1.61.0
+  PATH_TO_SCRIPTS: .github/scripts
 
 jobs:
   cancel-previous-runs:
@@ -22,6 +23,16 @@ jobs:
         uses: styfle/cancel-workflow-action@0.9.1
         with:
           access_token: ${{ github.token }}
+
+  check-forc-badge-version:
+    needs: cancel-previous-runs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Checking versions
+        run: sh ${{ env.PATH_TO_SCRIPTS }}/forc_badge_check.sh
 
   lint-toml-files:
     needs: cancel-previous-runs
@@ -95,7 +106,7 @@ jobs:
           cargo fmt --verbose --check
 
       - name: Build Sway
-        run: sh build.sh ${{ matrix.project }}
+        run: sh ${{ env.PATH_TO_SCRIPTS }}/build.sh ${{ matrix.project }}
 
       - name: Run Forc tests
         run: |
