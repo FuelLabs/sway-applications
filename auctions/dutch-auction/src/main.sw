@@ -134,6 +134,7 @@ impl DutchAuction for Contract {
         });
     }
 
+    /// Returns the auction for any given auction_id
     fn auction(auction_id: u64) -> Auction {
         validate_id(auction_id);
         storage.auctions.get(auction_id)
