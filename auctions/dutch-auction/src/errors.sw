@@ -1,17 +1,28 @@
 library errors;
 
-pub enum Error {
-    ContractNotYetInitialized: (),
+pub enum AuthorizationError {
     CannotReinitialize: (),
     SenderNotAdmin: (),
-    AuctionInProgress: (),
-    AuctionAlreadyEnded: (),
+}
+
+pub enum BidError {
     BidTooLow: (),
     WrongAssetSent: (),
-    EndPriceCannotBeLargerThanStartPrice: (),
+}
+
+pub enum SetupError {
+    AuctionCannotEndBeforeItStarts: (),
     AuctionCannotEndInThePast: (),
     AuctionCannotStartInThePast: (),
-    AuctionCannotEndBeforeItStarts: (),
-    AuctionNotYetStarted: (),
+    EndPriceCannotBeLargerThanStartPrice: (),
+}
+
+pub enum TechnicalError {
+    ContractNotYetInitialized: (),
     InvalidAuctionID: (),
+}
+
+pub enum TimeError {
+    AuctionAlreadyEnded: (),
+    AuctionNotYetStarted: (),
 }

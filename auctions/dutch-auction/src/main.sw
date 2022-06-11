@@ -22,7 +22,7 @@ use std::{
 
 use abi::DutchAuction;
 use data_structures::Auction;
-use errors::Error;
+use errors::{AuthorizationError, BidError, SetupError, TechnicalError, TimeError};
 use events::{AuctionCancelledEvent, CreatedAuctionEvent, WinningBidEvent};
 
 storage {
@@ -39,7 +39,7 @@ storage {
 impl DutchAuction for Contract {
     /// This function should be called right after being deployed, so the admin can be set
     fn constructor(admin: Identity) {
-        require(!storage.initialized, Error::CannotReinitialize);
+        require(!storage.initialized, AuthorizationError::CannotReinitialize);
         storage.admin = admin;
         storage.initialized = true;
     }
@@ -54,24 +54,24 @@ impl DutchAuction for Contract {
     /// Bids in the given auction_id, is a win if the amount and asset are correct
     fn bid(auction_id: u64) {
         // In a Dutch auction the first bid wins
-        require(storage.initialized, Error::ContractNotYetInitialized);
+        require(storage.initialized, TechnicalError::ContractNotYetInitialized);
 
         validate_id(auction_id);
 
         let mut auction = storage.auctions.get(auction_id);
 
-        require(!auction.ended, Error::AuctionAlreadyEnded);
+        require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         // Cannot bid before auction starts
-        require(auction.start_time <= height(), Error::AuctionNotYetStarted);
+        require(auction.start_time <= height(), TimeError::AuctionNotYetStarted);
 
         // Checks for correct asset_id being sent
-        require(msg_asset_id() == auction.asset_id, Error::WrongAssetSent);
+        require(msg_asset_id() == auction.asset_id, BidError::WrongAssetSent);
 
         let price = calculate_price(auction_id);
 
         // Checks for high enough amount being sent
-        require(price <= msg_amount(), Error::BidTooLow);
+        require(price <= msg_amount(), BidError::BidTooLow);
 
         // Disallows furthur bids
         auction.ended = true;
@@ -92,12 +92,12 @@ impl DutchAuction for Contract {
 
     /// Creates a new auction
     fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Identity, asset: ContractId) {
-        require(storage.initialized, Error::ContractNotYetInitialized);
-        require(eq_identity(storage.admin, sender_indentity()), Error::SenderNotAdmin);
-        require(reserve_price <= opening_price, Error::EndPriceCannotBeLargerThanStartPrice);
-        require(height() < end_time, Error::AuctionCannotEndInThePast);
-        require(height() <= start_time, Error::AuctionCannotStartInThePast);
-        require(start_time < end_time, Error::AuctionCannotEndBeforeItStarts);
+        require(storage.initialized, TechnicalError::ContractNotYetInitialized);
+        require(eq_identity(storage.admin, sender_indentity()), AuthorizationError::SenderNotAdmin);
+        require(reserve_price <= opening_price, SetupError::EndPriceCannotBeLargerThanStartPrice);
+        require(height() < end_time, SetupError::AuctionCannotEndInThePast);
+        require(height() <= start_time, SetupError::AuctionCannotStartInThePast);
+        require(start_time < end_time, SetupError::AuctionCannotEndBeforeItStarts);
 
         storage.auction_count = storage.auction_count + 1;
 
@@ -115,16 +115,16 @@ impl DutchAuction for Contract {
 
     /// Cancels an auction so no one can bid on it. Needs to be called even after end_time of an auction if you want no one to bid anymore
     fn cancel_auction(auction_id: u64) {
-        require(storage.initialized, Error::ContractNotYetInitialized);
+        require(storage.initialized, TechnicalError::ContractNotYetInitialized);
 
         validate_id(auction_id);
 
         // Only the admin can end the auction (prematurely)
-        require(eq_identity(sender_indentity(), storage.admin), Error::SenderNotAdmin);
+        require(eq_identity(sender_indentity(), storage.admin), AuthorizationError::SenderNotAdmin);
 
         let mut auction = storage.auctions.get(auction_id);
         // Checks if the auction has already ended
-        require(!auction.ended, Error::AuctionAlreadyEnded);
+        require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
@@ -208,6 +208,6 @@ fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
 /// Validates an auction_id to make sure it corresponds to an auction
 fn validate_id(id: u64) {
     // If the given auction id is higher than the auction count, its an invalid auction_id
-    require(id != 0, Error::InvalidAuctionID);
-    require(id <= storage.auction_count, Error::InvalidAuctionID);
+    require(id != 0, TechnicalError::InvalidAuctionID);
+    require(id <= storage.auction_count, TechnicalError::InvalidAuctionID);
 }
