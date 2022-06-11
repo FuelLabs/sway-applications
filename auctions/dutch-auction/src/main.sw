@@ -44,8 +44,7 @@ impl DutchAuction for Contract {
     }
 
     fn price(auction_id: u64) -> u64 {
-        // If the given auction id is higher than the auction count, its an invalid auction_id
-        require(auction_id <= storage.auction_count, Error::InvalidAuctionID);
+        validate_id(auction_id);
 
         calculate_price(auction_id)
     }
@@ -54,8 +53,7 @@ impl DutchAuction for Contract {
         /// In a Dutch auction the first bid wins
         require(storage.initialized, Error::ContractNotYetInitialized);
 
-        /// If the given auction id is higher than the auction count, its an invalid auction_id
-        require(auction_id <= storage.auction_count, Error::InvalidAuctionID);
+        validate_id(auction_id);
 
         let mut auction = storage.auctions.get(auction_id);
         let price = calculate_price(auction_id);
@@ -111,8 +109,7 @@ impl DutchAuction for Contract {
     fn cancel_auction(auction_id: u64) {
         require(storage.initialized, Error::ContractNotYetInitialized);
 
-        /// If the given auction id is higher than the auction count, its an invalid auction_id
-        require(auction_id <= storage.auction_count, Error::InvalidAuctionID);
+        validate_id(auction_id);
 
         /// Only the admin can end the auction (prematurely)
         require(eq_identity(get_sender_identity(), storage.admin), Error::SenderNotAdmin);
@@ -195,4 +192,10 @@ fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
             }
         },
     }
+}
+
+fn validate_id(id: u64) {
+    // If the given auction id is higher than the auction count, its an invalid auction_id
+    require(id != 0, Error::InvalidAuctionID);
+    require(id <= storage.auction_count, Error::InvalidAuctionID);
 }
