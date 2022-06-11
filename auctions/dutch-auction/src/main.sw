@@ -80,7 +80,7 @@ impl DutchAuction for Contract {
             transfer_to_identity(return_amount, auction.asset_id, sender_indentity());
         }
 
-        on_win(auction_id, price);
+        on_win(auction, price);
 
         log(WinningBidEvent {
             winner: sender_indentity(), id: auction_id, 
@@ -116,10 +116,11 @@ impl DutchAuction for Contract {
 
         // Only the admin can end the auction (prematurely)
         require(eq_identity(sender_indentity(), storage.admin), Error::SenderNotAdmin);
+
+        let mut auction = storage.auctions.get(auction_id);
         // Checks if the auction has already ended
         require(!auction.ended, Error::AuctionAlreadyEnded);
 
-        let mut auction = storage.auctions.get(auction_id);
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
 
@@ -130,8 +131,7 @@ impl DutchAuction for Contract {
 }
 
 /// This function is called whenever a winning bid is recieved.
-fn on_win(auction_id: u64, winning_amount: u64) {
-    let auction = storage.auctions.get(auction_id);
+fn on_win(auction: Auction, winning_amount: u64) {
     transfer_to_identity(winning_amount, auction.asset_id, auction.beneficiary);
 }
 
