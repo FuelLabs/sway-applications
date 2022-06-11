@@ -28,10 +28,9 @@ use events::{AuctionCancelledEvent, CreatedAuctionEvent, WinningBidEvent};
 storage {
     /// The Admin Address
     admin: Identity,
-     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
+    /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
     auctions: StorageMap<u64,
-    Auction>,
-    /// Tracking how many auctions have been made till now
+    Auction>, /// Tracking how many auctions have been made till now
     auction_count: u64,
     /// Whether the constructor has been called
     initialized: bool,
