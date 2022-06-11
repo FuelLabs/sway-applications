@@ -133,6 +133,11 @@ impl DutchAuction for Contract {
             id: auction_id, 
         });
     }
+
+    fn auction(auction_id: u64) -> Auction {
+        validate_id(auction_id);
+        storage.auctions.get(auction_id)
+    }
 }
 
 /// This function is called whenever a winning bid is recieved.
