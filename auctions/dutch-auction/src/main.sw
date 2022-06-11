@@ -1,8 +1,8 @@
 contract;
 
 dep abi;
-dep errors;
 dep data_structures;
+dep errors;
 dep events;
 
 use std::{
@@ -21,9 +21,9 @@ use std::{
 };
 
 use abi::DutchAuction;
-use errors::Error;
 use data_structures::Auction;
-use events::*;
+use errors::Error;
+use events::{AuctionCancelledEvent, CreatedAuctionEvent, WinningBidEvent};
 
 storage {
     /// Whether or not the constructor function has been called yet
@@ -108,7 +108,7 @@ impl DutchAuction for Contract {
         });
     }
 
-    fn end_auction(auction_id: u64) {
+    fn cancel_auction(auction_id: u64) {
         require(storage.initialized, Error::ContractNotYetInitialized);
 
         /// If the given auction id is higher than the auction count, its an invalid auction_id
@@ -121,7 +121,7 @@ impl DutchAuction for Contract {
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
 
-        log(AuctionEndedEvent {
+        log(AuctionCancelledEvent {
             id: auction_id, 
         });
     }
