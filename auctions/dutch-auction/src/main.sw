@@ -116,6 +116,8 @@ impl DutchAuction for Contract {
 
         // Only the admin can end the auction (prematurely)
         require(eq_identity(sender_indentity(), storage.admin), Error::SenderNotAdmin);
+        // Checks if the auction has already ended
+        require(!auction.ended, Error::AuctionAlreadyEnded);
 
         let mut auction = storage.auctions.get(auction_id);
         auction.ended = true;
