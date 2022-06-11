@@ -111,7 +111,7 @@ impl DutchAuction for Contract {
 
         validate_id(auction_id);
 
-        /// Only the admin can end the auction (prematurely)
+        // Only the admin can end the auction (prematurely)
         require(eq_identity(get_sender_identity(), storage.admin), Error::SenderNotAdmin);
 
         let mut auction = storage.auctions.get(auction_id);
@@ -133,24 +133,24 @@ fn on_win(auction_id: u64, winning_amount: u64) {
 fn calculate_price(auction_id: u64) -> u64 {
     let auction = storage.auctions.get(auction_id);
 
-    /// How much the price will go down by, throughout the auction
+    // How much the price will go down by, throughout the auction
     let price_delta = auction.opening_price - auction.reserve_price;
-    /// How long the auction will last
+    // How long the auction will last
     let auction_duration = auction.end_time - auction.start_time;
-    /// This is the amount the price will reduce by per block
+    // This is the amount the price will reduce by per block
     let price_shift = price_delta / auction_duration;
 
-    /// Tells us how far we are into the auction (out of the auction_duration)
+    // Tells us how far we are into the auction (out of the auction_duration)
     let blocks_into_auction = height() - auction.start_time;
 
-    /// Cap how far we are into the auction by the auction_duration, so price doesnt go into negative or below endprice
+    // Cap how far we are into the auction by the auction_duration, so price doesnt go into negative or below endprice
     let blocks_into_auction = if blocks_into_auction > auction_duration {
         auction_duration
     } else {
         blocks_into_auction
     };
 
-    /// price_shift * blocks_into_auction tells us how much the price has reduced by now
+    // price_shift * blocks_into_auction tells us how much the price has reduced by now
     auction.opening_price - (price_shift * blocks_into_auction)
 }
 
