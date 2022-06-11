@@ -50,7 +50,7 @@ impl DutchAuction for Contract {
     }
 
     fn bid(auction_id: u64) {
-        /// In a Dutch auction the first bid wins
+        // In a Dutch auction the first bid wins
         require(storage.initialized, Error::ContractNotYetInitialized);
 
         validate_id(auction_id);
@@ -58,20 +58,20 @@ impl DutchAuction for Contract {
         let mut auction = storage.auctions.get(auction_id);
         let price = calculate_price(auction_id);
 
-        /// Cannot bid before auction starts
+        // Cannot bid before auction starts
         require(auction.start_time <= height(), Error::AuctionNotYetStarted);
 
-        /// Checks for correct asset_id being sent and high enough amount being sent
+        // Checks for correct asset_id being sent and high enough amount being sent
         require(msg_asset_id() == auction.asset_id, Error::WrongAssetSent);
         require(price <= msg_amount(), Error::BidTooLow);
 
         require(!auction.ended, Error::AuctionAlreadyEnded);
 
-        /// Disallows furthur bids
+        // Disallows furthur bids
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
 
-        /// If someone sends more than the current price, refunds the extra amount
+        // If someone sends more than the current price, refunds the extra amount
         if msg_amount() > price {
             let return_amount = msg_amount() - price;
             transfer_to_identity(return_amount, auction.asset_id, get_sender_identity());
