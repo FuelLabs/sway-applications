@@ -77,14 +77,11 @@ jobs:
       - name: Install fuelup
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/FuelLabs/fuelup/binggh/remove-tty/fuelup-init.sh | sh -s -- --no-modify-path
-          echo "export PATH=\$HOME/.fuelup/bin:\$PATH" >> ~/.bashrc
-          source $HOME/.bashrc
-          tail ~/.bashrc
+          export PATH="${HOME}/.fuelup/bin:${PATH}"
           echo "PATH1" $PATH
 
       - name: Check Sway formatting
         run: |
-          tail ~/.bashrc
           echo "PATH2" $PATH
           forc fmt --path ${{ matrix.project }} --check
 
