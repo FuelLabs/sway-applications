@@ -68,7 +68,7 @@ impl MultiSignatureWallet for Contract {
             require(~Address::from(NATIVE_ASSET_ID) != users[user_index].identity, InitError::AddressCannotBeZero);
             require(users[user_index].weight != 0, InitError::WeightingCannotBeZero);
             storage.weighting.insert(users[user_index].identity, users[user_index].weight);
-            user_index + = 1;
+            user_index = user_index + 1;
         }
 
         storage.nonce = 1;
@@ -181,14 +181,14 @@ fn count_approvals(transaction_hash: b256, signatures: [B512;
         require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
 
         previous_signer = signer;
-        approval_count + = storage.weighting.get(~Address::from(signer));
+        approval_count = approval_count + storage.weighting.get(~Address::from(signer));
 
         // Once break is implemented uncomment below. https://github.com/FuelLabs/sway/pull/1646
         // if storage.threshold <= approval_count {
         //     break;
         // }
 
-        index + = 1;
+        index = index + 1;
     }
 
     approval_count
