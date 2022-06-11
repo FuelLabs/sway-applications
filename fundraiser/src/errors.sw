@@ -1,7 +1,7 @@
 library errors;
 
 pub enum Error {
-    NoSuchCampaign: ()
+    NoSuchCampaign: (),
 }
 
 pub enum StateError {

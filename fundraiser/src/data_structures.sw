@@ -3,21 +3,22 @@ library data_structures;
 use std::{contract_id::ContractId, identity::Identity};
 use core::ops::Eq;
 
-pub enum State {
-    Funding: (),
-    Successful: (),
-    Failed: (),
-    Cancelled: (),
-}
-
 pub struct Campaign {
     author: Identity,
     asset: ContractId,
     claimed: bool,
     deadline: u64,
-    state: State,
+    // state: State,
+    state: u64, // workaround until Eq on self works
     target_amount: u64,
     total_pledge: u64,
+}
+
+pub enum State {
+    Funding: (),
+    Successful: (),
+    Failed: (),
+    Cancelled: (),
 }
 
 // impl Eq for State {
