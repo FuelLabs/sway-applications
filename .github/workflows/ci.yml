@@ -78,7 +78,7 @@ jobs:
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/FuelLabs/fuelup/binggh/remove-tty/fuelup-init.sh | sh -s -- --no-modify-path
           echo "export PATH=\$HOME/.fuelup/bin:\$PATH" >> ~/.bashrc
-          source ~/.bashrc
+          source $HOME/.bashrc
           tail ~/.bashrc
           echo "PATH1" $PATH
 
