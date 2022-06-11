@@ -37,18 +37,21 @@ storage {
 }
 
 impl DutchAuction for Contract {
+    /// This function should be called right after being deployed, so the admin can be set
     fn constructor(admin: Identity) {
         require(!storage.initialized, Error::CannotReinitialize);
         storage.admin = admin;
         storage.initialized = true;
     }
 
+    /// Returns the current price for the auction corresponding to the auction_id
     fn price(auction_id: u64) -> u64 {
         validate_id(auction_id);
 
         calculate_price(auction_id)
     }
 
+    /// Bids in the given auction_id, is a win if the amount and asset are correct
     fn bid(auction_id: u64) {
         // In a Dutch auction the first bid wins
         require(storage.initialized, Error::ContractNotYetInitialized);
@@ -87,6 +90,7 @@ impl DutchAuction for Contract {
         });
     }
 
+    /// Creates a new auction
     fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Identity, asset: ContractId) {
         require(storage.initialized, Error::ContractNotYetInitialized);
         require(eq_identity(storage.admin, sender_indentity()), Error::SenderNotAdmin);
@@ -109,6 +113,7 @@ impl DutchAuction for Contract {
         });
     }
 
+    /// Cancels an auction so no one can bid on it. Needs to be called even after end_time of an auction if you want no one to bid anymore
     fn cancel_auction(auction_id: u64) {
         require(storage.initialized, Error::ContractNotYetInitialized);
 
@@ -135,6 +140,7 @@ fn on_win(auction: Auction, winning_amount: u64) {
     transfer_to_identity(winning_amount, auction.asset_id, auction.beneficiary);
 }
 
+/// Calculates the current price of a given auction
 fn calculate_price(auction_id: u64) -> u64 {
     let auction = storage.auctions.get(auction_id);
 
@@ -165,6 +171,7 @@ fn sender_indentity() -> Identity {
     sender.unwrap()
 }
 
+/// Helper function to transfer assets to an identity
 fn transfer_to_identity(amount: u64, asset_id: ContractId, reciever: Identity) {
     match reciever {
         Identity::Address(address) => {
@@ -176,6 +183,7 @@ fn transfer_to_identity(amount: u64, asset_id: ContractId, reciever: Identity) {
     };
 }
 
+/// Helper function to compare identities
 fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
     match id_1 {
         Identity::Address(address1) => {
@@ -197,6 +205,7 @@ fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
     }
 }
 
+/// Validates an auction_id to make sure it corresponds to an auction
 fn validate_id(id: u64) {
     // If the given auction id is higher than the auction count, its an invalid auction_id
     require(id != 0, Error::InvalidAuctionID);
