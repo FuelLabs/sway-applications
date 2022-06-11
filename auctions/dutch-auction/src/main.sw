@@ -26,14 +26,15 @@ use errors::Error;
 use events::{AuctionCancelledEvent, CreatedAuctionEvent, WinningBidEvent};
 
 storage {
-    /// Whether or not the constructor function has been called yet
-    initialized: bool,
-    /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
-    auctions: StorageMap<u64,
-    Auction>, /// The Admin Address
+    /// The Admin Address
     admin: Identity,
+     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
+    auctions: StorageMap<u64,
+    Auction>,
     /// Tracking how many auctions have been made till now
     auction_count: u64,
+    /// Whether the constructor has been called
+    initialized: bool,
 }
 
 impl DutchAuction for Contract {
@@ -44,7 +45,7 @@ impl DutchAuction for Contract {
     }
 
     fn price(auction_id: u64) -> u64 {
-        /// If the given auction id is higher than the auction count, its an invalid auction_id
+        // If the given auction id is higher than the auction count, its an invalid auction_id
         require(auction_id <= storage.auction_count, Error::InvalidAuctionID);
 
         calculate_price(auction_id)
@@ -61,7 +62,7 @@ impl DutchAuction for Contract {
         let price = calculate_price(auction_id);
 
         /// Cannot bid before auction starts
-        require(height() >= auction.start_time, Error::AuctionNotYetStarted);
+        require(auction.start_time <= height(), Error::AuctionNotYetStarted);
 
         /// Checks for correct asset_id being sent and high enough amount being sent
         require(msg_asset_id() == auction.asset_id, Error::WrongAssetSent);
@@ -167,8 +168,8 @@ fn get_sender_identity() -> Identity {
 
 fn transfer_to_identity(amount: u64, asset_id: ContractId, reciever: Identity) {
     match reciever {
-        Identity::Address(addy) => {
-            transfer_to_output(amount, asset_id, addy);
+        Identity::Address(address) => {
+            transfer_to_output(amount, asset_id, address);
         },
         Identity::ContractId(contractid) => {
             force_transfer_to_contract(amount, asset_id, contractid);
@@ -178,10 +179,10 @@ fn transfer_to_identity(amount: u64, asset_id: ContractId, reciever: Identity) {
 
 fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
     match id_1 {
-        Identity::Address(addy_1) => {
+        Identity::Address(address1) => {
             match id_2 {
-                Identity::Address(addy_2) => {
-                    addy_1 == addy_2
+                Identity::Address(address2) => {
+                    address1 == address2
                 },
                 _ => false, 
             }
