@@ -56,16 +56,19 @@ impl DutchAuction for Contract {
         validate_id(auction_id);
 
         let mut auction = storage.auctions.get(auction_id);
-        let price = calculate_price(auction_id);
+
+        require(!auction.ended, Error::AuctionAlreadyEnded);
 
         // Cannot bid before auction starts
         require(auction.start_time <= height(), Error::AuctionNotYetStarted);
 
-        // Checks for correct asset_id being sent and high enough amount being sent
+        // Checks for correct asset_id being sent
         require(msg_asset_id() == auction.asset_id, Error::WrongAssetSent);
-        require(price <= msg_amount(), Error::BidTooLow);
 
-        require(!auction.ended, Error::AuctionAlreadyEnded);
+        let price = calculate_price(auction_id);
+
+        // Checks for high enough amount being sent
+        require(price <= msg_amount(), Error::BidTooLow);
 
         // Disallows furthur bids
         auction.ended = true;
