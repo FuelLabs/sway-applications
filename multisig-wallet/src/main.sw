@@ -58,17 +58,16 @@ impl MultiSignatureWallet for Contract {
     /// - When the user address is the 0th address (0x00000...)
     /// - When the threshold is set to 0
     /// - When an owner has an approval weight of 0
-    fn constructor(users: [User;
-    2], threshold: u64) {
+    fn constructor(users: [User; 25], threshold: u64) {
         require(storage.nonce == 0, InitError::CannotReinitialize);
         require(storage.threshold != 0, InitError::ThresholdCannotBeZero);
 
         let mut user_index = 0;
-        while user_index < 2 {
+        while user_index < 25 {
             require(~Address::from(NATIVE_ASSET_ID) != users[user_index].identity, InitError::AddressCannotBeZero);
             require(users[user_index].weight != 0, InitError::WeightingCannotBeZero);
             storage.weighting.insert(users[user_index].identity, users[user_index].weight);
-            user_index = user_index + 1;
+            user_index += 1;
         }
 
         storage.nonce = 1;
@@ -84,8 +83,7 @@ impl MultiSignatureWallet for Contract {
     /// - When the public key cannot be recovered from a signature
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
     /// - When the total approval count is less than the required threshold for execution
-    fn execute_transaction(to: Identity, value: u64, data: b256, signatures: [B512;
-    2]) {
+    fn execute_transaction(to: Identity, value: u64, data: b256, signatures: [B512; 25]) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
         let transaction_hash = create_hash(to, value, data, storage.nonce, contract_id());
@@ -111,8 +109,7 @@ impl MultiSignatureWallet for Contract {
     /// - When the public key cannot be recovered from a signature
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
     /// - When the total approval count is less than the required threshold for execution
-    fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures: [B512;
-    2]) {
+    fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures: [B512; 25]) {
         require(storage.nonce != 0, InitError::NotInitialized);
         require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
@@ -124,7 +121,8 @@ impl MultiSignatureWallet for Contract {
         storage.nonce = storage.nonce + 1;
 
         match to {
-            Identity::Address(address) => transfer_to_output(value, asset_id, address), Identity::ContractId(contract) => force_transfer_to_contract(value, asset_id, contract), 
+            Identity::Address(address) => transfer_to_output(value, asset_id, address), 
+            Identity::ContractId(contract) => force_transfer_to_contract(value, asset_id, contract), 
         };
 
         log(TransferEvent {
@@ -166,14 +164,13 @@ fn create_hash(to: Identity, value: u64, data: b256, nonce: u64, self_id: Contra
     })
 }
 
-fn count_approvals(transaction_hash: b256, signatures: [B512;
-2]) -> u64 {
+fn count_approvals(transaction_hash: b256, signatures: [B512; 25]) -> u64 {
     // The signers must have increasing values in order to check for duplicates or a zero-value
     let mut previous_signer = ~b256::min();
 
     let mut approval_count = 0;
     let mut index = 0;
-    while index < 2 {
+    while index < 25 {
         let signer = match ec_recover_address(signatures[index], transaction_hash) {
             Result::Ok(address) => address.value, _ => revert(42), 
         };
@@ -181,14 +178,14 @@ fn count_approvals(transaction_hash: b256, signatures: [B512;
         require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
 
         previous_signer = signer;
-        approval_count = approval_count + storage.weighting.get(~Address::from(signer));
+        approval_count += storage.weighting.get(~Address::from(signer));
 
         // Once break is implemented uncomment below. https://github.com/FuelLabs/sway/pull/1646
         // if storage.threshold <= approval_count {
         //     break;
         // }
 
-        index = index + 1;
+        index += 1;
     }
 
     approval_count
