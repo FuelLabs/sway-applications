@@ -3,9 +3,10 @@ contract;
 use std::{
     address::Address,
     assert::require,
-    chain::auth::{AuthError, Sender, msg_sender},
+    chain::auth::{AuthError, msg_sender},
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount, this_balance},
     contract_id::ContractId,
+    identity::Identity,
     result::*,
     revert::revert,
     token::transfer_to_output,
@@ -96,9 +97,9 @@ impl Escrow for Contract {
         require(storage.asset == msg_asset_id(), Error::IncorrectAssetId);
         require(storage.asset_amount == msg_amount(), Error::IncorrectAssetAmount);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
+        let sender: Result<Identity, AuthError> = msg_sender();
 
-        if let Sender::Address(address) = sender.unwrap() {
+        if let Identity::Address(address) = sender.unwrap() {
             require(address == storage.buyer.address || address == storage.seller.address, Error::UnauthorizedUser);
 
             if address == storage.buyer.address {
@@ -131,9 +132,9 @@ impl Escrow for Contract {
         // require(storage.state == State::Pending, Error::StateNotPending);
         require(storage.state == 1, Error::StateNotPending);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
+        let sender: Result<Identity, AuthError> = msg_sender();
 
-        if let Sender::Address(address) = sender.unwrap() {
+        if let Identity::Address(address) = sender.unwrap() {
             require(address == storage.buyer.address || address == storage.seller.address, Error::UnauthorizedUser);
 
             if address == storage.buyer.address {
@@ -172,9 +173,9 @@ impl Escrow for Contract {
         // require(storage.state == State::Pending, Error::StateNotPending);
         require(storage.state == 1, Error::StateNotPending);
 
-        let sender: Result<Sender, AuthError> = msg_sender();
+        let sender: Result<Identity, AuthError> = msg_sender();
 
-        if let Sender::Address(address) = sender.unwrap() {
+        if let Identity::Address(address) = sender.unwrap() {
             require(address == storage.buyer.address || address == storage.seller.address, Error::UnauthorizedUser);
 
             if address == storage.buyer.address {

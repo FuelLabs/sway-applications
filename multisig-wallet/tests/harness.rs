@@ -1,5 +1,3 @@
-#![allow(unused_variables)]
-
 use fuels::prelude::*;
 use fuels_abigen_macro::abigen;
 
@@ -7,21 +5,21 @@ use fuels_abigen_macro::abigen;
 abigen!(Multisig, "out/debug/multisig-wallet-abi.json");
 
 async fn setup() -> (Multisig, LocalWallet, LocalWallet, LocalWallet) {
-    // Create some addresses with the minimum amount of asset: 1 Million
-    let (pk1, mut coins1) = setup_address_and_coins(1, 1000000);
-    let (pk2, coins2) = setup_address_and_coins(1, 1000000);
-    let (pk3, coins3) = setup_address_and_coins(1, 1000000);
+    let num_wallets = 3;
+    let coins_per_wallet = 1;
+    let amount_per_coin = 1_000_000;
 
-    coins1.extend(coins2);
-    coins1.extend(coins3);
+    let config = WalletsConfig::new(
+        Some(num_wallets),
+        Some(coins_per_wallet),
+        Some(amount_per_coin),
+    );
 
-    // Launch a provider with those coins
-    let (provider, _) = setup_test_provider(coins1).await;
+    let mut wallets = launch_provider_and_get_wallets(config).await;
 
-    // Get the wallets from that provider
-    let wallet1 = LocalWallet::new_from_private_key(pk1, provider.clone());
-    let wallet2 = LocalWallet::new_from_private_key(pk2, provider.clone());
-    let wallet3 = LocalWallet::new_from_private_key(pk3, provider);
+    let wallet1 = wallets.pop().unwrap();
+    let wallet2 = wallets.pop().unwrap();
+    let wallet3 = wallets.pop().unwrap();
 
     let id = Contract::deploy(
         "./out/debug/multisig-wallet.bin",
