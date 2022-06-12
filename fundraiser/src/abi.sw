@@ -15,4 +15,5 @@ abi Fundraiser {
     fn pledged(id: u64) -> u64;
     fn user_campaigns(user: Identity) -> UserCampaigns;
     fn campaign_count() -> u64;
+    fn update_campaign_state(id: u64);
 }

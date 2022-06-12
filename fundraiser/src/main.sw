@@ -28,7 +28,7 @@ use abi::Fundraiser;
 use data_structures::{Campaign, State, UserCampaigns};
 use errors::{CreationError, UserError};
 use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
-use utils::{sender_identity, transfer, validate_deadline, validate_id, validate_sender};
+use utils::{sender_identity, transfer, validate_id, validate_sender};
 
 storage {
     /// campaign identifier => Campaign Data
@@ -70,10 +70,11 @@ impl Fundraiser for Contract {
     fn pledge(id: u64) {
         validate_id(id, storage.campaign_count);
 
-        let mut campaign = validate_deadline(storage.campaigns.get(id));
+        let mut campaign = storage.campaigns.get(id);
 
         // require(campaign.state == State::Funding, UserError::FundraiseEnded);
-        require(campaign.state == 0, UserError::FundraiseEnded);
+        require(campaign.state == 0, UserError::FundraiseEnded); // workaround
+        require(height() < campaign.deadline, UserError::FundraiseEnded);
         require(campaign.asset == msg_asset_id(), UserError::IncorrectAssetSent);
 
         let pledge_amount = msg_amount();
@@ -92,10 +93,10 @@ impl Fundraiser for Contract {
     fn unpledge(id: u64, amount: u64) {
         validate_id(id, storage.campaign_count);
 
-        let mut campaign = validate_deadline(storage.campaigns.get(id));
+        let mut campaign = storage.campaigns.get(id);
 
         // require(campaign.state != State::Successful, UserError::FundraiseEnded);
-        require(campaign.state != 1, UserError::FundraiseEnded);
+        require(campaign.state != 1, UserError::FundraiseEnded); // workaround
 
         let user = sender_identity();
         let user_pledge = storage.pledgers.get((id, user));
@@ -121,23 +122,22 @@ impl Fundraiser for Contract {
     fn claim(id: u64) {
         validate_id(id, storage.campaign_count);
 
-        let mut campaign = validate_deadline(storage.campaigns.get(id));
-
-        require(!campaign.claimed, UserError::AlreadyClaimed);
+        let mut campaign = storage.campaigns.get(id);
 
         // require(campaign.author == sender_identity(), UserError::UnauthorizedUser);
         validate_sender(sender_identity(), campaign.author); // workaround
 
         // require(campaign.state == State::Successful, UserError::FundraiseNotSuccessful);
         require(campaign.state == 1, UserError::FundraiseNotSuccessful); // workaround
+        require(!campaign.claimed, UserError::AlreadyClaimed);
 
         let mut user_campaigns = storage.user_campaigns.get(campaign.author);
-
-        campaign.claimed = true;
 
         // workaround
         user_campaigns.completed = user_campaigns.active;
         user_campaigns.active = [0];
+
+        campaign.claimed = true;
 
         storage.campaigns.insert(id, campaign);
         storage.user_campaigns.insert(campaign.author, user_campaigns);
@@ -152,22 +152,23 @@ impl Fundraiser for Contract {
     fn cancel(id: u64) {
         validate_id(id, storage.campaign_count);
 
-        let mut campaign = validate_deadline(storage.campaigns.get(id));
+        let mut campaign = storage.campaigns.get(id);
 
         // require(campaign.author == sender_identity(), UserError::UnauthorizedUser);
         validate_sender(sender_identity(), campaign.author); // workaround
 
         // require(campaign.state == State::Funding, UserError::FundraiseEnded);
         require(campaign.state == 0, UserError::FundraiseEnded); // workaround
+        require(height() < campaign.deadline, UserError::FundraiseEnded);
 
         let mut user_campaigns = storage.user_campaigns.get(campaign.author);
-
-        // campaign.state = State::Cancelled;
-        campaign.state = 3;
 
         // workaround
         user_campaigns.completed = user_campaigns.active;
         user_campaigns.active = [0];
+
+        // campaign.state = State::Cancelled;
+        campaign.state = 3; // workaround
 
         storage.campaigns.insert(id, campaign);
         storage.user_campaigns.insert(campaign.author, user_campaigns);
@@ -195,5 +196,27 @@ impl Fundraiser for Contract {
 
     fn campaign_count() -> u64 {
         storage.campaign_count
+    }
+
+    fn update_campaign_state(id: u64) {
+        validate_id(id, storage.campaign_count);
+
+        let mut campaign = storage.campaigns.get(id);
+
+        if campaign.deadline < height() {
+            // if campaign.state == State::Funding {
+            //     campaign.state = if campaign.target_amount < campaign.total_pledge { State::Failed } else { State::Successful };
+            //     storage.campaigns.insert(id, campaign);
+            // }
+            // workaround
+            if campaign.state == 0 {
+                campaign.state = if campaign.target_amount < campaign.total_pledge {
+                    2
+                } else {
+                    1
+                };
+                storage.campaigns.insert(id, campaign);
+            }
+        }
     }
 }

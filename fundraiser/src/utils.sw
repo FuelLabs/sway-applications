@@ -33,28 +33,6 @@ pub fn transfer(to: Identity, amount: u64, asset: ContractId) {
     }
 }
 
-pub fn validate_deadline(campaign: Campaign) -> Campaign {
-    // workaround since passing in mut does not work yet
-    let mut campaign = campaign;
-
-    if campaign.deadline < height() {
-        // if campaign.state != State::Successful || campaign.state != State::Failed {
-        //     campaign.state = if campaign.target_amount < campaign.total_pledge { State::Failed } else { State::Successful };
-        // }
-        // workaround for Eq
-        // TODO: correct logic
-        if campaign.state != 1 || campaign.state != 2 {
-            campaign.state = if campaign.target_amount < campaign.total_pledge {
-                2
-            } else {
-                1
-            };
-        }
-    }
-
-    campaign
-}
-
 pub fn validate_id(id: u64, count: u64) {
     require(id != 0 && id <= count, UserError::NoSuchCampaign);
 }
