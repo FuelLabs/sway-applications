@@ -6,6 +6,7 @@ use core::ops::Eq;
 pub struct Campaign {
     author: Identity,
     asset: ContractId,
+    beneficiary: Identity,
     claimed: bool,
     deadline: u64,
     // state: State,
@@ -19,6 +20,13 @@ pub enum State {
     Successful: (),
     Failed: (),
     Cancelled: (),
+}
+
+pub struct UserCampaigns {
+    active: [u64;
+    1],
+    completed: [u64;
+    1],
 }
 
 // impl Eq for State {

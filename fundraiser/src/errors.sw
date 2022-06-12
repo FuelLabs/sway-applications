@@ -1,18 +1,17 @@
 library errors;
 
-pub enum Error {
-    NoSuchCampaign: (),
-}
-
-pub enum StateError {
-    CannotReinitialize: (),
-    CannotUnpledgeSuccessfulFundraise: (),
-    FundraiseEnded: (),
-    FundraiseNotSuccessful: (),
+pub enum CreationError {
+    CannotUseNativeAsset: (),
+    ContractNotInitialized: (),
+    DeadlineMustBeInTheFuture: (),
+    TargetAmountCannotBeZero: (),
 }
 
 pub enum UserError {
     AlreadyClaimed: (),
+    FundraiseEnded: (),
+    FundraiseNotSuccessful: (),
     IncorrectAssetSent: (),
+    NoSuchCampaign: (),
     UnauthorizedUser: (),
 }

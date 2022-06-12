@@ -5,18 +5,15 @@ dep data_structures;
 use std::identity::Identity;
 use data_structures::Campaign;
 
-pub struct CancelledEvent {
+pub struct CancelledCampaignEvent {
     id: u64,
-    user: Identity,
 }
 
 pub struct ClaimedEvent {
-    amount: u64,
     id: u64,
-    user: Identity,
 }
 
-pub struct CreatedCampaign {
+pub struct CreatedCampaignEvent {
     campaign: Campaign,
     id: u64,
 }
@@ -24,11 +21,9 @@ pub struct CreatedCampaign {
 pub struct PledgedEvent {
     amount: u64,
     id: u64,
-    user: Identity,
 }
 
 pub struct UnpledgedEvent {
     amount: u64,
     id: u64,
-    user: Identity,
 }
