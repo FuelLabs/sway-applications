@@ -5,7 +5,7 @@ dep data_structures;
 use data_structures::Auction;
 use std::identity::Identity;
 
-pub struct AuctionCancelledEvent {
+pub struct CancelledAuctionEvent {
     id: u64,
 }
 
@@ -15,6 +15,6 @@ pub struct CreatedAuctionEvent {
 }
 
 pub struct WinningBidEvent {
-    winner: Identity,
     id: u64,
+    winner: Identity,
 }

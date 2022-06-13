@@ -1,14 +1,5 @@
 library errors;
 
-pub enum AuthorizationError {
-    SenderNotBeneficiary: (),
-}
-
-pub enum BidError {
-    BidTooLow: (),
-    WrongAssetSent: (),
-}
-
 pub enum SetupError {
     AuctionCannotEndBeforeItStarts: (),
     AuctionCannotEndInThePast: (),
@@ -16,9 +7,11 @@ pub enum SetupError {
     EndPriceCannotBeLargerThanStartPrice: (),
 }
 
-pub enum TechnicalError {
-    ContractNotYetInitialized: (),
+pub enum UserError {
     InvalidAuctionID: (),
+    BidTooLow: (),
+    WrongAssetSent: (),
+    SenderNotBeneficiary: (),
 }
 
 pub enum TimeError {

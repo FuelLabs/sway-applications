@@ -22,8 +22,8 @@ use std::{
 
 use abi::DutchAuction;
 use data_structures::Auction;
-use errors::{AuthorizationError, BidError, SetupError, TechnicalError, TimeError};
-use events::{AuctionCancelledEvent, CreatedAuctionEvent, WinningBidEvent};
+use errors::{UserError, SetupError, TimeError};
+use events::{CancelledAuctionEvent, CreatedAuctionEvent, WinningBidEvent};
 
 storage {
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
@@ -55,12 +55,12 @@ impl DutchAuction for Contract {
         require(auction.start_time <= height(), TimeError::AuctionNotYetStarted);
 
         // Checks for correct asset_id being sent
-        require(msg_asset_id() == auction.asset_id, BidError::WrongAssetSent);
+        require(msg_asset_id() == auction.asset_id, UserError::WrongAssetSent);
 
         let price = calculate_price(auction_id);
 
         // Checks for high enough amount being sent
-        require(price <= msg_amount(), BidError::BidTooLow);
+        require(price <= msg_amount(), UserError::BidTooLow);
 
         // Disallows furthur bids
         auction.ended = true;
@@ -107,14 +107,14 @@ impl DutchAuction for Contract {
         let mut auction = storage.auctions.get(auction_id);
 
         // Only the beneficiary can end the auction (prematurely)
-        require(eq_identity(sender_indentity(), auction.beneficiary), AuthorizationError::SenderNotBeneficiary);
+        require(eq_identity(sender_indentity(), auction.beneficiary), User::SenderNotBeneficiary);
         // Checks if the auction has already ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
 
-        log(AuctionCancelledEvent {
+        log(CancelledAuctionEvent {
             id: auction_id, 
         });
     }
@@ -199,6 +199,6 @@ fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
 /// Validates an auction_id to make sure it corresponds to an auction
 fn validate_id(id: u64) {
     // If the given auction id is higher than the auction count, its an invalid auction_id
-    require(id != 0, TechnicalError::InvalidAuctionID);
-    require(id <= storage.auction_count, TechnicalError::InvalidAuctionID);
+    require(id != 0, UserError::InvalidAuctionID);
+    require(id <= storage.auction_count, UserError::InvalidAuctionID);
 }
