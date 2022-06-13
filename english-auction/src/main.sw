@@ -20,14 +20,14 @@ abi EnglishAuction {
     fn bid() -> bool;
     fn buy_reserve() -> bool;
     fn constructor(seller: Identity, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool;
-    fn get_balance(identity: Identity) -> u64;
-    fn get_current_bid() -> u64;
-    fn get_end_time() -> u64;
-    // fn get_highest_bidder() -> Option<Identity>;
-    fn get_sell_amount() -> u64;
-    fn get_sell_asset() -> ContractId;
-    fn get_reserve() -> u64;
-    fn get_state() -> u64;
+    fn user_balance(identity: Identity) -> u64;
+    fn current_bid() -> u64;
+    fn auction_end_block() -> u64;
+    // fn highest_bidder() -> Option<Identity>;
+    fn sell_amount() -> u64;
+    fn sell_asset() -> ContractId;
+    fn reserve() -> u64;
+    fn state() -> u64;
     fn withdraw() -> bool;
 }
 
@@ -175,7 +175,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    fn get_balance(identity: Identity) -> u64 {
+    fn user_balance(identity: Identity) -> u64 {
         require(storage.state != 0, Error::AuctionNotInitalized);
         storage.deposits.get(identity)
     }
@@ -186,18 +186,18 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    fn get_current_bid() -> u64 {
+    fn current_bid() -> u64 {
         require(storage.state != 0, Error::AuctionNotInitalized);
         storage.current_bid
     }
 
-    /// Returns the time remaining for the auction
+    /// Returns the block at which the auction will end
     ///
     /// # Panics
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    fn get_end_time() -> u64 {
+    fn auction_end_block() -> u64 {
         require(storage.state != 0, Error::AuctionNotInitalized);
         storage.end_time
     }
@@ -209,7 +209,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    // fn get_highest_bidder() -> Option<Identity> {
+    // fn highest_bidder() -> Option<Identity> {
     //     require(storage.state != 0, Error::AuctionNotInitalized);
     //     Option::Some(storage.current_bidder)
     // }
@@ -220,7 +220,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    fn get_sell_amount() -> u64 {
+    fn sell_amount() -> u64 {
         require(storage.state != 0, Error::AuctionNotInitalized);
         storage.sell_amount
     }
@@ -231,7 +231,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    fn get_sell_asset() -> ContractId {
+    fn sell_asset() -> ContractId {
         require(storage.state != 0, Error::AuctionNotInitalized);
         storage.sell_asset
     }
@@ -242,7 +242,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    fn get_reserve() -> u64 {
+    fn reserve() -> u64 {
         require(storage.state != 0, Error::AuctionNotInitalized);
         storage.reserve_price
     }
@@ -253,7 +253,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    fn get_state() -> u64 {
+    fn state() -> u64 {
         require(storage.state != 0, Error::AuctionNotInitalized);
         storage.state
     }
