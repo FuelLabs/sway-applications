@@ -38,7 +38,6 @@ impl DutchAuction for Contract {
     /// Returns the current price for the auction corresponding to the auction_id
     fn price(auction_id: u64) -> u64 {
         validate_id(auction_id);
-
         calculate_price(auction_id)
     }
 
@@ -53,6 +52,8 @@ impl DutchAuction for Contract {
 
         // Cannot bid before auction starts
         require(auction.start_time <= height(), TimeError::AuctionNotYetStarted);
+        // Cannot bid after auction ends
+        require(auction.end_time >= height(), TimeError::AuctionAlreadyEnded);
 
         // Checks for correct asset_id being sent
         require(msg_asset_id() == auction.asset_id, UserError::WrongAssetSent);
@@ -100,7 +101,7 @@ impl DutchAuction for Contract {
         });
     }
 
-    /// Cancels an auction so no one can bid on it. Needs to be called even after end_time of an auction if you want no one to bid anymore
+    /// Cancels an auction so no one can bid on it.
     fn cancel_auction(auction_id: u64) {
         validate_id(auction_id);
 
@@ -198,7 +199,7 @@ fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
 
 /// Validates an auction_id to make sure it corresponds to an auction
 fn validate_id(id: u64) {
-    // If the given auction id is higher than the auction count, its an invalid auction_id
+    // If the id is greater than the auction count then it's invalid
     require(id != 0, UserError::InvalidAuctionID);
     require(id <= storage.auction_count, UserError::InvalidAuctionID);
 }
