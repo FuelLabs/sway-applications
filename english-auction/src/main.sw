@@ -25,6 +25,7 @@ enum Error {
     AuctionIsNotOpen: (),
     AuctionNotInitalized: (),
     AuctionTimeNotProvided: (),
+    BidderIsSeller: (),
     CannotReinitialize: (),
     BuyAssetNotProvided: (),
     IncorrectAssetProvided: (),
@@ -75,6 +76,7 @@ impl EnglishAuction for Contract {
     /// - The auction is not open
     /// - The asset provided is not the buy asset
     /// - The asset amount provided is less than the inital price if there are no bids
+    /// - The bidder is the seller
     /// - The asset amount provided plus current deposit is less than or equal to the current bid
     fn bid() -> bool {
         require(storage.state == 1, Error::AuctionIsNotOpen);
@@ -88,6 +90,7 @@ impl EnglishAuction for Contract {
         let sender: Identity = unwrap_identity(msg_sender());
         let balance = storage.deposits.get(sender);
         
+        require(!compare_identities(sender, storage.seller), Error::BidderIsSeller);
         require(msg_amount() + balance >= storage.current_bid, Error::IncorrectAmountProvided);
 
         storage.current_bidder = sender;
@@ -105,6 +108,7 @@ impl EnglishAuction for Contract {
     /// - The auction is not in the bidding state
     /// - The auction is not open
     /// - There is no reserve price set
+    /// - The bidder is the seller
     /// - The asset amount is not at the reserve price
     /// - The buy assest provided is the incorrect asset
     fn buy_reserve() -> bool {
@@ -115,6 +119,7 @@ impl EnglishAuction for Contract {
         let sender: Identity = unwrap_identity(msg_sender());
         let balance = storage.deposits.get(sender);
 
+        require(!compare_identities(sender, storage.seller), Error::BidderIsSeller);
         require(msg_amount() + balance == storage.reserve_price, Error::IncorrectAmountProvided);
         require(msg_asset_id() == storage.buy_asset, Error::IncorrectAssetProvided);
 

@@ -738,6 +738,40 @@ mod bid {
 
     #[tokio::test]
     #[should_panic]
+    async fn panics_when_bidder_is_seller() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &seller.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            seller
+                .auction
+                .bid()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
     async fn panics_when_second_bid_less_then_current_bid() {
         let (deploy_wallet, seller, buyer1, buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
 
@@ -1028,6 +1062,41 @@ mod buy_reserve {
 
         assert!(
             buyer1
+                .auction
+                .buy_reserve()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_bidder_is_seller() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &seller.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            seller
                 .auction
                 .buy_reserve()
                 .tx_params(tx_params)
