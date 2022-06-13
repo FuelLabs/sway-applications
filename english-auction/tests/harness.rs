@@ -1862,3 +1862,34 @@ mod reserve {
         );
     }
 }
+
+mod state {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn gets_state() {
+        let (deploy_wallet, seller, _buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        assert_eq!(
+            deploy_wallet.auction.state().call().await.unwrap().value,
+            0
+        );
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        assert_eq!(
+            deploy_wallet.auction.state().call().await.unwrap().value,
+            1
+        );
+    }
+}
