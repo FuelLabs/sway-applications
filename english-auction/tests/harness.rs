@@ -1752,3 +1752,76 @@ mod deposits {
         );
     }
 }
+
+// Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
+// mod highest_bidder {
+
+//     use super::*;
+
+//     #[tokio::test]
+//     async fn get_highest_bidder() {
+//         let (deploy_wallet, seller, buyer1, buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+//         init(&deploy_wallet,
+//             &seller,
+//             sell_asset_id,
+//             sell_amount,
+//             buy_asset_id,
+//             inital_price,
+//             reserve_price,
+//             time
+//         )
+//         .await;
+
+//         deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+
+//         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+//         let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+//         let _bid1 = buyer1
+//             .auction
+//             .bid()
+//             .tx_params(tx_params)
+//             .call_params(call_params)
+//             .call()
+//             .await
+//             .unwrap()
+//             .value;
+
+//         assert_eq!(
+//             deploy_wallet.auction.highest_bidder().call().await.unwrap().value,
+//             buyer1.wallet.address()
+//         );
+
+//         deploy_funds(&buyer, &buyer2.wallet, 100).await;
+
+//         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+//         let call_params = CallParameters::new(Some(inital_price + 1), Some(AssetId::from(*buy_asset_id)));
+
+//         let _bid2 = buyer2
+//             .auction
+//             .bid()
+//             .tx_params(tx_params)
+//             .call_params(call_params)
+//             .call()
+//             .await
+//             .unwrap()
+//             .value;
+
+//         assert_eq!(
+//             deploy_wallet.auction.highest_bidder().call().await.unwrap().value,
+//             buyer2.wallet.address()
+//         );
+//     }
+
+//     #[tokio::test]
+//     #[should_panic]
+//     async fn panics_when_not_initalized() {
+//         let (deploy_wallet, _seller, buyer1, _buyer2, _sell_asset_id, _buy_asset_id, _sell_amount, _inital_price, _reserve_price, _time) = setup().await;
+
+//         assert_eq!(
+//             deploy_wallet.auction.highest_bidder().call().await.unwrap().value,
+//             buyer1.wallet.address()
+//         );
+//     }
+// }
