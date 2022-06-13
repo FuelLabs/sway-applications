@@ -107,7 +107,7 @@ impl DutchAuction for Contract {
         let mut auction = storage.auctions.get(auction_id);
 
         // Only the beneficiary can end the auction (prematurely)
-        require(eq_identity(sender_indentity(), auction.beneficiary), User::SenderNotBeneficiary);
+        require(eq_identity(sender_indentity(), auction.beneficiary), UserError::SenderNotBeneficiary);
         // Checks if the auction has already ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
