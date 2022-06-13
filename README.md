@@ -48,6 +48,7 @@ sway-applications/
 
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
+- [English Auction](./auctions/english-auction/) is a English Auction template where user bid up the price of an asset until time is up or a reserve has been met.
 
 ## Running a project
 
