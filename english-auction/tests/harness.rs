@@ -63,14 +63,6 @@ async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId, Contrac
     .await
     .unwrap();
 
-    // let buy_asset_id = Contract::deploy(
-    //     "./tests/artifacts/asset/out/debug/asset.bin",
-    //     &wallet1,
-    //     TxParameters::default(),
-    // )
-    // .await
-    // .unwrap();
-
     let buyer1 = Metadata {
         asset: Some(Asset::new(buy_asset_id.to_string(), wallet3.clone())),
         auction: EnglishAuction::new(auction_id.to_string(), wallet3.clone()),
@@ -395,7 +387,7 @@ mod bid {
         // assert_eq!(
         //     buyer2.auction.get_highest_bidder().call().await.unwrap().value,
         //     buyer2.wallet.address
-        // )
+        // );
     }
 
     #[tokio::test]
@@ -465,7 +457,7 @@ mod bid {
         // assert_eq!(
         //     buyer1.auction.get_highest_bidder().call().await.unwrap().value,
         //     buyer1.wallet.address
-        // )
+        // );
     }
 
     #[tokio::test]
@@ -658,6 +650,305 @@ mod bid {
         // assert_eq!(
         //     buyer2.auction.get_highest_bidder().call().await.unwrap().value,
         //     buyer2.wallet.address
-        // )
+        // );
+    }
+}
+
+mod buy_reserve {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn buys_reserve() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(reserve_price), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .buy_reserve()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+
+        // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
+        // assert_eq!(
+        //     buyer1.auction.get_highest_bidder().call().await.unwrap().value,
+        //     buyer1.wallet.address
+        // );
+    }
+
+    #[tokio::test]
+    async fn buys_after_bid() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid1 = buyer1
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+    
+        let remaining_deposit = reserve_price - inital_price;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(remaining_deposit), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .buy_reserve()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+
+        // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
+        // assert_eq!(
+        //     buyer1.auction.get_highest_bidder().call().await.unwrap().value,
+        //     buyer1.wallet.address
+        // );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (_deploy_wallet, _seller, buyer1, _buyer2, _sell_asset_id, buy_asset_id, _sell_amount, _inital_price, reserve_price, _time) = setup().await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(reserve_price), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .buy_reserve()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_over_time() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, _time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            1
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(reserve_price), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .buy_reserve()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_no_reserve_set() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            0,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(reserve_price), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .buy_reserve()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_reserve_not_met() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(reserve_price - 1), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .buy_reserve()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_sending_incorrect_asset() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&deploy_wallet, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(reserve_price), Some(AssetId::from(*sell_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .buy_reserve()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_over_reserve() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(reserve_price + 1), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .buy_reserve()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
     }
 }

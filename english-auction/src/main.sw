@@ -114,8 +114,8 @@ impl EnglishAuction for Contract {
         let sender: Identity = unwrap_identity(msg_sender());
         let balance = storage.deposits.get(sender);
 
-        require(msg_amount() + balance != storage.reserve_price, Error::IncorrectAmountProvided);
-        require(msg_asset_id() != storage.buy_asset, Error::IncorrectAssetProvided);
+        require(msg_amount() + balance == storage.reserve_price, Error::IncorrectAmountProvided);
+        require(msg_asset_id() == storage.buy_asset, Error::IncorrectAssetProvided);
 
         storage.state = 2;
 
