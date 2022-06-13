@@ -11,6 +11,5 @@ abi DutchAuction {
     fn bid(auction_id: u64);
     fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Identity, asset: ContractId);
     fn cancel_auction(auction_id: u64);
-    fn constructor(admin: Identity);
     fn auction(auction_id: u64) -> Auction;
 }

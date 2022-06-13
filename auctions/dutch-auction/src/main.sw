@@ -26,23 +26,14 @@ use errors::{AuthorizationError, BidError, SetupError, TechnicalError, TimeError
 use events::{AuctionCancelledEvent, CreatedAuctionEvent, WinningBidEvent};
 
 storage {
-    /// The Admin Address
-    admin: Identity,
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
     auctions: StorageMap<u64,
     Auction>, /// Tracking how many auctions have been made till now
     auction_count: u64,
     /// Whether the constructor has been called
-    initialized: bool,
 }
 
 impl DutchAuction for Contract {
-    /// This function should be called right after being deployed, so the admin can be set
-    fn constructor(admin: Identity) {
-        require(!storage.initialized, AuthorizationError::CannotReinitialize);
-        storage.admin = admin;
-        storage.initialized = true;
-    }
 
     /// Returns the current price for the auction corresponding to the auction_id
     fn price(auction_id: u64) -> u64 {
@@ -54,8 +45,6 @@ impl DutchAuction for Contract {
     /// Bids in the given auction_id, is a win if the amount and asset are correct
     fn bid(auction_id: u64) {
         // In a Dutch auction the first bid wins
-        require(storage.initialized, TechnicalError::ContractNotYetInitialized);
-
         validate_id(auction_id);
 
         let mut auction = storage.auctions.get(auction_id);
@@ -92,8 +81,6 @@ impl DutchAuction for Contract {
 
     /// Creates a new auction
     fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Identity, asset: ContractId) {
-        require(storage.initialized, TechnicalError::ContractNotYetInitialized);
-        require(eq_identity(storage.admin, sender_indentity()), AuthorizationError::SenderNotAdmin);
         require(reserve_price <= opening_price, SetupError::EndPriceCannotBeLargerThanStartPrice);
         require(height() < end_time, SetupError::AuctionCannotEndInThePast);
         require(height() <= start_time, SetupError::AuctionCannotStartInThePast);
@@ -115,14 +102,12 @@ impl DutchAuction for Contract {
 
     /// Cancels an auction so no one can bid on it. Needs to be called even after end_time of an auction if you want no one to bid anymore
     fn cancel_auction(auction_id: u64) {
-        require(storage.initialized, TechnicalError::ContractNotYetInitialized);
-
         validate_id(auction_id);
 
-        // Only the admin can end the auction (prematurely)
-        require(eq_identity(sender_indentity(), storage.admin), AuthorizationError::SenderNotAdmin);
-
         let mut auction = storage.auctions.get(auction_id);
+
+        // Only the beneficiary can end the auction (prematurely)
+        require(eq_identity(sender_indentity(), auction.beneficiary), AuthorizationError::SenderNotBeneficiary);
         // Checks if the auction has already ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 

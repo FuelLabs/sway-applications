@@ -1,8 +1,7 @@
 library errors;
 
 pub enum AuthorizationError {
-    CannotReinitialize: (),
-    SenderNotAdmin: (),
+    SenderNotBeneficiary: (),
 }
 
 pub enum BidError {
