@@ -130,6 +130,8 @@ impl DutchAuction for Contract {
 
         // Only the beneficiary can change the bidding asset
         require(eq_identity(sender_indentity(), auction.beneficiary), UserError::SenderNotBeneficiary);
+        // Cant edit an ended auction
+        require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         auction.asset_id = new_asset;
 
@@ -142,6 +144,8 @@ impl DutchAuction for Contract {
 
         // Only the beneficiary can change the beneficiary
         require(eq_identity(sender_indentity(), auction.beneficiary), UserError::SenderNotBeneficiary);
+        // Cant edit an ended auction
+        require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         auction.beneficiary = new_beneficiary;
 
