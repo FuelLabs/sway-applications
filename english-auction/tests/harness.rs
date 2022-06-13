@@ -1577,3 +1577,46 @@ mod withdraw {
         );
     }
 }
+
+
+mod auction_end_block {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn gets_end_block() {
+        let (deploy_wallet, seller, _buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        // TODO: This really shouldn't be hard coded. Need to add a get block function
+        let block = 4;
+
+        assert_eq!(
+            deploy_wallet.auction.auction_end_block().call().await.unwrap().value,
+            time + block
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (_deploy_wallet, seller, _buyer1, _buyer2, _sell_asset_id, _buy_asset_id, _sell_amount, _inital_price, _reserve_price, time) = setup().await;
+
+        let block = 0;
+
+        assert_eq!(
+            seller.auction.auction_end_block().call().await.unwrap().value,
+            time + block
+        );
+    }
+}

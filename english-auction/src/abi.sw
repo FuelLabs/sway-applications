@@ -1,5 +1,7 @@
 library abi;
 
+use::std::{identity::Identity, contract_id::ContractId};
+
 abi EnglishAuction {
     fn auction_end_block() -> u64;
     fn bid() -> bool;
