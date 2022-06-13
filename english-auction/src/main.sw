@@ -1,8 +1,10 @@
 contract;
 
 dep abi;
+dep errors;
 
 use abi::EnglishAuction;
+use errors::{AccessError, InitError, InputError, UserError};
 
 use std::{
     address::Address,
@@ -19,23 +21,6 @@ use std::{
     storage::StorageMap,
     token::{force_transfer_to_contract, transfer_to_output}
 };
-
-enum Error {
-    AuctionIsNotClosed: (),
-    AuctionIsNotOpen: (),
-    AuctionNotInitalized: (),
-    AuctionTimeNotProvided: (),
-    BidderIsSeller: (),
-    CannotReinitialize: (),
-    BuyAssetNotProvided: (),
-    IncorrectAssetProvided: (),
-    IncorrectAmountProvided: (),
-    InitalPriceCannotBeZero: (),
-    InitalPriceNotMet: (),
-    NoReserveSet: (),
-    ReserveLessThanInitalPrice: (),
-    UserHasAlreadyWithdrawn: (),
-}
 
 storage {
     buy_asset: ContractId,
@@ -62,7 +47,7 @@ impl EnglishAuction for Contract {
     /// The function will panic when:
     /// - The auction has not yet been initalized
     fn auction_end_block() -> u64 {
-        require(storage.state != 0, Error::AuctionNotInitalized);
+        require(storage.state != 0, AccessError::AuctionIsNotOpen);
         storage.end_time
     }
 
@@ -78,19 +63,19 @@ impl EnglishAuction for Contract {
     /// - The bidder is the seller
     /// - The asset amount provided plus current deposit is less than or equal to the current bid
     fn bid() -> bool {
-        require(storage.state == 1, Error::AuctionIsNotOpen);
-        require(height() <= storage.end_time, Error::AuctionIsNotOpen);
-        require(msg_asset_id() == storage.buy_asset, Error::IncorrectAssetProvided);
+        require(storage.state == 1, AccessError::AuctionIsNotOpen);
+        require(height() <= storage.end_time, AccessError::AuctionIsNotOpen);
+        require(msg_asset_id() == storage.buy_asset, InputError::IncorrectAssetProvided);
 
         if (storage.current_bid == 0) {
-            require(msg_amount() >= storage.inital_price, Error::InitalPriceNotMet);
+            require(msg_amount() >= storage.inital_price, InputError::InitalPriceNotMet);
         }
 
         let sender: Identity = unwrap_identity(msg_sender());
         let balance = storage.deposits.get(sender);
         
-        require(!compare_identities(sender, storage.seller), Error::BidderIsSeller);
-        require(msg_amount() + balance >= storage.current_bid, Error::IncorrectAmountProvided);
+        require(!compare_identities(sender, storage.seller), UserError::BidderIsSeller);
+        require(msg_amount() + balance >= storage.current_bid, InputError::IncorrectAmountProvided);
 
         if (msg_amount() + balance < storage.reserve_price) {
             // If the reserve price has not yet been met
@@ -116,16 +101,16 @@ impl EnglishAuction for Contract {
     /// - The asset amount does not meet the reserve price
     /// - The buy assest provided is the incorrect asset
     fn buy_reserve() -> bool {
-        require(storage.state == 1, Error::AuctionIsNotOpen);
-        require(height() <= storage.end_time, Error::AuctionIsNotOpen);
-        require(storage.reserve_price != 0, Error::NoReserveSet);
+        require(storage.state == 1, AccessError::AuctionIsNotOpen);
+        require(height() <= storage.end_time, AccessError::AuctionIsNotOpen);
+        require(storage.reserve_price != 0, AccessError::NoReserveSet);
 
         let sender: Identity = unwrap_identity(msg_sender());
         let balance = storage.deposits.get(sender);
 
-        require(!compare_identities(sender, storage.seller), Error::BidderIsSeller);
-        require(msg_amount() + balance >= storage.reserve_price, Error::IncorrectAmountProvided);
-        require(msg_asset_id() == storage.buy_asset, Error::IncorrectAssetProvided);
+        require(!compare_identities(sender, storage.seller), UserError::BidderIsSeller);
+        require(msg_amount() + balance >= storage.reserve_price, InputError::IncorrectAmountProvided);
+        require(msg_asset_id() == storage.buy_asset, InputError::IncorrectAssetProvided);
 
         reserve_met(sender, balance);
         true
@@ -144,12 +129,12 @@ impl EnglishAuction for Contract {
     /// - The inital price is higher than the reserve price if a reserve price is set
     /// - The time for the auction to end is 0
     fn constructor(seller: Identity, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool {
-        require(storage.state == 0, Error::CannotReinitialize);
-        require(msg_amount() > 0, Error::IncorrectAmountProvided);
-        require(msg_asset_id() != ~ContractId::from(NATIVE_ASSET_ID), Error::IncorrectAssetProvided);
-        require(buy_asset != ~ContractId::from(NATIVE_ASSET_ID), Error::BuyAssetNotProvided);
-        require((reserve_price >= inital_price && reserve_price != 0) || reserve_price == 0, Error::ReserveLessThanInitalPrice);
-        require(time != 0, Error::AuctionTimeNotProvided);
+        require(storage.state == 0, InitError::CannotReinitialize);
+        require(msg_amount() > 0, InputError::IncorrectAmountProvided);
+        require(msg_asset_id() != ~ContractId::from(NATIVE_ASSET_ID), InputError::IncorrectAssetProvided);
+        require(buy_asset != ~ContractId::from(NATIVE_ASSET_ID), InitError::BuyAssetNotProvided);
+        require((reserve_price >= inital_price && reserve_price != 0) || reserve_price == 0, InitError::ReserveLessThanInitalPrice);
+        require(time != 0, InitError::AuctionTimeNotProvided);
 
         storage.buy_asset = buy_asset;
         storage.buyer_withdrawn = false;
@@ -172,7 +157,7 @@ impl EnglishAuction for Contract {
     /// The function will panic when:
     /// - The auction has not yet been initalized
     fn current_bid() -> u64 {
-        require(storage.state != 0, Error::AuctionNotInitalized);
+        require(storage.state != 0, AccessError::AuctionIsNotOpen);
         storage.current_bid
     }
 
@@ -183,7 +168,7 @@ impl EnglishAuction for Contract {
     /// The function will panic when:
     /// - The auction has not yet been initalized
     fn deposits(identity: Identity) -> u64 {
-        require(storage.state != 0, Error::AuctionNotInitalized);
+        require(storage.state != 0, AccessError::AuctionIsNotOpen);
         storage.deposits.get(identity)
     }
 
@@ -195,7 +180,7 @@ impl EnglishAuction for Contract {
     /// The function will panic when:
     /// - The auction has not yet been initalized
     // fn highest_bidder() -> Option<Identity> {
-    //     require(storage.state != 0, Error::AuctionNotInitalized);
+    //     require(storage.state != 0, AccessError::AuctionIsNotOpen);
     //     Option::Some(storage.current_bidder)
     // }
 
@@ -206,7 +191,7 @@ impl EnglishAuction for Contract {
     /// The function will panic when:
     /// - The auction has not yet been initalized
     fn reserve() -> u64 {
-        require(storage.state != 0, Error::AuctionNotInitalized);
+        require(storage.state != 0, AccessError::AuctionIsNotOpen);
         storage.reserve_price
     }
 
@@ -217,7 +202,7 @@ impl EnglishAuction for Contract {
     /// The function will panic when:
     /// - The auction has not yet been initalized
     fn sell_amount() -> u64 {
-        require(storage.state != 0, Error::AuctionNotInitalized);
+        require(storage.state != 0, AccessError::AuctionIsNotOpen);
         storage.sell_amount
     }
 
@@ -228,7 +213,7 @@ impl EnglishAuction for Contract {
     /// The function will panic when:
     /// - The auction has not yet been initalized
     fn sell_asset() -> ContractId {
-        require(storage.state != 0, Error::AuctionNotInitalized);
+        require(storage.state != 0, AccessError::AuctionIsNotOpen);
         storage.sell_asset
     }
 
@@ -248,7 +233,7 @@ impl EnglishAuction for Contract {
     /// - The seller is the sender and already withdrew
     /// - The sender is not the buyer or seller and has nothing to withdraw
     fn withdraw() -> bool {
-        require(storage.state == 2 || height() >= storage.end_time, Error::AuctionIsNotClosed);
+        require(storage.state == 2 || height() >= storage.end_time, AccessError::AuctionIsNotClosed);
 
         // If time has run out set the contract state to 2
         if (height() >= storage.end_time && storage.state == 1)
@@ -262,7 +247,7 @@ impl EnglishAuction for Contract {
             
         if (compare_identities(current_bidder, sender)) {
             // The buyer is withdrawing
-            require(!storage.buyer_withdrawn, Error::UserHasAlreadyWithdrawn);
+            require(!storage.buyer_withdrawn, UserError::UserHasAlreadyWithdrawn);
             storage.buyer_withdrawn = true;
             storage.deposits.insert(sender, 0);
 
@@ -276,7 +261,7 @@ impl EnglishAuction for Contract {
             };
         } else if (compare_identities(seller, sender)) {
             // The seller is withdrawing
-            require(!storage.seller_withdawn, Error::UserHasAlreadyWithdrawn);
+            require(!storage.seller_withdawn, UserError::UserHasAlreadyWithdrawn);
             storage.seller_withdawn = true;
 
             // No one placed a bid
@@ -302,7 +287,7 @@ impl EnglishAuction for Contract {
         } else {
             // Anyone with a failed bid is withdrawing
             let deposit_amount = storage.deposits.get(sender);
-            require(deposit_amount > 0, Error::UserHasAlreadyWithdrawn);
+            require(deposit_amount > 0, UserError::UserHasAlreadyWithdrawn);
 
             storage.deposits.insert(sender, 0);
 
