@@ -41,7 +41,7 @@ impl DutchAuction for Contract {
         calculate_price(auction_id)
     }
 
-    /// Bids in the given auction_id, is a win if the amount and asset are correct
+    /// Bids in the given auction, wins if the amount and type of asset are correct
     fn bid(auction_id: u64) {
         // In a Dutch auction the first bid wins
         validate_id(auction_id);
@@ -87,13 +87,12 @@ impl DutchAuction for Contract {
         require(height() <= start_time, SetupError::AuctionCannotStartInThePast);
         require(start_time < end_time, SetupError::AuctionCannotEndBeforeItStarts);
 
-        storage.auction_count = storage.auction_count + 1;
-
         let auction = Auction {
             opening_price, reserve_price, start_time, end_time, beneficiary, asset_id: asset,
             ended: false,
         };
 
+        storage.auction_count = storage.auction_count + 1;
         storage.auctions.insert(storage.auction_count, auction);
 
         log(CreatedAuctionEvent {
@@ -129,6 +128,7 @@ impl DutchAuction for Contract {
 
 /// This function is called whenever a winning bid is recieved.
 fn on_win(auction: Auction, winning_amount: u64) {
+    // Add custom logic for winning the auction here
     transfer_to_identity(winning_amount, auction.asset_id, auction.beneficiary);
 }
 
