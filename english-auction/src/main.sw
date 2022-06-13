@@ -65,6 +65,7 @@ storage {
 
 impl EnglishAuction for Contract {
 
+    /// TODO: If the bid meets or exceeds the reserve the asset should be bought
     /// Places a bid 
     ///
     /// # Panics
@@ -96,7 +97,7 @@ impl EnglishAuction for Contract {
         true
     }
 
-    /// Purchases at the sell price
+    /// Purchases at the reserve price
     ///
     /// # Panics
     /// 

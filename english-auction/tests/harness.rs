@@ -952,3 +952,398 @@ mod buy_reserve {
         );
     }
 }
+
+mod withdraw {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn withdraws_for_buyer() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, _time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            3
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid1 = buyer1
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        // TODO: Speed up time
+
+        assert!(
+            buyer1
+                .auction
+                .withdraw()
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+
+        // TODO: Ensure the buyer has the seller assets
+    }
+
+    #[tokio::test]
+    async fn withdraws_for_seller() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, _time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            3
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid1 = buyer1
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        // TODO: Speed up time
+
+        assert!(
+            seller
+                .auction
+                .withdraw()
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+
+        // TODO: Ensure the seller has the buyer assets
+    }
+
+    #[tokio::test]
+    async fn withdraws_for_failed_bids() {
+        let (deploy_wallet, seller, buyer1, buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, _time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            5
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid1 = buyer1
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        deploy_funds(&buyer1, &buyer2.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price + 1), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid2 = buyer2
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        // TODO: Speed up time
+
+        assert!(
+            buyer1
+                .auction
+                .withdraw()
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+
+        // TODO: Ensure the failed buyer has the inital price of assests again
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (_deploy_wallet, _seller, buyer1, _buyer2, _sell_asset_id, _buy_asset_id, _sell_amount, _inital_price, _reserve_price, _time) = setup().await;
+
+        assert!(
+            buyer1
+                .auction
+                .withdraw()
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_over_time() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid1 = buyer1
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert!(
+            buyer1
+                .auction
+                .withdraw()
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_buyer_already_withdrawn() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, _time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            3
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid1 = buyer1
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        // TODO: Speed up time
+
+        let _widthdraw = buyer1
+            .auction
+            .withdraw()
+            .append_variable_outputs(2)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert!(
+            buyer1
+                .auction
+                .withdraw()
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_seller_already_withdrawn() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, _time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            3
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid1 = buyer1
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        // TODO: Speed up time
+
+        let _withdrawn = seller
+            .auction
+            .withdraw()
+            .append_variable_outputs(2)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert!(
+            seller
+                .auction
+                .withdraw()
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_failed_bid_withdrawn_twice() {
+        let (deploy_wallet, seller, buyer1, buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, _time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            5
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid1 = buyer1
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        deploy_funds(&buyer1, &buyer2.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price + 1), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid2 = buyer2
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        // TODO: Speed up time
+
+        let _withdrawn = buyer1
+            .auction
+            .withdraw()
+            .append_variable_outputs(2)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert!(
+            buyer1
+                .auction
+                .withdraw()
+                .append_variable_outputs(2)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+}
