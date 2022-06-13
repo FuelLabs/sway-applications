@@ -2,6 +2,7 @@ contract;
 
 // TODO: matching on self is not implemented so cannot do equalityy on enums
 //       change arrays to vec when out
+//       currently only the author stores campaign info, need to show user as well
 
 dep abi;
 dep data_structures;
