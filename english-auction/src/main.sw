@@ -1,5 +1,9 @@
 contract;
 
+dep abi;
+
+use abi::EnglishAuction;
+
 use std::{
     address::Address,
     assert::require,
@@ -15,21 +19,6 @@ use std::{
     storage::StorageMap,
     token::{force_transfer_to_contract, transfer_to_output}
 };
-
-abi EnglishAuction {
-    fn bid() -> bool;
-    fn buy_reserve() -> bool;
-    fn constructor(seller: Identity, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> bool;
-    fn user_balance(identity: Identity) -> u64;
-    fn current_bid() -> u64;
-    fn auction_end_block() -> u64;
-    // fn highest_bidder() -> Option<Identity>;
-    fn sell_amount() -> u64;
-    fn sell_asset() -> ContractId;
-    fn reserve() -> u64;
-    fn state() -> u64;
-    fn withdraw() -> bool;
-}
 
 enum Error {
     AuctionIsNotClosed: (),
@@ -64,6 +53,17 @@ storage {
 }
 
 impl EnglishAuction for Contract {
+
+    /// Returns the block at which the auction will end
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The auction has not yet been initalized
+    fn auction_end_block() -> u64 {
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.end_time
+    }
 
     /// TODO: If the bid meets or exceeds the reserve the asset should be bought
     /// Places a bid 
@@ -170,17 +170,6 @@ impl EnglishAuction for Contract {
         true
     }
 
-    /// Returns the balance of the Address's buy asset deposits
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction has not yet been initalized
-    fn user_balance(identity: Identity) -> u64 {
-        require(storage.state != 0, Error::AuctionNotInitalized);
-        storage.deposits.get(identity)
-    }
-
     /// Returns the current bid of the auction
     ///
     /// # Panics
@@ -192,15 +181,15 @@ impl EnglishAuction for Contract {
         storage.current_bid
     }
 
-    /// Returns the block at which the auction will end
+    /// Returns the balance of the Address's buy asset deposits
     ///
     /// # Panics
     ///
     /// The function will panic when:
     /// - The auction has not yet been initalized
-    fn auction_end_block() -> u64 {
+    fn deposits(identity: Identity) -> u64 {
         require(storage.state != 0, Error::AuctionNotInitalized);
-        storage.end_time
+        storage.deposits.get(identity)
     }
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
@@ -214,6 +203,17 @@ impl EnglishAuction for Contract {
     //     require(storage.state != 0, Error::AuctionNotInitalized);
     //     Option::Some(storage.current_bidder)
     // }
+
+    /// Returns the reserve price of the auction
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The auction has not yet been initalized
+    fn reserve() -> u64 {
+        require(storage.state != 0, Error::AuctionNotInitalized);
+        storage.reserve_price
+    }
 
     /// Returns the amount of asset that is being sold
     ///
@@ -235,17 +235,6 @@ impl EnglishAuction for Contract {
     fn sell_asset() -> ContractId {
         require(storage.state != 0, Error::AuctionNotInitalized);
         storage.sell_asset
-    }
-
-    /// Returns the reserve price of the auction
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction has not yet been initalized
-    fn reserve() -> u64 {
-        require(storage.state != 0, Error::AuctionNotInitalized);
-        storage.reserve_price
     }
 
     /// Returns the current state of the function

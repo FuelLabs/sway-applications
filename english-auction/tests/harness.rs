@@ -368,7 +368,7 @@ mod bid {
         assert_eq!(
             buyer1
                 .auction
-                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .deposits(englishauction_mod::Identity::Address(buyer1.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -423,7 +423,7 @@ mod bid {
         assert_eq!(
             buyer1
                 .auction
-                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .deposits(englishauction_mod::Identity::Address(buyer1.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -494,7 +494,7 @@ mod bid {
         assert_eq!(
             buyer1
                 .auction
-                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .deposits(englishauction_mod::Identity::Address(buyer1.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -505,7 +505,7 @@ mod bid {
         assert_eq!(
             buyer2
                 .auction
-                .user_balance(englishauction_mod::Identity::Address(buyer2.wallet.address()))
+                .deposits(englishauction_mod::Identity::Address(buyer2.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -591,7 +591,7 @@ mod bid {
         assert_eq!(
             buyer2
                 .auction
-                .user_balance(englishauction_mod::Identity::Address(buyer2.wallet.address()))
+                .deposits(englishauction_mod::Identity::Address(buyer2.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -602,7 +602,7 @@ mod bid {
         assert_eq!(
             buyer1
                 .auction
-                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .deposits(englishauction_mod::Identity::Address(buyer1.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -851,7 +851,7 @@ mod buy_reserve {
         assert_eq!(
             buyer1
                 .auction
-                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .deposits(englishauction_mod::Identity::Address(buyer1.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -927,7 +927,7 @@ mod buy_reserve {
         assert_eq!(
             buyer1
                 .auction
-                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .deposits(englishauction_mod::Identity::Address(buyer1.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -1198,7 +1198,7 @@ mod withdraw {
         assert_eq!(
             buyer1
                 .auction
-                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .deposits(englishauction_mod::Identity::Address(buyer1.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -1326,7 +1326,7 @@ mod withdraw {
         assert_eq!(
             buyer1
                 .auction
-                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .deposits(englishauction_mod::Identity::Address(buyer1.wallet.address()))
                 .call()
                 .await
                 .unwrap()
