@@ -123,6 +123,7 @@ impl EnglishAuction for Contract {
         storage.current_bidder = sender;
         storage.current_bid = msg_amount() + balance;
         storage.buyer_withdrawn = true;
+        storage.deposits.insert(sender, 0);
 
         match sender {
             Identity::Address(sender) => {
@@ -248,13 +249,7 @@ impl EnglishAuction for Contract {
     }
 
     /// Returns the current state of the function
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction has not yet been initalized
     fn state() -> u64 {
-        require(storage.state != 0, Error::AuctionNotInitalized);
         storage.state
     }
 
@@ -285,6 +280,7 @@ impl EnglishAuction for Contract {
             // The buyer is withdrawing
             require(!storage.buyer_withdrawn, Error::UserHasAlreadyWithdrawn);
             storage.buyer_withdrawn = true;
+            storage.deposits.insert(sender, 0);
 
             match sender {
                 Identity::Address(sender) => {

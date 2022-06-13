@@ -157,6 +157,11 @@ mod constructor {
     async fn inits() {
         let (deploy_wallet, seller, _buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
 
+        assert_eq!(
+            deploy_wallet.auction.state().call().await.unwrap().value,
+            0
+        );
+
         assert!(
             init(
                 &deploy_wallet,
@@ -169,6 +174,54 @@ mod constructor {
                 time
             )
             .await
+        );
+
+        assert_eq!(
+            deploy_wallet.auction.state().call().await.unwrap().value,
+            1
+        );
+    }
+
+    #[tokio::test]
+    async fn sets_values() {
+        let (deploy_wallet, seller, _buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(
+            &deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        assert_eq!(
+            deploy_wallet.auction.current_bid().call().await.unwrap().value,
+            0
+        );
+
+        // TODO: Get the current block to test what block the auction should end
+        // assert_eq!(
+        //     deploy_wallet.auction.auction_end_block().call().await.unwrap().value,
+        //     0
+        // );
+
+        assert_eq!(
+            deploy_wallet.auction.sell_amount().call().await.unwrap().value,
+            sell_amount
+        );
+
+        assert_eq!(
+            deploy_wallet.auction.sell_asset().call().await.unwrap().value,
+            sell_asset_id
+        );
+
+        assert_eq!(
+            deploy_wallet.auction.reserve().call().await.unwrap().value,
+            reserve_price
         );
     }
 
@@ -300,6 +353,28 @@ mod bid {
                 .unwrap()
                 .value
         );
+
+        // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
+        // assert_eq!(
+        //     buyer1.auction.highest_bidder().call().await.unwrap().value,
+        //     buyer1.wallet.address
+        // );
+
+        assert_eq!(
+            buyer1.auction.current_bid().call().await.unwrap().value,
+            inital_price
+        );
+
+        assert_eq!(
+            buyer1
+                .auction
+                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .call()
+                .await
+                .unwrap()
+                .value,
+            inital_price
+        );
     }
 
     #[tokio::test]
@@ -332,6 +407,28 @@ mod bid {
                 .await
                 .unwrap()
                 .value
+        );
+
+        // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
+        // assert_eq!(
+        //     buyer1.auction.highest_bidder().call().await.unwrap().value,
+        //     buyer1.wallet.address
+        // );
+
+        assert_eq!(
+            buyer1.auction.current_bid().call().await.unwrap().value,
+            inital_price + 1
+        );
+
+        assert_eq!(
+            buyer1
+                .auction
+                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .call()
+                .await
+                .unwrap()
+                .value,
+            inital_price + 1
         );
     }
 
@@ -385,9 +482,36 @@ mod bid {
 
         // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
         // assert_eq!(
-        //     buyer2.auction.get_highest_bidder().call().await.unwrap().value,
+        //     buyer2.auction.highest_bidder().call().await.unwrap().value,
         //     buyer2.wallet.address
         // );
+
+        assert_eq!(
+            buyer2.auction.current_bid().call().await.unwrap().value,
+            inital_price + 1
+        );
+
+        assert_eq!(
+            buyer1
+                .auction
+                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .call()
+                .await
+                .unwrap()
+                .value,
+            inital_price
+        );
+
+        assert_eq!(
+            buyer2
+                .auction
+                .user_balance(englishauction_mod::Identity::Address(buyer2.wallet.address()))
+                .call()
+                .await
+                .unwrap()
+                .value,
+            inital_price + 1
+        );
     }
 
     #[tokio::test]
@@ -458,6 +582,33 @@ mod bid {
         //     buyer1.auction.get_highest_bidder().call().await.unwrap().value,
         //     buyer1.wallet.address
         // );
+
+        assert_eq!(
+            buyer1.auction.current_bid().call().await.unwrap().value,
+            inital_price + inital_price + 1
+        );
+
+        assert_eq!(
+            buyer2
+                .auction
+                .user_balance(englishauction_mod::Identity::Address(buyer2.wallet.address()))
+                .call()
+                .await
+                .unwrap()
+                .value,
+            inital_price + inital_price
+        );
+
+        assert_eq!(
+            buyer1
+                .auction
+                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .call()
+                .await
+                .unwrap()
+                .value,
+            inital_price + inital_price + 1
+        );
     }
 
     #[tokio::test]
@@ -696,6 +847,27 @@ mod buy_reserve {
         //     buyer1.auction.get_highest_bidder().call().await.unwrap().value,
         //     buyer1.wallet.address
         // );
+
+        assert_eq!(
+            buyer1
+                .auction
+                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .call()
+                .await
+                .unwrap()
+                .value,
+            0
+        );
+
+        assert_eq!(
+            buyer1.auction.current_bid().call().await.unwrap().value,
+            reserve_price
+        );
+
+        assert_eq!(
+            buyer1.auction.state().call().await.unwrap().value,
+            2
+        );
     }
 
     #[tokio::test]
@@ -751,6 +923,27 @@ mod buy_reserve {
         //     buyer1.auction.get_highest_bidder().call().await.unwrap().value,
         //     buyer1.wallet.address
         // );
+
+        assert_eq!(
+            buyer1
+                .auction
+                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .call()
+                .await
+                .unwrap()
+                .value,
+            0
+        );
+
+        assert_eq!(
+            buyer1.auction.current_bid().call().await.unwrap().value,
+            reserve_price
+        );
+
+        assert_eq!(
+            buyer1.auction.state().call().await.unwrap().value,
+            2
+        );
     }
 
     #[tokio::test]
@@ -1001,6 +1194,22 @@ mod withdraw {
         );
 
         // TODO: Ensure the buyer has the seller assets
+
+        assert_eq!(
+            buyer1
+                .auction
+                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .call()
+                .await
+                .unwrap()
+                .value,
+            0
+        );
+
+        assert_eq!(
+            buyer1.auction.state().call().await.unwrap().value,
+            2
+        );
     }
 
     #[tokio::test]
@@ -1047,6 +1256,11 @@ mod withdraw {
         );
 
         // TODO: Ensure the seller has the buyer assets
+
+        assert_eq!(
+            buyer1.auction.state().call().await.unwrap().value,
+            2
+        );
     }
 
     #[tokio::test]
@@ -1108,6 +1322,22 @@ mod withdraw {
         );
 
         // TODO: Ensure the failed buyer has the inital price of assests again
+
+        assert_eq!(
+            buyer1
+                .auction
+                .user_balance(englishauction_mod::Identity::Address(buyer1.wallet.address()))
+                .call()
+                .await
+                .unwrap()
+                .value,
+            0
+        );
+
+        assert_eq!(
+            buyer1.auction.state().call().await.unwrap().value,
+            2
+        );
     }
 
     #[tokio::test]
