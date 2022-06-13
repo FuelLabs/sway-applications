@@ -22,7 +22,7 @@ use std::{
 
 use abi::DutchAuction;
 use data_structures::Auction;
-use errors::{UserError, SetupError, TimeError};
+use errors::{SetupError, TimeError, UserError};
 use events::{CancelledAuctionEvent, CreatedAuctionEvent, WinningBidEvent};
 
 storage {
@@ -34,7 +34,6 @@ storage {
 }
 
 impl DutchAuction for Contract {
-
     /// Returns the current price for the auction corresponding to the auction_id
     fn price(auction_id: u64) -> u64 {
         validate_id(auction_id);
@@ -123,6 +122,30 @@ impl DutchAuction for Contract {
     fn auction(auction_id: u64) -> Auction {
         validate_id(auction_id);
         storage.auctions.get(auction_id)
+    }
+
+    fn change_asset(new_asset: ContractId, auction_id: u64) {
+        validate_id(auction_id);
+        let mut auction = storage.auctions.get(auction_id);
+
+        // Only the beneficiary can change the bidding asset
+        require(eq_identity(sender_indentity(), auction.beneficiary), UserError::SenderNotBeneficiary);
+
+        auction.asset_id = new_asset;
+
+        storage.auctions.insert(auction_id, auction);
+    }
+
+    fn change_beneficiary(new_beneficiary: Identity, auction_id: u64) {
+        validate_id(auction_id);
+        let mut auction = storage.auctions.get(auction_id);
+
+        // Only the beneficiary can change the beneficiary
+        require(eq_identity(sender_indentity(), auction.beneficiary), UserError::SenderNotBeneficiary);
+
+        auction.beneficiary = new_beneficiary;
+
+        storage.auctions.insert(auction_id, auction);
     }
 }
 
