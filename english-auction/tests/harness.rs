@@ -1930,3 +1930,40 @@ mod sell_amount {
         );
     }
 }
+
+mod sell_asset {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn gets_sell_asset() {
+        let (deploy_wallet, seller, _buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        assert_eq!(
+            deploy_wallet.auction.sell_asset().call().await.unwrap().value,
+            sell_asset_id
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_initalized() {
+        let (deploy_wallet, _seller, _buyer1, _buyer2, sell_asset_id, _buy_asset_id, _sell_amount, _inital_price, _reserve_price, _time) = setup().await;
+
+        assert_eq!(
+            deploy_wallet.auction.sell_asset().call().await.unwrap().value,
+            sell_asset_id
+        );
+    }
+}
