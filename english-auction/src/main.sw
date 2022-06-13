@@ -66,7 +66,6 @@ impl EnglishAuction for Contract {
         storage.end_time
     }
 
-    /// TODO: If the bid meets or exceeds the reserve the asset should be bought
     /// Places a bid 
     ///
     /// # Panics
@@ -93,10 +92,15 @@ impl EnglishAuction for Contract {
         require(!compare_identities(sender, storage.seller), Error::BidderIsSeller);
         require(msg_amount() + balance >= storage.current_bid, Error::IncorrectAmountProvided);
 
-        storage.current_bidder = sender;
-        storage.current_bid = balance + msg_amount();
-        storage.deposits.insert(sender, balance + msg_amount());
-
+        if (msg_amount() + balance < storage.reserve_price) {
+            // If the reserve price has not yet been met
+            storage.current_bidder = sender;
+            storage.current_bid = balance + msg_amount();
+            storage.deposits.insert(sender, balance + msg_amount());
+        } else {
+            // The reserve price was met
+            reserve_met(sender, balance);
+        }
         true
     }
 
@@ -109,7 +113,7 @@ impl EnglishAuction for Contract {
     /// - The auction is not open
     /// - There is no reserve price set
     /// - The bidder is the seller
-    /// - The asset amount is not at the reserve price
+    /// - The asset amount does not meet the reserve price
     /// - The buy assest provided is the incorrect asset
     fn buy_reserve() -> bool {
         require(storage.state == 1, Error::AuctionIsNotOpen);
@@ -120,24 +124,10 @@ impl EnglishAuction for Contract {
         let balance = storage.deposits.get(sender);
 
         require(!compare_identities(sender, storage.seller), Error::BidderIsSeller);
-        require(msg_amount() + balance == storage.reserve_price, Error::IncorrectAmountProvided);
+        require(msg_amount() + balance >= storage.reserve_price, Error::IncorrectAmountProvided);
         require(msg_asset_id() == storage.buy_asset, Error::IncorrectAssetProvided);
 
-        storage.state = 2;
-
-        storage.current_bidder = sender;
-        storage.current_bid = msg_amount() + balance;
-        storage.buyer_withdrawn = true;
-        storage.deposits.insert(sender, 0);
-
-        match sender {
-            Identity::Address(sender) => {
-                transfer_to_output(storage.sell_amount, storage.sell_asset, sender);    
-            },
-            Identity::ContractId(sender) => {
-                force_transfer_to_contract(storage.sell_amount, storage.sell_asset, sender);
-            },
-        };
+        reserve_met(sender, balance);
         true
     }
 
@@ -344,6 +334,37 @@ fn compare_identities(identity1: Identity, identity2: Identity) -> bool {
                 _ => false,
             }
         }
+    }
+}
+
+// Gets called when the reserve price is met
+fn reserve_met(sender: Identity, balance: u64) {
+    storage.state = 2;
+    storage.current_bidder = sender;
+    storage.current_bid = storage.reserve_price;
+    storage.buyer_withdrawn = true;
+    storage.deposits.insert(sender, 0);
+
+    match sender {
+        Identity::Address(sender) => {
+            transfer_to_output(storage.sell_amount, storage.sell_asset, sender);    
+        },
+        Identity::ContractId(sender) => {
+            force_transfer_to_contract(storage.sell_amount, storage.sell_asset, sender);
+        },
+    };
+
+    let overpaid_balance: u64 = (msg_amount() + balance) - storage.reserve_price;
+    if (overpaid_balance > 0)
+    {
+        match sender {
+            Identity::Address(sender) => {
+                transfer_to_output(overpaid_balance, storage.buy_asset, sender);    
+            },
+            Identity::ContractId(sender) => {
+                force_transfer_to_contract(overpaid_balance, storage.buy_asset, sender);
+            },
+        };
     }
 }
 
