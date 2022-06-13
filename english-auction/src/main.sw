@@ -23,7 +23,7 @@ abi EnglishAuction {
     fn get_balance(identity: Identity) -> u64;
     fn get_current_bid() -> u64;
     fn get_end_time() -> u64;
-    // // fn get_highest_bidder() -> Option<Identity>;
+    // fn get_highest_bidder() -> Option<Identity>;
     fn get_sell_amount() -> u64;
     fn get_sell_asset() -> ContractId;
     fn get_reserve() -> u64;
@@ -78,16 +78,16 @@ impl EnglishAuction for Contract {
     fn bid() -> bool {
         require(storage.state == 1, Error::AuctionIsNotOpen);
         require(height() <= storage.end_time, Error::AuctionIsNotOpen);
-        require(msg_asset_id() != storage.buy_asset, Error::IncorrectAssetProvided);
+        require(msg_asset_id() == storage.buy_asset, Error::IncorrectAssetProvided);
 
         if (storage.current_bid == 0) {
-            require(msg_amount() < storage.inital_price, Error::InitalPriceNotMet);
+            require(msg_amount() >= storage.inital_price, Error::InitalPriceNotMet);
         }
 
         let sender: Identity = unwrap_identity(msg_sender());
         let balance = storage.deposits.get(sender);
         
-        require(msg_amount() + balance <= storage.current_bid, Error::IncorrectAmountProvided);
+        require(msg_amount() + balance >= storage.current_bid, Error::IncorrectAmountProvided);
 
         storage.current_bidder = sender;
         storage.current_bid = balance + msg_amount();

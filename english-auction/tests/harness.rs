@@ -1,4 +1,4 @@
-use fuels::{prelude::*, tx::ContractId};
+use fuels::{prelude::*, tx::ContractId, tx::Salt};
 use fuels_abigen_macro::abigen;
 
 // Load abi from json
@@ -54,13 +54,22 @@ async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId, Contrac
         wallet: wallet2.clone(),
     };
 
-    let buy_asset_id = Contract::deploy(
+    let buy_asset_id = Contract::deploy_with_salt(
         "./tests/artifacts/asset/out/debug/asset.bin",
-        &wallet1,
+        &wallet3,
         TxParameters::default(),
+        Salt::from([1u8; 32]),
     )
     .await
     .unwrap();
+
+    // let buy_asset_id = Contract::deploy(
+    //     "./tests/artifacts/asset/out/debug/asset.bin",
+    //     &wallet1,
+    //     TxParameters::default(),
+    // )
+    // .await
+    // .unwrap();
 
     let buyer1 = Metadata {
         asset: Some(Asset::new(buy_asset_id.to_string(), wallet3.clone())),
@@ -77,7 +86,7 @@ async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId, Contrac
     let sell_amount = 10;
     let inital_price = 1;
     let reserve_price = 3;
-    let time = 1;
+    let time = 10;
 
     (deploy_wallet, seller, buyer1, buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time)
 }
@@ -88,7 +97,7 @@ async fn deploy_funds(
     asset_amount: u64
 ) {
     deploy_wallet
-        .asset
+        .asset 
         .as_ref()
         .unwrap()
         .mint_and_send_to_address(asset_amount, wallet.address())
@@ -129,6 +138,23 @@ async fn init(
         .await
         .unwrap()
         .value
+}
+
+mod asset_test {
+
+    use super::*;
+
+    #[tokio::test]
+    #[should_panic]
+    async fn assets_different() {
+        let (_deploy_wallet, _seller, _buyer1, _buyer2, sell_asset_id, buy_asset_id, _sell_amount, _inital_price, _reserve_price, _time) = setup().await;
+
+        assert_eq!(
+            sell_asset_id,
+            buy_asset_id
+        );
+    }
+
 }
 
 mod constructor {
@@ -244,5 +270,394 @@ mod constructor {
             )
             .await
         );
+    }
+}
+
+mod bid {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn bids_inital_price() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .bid()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    async fn bids_over_inital_price() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price + 1), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .bid()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    async fn bid_overtaken_by_different_bidder() {
+        let (deploy_wallet, seller, buyer1, buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid1 = buyer1
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        
+        deploy_funds(&buyer1, &buyer2.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price + 1), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer2
+                .auction
+                .bid()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+
+        // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
+        // assert_eq!(
+        //     buyer2.auction.get_highest_bidder().call().await.unwrap().value,
+        //     buyer2.wallet.address
+        // )
+    }
+
+    #[tokio::test]
+    async fn bid_overtaken_by_original_bidder() {
+        let (deploy_wallet, seller, buyer1, buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid1 = buyer1
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        
+        deploy_funds(&buyer1, &buyer2.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price + inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid2 = buyer2
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        // The first bidder already bid the inital price, so bidding the inital price again plus one 
+        // should overbid the second bidder with the original deposit
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price + 1), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .bid()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+
+        // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
+        // assert_eq!(
+        //     buyer1.auction.get_highest_bidder().call().await.unwrap().value,
+        //     buyer1.wallet.address
+        // )
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_not_intialized() {
+        let (_deploy_wallet, _seller, buyer1, _buyer2, _sell_asset_id, buy_asset_id, _sell_amount, inital_price, _reserve_price, _time) = setup().await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .bid()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_over_time() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, _time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            1
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .bid()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_sending_incorrect_asset() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            buy_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&deploy_wallet, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*sell_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .bid()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_less_then_inital_price() {
+        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            sell_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price - 1), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .bid()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn panics_when_second_bid_less_then_current_bid() {
+        let (deploy_wallet, seller, buyer1, buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+
+        init(&deploy_wallet,
+            &seller,
+            sell_asset_id,
+            sell_amount,
+            sell_asset_id,
+            inital_price,
+            reserve_price,
+            time
+        )
+        .await;
+
+        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+    
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid1 = buyer1
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        deploy_funds(&buyer1, &buyer2.wallet, 100).await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price + inital_price + 1), Some(AssetId::from(*buy_asset_id)));
+
+        let _bid2 = buyer2
+            .auction
+            .bid()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(inital_price - 1), Some(AssetId::from(*buy_asset_id)));
+
+        assert!(
+            buyer1
+                .auction
+                .bid()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value
+        );
+
+        // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
+        // assert_eq!(
+        //     buyer2.auction.get_highest_bidder().call().await.unwrap().value,
+        //     buyer2.wallet.address
+        // )
     }
 }
