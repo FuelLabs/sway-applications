@@ -38,12 +38,20 @@ storage {
 
 impl DutchAuction for Contract {
     /// Returns the current price for the auction corresponding to the auction_id
+    /// Panics when -
+    ///     1. auction_id is 0 or higher than storage.auction_count
     fn price(auction_id: u64) -> u64 {
         validate_id(auction_id);
         calculate_price(auction_id)
     }
 
     /// Bids in the given auction, wins if the amount and type of asset are correct
+    /// Panics when -
+    ///     1. auction_id is 0 or higher than storage.auction_count
+    ///     2. auction has already ended
+    ///     3. current block height is lower than start_time, or higher than end_time
+    ///     4. asset_id of the msg is not the same as the asset_id set in the auction
+    ///     5. msg_amount is lower than the current going price in the auction
     fn bid(auction_id: u64) {
         // In a Dutch auction the first bid wins
         validate_id(auction_id);
@@ -86,6 +94,10 @@ impl DutchAuction for Contract {
     }
 
     /// Creates a new auction
+    /// Panics when -
+    ///     1. reserve_price is greater than opening_price
+    ///     2. current block height is higher than end_time or start_time
+    ///     3. start_time is greater than end_time
     fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Identity, asset: ContractId) {
         require(reserve_price <= opening_price, SetupError::EndPriceCannotBeLargerThanStartPrice);
         require(height() < end_time, SetupError::AuctionCannotEndInThePast);
@@ -108,6 +120,10 @@ impl DutchAuction for Contract {
     }
 
     /// Cancels an auction so no one can bid on it.
+    /// Panics when -
+    ///     1. auction_id is 0 or higher than storage.auction_count
+    ///     2. msg_sender is not the beneficiary of the auction
+    ///     3. auction has already ended
     fn cancel_auction(auction_id: u64) {
         validate_id(auction_id);
 
@@ -129,11 +145,18 @@ impl DutchAuction for Contract {
     }
 
     /// Returns the auction for any given auction_id
+    /// Panics when -
+    ///     1. auction_id is 0 or higher than storage.auction_count
     fn auction(auction_id: u64) -> Auction {
         validate_id(auction_id);
         storage.auctions.get(auction_id)
     }
 
+    /// Changes the bidding asset in the given auction
+    /// Panics when -
+    ///     1. auction_id is 0 or higher than storage.auction_count
+    ///     2. msg_sender is not the beneficiary of the auction
+    ///     3. auction has already ended
     fn change_asset(new_asset: ContractId, auction_id: u64) {
         validate_id(auction_id);
         let mut auction = storage.auctions.get(auction_id);
@@ -148,6 +171,11 @@ impl DutchAuction for Contract {
         storage.auctions.insert(auction_id, auction);
     }
 
+    /// Changes the beneficiary of the given auction
+    /// Panics when -
+    ///     1. auction_id is 0 or higher than storage.auction_count
+    ///     2. msg_sender is not the beneficiary of the auction
+    ///     3. auction has already ended
     fn change_beneficiary(new_beneficiary: Identity, auction_id: u64) {
         validate_id(auction_id);
         let mut auction = storage.auctions.get(auction_id);
@@ -166,6 +194,7 @@ impl DutchAuction for Contract {
         storage.auctions.insert(auction_id, auction);
     }
 
+    /// Returns the active auctions of which the identity is the beneficiary of
     fn active_auctions_by_identity(identity_to_check: Identity) -> [u64;
     1] {
         storage.active_auctions_by_identity.get(identity_to_check)
