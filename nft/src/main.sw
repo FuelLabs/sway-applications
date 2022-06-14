@@ -219,8 +219,19 @@ impl NFT for Contract {
     // fn get_approved(token_id: u64) -> Option<Identity> {
     //     require(storage.state != 0, InitError::NFTNotInitalized);
 
-    //     let meta_data: MetaData = storage.meta_data.get(token_id);
-    //     Option::Some(meta_data.approved)
+    //     let meta_data = storage.meta_data.get(token_id);
+    //     let entity = meta_data.approved;
+
+    //     let address = match entity {
+    //         Identity::Address(entity) => entity.value,
+    //         Identity::ContractId(entity) => entity.value,
+    //     };
+        
+    //     if (address != NATIVE_ASSET_ID) {
+    //         Option::Some(meta_data.approved)
+    //     } else {
+    //         Option::None()
+    //     }
     // }
 
     /// Returns the tokens owned by the address
@@ -322,8 +333,19 @@ impl NFT for Contract {
     // fn owner_of(token_id: u64) -> Option<Identity> {
     //     require(storage.state != 0, InitError::NFTNotInitalized);
 
-    //     let meta_data: MetaData = storage.meta_data.get(token_id);
-    //     Option::Some(meta_data.owner)
+    //     let meta_data = storage.meta_data.get(token_id);
+    //     let entity = meta_data.owner;
+
+    //     let address = match entity {
+    //         Identity::Address(entity) => entity.value,
+    //         Identity::ContractId(entity) => entity.value,
+    //     };
+        
+    //     if (address != NATIVE_ASSET_ID) {
+    //         Option::Some(meta_data.approved)
+    //     } else {
+    //         Option::None()
+    //     }
     // }
 
     /// Gives the operator identity approval to transfer any tokens owned by 
