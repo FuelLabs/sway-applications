@@ -76,7 +76,7 @@ impl NFT for Contract {
     /// - The Identity provided is invalid
     /// - The Identity has already been allowed access
     /// - The Identity is not the access control address
-    fn allow_mint(minter: Identity, allow: bool) -> bool {
+    fn allow_mint(minter: Identity, allow: bool) {
         require(storage.state != 0, InitError::NFTNotInitalized);
         require(storage.access_control, AccessError::AccessControlNotSet);
 
@@ -95,8 +95,6 @@ impl NFT for Contract {
 
         /// Add the provided identity to the list of identities that are approved to mint
         storage.allowed_minters.insert(minter, allow);
-
-        true
     }
 
     /// Gives approval to the 'to' Identity to transfer the specified token
@@ -109,7 +107,7 @@ impl NFT for Contract {
     /// - The address has already been approved
     /// - The appover is the owner
     /// - The sender is not the owner
-    fn approve(to: Identity, token_id: u64) -> bool {
+    fn approve(to: Identity, token_id: u64) {
         require(storage.state != 0, InitError::NFTNotInitalized);
 
         validate_identity(to);
@@ -137,7 +135,6 @@ impl NFT for Contract {
         storage.meta_data.insert(token_id, meta_data);
 
         log(ApprovalEvent{owner: sender, approved: to, token_id});
-        true
     }
 
     /// Returns the balance of the specified owner
@@ -159,7 +156,7 @@ impl NFT for Contract {
     /// - The NFT contract has not been initalized
     /// - The token id does not exist
     /// - The sender is not the owner
-    fn burn(token_id: u64) -> bool {
+    fn burn(token_id: u64) {
         require(storage.state != 0, InitError::NFTNotInitalized);
 
         /// Ensure this is a valid token that has already been minted and exists
@@ -191,8 +188,6 @@ impl NFT for Contract {
         storage.owners.insert(sender, 0);
 
         log(BurnEvent{owner: sender, token_id});
-
-        true
     }
 
     /// Constructor for the NFT
@@ -203,7 +198,7 @@ impl NFT for Contract {
     /// - The constructor has already been called
     /// - The token count is 0
     /// - The owner is not a valid identity
-    fn constructor(owner: Identity, access_control: bool, token_supply: u64) -> bool {
+    fn constructor(owner: Identity, access_control: bool, token_supply: u64) {
         require(storage.state == 0, InitError::CannotReinitialize);
         require(token_supply != 0, InputError::TokenSupplyCannotBeZero);
         validate_identity(owner);
@@ -212,8 +207,6 @@ impl NFT for Contract {
         storage.access_control = access_control;
         storage.token_supply = token_supply;
         storage.state = 1;
-
-        true
     }
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
@@ -275,7 +268,7 @@ impl NFT for Contract {
     /// - The sender is not approved to mint
     /// - The sender sent the wrong asset
     /// - The sender did not pay enough tokens
-    fn mint(to: Identity, amount: u64) -> bool {
+    fn mint(to: Identity, amount: u64) {
         require(storage.state != 0, InitError::NFTNotInitalized);
         require(amount != 0, InputError::MintAmountCannotBeZero);
         require(
@@ -317,8 +310,6 @@ impl NFT for Contract {
 
             log(MintEvent{owner: to, token_id});
         }
-
-        true
     }
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
@@ -345,7 +336,7 @@ impl NFT for Contract {
     /// - The operator address provided not a valid identity
     /// - The address has already been approved
     /// - The sender is not the owner
-    fn set_approval_for_all(owner: Identity, operator: Identity) -> bool {
+    fn set_approval_for_all(owner: Identity, operator: Identity) {
         require(storage.state != 0, InitError::NFTNotInitalized);
         validate_identity(operator);
 
@@ -359,7 +350,6 @@ impl NFT for Contract {
         storage.operator_approval.insert(hash, true);
 
         log(OperatorEvent{owner, operator});
-        true
     }
 
     /// Transfers ownership from one address to another
@@ -372,7 +362,7 @@ impl NFT for Contract {
     /// - The sender is not the owner
     /// - The sender is not approved
     /// - The sender is not an operator for the owner
-    fn transfer_from(from: Identity, to: Identity, token_id: u64) -> bool {
+    fn transfer_from(from: Identity, to: Identity, token_id: u64) {
         require(storage.state != 0, InitError::NFTNotInitalized);
         validate_identity(to);
 
@@ -407,6 +397,5 @@ impl NFT for Contract {
         storage.balances.insert(to, balance_to + 1);
 
         log(TransferEvent{from, to, token_id});
-        true
     }
 }

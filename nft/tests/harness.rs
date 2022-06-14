@@ -55,16 +55,161 @@ async fn init(
     access_control: bool,
     token_supply: u64,
 ) -> bool {
-    deploy_wallet
+    let response = deploy_wallet
         .nft
         .constructor(
             nft_mod::Identity::Address(owner.wallet.address()), 
             access_control, 
             token_supply)
         .call()
-        .await
-        .unwrap()
-        .value
+        .await;
+
+    match response {
+        Ok(_call_response) => true,
+        Err(Error::ContractCallError(reason, receipts)) => {
+            println!("ContractCall failed with reason: {}", reason);
+            println!("Transaction receipts are: {:?}", receipts);
+            false
+        },
+        _ => false
+    }
+}
+
+async fn mint(
+    mint_wallet: &Metadata,
+    owner: &Metadata,
+    amount: u64
+)  -> bool {
+    let response = mint_wallet
+        .nft
+        .mint(nft_mod::Identity::Address(owner.wallet.address()), amount)
+        .call()
+        .await;
+
+    match response {
+        Ok(_call_response) => true,
+        Err(Error::ContractCallError(reason, receipts)) => {
+            println!("ContractCall failed with reason: {}", reason);
+            println!("Transaction receipts are: {:?}", receipts);
+            false
+        },
+        _ => false
+    }
+}
+
+async fn allow_mint(
+    call_wallet: &Metadata,
+    minter: &Metadata,
+    allow: bool
+) -> bool {
+    let response = call_wallet
+        .nft
+        .allow_mint(nft_mod::Identity::Address(minter.wallet.address()), allow)
+        .call()
+        .await;
+
+    match response {
+        Ok(_call_response) => true,
+        Err(Error::ContractCallError(reason, receipts)) => {
+            println!("ContractCall failed with reason: {}", reason);
+            println!("Transaction receipts are: {:?}", receipts);
+            false
+        },
+        _ => false
+    }
+}
+
+async fn approve(
+    call_wallet: &Metadata,
+    approve: &Metadata,
+    token_id: u64
+) -> bool {
+    let response = call_wallet
+        .nft
+        .approve(nft_mod::Identity::Address(approve.wallet.address()), token_id)
+        .call()
+        .await;
+
+    match response {
+        Ok(_call_response) => true,
+        Err(Error::ContractCallError(reason, receipts)) => {
+            println!("ContractCall failed with reason: {}", reason);
+            println!("Transaction receipts are: {:?}", receipts);
+            false
+        },
+        _ => false
+    }
+}
+
+async fn burn(
+    call_wallet: &Metadata,
+    token_id: u64
+) -> bool {
+    let response = call_wallet
+        .nft
+        .burn(token_id)
+        .call()
+        .await;
+
+    match response {
+        Ok(_call_response) => true,
+        Err(Error::ContractCallError(reason, receipts)) => {
+            println!("ContractCall failed with reason: {}", reason);
+            println!("Transaction receipts are: {:?}", receipts);
+            false
+        },
+        _ => false
+    }  
+}
+
+async fn set_approval_for_all(
+    call_wallet: &Metadata,
+    owner: &Metadata,
+    operator: &Metadata
+) -> bool {
+    let response = call_wallet
+        .nft
+        .set_approval_for_all(
+            nft_mod::Identity::Address(owner.wallet.address()), 
+            nft_mod::Identity::Address(operator.wallet.address()))
+        .call()
+        .await;
+
+    match response {
+        Ok(_call_response) => true,
+        Err(Error::ContractCallError(reason, receipts)) => {
+            println!("ContractCall failed with reason: {}", reason);
+            println!("Transaction receipts are: {:?}", receipts);
+            false
+        },
+        _ => false
+    }  
+}
+
+async fn transfer(
+    call_wallet: &Metadata,
+    from: &Metadata,
+    to: &Metadata,
+    token_id: u64
+) -> bool {
+    let response = call_wallet
+        .nft
+        .transfer_from(
+            nft_mod::Identity::Address(from.wallet.address()), 
+            nft_mod::Identity::Address(to.wallet.address()), 
+            token_id)
+        .call()
+        .await;
+
+    match response {
+        Ok(_call_response) => true,
+        Err(Error::ContractCallError(reason, receipts)) => {
+            println!("ContractCall failed with reason: {}", reason);
+            println!("Transaction receipts are: {:?}", receipts);
+            false
+        },
+        _ => false
+    } 
 }
 
 mod constructor {
@@ -132,13 +277,7 @@ mod mint {
         init(&deploy_wallet, &owner1, false, 1).await;
 
         assert!(
-            owner1
-                .nft
-                .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-                .call()
-                .await
-                .unwrap()
-                .value
+            mint(&owner1, &owner1, 1).await
         );
 
         assert_eq!(
@@ -159,20 +298,10 @@ mod mint {
 
         init(&deploy_wallet, &owner1, true, 1).await;
 
-        let _allowed_mint = owner1
-            .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
-            .call()
-            .await;
+        allow_mint(&owner1, &owner1, true).await;
 
         assert!(
-            owner1
-                .nft
-                .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-                .call()
-                .await
-                .unwrap()
-                .value
+            mint(&owner1, &owner1, 1).await
         );
 
         assert_eq!(
@@ -194,13 +323,7 @@ mod mint {
         init(&deploy_wallet, &owner1, false, 5).await;
 
         assert!(
-            owner1
-                .nft
-                .mint(nft_mod::Identity::Address(owner1.wallet.address()), 3)
-                .call()
-                .await
-                .unwrap()
-                .value
+            mint(&owner1, &owner1, 3).await
         );
 
         assert_eq!(
@@ -221,13 +344,7 @@ mod mint {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
         assert!(
-            owner1
-                .nft
-                .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-                .call()
-                .await
-                .unwrap()
-                .value
+            mint(&owner1, &owner1, 1).await
         );
     }
 
@@ -239,13 +356,7 @@ mod mint {
         init(&deploy_wallet, &owner1, false, 1).await;
 
         assert!(
-            owner1
-                .nft
-                .mint(nft_mod::Identity::Address(owner1.wallet.address()), 0)
-                .call()
-                .await
-                .unwrap()
-                .value
+            mint(&owner1, &owner1, 0).await
         );
     }
 
@@ -257,13 +368,7 @@ mod mint {
         init(&deploy_wallet, &owner1, false, 1).await;
 
         assert!(
-            owner1
-                .nft
-                .mint(nft_mod::Identity::Address(owner1.wallet.address()), 2)
-                .call()
-                .await
-                .unwrap()
-                .value
+            mint(&owner1, &owner1, 2).await
         );
     }
 
@@ -275,13 +380,7 @@ mod mint {
         init(&deploy_wallet, &owner1, true, 1).await;
 
         assert!(
-            owner1
-                .nft
-                .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-                .call()
-                .await
-                .unwrap()
-                .value
+            mint(&owner1, &owner1, 1).await
         );
     }
 }
@@ -296,15 +395,9 @@ mod allow_mint {
 
         init(&deploy_wallet, &owner1, true, 1).await;
 
-        assert! {
-            owner1
-            .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
-            .call()
-            .await
-            .unwrap()
-            .value
-        };
+        assert! (
+            allow_mint(&owner1, &owner1, true).await
+        );
     }
 
     #[tokio::test]
@@ -312,15 +405,9 @@ mod allow_mint {
     async fn panics_when_not_initalized() {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
-        assert! {
-            owner1
-            .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
-            .call()
-            .await
-            .unwrap()
-            .value
-        };
+        assert! (
+            allow_mint(&owner1, &owner1, true).await
+        );
     }
 
     #[tokio::test]
@@ -330,15 +417,9 @@ mod allow_mint {
 
         init(&deploy_wallet, &owner1, false, 1).await;
 
-        assert! {
-            owner1
-            .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
-            .call()
-            .await
-            .unwrap()
-            .value
-        };
+        assert! (
+            allow_mint(&owner1, &owner1, true).await
+        );
     }
 
     #[tokio::test]
@@ -348,21 +429,11 @@ mod allow_mint {
 
         init(&deploy_wallet, &owner1, true, 1).await;
 
-        let _allowed_mint = owner1
-            .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
-            .call()
-            .await;
+        allow_mint(&owner1, &owner1, true).await;   
 
-        assert! {
-            owner1
-            .nft
-            .allow_mint(nft_mod::Identity::Address(owner1.wallet.address()), true)
-            .call()
-            .await
-            .unwrap()
-            .value
-        };
+        assert! (
+            allow_mint(&owner1, &owner1, true).await
+        );
     }
 
     #[tokio::test]
@@ -372,15 +443,9 @@ mod allow_mint {
 
         init(&deploy_wallet, &owner1, true, 1).await;
 
-        assert! {
-            owner2
-            .nft
-            .allow_mint(nft_mod::Identity::Address(owner2.wallet.address()), true)
-            .call()
-            .await
-            .unwrap()
-            .value
-        };
+        assert! (
+            allow_mint(&owner2, &owner1, true).await
+        );
     }
 }
 
@@ -393,12 +458,7 @@ mod approve {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = owner1
             .nft
@@ -409,13 +469,7 @@ mod approve {
             .value;
 
         assert!{
-            owner1
-            .nft
-            .approve(nft_mod::Identity::Address(owner2.wallet.address()), token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            approve(&owner1, &owner2, token_id).await
         };
     }
 
@@ -423,17 +477,10 @@ mod approve {
     #[should_panic]
     async fn panics_when_not_initalized() {
         let (_deploy_wallet, owner1, owner2) = setup().await;
-
         let token_id = 0;
 
         assert!{
-            owner1
-            .nft
-            .approve(nft_mod::Identity::Address(owner2.wallet.address()), token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            approve(&owner1, &owner2, token_id).await
         };
     }
 
@@ -443,12 +490,7 @@ mod approve {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = owner1
             .nft
@@ -458,20 +500,10 @@ mod approve {
             .unwrap()
             .value;
 
-        let _approved = owner1
-            .nft
-            .approve(nft_mod::Identity::Address(owner2.wallet.address()), token_id)
-            .call()
-            .await;
+        approve(&owner1, &owner2, token_id).await;
 
         assert!{
-            owner1
-            .nft
-            .approve(nft_mod::Identity::Address(owner2.wallet.address()), token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            approve(&owner1, &owner2, token_id).await
         };
     }
 
@@ -481,12 +513,7 @@ mod approve {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = owner1
             .nft
@@ -497,13 +524,7 @@ mod approve {
             .value;
 
         assert!{
-            owner2
-            .nft
-            .approve(nft_mod::Identity::Address(owner2.wallet.address()), token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            approve(&owner2, &owner2, token_id).await
         };
     }
 
@@ -513,12 +534,7 @@ mod approve {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = owner1
             .nft
@@ -529,13 +545,7 @@ mod approve {
             .value;
 
         assert!{
-            owner1
-            .nft
-            .approve(nft_mod::Identity::Address(owner1.wallet.address()), token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            approve(&owner1, &owner1, token_id).await
         };
     }
 }
@@ -549,12 +559,7 @@ mod balance_of {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         assert_eq!(
             owner1
@@ -595,12 +600,7 @@ mod burn {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = owner1
             .nft
@@ -611,13 +611,7 @@ mod burn {
             .value;
 
         assert!(
-            owner1
-            .nft
-            .burn(token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            burn(&owner1, token_id).await
         );
 
         assert_eq!(
@@ -640,13 +634,7 @@ mod burn {
         let token_id = 0;
 
         assert!(
-            owner1
-            .nft
-            .burn(token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            burn(&owner1, token_id).await
         );
     }
 
@@ -656,23 +644,12 @@ mod burn {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = 2;
 
         assert!(
-            owner1
-            .nft
-            .burn(token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            burn(&owner1, token_id).await
         );
     }
 
@@ -682,12 +659,7 @@ mod burn {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = owner1
             .nft
@@ -698,13 +670,7 @@ mod burn {
             .value;
 
         assert!(
-            owner2
-            .nft
-            .burn(token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            burn(&owner2, token_id).await
         );
     }
 }
@@ -719,12 +685,7 @@ mod burn {
 //         let (deploy_wallet, owner1, owner2) = setup().await;
 
 //         init(&deploy_wallet, &owner1, false, 1).await;
-
-//         let _minted = owner1
-//             .nft
-//             .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-//             .call()
-//             .await;
+//         mint(&owner1, &owner1, 1).await;
 
 //         let token_id = owner1
 //             .nft
@@ -734,11 +695,7 @@ mod burn {
 //             .unwrap()
 //             .value;
 
-//         let _approved = owner1
-//             .nft
-//             .approve(nft_mod::Identity::Address(owner2.wallet.address()), token_id)
-//             .call()
-//             .await;
+//         approve(&owner1, &owner2, token_id).await;
 
 //         assert_eq!(
 //             owner1.nft.get_approved(token_id).call().await.unwrap().value,
@@ -768,12 +725,7 @@ mod get_tokens {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = owner1
             .nft
@@ -850,14 +802,7 @@ mod is_approved_for_all {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _set_approval = owner1
-            .nft
-            .set_approval_for_all(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()))
-            .call()
-            .await;
+        set_approval_for_all(&owner1, &owner1, &owner2).await;
 
         assert_eq!{
             owner1
@@ -903,12 +848,7 @@ mod is_approved_for_all {
 //         let (deploy_wallet, owner1, _owner2) = setup().await;
 
 //         init(&deploy_wallet, &owner1, false, 1).await;
-
-//         let _minted = owner1
-//             .nft
-//             .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-//             .call()
-//             .await;
+//         mint(&owner1, &owner1, 1).await;
 
 //         let token_id = owner1
 //             .nft
@@ -948,15 +888,7 @@ mod set_approval_for_all {
         init(&deploy_wallet, &owner1, false, 1).await;
 
         assert!(
-            owner1
-            .nft
-            .set_approval_for_all(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value
+            set_approval_for_all(&owner1, &owner1, &owner2).await
         );
 
         assert_eq!(
@@ -979,15 +911,7 @@ mod set_approval_for_all {
         let (_deploy_wallet, owner1, owner2) = setup().await;
 
         assert!(
-            owner1
-            .nft
-            .set_approval_for_all(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value
+            set_approval_for_all(&owner1, &owner1, &owner2).await
         );
     }
 
@@ -997,25 +921,10 @@ mod set_approval_for_all {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _approved = owner1
-            .nft
-            .set_approval_for_all(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()))
-            .call()
-            .await;
+        set_approval_for_all(&owner1, &owner1, &owner2).await;
 
         assert!(
-            owner1
-            .nft
-            .set_approval_for_all(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value
+            set_approval_for_all(&owner1, &owner1, &owner2).await
         );
     }
 
@@ -1027,15 +936,7 @@ mod set_approval_for_all {
         init(&deploy_wallet, &owner1, false, 1).await;
 
         assert!(
-            owner2
-            .nft
-            .set_approval_for_all(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value
+            set_approval_for_all(&owner2, &owner1, &owner2).await
         );
     }
 }
@@ -1049,12 +950,7 @@ mod transfer_from {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = owner1
             .nft
@@ -1065,16 +961,7 @@ mod transfer_from {
             .value;
 
         assert!(
-            owner1
-            .nft
-            .transfer_from(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()), 
-                token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            transfer(&owner1, &owner1, &owner2, token_id).await
         );  
 
         // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
@@ -1139,12 +1026,7 @@ mod transfer_from {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = owner1
             .nft
@@ -1154,23 +1036,10 @@ mod transfer_from {
             .unwrap()
             .value;
 
-        let _approved = owner1
-            .nft
-            .approve(nft_mod::Identity::Address(owner2.wallet.address()), token_id)
-            .call()
-            .await;
+        approve(&owner1, &owner2, token_id).await;
 
         assert!(
-            owner2
-            .nft
-            .transfer_from(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()), 
-                token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            transfer(&owner2, &owner1, &owner2, token_id).await
         );  
 
         // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
@@ -1191,12 +1060,7 @@ mod transfer_from {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = owner1
             .nft
@@ -1206,25 +1070,10 @@ mod transfer_from {
             .unwrap()
             .value;
 
-        let _set_approval = owner1
-            .nft
-            .set_approval_for_all(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()))
-            .call()
-            .await;
+        set_approval_for_all(&owner1, &owner1, &owner2).await;
 
         assert!(
-            owner2
-            .nft
-            .transfer_from(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()), 
-                token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            transfer(&owner2, &owner1, &owner2, token_id).await
         );  
 
         // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
@@ -1247,16 +1096,7 @@ mod transfer_from {
         let token_id = 0;
 
         assert!(
-            owner1
-            .nft
-            .transfer_from(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()), 
-                token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            transfer(&owner1, &owner1, &owner2, token_id).await
         );  
     }
 
@@ -1266,12 +1106,7 @@ mod transfer_from {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        let _minted = owner1
-            .nft
-            .mint(nft_mod::Identity::Address(owner1.wallet.address()), 1)
-            .call()
-            .await;
+        mint(&owner1, &owner1, 1).await;
 
         let token_id = owner1
             .nft
@@ -1282,16 +1117,7 @@ mod transfer_from {
             .value;
 
         assert!(
-            owner2
-            .nft
-            .transfer_from(
-                nft_mod::Identity::Address(owner1.wallet.address()), 
-                nft_mod::Identity::Address(owner2.wallet.address()), 
-                token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+            transfer(&owner2, &owner1, &owner2, token_id).await
         );  
     }
 }
