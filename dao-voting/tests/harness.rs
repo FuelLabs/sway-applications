@@ -171,7 +171,7 @@ async fn user_can_deposit() {
 
     assert_eq!(
         user.dao_voting
-            .get_user_balance(user.wallet.address())
+            .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
             .call()
             .await
             .unwrap()
@@ -196,6 +196,17 @@ async fn user_can_deposit() {
         deployer
             .dao_voting
             .get_balance()
+            .call()
+            .await
+            .unwrap()
+            .value,
+        asset_amount
+    );
+
+    assert_eq!(
+        user
+            .dao_voting
+            .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
             .call()
             .await
             .unwrap()
@@ -361,4 +372,73 @@ async fn user_can_add_proposal() {
 async fn panics_on_incorrect_proposal_id() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     user.dao_voting.get_proposal(0).call().await.unwrap();
+}
+
+#[tokio::test]
+async fn user_can_lock_and_get_votes() {
+    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+    deployer
+        .dao_voting
+        .constructor(gov_token_id, 10, 10)
+        .call()
+        .await
+        .unwrap()
+        .value;
+    
+    assert!(
+        deployer
+            .gov_token
+            .unwrap()
+            .mint_and_send_to_address(100, user.wallet.address())
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
+    assert!(
+        user.dao_voting
+            .deposit()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    assert!(
+        user
+            .dao_voting
+            .lock_and_get_votes(asset_amount / 2)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    assert_eq!(
+        user
+            .dao_voting
+            .get_user_votes(daovoting_mod::Identity::Address(user.wallet.address()))
+            .call()
+            .await
+            .unwrap()
+            .value,
+        asset_amount / 2
+    );
+
+    assert_eq!(
+        user
+            .dao_voting
+            .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+            .call()
+            .await
+            .unwrap()
+            .value,
+        asset_amount / 2
+    );
 }
