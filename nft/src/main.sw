@@ -348,12 +348,10 @@ impl NFT for Contract {
         storage.owners.insert(to, token_id);
 
         // Decrease the previous owner's balance of tokens
-        let mut balance_from = storage.balances.get(from);
-        storage.balances.insert(from, balance_from - 1);
+        storage.balances.insert(from, storage.balances.get(from) - 1);
 
         // Increase the new owner's balance of tokens
-        let mut balance_to = storage.balances.get(to);
-        storage.balances.insert(to, balance_to + 1);
+        storage.balances.insert(to, storage.balances.get(to) + 1);
 
         log(TransferEvent{from, to, token_id});
     }
