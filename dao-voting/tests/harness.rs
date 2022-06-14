@@ -490,3 +490,26 @@ async fn panics_on_incorrect_vote_amount() {
             .value
     );
 }
+
+#[tokio::test]
+#[should_panic]
+async fn panics_on_incorrect_no_user_deposit() {
+    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+    deployer
+        .dao_voting
+        .constructor(gov_token_id, 10, 10)
+        .call()
+        .await
+        .unwrap()
+        .value;
+
+    assert!(
+        user
+            .dao_voting
+            .lock_and_get_votes(1)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+}
