@@ -20,6 +20,7 @@ abi DaoVoting {
     fn get_user_votes(user: Identity) -> u64;
     fn add_proposal(proposal: b256) -> bool;
     fn get_proposal(id: u64) -> Proposal;
+    fn lock_and_get_votes(vote_amount: u64) -> bool;
 }
 
 enum Error {
@@ -27,8 +28,10 @@ enum Error {
     NotInitialized: (),
     NotGovernanceToken: (),
     PeriodCannotBeZero: (),
+    VoteAmountCannotBeZero: (),
     ApprovalPercentageCannotBeZero: (),
     NoAssetsSent: (),
+    NotEnoughAssets: (),
     InvalidId: (),
 }
 
@@ -42,13 +45,13 @@ storage {
     gov_token: ContractId,
     voting_period: u64,
     approval_percentage: u64,
-    proposals: StorageMap<u64, Proposal>,
-    proposal_count: u64,
+    proposals: StorageMap<u64,
+    Proposal>, proposal_count: u64,
     // The amount of governance tokens a user has deposited
-    balances: StorageMap<Identity, u64>,
-    // The amount of votes a user has
-    votes: StorageMap<Identity, u64>,
-    state: u64,
+    balances: StorageMap<Identity,
+    u64>, // The amount of votes a user has
+    votes: StorageMap<Identity,
+    u64>, state: u64,
 }
 
 impl DaoVoting for Contract {
@@ -94,6 +97,35 @@ impl DaoVoting for Contract {
         let prev_balance = storage.balances.get(sender);
         let new_balance = prev_balance + msg_amount();
         storage.balances.insert(sender, new_balance);
+
+        true
+    }
+
+    /// Lock user governance tokens and give the user an equivalent amount of votes to be used on proposals.
+    /// Users can convert unused votes back to tokens at any time.
+    /// Users will get votes back when a proposal they voted on ends.
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The constructor has not been called to initialize
+    /// - The vote amount is 0
+    /// - The user has not deposited any governance tokens
+    /// - The vote amount is greater than the senders deposited balance
+    fn lock_and_get_votes(vote_amount: u64) -> bool {
+        require(storage.state == 1, Error::NotInitialized);
+        require(vote_amount > 0, Error::VoteAmountCannotBeZero);
+        let result: Result<Identity, AuthError> = msg_sender();
+        let sender: Identity = result.unwrap();
+        let sender_balance = storage.balances.get(sender);
+        require(sender_balance > 0, Error::NoAssetsSent);
+        require(sender_balance > vote_amount, Error::NotEnoughAssets);
+
+        let new_balance = sender_balance - vote_amount;
+        storage.balances.insert(sender, new_balance);
+        let prev_sender_vote_amount = storage.votes.get(sender);
+        let new_sender_vote_amount = prev_sender_vote_amount + vote_amount;
+        storage.votes.insert(sender, new_sender_vote_amount);
 
         true
     }
