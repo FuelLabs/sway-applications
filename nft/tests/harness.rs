@@ -121,12 +121,13 @@ async fn allow_mint(
 
 async fn approve(
     call_wallet: &Metadata,
-    approve: &Metadata,
-    token_id: u64
+    approved: &Metadata,
+    token_id: u64,
+    approve: bool
 ) -> bool {
     let response = call_wallet
         .nft
-        .approve(nft_mod::Identity::Address(approve.wallet.address()), token_id)
+        .approve(nft_mod::Identity::Address(approved.wallet.address()), token_id, approve)
         .call()
         .await;
 
@@ -165,13 +166,15 @@ async fn burn(
 async fn set_approval_for_all(
     call_wallet: &Metadata,
     owner: &Metadata,
-    operator: &Metadata
+    operator: &Metadata,
+    approve: bool
 ) -> bool {
     let response = call_wallet
         .nft
         .set_approval_for_all(
             nft_mod::Identity::Address(owner.wallet.address()), 
-            nft_mod::Identity::Address(operator.wallet.address()))
+            nft_mod::Identity::Address(operator.wallet.address()),
+            approve)
         .call()
         .await;
 
@@ -465,41 +468,7 @@ mod approve {
             .value;
 
         assert!{
-            approve(&owner1, &owner2, token_id).await
-        };
-    }
-
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_not_initalized() {
-        let (_deploy_wallet, owner1, owner2) = setup().await;
-        let token_id = 0;
-
-        assert!{
-            approve(&owner1, &owner2, token_id).await
-        };
-    }
-
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_approval_given_twice() {
-        let (deploy_wallet, owner1, owner2) = setup().await;
-
-        init(&deploy_wallet, &owner1, false, 1).await;
-        mint(&owner1, &owner1, 1).await;
-
-        let token_id = owner1
-            .nft
-            .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value;
-
-        approve(&owner1, &owner2, token_id).await;
-
-        assert!{
-            approve(&owner1, &owner2, token_id).await
+            approve(&owner1, &owner2, token_id, true).await
         };
     }
 
@@ -520,7 +489,7 @@ mod approve {
             .value;
 
         assert!{
-            approve(&owner2, &owner2, token_id).await
+            approve(&owner2, &owner2, token_id, true).await
         };
     }
 
@@ -541,7 +510,7 @@ mod approve {
             .value;
 
         assert!{
-            approve(&owner1, &owner1, token_id).await
+            approve(&owner1, &owner1, token_id, true).await
         };
     }
 }
@@ -674,7 +643,7 @@ mod burn {
 //             .unwrap()
 //             .value;
 
-//         approve(&owner1, &owner2, token_id).await;
+//         approve(&owner1, &owner2, token_id, true).await;
 
 //         assert_eq!(
 //             owner1.nft.get_approved(token_id).call().await.unwrap().value,
@@ -741,7 +710,7 @@ mod is_approved_for_all {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-        set_approval_for_all(&owner1, &owner1, &owner2).await;
+        set_approval_for_all(&owner1, &owner1, &owner2, true).await;
 
         assert_eq!{
             owner1
@@ -796,7 +765,7 @@ mod set_approval_for_all {
         init(&deploy_wallet, &owner1, false, 1).await;
 
         assert!(
-            set_approval_for_all(&owner1, &owner1, &owner2).await
+            set_approval_for_all(&owner1, &owner1, &owner2, true).await
         );
 
         assert_eq!(
@@ -815,26 +784,13 @@ mod set_approval_for_all {
 
     #[tokio::test]
     #[should_panic]
-    async fn panics_when_approval_given_twice() {
-        let (deploy_wallet, owner1, owner2) = setup().await;
-
-        init(&deploy_wallet, &owner1, false, 1).await;
-        set_approval_for_all(&owner1, &owner1, &owner2).await;
-
-        assert!(
-            set_approval_for_all(&owner1, &owner1, &owner2).await
-        );
-    }
-
-    #[tokio::test]
-    #[should_panic]
     async fn panics_when_sender_is_not_owner() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
 
         assert!(
-            set_approval_for_all(&owner2, &owner1, &owner2).await
+            set_approval_for_all(&owner2, &owner1, &owner2, true).await
         );
     }
 }
@@ -934,7 +890,7 @@ mod transfer_from {
             .unwrap()
             .value;
 
-        approve(&owner1, &owner2, token_id).await;
+        approve(&owner1, &owner2, token_id, true).await;
 
         assert!(
             transfer(&owner2, &owner1, &owner2, token_id).await
@@ -968,7 +924,7 @@ mod transfer_from {
             .unwrap()
             .value;
 
-        set_approval_for_all(&owner1, &owner1, &owner2).await;
+        set_approval_for_all(&owner1, &owner1, &owner2, true).await;
 
         assert!(
             transfer(&owner2, &owner1, &owner2, token_id).await

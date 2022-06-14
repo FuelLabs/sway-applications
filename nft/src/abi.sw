@@ -4,7 +4,7 @@ use std::{contract_id::ContractId, identity::Identity, option::Option};
 
 abi NFT {
     fn allow_mint(minter: Identity, allow: bool);
-    fn approve(to: Identity, token_id: u64);
+    fn approve(to: Identity, token_id: u64, approve: bool);
     fn balance_of(owner: Identity) -> u64;
     fn burn(token_id: u64);
     fn constructor(owner: Identity, access_control: bool, token_supply: u64);
@@ -14,6 +14,6 @@ abi NFT {
     fn is_approved_for_all(owner: Identity, operator: Identity) -> bool;
     fn mint(to: Identity, amount: u64);
     // fn owner_of(token_id: u64) -> Option<Identity>;
-    fn set_approval_for_all(owner: Identity, operator: Identity);
+    fn set_approval_for_all(owner: Identity, operator: Identity, approve: bool);
     fn transfer_from(from: Identity, to: Identity, token_id: u64);
 }

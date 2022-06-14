@@ -90,24 +90,13 @@ impl NFT for Contract {
     ///
     /// The function will panic when:
     /// - The token does not exist
-    /// - The address has already been approved
     /// - The appover is the owner
     /// - The sender is not the owner
-    fn approve(to: Identity, token_id: u64) {
+    fn approve(to: Identity, token_id: u64, approve: bool) {
         let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
         require(meta_data.is_some(), InputError::TokenDoesNotExist);
 
         let mut meta_data: MetaData = meta_data.unwrap();
-
-        // Ensure that the identity being approved is unique
-        let approved: Option<Identity> = meta_data.approved;
-        if (approved.is_some()) {
-            require(
-                !identities_equal(approved.unwrap(), to), 
-                ApprovalError::AddressAlreadyGivenApproval
-            );
-        }
-
         let owner = meta_data.owner;
         require(
             !identities_equal(meta_data.owner, to), 
@@ -121,9 +110,18 @@ impl NFT for Contract {
             AccessError::SenderNotOwner
         );
 
-        // Approve this identity for this token
-        meta_data.approved = Option::Some(to);
-        storage.meta_data.insert(token_id, Option::Some(meta_data));
+        match approve {
+            true => {
+                // Approve this identity for this token
+                meta_data.approved = Option::Some(to);
+                storage.meta_data.insert(token_id, Option::Some(meta_data));
+            },
+            false => {
+                // Remove approval
+                meta_data.approved = Option::None();
+                storage.meta_data.insert(token_id, Option::Some(meta_data));
+            }
+        }
 
         log(ApprovalEvent{owner: sender, approved: to, token_id});
     }
@@ -286,17 +284,15 @@ impl NFT for Contract {
     /// # Panics
     ///
     /// The function will panic when:
-    /// - The address has already been approved
     /// - The sender is not the owner
-    fn set_approval_for_all(owner: Identity, operator: Identity) {
+    fn set_approval_for_all(owner: Identity, operator: Identity, allow: bool) {
         let hash = sha256(owner, operator);
-        require(!storage.operator_approval.get(hash), ApprovalError::AddressAlreadyGivenApproval);
 
         let sender = sender_identity();
         require(identities_equal(owner, sender), AccessError::SenderNotOwner);
 
         // Set the identity to have approval on all tokens owned
-        storage.operator_approval.insert(hash, true);
+        storage.operator_approval.insert(hash, allow);
 
         log(OperatorEvent{owner, operator});
     }
