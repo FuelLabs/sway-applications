@@ -3,6 +3,7 @@ contract;
 use std::{
     address::Address,
     assert::require,
+    block::height,
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
@@ -22,6 +23,7 @@ abi DaoVoting {
     fn get_proposal(id: u64) -> Proposal;
     fn lock_and_get_votes(vote_amount: u64) -> bool;
     fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool;
+    fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool);
 }
 
 enum Error {
@@ -35,12 +37,14 @@ enum Error {
     NoAssetsSent: (),
     NotEnoughAssets: (),
     InvalidId: (),
+    ProposalExipred: (),
 }
 
 struct Proposal {
-    approved: bool,
-    expired: bool,
+    yes_votes: u64,
+    no_votes: u64,
     data: b256,
+    end_height: u64,
 }
 
 storage {
@@ -54,6 +58,8 @@ storage {
     u64>, // The amount of votes a user has
     votes: StorageMap<Identity,
     u64>, state: u64,
+    spent_votes: StorageMap<Identity,
+    u64>, 
 }
 
 impl DaoVoting for Contract {
@@ -157,6 +163,44 @@ impl DaoVoting for Contract {
         true
     }
 
+    /// Vote on a given proposal
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The constructor has not been called to initialize
+    /// - The proposal id is out of range
+    /// - The vote amount is 0
+    /// - The vote amount is greater than the user's amount of votes
+    /// - The given proposal is expired
+    fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) {
+        require(storage.state == 1, Error::NotInitialized);
+        require(proposal_id < storage.proposal_count, Error::InvalidId);
+        require(vote_amount > 0, Error::VoteAmountCannotBeZero);
+
+        let result: Result<Identity, AuthError> = msg_sender();
+        let sender: Identity = result.unwrap();
+        let sender_votes = storage.votes.get(sender);
+
+        require(sender_votes >= vote_amount, Error::NotEnoughAssets);
+
+        let proposal = storage.proposals.get(proposal_id);
+        require(proposal.end_height < height(), Error::ProposalExpired);
+
+        if (is_yes_vote) {
+            proposal.yes_votes = proposal.yes_votes + vote_amount;
+        } else {
+            proposal.no_votes = proposal.no_votes + vote_amount;
+        };
+
+        storage.votes.insert(sender, sender_votes - vote_amount);
+
+        let spent_votes = storage.spent_votes.get(sender);
+        storage.spent_votes.insert(sender, spent_votes + vote_amount);
+
+        storage.proposals.insert(proposal_id, proposal);
+    }
+
     /// Return the amount of governance tokens in this contract
     fn get_balance() -> u64 {
         this_balance(storage.gov_token)
@@ -182,9 +226,10 @@ impl DaoVoting for Contract {
         require(storage.state == 1, Error::NotInitialized);
 
         let proposal = Proposal {
-            approved: false,
-            expired: false,
+            yes_votes: 0,
+            no_votes: 0,
             data: proposal_data,
+            end_height: height() + storage.voting_period,
         };
         storage.proposals.insert(storage.proposal_count, proposal);
         storage.proposal_count = storage.proposal_count + 1;
