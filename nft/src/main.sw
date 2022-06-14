@@ -1,10 +1,12 @@
 contract;
 
 dep abi;
+dep data_structures;
 dep errors;
 dep events;
 
 use abi::NFT;
+use data_structures::MetaData;
 use errors::{AccessError, ApprovalError, InitError, InputError};
 use events::{ApprovalEvent, BurnEvent, MintEvent, OperatorEvent, TransferEvent};
 
@@ -23,11 +25,6 @@ use std::{
     revert::revert,
     storage::StorageMap,
 };
-
-struct MetaData {
-    approved: Identity,
-    owner: Identity,
-}
 
 storage {
     /// Determines if there is a whitelist to mint. Only set on the
