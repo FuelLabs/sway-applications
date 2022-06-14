@@ -7,6 +7,6 @@ if [ $PROJECT = 'escrow' ]; then
     forc build --path $PROJECT/tests/artifacts/asset
 elif [ $PROJECT = 'multisig-wallet' ]; then
     forc build --path $PROJECT
-elif [ $PROJECT = 'nft' ]; then
+elif [ $PROJECT = 'NFT' ]; then
     forc build --path $PROJECT
 fi

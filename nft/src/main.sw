@@ -25,9 +25,8 @@ use std::{
 };
 
 struct MetaData {
-    // NFT Metadata
-    owner: Identity,
     approved: Identity,
+    owner: Identity,
 }
 
 storage {

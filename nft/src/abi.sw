@@ -1,6 +1,6 @@
 library abi;
 
-use std::{identity::Identity, contract_id::ContractId};
+use std::{contract_id::ContractId, identity::Identity};
 
 abi NFT {
     fn allow_mint(minter: Identity, allow: bool) -> bool;
