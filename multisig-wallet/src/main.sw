@@ -59,12 +59,12 @@ impl MultiSignatureWallet for Contract {
     /// - When the threshold is set to 0
     /// - When an owner has an approval weight of 0
     fn constructor(users: [User;
-    2], threshold: u64) {
+    25], threshold: u64) {
         require(storage.nonce == 0, InitError::CannotReinitialize);
         require(storage.threshold != 0, InitError::ThresholdCannotBeZero);
 
         let mut user_index = 0;
-        while user_index < 2 {
+        while user_index < 25 {
             require(~Address::from(NATIVE_ASSET_ID) != users[user_index].identity, InitError::AddressCannotBeZero);
             require(users[user_index].weight != 0, InitError::WeightingCannotBeZero);
             storage.weighting.insert(users[user_index].identity, users[user_index].weight);
@@ -85,7 +85,7 @@ impl MultiSignatureWallet for Contract {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
     /// - When the total approval count is less than the required threshold for execution
     fn execute_transaction(to: Identity, value: u64, data: b256, signatures: [B512;
-    2]) {
+    25]) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
         let transaction_hash = create_hash(to, value, data, storage.nonce, contract_id());
@@ -112,7 +112,7 @@ impl MultiSignatureWallet for Contract {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
     /// - When the total approval count is less than the required threshold for execution
     fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures: [B512;
-    2]) {
+    25]) {
         require(storage.nonce != 0, InitError::NotInitialized);
         require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
@@ -167,13 +167,13 @@ fn create_hash(to: Identity, value: u64, data: b256, nonce: u64, self_id: Contra
 }
 
 fn count_approvals(transaction_hash: b256, signatures: [B512;
-2]) -> u64 {
+25]) -> u64 {
     // The signers must have increasing values in order to check for duplicates or a zero-value
     let mut previous_signer = ~b256::min();
 
     let mut approval_count = 0;
     let mut index = 0;
-    while index < 2 {
+    while index < 25 {
         let signer = match ec_recover_address(signatures[index], transaction_hash) {
             Result::Ok(address) => address.value, _ => revert(42), 
         };
