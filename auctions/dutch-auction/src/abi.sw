@@ -8,6 +8,8 @@ use data_structures::Auction;
 
 abi DutchAuction {
     fn auction(auction_id: u64) -> Auction;
+    fn active_auctions_by_identity(identity_to_check: Identity) -> [u64;
+    1];
     fn bid(auction_id: u64);
     fn cancel_auction(auction_id: u64);
     fn change_asset(new_asset: ContractId, auction_id: u64);

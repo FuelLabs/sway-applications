@@ -30,6 +30,10 @@ storage {
     auctions: StorageMap<u64,
     Auction>, /// Tracking how many auctions have been made till now
     auction_count: u64,
+    /// Auction ids of the active auctions per beneficiary
+    active_auctions_by_identity: StorageMap<Identity,
+    [u64;
+    1]>
 }
 
 impl DutchAuction for Contract {
@@ -73,6 +77,9 @@ impl DutchAuction for Contract {
 
         on_win(auction, price);
 
+        /// WARNING: This needs to be changed to a pop to a vec instead of just replacing the contents of the array
+        storage.active_auctions_by_identity.insert(auction.beneficiary, [0]);
+
         log(WinningBidEvent {
             winner: sender_indentity(), id: auction_id, 
         });
@@ -92,6 +99,8 @@ impl DutchAuction for Contract {
 
         storage.auction_count = storage.auction_count + 1;
         storage.auctions.insert(storage.auction_count, auction);
+        /// WARNING: This needs to be changed to a push to a vec instead of just replacing the contents of the array
+        storage.active_auctions_by_identity.insert(beneficiary, [storage.auction_count]);
 
         log(CreatedAuctionEvent {
             id: storage.auction_count, auction, 
@@ -111,6 +120,8 @@ impl DutchAuction for Contract {
 
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
+        /// WARNING: This needs to be changed to a pop to a vec instead of just replacing the contents of the array
+        storage.active_auctions_by_identity.insert(sender_indentity(), [0]);
 
         log(CancelledAuctionEvent {
             id: auction_id, 
@@ -147,8 +158,17 @@ impl DutchAuction for Contract {
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         auction.beneficiary = new_beneficiary;
+        /// WARNING: This needs to be changed to a pop to a vec instead of just replacing the contents of the array
+        storage.active_auctions_by_identity.insert(sender_indentity(), [0]);
+        /// WARNING: This needs to be changed to a push to a vec instead of just replacing the contents of the array
+        storage.active_auctions_by_identity.insert(new_beneficiary, [auction_id]);
 
         storage.auctions.insert(auction_id, auction);
+    }
+
+    fn active_auctions_by_identity(identity_to_check: Identity) -> [u64;
+    1] {
+        storage.active_auctions_by_identity.get(identity_to_check)
     }
 }
 
