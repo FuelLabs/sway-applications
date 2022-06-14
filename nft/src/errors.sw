@@ -21,7 +21,6 @@ pub enum InitError {
 
 pub enum InputError {
     InputAddressCannotBeZero: (),
-    MintAmountCannotBeZero: (),
     NotEnoughTokensToMint: (),
     TokenDoesNotExist: (),
     TokenSupplyCannotBeZero: (),

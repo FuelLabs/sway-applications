@@ -349,14 +349,24 @@ mod mint {
     }
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_when_mint_amount_is_zero() {
+    async fn does_not_mint_when_not_initalized() {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
 
         assert!(
             mint(&owner1, &owner1, 0).await
+        );
+
+        assert_eq!(
+            owner1
+                .nft
+                .balance_of(nft_mod::Identity::Address(owner1.wallet.address()))
+                .call()
+                .await
+                .unwrap()
+                .value,
+            0
         );
     }
 
@@ -416,20 +426,6 @@ mod allow_mint {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, false, 1).await;
-
-        assert! (
-            allow_mint(&owner1, &owner1, true).await
-        );
-    }
-
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_given_access_twice() {
-        let (deploy_wallet, owner1, _owner2) = setup().await;
-
-        init(&deploy_wallet, &owner1, true, 1).await;
-
-        allow_mint(&owner1, &owner1, true).await;   
 
         assert! (
             allow_mint(&owner1, &owner1, true).await
@@ -572,23 +568,6 @@ mod balance_of {
             1
         );
     }
-
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_not_initalized() {
-        let (_deploy_wallet, owner1, _owner2) = setup().await;
-
-        assert_eq!(
-            owner1
-                .nft
-                .balance_of(nft_mod::Identity::Address(owner1.wallet.address()))
-                .call()
-                .await
-                .unwrap()
-                .value,
-            0
-        );
-    }
 }
 
 mod burn {
@@ -702,18 +681,6 @@ mod burn {
 //             owner2.wallet.address()
 //         );
 //     }
-
-//     #[tokio::test]
-//     #[should_panic]
-//     async fn panics_when_not_initalized() {
-//         let (_deploy_wallet, owner1, _owner2) = setup().await;
-//         let token_id = 0;
-
-//         assert_eq!(
-//             owner1.nft.get_approved(token_id).call().await.unwrap().value,
-//             owner1.wallet.address()
-//         );
-//     }
 // }
 
 mod get_tokens {
@@ -746,23 +713,6 @@ mod get_tokens {
             token_id
         );
     }
-
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_not_initalized() {
-        let (_deploy_wallet, owner1, _owner2) = setup().await;
-
-        assert_eq!(
-            owner1
-                .nft
-                .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
-                .call()
-                .await
-                .unwrap()
-                .value,
-            0
-        );
-    }
 }
 
 mod get_total_supply {
@@ -780,17 +730,6 @@ mod get_total_supply {
             10
         );
     }
-
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_not_initalized() {
-        let (_deploy_wallet, owner1, _owner2) = setup().await;
-
-        assert_eq!(
-            owner1.nft.get_total_supply().call().await.unwrap().value,
-            0
-        );
-    }
 }
 
 mod is_approved_for_all {
@@ -803,25 +742,6 @@ mod is_approved_for_all {
 
         init(&deploy_wallet, &owner1, false, 1).await;
         set_approval_for_all(&owner1, &owner1, &owner2).await;
-
-        assert_eq!{
-            owner1
-                .nft
-                .is_approved_for_all(
-                    nft_mod::Identity::Address(owner1.wallet.address()), 
-                    nft_mod::Identity::Address(owner2.wallet.address()))
-                .call()
-                .await
-                .unwrap()
-                .value,
-            true
-        };
-    }
-
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_not_initalized() {
-        let (_deploy_wallet, owner1, owner2) = setup().await;
 
         assert_eq!{
             owner1
@@ -863,18 +783,6 @@ mod is_approved_for_all {
 //             owner1.wallet.address()
 //         );
 //     }
-
-//     #[tokio::test]
-//     #[should_panic]
-//     async fn panics_when_not_initalized() {
-//         let (_deploy_wallet, owner1, _owner2) = setup().await;
-//         let token_id = 0;
-
-//         assert_eq!(
-//             owner1.nft.owner_of(token_id).call().await.unwrap().value,
-//             owner1.wallet.address()
-//         );
-//     }
 // }
 
 mod set_approval_for_all {
@@ -902,16 +810,6 @@ mod set_approval_for_all {
             .unwrap()
             .value,
             true
-        );
-    }
-
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_not_initalized() {
-        let (_deploy_wallet, owner1, owner2) = setup().await;
-
-        assert!(
-            set_approval_for_all(&owner1, &owner1, &owner2).await
         );
     }
 

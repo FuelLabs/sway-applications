@@ -33,13 +33,3 @@ pub fn sender_identity() -> Identity {
     let sender: Result<Identity, AuthError> = msg_sender();
     sender.unwrap()
 }
-
-// This function will panic if the given Identity points to the zero value
-pub fn validate_identity(entity: Identity) {
-    let address = match entity {
-        Identity::Address(entity) => entity.value,
-        Identity::ContractId(entity) => entity.value,
-    };
-    
-    require(address != NATIVE_ASSET_ID, InputError::InputAddressCannotBeZero);
-}
