@@ -15,6 +15,11 @@ pub struct Campaign {
     total_pledge: u64,
 }
 
+pub struct Campaigns {
+    active: [u64; 1],
+    completed: [u64; 1],
+}
+
 pub enum State {
     Funding: (),
     Successful: (),
@@ -22,11 +27,9 @@ pub enum State {
     Cancelled: (),
 }
 
-pub struct UserCampaigns {
-    active: [u64;
-    1],
-    completed: [u64;
-    1],
+pub struct Pledge {
+    amount: u64,
+    id: u64,
 }
 
 // impl Eq for State {

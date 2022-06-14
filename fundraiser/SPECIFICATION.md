@@ -210,9 +210,6 @@ The user interface needs to be able to display the currently active campaigns th
 
 ##### Requirements
 
-- The following parameters are required
-  - Author identity
-    - `type`: Identity
 - The following values should be returned
   - Campaigns created by the author (active / completed)
     - `type`: struct
@@ -247,3 +244,16 @@ This is a problem because there needs to be some incentive for this function to 
 - If the deadline has been passed and the campaign is in the Funding phase then the state should be updated to either Failed or Successful based on whether the target amount has been reached
 
 ## User interface
+
+1. A user should be able to create a campaign
+2. An author of a campaign should be able to share campaigns with others
+   1. Link to campaign ?
+   2. Pass in address to look up campaigns
+3. An author should be able to see their currently active campaigns and completed campaigns (failed, successful, cancelled)
+4. An author should be able to cancel a campaign that is still in the Funding phase
+5. An author should be able to claim when a campaign is in the success phase
+6. A user should be able to see which campaigns they have pledged to and the amount pledged
+   1. Currently
+   2. In the past (not upledged full amount pledged)
+7. A user should be able to search for campaigns
+8. A user should be able to pledge and unpledge
