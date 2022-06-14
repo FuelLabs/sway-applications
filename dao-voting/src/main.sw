@@ -21,6 +21,7 @@ abi DaoVoting {
     fn add_proposal(proposal: b256) -> bool;
     fn get_proposal(id: u64) -> Proposal;
     fn lock_and_get_votes(vote_amount: u64) -> bool;
+    fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool;
 }
 
 enum Error {
@@ -29,6 +30,7 @@ enum Error {
     NotGovernanceToken: (),
     PeriodCannotBeZero: (),
     VoteAmountCannotBeZero: (),
+    TokenAmountCanontBeZero: (),
     ApprovalPercentageCannotBeZero: (),
     NoAssetsSent: (),
     NotEnoughAssets: (),
@@ -119,13 +121,42 @@ impl DaoVoting for Contract {
         let sender: Identity = result.unwrap();
         let sender_balance = storage.balances.get(sender);
         require(sender_balance > 0, Error::NoAssetsSent);
-        require(sender_balance > vote_amount, Error::NotEnoughAssets);
+        require(sender_balance >= vote_amount, Error::NotEnoughAssets);
 
         let new_balance = sender_balance - vote_amount;
         storage.balances.insert(sender, new_balance);
         let prev_sender_vote_amount = storage.votes.get(sender);
         let new_sender_vote_amount = prev_sender_vote_amount + vote_amount;
         storage.votes.insert(sender, new_sender_vote_amount);
+
+        true
+    }
+
+    /// Unlock user governance tokens and reduce their amount of votes
+    /// Users can then withdraw the tokens back into their wallets
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The constructor has not been called to initalize
+    /// - The token amount is 0
+    /// - The token amount is greater than the amount of votes a user has
+    fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool {
+        require(storage.state == 1, Error::NotInitialized);
+        require(token_amount > 0, Error::TokenAmountCanontBeZero);
+
+        let result: Result<Identity, AuthError> = msg_sender();
+        let sender: Identity = result.unwrap();
+        let sender_votes = storage.votes.get(sender);
+
+        require(sender_votes >= token_amount, Error::NotEnoughAssets);
+
+        let new_votes = sender_votes - token_amount;
+        storage.votes.insert(sender, new_votes);
+
+        let prev_sender_balance = storage.balances.get(sender);
+        let new_sender_balance = prev_sender_balance + token_amount;
+        storage.balances.insert(sender, new_sender_balance);
 
         true
     }
