@@ -1,8 +1,8 @@
 library data_structures;
 
-use std::identity::Identity;
+use std::{identity::Identity, option::Option};
 
 pub struct MetaData {
-    approved: Identity,
+    approved: Option<Identity>,
     owner: Identity,
 }
