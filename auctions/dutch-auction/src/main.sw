@@ -30,7 +30,6 @@ storage {
     auctions: StorageMap<u64,
     Auction>, /// Tracking how many auctions have been made till now
     auction_count: u64,
-    /// Whether the constructor has been called
 }
 
 impl DutchAuction for Contract {
