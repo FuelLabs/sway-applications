@@ -112,22 +112,20 @@ impl DaoVoting for Contract {
     /// The function will panic when:
     /// - The constructor has not been called to initialize
     /// - The vote amount is 0
-    /// - The user has not deposited any governance tokens
     /// - The vote amount is greater than the senders deposited balance
     fn lock_and_get_votes(vote_amount: u64) -> bool {
         require(storage.state == 1, Error::NotInitialized);
         require(vote_amount > 0, Error::VoteAmountCannotBeZero);
+
         let result: Result<Identity, AuthError> = msg_sender();
         let sender: Identity = result.unwrap();
         let sender_balance = storage.balances.get(sender);
-        require(sender_balance > 0, Error::NoAssetsSent);
         require(sender_balance >= vote_amount, Error::NotEnoughAssets);
 
-        let new_balance = sender_balance - vote_amount;
-        storage.balances.insert(sender, new_balance);
+        storage.balances.insert(sender, sender_balance - vote_amount);
+
         let prev_sender_vote_amount = storage.votes.get(sender);
-        let new_sender_vote_amount = prev_sender_vote_amount + vote_amount;
-        storage.votes.insert(sender, new_sender_vote_amount);
+        storage.votes.insert(sender, prev_sender_vote_amount + vote_amount);
 
         true
     }
@@ -151,12 +149,10 @@ impl DaoVoting for Contract {
 
         require(sender_votes >= token_amount, Error::NotEnoughAssets);
 
-        let new_votes = sender_votes - token_amount;
-        storage.votes.insert(sender, new_votes);
+        storage.votes.insert(sender, sender_votes - token_amount);
 
         let prev_sender_balance = storage.balances.get(sender);
-        let new_sender_balance = prev_sender_balance + token_amount;
-        storage.balances.insert(sender, new_sender_balance);
+        storage.balances.insert(sender, prev_sender_balance + token_amount);
 
         true
     }
