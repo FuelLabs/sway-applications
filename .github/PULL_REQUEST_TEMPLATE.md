@@ -6,7 +6,7 @@
 
 - Bug fix
 - New feature
-- Improvement (refactoring, restructoring repository, cleaning tech debt, ...)
+- Improvement (refactoring, restructuring repository, cleaning tech debt, ...)
 - Documentation
 - Other (describe below)
 

@@ -10,7 +10,6 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  FORC_VERSION: 0.15.2
   REGISTRY: ghcr.io
   RUST_VERSION: 1.61.0
   PATH_TO_SCRIPTS: .github/scripts
@@ -75,17 +74,8 @@ jobs:
       - name: Install rustfmt
         run: rustup component add rustfmt
 
-      - name: Install forc
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: forc --version ${{ env.FORC_VERSION }}
-
-      - name: Install forc-fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: forc-fmt --version ${{ env.FORC_VERSION }}
+      - name: Install Fuel toolchain
+        uses: FuelLabs/action-fuel-toolchain@v0.1.0
 
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
