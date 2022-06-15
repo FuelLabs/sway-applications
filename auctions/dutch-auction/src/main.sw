@@ -48,16 +48,16 @@ impl DutchAuction for Contract {
         calculate_price(auction_id)
     }
 
-    /// Bids in the given auction, wins if the amount and type of asset are correct
+    /// Bids on the specified auction
     ///
     /// # Panics
     ///
     /// This function will panic when:
-    ///     1. auction_id is 0 or higher than storage.auction_count
+    ///     1. auction_id is 0 or greater than storage.auction_count
     ///     2. auction has already ended
     ///     3. current block height is lower than start_time, or higher than end_time
-    ///     4. asset_id of the msg is not the same as the asset_id set in the auction
-    ///     5. msg_amount is lower than the current going price in the auction
+    ///     4. Incorrect asset is sent to the auction
+    ///     5. The bid is less than the current price
     fn bid(auction_id: u64) {
         // In a Dutch auction the first bid wins
         validate_id(auction_id);
@@ -69,7 +69,7 @@ impl DutchAuction for Contract {
         // Cannot bid before auction starts
         require(auction.start_time <= height(), TimeError::AuctionNotYetStarted);
         // Cannot bid after auction ends
-        require(auction.end_time >= height(), TimeError::AuctionAlreadyEnded);
+        require(height() <= auction.end_time, TimeError::AuctionAlreadyEnded);
 
         // Checks for correct asset_id being sent
         require(msg_asset_id() == auction.asset_id, UserError::WrongAssetSent);
@@ -95,7 +95,7 @@ impl DutchAuction for Contract {
         storage.active_auctions_by_identity.insert(auction.beneficiary, [0]);
 
         log(WinningBidEvent {
-            winner: sender_indentity(), id: auction_id, 
+            id: auction_id, winner: sender_indentity(),  
         });
     }
 
@@ -105,7 +105,7 @@ impl DutchAuction for Contract {
     ///
     /// This function will panic when:
     ///     1. reserve_price is greater than opening_price
-    ///     2. current block height is higher than end_time or start_time
+    ///     2. block height is greater than end_time or start_time
     ///     3. start_time is greater than end_time
     fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Identity, asset: ContractId) {
         require(reserve_price <= opening_price, SetupError::EndPriceCannotBeLargerThanStartPrice);
@@ -124,16 +124,16 @@ impl DutchAuction for Contract {
         storage.active_auctions_by_identity.insert(beneficiary, [storage.auction_count]);
 
         log(CreatedAuctionEvent {
-            id: storage.auction_count, auction, 
+            auction, id: storage.auction_count, 
         });
     }
 
-    /// Cancels an auction so no one can bid on it.
+    /// Cancels an auction preventing any bids from being placed
     ///
     /// # Panics
     ///
     /// This function will panic when:
-    ///     1. auction_id is 0 or higher than storage.auction_count
+    ///     1. auction_id is 0 or greater than storage.auction_count
     ///     2. msg_sender is not the beneficiary of the auction
     ///     3. auction has already ended
     fn cancel_auction(auction_id: u64) {
@@ -143,7 +143,7 @@ impl DutchAuction for Contract {
 
         // Only the beneficiary can end the auction (prematurely)
         require(eq_identity(sender_indentity(), auction.beneficiary), UserError::SenderNotBeneficiary);
-        // Checks if the auction has already ended
+        // Cannot cancel an auction that has already ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         auction.ended = true;
@@ -156,23 +156,23 @@ impl DutchAuction for Contract {
         });
     }
 
-    /// Returns the auction for any given auction_id
+    /// Returns the auction data for the specified auction ID
     ///
     /// # Panics
     ///
     /// This function will panic when:
-    ///     1. auction_id is 0 or higher than storage.auction_count
+    ///     1. auction_id is 0 or greater than storage.auction_count
     fn auction(auction_id: u64) -> Auction {
         validate_id(auction_id);
         storage.auctions.get(auction_id)
     }
 
-    /// Changes the bidding asset in the given auction
+    /// Changes the asset an auction accepts for a bid
     ///
     /// # Panics
     ///
     /// This function will panic when:
-    ///     1. auction_id is 0 or higher than storage.auction_count
+    ///     1. auction_id is 0 or greater than storage.auction_count
     ///     2. msg_sender is not the beneficiary of the auction
     ///     3. auction has already ended
     fn change_asset(new_asset: ContractId, auction_id: u64) {
@@ -181,7 +181,7 @@ impl DutchAuction for Contract {
 
         // Only the beneficiary can change the bidding asset
         require(eq_identity(sender_indentity(), auction.beneficiary), UserError::SenderNotBeneficiary);
-        // Cant edit an ended auction
+        // Cannot edit an auction that has ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         auction.asset_id = new_asset;
@@ -194,7 +194,7 @@ impl DutchAuction for Contract {
     /// # Panics
     ///
     /// This function will panic when:
-    ///     1. auction_id is 0 or higher than storage.auction_count
+    ///     1. auction_id is 0 or greater than storage.auction_count
     ///     2. msg_sender is not the beneficiary of the auction
     ///     3. auction has already ended
     fn change_beneficiary(new_beneficiary: Identity, auction_id: u64) {
@@ -203,7 +203,7 @@ impl DutchAuction for Contract {
 
         // Only the beneficiary can change the beneficiary
         require(eq_identity(sender_indentity(), auction.beneficiary), UserError::SenderNotBeneficiary);
-        // Cant edit an ended auction
+        // Cannot edit an auction that has ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         auction.beneficiary = new_beneficiary;
