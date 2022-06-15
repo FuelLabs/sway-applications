@@ -1,7 +1,7 @@
 contract;
 
-// TODO: matching on self is not implemented so cannot do equalityy on enums
-//       change campaigns to use mappings like the user pledge history
+// TODO: 
+//      * matching on self is not implemented so cannot do equality on enums
 
 dep abi;
 dep data_structures;
@@ -25,27 +25,33 @@ use std::{
 };
 
 use abi::Fundraiser;
-use data_structures::{Campaigns, Campaign, State, Pledge};
-use errors::{CreationError, UserError};
+use data_structures::{Campaign, CampaignInfo, Pledge};
+use errors::{CampaignError, CreationError, UserError};
 use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
 use utils::{sender_identity, transfer, validate_id, validate_sender};
 
 storage {
-    /// Data describing the content of a campaign
-    /// Map(Campaign ID => Campaign)
-    campaign: StorageMap<u64, Campaign>,
+    /// The total number of unique campaigns that a user has created
+    /// This should only be incremented
+    /// Cancelling / Claiming should not affect this number
+    campaign_count: StorageMap<Identity, u64>,
 
     /// Campaigns that have been created by a user
-    /// Map(User => Campaigns)
-    campaigns: StorageMap<Identity, Campaigns>, 
+    /// Map(User => Campaign)
+    campaign_history: StorageMap<(Identity, u64), Campaign>,
 
-    /// The number of campaigns created by all users
-    campaign_count: u64,
+    /// O(1) look-up to prevent iterating over campaign_history
+    /// Map(Identity => Map(Campaign ID => Campaign History Index))
+    campaign_history_index: StorageMap<(Identity, u64), u64>,
+
+    /// Data describing the content of a campaign
+    /// Map(Campaign ID => CampaignInfo)
+    campaign_info: StorageMap<u64, CampaignInfo>,
     
     /// The total number of unique campaigns that a user has pledged to
-    /// This should only be incremented. 
+    /// This should only be incremented.
     /// Unpledging should not affect this number
-    pledge_count: StorageMap<Identity, u64>, 
+    pledge_count: StorageMap<Identity, u64>,
 
     /// Record of how much a user has pledged to a specific campaign
     /// Locked after the deadline
@@ -55,45 +61,129 @@ storage {
     /// O(1) look-up to prevent iterating over pledge_history
     /// Map(Identity => Map(Campaign ID => Pledge History Index))
     pledge_history_index: StorageMap<(Identity, u64), u64>,
+
+    /// The number of campaigns created by all users
+    total_campaigns: u64,
 }
 
 impl Fundraiser for Contract {
+
+    /// Creates a data structure representing a campaign that users can pledge to
+    ///
+    /// Instead of having a contract per campaign we create an internal representation for the data
+    /// and manage it via mappings.
+    ///
+    /// # Arguments
+    ///
+    /// * `asset` - A coin that the campaign accepts as a pledge
+    /// * `beneficiary` - The recipient to whom the pledge will be sent to upon a successful campaign
+    /// * `deadline` - Block height used to dictate the end time of a campaign
+    /// * `target_amount` - The amount of `asset` required to deem the campaign a success
+    /// 
+    /// # Reverts
+    /// 
+    /// * When `asset` is the BASE_ASSET
+    /// * When the `deadline` is not ahead of the current block height
+    /// * When the `target_amount` is 0
+    /// * When an AuthError is generated
     fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64) {
+        require(asset.value != NATIVE_ASSET_ID, CreationError::CannotUseBaseAsset);
         require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
-        require(NATIVE_ASSET_ID != asset.value, CreationError::CannotUseNativeAsset);
         require(0 < target_amount, CreationError::TargetAmountCannotBeZero);
 
-        let campaign = Campaign {
+        let user = sender_identity();
+
+        let campaign_info = CampaignInfo {
             asset, 
-            author: sender_identity(),
+            author: user,
             beneficiary, 
+            cancelled: false,
             claimed: false,
             deadline, 
-            // state: State::Funding
-            state: 0,
             target_amount, 
             total_pledge: 0,
         };
 
-        storage.campaign_count = storage.campaign_count + 1;
-        storage.campaign.insert(storage.campaign_count, campaign);
+        let campaign_count = storage.campaign_count.get(user);
 
-        // TODO: change to mappings
-        let mut campaigns = storage.campaigns.get(campaign.author);
-        campaigns.active = [storage.campaign_count];
+        if campaign_count == 0 {
+            storage.campaign_count.insert(user, 1);
+        } else {
+            storage.campaign_count.insert(user, campaign_count + 1);
+        }
 
-        log(CreatedCampaignEvent {campaign, id: storage.campaign_count});
+        storage.total_campaigns = storage.total_campaigns + 1;
+        storage.campaign_history.insert((user, campaign_count + 1), Campaign { id: storage.total_campaigns });
+        storage.campaign_history_index.insert((user, storage.total_campaigns), campaign_count + 1);
+        storage.campaign_info.insert(storage.total_campaigns, campaign_info);        
+
+        log(CreatedCampaignEvent {campaign_info, id: storage.total_campaigns});
     }
 
+    fn cancel_campaign(id: u64) {
+        validate_id(id, storage.total_campaigns);
+
+        let mut campaign_info = storage.campaign_info.get(id);
+
+        // require(campaign_info.author == sender_identity(), UserError::UnauthorizedUser);
+        validate_sender(sender_identity(), campaign_info.author); // workaround
+
+        require(height() < campaign_info.deadline, CampaignError::CampaignEnded);
+        require(!campaign_info.cancelled, CampaignError::CampaignHasBeenCancelled);
+
+        campaign_info.cancelled = true;
+
+        storage.campaign_info.insert(id, campaign_info);
+
+        log(CancelledCampaignEvent { id });
+    }
+
+    fn claim_pledges(id: u64) {
+        validate_id(id, storage.total_campaigns);
+
+        let mut campaign_info = storage.campaign_info.get(id);
+
+        // require(campaign_info.author == sender_identity(), UserError::UnauthorizedUser);
+        validate_sender(sender_identity(), campaign_info.author); // workaround
+
+        require(campaign_info.deadline <= height(), CampaignError::DeadlineNotReached);
+        require(campaign_info.target_amount <= campaign_info.total_pledge, CampaignError::TargetNotReached);
+        require(!campaign_info.claimed, UserError::AlreadyClaimed);
+        require(!campaign_info.cancelled, CampaignError::CampaignHasBeenCancelled);
+
+        campaign_info.claimed = true;
+        storage.campaign_info.insert(id, campaign_info);
+
+        transfer(campaign_info.beneficiary, campaign_info.total_pledge, campaign_info.asset);
+
+        log(ClaimedEvent { id });
+    }
+
+    /// Allows a user to pledge any amount of the campaign asset towards the campaign goal
+    /// 
+    /// In order to reach the campaign's target amount users must pledge some amount of asset towards
+    /// that campaign. 
+    /// This information is recorded for the campaign and for the user so that they can unpledge.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
+    /// 
+    /// # Reverts
+    /// 
+    /// * When the `id` is either 0 or greater than the total number of campaigns created
+    /// * When the user attempts to pledge when the deadline has been reached
+    /// * When the user pledges a different asset to the one specified in the campaign
+    /// * When the user pledges after the campaign has been cancelled
+    /// * When an AuthError is generated
     fn pledge(id: u64) {
-        validate_id(id, storage.campaign_count);
+        validate_id(id, storage.total_campaigns);
 
-        let mut campaign = storage.campaign.get(id);
+        let mut campaign_info = storage.campaign_info.get(id);
 
-        // require(campaign.state == State::Funding, UserError::FundraiseEnded);
-        require(campaign.state == 0, UserError::FundraiseEnded); // workaround
-        require(height() < campaign.deadline, UserError::FundraiseEnded);
-        require(campaign.asset == msg_asset_id(), UserError::IncorrectAssetSent);
+        require(height() < campaign_info.deadline, CampaignError::CampaignEnded);
+        require(campaign_info.asset == msg_asset_id(), UserError::IncorrectAssetSent);
+        require(!campaign_info.cancelled, CampaignError::CampaignHasBeenCancelled);
 
         let user = sender_identity();
         let pledge_count = storage.pledge_count.get(user);
@@ -117,148 +207,89 @@ impl Fundraiser for Contract {
             }
         }
 
-        campaign.total_pledge = campaign.total_pledge + msg_amount();
+        campaign_info.total_pledge = campaign_info.total_pledge + msg_amount();
 
-        storage.campaign.insert(id, campaign);
+        storage.campaign_info.insert(id, campaign_info);
 
         log(PledgedEvent {amount: msg_amount(), id});
     }
 
+    /// Allows a user to unpledge an amount of the campaign asset that they have pledged
+    /// 
+    /// A user may have changed their mind about the amount of an asset that they have pledged
+    /// therefore they may wish to unpledge some amount of that pledge.
+    /// If they attempt to unpledge more than they have pledged then their total pledge will be returned
+    /// 
+    /// # Arguments
+    /// 
+    /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
+    /// * `amount` - The amount of asset that the user wishes to unpledge
+    /// 
+    /// # Reverts
+    /// 
+    /// * When the `id` is either 0 or greater than the total number of campaigns created
+    /// * When the user attempts to unpledge when the deadline has been reached
+    /// * When an AuthError is generated
+    /// * When the user has not pledged to the campaign represented by the `id`
     fn unpledge(id: u64, amount: u64) {
-        validate_id(id, storage.campaign_count);
+        validate_id(id, storage.total_campaigns);
 
-        let mut campaign = storage.campaign.get(id);
+        let mut campaign_info = storage.campaign_info.get(id);
 
-        // require(campaign.state != State::Successful, UserError::FundraiseEnded);
-        require(campaign.state != 1, UserError::FundraiseEnded); // workaround
+        if campaign_info.deadline <= height() {
+            require(campaign_info.total_pledge < campaign_info.target_amount, CampaignError::TargetReached);
+        }
 
         let user = sender_identity();
-        let pledge_count = storage.pledge_count.get(user);
+        let pledge_history_index = storage.pledge_history_index.get((user, id));
 
-        if pledge_count != 0 {
-            let pledge_history_index = storage.pledge_history_index.get((user, id));
+        require(pledge_history_index != 0, UserError::UserHasNotPledged);
 
-            if pledge_history_index != 0 {
-                let mut pledge = storage.pledge_history.get((user, pledge_history_index));
-                let mut amount = amount;
+        let mut pledge = storage.pledge_history.get((user, pledge_history_index));
+        let mut amount = amount;
 
-                if pledge.amount < amount {
-                    amount = pledge.amount;
-                }
-
-                pledge.amount = pledge.amount - amount;
-                campaign.total_pledge = campaign.total_pledge - amount;
-
-                storage.pledge_history.insert((user, pledge_history_index), pledge);
-                storage.campaign.insert(id, campaign);
-
-                transfer(user, amount, campaign.asset);
-
-                log(UnpledgedEvent {amount, id});
-            }
+        if pledge.amount < amount {
+            amount = pledge.amount;
         }
+
+        pledge.amount = pledge.amount - amount;
+        campaign_info.total_pledge = campaign_info.total_pledge - amount;
+
+        storage.pledge_history.insert((user, pledge_history_index), pledge);
+        storage.campaign_info.insert(id, campaign_info);
+
+        transfer(user, amount, campaign_info.asset);
+
+        log(UnpledgedEvent {amount, id});
     }
 
-    fn claim(id: u64) {
-        validate_id(id, storage.campaign_count);
-
-        let mut campaign = storage.campaign.get(id);
-
-        // require(campaign.author == sender_identity(), UserError::UnauthorizedUser);
-        validate_sender(sender_identity(), campaign.author); // workaround
-
-        // require(campaign.state == State::Successful, UserError::FundraiseNotSuccessful);
-        require(campaign.state == 1, UserError::FundraiseNotSuccessful); // workaround
-        require(!campaign.claimed, UserError::AlreadyClaimed);
-
-        let mut campaigns = storage.campaigns.get(campaign.author);
-
-        // workaround
-        campaigns.completed = campaigns.active;
-        campaigns.active = [0];
-
-        campaign.claimed = true;
-
-        storage.campaign.insert(id, campaign);
-        storage.campaigns.insert(campaign.author, campaigns);
-
-        transfer(campaign.beneficiary, campaign.total_pledge, campaign.asset);
-
-        log(ClaimedEvent { id });
+    /// Returns the total number of campaigns that have been created by all users
+    fn total_campaigns() -> u64 {
+        storage.total_campaigns
     }
 
-    fn cancel(id: u64) {
-        validate_id(id, storage.campaign_count);
-
-        let mut campaign = storage.campaign.get(id);
-
-        // require(campaign.author == sender_identity(), UserError::UnauthorizedUser);
-        validate_sender(sender_identity(), campaign.author); // workaround
-
-        // require(campaign.state == State::Funding, UserError::FundraiseEnded);
-        require(campaign.state == 0, UserError::FundraiseEnded); // workaround
-        require(height() < campaign.deadline, UserError::FundraiseEnded);
-
-        let mut campaigns = storage.campaigns.get(campaign.author);
-
-        // workaround
-        campaigns.completed = campaigns.active;
-        campaigns.active = [0];
-
-        // campaign.state = State::Cancelled;
-        campaign.state = 3; // workaround
-
-        storage.campaign.insert(id, campaign);
-        storage.campaigns.insert(campaign.author, campaigns);
-
-        log(CancelledCampaignEvent {
-            id
-        });
+    fn campaign_info(id: u64) -> CampaignInfo {
+        validate_id(id, storage.total_campaigns);
+        storage.campaign_info.get(id)
     }
 
+    /// Returns the number of campaigns that the user has created
     fn campaign_count() -> u64 {
-        storage.campaign_count
+        storage.campaign_count.get(sender_identity())
     }
 
-    fn campaign_info(id: u64) -> Campaign {
-        validate_id(id, storage.campaign_count);
-        storage.campaign.get(id)
+    fn campaign(campaign_history_index: u64) -> Campaign {
+        require(campaign_history_index != 0 && campaign_history_index < storage.campaign_count.get(sender_identity()), UserError::InvalidHistoryId);
+        storage.campaign_history.get((sender_identity(), campaign_history_index))
     }
 
+    /// Returns the number of campaigns that the user has pledged to
     fn pledge_count() -> u64 {
         storage.pledge_count.get(sender_identity())
     }
 
-    fn pledged(id: u64) -> Pledge {
-        require(id < storage.pledge_count.get(sender_identity()), "TODO: make this an enum");
-        storage.pledge_history.get((sender_identity(), id))
-    }
-
-    /// Returns data regarding the identifiers for active and completed campaign
-    /// Works for all users - including ones not in the contract
-    fn campaigns() -> Campaigns {
-        storage.campaigns.get(sender_identity())
-    }
-
-    fn update_campaign_state(id: u64) {
-        validate_id(id, storage.campaign_count);
-
-        let mut campaign = storage.campaign.get(id);
-
-        if campaign.deadline < height() {
-            // if campaign.state == State::Funding {
-            //     campaign.state = if campaign.target_amount < campaign.total_pledge { State::Failed } else { State::Successful };
-            //     storage.campaign.insert(id, campaign);
-            // }
-            // workaround
-            if campaign.state == 0 {
-                campaign.state = if campaign.target_amount < campaign.total_pledge {
-                    2
-                } else {
-                    1
-                };
-                storage.campaign.insert(id, campaign);
-            }
-        }
+    fn pledged(pledge_history_index: u64) -> Pledge {
+        require(pledge_history_index != 0 && pledge_history_index < storage.pledge_count.get(sender_identity()), UserError::InvalidHistoryId);
+        storage.pledge_history.get((sender_identity(), pledge_history_index))
     }
 }

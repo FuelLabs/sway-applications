@@ -1,7 +1,15 @@
 library errors;
 
+pub enum CampaignError {
+    CampaignEnded: (),
+    CampaignHasBeenCancelled: (),
+    DeadlineNotReached: (),
+    TargetReached: (),
+    TargetNotReached: (),
+}
+
 pub enum CreationError {
-    CannotUseNativeAsset: (),
+    CannotUseBaseAsset: (),
     ContractNotInitialized: (),
     DeadlineMustBeInTheFuture: (),
     TargetAmountCannotBeZero: (),
@@ -9,9 +17,9 @@ pub enum CreationError {
 
 pub enum UserError {
     AlreadyClaimed: (),
-    FundraiseEnded: (),
-    FundraiseNotSuccessful: (),
     IncorrectAssetSent: (),
+    InvalidHistoryId: (),
     NoSuchCampaign: (),
     UnauthorizedUser: (),
+    UserHasNotPledged: (),
 }

@@ -1,7 +1,7 @@
 library utils;
 
-dep errors;
 dep data_structures;
+dep errors;
 
 use std::{
     assert::require,
