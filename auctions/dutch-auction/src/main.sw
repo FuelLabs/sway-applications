@@ -38,7 +38,10 @@ storage {
 
 impl DutchAuction for Contract {
     /// Returns the current price for the auction corresponding to the auction_id
-    /// Panics when -
+    ///
+    /// # Panics
+    ///
+    /// This function will panic when:
     ///     1. auction_id is 0 or higher than storage.auction_count
     fn price(auction_id: u64) -> u64 {
         validate_id(auction_id);
@@ -46,7 +49,10 @@ impl DutchAuction for Contract {
     }
 
     /// Bids in the given auction, wins if the amount and type of asset are correct
-    /// Panics when -
+    ///
+    /// # Panics
+    ///
+    /// This function will panic when:
     ///     1. auction_id is 0 or higher than storage.auction_count
     ///     2. auction has already ended
     ///     3. current block height is lower than start_time, or higher than end_time
@@ -94,7 +100,10 @@ impl DutchAuction for Contract {
     }
 
     /// Creates a new auction
-    /// Panics when -
+    ///
+    /// # Panics
+    ///
+    /// This function will panic when:
     ///     1. reserve_price is greater than opening_price
     ///     2. current block height is higher than end_time or start_time
     ///     3. start_time is greater than end_time
@@ -120,7 +129,10 @@ impl DutchAuction for Contract {
     }
 
     /// Cancels an auction so no one can bid on it.
-    /// Panics when -
+    ///
+    /// # Panics
+    ///
+    /// This function will panic when:
     ///     1. auction_id is 0 or higher than storage.auction_count
     ///     2. msg_sender is not the beneficiary of the auction
     ///     3. auction has already ended
@@ -145,7 +157,10 @@ impl DutchAuction for Contract {
     }
 
     /// Returns the auction for any given auction_id
-    /// Panics when -
+    ///
+    /// # Panics
+    ///
+    /// This function will panic when:
     ///     1. auction_id is 0 or higher than storage.auction_count
     fn auction(auction_id: u64) -> Auction {
         validate_id(auction_id);
@@ -153,7 +168,10 @@ impl DutchAuction for Contract {
     }
 
     /// Changes the bidding asset in the given auction
-    /// Panics when -
+    ///
+    /// # Panics
+    ///
+    /// This function will panic when:
     ///     1. auction_id is 0 or higher than storage.auction_count
     ///     2. msg_sender is not the beneficiary of the auction
     ///     3. auction has already ended
@@ -172,7 +190,10 @@ impl DutchAuction for Contract {
     }
 
     /// Changes the beneficiary of the given auction
-    /// Panics when -
+    ///
+    /// # Panics
+    ///
+    /// This function will panic when:
     ///     1. auction_id is 0 or higher than storage.auction_count
     ///     2. msg_sender is not the beneficiary of the auction
     ///     3. auction has already ended
