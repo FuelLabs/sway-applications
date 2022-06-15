@@ -7,14 +7,14 @@ pub enum SetupError {
     EndPriceCannotBeLargerThanStartPrice: (),
 }
 
+pub enum TimeError {
+    AuctionAlreadyEnded: (),
+    AuctionNotYetStarted: (),
+}
+
 pub enum UserError {
     InvalidAuctionID: (),
     BidTooLow: (),
     WrongAssetSent: (),
     SenderNotBeneficiary: (),
-}
-
-pub enum TimeError {
-    AuctionAlreadyEnded: (),
-    AuctionNotYetStarted: (),
 }
