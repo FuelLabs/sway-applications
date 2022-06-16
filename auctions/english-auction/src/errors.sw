@@ -1,6 +1,7 @@
 library errors;
 
 pub enum AccessError {
+    AuctionDoesNotExist: (),
     AuctionIsNotClosed: (),
     AuctionIsNotOpen: (),
     NoReserveSet: (),
