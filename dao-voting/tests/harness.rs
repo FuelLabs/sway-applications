@@ -204,8 +204,7 @@ async fn user_can_deposit() {
     );
 
     assert_eq!(
-        user
-            .dao_voting
+        user.dao_voting
             .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
             .call()
             .await
@@ -385,7 +384,7 @@ async fn user_can_lock_and_get_votes() {
         .await
         .unwrap()
         .value;
-    
+
     assert!(
         deployer
             .gov_token
@@ -412,8 +411,7 @@ async fn user_can_lock_and_get_votes() {
     );
 
     assert!(
-        user
-            .dao_voting
+        user.dao_voting
             .lock_and_get_votes(asset_amount / 2)
             .call()
             .await
@@ -422,8 +420,7 @@ async fn user_can_lock_and_get_votes() {
     );
 
     assert_eq!(
-        user
-            .dao_voting
+        user.dao_voting
             .get_user_votes(daovoting_mod::Identity::Address(user.wallet.address()))
             .call()
             .await
@@ -433,8 +430,7 @@ async fn user_can_lock_and_get_votes() {
     );
 
     assert_eq!(
-        user
-            .dao_voting
+        user.dao_voting
             .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
             .call()
             .await
@@ -455,7 +451,7 @@ async fn panics_on_incorrect_vote_amount() {
         .await
         .unwrap()
         .value;
-    
+
     assert!(
         deployer
             .gov_token
@@ -482,8 +478,7 @@ async fn panics_on_incorrect_vote_amount() {
     );
 
     assert!(
-        user
-            .dao_voting
+        user.dao_voting
             .lock_and_get_votes(0)
             .call()
             .await
@@ -505,8 +500,7 @@ async fn panics_on_no_user_deposit() {
         .value;
 
     assert!(
-        user
-            .dao_voting
+        user.dao_voting
             .lock_and_get_votes(1)
             .call()
             .await
@@ -553,8 +547,7 @@ async fn panics_on_votes_great_than_deposit() {
     );
 
     assert!(
-        user
-            .dao_voting
+        user.dao_voting
             .lock_and_get_votes(asset_amount * 2)
             .call()
             .await
@@ -573,7 +566,7 @@ async fn user_can_unlock_tokens() {
         .await
         .unwrap()
         .value;
-    
+
     assert!(
         deployer
             .gov_token
@@ -600,8 +593,7 @@ async fn user_can_unlock_tokens() {
     );
 
     assert!(
-        user
-            .dao_voting
+        user.dao_voting
             .lock_and_get_votes(asset_amount / 2)
             .call()
             .await
@@ -610,8 +602,7 @@ async fn user_can_unlock_tokens() {
     );
 
     assert_eq!(
-        user
-            .dao_voting
+        user.dao_voting
             .get_user_votes(daovoting_mod::Identity::Address(user.wallet.address()))
             .call()
             .await
@@ -621,8 +612,7 @@ async fn user_can_unlock_tokens() {
     );
 
     assert_eq!(
-        user
-            .dao_voting
+        user.dao_voting
             .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
             .call()
             .await
@@ -632,8 +622,7 @@ async fn user_can_unlock_tokens() {
     );
 
     assert!(
-        user
-            .dao_voting
+        user.dao_voting
             .unlock_tokens_and_remove_votes(asset_amount / 2)
             .call()
             .await
@@ -642,8 +631,7 @@ async fn user_can_unlock_tokens() {
     );
 
     assert_eq!(
-        user
-            .dao_voting
+        user.dao_voting
             .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
             .call()
             .await
@@ -653,8 +641,7 @@ async fn user_can_unlock_tokens() {
     );
 
     assert_eq!(
-        user
-            .dao_voting
+        user.dao_voting
             .get_user_votes(daovoting_mod::Identity::Address(user.wallet.address()))
             .call()
             .await
@@ -662,4 +649,92 @@ async fn user_can_unlock_tokens() {
             .value,
         0
     );
+}
+
+#[tokio::test]
+async fn user_can_vote() {
+    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+    deployer
+        .dao_voting
+        .constructor(gov_token_id, 10, 10)
+        .call()
+        .await
+        .unwrap()
+        .value;
+
+    assert!(
+        deployer
+            .gov_token
+            .unwrap()
+            .mint_and_send_to_address(100, user.wallet.address())
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
+    assert!(
+        user.dao_voting
+            .deposit()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    assert!(
+        user.dao_voting
+            .lock_and_get_votes(asset_amount / 2)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    assert!(
+        user.dao_voting
+            .add_proposal([1; 32])
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    assert!(
+        user
+            .dao_voting
+            .vote(0, asset_amount / 4, true)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    assert!(
+        user
+            .dao_voting
+            .vote(0, asset_amount / 4, false)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    let proposal = user.dao_voting.get_proposal(0).call().await.unwrap().value;
+
+    assert_eq!(
+        proposal,
+        daovoting_mod::Proposal {
+            yes_votes: asset_amount / 4,
+            no_votes: asset_amount / 4,
+            data: [1; 32],
+            end_height: 16,
+        }
+    );
+
 }
