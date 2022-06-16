@@ -6,7 +6,6 @@ use errors::InputError;
 use std::{
     assert::require, 
     chain::auth::{AuthError, msg_sender},
-    constants::NATIVE_ASSET_ID,
     identity::Identity, 
     result::*,
 };

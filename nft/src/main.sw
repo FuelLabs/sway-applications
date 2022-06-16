@@ -16,7 +16,6 @@ use std::{
     address::Address,
     assert::require,
     chain::auth::{AuthError, msg_sender},
-    constants::NATIVE_ASSET_ID,
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount, this_balance},
     contract_id::ContractId,
     hash::sha256,
