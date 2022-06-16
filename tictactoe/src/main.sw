@@ -59,7 +59,7 @@ impl TicTacToe for Contract {
         let mut game = Game {
             gameID: gameID,
             PlayerOne: Players.PlayerOne,
-            PlayerTwo: None,
+            PlayerTwo: Players.PlayerTwo,
             winner: None,
             playerTurn: Players.PlayerOne,
         };
@@ -181,11 +181,11 @@ impl TicTacToe for Contract {
 }
 fn test(gameID: u64) -> Winners {
     let mut counter = 1;
-    let mut break early = false;
+    let mut break_early = false;
     let mut i = 1;
     while counter < 3 {
-        while get_player_position_filled(gameID,i) != Players.None{
-            if  get_player_position_filled(gameID,i) == get_player_position_filled(gameID,i+1) { 
+        while get_player_position_filled(gameID, i) != Players.None {
+            if get_player_position_filled(gameID, i) == get_player_position_filled(gameID, i + 1) {
                 counter = counter + 1;
                 i = i + 1;
             } else {
@@ -194,91 +194,90 @@ fn test(gameID: u64) -> Winners {
                     i = 4;
                 } else {
                     i = 7;
-                } 
+                }
             }
         }
-        
     }
-
-    while 
 }
 
-fn horizontal_alignment(gameID: u64) -> Winners {
-        if (get_player_position_filled(gameID, 1) == get_player_position_filled(gameID, 2)) {
-            if (get_player_position_filled(gameID, 2)  == get_player_position_filled(gameID, 3)) {
-                if (get_player_position_filled(gameID, 1) != Players.None) {
-                    return get_player_position_filled(gameID, 1);
-                }
-            }
-        }
+// fn horizontal_alignment(gameID: u64) -> Winners {
+//         if (get_player_position_filled(gameID, 1) == get_player_position_filled(gameID, 2)) {
+//             if (get_player_position_filled(gameID, 2)  == get_player_position_filled(gameID, 3)) {
+//                 if (get_player_position_filled(gameID, 1) != Players.None) {
+//                     return get_player_position_filled(gameID, 1);
+//                 }
+//             }
+//         }
 
-        elif (get_player_position_filled(gameID, 4) == get_player_position_filled(gameID, 5)) {
-            if (get_player_position_filled(gameID, 5)  == get_player_position_filled(6)) {
-                if (get_player_position_filled(4) != Players.None) {
-                    return get_player_position_filled(gameID, 4);
-                }
-            }
-        }
+//         elif (get_player_position_filled(gameID, 4) == get_player_position_filled(gameID, 5)) {
+//             if (get_player_position_filled(gameID, 5)  == get_player_position_filled(6)) {
+//                 if (get_player_position_filled(4) != Players.None) {
+//                     return get_player_position_filled(gameID, 4);
+//                 }
+//             }
+//         }
 
-        elif (get_player_position_filled(gameID, 7) == get_player_position_filled(gameID, 8)) {
-            if (get_player_position_filled(gameID, 8)  == get_player_position_filled(gameID, 9)) {
-                if (get_player_position_filled(gameID, 7) != Players.None) {
-                    return get_player_position_filled(gameID, 7);
-                }
-            }
+//         elif (get_player_position_filled(gameID, 7) == get_player_position_filled(gameID, 8)) {
+//             if (get_player_position_filled(gameID, 8)  == get_player_position_filled(gameID, 9)) {
+//                 if (get_player_position_filled(gameID, 7) != Players.None) {
+//                     return get_player_position_filled(gameID, 7);
+//                 }
+//             }
+//         }
+//         return Players.None;
+//     }
+
+//     fn vertical_alignment(gameID: u64) -> Winners {
+//         if (get_player_position_filled(gameID, 1) == get_player_position_filled(gameID, 4)) {
+//             if (get_player_position_filled(gameID, 4)  == get_player_position_filled(gameID, 7)) {
+//                 if (get_player_position_filled(gameID, 1) != Players.None) {
+//                     return get_player_position_filled(gameID, 1);
+//                 }
+//             }
+//         }
+
+//         elif (get_player_position_filled(gameID, 2) == get_player_position_filled(gameID, 5)) {
+//             if (get_player_position_filled(gameID, 5)  == get_player_position_filled(gameID, 8)) {
+//                 if (get_player_position_filled(gameID, 2) != Players.None) {
+//                     return get_player_position_filled(gameID, 2);
+//                 }
+//             }
+//         }
+
+//         elif (get_player_position_filled(gameID, 3) == get_player_position_filled(gameID, 6)) {
+//             if (get_player_position_filled(gameID, 6)  == get_player_position_filled(gameID, 9)) {
+//                 if (get_player_position_filled(gameID, 3) != Players.None) {
+//                     return get_player_position_filled(gameID, 3);
+//                 }
+//             }
+//         }
+//     }
+
+//     fn diagonal_alignment(gameID: u64) -> Winners {
+//         if (get_player_position_filled(gameID, 1) == get_player_position_filled(gameID, 5)) {
+//             if (get_player_position_filled(gameID, 5)  == get_player_position_filled(gameID, 9)) {
+//                 if (get_player_position_filled(gameID, 1) != Players.None) {
+//                     return get_player_position_filled(gameID, 1);
+//                 }
+//             }
+//         }
+//         elif (get_player_position_filled(gameID, 3) == get_player_position_filled(gameID, 5)) {
+//             if (get_player_position_filled(gameID, 5)  == get_player_position_filled(gameID, 7)) {
+//                 if (get_player_position_filled(gameID, 3) != Players.None) {
+//                     return get_player_position_filled(gameID, 2);
+//                 }
+//             }
+//         }
+//         return Player.None;
+//     }
+
+fn is_board_full(gameID: u64) -> bool {
+    let mut x = 0;
+    while x < 9 {
+        if (get_player_position_filled(gameID, x) == Players.None) {
+            return false;
         }
-        return Players.None;
+        x = x + 1;
     }
-
-    fn vertical_alignment(gameID: u64) -> Winners {
-        if (get_player_position_filled(gameID, 1) == get_player_position_filled(gameID, 4)) {
-            if (get_player_position_filled(gameID, 4)  == get_player_position_filled(gameID, 7)) {
-                if (get_player_position_filled(gameID, 1) != Players.None) {
-                    return get_player_position_filled(gameID, 1);
-                }
-            }
-        }
-
-        elif (get_player_position_filled(gameID, 2) == get_player_position_filled(gameID, 5)) {
-            if (get_player_position_filled(gameID, 5)  == get_player_position_filled(gameID, 8)) {
-                if (get_player_position_filled(gameID, 2) != Players.None) {
-                    return get_player_position_filled(gameID, 2);
-                }
-            }
-        }
-
-        elif (get_player_position_filled(gameID, 3) == get_player_position_filled(gameID, 6)) {
-            if (get_player_position_filled(gameID, 6)  == get_player_position_filled(gameID, 9)) {
-                if (get_player_position_filled(gameID, 3) != Players.None) {
-                    return get_player_position_filled(gameID, 3);
-                }
-            }
-        }
-    }
-
-    fn diagonal_alignment(gameID: u64) -> Winners {
-        if (get_player_position_filled(gameID, 1) == get_player_position_filled(gameID, 5)) {
-            if (get_player_position_filled(gameID, 5)  == get_player_position_filled(gameID, 9)) {
-                if (get_player_position_filled(gameID, 1) != Players.None) {
-                    return get_player_position_filled(gameID, 1);
-                }
-            }
-        }
-        elif (get_player_position_filled(gameID, 3) == get_player_position_filled(gameID, 5)) {
-            if (get_player_position_filled(gameID, 5)  == get_player_position_filled(gameID, 7)) {
-                if (get_player_position_filled(gameID, 3) != Players.None) {
-                    return get_player_position_filled(gameID, 2);
-                }
-            }
-        }
-        return Player.None;
-    }
-
-    fn is_board_full(gameID: u64) -> bool{
-        for (u8 x = 0; x < 9; x++) {
-            if (get_player_position_filled(gameID, x) == None) {
-                return false;
-            }
-        }
-        return true;
-    }
+    return true;
+}
