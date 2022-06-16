@@ -1,6 +1,6 @@
 library data_structures;
 
-use std::{contract_id::ContractId, identity::Identity};
+use std::{contract_id::ContractId, identity::Identity, option::Option};
 
 pub struct Auction {
     /// The asset the auction accepts for placing bids
@@ -19,4 +19,6 @@ pub struct Auction {
     reserve_price: u64,
     /// Point in time when bids can be placed and when the price will start to decrease
     start_time: u64,
+    /// The Identity which won the auction
+    winner: Option<Identity>,
 }

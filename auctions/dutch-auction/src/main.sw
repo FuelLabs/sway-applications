@@ -14,6 +14,7 @@ use std::{
     contract_id::ContractId,
     identity::Identity,
     logging::log,
+    option::Option,
     revert::revert,
     storage::StorageMap,
 };
@@ -86,6 +87,7 @@ impl DutchAuction for Contract {
 
         // Disallows furthur bids
         auction.ended = true;
+        auction.winner = Option::Some(sender_indentity());
         storage.auctions.insert(auction_id, auction);
 
         // If someone sends more than the current price, refunds the extra amount
@@ -124,6 +126,7 @@ impl DutchAuction for Contract {
             opening_price, reserve_price, start_time, end_time, beneficiary, asset_id: asset,
             author: sender_indentity(),
             ended: false,
+            winner: Option::None,
         };
 
         storage.auction_count = storage.auction_count + 1;
