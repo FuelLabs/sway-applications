@@ -29,10 +29,13 @@ storage {
     auctions: StorageMap<u64,
     Auction>, /// Tracking how many auctions have been made till now
     auction_count: u64,
-    /// Auction ids of the active auctions per beneficiary
-    active_auctions_by_identity: StorageMap<Identity,
+    /// Auction ids of the active auctions by author
+    active_auctions_of_author: StorageMap<Identity,
     [u64;
-    1]>
+    1]>, /// Auction ids of all auctions by author
+    auctions_of_author: StorageMap<Identity,
+    [u64;
+    1]>, 
 }
 
 impl DutchAuction for Contract {
@@ -91,7 +94,7 @@ impl DutchAuction for Contract {
         on_win(auction, price);
 
         /// WARNING: This needs to be changed to a pop to a vec instead of just replacing the contents of the array
-        storage.active_auctions_by_identity.insert(auction.beneficiary, [0]);
+        storage.active_auctions_of_author.insert(auction.author, [0]);
 
         log(WinningBidEvent {
             id: auction_id, winner: sender_indentity(), 
@@ -114,13 +117,17 @@ impl DutchAuction for Contract {
 
         let auction = Auction {
             opening_price, reserve_price, start_time, end_time, beneficiary, asset_id: asset,
+            author: sender_indentity(),
             ended: false,
         };
 
         storage.auction_count = storage.auction_count + 1;
         storage.auctions.insert(storage.auction_count, auction);
+
         /// WARNING: This needs to be changed to a push to a vec instead of just replacing the contents of the array
-        storage.active_auctions_by_identity.insert(beneficiary, [storage.auction_count]);
+        storage.active_auctions_of_author.insert(sender_indentity(), [storage.auction_count]);
+        /// WARNING: This needs to be changed to a push to a vec instead of just replacing the contents of the array
+        storage.auctions_of_author.insert(sender_indentity(), [storage.auction_count]);
 
         log(CreatedAuctionEvent {
             auction, id: storage.auction_count, 
@@ -133,22 +140,22 @@ impl DutchAuction for Contract {
     ///
     /// This function will panic when:
     ///     1. auction_id is 0 or greater than storage.auction_count
-    ///     2. msg_sender is not the beneficiary of the auction
+    ///     2. msg_sender is not the author of the auction
     ///     3. auction has already ended
     fn cancel_auction(auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
 
         let mut auction = storage.auctions.get(auction_id);
 
-        // Only the beneficiary can end the auction (prematurely)
-        require(eq_identity(sender_indentity(), auction.beneficiary), UserError::SenderNotBeneficiary);
+        // Only the author can end the auction (prematurely)
+        require(eq_identity(sender_indentity(), auction.author), UserError::SenderNotAuthor);
         // Cannot cancel an auction that has already ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
         /// WARNING: This needs to be changed to a pop to a vec instead of just replacing the contents of the array
-        storage.active_auctions_by_identity.insert(sender_indentity(), [0]);
+        storage.active_auctions_of_author.insert(sender_indentity(), [0]);
 
         log(CancelledAuctionEvent {
             id: auction_id, 
@@ -172,14 +179,14 @@ impl DutchAuction for Contract {
     ///
     /// This function will panic when:
     ///     1. auction_id is 0 or greater than storage.auction_count
-    ///     2. msg_sender is not the beneficiary of the auction
+    ///     2. msg_sender is not the author of the auction
     ///     3. auction has already ended
     fn change_asset(new_asset: ContractId, auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
         let mut auction = storage.auctions.get(auction_id);
 
-        // Only the beneficiary can change the bidding asset
-        require(eq_identity(sender_indentity(), auction.beneficiary), UserError::SenderNotBeneficiary);
+        // Only the author can change the bidding asset
+        require(eq_identity(sender_indentity(), auction.author), UserError::SenderNotAuthor);
         // Cannot edit an auction that has ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
@@ -194,30 +201,32 @@ impl DutchAuction for Contract {
     ///
     /// This function will panic when:
     ///     1. auction_id is 0 or greater than storage.auction_count
-    ///     2. msg_sender is not the beneficiary of the auction
+    ///     2. msg_sender is not the author of the auction
     ///     3. auction has already ended
     fn change_beneficiary(new_beneficiary: Identity, auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
         let mut auction = storage.auctions.get(auction_id);
 
-        // Only the beneficiary can change the beneficiary
-        require(eq_identity(sender_indentity(), auction.beneficiary), UserError::SenderNotBeneficiary);
+        // Only the author can change the beneficiary
+        require(eq_identity(sender_indentity(), auction.author), UserError::SenderNotAuthor);
         // Cannot edit an auction that has ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         auction.beneficiary = new_beneficiary;
-        /// WARNING: This needs to be changed to a pop to a vec instead of just replacing the contents of the array
-        storage.active_auctions_by_identity.insert(sender_indentity(), [0]);
-        /// WARNING: This needs to be changed to a push to a vec instead of just replacing the contents of the array
-        storage.active_auctions_by_identity.insert(new_beneficiary, [auction_id]);
 
         storage.auctions.insert(auction_id, auction);
     }
 
-    /// Returns the active auctions of which the identity is the beneficiary of
-    fn active_auctions_by_identity(identity_to_check: Identity) -> [u64;
+    /// Returns the active auctions of the author
+    fn active_auctions_of_author(author: Identity) -> [u64;
     1] {
-        storage.active_auctions_by_identity.get(identity_to_check)
+        storage.active_auctions_of_author.get(author)
+    }
+
+    /// Returns all the auctions created by author
+    fn auctions_of_author(author: Identity) -> [u64;
+    1] {
+        storage.auctions_of_author.get(author)
     }
 }
 

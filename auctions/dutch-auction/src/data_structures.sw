@@ -5,6 +5,8 @@ use std::{contract_id::ContractId, identity::Identity};
 pub struct Auction {
     /// The asset the auction accepts for placing bids
     asset_id: ContractId,
+    /// The identity that created the auction
+    author: Identity,
     /// The beneficiary of the proceeds of the auction
     beneficiary: Identity,
     /// Whether the auction has ended

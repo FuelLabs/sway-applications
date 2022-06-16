@@ -16,5 +16,5 @@ pub enum UserError {
     InvalidAuctionID: (),
     BidTooLow: (),
     WrongAssetSent: (),
-    SenderNotBeneficiary: (),
+    SenderNotAuthor: (),
 }
