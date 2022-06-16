@@ -3,9 +3,14 @@ library events;
 dep data_structures;
 
 use data_structures::Auction;
-use std::identity::Identity;
+use std::{contract_id::ContractId, identity::Identity};
 
 pub struct CancelledAuctionEvent {
+    id: u64,
+}
+
+pub struct ChangedAsset {
+    new_asset: ContractId,
     id: u64,
 }
 

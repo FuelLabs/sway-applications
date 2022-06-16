@@ -22,7 +22,7 @@ use std::{
 use abi::DutchAuction;
 use data_structures::Auction;
 use errors::{SetupError, TimeError, UserError};
-use events::{CancelledAuctionEvent, CreatedAuctionEvent, WinningBidEvent};
+use events::{CancelledAuctionEvent, ChangedAsset, CreatedAuctionEvent, WinningBidEvent};
 use utils::{calculate_price, eq_identity, sender_indentity, transfer_to_identity, validate_id};
 
 storage {
@@ -201,6 +201,10 @@ impl DutchAuction for Contract {
         auction.asset_id = new_asset;
 
         storage.auctions.insert(auction_id, auction);
+
+        log(ChangedAsset {
+            new_asset, id: auction_id, 
+        });
     }
 
     /// Changes the beneficiary of the given auction
