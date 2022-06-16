@@ -35,6 +35,9 @@ storage {
     1]>, /// Auction ids of all auctions by author
     auctions_of_author: StorageMap<Identity,
     [u64;
+    1]>, /// The auctions which any given bidder has won
+    auctions_won: StorageMap<Identity,
+    [u64;
     1]>, 
 }
 
@@ -95,6 +98,8 @@ impl DutchAuction for Contract {
 
         /// WARNING: This needs to be changed to a pop to a vec instead of just replacing the contents of the array
         storage.active_auctions_of_author.insert(auction.author, [0]);
+        /// WARNING: This needs to be changed to a push to a vec instead of just replacing the contents of the array
+        storage.auctions_won.insert(sender_indentity(), [auction_id]);
 
         log(WinningBidEvent {
             id: auction_id, winner: sender_indentity(), 
@@ -227,6 +232,12 @@ impl DutchAuction for Contract {
     fn auctions_of_author(author: Identity) -> [u64;
     1] {
         storage.auctions_of_author.get(author)
+    }
+
+    /// Returns what auctions some bidder has won
+    fn auctions_won(bidder: Identity) -> [u64;
+    1] {
+        storage.auctions_won.get(bidder)
     }
 }
 
