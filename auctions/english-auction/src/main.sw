@@ -3,11 +3,13 @@ contract;
 dep abi;
 dep data_structures;
 dep errors;
+dep events;
 dep utils;
 
 use abi::EnglishAuction;
 use data_structures::{Asset, Auction};
 use errors::{AccessError, InitError, InputError, UserError};
+use events::{AuctionStartEvent, BidEvent, WithdrawEvent};
 use utils::{identities_equal, reserve_met, sender_identity};
 
 use std::{
@@ -19,6 +21,7 @@ use std::{
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
     contract_id::ContractId,
     identity::Identity,
+    logging::log,
     option::*,
     result::*,
     revert::revert,
@@ -95,11 +98,18 @@ impl EnglishAuction for Contract {
             auction.buy_asset.amount = sender_deposit.amount + msg_amount();
             storage.auctions.insert(auction_id, Option::Some(auction));
             storage.deposits.insert((sender, auction_id), Option::Some(auction.buy_asset));
+            log(BidEvent{asset: auction.buy_asset, auction_id: auction_id, identity: sender});
         } else {
             // The reserve price was met
             let auction = reserve_met(auction, sender_deposit.amount, reserve.unwrap());
             storage.auctions.insert(auction_id, Option::Some(auction));
-            storage.deposits.insert((sender, auction_id), Option::None());  
+            storage.deposits.insert((sender, auction_id), Option::None());
+
+            let bought_asset = Asset{
+                amount: reserve.unwrap(),
+                contract_id: auction.buy_asset.contract_id
+            };
+            log(WithdrawEvent{asset: bought_asset, auction_id: auction_id, identity: sender});  
         }
         true
     }
@@ -143,6 +153,12 @@ impl EnglishAuction for Contract {
         let auction = reserve_met(auction, sender_deposit.amount, reserve.unwrap());
         storage.auctions.insert(auction_id, Option::Some(auction));
         storage.deposits.insert((sender, auction_id), Option::None()); 
+
+        let bought_asset = Asset{
+            amount: reserve.unwrap(),
+            contract_id: auction.buy_asset.contract_id
+        };
+        log(WithdrawEvent{asset: bought_asset, auction_id: auction_id, identity: sender});  
         true
     }
 
@@ -188,6 +204,8 @@ impl EnglishAuction for Contract {
 
         storage.deposits.insert((seller, storage.total_auctions), Option::Some(sell_asset));
         storage.auctions.insert(storage.total_auctions, Option::Some(auction));
+        log(AuctionStartEvent{auction: auction, auction_id: storage.total_auctions});
+
         storage.total_auctions = storage.total_auctions + 1;
         storage.total_auctions - 1
     }
