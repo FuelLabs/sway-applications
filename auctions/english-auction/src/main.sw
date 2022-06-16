@@ -6,18 +6,24 @@ dep errors;
 dep events;
 dep utils;
 
-use abi::EnglishAuction;
+use abi::{EnglishAuction, NFT};
 use data_structures::{Asset, Auction};
 use errors::{AccessError, InitError, InputError, UserError};
 use events::{AuctionStartEvent, BidEvent, WithdrawEvent};
-use utils::{identities_equal, reserve_met, sender_identity};
+use utils::{
+    approved_for_nft_transfer, 
+    identities_equal, reserve_met, 
+    sender_identity, 
+    send_tokens, 
+    transfer_nft
+};
 
 use std::{
     address::Address,
     assert::require,
     block::height,
     chain::auth::{AuthError, msg_sender},
-    constants::NATIVE_ASSET_ID,
+    constants::BASE_ASSET_ID,
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
     contract_id::ContractId,
     identity::Identity,
@@ -45,6 +51,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction does not exist
+    #[storage(read)]
     fn auction_end_block(auction_id: u64) -> u64 {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -67,6 +74,7 @@ impl EnglishAuction for Contract {
     /// - The asset amount provided is less than the inital price if there are no bids
     /// - The bidder is the seller
     /// - The asset amount provided plus current deposit is less than or equal to the current bid
+    #[storage(read, write)]
     fn bid(auction_id: u64) -> bool {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -82,14 +90,20 @@ impl EnglishAuction for Contract {
         }
 
         let sender: Identity = sender_identity();
+        let nft_id: Option<u64> = auction.buy_asset.nft_id;
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
+        // TODO: Change this
         let sender_deposit = match sender_deposit {
             Option::Some(Asset) => sender_deposit.unwrap(),
-            Option::None(Asset) => Asset {amount: 0, contract_id: ~ContractId::from(NATIVE_ASSET_ID)},
+            Option::None(Asset) => Asset {amount: 0, contract_id: ~ContractId::from(BASE_ASSET_ID), nft_id: Option::None()},
         };
         
         require(!identities_equal(sender, auction.seller), UserError::BidderIsSeller);
-        require(msg_amount() + sender_deposit.amount >= current_bid, InputError::IncorrectAmountProvided);
+
+        // TODO: Allow for bidding of mutliple NFTs
+        if (nft_id.is_none()) {
+            require(msg_amount() + sender_deposit.amount >= current_bid, InputError::IncorrectAmountProvided);
+        }
 
         let reserve: Option<u64> = auction.reserve_price;
         if (reserve.is_none() || msg_amount() + sender_deposit.amount < reserve.unwrap()) {
@@ -107,7 +121,8 @@ impl EnglishAuction for Contract {
 
             let bought_asset = Asset{
                 amount: reserve.unwrap(),
-                contract_id: auction.buy_asset.contract_id
+                contract_id: auction.buy_asset.contract_id,
+                nft_id: auction.buy_asset.nft_id
             };
             log(WithdrawEvent{asset: bought_asset, auction_id: auction_id, identity: sender});  
         }
@@ -127,6 +142,7 @@ impl EnglishAuction for Contract {
     /// - The bidder is the seller
     /// - The asset amount does not meet the reserve price
     /// - The buy assest provided is the incorrect asset
+    #[storage(read, write)]
     fn buy_reserve(auction_id: u64) -> bool {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -138,16 +154,23 @@ impl EnglishAuction for Contract {
         let reserve: Option<u64> = auction.reserve_price;
         require(reserve.is_some(), AccessError::NoReserveSet);
 
+
         let sender = sender_identity();
+        let nft_id: Option<u64> = auction.buy_asset.nft_id;
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
+        // TODO: Change this
         let sender_deposit = match sender_deposit {
             Option::Some(Asset) => sender_deposit.unwrap(),
-            Option::None(Asset) => Asset {amount: 0, contract_id: ~ContractId::from(NATIVE_ASSET_ID)},
+            Option::None(Asset) => Asset {amount: 0, contract_id: ~ContractId::from(BASE_ASSET_ID), nft_id: Option::None()},
         };
 
         require(!identities_equal(sender, auction.seller), UserError::BidderIsSeller);
-        require(msg_amount() + sender_deposit.amount >= reserve.unwrap(), InputError::IncorrectAmountProvided);
         require(msg_asset_id() == auction.buy_asset.contract_id, InputError::IncorrectAssetProvided);
+
+        // TODO: Allow for mutliple NFTs
+        if (nft_id.is_none()) {
+            require(msg_amount() + sender_deposit.amount >= reserve.unwrap(), InputError::IncorrectAmountProvided);
+        }
 
         // The reserve price was met
         let auction = reserve_met(auction, sender_deposit.amount, reserve.unwrap());
@@ -156,7 +179,8 @@ impl EnglishAuction for Contract {
 
         let bought_asset = Asset{
             amount: reserve.unwrap(),
-            contract_id: auction.buy_asset.contract_id
+            contract_id: auction.buy_asset.contract_id,
+            nft_id: auction.buy_asset.nft_id
         };
         log(WithdrawEvent{asset: bought_asset, auction_id: auction_id, identity: sender});  
         true
@@ -171,20 +195,50 @@ impl EnglishAuction for Contract {
     /// - The transaction did not have any sell asset
     /// - The inital price is higher than the reserve price if a reserve price is set
     /// - The time for the auction to end is 0
-    fn constructor(seller: Identity, buy_asset: ContractId, inital_price: u64, reserve_price: u64, time: u64) -> u64 {
+    /// - The token amount tranfered is not the amount specified in sell_asset
+    /// - The token contract transfered is not the type specified in sell_asset
+    /// - The auction contract is not approved to transfer all NFTs
+    /// - The auction contract is not approved to transfer the specified token id in sell_asset
+    /// - The auction contract is not the owner of the specified NFT
+    /// - The sender is not approved to transfer all NFTs
+    /// - The sender is not approved to transfer the specified token id in sell_asset
+    /// - The sender is not the owner of the specified NFT
+    #[storage(read, write)]
+    fn constructor(seller: Identity, sell_asset: Asset, buy_asset: Asset, inital_price: u64, reserve_price: u64, time: u64) -> u64 {
         require(msg_amount() > 0, InputError::IncorrectAmountProvided);
         require((reserve_price >= inital_price && reserve_price != 0) || reserve_price == 0, InitError::ReserveLessThanInitalPrice);
         require(time != 0, InitError::AuctionTimeNotProvided);
 
-        let buy_asset = Asset {
-            amount: 0,
-            contract_id: buy_asset
-        };
-
-        let sell_asset = Asset {
-            amount: msg_amount(),
-            contract_id: msg_asset_id()
-        };
+        let nft_id: Option<u64> = sell_asset.nft_id;
+        if (nft_id.is_none())
+        {
+            // Selling tokens
+            require(msg_amount() == sell_asset.amount, InputError::IncorrectAmountProvided);
+            require(msg_asset_id() == sell_asset.contract_id, InputError::IncorrectAssetProvided);
+        } else {
+            // Selling NFTs
+            // Ensure that this contract is approved to transfer the token
+            require(
+                approved_for_nft_transfer(
+                    Identity::ContractId(contract_id()), 
+                    seller, 
+                    sell_asset.contract_id, 
+                    nft_id.unwrap()
+                ), 
+                AccessError::NFTTransferNotApproved
+            );
+            // Ensure that the sender is approved to transfer the token or is the owner
+            let sender = sender_identity();
+            require(
+                approved_for_nft_transfer(
+                    sender, 
+                    seller, 
+                    sell_asset.contract_id, 
+                    nft_id.unwrap()
+                ), 
+                AccessError::NFTTransferNotApproved
+            );
+        }
 
         let reserve = match reserve_price {
             0 => Option::None(),
@@ -216,6 +270,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction exists
+    #[storage(read)]
     fn current_bid(auction_id: u64) -> u64 {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -263,6 +318,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction does not exist
+    #[storage(read)]
     fn sell_amount(auction_id: u64) -> u64 {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -276,6 +332,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction does not exist
+    #[storage(read)]
     fn sell_asset(auction_id: u64) -> ContractId {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -289,6 +346,7 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction does not exist
+    #[storage(read)]
     fn state(auction_id: u64) -> u64 {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -307,6 +365,7 @@ impl EnglishAuction for Contract {
     /// - The buyer is the sender and already withdrew
     /// - The seller is the sender and already withdrew
     /// - The sender is not the buyer or seller and has nothing to withdraw
+    #[storage(read, write)]
     fn withdraw(auction_id: u64) -> bool {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -321,59 +380,40 @@ impl EnglishAuction for Contract {
         }
 
         let sender = sender_identity();
+        let bidder: Option<Identity> = auction.bidder;
+        let sell_nft_id: Option<u64> = auction.sell_asset.nft_id;
+        let buy_nft_id: Option<u64> = auction.buy_asset.nft_id;
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
+        // TODO: Change this
         let sender_deposit = match sender_deposit {
             Option::Some(Asset) => sender_deposit.unwrap(),
-            Option::None(Asset) => Asset {amount: 0, contract_id: ~ContractId::from(NATIVE_ASSET_ID)},
+            Option::None(Asset) => Asset {amount: 0, contract_id: ~ContractId::from(BASE_ASSET_ID), nft_id: Option::None()},
         };
 
         require(sender_deposit.amount != 0, UserError::UserHasAlreadyWithdrawn);
         storage.deposits.insert((sender, auction_id), Option::None());
             
-        let bidder: Option<Identity> = auction.bidder;
-        if (bidder.is_none() && identities_equal(bidder.unwrap(), sender)) {
+        if (bidder.is_some() && identities_equal(bidder.unwrap(), sender)) {
             // The buyer is withdrawing
-            match sender {
-                Identity::Address(sender) => {
-                    transfer_to_output(auction.sell_asset.amount, auction.sell_asset.contract_id, sender);    
-                },
-                Identity::ContractId(sender) => {
-                    force_transfer_to_contract(auction.sell_asset.amount, auction.sell_asset.contract_id, sender);
-                },
+            match sell_nft_id {
+                Option::Some(u64) => transfer_nft(auction.seller, sender, auction.sell_asset),
+                Option::None(u64) => send_tokens(sender, auction.sell_asset),
             };
         } else if (identities_equal(auction.seller, sender)) {
             // The seller is withdrawing
-            if (bidder.is_none()) {
-                // No one placed a bid
-                match sender {
-                    Identity::Address(sender) => {
-                        transfer_to_output(auction.sell_asset.amount, auction.sell_asset.contract_id, sender);    
-                    },
-                    Identity::ContractId(sender) => {
-                        force_transfer_to_contract(auction.sell_asset.amount, auction.sell_asset.contract_id, sender);
-                    },
-                };
+            if (bidder.is_none() && sell_nft_id.is_none()) {
+                // No one placed a bid, only tokens should be transfered back
+                send_tokens(sender, auction.sell_asset);
             } else { 
                 // The asset was sold
-                match sender {
-                    Identity::Address(sender) => {
-                        transfer_to_output(auction.buy_asset.amount, auction.buy_asset.contract_id, sender);    
-                    },
-                    Identity::ContractId(sender) => {
-                        force_transfer_to_contract(auction.buy_asset.amount, auction.buy_asset.contract_id, sender);
-                    },
-                };
+                match buy_nft_id {
+                    Option::Some(u64) => transfer_nft(bidder.unwrap(), sender, auction.buy_asset),
+                    Option::None(u64) => send_tokens(sender, auction.buy_asset),
+                }
             }
-        } else {
+        } else if (buy_nft_id.is_none()) {
             // Anyone with a failed bid is withdrawing
-            match sender {
-                Identity::Address(sender) => {
-                    transfer_to_output(sender_deposit.amount, auction.buy_asset.contract_id, sender);    
-                },
-                Identity::ContractId(sender) => {
-                    force_transfer_to_contract(sender_deposit.amount, auction.buy_asset.contract_id, sender);
-                },
-            };
+            send_tokens(sender, sender_deposit);
         };
 
         storage.auctions.insert(auction_id, Option::Some(auction));

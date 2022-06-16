@@ -10,6 +10,8 @@ use std::{
 pub struct Asset {
     amount: u64,
     contract_id: ContractId,
+    // TODO: This should be a Vec in order to auction off multiple NFTs at the same time
+    nft_id: Option<u64>,
 }
 
 pub struct Auction {

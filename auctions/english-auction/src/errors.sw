@@ -4,6 +4,7 @@ pub enum AccessError {
     AuctionDoesNotExist: (),
     AuctionIsNotClosed: (),
     AuctionIsNotOpen: (),
+    NFTTransferNotApproved: (),
     NoReserveSet: (),
 }
 
