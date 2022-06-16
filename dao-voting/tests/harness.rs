@@ -360,9 +360,10 @@ async fn user_can_add_proposal() {
     assert_eq!(
         proposal,
         daovoting_mod::Proposal {
-            approved: false,
-            expired: false,
-            data: [1; 32]
+            yes_votes: 0,
+            no_votes: 0,
+            data: [1; 32],
+            end_height: 13,
         }
     );
 }

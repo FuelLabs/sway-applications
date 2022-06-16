@@ -37,7 +37,7 @@ enum Error {
     NoAssetsSent: (),
     NotEnoughAssets: (),
     InvalidId: (),
-    ProposalExipred: (),
+    ProposalExpired: (),
 }
 
 struct Proposal {
@@ -184,7 +184,7 @@ impl DaoVoting for Contract {
 
         require(sender_votes >= vote_amount, Error::NotEnoughAssets);
 
-        let proposal = storage.proposals.get(proposal_id);
+        let mut proposal = storage.proposals.get(proposal_id);
         require(proposal.end_height < height(), Error::ProposalExpired);
 
         if (is_yes_vote) {
