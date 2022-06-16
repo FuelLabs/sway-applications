@@ -3,10 +3,12 @@ contract;
 dep abi;
 dep data_structures;
 dep errors;
+dep utils;
 
 use abi::EnglishAuction;
 use data_structures::{Asset, Auction};
 use errors::{AccessError, InitError, InputError, UserError};
+use utils::{identities_equal, reserve_met, sender_identity};
 
 use std::{
     address::Address,
@@ -76,14 +78,14 @@ impl EnglishAuction for Contract {
             require(msg_amount() >= auction.inital_price, InputError::InitalPriceNotMet);
         }
 
-        let sender: Identity = unwrap_identity(msg_sender());
+        let sender: Identity = sender_identity();
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let sender_deposit = match sender_deposit {
             Option::Some(Asset) => sender_deposit.unwrap(),
             Option::None(Asset) => Asset {amount: 0, contract_id: ~ContractId::from(NATIVE_ASSET_ID)},
         };
         
-        require(!compare_identities(sender, auction.seller), UserError::BidderIsSeller);
+        require(!identities_equal(sender, auction.seller), UserError::BidderIsSeller);
         require(msg_amount() + sender_deposit.amount >= current_bid, InputError::IncorrectAmountProvided);
 
         let reserve: Option<u64> = auction.reserve_price;
@@ -95,7 +97,9 @@ impl EnglishAuction for Contract {
             storage.deposits.insert((sender, auction_id), Option::Some(auction.buy_asset));
         } else {
             // The reserve price was met
-            reserve_met(sender, sender_deposit.amount, auction_id, reserve.unwrap());
+            let auction = reserve_met(auction, sender_deposit.amount, reserve.unwrap());
+            storage.auctions.insert(auction_id, Option::Some(auction));
+            storage.deposits.insert((sender, auction_id), Option::None());  
         }
         true
     }
@@ -124,18 +128,21 @@ impl EnglishAuction for Contract {
         let reserve: Option<u64> = auction.reserve_price;
         require(reserve.is_some(), AccessError::NoReserveSet);
 
-        let sender = unwrap_identity(msg_sender());
+        let sender = sender_identity();
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let sender_deposit = match sender_deposit {
             Option::Some(Asset) => sender_deposit.unwrap(),
             Option::None(Asset) => Asset {amount: 0, contract_id: ~ContractId::from(NATIVE_ASSET_ID)},
         };
 
-        require(!compare_identities(sender, auction.seller), UserError::BidderIsSeller);
+        require(!identities_equal(sender, auction.seller), UserError::BidderIsSeller);
         require(msg_amount() + sender_deposit.amount >= reserve.unwrap(), InputError::IncorrectAmountProvided);
         require(msg_asset_id() == auction.buy_asset.contract_id, InputError::IncorrectAssetProvided);
 
-        reserve_met(sender, sender_deposit.amount, auction_id, reserve.unwrap());
+        // The reserve price was met
+        let auction = reserve_met(auction, sender_deposit.amount, reserve.unwrap());
+        storage.auctions.insert(auction_id, Option::Some(auction));
+        storage.deposits.insert((sender, auction_id), Option::None()); 
         true
     }
 
@@ -295,7 +302,7 @@ impl EnglishAuction for Contract {
             auction.state = 2;
         }
 
-        let sender = unwrap_identity(msg_sender());
+        let sender = sender_identity();
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let sender_deposit = match sender_deposit {
             Option::Some(Asset) => sender_deposit.unwrap(),
@@ -306,7 +313,7 @@ impl EnglishAuction for Contract {
         storage.deposits.insert((sender, auction_id), Option::None());
             
         let bidder: Option<Identity> = auction.bidder;
-        if (bidder.is_none() && compare_identities(bidder.unwrap(), sender)) {
+        if (bidder.is_none() && identities_equal(bidder.unwrap(), sender)) {
             // The buyer is withdrawing
             match sender {
                 Identity::Address(sender) => {
@@ -316,7 +323,7 @@ impl EnglishAuction for Contract {
                     force_transfer_to_contract(auction.sell_asset.amount, auction.sell_asset.contract_id, sender);
                 },
             };
-        } else if (compare_identities(auction.seller, sender)) {
+        } else if (identities_equal(auction.seller, sender)) {
             // The seller is withdrawing
             if (bidder.is_none()) {
                 // No one placed a bid
@@ -354,61 +361,4 @@ impl EnglishAuction for Contract {
         storage.auctions.insert(auction_id, Option::Some(auction));
         true
     }
-}
-
-// This function will take two identities and return true if they are the same
-fn compare_identities(identity1: Identity, identity2: Identity) -> bool {
-    match identity1 {
-        Identity::Address(identity1) => {
-            match identity2 {
-                Identity::Address(identity2) => identity1.value == identity2.value,
-                _ => false,
-            }
-        },
-        Identity::ContractId(identity1) => {
-            match identity2 {
-                Identity::ContractId(identity2) => identity1.value == identity2.value,
-                _ => false,
-            }
-        }
-    }
-}
-
-
-// Gets called when the reserve price is met
-fn reserve_met(sender: Identity, balance: u64, auction_id: u64, reserve: u64) {
-    let auction: Option<Auction> = storage.auctions.get(auction_id);
-    let mut auction: Auction = auction.unwrap();
-    auction.state = 2;
-    auction.bidder = Option::Some(sender);
-    auction.buy_asset.amount = reserve;
-    storage.deposits.insert((sender, auction_id), Option::None());
-
-    match sender {
-        Identity::Address(sender) => {
-            transfer_to_output(auction.sell_asset.amount, auction.sell_asset.contract_id, sender);    
-        },
-        Identity::ContractId(sender) => {
-            force_transfer_to_contract(auction.sell_asset.amount, auction.sell_asset.contract_id, sender);
-        },
-    };
-
-    let overpaid_balance = (msg_amount() + balance) - reserve;
-    if (overpaid_balance > 0)
-    {
-        match sender {
-            Identity::Address(sender) => {
-                transfer_to_output(overpaid_balance, auction.buy_asset.contract_id, sender);    
-            },
-            Identity::ContractId(sender) => {
-                force_transfer_to_contract(overpaid_balance, auction.buy_asset.contract_id, sender);
-            },
-        };
-    }
-
-    storage.auctions.insert(auction_id, Option::Some(auction));
-}
-
-fn unwrap_identity(sender: Result<Identity, AuthError>) -> Identity {
-    sender.unwrap()
 }
