@@ -36,12 +36,9 @@ storage {
     /// Cancelling / Claiming should not affect this number
     campaign_count: StorageMap<Identity,
     u64>, /// Campaigns that have been created by a user
-    /// Map(User => Campaign)
+    /// Map(Identity => Map(1...campaign_count => Campaign)
     campaign_history: StorageMap<(Identity,
-    u64), Campaign>, /// O(1) look-up to prevent iterating over campaign_history
-    /// Map(Identity => Map(Campaign ID => Campaign History Index))
-    campaign_history_index: StorageMap<(Identity,
-    u64), u64>, /// Data describing the content of a campaign
+    u64), Campaign>, /// Data describing the content of a campaign
     /// Map(Campaign ID => CampaignInfo)
     campaign_info: StorageMap<u64,
     CampaignInfo>, /// The total number of unique campaigns that a user has pledged to
@@ -94,17 +91,11 @@ impl Fundraiser for Contract {
 
         let campaign_count = storage.campaign_count.get(user);
 
-        if campaign_count == 0 {
-            storage.campaign_count.insert(user, 1);
-        } else {
-            storage.campaign_count.insert(user, campaign_count + 1);
-        }
-
         storage.total_campaigns = storage.total_campaigns + 1;
+        storage.campaign_count.insert(user, campaign_count + 1);
         storage.campaign_history.insert((user, campaign_count + 1), Campaign {
             id: storage.total_campaigns
         });
-        storage.campaign_history_index.insert((user, storage.total_campaigns), campaign_count + 1);
         storage.campaign_info.insert(storage.total_campaigns, campaign_info);
 
         log(CreatedCampaignEvent {
@@ -327,15 +318,15 @@ impl Fundraiser for Contract {
     ///
     /// # Arguments
     ///
-    /// * `campaign_history_index` - Unique identifier which is a number starting from 1...storage.campaign_count
+    /// * `id` - Unique identifier which is a number starting from 1...storage.campaign_count
     ///
     /// # Reverts
     ///
-    /// * When the `campaign_history_index` is either 0 or greater than the total number of campaigns created by the author
+    /// * When the `id` is either 0 or greater than the total number of campaigns created by the author
     /// * When an AuthError is generated
-    fn campaign(campaign_history_index: u64) -> Campaign {
-        require(campaign_history_index != 0 && campaign_history_index < storage.campaign_count.get(sender_identity()), UserError::InvalidHistoryId);
-        storage.campaign_history.get((sender_identity(), campaign_history_index))
+    fn campaign(id: u64) -> Campaign {
+        require(id != 0 && id <= storage.campaign_count.get(sender_identity()), UserError::InvalidHistoryId);
+        storage.campaign_history.get((sender_identity(), id))
     }
 
     /// Returns the number of campaigns that the user has pledged to
