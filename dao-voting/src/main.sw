@@ -23,7 +23,7 @@ abi DaoVoting {
     fn get_proposal(id: u64) -> Proposal;
     fn lock_and_get_votes(vote_amount: u64) -> bool;
     fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool;
-    fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool);
+    fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool;
 }
 
 enum Error {
@@ -173,7 +173,7 @@ impl DaoVoting for Contract {
     /// - The vote amount is 0
     /// - The vote amount is greater than the user's amount of votes
     /// - The given proposal is expired
-    fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) {
+    fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool {
         require(storage.state == 1, Error::NotInitialized);
         require(proposal_id < storage.proposal_count, Error::InvalidId);
         require(vote_amount > 0, Error::VoteAmountCannotBeZero);
@@ -185,7 +185,7 @@ impl DaoVoting for Contract {
         require(sender_votes >= vote_amount, Error::NotEnoughAssets);
 
         let mut proposal = storage.proposals.get(proposal_id);
-        require(proposal.end_height < height(), Error::ProposalExpired);
+        require(proposal.end_height >= height(), Error::ProposalExpired);
 
         if (is_yes_vote) {
             proposal.yes_votes = proposal.yes_votes + vote_amount;
@@ -199,6 +199,8 @@ impl DaoVoting for Contract {
         storage.spent_votes.insert(sender, spent_votes + vote_amount);
 
         storage.proposals.insert(proposal_id, proposal);
+
+        true
     }
 
     /// Return the amount of governance tokens in this contract
