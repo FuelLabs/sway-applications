@@ -67,7 +67,7 @@ pub fn reserve_met(auction: Auction, balance: u64, reserve: u64) -> Auction {
         Option::None(u64) => send_tokens(sender, auction.sell_asset),
     };
 
-    let overpaid_balance = (msg_amount() + balance) - reserve;
+    let overpaid_balance = balance - reserve;
     if (overpaid_balance > 0)
     {
         match sender {

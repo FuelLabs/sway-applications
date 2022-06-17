@@ -93,7 +93,7 @@ impl EnglishAuction for Contract {
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let reserve: Option<u64> = auction.reserve_price;
         let new_bid = match sender_deposit {
-            Option::Some(Asset) => sender_deposit.unwrap() + msg_amount(),
+            Option::Some(Asset) => sender_deposit.unwrap().amount + msg_amount(),
             Option::None(Asset) => msg_amount(),
         };
 
@@ -147,7 +147,7 @@ impl EnglishAuction for Contract {
             }
 
             auction.bidder = Option::Some(sender);
-            auction.buy_asset.amount = asset.amount + sender_deposit.amount;
+            auction.buy_asset.amount = new_bid;
             storage.auctions.insert(auction_id, Option::Some(auction));
             storage.deposits.insert((sender, auction_id), Option::Some(auction.buy_asset));
 
@@ -155,7 +155,7 @@ impl EnglishAuction for Contract {
             log(BidEvent{asset: auction.buy_asset, auction_id: auction_id, identity: sender});
         } else {
             // The reserve price was met
-            let auction = reserve_met(auction, sender_deposit.amount, reserve.unwrap());
+            let auction = reserve_met(auction, new_bid, reserve.unwrap());
             storage.auctions.insert(auction_id, Option::Some(auction));
             storage.deposits.insert((sender, auction_id), Option::None());
 
@@ -198,7 +198,7 @@ impl EnglishAuction for Contract {
         let nft_id: Option<u64> = auction.buy_asset.nft_id;
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let new_bid = match sender_deposit {
-            Option::Some(Asset) => sender_deposit.unwrap() + msg_amount(),
+            Option::Some(Asset) => sender_deposit.unwrap().amount + msg_amount(),
             Option::None(Asset) => msg_amount(),
         };
 
@@ -242,7 +242,7 @@ impl EnglishAuction for Contract {
         {
             transfer_nft(sender, Identity::ContractId(contract_id()), asset);
         }
-        let auction = reserve_met(auction, sender_deposit.amount, reserve.unwrap());
+        let auction = reserve_met(auction, new_bid, reserve.unwrap());
         storage.auctions.insert(auction_id, Option::Some(auction));
         storage.deposits.insert((sender, auction_id), Option::None()); 
 
