@@ -15,6 +15,7 @@ use std::{
     result::*,
     revert::revert,
     storage::StorageMap,
+    token::{transfer_to_output, force_transfer_to_contract},
 };
 
 use abi::DaoVoting;
@@ -31,9 +32,7 @@ storage {
     balances: StorageMap<Identity,
     u64>, // The amount of votes a user has
     votes: StorageMap<Identity,
-    u64>, state: u64,
-    //spent_votes: StorageMap<Identity,
-    //u64>, 
+    u64>, state: u64, 
 }
 
 impl DaoVoting for Contract {
@@ -98,6 +97,34 @@ impl DaoVoting for Contract {
         let prev_balance = storage.balances.get(sender);
         let new_balance = prev_balance + msg_amount();
         storage.balances.insert(sender, new_balance);
+
+        true
+    }
+
+    /// Update the user balance to indicate they have withdrawn governance tokens
+    ///
+    /// # Panics
+    ///
+    /// This functions will panic when:
+    /// - The constructor has not been called to initalize
+    /// - The user tries to withdraw more than their balance
+    fn withdraw(amount: u64) -> bool {
+        require(storage.state == 1, Error::NotInitialized);
+
+        let result: Result<Identity, AuthError> = msg_sender();
+        let sender: Identity = result.unwrap();
+
+        let prev_balance = storage.balances.get(sender);
+        require(prev_balance >= amount, Error::NotEnoughAssets);
+
+        let new_balance = prev_balance - amount;
+        storage.balances.insert(sender, new_balance);
+
+        // Transfer the asset back to the user
+        match sender {
+            Identity::Address(address) => transfer_to_output(amount, storage.gov_token, address), 
+            Identity::ContractId(address) => force_transfer_to_contract(amount, storage.gov_token, address), 
+        }
 
         true
     }

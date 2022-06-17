@@ -16,4 +16,5 @@ abi DaoVoting {
     fn get_proposal(id: u64) -> Proposal;
     fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool;
     fn execute(proposal_id: u64) -> bool;
+    fn withdraw(amount: u64) -> bool;
 }
