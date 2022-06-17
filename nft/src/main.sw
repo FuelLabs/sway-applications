@@ -69,6 +69,7 @@ impl NFT for Contract {
     /// The function will panic when:
     /// - The NFT contract does not have access control set
     /// - The Identity is not the access control address
+    #[storage(read, write)]
     fn allow_mint(minter: Identity, allow: bool) {
         require(storage.access_control, AccessError::AccessControlNotSet);
         
@@ -91,6 +92,7 @@ impl NFT for Contract {
     /// - The token does not exist
     /// - The appover is the owner
     /// - The sender is not the owner
+    #[storage(read, write)]
     fn approve(to: Identity, token_id: u64, approve: bool) {
         let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
         require(meta_data.is_some(), InputError::TokenDoesNotExist);
@@ -126,6 +128,7 @@ impl NFT for Contract {
     }
 
     /// Returns the balance of the specified owner
+    #[storage(read)]
     fn balance_of(owner: Identity) -> u64 {
         storage.balances.get(owner)
     }
@@ -137,6 +140,7 @@ impl NFT for Contract {
     /// The function will panic when:
     /// - The token id does not exist
     /// - The sender is not the owner
+    #[storage(read, write)]
     fn burn(token_id: u64) {
         // Ensure this is a valid token that has already been minted and exists
         let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
@@ -170,6 +174,7 @@ impl NFT for Contract {
     /// The function will panic when:
     /// - The constructor has already been called
     /// - The token count is 0
+    #[storage(read, write)]
     fn constructor(owner: Identity, access_control: bool, token_supply: u64) {
         require(storage.token_supply == 0, InitError::CannotReinitialize);
         require(token_supply != 0, InputError::TokenSupplyCannotBeZero);
@@ -181,6 +186,7 @@ impl NFT for Contract {
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
     /// Returns the approved address
+    // #[storage(read)]
     // fn get_approved(token_id: u64) -> Option<Identity> {
     //     let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
 
@@ -199,16 +205,19 @@ impl NFT for Contract {
     // }
 
     /// Returns the tokens owned by the address
+    #[storage(read)]
     fn get_tokens(identity: Identity) -> u64 {
         storage.owners.get(identity)
     }
 
     /// Returns the total supply for the NFT contract
+    #[storage(read)]
     fn get_total_supply() -> u64 {
         storage.token_supply
     }
 
     /// Returns whether the address is approved for all tokens
+    #[storage(read)]
     fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
         storage.operator_approval.get(sha256(owner, operator))
     }
@@ -223,6 +232,7 @@ impl NFT for Contract {
     /// - The sender is not approved to mint
     /// - The sender sent the wrong asset
     /// - The sender did not pay enough tokens
+    #[storage(read, write)]
     fn mint(to: Identity, amount: u64) {
         require(
             storage.token_supply >= (storage.token_count + amount), 
@@ -265,6 +275,7 @@ impl NFT for Contract {
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
     /// Returns the owner of a given token id
+    // #[storage(read)]
     // fn owner_of(token_id: u64) -> Option<Identity> {
     //     let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
 
@@ -284,6 +295,7 @@ impl NFT for Contract {
     ///
     /// The function will panic when:
     /// - The sender is not the owner
+    #[storage(read, write)]
     fn set_approval_for_all(owner: Identity, operator: Identity, allow: bool) {
         let hash = sha256(owner, operator);
 
@@ -305,6 +317,7 @@ impl NFT for Contract {
     /// - The sender is not the owner
     /// - The sender is not approved
     /// - The sender is not an operator for the owner
+    #[storage(read, write)]
     fn transfer_from(from: Identity, to: Identity, token_id: u64) {
         // Make sure the token exists
         let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
