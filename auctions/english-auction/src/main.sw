@@ -86,9 +86,16 @@ impl EnglishAuction for Contract {
         require(auction.state == 1, AccessError::AuctionIsNotOpen);
         require(height() <= auction.end_block, AccessError::AuctionIsNotOpen);
 
+        // Set some variables we will need
         let nft_id: Option<u64> = asset.nft_id;
         let current_bid = auction.buy_asset.amount;
         let sender: Identity = sender_identity();
+        let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
+        let reserve: Option<u64> = auction.reserve_price;
+        let new_bid = match sender_deposit {
+            Option::Some(Asset) => sender_deposit.unwrap() + msg_amount(),
+            Option::None(Asset) => msg_amount(),
+        };
 
         require(!identities_equal(sender, auction.seller), UserError::BidderIsSeller);
 
@@ -125,24 +132,14 @@ impl EnglishAuction for Contract {
             require(msg_amount() >= auction.inital_price, InputError::InitalPriceNotMet);
         }
 
-        // Set some variables we will need
-        let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
-        // TODO: Change this
-        let sender_deposit = match sender_deposit {
-            Option::Some(Asset) => sender_deposit.unwrap(),
-            Option::None(Asset) => Asset {amount: 0, contract_id: ~ContractId::from(BASE_ASSET_ID), nft_id: Option::None()},
-        };
-        
         // TODO: Allow for bidding of mutliple NFTs
         // Make sure this bid is more than the last
         if (nft_id.is_none()) {
-            require(msg_amount() + sender_deposit.amount > current_bid, InputError::IncorrectAmountProvided);
+            require(new_bid > current_bid, InputError::IncorrectAmountProvided);
         }
 
         // Make the bid
-        let reserve: Option<u64> = auction.reserve_price;
-
-        if (reserve.is_none() || msg_amount() + sender_deposit.amount < reserve.unwrap())
+        if (reserve.is_none() || new_bid < reserve.unwrap())
         {
             if (nft_id.is_some())
             {
@@ -200,14 +197,14 @@ impl EnglishAuction for Contract {
         let sender = sender_identity();
         let nft_id: Option<u64> = auction.buy_asset.nft_id;
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
-        // TODO: Change this
-        let sender_deposit = match sender_deposit {
-            Option::Some(Asset) => sender_deposit.unwrap(),
-            Option::None(Asset) => Asset {amount: 0, contract_id: ~ContractId::from(BASE_ASSET_ID), nft_id: Option::None()},
+        let new_bid = match sender_deposit {
+            Option::Some(Asset) => sender_deposit.unwrap() + msg_amount(),
+            Option::None(Asset) => msg_amount(),
         };
 
-        // Make sure this is a valid bid
+        // Make sure this is not the seller
         require(!identities_equal(sender, auction.seller), UserError::BidderIsSeller);
+
         // Ensure this is the correct asset in the transaction and 
         // in the Asset struct provided
         match nft_id {
@@ -237,7 +234,7 @@ impl EnglishAuction for Contract {
 
         // TODO: Allow for mutliple NFTs
         if (nft_id.is_none()) {
-            require(msg_amount() + sender_deposit.amount >= reserve.unwrap(), InputError::IncorrectAmountProvided);
+            require(new_bid >= reserve.unwrap(), InputError::IncorrectAmountProvided);
         }
 
         // The reserve price was met
