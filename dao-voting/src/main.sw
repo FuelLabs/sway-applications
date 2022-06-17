@@ -1,5 +1,9 @@
 contract;
 
+dep abi;
+dep data_structures;
+dep errors;
+
 use std::{
     address::Address,
     assert::require,
@@ -13,43 +17,9 @@ use std::{
     storage::StorageMap,
 };
 
-abi DaoVoting {
-    fn constructor(gov_token: ContractId) -> bool;
-    fn deposit() -> bool;
-    fn get_balance() -> u64;
-    fn get_user_balance(user: Identity) -> u64;
-    fn get_user_votes(user: Identity) -> u64;
-    fn add_proposal(voting_period: u64, approval_percentage: u64, proposal_data: b256) -> bool;
-    fn get_proposal(id: u64) -> Proposal;
-    //fn lock_and_get_votes(vote_amount: u64) -> bool;
-    //fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool;
-    fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool;
-    fn execute(proposal_id: u64) -> bool;
-}
-
-enum Error {
-    CannotReinitialize: (),
-    NotInitialized: (),
-    NotGovernanceToken: (),
-    PeriodCannotBeZero: (),
-    VoteAmountCannotBeZero: (),
-    TokenAmountCanontBeZero: (),
-    ApprovalPercentageCannotBeZero: (),
-    NoAssetsSent: (),
-    NotEnoughAssets: (),
-    InvalidId: (),
-    ProposalExpired: (),
-    ProposalActive: (),
-    ApprovalPercentageNotMet: (),
-}
-
-struct Proposal {
-    yes_votes: u64,
-    no_votes: u64,
-    approval_percentage: u64,
-    end_height: u64,
-    data: b256,
-}
+use abi::DaoVoting;
+use data_structures::Proposal;
+use errors::Error;
 
 storage {
     gov_token: ContractId,
@@ -131,60 +101,6 @@ impl DaoVoting for Contract {
 
         true
     }
-
-    /// Lock user governance tokens and give the user an equivalent amount of votes to be used on proposals.
-    /// Users can convert unused votes back to tokens at any time.
-    /// Users will get votes back when a proposal they voted on ends.
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The constructor has not been called to initialize
-    /// - The vote amount is 0
-    /// - The vote amount is greater than the senders deposited balance
-    // fn lock_and_get_votes(vote_amount: u64) -> bool {
-    //     require(storage.state == 1, Error::NotInitialized);
-    //     require(vote_amount > 0, Error::VoteAmountCannotBeZero);
-
-    //     let result: Result<Identity, AuthError> = msg_sender();
-    //     let sender: Identity = result.unwrap();
-    //     let sender_balance = storage.balances.get(sender);
-    //     require(sender_balance >= vote_amount, Error::NotEnoughAssets);
-
-    //     storage.balances.insert(sender, sender_balance - vote_amount);
-
-    //     let prev_sender_vote_amount = storage.votes.get(sender);
-    //     storage.votes.insert(sender, prev_sender_vote_amount + vote_amount);
-
-    //     true
-    // }
-
-    /// Unlock user governance tokens and reduce their amount of votes
-    /// Users can then withdraw the tokens back into their wallets
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The constructor has not been called to initalize
-    /// - The token amount is 0
-    /// - The token amount is greater than the amount of votes a user has
-    // fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool {
-    //     require(storage.state == 1, Error::NotInitialized);
-    //     require(token_amount > 0, Error::TokenAmountCanontBeZero);
-
-    //     let result: Result<Identity, AuthError> = msg_sender();
-    //     let sender: Identity = result.unwrap();
-    //     let sender_votes = storage.votes.get(sender);
-
-    //     require(sender_votes >= token_amount, Error::NotEnoughAssets);
-
-    //     storage.votes.insert(sender, sender_votes - token_amount);
-
-    //     let prev_sender_balance = storage.balances.get(sender);
-    //     storage.balances.insert(sender, prev_sender_balance + token_amount);
-
-    //     true
-    // }
 
     /// Vote on a given proposal
     ///
