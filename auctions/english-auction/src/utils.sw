@@ -53,17 +53,15 @@ pub fn identities_equal(identity1: Identity, identity2: Identity) -> bool {
 pub fn reserve_met(auction: Auction, balance: u64, reserve: u64) -> Auction {
     let mut mut_auction = auction;
     let sender = sender_identity();
+    let sell_nft_id: Option<u64> = auction.sell_asset.nft_id;
+
     mut_auction.state = 2;
     mut_auction.bidder = Option::Some(sender);
     mut_auction.buy_asset.amount = reserve;
 
-    match sender {
-        Identity::Address(sender) => {
-            transfer_to_output(auction.sell_asset.amount, auction.sell_asset.contract_id, sender);    
-        },
-        Identity::ContractId(sender) => {
-            force_transfer_to_contract(auction.sell_asset.amount, auction.sell_asset.contract_id, sender);
-        },
+    match sell_nft_id {
+        Option::Some(u64) => transfer_nft(Identity::ContractId(contract_id()), sender, auction.sell_asset),
+        Option::None(u64) => send_tokens(sender, auction.sell_asset),
     };
 
     let overpaid_balance = (msg_amount() + balance) - reserve;
