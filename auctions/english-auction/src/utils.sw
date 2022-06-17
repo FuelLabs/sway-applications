@@ -20,10 +20,8 @@ use std::{
 
 /// This function takes a seller, an identity, and NFT data and returns true if the identity is
 /// approved to transfer or owns the NFT
-pub fn approved_for_nft_transfer(identity: Identity, seller: Identity, contract_id: ContractId, nft_id: u64) -> bool {
-    let contract_b256 = contract_id().value;
-    let nft_abi = abi(NFT, contract_b256);
-
+pub fn approved_for_nft_transfer(identity: Identity, seller: Identity, nft_contract: ContractId, nft_id: u64) -> bool {
+    let nft_abi = abi(NFT, nft_contract.value);
     let approved: Option<Identity> = nft_abi.get_approved(nft_id);
     let owner: Option<Identity> = nft_abi.owner_of(nft_id);
     let approved_for_all = nft_abi.is_approved_for_all(seller, identity);

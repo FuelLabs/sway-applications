@@ -55,9 +55,7 @@ impl EnglishAuction for Contract {
     fn auction_end_block(auction_id: u64) -> u64 {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
-
-        let auction = auction.unwrap();
-        auction.end_block
+        auction.unwrap().end_block
     }
 
     /// Places a bid on the auction specified. If the reserve is met the
@@ -88,8 +86,7 @@ impl EnglishAuction for Contract {
 
         // Set some variables we will need
         let nft_id: Option<u64> = asset.nft_id;
-        let current_bid = auction.buy_asset.amount;
-        let sender: Identity = sender_identity();
+        let sender = sender_identity();
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let reserve: Option<u64> = auction.reserve_price;
         let new_bid = match sender_deposit {
@@ -128,19 +125,20 @@ impl EnglishAuction for Contract {
 
         // TODO: Support bidding of mutliple NFTs
         // Make sure this is greater than inital bid
-        if (current_bid == 0 && nft_id.is_none()) {
+        if (auction.buy_asset.amount == 0 && nft_id.is_none()) {
             require(msg_amount() >= auction.inital_price, InputError::InitalPriceNotMet);
         }
 
         // TODO: Allow for bidding of mutliple NFTs
         // Make sure this bid is more than the last
         if (nft_id.is_none()) {
-            require(new_bid > current_bid, InputError::IncorrectAmountProvided);
+            require(new_bid > auction.buy_asset.amount, InputError::IncorrectAmountProvided);
         }
 
         // Make the bid
         if (reserve.is_none() || new_bid < reserve.unwrap())
         {
+            // There is no reserve or it was not met
             if (nft_id.is_some())
             {
                 transfer_nft(sender, Identity::ContractId(contract_id()), asset);
@@ -344,6 +342,7 @@ impl EnglishAuction for Contract {
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
     /// Returns the balance of the Address's buy asset deposits
+    // #[storage(read)]
     // fn deposits(identity: Identity, auction_id: u64) -> Option<Asset> {
     //     storage.deposits.get((identity, auction_id))
     // }
@@ -355,11 +354,11 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction does not exist
+    // #[storage(read)]
     // fn highest_bidder(auction_id: u64) -> Option<Identity> {
     //     let auction: Option<Auction> = storage.auctions.get(auction_id);
     //     require(auction.is_some(), AccessError::AuctionDoesNotExist);
-    //     let auction = auction.unwrap();
-    //     auction.bidder
+    //     auction.unwrap().bidder
     // }
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
@@ -369,11 +368,11 @@ impl EnglishAuction for Contract {
     ///
     /// The function will panic when:
     /// - The auction does not exist
+    // #[storage(read)]
     // fn reserve(auction_id: u64) -> Option<u64> {
     //     let auction: Option<Auction> = storage.auctions.get(auction_id);
     //     require(auction.is_some(), AccessError::AuctionDoesNotExist);
-    //     let auction = auction.unwrap();
-    //     auction.reserve_price
+    //     auction.unwrap().reserve_price
     // }
 
     /// Returns the amount of asset that is being sold
@@ -386,8 +385,7 @@ impl EnglishAuction for Contract {
     fn sell_amount(auction_id: u64) -> u64 {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
-        let auction = auction.unwrap();
-        auction.sell_asset.amount
+        auction.unwrap().sell_asset.amount
     }
 
     /// Returns the contract id of asset that is being sold
@@ -400,8 +398,7 @@ impl EnglishAuction for Contract {
     fn sell_asset(auction_id: u64) -> ContractId {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
-        let auction = auction.unwrap();
-        auction.sell_asset.contract_id
+        auction.unwrap().sell_asset.contract_id
     }
 
     /// Returns the current state of the function
@@ -414,8 +411,7 @@ impl EnglishAuction for Contract {
     fn state(auction_id: u64) -> u64 {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
-        let auction = auction.unwrap();
-        auction.state
+        auction.unwrap().state
     }
 
     /// Withdraws after the end of the auction
