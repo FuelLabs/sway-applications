@@ -76,7 +76,7 @@ async fn initialize() -> bool {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -94,14 +94,14 @@ async fn panics_when_reinitialized() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
         .value;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -114,7 +114,14 @@ async fn panics_with_incorrect_voting_period() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 0, 10)
+        .constructor(gov_token_id)
+        .call()
+        .await
+        .unwrap()
+        .value;
+    deployer
+        .dao_voting
+        .add_proposal(0, 10, [1; 32])
         .call()
         .await
         .unwrap()
@@ -127,7 +134,14 @@ async fn panics_with_incorrect_approval_percentage() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 0)
+        .constructor(gov_token_id)
+        .call()
+        .await
+        .unwrap()
+        .value;
+    deployer
+        .dao_voting
+        .add_proposal(10, 0, [1; 32])
         .call()
         .await
         .unwrap()
@@ -152,7 +166,7 @@ async fn user_can_deposit() {
 
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -270,7 +284,7 @@ async fn panics_with_incorrect_asset() {
 
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -307,7 +321,7 @@ async fn panics_with_incorrect_amount() {
 
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -340,14 +354,14 @@ async fn user_can_add_proposal() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
         .value;
     assert!(
         user.dao_voting
-            .add_proposal([1; 32])
+            .add_proposal(10, 10, [1; 32])
             .call()
             .await
             .unwrap()
@@ -361,6 +375,7 @@ async fn user_can_add_proposal() {
         daovoting_mod::Proposal {
             yes_votes: 0,
             no_votes: 0,
+            approval_percentage: 10,
             data: [1; 32],
             end_height: 13,
         }
@@ -379,7 +394,7 @@ async fn user_can_lock_and_get_votes() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -446,7 +461,7 @@ async fn panics_on_incorrect_vote_amount() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -493,7 +508,7 @@ async fn panics_on_no_user_deposit() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -515,7 +530,7 @@ async fn panics_on_votes_great_than_deposit() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -561,7 +576,7 @@ async fn user_can_unlock_tokens() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -656,7 +671,7 @@ async fn user_can_vote() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -698,7 +713,7 @@ async fn user_can_vote() {
 
     assert!(
         user.dao_voting
-            .add_proposal([1; 32])
+            .add_proposal(10, 10, [1; 32])
             .call()
             .await
             .unwrap()
@@ -730,6 +745,7 @@ async fn user_can_vote() {
         daovoting_mod::Proposal {
             yes_votes: asset_amount / 4,
             no_votes: asset_amount / 4,
+            approval_percentage: 10,
             data: [1; 32],
             end_height: 16,
         }
@@ -742,7 +758,7 @@ async fn panics_on_not_enough_votes() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 10, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -750,7 +766,7 @@ async fn panics_on_not_enough_votes() {
 
     assert!(
         user.dao_voting
-            .add_proposal([1; 32])
+            .add_proposal(10, 10, [1; 32])
             .call()
             .await
             .unwrap()
@@ -771,7 +787,7 @@ async fn panics_on_expired_proposal() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
-        .constructor(gov_token_id, 2, 10)
+        .constructor(gov_token_id)
         .call()
         .await
         .unwrap()
@@ -791,7 +807,7 @@ async fn panics_on_expired_proposal() {
 
     assert!(
         user.dao_voting
-            .add_proposal([1; 32])
+            .add_proposal(2, 10, [1; 32])
             .call()
             .await
             .unwrap()

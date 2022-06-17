@@ -14,12 +14,12 @@ use std::{
 };
 
 abi DaoVoting {
-    fn constructor(gov_token: ContractId, voting_period: u64, approval_percentage: u64) -> bool;
+    fn constructor(gov_token: ContractId) -> bool;
     fn deposit() -> bool;
     fn get_balance() -> u64;
     fn get_user_balance(user: Identity) -> u64;
     fn get_user_votes(user: Identity) -> u64;
-    fn add_proposal(proposal: b256) -> bool;
+    fn add_proposal(voting_period: u64, approval_percentage: u64, proposal_data: b256) -> bool;
     fn get_proposal(id: u64) -> Proposal;
     fn lock_and_get_votes(vote_amount: u64) -> bool;
     fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool;
@@ -40,13 +40,15 @@ enum Error {
     InvalidId: (),
     ProposalExpired: (),
     ProposalActive: (),
+    ApprovalPercentageNotMet: (),
 }
 
 struct Proposal {
     yes_votes: u64,
     no_votes: u64,
-    data: b256,
+    approval_percentage: u64,
     end_height: u64,
+    data: b256,
 }
 
 storage {
@@ -73,17 +75,36 @@ impl DaoVoting for Contract {
     /// - The constructor is called more than once
     /// - The voting period is not greater than 0
     /// - The approval percentage is not greater than 0
-    fn constructor(gov_token: ContractId, voting_period: u64, approval_percentage: u64) -> bool {
+    fn constructor(gov_token: ContractId) -> bool {
         require(storage.state == 0, Error::CannotReinitialize);
-        require(voting_period > 0, Error::PeriodCannotBeZero);
-        require(approval_percentage > 0, Error::ApprovalPercentageCannotBeZero);
 
         storage.gov_token = gov_token;
-        storage.voting_period = voting_period;
-        storage.approval_percentage = approval_percentage;
         storage.proposal_count = 0;
         storage.state = 1;
 
+        true
+    }
+
+    /// Add proposal to be voted on
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The constructor has not been called to initialize
+    fn add_proposal(voting_period: u64, approval_percentage: u64, proposal_data: b256) -> bool {
+        require(storage.state == 1, Error::NotInitialized);
+        require(voting_period > 0, Error::PeriodCannotBeZero);
+        require(approval_percentage > 0, Error::ApprovalPercentageCannotBeZero);
+
+        let proposal = Proposal {
+            yes_votes: 0,
+            no_votes: 0,
+            approval_percentage: approval_percentage,
+            data: proposal_data,
+            end_height: height() + voting_period,
+        };
+        storage.proposals.insert(storage.proposal_count, proposal);
+        storage.proposal_count = storage.proposal_count + 1;
         true
     }
 
@@ -222,11 +243,13 @@ impl DaoVoting for Contract {
         require(proposal.end_height > height(), Error::ProposalActive);
 
         let approval_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
-        require(approval_percentage >= proposal.approval_percentage);
+        require(approval_percentage >= proposal.approval_percentage, Error::ApprovalPercentageNotMet);
 
         // TODO execute the proposal
 
         // Give users back their tokens
+
+        true
     }
 
     /// Return the amount of governance tokens in this contract
@@ -242,26 +265,6 @@ impl DaoVoting for Contract {
     /// Return the amount of votes a user can use.
     fn get_user_votes(user: Identity) -> u64 {
         storage.votes.get(user)
-    }
-
-    /// Add proposal to be voted on
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The constructor has not been called to initialize
-    fn add_proposal(proposal_data: b256) -> bool {
-        require(storage.state == 1, Error::NotInitialized);
-
-        let proposal = Proposal {
-            yes_votes: 0,
-            no_votes: 0,
-            data: proposal_data,
-            end_height: height() + storage.voting_period,
-        };
-        storage.proposals.insert(storage.proposal_count, proposal);
-        storage.proposal_count = storage.proposal_count + 1;
-        true
     }
 
     /// Return proposal data for a given id
