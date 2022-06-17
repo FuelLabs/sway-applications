@@ -24,6 +24,7 @@ abi DaoVoting {
     fn lock_and_get_votes(vote_amount: u64) -> bool;
     fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool;
     fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool;
+    fn execute(proposal_id: u64) -> bool;
 }
 
 enum Error {
@@ -38,6 +39,7 @@ enum Error {
     NotEnoughAssets: (),
     InvalidId: (),
     ProposalExpired: (),
+    ProposalActive: (),
 }
 
 struct Proposal {
@@ -201,6 +203,30 @@ impl DaoVoting for Contract {
         storage.proposals.insert(proposal_id, proposal);
 
         true
+    }
+
+    /// Execute a given proposal
+    ///
+    /// # Panics
+    ///
+    /// This function will panic when:
+    /// - The construct has not been called to initialize
+    /// - The proposal id is out of range
+    /// - The proposal has not expired
+    /// - The proposal has not met the necessary approval percentage
+    fn execute(proposal_id: u64) -> bool {
+        require(storage.state == 1, Error::NotInitialized);
+        require(proposal_id < storage.proposal_count, Error::InvalidId);
+
+        let proposal = storage.proposals.get(proposal_id);
+        require(proposal.end_height > height(), Error::ProposalActive);
+
+        let approval_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
+        require(approval_percentage >= proposal.approval_percentage);
+
+        // TODO execute the proposal
+
+        // Give users back their tokens
     }
 
     /// Return the amount of governance tokens in this contract
