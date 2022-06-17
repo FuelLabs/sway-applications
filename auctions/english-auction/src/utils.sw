@@ -6,7 +6,7 @@ dep errors;
 
 use abi::NFT;
 use data_structures::{Asset, Auction};
-use errors::AccessError;
+use errors::{AccessError, InputError};
 use std::{
     assert::require,
     chain::auth::{AuthError, msg_sender},
@@ -81,11 +81,13 @@ pub fn reserve_met(auction: Auction, balance: u64, reserve: u64) -> Auction {
     mut_auction
 }
 
+/// This function will return the identity of the sender
 pub fn sender_identity() -> Identity {
     let sender: Result<Identity, AuthError> = msg_sender();
     sender.unwrap()
 }
 
+/// This function will send tokens to the idenitity provided
 pub fn send_tokens(identity: Identity, asset: Asset) {
     match identity {
         Identity::Address(identity) => {
@@ -97,6 +99,12 @@ pub fn send_tokens(identity: Identity, asset: Asset) {
     };
 }
 
+/// This function will transfer a NFT from one identity to another
+///
+/// # Panics
+///
+/// This function will panic when:
+/// - The NFT transfer failed
 pub fn transfer_nft(from: Identity, to: Identity, asset: Asset) {
     let nft_abi = abi(NFT, asset.contract_id.value);
     let nft_id: Option<u64> = asset.nft_id;
@@ -104,4 +112,43 @@ pub fn transfer_nft(from: Identity, to: Identity, asset: Asset) {
 
     let owner: Option<Identity> = nft_abi.owner_of(nft_id.unwrap());
     require(owner.is_some() && identities_equal(owner.unwrap(), to), AccessError::NFTTransferNotApproved);
+}
+
+/// This function will panic when the recieving assets in a tansaction are incorrect
+///
+/// # Panics
+/// 
+/// This function will panic when:
+/// - The contract IDs in the buy_asset and recieved_asset are different
+/// - The auction contract is not approved to transfer the NFT specified in recieved_asset struct
+/// - The transaction asset is not the same as the buy_asset
+/// - The transaction asset is not the same as the recieved_asset 
+pub fn validate_corrent_asset(buy_asset: Asset, recieved_asset: Asset) {
+    let nft_id = recieved_asset.nft_id;
+    let sender = sender_identity();
+
+    match nft_id {
+        // Depositing a NFT
+        Option::Some(u64) => {
+            // This is the correct NFT and the auction contract can transfer 
+            require(recieved_asset.contract_id == buy_asset.contract_id, InputError::IncorrectAssetProvided);
+            require(
+                approved_for_nft_transfer(
+                    Identity::ContractId(contract_id()), 
+                    sender, 
+                    recieved_asset.contract_id, 
+                    nft_id.unwrap()
+                ), 
+                AccessError::NFTTransferNotApproved
+            );
+        },
+        // Depositing a token
+        Option::None(u64) => {
+            require(
+                msg_asset_id() == buy_asset.contract_id &&
+                msg_asset_id() == recieved_asset.contract_id,
+                InputError::IncorrectAssetProvided
+            );
+        }
+    };
 }

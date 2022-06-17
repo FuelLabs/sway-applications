@@ -15,7 +15,8 @@ use utils::{
     identities_equal, reserve_met, 
     sender_identity, 
     send_tokens,
-    transfer_nft
+    transfer_nft,
+    validate_corrent_asset
 };
 
 use std::{
@@ -98,30 +99,7 @@ impl EnglishAuction for Contract {
 
         // Ensure this is the correct asset in the transaction and 
         // in the Asset struct provided
-        match nft_id {
-            // Depositing a NFT
-            Option::Some(u64) => {
-                // This is the correct NFT and the auction contract can transfer 
-                require(asset.contract_id == auction.buy_asset.contract_id, InputError::IncorrectAssetProvided);
-                require(
-                    approved_for_nft_transfer(
-                        Identity::ContractId(contract_id()), 
-                        sender, 
-                        asset.contract_id, 
-                        nft_id.unwrap()
-                    ), 
-                    AccessError::NFTTransferNotApproved
-                );
-            },
-            // Depositing a token
-            Option::None(u64) => {
-                require(
-                    msg_asset_id() == auction.buy_asset.contract_id &&
-                    msg_asset_id() == asset.contract_id,
-                    InputError::IncorrectAssetProvided
-                );
-            }
-        };
+        validate_corrent_asset(auction.buy_asset, asset);
 
         // TODO: Support bidding of mutliple NFTs
         // Make sure this is greater than inital bid
@@ -203,32 +181,9 @@ impl EnglishAuction for Contract {
         // Make sure this is not the seller
         require(!identities_equal(sender, auction.seller), UserError::BidderIsSeller);
 
-        // Ensure this is the correct asset in the transaction and 
-        // in the Asset struct provided
-        match nft_id {
-            // Depositing a NFT
-            Option::Some(u64) => {
-                // This is the correct NFT and the auction contract can transfer 
-                require(asset.contract_id == auction.buy_asset.contract_id, InputError::IncorrectAssetProvided);
-                require(
-                    approved_for_nft_transfer(
-                        Identity::ContractId(contract_id()), 
-                        sender, 
-                        asset.contract_id, 
-                        nft_id.unwrap()
-                    ), 
-                    AccessError::NFTTransferNotApproved
-                );
-            },
-            // Depositing a token
-            Option::None(u64) => {
-                require(
-                    msg_asset_id() == auction.buy_asset.contract_id &&
-                    msg_asset_id() == asset.contract_id,
-                    InputError::IncorrectAssetProvided
-                );
-            }
-        };
+        // Ensure this is the correct asset in the transaction and the Asset struct
+        // provided has the correct information
+        validate_corrent_asset(auction.buy_asset, asset);
 
         // TODO: Allow for mutliple NFTs
         if (nft_id.is_none()) {
