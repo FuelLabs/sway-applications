@@ -706,8 +706,7 @@ async fn user_can_vote() {
     );
 
     assert!(
-        user
-            .dao_voting
+        user.dao_voting
             .vote(0, asset_amount / 4, true)
             .call()
             .await
@@ -716,8 +715,7 @@ async fn user_can_vote() {
     );
 
     assert!(
-        user
-            .dao_voting
+        user.dao_voting
             .vote(0, asset_amount / 4, false)
             .call()
             .await
@@ -736,5 +734,96 @@ async fn user_can_vote() {
             end_height: 16,
         }
     );
+}
 
+#[tokio::test]
+#[should_panic]
+async fn panics_on_not_enough_votes() {
+    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+    deployer
+        .dao_voting
+        .constructor(gov_token_id, 10, 10)
+        .call()
+        .await
+        .unwrap()
+        .value;
+
+    assert!(
+        user.dao_voting
+            .add_proposal([1; 32])
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    user.dao_voting
+        .vote(0, asset_amount / 4, true)
+        .call()
+        .await
+        .unwrap()
+        .value;
+}
+
+#[tokio::test]
+#[should_panic]
+async fn panics_on_expired_proposal() {
+    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+    deployer
+        .dao_voting
+        .constructor(gov_token_id, 2, 10)
+        .call()
+        .await
+        .unwrap()
+        .value;
+
+    assert!(
+        deployer
+            .gov_token
+            .unwrap()
+            .mint_and_send_to_address(100, user.wallet.address())
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    assert!(
+        user.dao_voting
+            .add_proposal([1; 32])
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
+    assert!(
+        user.dao_voting
+            .deposit()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    assert!(
+        user.dao_voting
+            .lock_and_get_votes(asset_amount / 2)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    user.dao_voting
+        .vote(0, asset_amount / 4, true)
+        .call()
+        .await
+        .unwrap()
+        .value;
 }
