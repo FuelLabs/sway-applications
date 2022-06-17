@@ -13,7 +13,7 @@ use std::{
     assert::require,
     block::height,
     chain::auth::{AuthError, msg_sender},
-    constants::NATIVE_ASSET_ID,
+    constants::BASE_ASSET_ID,
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
     identity::Identity,
@@ -75,8 +75,8 @@ impl Fundraiser for Contract {
     /// * When the `deadline` is not ahead of the current block height
     /// * When the `target_amount` is 0
     /// * When an AuthError is generated
-    fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64) {
-        require(asset.value != NATIVE_ASSET_ID, CreationError::CannotUseBaseAsset);
+    #[storage(read, write)]fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64) {
+        require(asset.value != BASE_ASSET_ID, CreationError::CannotUseBaseAsset);
         require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
         require(0 < target_amount, CreationError::TargetAmountCannotBeZero);
 
@@ -116,7 +116,7 @@ impl Fundraiser for Contract {
     /// * When the user is not the author of the campaign
     /// * When the deadline has been surpassed
     /// * When the campaign has already been cancelled
-    fn cancel_campaign(id: u64) {
+    #[storage(read, write)]fn cancel_campaign(id: u64) {
         validate_id(id, storage.total_campaigns);
 
         let mut campaign_info = storage.campaign_info.get(id);
@@ -151,7 +151,7 @@ impl Fundraiser for Contract {
     /// * When the total pledge has not reached the minimum `target_amount`
     /// * When the campaign has already been claimed
     /// * When the campaign has already been cancelled
-    fn claim_pledges(id: u64) {
+    #[storage(read, write)]fn claim_pledges(id: u64) {
         validate_id(id, storage.total_campaigns);
 
         let mut campaign_info = storage.campaign_info.get(id);
@@ -191,7 +191,7 @@ impl Fundraiser for Contract {
     /// * When the user pledges a different asset to the one specified in the campaign
     /// * When the user pledges after the campaign has been cancelled
     /// * When an AuthError is generated
-    fn pledge(id: u64) {
+    #[storage(read, write)]fn pledge(id: u64) {
         validate_id(id, storage.total_campaigns);
 
         let mut campaign_info = storage.campaign_info.get(id);
@@ -252,7 +252,7 @@ impl Fundraiser for Contract {
     /// * When the user attempts to unpledge after the deadline and `target_amount` have been reached
     /// * When an AuthError is generated
     /// * When the user has not pledged to the campaign represented by the `id`
-    fn unpledge(id: u64, amount: u64) {
+    #[storage(read, write)]fn unpledge(id: u64, amount: u64) {
         validate_id(id, storage.total_campaigns);
 
         let mut campaign_info = storage.campaign_info.get(id);
@@ -287,7 +287,7 @@ impl Fundraiser for Contract {
     }
 
     /// Returns the total number of campaigns that have been created by all users
-    fn total_campaigns() -> u64 {
+    #[storage(read)]fn total_campaigns() -> u64 {
         storage.total_campaigns
     }
 
@@ -300,7 +300,7 @@ impl Fundraiser for Contract {
     /// # Reverts
     ///
     /// * When the `id` is either 0 or greater than the total number of campaigns created
-    fn campaign_info(id: u64) -> CampaignInfo {
+    #[storage(read)]fn campaign_info(id: u64) -> CampaignInfo {
         validate_id(id, storage.total_campaigns);
         storage.campaign_info.get(id)
     }
@@ -310,7 +310,7 @@ impl Fundraiser for Contract {
     /// # Reverts
     ///
     /// * When an AuthError is generated
-    fn campaign_count() -> u64 {
+    #[storage(read)]fn campaign_count() -> u64 {
         storage.campaign_count.get(sender_identity())
     }
 
@@ -324,7 +324,7 @@ impl Fundraiser for Contract {
     ///
     /// * When the `id` is either 0 or greater than the total number of campaigns created by the author
     /// * When an AuthError is generated
-    fn campaign(id: u64) -> Campaign {
+    #[storage(read)]fn campaign(id: u64) -> Campaign {
         require(id != 0 && id <= storage.campaign_count.get(sender_identity()), UserError::InvalidHistoryId);
         storage.campaign_history.get((sender_identity(), id))
     }
@@ -334,7 +334,7 @@ impl Fundraiser for Contract {
     /// # Reverts
     ///
     /// * When an AuthError is generated
-    fn pledge_count() -> u64 {
+    #[storage(read)]fn pledge_count() -> u64 {
         storage.pledge_count.get(sender_identity())
     }
 
@@ -348,7 +348,7 @@ impl Fundraiser for Contract {
     ///
     /// * When the `pledge_history_index` is either 0 or greater than the total number of pledges made by the user
     /// * When an AuthError is generated
-    fn pledged(pledge_history_index: u64) -> Pledge {
+    #[storage(read)]fn pledged(pledge_history_index: u64) -> Pledge {
         require(pledge_history_index != 0 && pledge_history_index < storage.pledge_count.get(sender_identity()), UserError::InvalidHistoryId);
         storage.pledge_history.get((sender_identity(), pledge_history_index))
     }

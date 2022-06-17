@@ -140,6 +140,15 @@ async fn pledge(
         .unwrap()
 }
 
+async fn unpledge(contract: &Fundraiser, id: u64, amount: u64) -> CallResponse<()> {
+    contract
+        .unpledge(id, amount)
+        .append_variable_outputs(1)
+        .call()
+        .await
+        .unwrap()
+}
+
 async fn claim_pledges(contract: &Fundraiser, id: u64) -> CallResponse<()> {
     contract
         .claim_pledges(id)
@@ -150,6 +159,8 @@ async fn claim_pledges(contract: &Fundraiser, id: u64) -> CallResponse<()> {
 }
 
 mod create_campaign {
+
+    // TODO: create 2 separate campaigns
 
     use super::*;
 
@@ -253,7 +264,7 @@ mod cancel_campaign {
     use super::*;
 
     #[tokio::test]
-    async fn cancels_a_campaign() {
+    async fn cancels() {
         let (author, user, asset) = setup().await;
         let asset_id = asset.id;
         let beneficiary = Identity::Address(user.wallet.address());
@@ -414,6 +425,185 @@ mod claim_pledges {
 
         assert_eq!(target_amount, claimed);
         assert_eq!(info.claimed, true);
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn panics_when_id_is_zero() {
+        let (author, user, asset) = setup().await;
+        let asset_id = asset.id;
+        let beneficiary = Identity::Address(author.wallet.address());
+        let deadline = 5;
+        let target_amount = 512;
+
+        mint(&asset.contract, target_amount, user.wallet.address()).await;
+        create_campaign(
+            &author.contract,
+            &asset_id,
+            &beneficiary,
+            deadline,
+            target_amount,
+        )
+        .await;
+        pledge(&user.contract, 1, &asset, target_amount).await;
+
+        // Should panic
+        claim_pledges(&author.contract, 0).await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn panics_when_id_is_greater_than_number_of_campaigns() {
+        let (author, user, asset) = setup().await;
+        let asset_id = asset.id;
+        let beneficiary = Identity::Address(author.wallet.address());
+        let deadline = 5;
+        let target_amount = 512;
+
+        mint(&asset.contract, target_amount, user.wallet.address()).await;
+        create_campaign(
+            &author.contract,
+            &asset_id,
+            &beneficiary,
+            deadline,
+            target_amount,
+        )
+        .await;
+        pledge(&user.contract, 1, &asset, target_amount).await;
+
+        // Should panic
+        claim_pledges(&author.contract, 100).await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn panics_when_sender_is_not_author() {
+        let (author, user, asset) = setup().await;
+        let asset_id = asset.id;
+        let beneficiary = Identity::Address(user.wallet.address());
+        let deadline = 4;
+        let target_amount = 512;
+
+        mint(&asset.contract, target_amount, user.wallet.address()).await;
+        create_campaign(
+            &author.contract,
+            &asset_id,
+            &beneficiary,
+            deadline,
+            target_amount,
+        )
+        .await;
+        pledge(&user.contract, 1, &asset, target_amount).await;
+
+        // Should panic
+        claim_pledges(&user.contract, 1).await;
+    }
+
+    // #[tokio::test]
+    // #[should_panic(expected = "Revert(42)")]
+    // async fn panics_when_calling_before_deadline() {
+    //     let (author, user, asset) = setup().await;
+    //     let asset_id = asset.id;
+    //     let beneficiary = Identity::Address(user.wallet.address());
+    //     let deadline = 5;
+    //     let target_amount = 512;
+
+    //     mint(&asset.contract, target_amount, user.wallet.address()).await;
+    //     create_campaign(
+    //         &author.contract,
+    //         &asset_id,
+    //         &beneficiary,
+    //         deadline,
+    //         target_amount,
+    //     )
+    //     .await;
+    //     pledge(&user.contract, 1, &asset, target_amount).await;
+
+    //     create_campaign(
+    //         &author.contract,
+    //         &asset_id,
+    //         &beneficiary,
+    //         deadline*2,
+    //         target_amount,
+    //     )
+    //     .await;
+
+    //     // Should panic
+    //     claim_pledges(&author.contract, 1).await;
+    // }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn panics_when_target_amount_is_not_reached() {
+        let (author, user, asset) = setup().await;
+        let asset_id = asset.id;
+        let beneficiary = Identity::Address(author.wallet.address());
+        let deadline = 5;
+        let target_amount = 512;
+
+        mint(&asset.contract, target_amount, user.wallet.address()).await;
+        create_campaign(
+            &author.contract,
+            &asset_id,
+            &beneficiary,
+            deadline,
+            target_amount,
+        )
+        .await;
+        pledge(&user.contract, 1, &asset, target_amount - 1).await;
+
+        // Should panic
+        claim_pledges(&author.contract, 1).await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn panics_when_already_claimed() {
+        let (author, user, asset) = setup().await;
+        let asset_id = asset.id;
+        let beneficiary = Identity::Address(author.wallet.address());
+        let deadline = 5;
+        let target_amount = 512;
+
+        mint(&asset.contract, target_amount, user.wallet.address()).await;
+        create_campaign(
+            &author.contract,
+            &asset_id,
+            &beneficiary,
+            deadline,
+            target_amount,
+        )
+        .await;
+        pledge(&user.contract, 1, &asset, target_amount).await;
+        claim_pledges(&author.contract, 1).await;
+
+        // Should panic
+        claim_pledges(&author.contract, 1).await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn panics_when_cancelled() {
+        let (author, user, asset) = setup().await;
+        let asset_id = asset.id;
+        let beneficiary = Identity::Address(author.wallet.address());
+        let deadline = 6;
+        let target_amount = 512;
+
+        mint(&asset.contract, target_amount, user.wallet.address()).await;
+        create_campaign(
+            &author.contract,
+            &asset_id,
+            &beneficiary,
+            deadline,
+            target_amount,
+        )
+        .await;
+        pledge(&user.contract, 1, &asset, target_amount).await;
+        cancel_campaign(&author.contract, 1).await;
+
+        // Should panic
+        claim_pledges(&author.contract, 1).await;
     }
 }
 
