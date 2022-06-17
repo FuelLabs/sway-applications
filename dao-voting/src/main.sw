@@ -21,8 +21,8 @@ abi DaoVoting {
     fn get_user_votes(user: Identity) -> u64;
     fn add_proposal(voting_period: u64, approval_percentage: u64, proposal_data: b256) -> bool;
     fn get_proposal(id: u64) -> Proposal;
-    fn lock_and_get_votes(vote_amount: u64) -> bool;
-    fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool;
+    //fn lock_and_get_votes(vote_amount: u64) -> bool;
+    //fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool;
     fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool;
     fn execute(proposal_id: u64) -> bool;
 }
@@ -62,8 +62,8 @@ storage {
     u64>, // The amount of votes a user has
     votes: StorageMap<Identity,
     u64>, state: u64,
-    spent_votes: StorageMap<Identity,
-    u64>, 
+    //spent_votes: StorageMap<Identity,
+    //u64>, 
 }
 
 impl DaoVoting for Contract {
@@ -142,22 +142,22 @@ impl DaoVoting for Contract {
     /// - The constructor has not been called to initialize
     /// - The vote amount is 0
     /// - The vote amount is greater than the senders deposited balance
-    fn lock_and_get_votes(vote_amount: u64) -> bool {
-        require(storage.state == 1, Error::NotInitialized);
-        require(vote_amount > 0, Error::VoteAmountCannotBeZero);
+    // fn lock_and_get_votes(vote_amount: u64) -> bool {
+    //     require(storage.state == 1, Error::NotInitialized);
+    //     require(vote_amount > 0, Error::VoteAmountCannotBeZero);
 
-        let result: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = result.unwrap();
-        let sender_balance = storage.balances.get(sender);
-        require(sender_balance >= vote_amount, Error::NotEnoughAssets);
+    //     let result: Result<Identity, AuthError> = msg_sender();
+    //     let sender: Identity = result.unwrap();
+    //     let sender_balance = storage.balances.get(sender);
+    //     require(sender_balance >= vote_amount, Error::NotEnoughAssets);
 
-        storage.balances.insert(sender, sender_balance - vote_amount);
+    //     storage.balances.insert(sender, sender_balance - vote_amount);
 
-        let prev_sender_vote_amount = storage.votes.get(sender);
-        storage.votes.insert(sender, prev_sender_vote_amount + vote_amount);
+    //     let prev_sender_vote_amount = storage.votes.get(sender);
+    //     storage.votes.insert(sender, prev_sender_vote_amount + vote_amount);
 
-        true
-    }
+    //     true
+    // }
 
     /// Unlock user governance tokens and reduce their amount of votes
     /// Users can then withdraw the tokens back into their wallets
@@ -168,23 +168,23 @@ impl DaoVoting for Contract {
     /// - The constructor has not been called to initalize
     /// - The token amount is 0
     /// - The token amount is greater than the amount of votes a user has
-    fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool {
-        require(storage.state == 1, Error::NotInitialized);
-        require(token_amount > 0, Error::TokenAmountCanontBeZero);
+    // fn unlock_tokens_and_remove_votes(token_amount: u64) -> bool {
+    //     require(storage.state == 1, Error::NotInitialized);
+    //     require(token_amount > 0, Error::TokenAmountCanontBeZero);
 
-        let result: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = result.unwrap();
-        let sender_votes = storage.votes.get(sender);
+    //     let result: Result<Identity, AuthError> = msg_sender();
+    //     let sender: Identity = result.unwrap();
+    //     let sender_votes = storage.votes.get(sender);
 
-        require(sender_votes >= token_amount, Error::NotEnoughAssets);
+    //     require(sender_votes >= token_amount, Error::NotEnoughAssets);
 
-        storage.votes.insert(sender, sender_votes - token_amount);
+    //     storage.votes.insert(sender, sender_votes - token_amount);
 
-        let prev_sender_balance = storage.balances.get(sender);
-        storage.balances.insert(sender, prev_sender_balance + token_amount);
+    //     let prev_sender_balance = storage.balances.get(sender);
+    //     storage.balances.insert(sender, prev_sender_balance + token_amount);
 
-        true
-    }
+    //     true
+    // }
 
     /// Vote on a given proposal
     ///
@@ -194,7 +194,7 @@ impl DaoVoting for Contract {
     /// - The constructor has not been called to initialize
     /// - The proposal id is out of range
     /// - The vote amount is 0
-    /// - The vote amount is greater than the user's amount of votes
+    /// - The vote amount is greater than the users deposited balance
     /// - The given proposal is expired
     fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool {
         require(storage.state == 1, Error::NotInitialized);
@@ -203,9 +203,9 @@ impl DaoVoting for Contract {
 
         let result: Result<Identity, AuthError> = msg_sender();
         let sender: Identity = result.unwrap();
-        let sender_votes = storage.votes.get(sender);
+        let sender_balance = storage.balances.get(sender);
 
-        require(sender_votes >= vote_amount, Error::NotEnoughAssets);
+        require(sender_balance >= vote_amount, Error::NotEnoughAssets);
 
         let mut proposal = storage.proposals.get(proposal_id);
         require(proposal.end_height >= height(), Error::ProposalExpired);
@@ -216,10 +216,10 @@ impl DaoVoting for Contract {
             proposal.no_votes = proposal.no_votes + vote_amount;
         };
 
-        storage.votes.insert(sender, sender_votes - vote_amount);
+        storage.balances.insert(sender, sender_balance - vote_amount);
 
-        let spent_votes = storage.spent_votes.get(sender);
-        storage.spent_votes.insert(sender, spent_votes + vote_amount);
+        let votes = storage.votes.get(sender);
+        storage.votes.insert(sender, votes + vote_amount);
 
         storage.proposals.insert(proposal_id, proposal);
 

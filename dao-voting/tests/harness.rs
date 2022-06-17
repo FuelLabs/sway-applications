@@ -390,283 +390,6 @@ async fn panics_on_incorrect_proposal_id() {
 }
 
 #[tokio::test]
-async fn user_can_lock_and_get_votes() {
-    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-    deployer
-        .dao_voting
-        .constructor(gov_token_id)
-        .call()
-        .await
-        .unwrap()
-        .value;
-
-    assert!(
-        deployer
-            .gov_token
-            .unwrap()
-            .mint_and_send_to_address(100, user.wallet.address())
-            .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
-    assert!(
-        user.dao_voting
-            .deposit()
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    assert!(
-        user.dao_voting
-            .lock_and_get_votes(asset_amount / 2)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    assert_eq!(
-        user.dao_voting
-            .get_user_votes(daovoting_mod::Identity::Address(user.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value,
-        asset_amount / 2
-    );
-
-    assert_eq!(
-        user.dao_voting
-            .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value,
-        asset_amount / 2
-    );
-}
-
-#[tokio::test]
-#[should_panic]
-async fn panics_on_incorrect_vote_amount() {
-    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-    deployer
-        .dao_voting
-        .constructor(gov_token_id)
-        .call()
-        .await
-        .unwrap()
-        .value;
-
-    assert!(
-        deployer
-            .gov_token
-            .unwrap()
-            .mint_and_send_to_address(100, user.wallet.address())
-            .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
-    assert!(
-        user.dao_voting
-            .deposit()
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    assert!(
-        user.dao_voting
-            .lock_and_get_votes(0)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-}
-
-#[tokio::test]
-#[should_panic]
-async fn panics_on_no_user_deposit() {
-    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-    deployer
-        .dao_voting
-        .constructor(gov_token_id)
-        .call()
-        .await
-        .unwrap()
-        .value;
-
-    assert!(
-        user.dao_voting
-            .lock_and_get_votes(1)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-}
-
-#[tokio::test]
-#[should_panic]
-async fn panics_on_votes_great_than_deposit() {
-    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-    deployer
-        .dao_voting
-        .constructor(gov_token_id)
-        .call()
-        .await
-        .unwrap()
-        .value;
-
-    assert!(
-        deployer
-            .gov_token
-            .unwrap()
-            .mint_and_send_to_address(100, user.wallet.address())
-            .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
-    assert!(
-        user.dao_voting
-            .deposit()
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    assert!(
-        user.dao_voting
-            .lock_and_get_votes(asset_amount * 2)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-}
-
-#[tokio::test]
-async fn user_can_unlock_tokens() {
-    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-    deployer
-        .dao_voting
-        .constructor(gov_token_id)
-        .call()
-        .await
-        .unwrap()
-        .value;
-
-    assert!(
-        deployer
-            .gov_token
-            .unwrap()
-            .mint_and_send_to_address(100, user.wallet.address())
-            .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
-    assert!(
-        user.dao_voting
-            .deposit()
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    assert!(
-        user.dao_voting
-            .lock_and_get_votes(asset_amount / 2)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    assert_eq!(
-        user.dao_voting
-            .get_user_votes(daovoting_mod::Identity::Address(user.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value,
-        asset_amount / 2
-    );
-
-    assert_eq!(
-        user.dao_voting
-            .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value,
-        asset_amount / 2
-    );
-
-    assert!(
-        user.dao_voting
-            .unlock_tokens_and_remove_votes(asset_amount / 2)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    assert_eq!(
-        user.dao_voting
-            .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value,
-        asset_amount
-    );
-
-    assert_eq!(
-        user.dao_voting
-            .get_user_votes(daovoting_mod::Identity::Address(user.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value,
-        0
-    );
-}
-
-#[tokio::test]
 async fn user_can_vote() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
@@ -696,15 +419,6 @@ async fn user_can_vote() {
             .deposit()
             .tx_params(tx_params)
             .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    assert!(
-        user.dao_voting
-            .lock_and_get_votes(asset_amount / 2)
             .call()
             .await
             .unwrap()
@@ -747,7 +461,7 @@ async fn user_can_vote() {
             no_votes: asset_amount / 4,
             approval_percentage: 10,
             data: [1; 32],
-            end_height: 16,
+            end_height: 15,
         }
     );
 }
@@ -807,7 +521,7 @@ async fn panics_on_expired_proposal() {
 
     assert!(
         user.dao_voting
-            .add_proposal(2, 10, [1; 32])
+            .add_proposal(1, 10, [1; 32])
             .call()
             .await
             .unwrap()
@@ -821,15 +535,6 @@ async fn panics_on_expired_proposal() {
             .deposit()
             .tx_params(tx_params)
             .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value
-    );
-
-    assert!(
-        user.dao_voting
-            .lock_and_get_votes(asset_amount / 2)
             .call()
             .await
             .unwrap()
