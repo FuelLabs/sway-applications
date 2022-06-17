@@ -95,10 +95,11 @@ impl EnglishAuction for Contract {
             Option::None(Asset) => msg_amount(),
         };
 
+        // The bidder cannot be the seller
         require(!identities_equal(sender, auction.seller), UserError::BidderIsSeller);
 
-        // Ensure this is the correct asset in the transaction and 
-        // in the Asset struct provided
+        // Ensure this is the correct asset in the transaction, the Asset struct has the
+        // correct information, and if it's an NFT we can transfer it to the auction contract
         validate_corrent_asset(auction.buy_asset, asset);
 
         // TODO: Support bidding of mutliple NFTs
@@ -113,15 +114,18 @@ impl EnglishAuction for Contract {
             require(new_bid > auction.buy_asset.amount, InputError::IncorrectAmountProvided);
         }
 
-        // Make the bid
-        if (reserve.is_none() || new_bid < reserve.unwrap())
-        {
+        // Finally, make the bid
+        if (reserve.is_none() || new_bid < reserve.unwrap()) {
             // There is no reserve or it was not met
             if (nft_id.is_some())
             {
+                // We need to transfer ownership to the auction contract if they are
+                // bidding a NFT
                 transfer_nft(sender, Identity::ContractId(contract_id()), asset);
+                auction.buy_asset.nft_id = asset.nft_id;
             }
 
+            // Update the auction
             auction.bidder = Option::Some(sender);
             auction.buy_asset.amount = new_bid;
             storage.auctions.insert(auction_id, Option::Some(auction));
@@ -178,11 +182,11 @@ impl EnglishAuction for Contract {
             Option::None(Asset) => msg_amount(),
         };
 
-        // Make sure this is not the seller
+        // Make sure the sender is not the seller
         require(!identities_equal(sender, auction.seller), UserError::BidderIsSeller);
 
-        // Ensure this is the correct asset in the transaction and the Asset struct
-        // provided has the correct information
+        // Ensure this is the correct asset in the transaction, the Asset struct has the
+        // correct information, and if it's an NFT we can transfer it to the auction contract
         validate_corrent_asset(auction.buy_asset, asset);
 
         // TODO: Allow for mutliple NFTs
@@ -190,11 +194,15 @@ impl EnglishAuction for Contract {
             require(new_bid >= reserve.unwrap(), InputError::IncorrectAmountProvided);
         }
 
-        // The reserve price was met
+        // Now the reserve price was met and the sender can purchase at the reserve price
         if (nft_id.is_some())
         {
+            // We need to transfer ownership to the auction contract if they are
+            // bidding a NFT
             transfer_nft(sender, Identity::ContractId(contract_id()), asset);
         }
+        
+        // Transfer the assets and update the auction
         let auction = reserve_met(auction, new_bid, reserve.unwrap());
         storage.auctions.insert(auction_id, Option::Some(auction));
         storage.deposits.insert((sender, auction_id), Option::None()); 
