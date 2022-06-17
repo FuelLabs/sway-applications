@@ -52,22 +52,25 @@ pub fn identities_equal(identity1: Identity, identity2: Identity) -> bool {
 /// This function gets called when the reserve price is met and transfers the sell assets.
 /// If an amount greater than the reserve is provided, the remainder is returned
 pub fn reserve_met(auction: Auction, balance: u64, reserve: u64) -> Auction {
+    // Set variables
     let mut mut_auction = auction;
     let sender = sender_identity();
     let sell_nft_id: Option<u64> = auction.sell_asset.nft_id;
 
+    // Update the auction state
     mut_auction.state = 2;
     mut_auction.bidder = Option::Some(sender);
     mut_auction.buy_asset.amount = reserve;
 
+    // Transfer selling asset to sender
     match sell_nft_id {
         Option::Some(u64) => transfer_nft(Identity::ContractId(contract_id()), sender, auction.sell_asset),
         Option::None(u64) => send_tokens(sender, auction.sell_asset),
     };
 
+    // Return any amount overpaid
     let overpaid_balance = balance - reserve;
-    if (overpaid_balance > 0)
-    {
+    if (overpaid_balance > 0) {
         match sender {
             Identity::Address(sender) => {
                 transfer_to_output(overpaid_balance, auction.buy_asset.contract_id, sender);    

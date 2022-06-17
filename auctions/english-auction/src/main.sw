@@ -195,8 +195,7 @@ impl EnglishAuction for Contract {
         }
 
         // Now the reserve price was met and the sender can purchase at the reserve price
-        if (nft_id.is_some())
-        {
+        if (nft_id.is_some()) {
             // We need to transfer ownership to the auction contract if they are
             // bidding a NFT
             transfer_nft(sender, Identity::ContractId(contract_id()), asset);
@@ -237,8 +236,7 @@ impl EnglishAuction for Contract {
 
         // If this is an NFT to be auctioned we don't have to worry about msg_amount
         let nft_id: Option<u64> = sell_asset.nft_id;
-        if (nft_id.is_none())
-        {
+        if (nft_id.is_none()) {
             // Selling tokens
             require(msg_amount() == sell_asset.amount, InputError::IncorrectAmountProvided);
             require(msg_asset_id() == sell_asset.contract_id, InputError::IncorrectAssetProvided);
@@ -399,8 +397,7 @@ impl EnglishAuction for Contract {
         require(auction.state == 2 || height() >= auction.end_block, AccessError::AuctionIsNotClosed);
 
         // If time has run out set the contract state to 2
-        if (height() >= auction.end_block && auction.state == 1)
-        {
+        if (height() >= auction.end_block && auction.state == 1) {
             auction.state = 2;
             storage.auctions.insert(auction_id, Option::Some(auction));
         }
