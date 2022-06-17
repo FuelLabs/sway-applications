@@ -14,7 +14,7 @@ use utils::{
     approved_for_nft_transfer, 
     identities_equal, reserve_met, 
     sender_identity, 
-    send_tokens, 
+    send_tokens,
     transfer_nft
 };
 
@@ -96,7 +96,7 @@ impl EnglishAuction for Contract {
         // in the Asset struct provided
         match nft_id {
             // Depositing a NFT
-            Option::Some() => {
+            Option::Some(u64) => {
                 // This is the correct NFT and the auction contract can transfer 
                 require(asset.contract_id == auction.buy_asset.contract_id, InputError::IncorrectAssetProvided);
                 require(
@@ -110,10 +110,10 @@ impl EnglishAuction for Contract {
                 );
             },
             // Depositing a token
-            Option::None() => {
+            Option::None(u64) => {
                 require(
                     msg_asset_id() == auction.buy_asset.contract_id &&
-                    msg_asset_id() == asset.contract_id
+                    msg_asset_id() == asset.contract_id,
                     InputError::IncorrectAssetProvided
                 );
             }
@@ -150,7 +150,7 @@ impl EnglishAuction for Contract {
             }
 
             auction.bidder = Option::Some(sender);
-            auction.buy_asset = asset;
+            auction.buy_asset.amount = asset.amount + sender_deposit.amount;
             storage.auctions.insert(auction_id, Option::Some(auction));
             storage.deposits.insert((sender, auction_id), Option::Some(auction.buy_asset));
 
@@ -163,8 +163,9 @@ impl EnglishAuction for Contract {
             storage.deposits.insert((sender, auction_id), Option::None());
 
             // Log the purchase
-            log(WithdrawEvent{asset: sell_asset, auction_id: auction_id, identity: sender}); 
+            log(WithdrawEvent{asset: auction.sell_asset, auction_id: auction_id, identity: sender}); 
         }
+        true
     }
 
     /// Purchases at the reserve price. If a deposit greater than the
@@ -211,7 +212,7 @@ impl EnglishAuction for Contract {
         // in the Asset struct provided
         match nft_id {
             // Depositing a NFT
-            Option::Some() => {
+            Option::Some(u64) => {
                 // This is the correct NFT and the auction contract can transfer 
                 require(asset.contract_id == auction.buy_asset.contract_id, InputError::IncorrectAssetProvided);
                 require(
@@ -225,10 +226,10 @@ impl EnglishAuction for Contract {
                 );
             },
             // Depositing a token
-            Option::None() => {
+            Option::None(u64) => {
                 require(
                     msg_asset_id() == auction.buy_asset.contract_id &&
-                    msg_asset_id() == asset.contract_id
+                    msg_asset_id() == asset.contract_id,
                     InputError::IncorrectAssetProvided
                 );
             }

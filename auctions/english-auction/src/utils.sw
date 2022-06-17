@@ -2,10 +2,13 @@ library utils;
 
 dep abi;
 dep data_structures;
+dep errors;
 
 use abi::NFT;
 use data_structures::{Asset, Auction};
+use errors::AccessError;
 use std::{
+    assert::require,
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
     contract_id::ContractId,
@@ -96,6 +99,11 @@ pub fn send_tokens(identity: Identity, asset: Asset) {
     };
 }
 
-pub fn transfer_nft(seller: Identity, buyer: Identity, asset: Asset) {
-    // TODO: transfer the amount, not just a single NFT. Need Vec
+pub fn transfer_nft(from: Identity, to: Identity, asset: Asset) {
+    let nft_abi = abi(NFT, asset.contract_id.value);
+    let nft_id: Option<u64> = asset.nft_id;
+    nft_abi.transfer_from(from, to, nft_id.unwrap());
+
+    let owner: Option<Identity> = nft_abi.owner_of(nft_id.unwrap());
+    require(owner.is_some() && identities_equal(owner.unwrap(), to), AccessError::NFTTransferNotApproved);
 }
