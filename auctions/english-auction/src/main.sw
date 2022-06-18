@@ -12,7 +12,7 @@ use errors::{AccessError, InitError, InputError, UserError};
 use events::{AuctionStartEvent, BidEvent, WithdrawEvent};
 use utils::{
     approved_for_nft_transfer, 
-    identities_equal, reserve_met, 
+    reserve_met, 
     sender_identity, 
     send_tokens,
     transfer_nft,
@@ -27,7 +27,7 @@ use std::{
     constants::BASE_ASSET_ID,
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
     contract_id::ContractId,
-    identity::Identity,
+    identity::*,
     logging::log,
     option::*,
     result::*,
@@ -96,7 +96,7 @@ impl EnglishAuction for Contract {
         };
 
         // The bidder cannot be the seller
-        require(!identities_equal(sender, auction.seller), UserError::BidderIsSeller);
+        require(sender != auction.seller, UserError::BidderIsSeller);
 
         // Ensure this is the correct asset in the transaction, the Asset struct has the
         // correct information, and if it's an NFT we can transfer it to the auction contract
@@ -183,7 +183,7 @@ impl EnglishAuction for Contract {
         };
 
         // Make sure the sender is not the seller
-        require(!identities_equal(sender, auction.seller), UserError::BidderIsSeller);
+        require(sender != auction.seller, UserError::BidderIsSeller);
 
         // Ensure this is the correct asset in the transaction, the Asset struct has the
         // correct information, and if it's an NFT we can transfer it to the auction contract
@@ -414,13 +414,13 @@ impl EnglishAuction for Contract {
         storage.deposits.insert((sender, auction_id), Option::None());
         
         // Go ahead and withdraw
-        if (bidder.is_some() && identities_equal(bidder.unwrap(), sender)) {
+        if (bidder.is_some() && sender == bidder.unwrap()) {
             // The buyer is withdrawing
             match sell_nft_id {
                 Option::Some(u64) => transfer_nft(Identity::ContractId(contract_id()), sender, auction.sell_asset),
                 Option::None(u64) => send_tokens(sender, auction.sell_asset),
             };
-        } else if (identities_equal(auction.seller, sender)) {
+        } else if (sender == auction.seller) {
             // The seller is withdrawing
             if (bidder.is_none()) {
                 // No one placed a bid

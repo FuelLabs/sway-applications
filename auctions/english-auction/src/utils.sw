@@ -12,7 +12,7 @@ use std::{
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
     contract_id::ContractId,
-    identity::Identity,
+    identity::*,
     option::*,
     result::*,
     token::{force_transfer_to_contract, transfer_to_output}
@@ -27,26 +27,8 @@ pub fn approved_for_nft_transfer(identity: Identity, seller: Identity, nft_contr
     let approved_for_all = nft_abi.is_approved_for_all(seller, identity);
 
     approved_for_all ||
-        (approved.is_none() && identities_equal(identity, approved.unwrap())) ||
-        (owner.is_none() && identities_equal(identity, owner.unwrap()))
-}
-
-/// This function will take two identities and return true if they are the same
-pub fn identities_equal(identity1: Identity, identity2: Identity) -> bool {
-    match identity1 {
-        Identity::Address(identity1) => {
-            match identity2 {
-                Identity::Address(identity2) => identity1.value == identity2.value,
-                _ => false,
-            }
-        },
-        Identity::ContractId(identity1) => {
-            match identity2 {
-                Identity::ContractId(identity2) => identity1.value == identity2.value,
-                _ => false,
-            }
-        }
-    }
+        (approved.is_none() && identity == approved.unwrap()) ||
+        (owner.is_none() && identity == owner.unwrap())
 }
 
 /// This function gets called when the reserve price is met and transfers the sell assets.
@@ -114,7 +96,7 @@ pub fn transfer_nft(from: Identity, to: Identity, asset: Asset) {
     nft_abi.transfer_from(from, to, nft_id.unwrap());
 
     let owner: Option<Identity> = nft_abi.owner_of(nft_id.unwrap());
-    require(owner.is_some() && identities_equal(owner.unwrap(), to), AccessError::NFTTransferNotApproved);
+    require(owner.is_some() && owner.unwrap() == to, AccessError::NFTTransferNotApproved);
 }
 
 /// This function will panic when the recieving assets in a tansaction are incorrect
