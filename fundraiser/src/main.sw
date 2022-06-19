@@ -16,19 +16,19 @@ use std::{
     constants::BASE_ASSET_ID,
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
-    identity::Identity,
+    identity::*,
     logging::log,
     result::*,
     revert::revert,
     storage::StorageMap,
-    token::{force_transfer_to_contract, transfer_to_output}
+    token::transfer,
 };
 
 use abi::Fundraiser;
 use data_structures::{Campaign, CampaignInfo, Pledge};
 use errors::{CampaignError, CreationError, UserError};
 use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
-use utils::{sender_identity, transfer, validate_id, validate_sender};
+use utils::{sender_identity, validate_id};
 
 storage {
     /// The total number of unique campaigns that a user has created
@@ -121,8 +121,7 @@ impl Fundraiser for Contract {
 
         let mut campaign_info = storage.campaign_info.get(id);
 
-        // require(campaign_info.author == sender_identity(), UserError::UnauthorizedUser);
-        validate_sender(sender_identity(), campaign_info.author); // workaround
+        require(campaign_info.author == sender_identity(), UserError::UnauthorizedUser);
 
         require(height() < campaign_info.deadline, CampaignError::CampaignEnded);
         require(!campaign_info.cancelled, CampaignError::CampaignHasBeenCancelled);
@@ -156,8 +155,7 @@ impl Fundraiser for Contract {
 
         let mut campaign_info = storage.campaign_info.get(id);
 
-        // require(campaign_info.author == sender_identity(), UserError::UnauthorizedUser);
-        validate_sender(sender_identity(), campaign_info.author); // workaround
+        require(campaign_info.author == sender_identity(), UserError::UnauthorizedUser);
 
         require(campaign_info.deadline <= height(), CampaignError::DeadlineNotReached);
         require(campaign_info.target_amount <= campaign_info.total_pledge, CampaignError::TargetNotReached);
@@ -167,7 +165,7 @@ impl Fundraiser for Contract {
         campaign_info.claimed = true;
         storage.campaign_info.insert(id, campaign_info);
 
-        transfer(campaign_info.beneficiary, campaign_info.total_pledge, campaign_info.asset);
+        transfer(campaign_info.total_pledge, campaign_info.asset, campaign_info.beneficiary);
 
         log(ClaimedEvent {
             id
@@ -203,21 +201,25 @@ impl Fundraiser for Contract {
         let user = sender_identity();
         let pledge_count = storage.pledge_count.get(user);
 
+        // First time pledging to any campaign
         if pledge_count == 0 {
-            storage.pledge_history.insert((user, pledge_count + 1), Pledge {
+            storage.pledge_history.insert((user, 1), Pledge {
                 amount: msg_amount(), id
             });
-            storage.pledge_history_index.insert((user, id), pledge_count + 1);
+            storage.pledge_history_index.insert((user, id), 1);
             storage.pledge_count.insert(user, 1);
         } else {
             let pledge_history_index = storage.pledge_history_index.get((user, id));
 
+            // Pledging to a campaign that they have already pledged to
             if pledge_history_index != 0 {
                 let mut pledge = storage.pledge_history.get((user, pledge_history_index));
                 pledge.amount = pledge.amount + msg_amount();
 
                 storage.pledge_history.insert((user, pledge_history_index), pledge);
-            } else {
+            }
+            // Pledging to a new campaign
+            else {
                 storage.pledge_history.insert((user, pledge_count + 1), Pledge {
                     amount: msg_amount(), id
                 });
@@ -279,7 +281,7 @@ impl Fundraiser for Contract {
         storage.pledge_history.insert((user, pledge_history_index), pledge);
         storage.campaign_info.insert(id, campaign_info);
 
-        transfer(user, amount, campaign_info.asset);
+        transfer(amount, campaign_info.asset, user);
 
         log(UnpledgedEvent {
             amount, id
@@ -349,7 +351,7 @@ impl Fundraiser for Contract {
     /// * When the `pledge_history_index` is either 0 or greater than the total number of pledges made by the user
     /// * When an AuthError is generated
     #[storage(read)]fn pledged(pledge_history_index: u64) -> Pledge {
-        require(pledge_history_index != 0 && pledge_history_index < storage.pledge_count.get(sender_identity()), UserError::InvalidHistoryId);
+        require(pledge_history_index != 0 && pledge_history_index <= storage.pledge_count.get(sender_identity()), UserError::InvalidHistoryId);
         storage.pledge_history.get((sender_identity(), pledge_history_index))
     }
 }
