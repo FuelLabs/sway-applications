@@ -74,8 +74,7 @@ impl NFT for Contract {
         require(storage.access_control, AccessError::AccessControlNotSet);
         
         // Ensure that the sender is allowed to add indetites to the approved list
-        let sender: Identity = sender_identity();
-        require(sender == storage.access_control_address, AccessError::SenderCannotSetAccessControl);
+        require(sender_identity() == storage.access_control_address, AccessError::SenderCannotSetAccessControl);
 
         // Add the provided identity to the list of identities that are approved to mint
         storage.allowed_minters.insert(minter, allow);
@@ -95,12 +94,10 @@ impl NFT for Contract {
         require(meta_data.is_some(), InputError::TokenDoesNotExist);
 
         let mut meta_data: MetaData = meta_data.unwrap();
-        let owner = meta_data.owner;
         require(meta_data.owner != to, ApprovalError::ApproverCannotBeOwner);
 
         // Ensure that the sender is the owner of the token to be approved
-        let sender = sender_identity();
-        require(owner == sender, AccessError::SenderNotOwner);
+        require(meta_data.owner == sender_identity(), AccessError::SenderNotOwner);
 
         match approve {
             true => {
@@ -115,7 +112,7 @@ impl NFT for Contract {
             }
         }
 
-        log(ApprovalEvent{owner: sender, approved: to, token_id});
+        log(ApprovalEvent{owner: sender_identity(), approved: to, token_id});
     }
 
     /// Returns the balance of the specified owner
@@ -227,12 +224,10 @@ impl NFT for Contract {
             InputError::NotEnoughTokensToMint
         );
 
-        let sender = sender_identity();
-
         // Ensure that the sender is on the approved mint list
         require(
             !storage.access_control || 
-            storage.allowed_minters.get(sender), 
+            storage.allowed_minters.get(sender_identity()), 
             AccessError::SenderDoesNotHaveAccessControl
         );
 
@@ -287,8 +282,7 @@ impl NFT for Contract {
     fn set_approval_for_all(owner: Identity, operator: Identity, allow: bool) {
         let hash = sha256(owner, operator);
 
-        let sender = sender_identity();
-        require(owner == sender, AccessError::SenderNotOwner);
+        require(owner == sender_identity(), AccessError::SenderNotOwner);
 
         // Set the identity to have approval on all tokens owned
         storage.operator_approval.insert(hash, allow);
@@ -317,25 +311,13 @@ impl NFT for Contract {
         let mut meta_data: MetaData = meta_data.unwrap();
         let approved: Option<Identity> = meta_data.approved;
 
-        match approved {
-            Option::Some(Identity) => {
-                // Include approved in the check for permissions
-                require(
-                    sender == meta_data.owner ||
-                    sender == approved.unwrap() ||
-                    (from == meta_data.owner && storage.operator_approval.get(sha256(from, sender))), 
-                    AccessError::SenderNotOwnerOrApproved
-                );
-            },
-            Option::None(Identity) => {
-                // Don't include approved in the check for permissions
-                require(
-                    sender == meta_data.owner ||
-                    (from == meta_data.owner && storage.operator_approval.get(sha256(from, sender))), 
-                    AccessError::SenderNotOwnerOrApproved
-                );
-            }
-        }
+        // Check for permissions
+        require(
+            sender == meta_data.owner ||
+            (approved.is_some() && sender == approved.unwrap()) ||
+            (from == meta_data.owner && storage.operator_approval.get(sha256(from, sender))), 
+            AccessError::SenderNotOwnerOrApproved
+        );
 
         // Set the new owner of the token and reset the approver
         meta_data.owner = to;
