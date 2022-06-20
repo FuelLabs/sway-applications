@@ -17,6 +17,7 @@ pub enum CreationError {
 
 pub enum UserError {
     AlreadyClaimed: (),
+    AmountCannotBeZero: (),
     IncorrectAssetSent: (),
     InvalidHistoryId: (),
     NoSuchCampaign: (),
