@@ -4,17 +4,17 @@ dep data_structures;
 
 use std::{contract_id::ContractId, identity::Identity};
 
-use data_structures::Proposal;
+use data_structures::{CallData, Proposal};
 
 abi DaoVoting {
-    fn constructor(gov_token: ContractId) -> bool;
-    fn deposit() -> bool;
-    fn get_balance() -> u64;
-    fn get_user_balance(user: Identity) -> u64;
-    fn get_user_votes(user: Identity) -> u64;
-    fn add_proposal(voting_period: u64, approval_percentage: u64, proposal_data: b256) -> bool;
-    fn get_proposal(id: u64) -> Proposal;
-    fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool;
-    fn execute(proposal_id: u64) -> bool;
-    fn withdraw(amount: u64) -> bool;
+    #[storage(read, write)] fn constructor(gov_token: ContractId) -> bool;
+    #[storage(read, write)] fn deposit() -> bool;
+    #[storage(read)] fn get_balance() -> u64;
+    #[storage(read)] fn get_user_balance(user: Identity) -> u64;
+    #[storage(read)] fn get_user_votes(user: Identity) -> u64;
+    #[storage(read, write)] fn add_proposal(voting_period: u64, approval_percentage: u64, proposal_data: CallData) -> bool;
+    #[storage(read)] fn get_proposal(id: u64) -> Proposal;
+    #[storage(read, write)] fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool;
+    #[storage(read, write)] fn execute(proposal_id: u64) -> bool;
+    #[storage(read, write)] fn withdraw(amount: u64) -> bool;
 }

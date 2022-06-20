@@ -84,6 +84,86 @@ async fn initialize() -> bool {
 }
 
 #[tokio::test]
+async fn user_proposal_can_execute() {
+    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+    deployer
+        .dao_voting
+        .constructor(gov_token_id)
+        .call()
+        .await
+        .unwrap();
+
+    assert!(
+        deployer
+            .gov_token
+            .unwrap()
+            .mint_and_send_to_address(100, user.wallet.address())
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
+    assert!(
+        user.dao_voting
+            .deposit()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    let mem_address = daovoting_mod::MemoryAddress {
+        contract_id: gov_token_id,
+        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
+        function_data: (500, user.wallet.address()),
+    };
+
+    let call_data = daovoting_mod::CallData {
+        memory_address: mem_address,
+        num_coins_to_forward: 0,
+        asset_id_of_coins_to_forward: gov_token_id,
+        amount_of_gas_to_forward: 20000,
+    };
+
+    assert!(
+        user.dao_voting
+            .add_proposal(10, 10, call_data)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    assert!(
+        user.dao_voting
+            .vote(0, asset_amount / 4, true)
+            .call()
+            .await
+            .unwrap()
+            .value
+    );
+
+    let proposal = user.dao_voting.get_proposal(0).call().await.unwrap().value;
+
+    assert_eq!(
+        proposal,
+        daovoting_mod::Proposal {
+            yes_votes: 10,
+            no_votes: 0,
+            call_data: call_data,
+            end_height: 13,
+            approval_percentage: 10
+        }
+    );
+}
+
+#[tokio::test]
 async fn initializes() {
     assert!(initialize().await);
 }
@@ -119,9 +199,23 @@ async fn panics_with_incorrect_voting_period() {
         .await
         .unwrap()
         .value;
+
+    let mem_address = daovoting_mod::MemoryAddress {
+        contract_id: gov_token_id,
+        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
+        function_data: (500, user.wallet.address()),
+    };
+
+    let call_data = daovoting_mod::CallData {
+        memory_address: mem_address,
+        num_coins_to_forward: 0,
+        asset_id_of_coins_to_forward: gov_token_id,
+        amount_of_gas_to_forward: 20000,
+    };
+
     deployer
         .dao_voting
-        .add_proposal(0, 10, [1; 32])
+        .add_proposal(0, 10, call_data)
         .call()
         .await
         .unwrap()
@@ -139,9 +233,23 @@ async fn panics_with_incorrect_approval_percentage() {
         .await
         .unwrap()
         .value;
+
+    let mem_address = daovoting_mod::MemoryAddress {
+        contract_id: gov_token_id,
+        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
+        function_data: (500, user.wallet.address()),
+    };
+
+    let call_data = daovoting_mod::CallData {
+        memory_address: mem_address,
+        num_coins_to_forward: 0,
+        asset_id_of_coins_to_forward: gov_token_id,
+        amount_of_gas_to_forward: 20000,
+    };
+
     deployer
         .dao_voting
-        .add_proposal(10, 0, [1; 32])
+        .add_proposal(10, 0, call_data)
         .call()
         .await
         .unwrap()
@@ -326,15 +434,7 @@ async fn user_can_withdraw() {
         0
     );
 
-    assert_eq!(
-        user.dao_voting
-            .get_balance()
-            .call()
-            .await
-            .unwrap()
-            .value,
-        0
-    );
+    assert_eq!(user.dao_voting.get_balance().call().await.unwrap().value, 0);
 }
 
 #[tokio::test]
@@ -468,9 +568,23 @@ async fn user_can_add_proposal() {
         .await
         .unwrap()
         .value;
+
+    let mem_address = daovoting_mod::MemoryAddress {
+        contract_id: gov_token_id,
+        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
+        function_data: (500, user.wallet.address()),
+    };
+
+    let call_data = daovoting_mod::CallData {
+        memory_address: mem_address,
+        num_coins_to_forward: 0,
+        asset_id_of_coins_to_forward: gov_token_id,
+        amount_of_gas_to_forward: 20000,
+    };
+
     assert!(
         user.dao_voting
-            .add_proposal(10, 10, [1; 32])
+            .add_proposal(10, 10, call_data)
             .call()
             .await
             .unwrap()
@@ -485,7 +599,7 @@ async fn user_can_add_proposal() {
             yes_votes: 0,
             no_votes: 0,
             approval_percentage: 10,
-            data: [1; 32],
+            call_data: call_data,
             end_height: 13,
         }
     );
@@ -534,9 +648,22 @@ async fn user_can_vote() {
             .value
     );
 
+    let mem_address = daovoting_mod::MemoryAddress {
+        contract_id: gov_token_id,
+        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
+        function_data: (500, user.wallet.address()),
+    };
+
+    let call_data = daovoting_mod::CallData {
+        memory_address: mem_address,
+        num_coins_to_forward: 0,
+        asset_id_of_coins_to_forward: gov_token_id,
+        amount_of_gas_to_forward: 20000,
+    };
+
     assert!(
         user.dao_voting
-            .add_proposal(10, 10, [1; 32])
+            .add_proposal(10, 10, call_data)
             .call()
             .await
             .unwrap()
@@ -569,7 +696,7 @@ async fn user_can_vote() {
             yes_votes: asset_amount / 4,
             no_votes: asset_amount / 4,
             approval_percentage: 10,
-            data: [1; 32],
+            call_data: call_data,
             end_height: 15,
         }
     );
@@ -587,9 +714,22 @@ async fn panics_on_not_enough_votes() {
         .unwrap()
         .value;
 
+    let mem_address = daovoting_mod::MemoryAddress {
+        contract_id: gov_token_id,
+        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
+        function_data: (500, user.wallet.address()),
+    };
+
+    let call_data = daovoting_mod::CallData {
+        memory_address: mem_address,
+        num_coins_to_forward: 0,
+        asset_id_of_coins_to_forward: gov_token_id,
+        amount_of_gas_to_forward: 20000,
+    };
+
     assert!(
         user.dao_voting
-            .add_proposal(10, 10, [1; 32])
+            .add_proposal(10, 10, call_data)
             .call()
             .await
             .unwrap()
@@ -628,9 +768,22 @@ async fn panics_on_expired_proposal() {
             .value
     );
 
+    let mem_address = daovoting_mod::MemoryAddress {
+        contract_id: gov_token_id,
+        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
+        function_data: (500, user.wallet.address()),
+    };
+
+    let call_data = daovoting_mod::CallData {
+        memory_address: mem_address,
+        num_coins_to_forward: 0,
+        asset_id_of_coins_to_forward: gov_token_id,
+        amount_of_gas_to_forward: 20000,
+    };
+
     assert!(
         user.dao_voting
-            .add_proposal(1, 10, [1; 32])
+            .add_proposal(1, 10, call_data)
             .call()
             .await
             .unwrap()
