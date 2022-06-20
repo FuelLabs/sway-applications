@@ -23,6 +23,7 @@ use std::{
     result::*,
     revert::revert,
     storage::StorageMap,
+    vec::Vec,
 };
 
 storage {
@@ -224,6 +225,7 @@ impl NFT for Contract {
 
         // Mint as many tokens as the sender has paid for
         let mut index = 0;
+        let mut minted_tokens: Vec<u64> = ~Vec::new::<u64>();
         while index < amount {
             // Increment the token count
             storage.token_count = storage.token_count + 1;
@@ -241,10 +243,11 @@ impl NFT for Contract {
             // and the number of tokens minted in this transaction
             index = index + 1;
 
-            // TODO: When Vec is available, log a Vec of tokens instead
-            let token_id = storage.token_count;
-            log(MintEvent{owner: to, token_id});
+            // Push to minted tokens Vec
+            minted_tokens.push(storage.token_count);
         }
+
+        log(MintEvent{owner: to, token_ids: minted_tokens});
     }
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved

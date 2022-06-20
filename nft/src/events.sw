@@ -1,6 +1,9 @@
 library events;
 
-use std::identity::Identity;
+use std::{
+    identity::Identity,
+    vec::Vec,
+};
 
 pub struct ApprovalEvent {
     approved: Identity,
@@ -15,7 +18,7 @@ pub struct BurnEvent {
 
 pub struct MintEvent {
     owner: Identity,
-    token_id: u64,
+    token_ids: Vec<u64>,
 }
 
 pub struct OperatorEvent {
