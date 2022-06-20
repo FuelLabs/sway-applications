@@ -1,6 +1,6 @@
 library abi;
 
-use std::{contract_id::ContractId, identity::Identity, option::Option};
+use std::{identity::Identity, option::Option};
 
 abi NFT {
     #[storage(read, write)]

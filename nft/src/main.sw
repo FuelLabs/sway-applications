@@ -13,11 +13,9 @@ use events::{ApprovalEvent, BurnEvent, MintEvent, OperatorEvent, TransferEvent};
 use utils::sender_identity;
 
 use std::{
-    address::Address,
     assert::require,
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount, this_balance},
-    contract_id::ContractId,
     hash::sha256,
     identity::*,
     logging::log,
@@ -100,17 +98,10 @@ impl NFT for Contract {
         require(meta_data.owner == sender_identity(), AccessError::SenderNotOwner);
 
         match approve {
-            true => {
-                // Approve this identity for this token
-                meta_data.approved = Option::Some(to);
-                storage.meta_data.insert(token_id, Option::Some(meta_data));
-            },
-            false => {
-                // Remove approval
-                meta_data.approved = Option::None();
-                storage.meta_data.insert(token_id, Option::Some(meta_data));
-            }
+            true => { meta_data.approved = Option::Some(to); },
+            false => { meta_data.approved = Option::None(); }
         }
+        storage.meta_data.insert(token_id, Option::Some(meta_data));
 
         log(ApprovalEvent{owner: sender_identity(), approved: to, token_id});
     }
