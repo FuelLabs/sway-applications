@@ -12,7 +12,7 @@ abi NFT {
     #[storage(read, write)]
     fn burn(token_id: u64);
     #[storage(read, write)]
-    fn constructor(owner: Identity, access_control: bool, token_supply: u64);
+    fn constructor(access_control_address: Identity, access_control: bool, token_supply: u64);
     // #[storage(read)]
     // fn get_approved(token_id: u64) -> Option<Identity>;
     #[storage(read)]

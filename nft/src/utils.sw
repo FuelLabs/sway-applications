@@ -6,6 +6,7 @@ use std::{
     result::*,
 };
 
+/// Returns the `Identity` of the transaction's sender
 pub fn sender_identity() -> Identity {
     let sender: Result<Identity, AuthError> = msg_sender();
     sender.unwrap()
