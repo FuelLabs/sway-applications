@@ -3,10 +3,10 @@ use fuels_abigen_macro::abigen;
 
 // Load abi from json
 abigen!(EnglishAuction, "out/debug/english-auction-abi.json");
-abigen!(Asset, "tests/artifacts/asset/out/debug/asset-abi.json");
+abigen!(MyAsset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
 struct Metadata {
-    asset: Option<Asset>,
+    asset: Option<MyAsset>,
     auction: EnglishAuction,
     wallet: LocalWallet,
 }
@@ -43,13 +43,13 @@ async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId, Contrac
     .unwrap();
 
     let deploy_wallet = Metadata {
-        asset: Some(Asset::new(sell_asset_id.to_string(), wallet1.clone())),
+        asset: Some(MyAsset::new(sell_asset_id.to_string(), wallet1.clone())),
         auction: EnglishAuction::new(auction_id.to_string(), wallet1.clone()),
         wallet: wallet1.clone(),
     };
 
     let seller = Metadata {
-        asset: Some(Asset::new(sell_asset_id.to_string(), wallet2.clone())),
+        asset: Some(MyAsset::new(sell_asset_id.to_string(), wallet2.clone())),
         auction: EnglishAuction::new(auction_id.to_string(), wallet2.clone()),
         wallet: wallet2.clone(),
     };
@@ -64,13 +64,13 @@ async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId, Contrac
     .unwrap();
 
     let buyer1 = Metadata {
-        asset: Some(Asset::new(buy_asset_id.to_string(), wallet3.clone())),
+        asset: Some(MyAsset::new(buy_asset_id.to_string(), wallet3.clone())),
         auction: EnglishAuction::new(auction_id.to_string(), wallet3.clone()),
         wallet: wallet3.clone(),
     };
     
     let buyer2 = Metadata {
-        asset: Some(Asset::new(buy_asset_id.to_string(), wallet4.clone())),
+        asset: Some(MyAsset::new(buy_asset_id.to_string(), wallet4.clone())),
         auction: EnglishAuction::new(auction_id.to_string(), wallet4.clone()),
         wallet: wallet4.clone(),
     };
@@ -109,7 +109,7 @@ async fn init(
     inital_price: u64,
     reserve_price: u64,
     time: u64
-) -> bool {
+) -> u64 {
 
     deploy_funds(&deploy_wallet, &seller.wallet, 100).await;
     
@@ -131,6 +131,12 @@ async fn init(
         .unwrap()
         .value
 }
+/*
+async fn bid(
+    call_wallet: &Metadata,
+    auction_id: u64,
+    asset: Asset
+)
 
 mod asset_test {
 
@@ -2183,4 +2189,4 @@ mod sell_asset {
             sell_asset_id
         );
     }
-}
+}*/

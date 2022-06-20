@@ -33,8 +33,8 @@ abi EnglishAuction {
 }
 
 abi NFT {
-    fn get_approved(token_id: u64) -> Option<Identity>;
+    // fn get_approved(token_id: u64) -> Option<Identity>;
     fn is_approved_for_all(owner: Identity, operator: Identity) -> bool;
-    fn owner_of(token_id: u64) -> Option<Identity>;
+    // fn owner_of(token_id: u64) -> Option<Identity>;
     fn transfer_from(from: Identity, to: Identity, token_id: u64);
 }
