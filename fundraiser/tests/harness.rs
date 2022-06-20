@@ -17,10 +17,13 @@ use utils::{
 // TODO: Until the SDK supports block manipulation changing tests may break them because of the
 //       specifically selected block deadlines so your test might be correct but the deadline is
 //       messing up the test
+//
 //  - claim_pledges
-//      - panics_when_claiming_before_deadline (need SDK to manipulate block height)
+//      - revert_when_claiming_before_deadline (need SDK to manipulate block height)
 //  - pledges
-//      - panics_when_pledging_after_deadline (need SDK to manipulate block height)
+//      - revert_when_pledging_after_deadline (need SDK to manipulate block height)
+//
+//      When logging is deserialized in the SDK, check logs are correct
 
 mod create_campaign {
 
@@ -188,6 +191,53 @@ mod cancel_campaign {
                 campaign_info(&author.contract, 1).await.value.cancelled
             );
         }
+
+        #[tokio::test]
+        async fn cancels_different_campaigns() {
+            let (author, _, _, _, defaults) = setup().await;
+
+            create_campaign(
+                &author.contract,
+                &defaults.asset_id,
+                &defaults.beneficiary,
+                defaults.deadline,
+                defaults.target_amount,
+            )
+            .await;
+
+            create_campaign(
+                &author.contract,
+                &defaults.asset_id,
+                &defaults.beneficiary,
+                defaults.deadline,
+                defaults.target_amount,
+            )
+            .await;
+
+            assert_eq!(
+                false,
+                campaign_info(&author.contract, 1).await.value.cancelled
+            );
+
+            assert_eq!(
+                false,
+                campaign_info(&author.contract, 2).await.value.cancelled
+            );
+
+            cancel_campaign(&author.contract, 1).await;
+
+            assert_eq!(
+                true,
+                campaign_info(&author.contract, 1).await.value.cancelled
+            );
+
+            cancel_campaign(&author.contract, 2).await;
+
+            assert_eq!(
+                true,
+                campaign_info(&author.contract, 2).await.value.cancelled
+            );
+        }
     }
 
     mod revert {
@@ -339,24 +389,16 @@ mod claim_pledges {
         #[tokio::test]
         #[should_panic(expected = "Revert(42)")]
         async fn when_id_is_zero() {
-            let (author, user, asset, _, defaults) = setup().await;
-            let deadline = 5;
+            let (author, _, _, _, defaults) = setup().await;
 
-            mint(
-                &asset.contract,
-                defaults.target_amount,
-                user.wallet.address(),
-            )
-            .await;
             create_campaign(
                 &author.contract,
                 &defaults.asset_id,
                 &defaults.beneficiary,
-                deadline,
+                defaults.deadline,
                 defaults.target_amount,
             )
             .await;
-            pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
             // Reverts
             claim_pledges(&author.contract, 0).await;
@@ -365,24 +407,16 @@ mod claim_pledges {
         #[tokio::test]
         #[should_panic(expected = "Revert(42)")]
         async fn when_id_is_greater_than_number_of_campaigns() {
-            let (author, user, asset, _, defaults) = setup().await;
-            let deadline = 5;
+            let (author, _, _, _, defaults) = setup().await;
 
-            mint(
-                &asset.contract,
-                defaults.target_amount,
-                user.wallet.address(),
-            )
-            .await;
             create_campaign(
                 &author.contract,
                 &defaults.asset_id,
                 &defaults.beneficiary,
-                deadline,
+                defaults.deadline,
                 defaults.target_amount,
             )
             .await;
-            pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
             // Reverts
             claim_pledges(&author.contract, 100).await;
@@ -391,24 +425,16 @@ mod claim_pledges {
         #[tokio::test]
         #[should_panic(expected = "Revert(42)")]
         async fn when_sender_is_not_author() {
-            let (author, user, asset, _, defaults) = setup().await;
-            let deadline = 4;
+            let (author, user, _, _, defaults) = setup().await;
 
-            mint(
-                &asset.contract,
-                defaults.target_amount,
-                user.wallet.address(),
-            )
-            .await;
             create_campaign(
                 &author.contract,
                 &defaults.asset_id,
                 &defaults.beneficiary,
-                deadline,
+                defaults.deadline,
                 defaults.target_amount,
             )
             .await;
-            pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
             // Reverts
             claim_pledges(&user.contract, 1).await;
@@ -440,15 +466,9 @@ mod claim_pledges {
         #[tokio::test]
         #[should_panic(expected = "Revert(42)")]
         async fn when_target_amount_is_not_reached() {
-            let (author, user, asset, _, defaults) = setup().await;
-            let deadline = 5;
+            let (author, _, _, _, defaults) = setup().await;
+            let deadline = 1;
 
-            mint(
-                &asset.contract,
-                defaults.target_amount,
-                user.wallet.address(),
-            )
-            .await;
             create_campaign(
                 &author.contract,
                 &defaults.asset_id,
@@ -457,7 +477,6 @@ mod claim_pledges {
                 defaults.target_amount,
             )
             .await;
-            pledge(&user.contract, 1, &asset, defaults.target_amount - 1).await;
 
             // Reverts
             claim_pledges(&author.contract, 1).await;
@@ -762,14 +781,8 @@ mod pledge {
         #[tokio::test]
         #[should_panic(expected = "Revert(42)")]
         async fn when_pledging_incorrect_asset() {
-            let (author, user, asset, asset2, defaults) = setup().await;
+            let (author, user, _, asset2, defaults) = setup().await;
 
-            mint(
-                &asset.contract,
-                defaults.target_amount,
-                user.wallet.address(),
-            )
-            .await;
             mint(
                 &asset2.contract,
                 defaults.target_amount,
@@ -1000,6 +1013,7 @@ mod unpledge {
         #[should_panic(expected = "Revert(42)")]
         async fn when_unpledging_zero_amount() {
             let (author, user, _, _, defaults) = setup().await;
+            let target_amount = 0;
 
             create_campaign(
                 &author.contract,
@@ -1011,7 +1025,7 @@ mod unpledge {
             .await;
 
             // Reverts
-            unpledge(&user.contract, 1, 0).await;
+            unpledge(&user.contract, 1, target_amount).await;
         }
 
         #[tokio::test]
@@ -1287,7 +1301,6 @@ mod pledged {
         #[tokio::test]
         async fn returns_info() {
             let (author, user, asset, _, defaults) = setup().await;
-            let beneficiary = Identity::Address(author.wallet.address());
             let deadline = 6;
 
             mint(
@@ -1299,7 +1312,7 @@ mod pledged {
             create_campaign(
                 &author.contract,
                 &defaults.asset_id,
-                &beneficiary,
+                &defaults.beneficiary,
                 deadline,
                 defaults.target_amount,
             )
