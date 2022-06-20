@@ -9,9 +9,9 @@ abi EnglishAuction {
     #[storage(read)]
     fn auction_end_block(auction_id: u64) -> u64;
     #[storage(read, write)]
-    fn bid(auction_id: u64, asset: Asset) -> bool;
+    fn bid(auction_id: u64, asset: Asset);
     #[storage(read, write)]
-    fn buy_reserve(auction_id: u64, asset: Asset) -> bool;
+    fn buy_reserve(auction_id: u64, asset: Asset);
     #[storage(read, write)]
     fn constructor(seller: Identity, sell_asset: Asset, buy_asset: Asset, inital_price: u64, reserve_price: u64, time: u64) -> u64;
     #[storage(read)]
@@ -29,7 +29,7 @@ abi EnglishAuction {
     #[storage(read)]
     fn state(auction_id: u64) -> u64;
     #[storage(read, write)]
-    fn withdraw(auction_id: u64) -> bool;
+    fn withdraw(auction_id: u64);
 }
 
 abi NFT {

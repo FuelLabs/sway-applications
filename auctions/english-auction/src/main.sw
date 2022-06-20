@@ -75,7 +75,7 @@ impl EnglishAuction for Contract {
     /// - The asset amount provided is less than the inital price if there are no bids
     /// - The asset amount provided plus current deposit is less than or equal to the current bid
     #[storage(read, write)]
-    fn bid(auction_id: u64, asset: Asset) -> bool {
+    fn bid(auction_id: u64, asset: Asset) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -142,7 +142,6 @@ impl EnglishAuction for Contract {
             // Log the purchase
             log(WithdrawEvent{asset: auction.sell_asset, auction_id: auction_id, identity: sender}); 
         }
-        true
     }
 
     /// Purchases at the reserve price. If a deposit greater than the
@@ -159,7 +158,7 @@ impl EnglishAuction for Contract {
     /// - The asset amount does not meet the reserve price
     /// - The buy assest provided is the incorrect asset
     #[storage(read, write)]
-    fn buy_reserve(auction_id: u64, asset: Asset) -> bool {
+    fn buy_reserve(auction_id: u64, asset: Asset) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -208,7 +207,6 @@ impl EnglishAuction for Contract {
 
         // Log the purchase
         log(WithdrawEvent{asset: auction.sell_asset, auction_id: auction_id, identity: sender});  
-        true
     }
 
     /// Starts a auction with the seller, selling asset, buying asset, 
@@ -387,7 +385,7 @@ impl EnglishAuction for Contract {
     /// - The seller is the sender and already withdrew
     /// - The sender is not the buyer or seller and has nothing to withdraw
     #[storage(read, write)]
-    fn withdraw(auction_id: u64) -> bool {
+    fn withdraw(auction_id: u64) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -442,6 +440,5 @@ impl EnglishAuction for Contract {
                 Option::None(u64) => send_tokens(sender, sender_deposit.unwrap()),
             }
         };
-        true
     }
 }
