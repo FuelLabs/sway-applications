@@ -253,44 +253,34 @@ impl Fundraiser for Contract {
         let user = sender_identity();
         let pledge_count = storage.pledge_count.get(user);
 
-        // First time pledging to any campaign
-        if pledge_count == 0 {
-            // First time pledge therefore increment everything to 1
-            storage.pledge_count.insert(user, 1);
+        // Fetch the index to see if the user has pledged to this campaign before or if this is a
+        // pledge to a new campaign
+        let pledge_history_index = storage.pledge_history_index.get((user, id));
+
+        // Pledging to a campaign that they have already pledged to
+        if pledge_history_index != 0 {
+            // 0 is the sentinel therefore they have pledged to this ID (campaign)
+            // increment their previous amount with the current pledge and update their pledge
+            let mut pledge = storage.pledge_history.get((user, pledge_history_index));
+            pledge.amount = pledge.amount + msg_amount();
+
+            storage.pledge_history.insert((user, pledge_history_index), pledge);
+        }
+        // Pledging to a new campaign
+        else {
+            // First time pledge to this campaign therefore increment everything by 1
+            storage.pledge_count.insert(user, pledge_count + 1);
 
             // Store the data structure required to look up the campaign they have pledged to, also
             // track how much they have pledged so that they can withdraw the correct amount.
             // Moreover, this can be used to show the user how much they have pledged to any campaign
-            storage.pledge_history.insert((user, 1), Pledge {
+            storage.pledge_history.insert((user, pledge_count + 1), Pledge {
                 amount: msg_amount(), id
             });
 
             // Since we use the campaign ID to interact with the contract use the ID as a key for
             // a reverse look-up. Value is the 1st pledge (count)
-            storage.pledge_history_index.insert((user, id), 1);
-        } else {
-            // The user has pledged before so retrieve the pledge count / index to see if this is a
-            // pledge to a new campaign or a campaign that they have previously pledged to
-            let pledge_history_index = storage.pledge_history_index.get((user, id));
-
-            // Pledging to a campaign that they have already pledged to
-            if pledge_history_index != 0 {
-                // 0 is the sentinel therefore they have pledged to this ID (campaign)
-                // increment their previous amount with the current pledge and update their pledge
-                let mut pledge = storage.pledge_history.get((user, pledge_history_index));
-                pledge.amount = pledge.amount + msg_amount();
-
-                storage.pledge_history.insert((user, pledge_history_index), pledge);
-            }
-            // Pledging to a new campaign
-            else {
-                // Same reasoning as pledging for the very first time to any campaign
-                storage.pledge_count.insert(user, pledge_count + 1);
-                storage.pledge_history.insert((user, pledge_count + 1), Pledge {
-                    amount: msg_amount(), id
-                });
-                storage.pledge_history_index.insert((user, id), pledge_count + 1);
-            }
+            storage.pledge_history_index.insert((user, id), pledge_count + 1);
         }
 
         // The user has pledged therefore we increment the total amount that this campaign has
