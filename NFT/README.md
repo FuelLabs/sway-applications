@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="./.docs/nft-logo.png" height="120">
+</p>
+
 ## Overview
 
 
