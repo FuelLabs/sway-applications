@@ -2,19 +2,19 @@ mod utils;
 
 use utils::{
     abi_calls::{
-        init,
-        mint,
-        burn,
-        transfer,
         approve,
-        set_approval_for_all,
-        set_admin,
         //approved,
         balance_of,
+        burn,
+        init,
         is_approved_for_all,
+        mint,
+        set_admin,
+        set_approval_for_all,
         //owner_of,
         tokens_owned,
-        total_supply
+        total_supply,
+        transfer,
     },
     test_helpers::setup,
 };
@@ -47,16 +47,16 @@ mod constructor {
         #[should_panic(expected = "Revert(42)")]
         async fn panics_when_initalized_twice() {
             let (deploy_wallet, owner1, _owner2) = setup().await;
-    
+
             init(&deploy_wallet, &owner1, true, 1).await;
             init(&deploy_wallet, &owner1, true, 1).await;
         }
-    
+
         #[tokio::test]
         #[should_panic(expected = "Revert(42)")]
         async fn panics_when_token_supply_is_zero() {
             let (deploy_wallet, owner1, _owner2) = setup().await;
-    
+
             init(&deploy_wallet, &owner1, true, 0).await;
         }
     }
@@ -162,7 +162,6 @@ mod set_admin {
             assert_eq!(balance_of(&owner2, &owner2).await, 1);
         }
     }
-
 
     mod reverts {
 
@@ -306,7 +305,7 @@ mod burn {
 
             let token_id = 0;
 
-            burn(&owner1, token_id).await; 
+            burn(&owner1, token_id).await;
         }
 
         #[tokio::test]
@@ -358,7 +357,7 @@ mod burn {
 //             approve(&owner1, &owner2, token_id, true).await;
 
 //             assert_eq!(approved(&owner1, token_id).await, owner2.wallet.address());
-//         } 
+//         }
 //     }
 // }
 
@@ -376,7 +375,7 @@ mod tokens_owned {
 
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
-            
+
             let token_id = tokens_owned(&owner1, &owner1).await;
 
             assert_eq!(1, token_id);
@@ -418,8 +417,8 @@ mod is_approved_for_all {
             init(&deploy_wallet, &owner1, false, 1).await;
             set_approval_for_all(&owner1, &owner1, &owner2, true).await;
 
-            assert_eq!{is_approved_for_all(&owner1, &owner1, &owner2).await, true};
-            assert_eq!{is_approved_for_all(&owner1, &owner2, &owner1).await, false};
+            assert_eq! {is_approved_for_all(&owner1, &owner1, &owner2).await, true};
+            assert_eq! {is_approved_for_all(&owner1, &owner2, &owner1).await, false};
         }
     }
 }
@@ -469,7 +468,7 @@ mod set_approval_for_all {
     }
 
     mod reverts {
-        
+
         use super::*;
 
         #[tokio::test]
@@ -564,7 +563,7 @@ mod transfer_from {
             let (_deploy_wallet, owner1, owner2) = setup().await;
             let token_id = 0;
 
-            transfer(&owner1, &owner1, &owner2, token_id).await;  
+            transfer(&owner1, &owner1, &owner2, token_id).await;
         }
 
         #[tokio::test]

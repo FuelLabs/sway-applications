@@ -1,7 +1,4 @@
-use fuels::{
-    contract::contract::CallResponse,
-    prelude::*
-};
+use fuels::{contract::contract::CallResponse, prelude::*};
 use fuels_abigen_macro::abigen;
 
 // Load abi from json
@@ -13,7 +10,7 @@ pub struct Metadata {
 }
 
 pub mod test_helpers {
-    
+
     use super::*;
 
     pub async fn setup() -> (Metadata, Metadata, Metadata) {
@@ -24,35 +21,31 @@ pub mod test_helpers {
             coin_amount: 1000000,
         })
         .await;
-    
+
         // Get the wallets from that provider
         let wallet1 = wallets.pop().unwrap();
         let wallet2 = wallets.pop().unwrap();
         let wallet3 = wallets.pop().unwrap();
-    
-        let nft_id = Contract::deploy(
-            "./out/debug/NFT.bin", 
-            &wallet1, 
-            TxParameters::default()
-        )
-        .await
-        .unwrap();
-    
+
+        let nft_id = Contract::deploy("./out/debug/NFT.bin", &wallet1, TxParameters::default())
+            .await
+            .unwrap();
+
         let deploy_wallet = Metadata {
             nft: Nft::new(nft_id.to_string(), wallet1.clone()),
-            wallet: wallet1.clone()
+            wallet: wallet1.clone(),
         };
-    
+
         let owner1 = Metadata {
             nft: Nft::new(nft_id.to_string(), wallet2.clone()),
-            wallet: wallet2.clone()
+            wallet: wallet2.clone(),
         };
-    
+
         let owner2 = Metadata {
             nft: Nft::new(nft_id.to_string(), wallet3.clone()),
-            wallet: wallet3.clone()
+            wallet: wallet3.clone(),
         };
-    
+
         (deploy_wallet, owner1, owner2)
     }
 }
@@ -70,9 +63,10 @@ pub mod abi_calls {
         deploy_wallet
             .nft
             .constructor(
-                nft_mod::Identity::Address(owner.wallet.address()), 
-                access_control, 
-                token_supply)
+                nft_mod::Identity::Address(owner.wallet.address()),
+                access_control,
+                token_supply,
+            )
             .call()
             .await
             .unwrap()
@@ -95,28 +89,33 @@ pub mod abi_calls {
         call_wallet: &Metadata,
         from: &Metadata,
         to: &Metadata,
-        token_id: u64
+        token_id: u64,
     ) -> CallResponse<()> {
         call_wallet
             .nft
             .transfer_from(
-                nft_mod::Identity::Address(from.wallet.address()), 
-                nft_mod::Identity::Address(to.wallet.address()), 
-                token_id)
+                nft_mod::Identity::Address(from.wallet.address()),
+                nft_mod::Identity::Address(to.wallet.address()),
+                token_id,
+            )
             .call()
             .await
-            .unwrap() 
+            .unwrap()
     }
 
     pub async fn approve(
         call_wallet: &Metadata,
         approved: &Metadata,
         token_id: u64,
-        approve: bool
-    ) ->  CallResponse<()> {
+        approve: bool,
+    ) -> CallResponse<()> {
         call_wallet
             .nft
-            .approve(nft_mod::Identity::Address(approved.wallet.address()), token_id, approve)
+            .approve(
+                nft_mod::Identity::Address(approved.wallet.address()),
+                token_id,
+                approve,
+            )
             .call()
             .await
             .unwrap()
@@ -126,14 +125,15 @@ pub mod abi_calls {
         call_wallet: &Metadata,
         owner: &Metadata,
         operator: &Metadata,
-        approve: bool
+        approve: bool,
     ) -> CallResponse<()> {
         call_wallet
             .nft
             .set_approval_for_all(
-                nft_mod::Identity::Address(owner.wallet.address()), 
+                nft_mod::Identity::Address(owner.wallet.address()),
                 nft_mod::Identity::Address(operator.wallet.address()),
-                approve)
+                approve,
+            )
             .call()
             .await
             .unwrap()
@@ -154,24 +154,29 @@ pub mod abi_calls {
 
     pub async fn balance_of(call_wallet: &Metadata, wallet: &Metadata) -> u64 {
         call_wallet
-        .nft
-        .balance_of(nft_mod::Identity::Address(wallet.wallet.address()))
-        .call()
-        .await
-        .unwrap()
-        .value
+            .nft
+            .balance_of(nft_mod::Identity::Address(wallet.wallet.address()))
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
-    pub async fn is_approved_for_all(call_wallet: &Metadata, owner: &Metadata, operator: &Metadata) -> bool {
+    pub async fn is_approved_for_all(
+        call_wallet: &Metadata,
+        owner: &Metadata,
+        operator: &Metadata,
+    ) -> bool {
         call_wallet
-        .nft
-        .is_approved_for_all(
-            nft_mod::Identity::Address(owner.wallet.address()), 
-            nft_mod::Identity::Address(operator.wallet.address()))
-        .call()
-        .await
-        .unwrap()
-        .value
+            .nft
+            .is_approved_for_all(
+                nft_mod::Identity::Address(owner.wallet.address()),
+                nft_mod::Identity::Address(operator.wallet.address()),
+            )
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     // pub async fn owner_of(call_wallet: &Metadata, token_id: u64) -> CallResponse<nft_mod::Identity> {
@@ -180,12 +185,12 @@ pub mod abi_calls {
 
     pub async fn tokens_owned(call_wallet: &Metadata, wallet: &Metadata) -> u64 {
         call_wallet
-        .nft
-        .tokens_owned(nft_mod::Identity::Address(wallet.wallet.address()))
-        .call()
-        .await
-        .unwrap()
-        .value
+            .nft
+            .tokens_owned(nft_mod::Identity::Address(wallet.wallet.address()))
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn total_supply(call_wallet: &Metadata) -> u64 {
