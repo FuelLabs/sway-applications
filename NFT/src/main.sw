@@ -86,44 +86,6 @@ impl NFT for Contract {
         storage.token_supply = token_supply;
     }
 
-    /// Burns the specified token. When burned, the NFT Metadata of the token is set
-    /// to none. After the token has been burned, no one will be able to fetch any data
-    /// about this token or have control over it.
-    ///
-    /// # Arguments
-    ///
-    /// * `token_id` - The ID of the token which is to be burned.
-    ///
-    /// * Reverts
-    ///
-    /// * When `token_id` does map to an existing token.
-    /// * When sender is not the owner of the `token_id`.
-    #[storage(read, write)]fn burn(token_id: u64) {
-        // Ensure this is a valid token that has already been minted and exists
-        let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
-        require(meta_data.is_some(), InputError::TokenDoesNotExist);
-
-        // Ensure the sender owns the token that is provided
-        let sender = sender_identity();
-        let meta_data: MetaData = meta_data.unwrap();
-        require(meta_data.owner == sender, AccessError::SenderNotOwner);
-
-        // Burn this token by setting the `token_id` mapping to `None`
-        storage.meta_data.insert(token_id, Option::None());
-
-        // Reduce the balance of tokens for the owner
-        storage.balances.insert(sender, storage.balances.get(sender) - 1);
-
-        // NOTE: Until we have a vec tokens_owned will now return
-        //       owning nothing, even if mutliple tokens are owned
-        storage.owners.insert(sender, 0);
-
-        // Log the burn event
-        log(BurnEvent {
-            owner: sender, token_id
-        });
-    }
-
     /// Mints a specified amount of tokens to the given `Identity`.
     ///
     /// # Arguments
@@ -170,6 +132,44 @@ impl NFT for Contract {
 
         log(MintEvent {
             owner: to, token_ids: minted_tokens
+        });
+    }
+
+    /// Burns the specified token. When burned, the NFT Metadata of the token is set
+    /// to none. After the token has been burned, no one will be able to fetch any data
+    /// about this token or have control over it.
+    ///
+    /// # Arguments
+    ///
+    /// * `token_id` - The ID of the token which is to be burned.
+    ///
+    /// * Reverts
+    ///
+    /// * When `token_id` does map to an existing token.
+    /// * When sender is not the owner of the `token_id`.
+    #[storage(read, write)]fn burn(token_id: u64) {
+        // Ensure this is a valid token that has already been minted and exists
+        let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
+        require(meta_data.is_some(), InputError::TokenDoesNotExist);
+
+        // Ensure the sender owns the token that is provided
+        let sender = sender_identity();
+        let meta_data: MetaData = meta_data.unwrap();
+        require(meta_data.owner == sender, AccessError::SenderNotOwner);
+
+        // Burn this token by setting the `token_id` mapping to `None`
+        storage.meta_data.insert(token_id, Option::None());
+
+        // Reduce the balance of tokens for the owner
+        storage.balances.insert(sender, storage.balances.get(sender) - 1);
+
+        // NOTE: Until we have a vec tokens_owned will now return
+        //       owning nothing, even if mutliple tokens are owned
+        storage.owners.insert(sender, 0);
+
+        // Log the burn event
+        log(BurnEvent {
+            owner: sender, token_id
         });
     }
 
