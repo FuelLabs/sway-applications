@@ -6,7 +6,7 @@ abigen!(EnglishAuction, "out/debug/english-auction-abi.json");
 abigen!(MyAsset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
 struct Metadata {
-    asset: MyAsset,
+    asset: core::option::Option<MyAsset>,
     auction: EnglishAuction,
     wallet: LocalWallet,
 }
@@ -43,13 +43,13 @@ async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId, Contrac
     .unwrap();
 
     let deploy_wallet = Metadata {
-        asset: MyAsset::new(sell_asset_id.to_string(), wallet1.clone()),
+        asset: Some(MyAsset::new(sell_asset_id.to_string(), wallet1.clone())),
         auction: EnglishAuction::new(auction_id.to_string(), wallet1.clone()),
         wallet: wallet1.clone(),
     };
 
     let seller = Metadata {
-        asset: MyAsset::new(sell_asset_id.to_string(), wallet2.clone()),
+        asset: Some(MyAsset::new(sell_asset_id.to_string(), wallet2.clone())),
         auction: EnglishAuction::new(auction_id.to_string(), wallet2.clone()),
         wallet: wallet2.clone(),
     };
@@ -64,13 +64,13 @@ async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId, Contrac
     .unwrap();
 
     let buyer1 = Metadata {
-        asset: MyAsset::new(buy_asset_id.to_string(), wallet3.clone()),
+        asset: Some(MyAsset::new(buy_asset_id.to_string(), wallet3.clone())),
         auction: EnglishAuction::new(auction_id.to_string(), wallet3.clone()),
         wallet: wallet3.clone(),
     };
     
     let buyer2 = Metadata {
-        asset: MyAsset::new(buy_asset_id.to_string(), wallet4.clone()),
+        asset: Some(MyAsset::new(buy_asset_id.to_string(), wallet4.clone())),
         auction: EnglishAuction::new(auction_id.to_string(), wallet4.clone()),
         wallet: wallet4.clone(),
     };
@@ -90,6 +90,8 @@ async fn deploy_funds(
 ) {
     deploy_wallet
         .asset 
+        .as_ref()
+        .unwrap()
         .mint_and_send_to_address(asset_amount, wallet.address())
         .append_variable_outputs(1)
         .call()
