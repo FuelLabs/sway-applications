@@ -26,7 +26,7 @@ enum Players {
 }
 
 enum Winners {
-    Players: Players,
+    Player: Players,
     None: (),
     Draw: (),
 }
@@ -42,10 +42,10 @@ struct Game {
 abi TicTacToe {
     fn new_game(player_one: Players, player_two: Players) -> Game;
     fn make_move(game: Game, position: u64) -> (bool, str[20]);
-    fn save_player_position(player: Players, position: u64);
-    fn get_player_position_filled(gameID: u64, position: u64) -> Players;
-    fn save_winner(gameID: u64, winner: Winners);
-    fn get_winner(gameID: u64) -> Winners;
+    // fn save_player_position(player: Players, position: u64);
+    // fn get_player_position_filled(gameID: u64, position: u64) -> Players;
+    // fn save_winner(gameID: u64, winner: Winners);
+    // fn get_winner(gameID: u64) -> Winners;
     fn calculate_winner(game: Game) -> Winners;
     //fn next_player(game: Game);
     // fn horizontal_alignment(gameID: u64) -> Winners;
@@ -59,7 +59,7 @@ impl TicTacToe for Contract {
         let gameID = storage.games_played;
         
         let mut game = Game {
-            gameID: gameID,
+            gameId: gameID,
             PlayerOne: player_one,
             PlayerTwo: player_two,
             winner: Winners::None,
@@ -71,7 +71,7 @@ impl TicTacToe for Contract {
     }
 
     fn make_move(game: Game, position: u64) -> (bool, str[20]) {
-        let gameID = game.gameID;
+        let gameID = game.gameId;
         if (gameID > storage.games_played) {
             return(false, "No such game exists.");
         }
@@ -105,88 +105,79 @@ impl TicTacToe for Contract {
         return(true, "");
     }
 
-    // player 1 or 2, position is 1-9 (123/456/789)
-    fn save_player_position(player: Players, position: u64) {
-        store(sha256(("player_pos", position)), player);
-    }
-    // get the players position on the board, returns the player or empty
-    // if the player returned value is None, that means it's empty
-    fn get_player_position_filled(gameID: u64, position: u64) -> Players {
-        get(sha256(("player_pos", gameID, position)));
-    }
-    fn save_winner(gameID: u64, winner: Winners) {
-        store(sha256(("winner", gameID)), winner);
-    }
-    fn get_winner(gameID: u64) -> Winners {
-        get(sha256(("winner", gameID, winner)));
-    }
+ 
+
     fn calculate_winner(game: Game) -> Winners {
-        let gameID = game.gameID;
+        let gameID = game.gameId;
         let player = horizontal_alignment(gameID);
 
-        if (player == Players::PlayerOne) {
-            save_winner(gameID, winner::Players(Players::PlayerOne));
-            return winner::Players(Players::PlayerOne);
+        if (player == game.PlayerOne) {
+            game.winner = Winners::Player(Players::PlayerOne);
+            save_winner(gameID, game.winner);
+            return game.winner;
         }
-        if (player == Players::PlayerTwo) {
-            save_winner(gameID, winner::Players(Players::PlayerTwo));
-            return winner::Players(Players::PlayerTwo);
+        if (player == game.PlayerTwo) {
+            game.winner = Winner::Player(Players::PlayerTwo);
+            save_winner(gameID, game.winner);
+            return game.winner;
         }
 
         player = vertical_alignment(gameID);
-        if (player == Players::PlayerOne) {
-            save_winner(gameID, winner::Players(Players::PlayerOne));
-            return winner::Players(Players::PlayerOne);
+        if (player == game.PlayerOne) {
+            game.winner = Winners::Player(Players::PlayerOne);
+            save_winner(gameID, game.winner);
+            return game.winner;
         }
-        if (player == Players::PlayerTwo) {
-            save_winner(gameID, winner::Players(Players::PlayerTwo));
-            return winner::Players(Players::PlayerTwo);
+        if (player == game.PlayerTwo) {
+            game.winner = Winners::Player(Players::PlayerTwo);
+            save_winner(gameID, game.winner);
+            return game.winner;
         }
         player = diagonal_alignment(gameID);
-        if (player == Players::PlayerOne) {
-            save_winner(gameID, winner::Players(Players::PlayerOne));
-            return winner::Players(Players::PlayerOne);
+        if (player == game.PlayerOne) {
+            game.winner = Winners::Player(Players::PlayerOne);
+            save_winner(gameID, game.winner);
+            return game.winner;
         }
-        if (player == Players::PlayerTwo) {
-            game.winner = Winner::Player:Players(Players::PlayerTwo);
-            save_winner(gameID, game::winner);
+        if (player == game.PlayerTwo) {
+            game.winner = Winners::Player(Players::PlayerTwo);
+            save_winner(gameID, game.winner);
             
             return game.winner;
         }
         // If there is no winner and no more space on the board,
         // then it is a draw.
         if (is_board_full(gameID)) {
-            
-            game.winner = Winner::Draw;
-            save_winner(gameID, winner);
-            return winner;
+            game.winner = Winners::Draw;
+            save_winner(gameID, game.winner);
+            game.winner
         }
         else {
-            save_winner(gameID, winner);
-            return winner;
+            game.winner = Winners::None;
+            game.winner
         }
     }
 }
-fn test(gameID: u64) -> Winners {
-    let mut counter = 1;
-    let mut break_early = false;
-    let mut i = 1;
-    while counter < 3 {
-        while get_player_position_filled(gameID, i) != Players::None {
-            if get_player_position_filled(gameID, i) == get_player_position_filled(gameID, i + 1) {
-                counter = counter + 1;
-                i = i + 1;
-            } else {
-                counter = 1;
-                if i < 4 && i < 7 {
-                    i = 4;
-                } else {
-                    i = 7;
-                }
-            }
-        }
-    }
-}
+// fn test(gameID: u64) -> Winners {
+//     let mut counter = 1;
+//     let mut break_early = false;
+//     let mut i = 1;
+//     while counter < 3 {
+//         while get_player_position_filled(gameID, i) != Players::None {
+//             if get_player_position_filled(gameID, i) == get_player_position_filled(gameID, i + 1) {
+//                 counter = counter + 1;
+//                 i = i + 1;
+//             } else {
+//                 counter = 1;
+//                 if i < 4 && i < 7 {
+//                     i = 4;
+//                 } else {
+//                     i = 7;
+//                 }
+//             }
+//         }
+//     }
+// }
 
 // nextPlayer changes whose turn it is for the given `_game`.
 // fn next_player(game: Game) {
@@ -283,19 +274,21 @@ fn is_board_full(gameID: u64) -> bool {
     return true;
 }
 
-
-
-enum Enum_a {
-    abc: Enum_b,
-    var1: (),
-    var2, (),
+// player 1 or 2, position is 1-9 (123/456/789)
+fn save_player_position(player: Players, position: u64) {
+    store(sha256(("player_pos", position)), player);
+}
+    
+// get the players position on the board, returns the player or empty
+// if the player returned value is None, that means it's empty
+fn get_player_position_filled(gameID: u64, position: u64) -> Players {
+    get(sha256(("player_pos", gameID, position)));
 }
 
-enum Enum_b {
-    abc: (),
-    def: (),
+fn save_winner(gameID: u64, winner: Winners) {
+    store(sha256(("winner", gameID)), winner);
 }
 
-struct S {
-    abc:
+fn get_winner(gameID: u64) -> Winners {
+    get(sha256(("winner", gameID, winner)));
 }
