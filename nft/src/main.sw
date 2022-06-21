@@ -27,17 +27,12 @@ use std::{
 };
 
 storage {
-    /// Determines if there is a whitelist to call the mint function
+    /// Determines if only the admin is allowed to call the mint function
     /// Only set on the initalization of the contract
     access_control: bool,
 
-    /// Stores the identity that has permission to add identities to the whitelist
-    /// Only set on the initalization of the contract
+    /// Stores the identity that has permission to mint if `access_control` is set
     admin: Identity,
-
-    /// Stores the identities that are on the whitelist to mint
-    /// Map(Identity => bool)
-    allowed_minters: StorageMap<Identity, bool>,
 
     /// Used of O(1) lookup of the number of tokens owned by each Identity
     /// This increments or decrements when minting, transfer of ownership, and burning of tokens
@@ -75,7 +70,7 @@ impl NFT for Contract {
     /// 
     /// # Arguments
     ///
-    /// * `admin` - The `Identity` which has the ability to add or remove an `Identity` from the whitelist.
+    /// * `admin` - The `Identity` which has the ability to mint if `access_control` is set and change the contract's admin.
     /// * `access_control` - The `bool` which will determine whether identities will need to approval to mint.
     /// * `token_supply` - The total supply of tokens which will be allowed to mint.
     ///
@@ -145,7 +140,7 @@ impl NFT for Contract {
     /// 
     /// * When the `amount` is set to 0.
     /// * When the sender attempts to mint more tokens than total supply.
-    /// * When the sender is not on the whitelist to mint and access control is set.
+    /// * When the sender is not the admin and `access_control` is set.
     #[storage(read, write)]
     fn mint(to: Identity, amount: u64) {
         // The current number of tokens minted plus the amount to be minted cannot be
@@ -158,7 +153,7 @@ impl NFT for Contract {
         // Ensure that the sender is on the approved mint list if this is a accessed mint
         require(
             !storage.access_control || 
-            storage.allowed_minters.get(sender_identity()), 
+            sender_identity() == storage.admin, 
             AccessError::SenderDoesNotHaveAccessControl
         );
 
@@ -307,29 +302,22 @@ impl NFT for Contract {
         log(OperatorEvent{owner, operator});
     }
 
-    /// Allows or revokes permissions for an `Identity` to call the mint function within 
-    /// this contract. Adds an `Identity` to the whitelist.
+    /// Changes the contract's `admin` `Identity`.
     ///
     /// # Arguments
     ///
-    /// * `minter` - The `Identity` which may call the mint function of this contract.
-    /// * `allow` - The `bool` which will allow or disallow calling of the mint function.
+    /// * `admin` - The `Identity` of the new `admin` to be stored
     ///
     /// # Reverts
     ///
-    /// * When the NFT contract does not have `access_control` set.
-    /// * When the `minter` `Identity` is not the `admin`.
+    /// * When the sender `Identity` is not the `admin` in storage.
     #[storage(read, write)]
-    fn allow_mint(minter: Identity, allow: bool) {
-        // We cannot set if someone is allowed to mint or not if 'access_control' is
-        // not set to true
-        require(storage.access_control, AccessError::AccessControlNotSet);
-        
+    fn set_admin(admin: Identity) {        
         // Ensure that the sender is allowed to add identities to the approved list
         require(sender_identity() == storage.admin, AccessError::SenderCannotSetAccessControl);
 
         // Add the provided `minter` Identity to the list of identities that are approved to mint
-        storage.allowed_minters.insert(minter, allow);
+        storage.admin = admin;
     }
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved

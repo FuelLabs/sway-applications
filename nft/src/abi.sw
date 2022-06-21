@@ -4,8 +4,6 @@ use std::{identity::Identity, option::Option};
 
 abi NFT {
     #[storage(read, write)]
-    fn allow_mint(minter: Identity, allow: bool);
-    #[storage(read, write)]
     fn approve(to: Identity, token_id: u64, approve: bool);
     // #[storage(read)]
     // fn approved(token_id: u64) -> Option<Identity>;
@@ -21,6 +19,8 @@ abi NFT {
     fn mint(to: Identity, amount: u64);
     #[storage(read)]
     // fn owner_of(token_id: u64) -> Option<Identity>;
+    #[storage(read, write)]
+    fn set_admin(admin: Identity);
     #[storage(read, write)]
     fn set_approval_for_all(owner: Identity, operator: Identity, approve: bool);
     #[storage(read)]

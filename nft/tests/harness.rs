@@ -97,14 +97,13 @@ async fn mint(
     }
 }
 
-async fn allow_mint(
+async fn set_admin(
     call_wallet: &Metadata,
-    minter: &Metadata,
-    allow: bool
+    minter: &Metadata
 ) -> bool {
     let response = call_wallet
         .nft
-        .allow_mint(nft_mod::Identity::Address(minter.wallet.address()), allow)
+        .set_admin(nft_mod::Identity::Address(minter.wallet.address()))
         .call()
         .await;
 
@@ -301,8 +300,6 @@ mod mint {
 
         init(&deploy_wallet, &owner1, true, 1).await;
 
-        allow_mint(&owner1, &owner1, true).await;
-
         assert!(
             mint(&owner1, &owner1, 1).await
         );
@@ -388,28 +385,28 @@ mod mint {
     #[tokio::test]
     #[should_panic]
     async fn panics_when_minter_does_not_have_access() {
-        let (deploy_wallet, owner1, _owner2) = setup().await;
+        let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, true, 1).await;
 
         assert!(
-            mint(&owner1, &owner1, 1).await
+            mint(&owner2, &owner2, 1).await
         );
     }
 }
 
-mod allow_mint {
+mod set_admin {
 
     use super::*;
 
     #[tokio::test]
-    async fn allows_mint() {
-        let (deploy_wallet, owner1, _owner2) = setup().await;
+    async fn changes_admin() {
+        let (deploy_wallet, owner1, owner2) = setup().await;
 
         init(&deploy_wallet, &owner1, true, 1).await;
 
         assert! (
-            allow_mint(&owner1, &owner1, true).await
+            set_admin(&owner1, &owner2).await
         );
     }
 
@@ -419,19 +416,7 @@ mod allow_mint {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
         assert! (
-            allow_mint(&owner1, &owner1, true).await
-        );
-    }
-
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_access_control_not_set() {
-        let (deploy_wallet, owner1, _owner2) = setup().await;
-
-        init(&deploy_wallet, &owner1, false, 1).await;
-
-        assert! (
-            allow_mint(&owner1, &owner1, true).await
+            set_admin(&owner1, &owner1).await
         );
     }
 
@@ -443,7 +428,7 @@ mod allow_mint {
         init(&deploy_wallet, &owner1, true, 1).await;
 
         assert! (
-            allow_mint(&owner2, &owner1, true).await
+            set_admin(&owner2, &owner1).await
         );
     }
 }
@@ -461,7 +446,7 @@ mod approve {
 
         let token_id = owner1
             .nft
-            .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+            .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
             .call()
             .await
             .unwrap()
@@ -482,7 +467,7 @@ mod approve {
 
         let token_id = owner1
             .nft
-            .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+            .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
             .call()
             .await
             .unwrap()
@@ -503,7 +488,7 @@ mod approve {
 
         let token_id = owner1
             .nft
-            .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+            .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
             .call()
             .await
             .unwrap()
@@ -552,7 +537,7 @@ mod burn {
 
         let token_id = owner1
             .nft
-            .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+            .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
             .call()
             .await
             .unwrap()
@@ -611,7 +596,7 @@ mod burn {
 
         let token_id = owner1
             .nft
-            .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+            .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
             .call()
             .await
             .unwrap()
@@ -624,7 +609,7 @@ mod burn {
 }
 
 // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
-// mod get_approved {
+// mod approved {
 
 //     use super::*;
 
@@ -637,7 +622,7 @@ mod burn {
 
 //         let token_id = owner1
 //             .nft
-//             .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+//             .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
 //             .call()
 //             .await
 //             .unwrap()
@@ -646,7 +631,7 @@ mod burn {
 //         approve(&owner1, &owner2, token_id, true).await;
 
 //         assert_eq!(
-//             owner1.nft.get_approved(token_id).call().await.unwrap().value,
+//             owner1.nft.approved(token_id).call().await.unwrap().value,
 //             owner2.wallet.address()
 //         );
 //     }
@@ -665,7 +650,7 @@ mod get_tokens {
 
         let token_id = owner1
             .nft
-            .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+            .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
             .call()
             .await
             .unwrap()
@@ -674,7 +659,7 @@ mod get_tokens {
         assert_eq!(
             owner1
                 .nft
-                .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+                .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -684,7 +669,7 @@ mod get_tokens {
     }
 }
 
-mod get_total_supply {
+mod total_supply {
 
     use super::*;
 
@@ -695,7 +680,7 @@ mod get_total_supply {
         init(&deploy_wallet, &owner1, false, 10).await;
 
         assert_eq!(
-            owner1.nft.get_total_supply().call().await.unwrap().value,
+            owner1.nft.total_supply().call().await.unwrap().value,
             10
         );
     }
@@ -741,7 +726,7 @@ mod is_approved_for_all {
 
 //         let token_id = owner1
 //             .nft
-//             .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+//             .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
 //             .call()
 //             .await
 //             .unwrap()
@@ -808,7 +793,7 @@ mod transfer_from {
 
         let token_id = owner1
             .nft
-            .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+            .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
             .call()
             .await
             .unwrap()
@@ -855,7 +840,7 @@ mod transfer_from {
         assert_eq!(
             owner2
                 .nft
-                .get_tokens(nft_mod::Identity::Address(owner2.wallet.address()))
+                .tokens_owned(nft_mod::Identity::Address(owner2.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -866,7 +851,7 @@ mod transfer_from {
         assert_eq!(
             owner1
                 .nft
-                .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+                .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
                 .call()
                 .await
                 .unwrap()
@@ -884,7 +869,7 @@ mod transfer_from {
 
         let token_id = owner1
             .nft
-            .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+            .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
             .call()
             .await
             .unwrap()
@@ -918,7 +903,7 @@ mod transfer_from {
 
         let token_id = owner1
             .nft
-            .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+            .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
             .call()
             .await
             .unwrap()
@@ -964,7 +949,7 @@ mod transfer_from {
 
         let token_id = owner1
             .nft
-            .get_tokens(nft_mod::Identity::Address(owner1.wallet.address()))
+            .tokens_owned(nft_mod::Identity::Address(owner1.wallet.address()))
             .call()
             .await
             .unwrap()
