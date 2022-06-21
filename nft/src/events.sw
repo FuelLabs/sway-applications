@@ -1,9 +1,6 @@
 library events;
 
-use std::{
-    identity::Identity,
-    vec::Vec,
-};
+use std::{identity::Identity, vec::Vec};
 
 pub struct ApprovalEvent {
     approved: Identity,
