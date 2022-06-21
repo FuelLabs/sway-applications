@@ -27,15 +27,15 @@ use std::{
 };
 
 storage {
-    /// Determines if there is an allow list to call the mint function
+    /// Determines if there is a whitelist to call the mint function
     /// Only set on the initalization of the contract
     access_control: bool,
 
     /// Stores the identity that has permission to add identities to the whitelist
     /// Only set on the initalization of the contract
-    access_control_address: Identity,
+    admin: Identity,
 
-    /// Stores the identities that are on the allowed mint list
+    /// Stores the identities that are on the whitelist to mint
     /// Map(Identity => bool)
     allowed_minters: StorageMap<Identity, bool>,
 
@@ -70,7 +70,7 @@ storage {
 impl NFT for Contract {
 
     /// Allows or revokes permissions for an `Identity` to call the mint function within 
-    /// this contract.
+    /// this contract. Adds an `Identity` to the whitelist.
     ///
     /// # Arguments
     ///
@@ -80,7 +80,7 @@ impl NFT for Contract {
     /// # Reverts
     ///
     /// * When the NFT contract does not have `access_control` set.
-    /// * When the `minter` `Identity` is not the `access_control_address`.
+    /// * When the `minter` `Identity` is not the `admin`.
     #[storage(read, write)]
     fn allow_mint(minter: Identity, allow: bool) {
         // We cannot set if someone is allowed to mint or not if 'access_control' is
@@ -88,10 +88,7 @@ impl NFT for Contract {
         require(storage.access_control, AccessError::AccessControlNotSet);
         
         // Ensure that the sender is allowed to add identities to the approved list
-        require(
-            sender_identity() == storage.access_control_address, 
-            AccessError::SenderCannotSetAccessControl
-        );
+        require(sender_identity() == storage.admin, AccessError::SenderCannotSetAccessControl);
 
         // Add the provided `minter` Identity to the list of identities that are approved to mint
         storage.allowed_minters.insert(minter, allow);
@@ -101,7 +98,7 @@ impl NFT for Contract {
     ///
     /// # Arguments
     ///
-    /// * `to` - The `Identity` which will be allowed to transfer the token.
+    /// * `approved` - The `Identity` which will be allowed to transfer the token.
     /// * `token_id` - The specific token which the owner is giving approval to.
     /// * `approve` - The `bool` which wil allow or disallow transfers.
     ///
@@ -111,14 +108,14 @@ impl NFT for Contract {
     /// * When the 'to' `Identity` is the owner.
     /// * When the sender is not the owner.
     #[storage(read, write)]
-    fn approve(to: Identity, token_id: u64, approve: bool) {
+    fn approve(approved: Identity, token_id: u64, approve: bool) {
         // Ensure this  is a valid token
         let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
         require(meta_data.is_some(), InputError::TokenDoesNotExist);
 
         // The owner cannot approve themselves to also be the approver
         let mut meta_data: MetaData = meta_data.unwrap();
-        require(meta_data.owner != to, ApprovalError::ApproverCannotBeOwner);
+        require(meta_data.owner != approved, ApprovalError::ApproverCannotBeOwner);
 
         // Ensure that the sender is the owner of the token to be approved
         require(meta_data.owner == sender_identity(), AccessError::SenderNotOwner);
@@ -126,13 +123,13 @@ impl NFT for Contract {
         // Set and store the approved Identity to the `to` address or to none 
         // based on the `approve` bool
         match approve {
-            true => { meta_data.approved = Option::Some(to); },
+            true => { meta_data.approved = Option::Some(approved); },
             false => { meta_data.approved = Option::None(); }
         }
         storage.meta_data.insert(token_id, Option::Some(meta_data));
 
         // Log the approval event
-        log(ApprovalEvent{owner: sender_identity(), approved: to, token_id});
+        log(ApprovalEvent{owner: sender_identity(), approved, token_id});
     }
 
     /// Returns a `u64` of the balance of the specified `Identity`.
@@ -182,14 +179,13 @@ impl NFT for Contract {
         log(BurnEvent{owner: sender, token_id});
     }
 
-    /// Constructor for the NFT. Calling this function will instantiate the total supply, the access
-    /// control address, and whether access control is enabled. These values can only be set once.
+    /// Constructor for the NFT. Calling this function will instantiate the total supply, the admin
+    /// `Identity`, and whether access control is enabled. These values can only be set once.
     /// Before this function is called the contract will not allow any minting or transfering of tokens.
     /// 
     /// # Arguments
     ///
-    /// * `access_control_address` - The `Identity` which has the ability to add or remove an `Identity` 
-    ///                              from the allowed mint list.
+    /// * `admin` - The `Identity` which has the ability to add or remove an `Identity` from the whitelist.
     /// * `access_control` - The `bool` which will determine whether identities will need to approval to mint.
     /// * `token_supply` - The total supply of tokens which will be allowed to mint.
     ///
@@ -198,7 +194,7 @@ impl NFT for Contract {
     /// * The constructor function has already been called.
     /// * The `token_count` is set to 0.
     #[storage(read, write)]
-    fn constructor(access_control_address: Identity, access_control: bool, token_supply: u64) {
+    fn constructor(admin: Identity, access_control: bool, token_supply: u64) {
         // This function can only be called once so if the token supply is already set it has
         // already been called
         require(storage.token_supply == 0, InitError::CannotReinitialize);
@@ -206,7 +202,7 @@ impl NFT for Contract {
         require(token_supply != 0, InputError::TokenSupplyCannotBeZero);
 
         // Store the information given
-        storage.access_control_address = access_control_address;
+        storage.admin = admin;
         storage.access_control = access_control;
         storage.token_supply = token_supply;
     }
@@ -274,7 +270,7 @@ impl NFT for Contract {
     /// 
     /// * When the `amount` is set to 0.
     /// * When the sender attempts to mint more tokens than total supply.
-    /// * When the sender is not approved to mint and access control is set.
+    /// * When the sender is not on the whitelist to mint and access control is set.
     #[storage(read, write)]
     fn mint(to: Identity, amount: u64) {
         // The current number of tokens minted plus the amount to be minted cannot be
