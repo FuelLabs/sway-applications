@@ -23,17 +23,26 @@ use std::{
 };
 
 use abi::Fundraiser;
-use data_structures::{Campaign, CampaignInfo, Pledge};
+use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
 use errors::{CampaignError, CreationError, UserError};
 use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
 use utils::{sender_identity, validate_id};
 
 storage {
-    /// The total number of unique campaigns that a user has created
+    /// Total number of unique assets used across all campaigns
+    asset_count: u64,
+
+    /// Direct look-up for asset data if the user wants to check via a known ID
+    asset_info: StorageMap<ContractId,
+    AssetInfo>, /// O(1) look-up to allow searching via asset_count
+    /// Map(1...asset_count => asset)
+    asset_index: StorageMap<u64,
+    ContractId>, /// The total number of unique campaigns that a user has created
     /// This should only be incremented
     /// Cancelling / Claiming should not affect this number
     campaign_count: StorageMap<Identity,
     u64>, /// Campaigns that have been created by a user
+
     /// Map(Identity => Map(1...campaign_count => Campaign)
     campaign_history: StorageMap<(Identity,
     u64), Campaign>, /// Data describing the content of a campaign
@@ -93,6 +102,22 @@ impl Fundraiser for Contract {
             claimed: false,
             deadline, target_amount, total_pledge: 0,
         };
+
+        // Keep track of new assets
+        let mut asset_info = storage.asset_info.get(asset);
+        if !asset_info.exists {
+            // New asset so mark it as existing
+            asset_info.exists = true;
+
+            // Update storage for new asset
+            storage.asset_info.insert(asset, asset_info);
+
+            // Increment asset count to keep track of new total
+            storage.asset_count = storage.asset_count + 1;
+
+            // Store in index to allow for asset discovery via iteration over numbers
+            storage.asset_index.insert(storage.asset_count, asset);
+        }
 
         // Use the user's number of created campaigns as an ID / way to index this new campaign
         let campaign_count = storage.campaign_count.get(user);
@@ -290,6 +315,13 @@ impl Fundraiser for Contract {
         // Campaign state has been updated therefore overwrite the previous version with the new
         storage.campaign_info.insert(id, campaign_info);
 
+        // Update the asset amount to track the addition of the new pledge
+        let mut asset_info = storage.asset_info.get(campaign_info.asset);
+        asset_info.amount = asset_info.amount + msg_amount();
+
+        // Update asset state
+        storage.asset_info.insert(campaign_info.asset, asset_info);
+
         // We have updated the state of a campaign therefore we must log it
         log(PledgedEvent {
             amount: msg_amount(), id
@@ -357,6 +389,13 @@ impl Fundraiser for Contract {
         // Update the campaign state with the updated version as well
         storage.campaign_info.insert(id, campaign_info);
 
+        // Update the asset amount to track the removal of the amount
+        let mut asset_info = storage.asset_info.get(campaign_info.asset);
+        asset_info.amount = asset_info.amount - amount;
+
+        // Update asset state
+        storage.asset_info.insert(campaign_info.asset, asset_info);
+
         // Transfer back the amount the user has unpledged
         transfer(amount, campaign_info.asset, user);
 
@@ -407,7 +446,7 @@ impl Fundraiser for Contract {
     /// * When an AuthError is generated
     #[storage(read)]fn campaign(id: u64) -> Campaign {
         // Validate the ID to ensure that the user has created the campaign
-        require(id != 0 && id <= storage.campaign_count.get(sender_identity()), UserError::InvalidHistoryId);
+        require(id != 0 && id <= storage.campaign_count.get(sender_identity()), UserError::InvalidID);
         storage.campaign_history.get((sender_identity(), id))
     }
 
@@ -432,7 +471,35 @@ impl Fundraiser for Contract {
     /// * When an AuthError is generated
     #[storage(read)]fn pledged(pledge_history_index: u64) -> Pledge {
         // Validate the ID to ensure that the user has pledged
-        require(pledge_history_index != 0 && pledge_history_index <= storage.pledge_count.get(sender_identity()), UserError::InvalidHistoryId);
+        require(pledge_history_index != 0 && pledge_history_index <= storage.pledge_count.get(sender_identity()), UserError::InvalidID);
         storage.pledge_history.get((sender_identity(), pledge_history_index))
+    }
+
+    /// Returns the number of unique assets that have added across all campaigns
+    #[storage(read)]fn asset_count() -> u64 {
+        storage.asset_count
+    }
+
+    /// Returns information about the specificed asset, specifically if it has been added and the
+    /// pledged amount
+    ///
+    /// # Arguments
+    ///
+    /// * `asset` - Uniquie identifier that identifies the asset
+    #[storage(read)]fn asset_info_by_address(asset: ContractId) -> AssetInfo {
+        storage.asset_info.get(asset)
+    }
+
+    /// Returns information about the specificed asset, specifically if it has been added and the
+    /// pledged amount
+    ///
+    /// The user interface will not know all possible assets that the contract contains therefore
+    /// this helper method allows the interface to iterate over the asset_count to discover all assets
+    ///
+    /// # Arguments
+    ///
+    /// * `index` - Number from 1...asset_count
+    #[storage(read)]fn asset_info_by_count(index: u64) -> AssetInfo {
+        storage.asset_info.get(storage.asset_index.get(index))
     }
 }

@@ -7,8 +7,9 @@ use fuels::{
 
 use utils::{
     abi_calls::{
-        campaign, campaign_count, campaign_info, cancel_campaign, claim_pledges, create_campaign,
-        pledge, pledge_count, pledged, total_campaigns, unpledge,
+        asset_count, asset_info_by_address, asset_info_by_count, campaign, campaign_count,
+        campaign_info, cancel_campaign, claim_pledges, create_campaign, pledge, pledge_count,
+        pledged, total_campaigns, unpledge,
     },
     test_helpers::{mint, setup},
     Identity,
@@ -37,6 +38,9 @@ mod create_campaign {
         async fn creates_a_campaign() {
             let (author, _, _, _, defaults) = setup().await;
 
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
             assert_eq!(0, total_campaigns(&author.contract).await);
             assert_eq!(0, campaign_count(&author.contract).await);
 
@@ -49,6 +53,9 @@ mod create_campaign {
             )
             .await;
             let info = campaign_info(&author.contract, 1).await.value;
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
 
             assert_eq!(1, total_campaigns(&author.contract).await);
             assert_eq!(1, campaign_count(&author.contract).await);
@@ -64,9 +71,12 @@ mod create_campaign {
         }
 
         #[tokio::test]
-        async fn creates_two_campaigns() {
+        async fn creates_two_campaigns_with_the_same_asset() {
             let (author, _, _, _, defaults) = setup().await;
 
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
             assert_eq!(0, total_campaigns(&author.contract).await);
             assert_eq!(0, campaign_count(&author.contract).await);
 
@@ -87,6 +97,67 @@ mod create_campaign {
                 defaults.target_amount * 2,
             )
             .await;
+
+            let asset_info1 = asset_info_by_count(&author.contract, 1).await;
+            let asset_info2 = asset_info_by_count(&author.contract, 2).await;
+
+            assert_eq!(0, asset_info1.value.amount);
+            assert_eq!(0, asset_info2.value.amount);
+            assert_eq!(true, asset_info1.value.exists);
+            assert_eq!(false, asset_info2.value.exists);
+
+            assert_eq!(2, total_campaigns(&author.contract).await);
+            assert_eq!(2, campaign_count(&author.contract).await);
+            assert_eq!(
+                defaults.target_amount,
+                campaign_info(&author.contract, 1).await.value.target_amount
+            );
+            assert_eq!(
+                defaults.target_amount * 2,
+                campaign_info(&author.contract, 2).await.value.target_amount
+            );
+        }
+
+        #[tokio::test]
+        async fn creates_two_campaigns_with_different_assets() {
+            let (author, _, _, asset2, defaults) = setup().await;
+            let asset_id = asset2.id;
+
+            let asset_info1 = asset_info_by_count(&author.contract, 1).await;
+            let asset_info2 = asset_info_by_count(&author.contract, 1).await;
+
+            assert_eq!(0, asset_info1.value.amount);
+            assert_eq!(0, asset_info2.value.amount);
+            assert_eq!(false, asset_info1.value.exists);
+            assert_eq!(false, asset_info2.value.exists);
+            assert_eq!(0, total_campaigns(&author.contract).await);
+            assert_eq!(0, campaign_count(&author.contract).await);
+
+            create_campaign(
+                &author.contract,
+                &defaults.asset_id,
+                &defaults.beneficiary,
+                defaults.deadline,
+                defaults.target_amount,
+            )
+            .await;
+
+            create_campaign(
+                &author.contract,
+                &asset_id,
+                &defaults.beneficiary,
+                defaults.deadline,
+                defaults.target_amount * 2,
+            )
+            .await;
+
+            let asset_info1 = asset_info_by_count(&author.contract, 1).await;
+            let asset_info2 = asset_info_by_count(&author.contract, 2).await;
+
+            assert_eq!(0, asset_info1.value.amount);
+            assert_eq!(0, asset_info2.value.amount);
+            assert_eq!(true, asset_info1.value.exists);
+            assert_eq!(true, asset_info2.value.exists);
 
             assert_eq!(2, total_campaigns(&author.contract).await);
             assert_eq!(2, campaign_count(&author.contract).await);
@@ -358,7 +429,9 @@ mod claim_pledges {
                 defaults.target_amount,
             )
             .await;
+
             pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+
             assert_eq!(
                 0,
                 author
@@ -550,6 +623,10 @@ mod pledge {
         async fn pledges() {
             let (author, user, asset, _, defaults) = setup().await;
 
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
+
             mint(
                 &asset.contract,
                 defaults.target_amount,
@@ -570,15 +647,36 @@ mod pledge {
                 campaign_info(&author.contract, 1).await.value.total_pledge
             );
             assert_eq!(0, pledge_count(&user.contract).await);
+            assert_eq!(
+                defaults.target_amount,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
 
             pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
+            assert_eq!(
+                0,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+
+            assert_eq!(defaults.target_amount, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
             assert_eq!(
                 defaults.target_amount,
                 campaign_info(&author.contract, 1).await.value.total_pledge
             );
             assert_eq!(1, pledge_count(&user.contract).await);
+
             let info = pledged(&user.contract, 1).await.value;
+
             assert_eq!(1, info.id);
             assert_eq!(defaults.target_amount, info.amount);
         }
@@ -587,6 +685,10 @@ mod pledge {
         async fn pledge_increments_previous_amount() {
             let (author, user, asset, _, defaults) = setup().await;
 
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
+
             mint(
                 &asset.contract,
                 defaults.target_amount * 2,
@@ -608,25 +710,61 @@ mod pledge {
             );
             assert_eq!(0, pledge_count(&user.contract).await);
 
+            assert_eq!(
+                defaults.target_amount * 2,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+
             pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
+            assert_eq!(
+                defaults.target_amount,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+
+            assert_eq!(defaults.target_amount, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
             assert_eq!(
                 defaults.target_amount,
                 campaign_info(&author.contract, 1).await.value.total_pledge
             );
             assert_eq!(1, pledge_count(&user.contract).await);
+
             let info = pledged(&user.contract, 1).await.value;
+
             assert_eq!(1, info.id);
             assert_eq!(defaults.target_amount, info.amount);
 
             pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
             assert_eq!(
+                0,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+
+            assert_eq!(defaults.target_amount * 2, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
+            assert_eq!(
                 defaults.target_amount * 2,
                 campaign_info(&author.contract, 1).await.value.total_pledge
             );
             assert_eq!(1, pledge_count(&user.contract).await);
+
             let info = pledged(&user.contract, 1).await.value;
+
             assert_eq!(1, info.id);
             assert_eq!(defaults.target_amount * 2, info.amount);
         }
@@ -635,6 +773,14 @@ mod pledge {
         async fn pledges_to_different_campaigns() {
             let (author, user, asset, asset2, defaults) = setup().await;
             let asset2_id = asset2.id;
+
+            let asset_info1 = asset_info_by_count(&author.contract, 1).await;
+            let asset_info2 = asset_info_by_count(&author.contract, 2).await;
+
+            assert_eq!(0, asset_info1.value.amount);
+            assert_eq!(0, asset_info2.value.amount);
+            assert_eq!(false, asset_info1.value.exists);
+            assert_eq!(false, asset_info2.value.exists);
 
             mint(
                 &asset.contract,
@@ -677,8 +823,47 @@ mod pledge {
             );
             assert_eq!(0, pledge_count(&user.contract).await);
 
+            assert_eq!(
+                defaults.target_amount,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+
+            assert_eq!(
+                defaults.target_amount,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset2.id))
+                    .await
+                    .unwrap()
+            );
+
             pledge(&user.contract, 1, &asset, defaults.target_amount).await;
             pledge(&user.contract, 2, &asset2, defaults.target_amount).await;
+
+            assert_eq!(
+                0,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+            assert_eq!(
+                0,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset2.id))
+                    .await
+                    .unwrap()
+            );
+
+            let asset_info1 = asset_info_by_count(&author.contract, 1).await;
+            let asset_info2 = asset_info_by_count(&author.contract, 2).await;
+
+            assert_eq!(defaults.target_amount, asset_info1.value.amount);
+            assert_eq!(defaults.target_amount, asset_info2.value.amount);
+            assert_eq!(true, asset_info1.value.exists);
+            assert_eq!(true, asset_info2.value.exists);
 
             assert_eq!(
                 defaults.target_amount,
@@ -688,7 +873,6 @@ mod pledge {
                 defaults.target_amount,
                 campaign_info(&author.contract, 2).await.value.total_pledge
             );
-
             assert_eq!(2, pledge_count(&user.contract).await);
             assert_eq!(1, pledged(&user.contract, 1).await.value.id);
             assert_eq!(2, pledged(&user.contract, 2).await.value.id);
@@ -866,8 +1050,12 @@ mod unpledge {
         use super::*;
 
         #[tokio::test]
-        async fn unpledges() {
+        async fn unpledges_full_amount() {
             let (author, user, asset, _, defaults) = setup().await;
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
 
             mint(
                 &asset.contract,
@@ -890,11 +1078,15 @@ mod unpledge {
             );
 
             pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+
+            assert_eq!(defaults.target_amount, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
             assert_eq!(
                 defaults.target_amount,
                 campaign_info(&author.contract, 1).await.value.total_pledge
             );
-
             assert_eq!(
                 0,
                 user.wallet
@@ -904,6 +1096,11 @@ mod unpledge {
             );
 
             unpledge(&user.contract, 1, defaults.target_amount).await;
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
             assert_eq!(
                 0,
                 campaign_info(&author.contract, 1).await.value.total_pledge
@@ -918,8 +1115,222 @@ mod unpledge {
         }
 
         #[tokio::test]
+        async fn unpledging_decrements_previous_amount() {
+            let (author, user, asset, _, defaults) = setup().await;
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
+
+            mint(
+                &asset.contract,
+                defaults.target_amount,
+                user.wallet.address(),
+            )
+            .await;
+            create_campaign(
+                &author.contract,
+                &defaults.asset_id,
+                &defaults.beneficiary,
+                defaults.deadline,
+                defaults.target_amount,
+            )
+            .await;
+
+            assert_eq!(
+                0,
+                campaign_info(&author.contract, 1).await.value.total_pledge
+            );
+            assert_eq!(0, pledge_count(&user.contract).await);
+
+            pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(defaults.target_amount, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
+
+            assert_eq!(
+                defaults.target_amount,
+                campaign_info(&author.contract, 1).await.value.total_pledge
+            );
+            assert_eq!(1, pledge_count(&user.contract).await);
+
+            let info = pledged(&user.contract, 1).await.value;
+            assert_eq!(1, info.id);
+            assert_eq!(defaults.target_amount, info.amount);
+
+            assert_eq!(
+                0,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+
+            unpledge(&user.contract, 1, defaults.target_amount - 1).await;
+
+            assert_eq!(
+                defaults.target_amount - 1,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(1, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
+
+            assert_eq!(
+                1,
+                campaign_info(&author.contract, 1).await.value.total_pledge
+            );
+            assert_eq!(1, pledge_count(&user.contract).await);
+            let info = pledged(&user.contract, 1).await.value;
+            assert_eq!(1, info.id);
+            assert_eq!(1, info.amount);
+        }
+
+        #[tokio::test]
+        async fn unpledges_from_different_campaigns() {
+            let (author, user, asset, asset2, defaults) = setup().await;
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
+
+            mint(
+                &asset.contract,
+                defaults.target_amount,
+                user.wallet.address(),
+            )
+            .await;
+            mint(
+                &asset2.contract,
+                defaults.target_amount,
+                user.wallet.address(),
+            )
+            .await;
+            create_campaign(
+                &author.contract,
+                &defaults.asset_id,
+                &defaults.beneficiary,
+                defaults.deadline,
+                defaults.target_amount,
+            )
+            .await;
+            create_campaign(
+                &author.contract,
+                &asset2.id,
+                &defaults.beneficiary,
+                defaults.deadline,
+                defaults.target_amount,
+            )
+            .await;
+
+            assert_eq!(
+                0,
+                campaign_info(&author.contract, 1).await.value.total_pledge
+            );
+            assert_eq!(
+                0,
+                campaign_info(&author.contract, 2).await.value.total_pledge
+            );
+            assert_eq!(0, pledge_count(&user.contract).await);
+
+            pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+            pledge(&user.contract, 2, &asset2, defaults.target_amount).await;
+
+            let asset_info1 = asset_info_by_count(&author.contract, 1).await;
+            let asset_info2 = asset_info_by_count(&author.contract, 2).await;
+
+            assert_eq!(defaults.target_amount, asset_info1.value.amount);
+            assert_eq!(defaults.target_amount, asset_info2.value.amount);
+            assert_eq!(true, asset_info1.value.exists);
+            assert_eq!(true, asset_info2.value.exists);
+            assert_eq!(
+                defaults.target_amount,
+                campaign_info(&author.contract, 1).await.value.total_pledge
+            );
+            assert_eq!(
+                defaults.target_amount,
+                campaign_info(&author.contract, 2).await.value.total_pledge
+            );
+            assert_eq!(2, pledge_count(&user.contract).await);
+
+            let info1 = pledged(&user.contract, 1).await.value;
+            let info2 = pledged(&user.contract, 2).await.value;
+
+            assert_eq!(1, info1.id);
+            assert_eq!(2, info2.id);
+            assert_eq!(defaults.target_amount, info1.amount);
+            assert_eq!(defaults.target_amount, info2.amount);
+            assert_eq!(
+                0,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+            assert_eq!(
+                0,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset2.id))
+                    .await
+                    .unwrap()
+            );
+
+            unpledge(&user.contract, 1, defaults.target_amount).await;
+            unpledge(&user.contract, 2, defaults.target_amount).await;
+
+            assert_eq!(
+                defaults.target_amount,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+            assert_eq!(
+                defaults.target_amount,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset2.id))
+                    .await
+                    .unwrap()
+            );
+
+            let asset_info1 = asset_info_by_count(&author.contract, 1).await;
+            let asset_info2 = asset_info_by_count(&author.contract, 2).await;
+
+            assert_eq!(0, asset_info1.value.amount);
+            assert_eq!(0, asset_info2.value.amount);
+            assert_eq!(true, asset_info1.value.exists);
+            assert_eq!(true, asset_info2.value.exists);
+            assert_eq!(
+                0,
+                campaign_info(&author.contract, 1).await.value.total_pledge
+            );
+            assert_eq!(
+                0,
+                campaign_info(&author.contract, 2).await.value.total_pledge
+            );
+            assert_eq!(2, pledge_count(&user.contract).await);
+
+            let info1 = pledged(&user.contract, 1).await.value;
+            let info2 = pledged(&user.contract, 2).await.value;
+
+            assert_eq!(1, info1.id);
+            assert_eq!(2, info2.id);
+            assert_eq!(0, info1.amount);
+            assert_eq!(0, info2.amount);
+        }
+
+        #[tokio::test]
         async fn unpledges_total_pledge_when_attempting_to_unpledge_more_than_pledged() {
             let (author, user, asset, _, defaults) = setup().await;
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
 
             mint(
                 &asset.contract,
@@ -942,6 +1353,11 @@ mod unpledge {
             );
 
             pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+
+            assert_eq!(defaults.target_amount, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
             assert_eq!(
                 defaults.target_amount,
                 campaign_info(&author.contract, 1).await.value.total_pledge
@@ -954,7 +1370,28 @@ mod unpledge {
                     .unwrap()
             );
 
+            assert_eq!(
+                0,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+
             unpledge(&user.contract, 1, defaults.target_amount * 10).await;
+
+            assert_eq!(
+                defaults.target_amount,
+                user.wallet
+                    .get_asset_balance(&AssetId::from(*asset.id))
+                    .await
+                    .unwrap()
+            );
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
             assert_eq!(
                 0,
                 campaign_info(&author.contract, 1).await.value.total_pledge
@@ -1345,6 +1782,135 @@ mod pledged {
 
             // Reverts
             pledged(&user.contract, 1).await;
+        }
+    }
+}
+
+mod asset_count {
+
+    use super::*;
+
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn returns_zero() {
+            let (author, _, _, _, _) = setup().await;
+
+            assert_eq!(0, asset_count(&author.contract).await);
+        }
+
+        #[tokio::test]
+        async fn returns_one() {
+            let (author, _, _, _, defaults) = setup().await;
+
+            assert_eq!(0, asset_count(&author.contract).await);
+            create_campaign(
+                &author.contract,
+                &defaults.asset_id,
+                &defaults.beneficiary,
+                defaults.deadline,
+                defaults.target_amount,
+            )
+            .await;
+            assert_eq!(1, asset_count(&author.contract).await);
+        }
+    }
+}
+
+mod asset_info_by_address {
+
+    use super::*;
+
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn returns_asset_does_not_exist_info() {
+            let (author, _, _, _, defaults) = setup().await;
+
+            let asset_info = asset_info_by_address(&author.contract, &defaults.asset_id).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
+        }
+
+        #[tokio::test]
+        async fn returns_asset_info() {
+            let (author, user, asset, _, defaults) = setup().await;
+
+            let asset_info = asset_info_by_address(&author.contract, &defaults.asset_id).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
+
+            mint(
+                &asset.contract,
+                defaults.target_amount,
+                user.wallet.address(),
+            )
+            .await;
+            create_campaign(
+                &author.contract,
+                &defaults.asset_id,
+                &defaults.beneficiary,
+                defaults.deadline,
+                defaults.target_amount,
+            )
+            .await;
+            pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+
+            let asset_info = asset_info_by_address(&author.contract, &defaults.asset_id).await;
+            assert_eq!(defaults.target_amount, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
+        }
+    }
+}
+
+mod asset_info_by_count {
+
+    use super::*;
+
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn returns_asset_does_not_exist_info() {
+            let (author, _, _, _, _) = setup().await;
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
+        }
+
+        #[tokio::test]
+        async fn returns_asset_info() {
+            let (author, user, asset, _, defaults) = setup().await;
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(0, asset_info.value.amount);
+            assert_eq!(false, asset_info.value.exists);
+
+            mint(
+                &asset.contract,
+                defaults.target_amount,
+                user.wallet.address(),
+            )
+            .await;
+            create_campaign(
+                &author.contract,
+                &defaults.asset_id,
+                &defaults.beneficiary,
+                defaults.deadline,
+                defaults.target_amount,
+            )
+            .await;
+            pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+
+            let asset_info = asset_info_by_count(&author.contract, 1).await;
+            assert_eq!(defaults.target_amount, asset_info.value.amount);
+            assert_eq!(true, asset_info.value.exists);
         }
     }
 }

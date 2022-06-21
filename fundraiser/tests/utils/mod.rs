@@ -194,4 +194,19 @@ pub mod abi_calls {
     pub async fn pledged(contract: &Fundraiser, id: u64) -> CallResponse<Pledge> {
         contract.pledged(id).call().await.unwrap()
     }
+
+    pub async fn asset_count(contract: &Fundraiser) -> u64 {
+        contract.asset_count().call().await.unwrap().value
+    }
+
+    pub async fn asset_info_by_address(
+        contract: &Fundraiser,
+        asset: &ContractId,
+    ) -> CallResponse<AssetInfo> {
+        contract.asset_info_by_address(*asset).call().await.unwrap()
+    }
+
+    pub async fn asset_info_by_count(contract: &Fundraiser, id: u64) -> CallResponse<AssetInfo> {
+        contract.asset_info_by_count(id).call().await.unwrap()
+    }
 }

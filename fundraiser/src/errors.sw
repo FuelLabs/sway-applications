@@ -19,7 +19,7 @@ pub enum UserError {
     AlreadyClaimed: (),
     AmountCannotBeZero: (),
     IncorrectAssetSent: (),
-    InvalidHistoryId: (),
+    InvalidID: (),
     NoSuchCampaign: (),
     UnauthorizedUser: (),
     UserHasNotPledged: (),

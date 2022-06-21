@@ -3,6 +3,11 @@ library data_structures;
 use std::{contract_id::ContractId, identity::Identity};
 use core::ops::Eq;
 
+pub struct AssetInfo {
+    amount: u64,
+    exists: bool,
+}
+
 pub struct Campaign {
     id: u64,
 }

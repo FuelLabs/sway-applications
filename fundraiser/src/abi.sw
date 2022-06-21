@@ -3,7 +3,7 @@ library abi;
 dep data_structures;
 
 use std::{contract_id::ContractId, identity::Identity};
-use data_structures::{Campaign, CampaignInfo, Pledge};
+use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
 
 abi Fundraiser {
     #[storage(read, write)]fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64);
@@ -27,4 +27,10 @@ abi Fundraiser {
     #[storage(read)]fn pledge_count() -> u64;
 
     #[storage(read)]fn pledged(pledge_history_index: u64) -> Pledge;
+
+    #[storage(read)]fn asset_count() -> u64;
+
+    #[storage(read)]fn asset_info_by_address(asset: ContractId) -> AssetInfo;
+
+    #[storage(read)]fn asset_info_by_count(index: u64) -> AssetInfo;
 }
