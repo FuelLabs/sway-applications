@@ -2,21 +2,10 @@ mod utils;
 
 use utils::{
     abi_calls::{
-        approve,
-        //approved,
-        balance_of,
-        burn,
-        init,
-        is_approved_for_all,
-        mint,
-        set_admin,
-        set_approval_for_all,
-        //owner_of,
-        tokens_owned,
-        total_supply,
-        transfer,
+        approve, approved, balance_of, burn, init, is_approved_for_all, mint, owner_of, set_admin,
+        set_approval_for_all, tokens_owned, total_supply, transfer,
     },
-    test_helpers::setup,
+    test_helpers::{nft_identity_option, setup},
 };
 
 mod constructor {
@@ -206,7 +195,10 @@ mod approve {
 
             approve(&owner1, &owner2, token_id, true).await;
 
-            // assert_eq!(approved(&owner1, token_id).await, owner2.wallet.address());
+            assert_eq!(
+                approved(&owner1, token_id).await,
+                nft_identity_option(&owner2).await
+            );
         }
     }
 
@@ -336,30 +328,32 @@ mod burn {
     }
 }
 
-// Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
-// mod approved {
+mod approved {
 
-//     use super::*;
+    use super::*;
 
-//     mod success {
+    mod success {
 
-//         use super::*;
+        use super::*;
 
-//         #[tokio::test]
-//         async fn gets_approval() {
-//             let (deploy_wallet, owner1, owner2) = setup().await;
+        #[tokio::test]
+        async fn gets_approval() {
+            let (deploy_wallet, owner1, owner2) = setup().await;
 
-//             init(&deploy_wallet, &owner1, false, 1).await;
-//             mint(&owner1, &owner1, 1).await;
+            init(&deploy_wallet, &owner1, false, 1).await;
+            mint(&owner1, &owner1, 1).await;
 
-//             let token_id = tokens_owned(&owner1, &owner1).await;
+            let token_id = tokens_owned(&owner1, &owner1).await;
 
-//             approve(&owner1, &owner2, token_id, true).await;
+            approve(&owner1, &owner2, token_id, true).await;
 
-//             assert_eq!(approved(&owner1, token_id).await, owner2.wallet.address());
-//         }
-//     }
-// }
+            assert_eq!(
+                approved(&owner1, token_id).await,
+                nft_identity_option(&owner2).await
+            );
+        }
+    }
+}
 
 mod tokens_owned {
 
@@ -423,28 +417,30 @@ mod is_approved_for_all {
     }
 }
 
-// Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
-// mod owner_of {
+mod owner_of {
 
-//     use super::*;
+    use super::*;
 
-//     mod success {
+    mod success {
 
-//         use super::*;
+        use super::*;
 
-//         #[tokio::test]
-//         async fn gets_owner_of() {
-//             let (deploy_wallet, owner1, _owner2) = setup().await;
+        #[tokio::test]
+        async fn gets_owner_of() {
+            let (deploy_wallet, owner1, _owner2) = setup().await;
 
-//             init(&deploy_wallet, &owner1, false, 1).await;
-//             mint(&owner1, &owner1, 1).await;
+            init(&deploy_wallet, &owner1, false, 1).await;
+            mint(&owner1, &owner1, 1).await;
 
-//             let token_id = tokens_owned(&owner1, &owner1).await;
+            let token_id = tokens_owned(&owner1, &owner1).await;
 
-//             assert_eq!(owner_of(token_id).await, owner1.wallet.address());
-//         }
-//     }
-// }
+            assert_eq!(
+                owner_of(&owner1, token_id).await,
+                nft_identity_option(&owner1).await
+            );
+        }
+    }
+}
 
 mod set_approval_for_all {
 
@@ -502,8 +498,10 @@ mod transfer_from {
 
             transfer(&owner1, &owner1, &owner2, token_id).await;
 
-            // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
-            // assert_eq!(owner_of(token_id).await, owner2.wallet.address());
+            assert_eq!(
+                owner_of(&owner1, token_id).await,
+                nft_identity_option(&owner2).await
+            );
             assert_eq!(balance_of(&owner1, &owner1).await, 0);
             assert_eq!(balance_of(&owner2, &owner2).await, 1);
             assert_eq!(tokens_owned(&owner2, &owner2).await, token_id);
@@ -523,8 +521,10 @@ mod transfer_from {
 
             transfer(&owner2, &owner1, &owner2, token_id).await;
 
-            // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
-            // assert_eq!(owner_of(token_id).await, owner2.wallet.address());
+            assert_eq!(
+                owner_of(&owner1, token_id).await,
+                nft_identity_option(&owner2).await
+            );
             assert_eq!(balance_of(&owner1, &owner1).await, 0);
             assert_eq!(balance_of(&owner2, &owner2).await, 1);
             assert_eq!(tokens_owned(&owner2, &owner2).await, token_id);
@@ -544,8 +544,10 @@ mod transfer_from {
 
             transfer(&owner2, &owner1, &owner2, token_id).await;
 
-            // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
-            // assert_eq!(owner_of(token_id), owner2.wallet.address());
+            assert_eq!(
+                owner_of(&owner1, token_id).await,
+                nft_identity_option(&owner2).await
+            );
             assert_eq!(balance_of(&owner1, &owner1).await, 0);
             assert_eq!(balance_of(&owner2, &owner2).await, 1);
             assert_eq!(tokens_owned(&owner2, &owner2).await, token_id);

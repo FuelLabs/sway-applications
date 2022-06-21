@@ -310,30 +310,27 @@ impl NFT for Contract {
         storage.admin = admin;
     }
 
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
     /// Returns an `Identity` of the approved address for a given token. If the token `MetaData` does not exist
     /// the function will return `None`.
     ///
     /// # Arguments
     ///
     /// * `token_id` - The id of the token which the approved `Identity` should be returned.
-    // #[storage(read)]
-    // fn approved(token_id: u64) -> Option<Identity> {
-    //     let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
+    #[storage(read)]fn approved(token_id: u64) -> Option<Identity> {
+        let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
 
-    //     match meta_data {
-    //         Option::Some(MetaData) => {
-    //             let meta_data: MetaData = meta_data.unwrap();
-    //             let approved = meta_data.approved;
+        match meta_data {
+            Option::Some(MetaData) => {
+                let meta_data: MetaData = meta_data.unwrap();
+                let approved = meta_data.approved;
 
-    //             match approved {
-    //                 Option::Some(Identity) => Option::Some(approved.unwrap()),
-    //                 Option::None(Identity) => Option::None(),
-    //             }
-    //         },
-    //         Option::None(MetaData) => Option::None(),
-    //     }
-    // }
+                match approved {
+                    Option::Some(Identity) => Option::Some(approved.unwrap()), Option::None(Identity) => Option::None(), 
+                }
+            },
+            Option::None(MetaData) => Option::None(), 
+        }
+    }
 
     /// Returns a `u64` of the balance of the specified `Identity`.
     ///
@@ -354,24 +351,22 @@ impl NFT for Contract {
         storage.operator_approval.get(sha256(owner, operator))
     }
 
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
     /// Returns the `Identity` which owns the given token id.
     ///
     /// # Arguments
     ///
     /// * `token_id` - The `u64` id of the token.
-    // #[storage(read)]
-    // fn owner_of(token_id: u64) -> Option<Identity> {
-    //     let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
+    #[storage(read)]fn owner_of(token_id: u64) -> Option<Identity> {
+        let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
 
-    //     match meta_data {
-    //         Option::Some(MetaData) => {
-    //             let meta_data: MetaData = meta_data.unwrap();
-    //             Option::Some(meta_data.owner)
-    //         },
-    //         Option::None(MetaData) => Option::None(),
-    //     }
-    // }
+        match meta_data {
+            Option::Some(MetaData) => {
+                let meta_data: MetaData = meta_data.unwrap();
+                Option::Some(meta_data.owner)
+            },
+            Option::None(MetaData) => Option::None(), 
+        }
+    }
 
     /// Returns a `u64` of the tokens IDs owned by the `Identity` given.
     ///

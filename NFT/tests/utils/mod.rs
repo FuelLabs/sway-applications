@@ -48,6 +48,11 @@ pub mod test_helpers {
 
         (deploy_wallet, owner1, owner2)
     }
+
+    pub async fn nft_identity_option(wallet: &Metadata) -> nft_mod::Option {
+        let identity = Identity::Address(wallet.wallet.address());
+        nft_mod::Option::Some(identity)
+    }
 }
 
 pub mod abi_calls {
@@ -148,9 +153,15 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    // pub async fn approved(call_wallet: &Metadata, token_id: u64) -> CallResponse<nft_mod::Identity> {
-    //     call_wallet.nft.approved(token_id).call().await.unwrap().value
-    // }
+    pub async fn approved(call_wallet: &Metadata, token_id: u64) -> nft_mod::Option {
+        call_wallet
+            .nft
+            .approved(token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
 
     pub async fn balance_of(call_wallet: &Metadata, wallet: &Metadata) -> u64 {
         call_wallet
@@ -179,9 +190,15 @@ pub mod abi_calls {
             .value
     }
 
-    // pub async fn owner_of(call_wallet: &Metadata, token_id: u64) -> CallResponse<nft_mod::Identity> {
-    //     call_wallet.nft.owner_of(token_id).call().await.unwrap().value
-    // }
+    pub async fn owner_of(call_wallet: &Metadata, token_id: u64) -> nft_mod::Option {
+        call_wallet
+            .nft
+            .owner_of(token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
 
     pub async fn tokens_owned(call_wallet: &Metadata, wallet: &Metadata) -> u64 {
         call_wallet
