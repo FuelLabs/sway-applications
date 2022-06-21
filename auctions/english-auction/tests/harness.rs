@@ -6,7 +6,7 @@ abigen!(EnglishAuction, "out/debug/english-auction-abi.json");
 abigen!(MyAsset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
 struct Metadata {
-    asset: Option<MyAsset>,
+    asset: MyAsset,
     auction: EnglishAuction,
     wallet: LocalWallet,
 }
@@ -43,13 +43,13 @@ async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId, Contrac
     .unwrap();
 
     let deploy_wallet = Metadata {
-        asset: Some(MyAsset::new(sell_asset_id.to_string(), wallet1.clone())),
+        asset: MyAsset::new(sell_asset_id.to_string(), wallet1.clone()),
         auction: EnglishAuction::new(auction_id.to_string(), wallet1.clone()),
         wallet: wallet1.clone(),
     };
 
     let seller = Metadata {
-        asset: Some(MyAsset::new(sell_asset_id.to_string(), wallet2.clone())),
+        asset: MyAsset::new(sell_asset_id.to_string(), wallet2.clone()),
         auction: EnglishAuction::new(auction_id.to_string(), wallet2.clone()),
         wallet: wallet2.clone(),
     };
@@ -64,13 +64,13 @@ async fn setup() -> (Metadata, Metadata, Metadata, Metadata, ContractId, Contrac
     .unwrap();
 
     let buyer1 = Metadata {
-        asset: Some(MyAsset::new(buy_asset_id.to_string(), wallet3.clone())),
+        asset: MyAsset::new(buy_asset_id.to_string(), wallet3.clone()),
         auction: EnglishAuction::new(auction_id.to_string(), wallet3.clone()),
         wallet: wallet3.clone(),
     };
     
     let buyer2 = Metadata {
-        asset: Some(MyAsset::new(buy_asset_id.to_string(), wallet4.clone())),
+        asset: MyAsset::new(buy_asset_id.to_string(), wallet4.clone()),
         auction: EnglishAuction::new(auction_id.to_string(), wallet4.clone()),
         wallet: wallet4.clone(),
     };
@@ -90,8 +90,6 @@ async fn deploy_funds(
 ) {
     deploy_wallet
         .asset 
-        .as_ref()
-        .unwrap()
         .mint_and_send_to_address(asset_amount, wallet.address())
         .append_variable_outputs(1)
         .call()
@@ -116,11 +114,24 @@ async fn init(
     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
     let call_params = CallParameters::new(Some(sell_amount), Some(AssetId::from(*sell_asset_id)));
 
+    let buy_asset_struct = Asset {
+        contract_id: buy_asset_id,
+        amount: 0,
+        nft_id: Option::None()
+    };
+
+    let sell_asset_struct = Asset {
+        contract_id: sell_asset_id,
+        amount: 0,
+        nft_id: Option::None()
+    };
+
     seller
         .auction
         .constructor(
             englishauction_mod::Identity::Address(seller.wallet.address()), 
-            buy_asset_id,
+            sell_asset_struct,
+            buy_asset_struct,
             inital_price,
             reserve_price,
             time)
