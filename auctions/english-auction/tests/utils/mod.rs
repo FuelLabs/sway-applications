@@ -245,7 +245,7 @@ pub mod abi_calls {
     }
 
     pub async fn withdraw(call_wallet: &Metadata, auction_id: u64) -> CallResponse<()> {
-        call_wallet.auction.withdraw(auction_id).call().await.unwrap()
+        call_wallet.auction.withdraw(auction_id).append_variable_outputs(2).call().await.unwrap()
     }
 
     pub async fn auction_end_block(call_wallet: &Metadata, auction_id: u64) -> u64 {
