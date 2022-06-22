@@ -6,7 +6,7 @@ abigen!(EnglishAuction, "out/debug/english-auction-abi.json");
 abigen!(MyAsset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
 struct Metadata {
-    asset: Option<MyAsset>,
+    asset: core::option::Option<MyAsset>,
     auction: EnglishAuction,
     wallet: LocalWallet,
 }
@@ -116,11 +116,24 @@ async fn init(
     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
     let call_params = CallParameters::new(Some(sell_amount), Some(AssetId::from(*sell_asset_id)));
 
+    let buy_asset_struct = Asset {
+        contract_id: buy_asset_id,
+        amount: 0,
+        nft_id: Option::None()
+    };
+
+    let sell_asset_struct = Asset {
+        contract_id: sell_asset_id,
+        amount: 0,
+        nft_id: Option::None()
+    };
+
     seller
         .auction
         .constructor(
             englishauction_mod::Identity::Address(seller.wallet.address()), 
-            buy_asset_id,
+            sell_asset_struct,
+            buy_asset_struct,
             inital_price,
             reserve_price,
             time)
