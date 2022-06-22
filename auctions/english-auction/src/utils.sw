@@ -135,6 +135,7 @@ pub fn validate_corrent_asset(buy_asset: Asset, recieved_asset: Asset) {
                 msg_asset_id() == recieved_asset.contract_id,
                 InputError::IncorrectAssetProvided
             );
+            require(msg_amount() == recieved_asset.amount, InputError::IncorrectAmountProvided);
         }
     };
 }

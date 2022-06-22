@@ -1126,409 +1126,558 @@ mod bid {
     }
 }
 
-/*
 mod buy_reserve {
 
     use super::*;
 
-    #[tokio::test]
-    async fn buys_reserve() {
-        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+    mod success {
 
-        init(&deploy_wallet,
-            &seller,
-            sell_asset_id,
-            sell_amount,
-            buy_asset_id,
-            inital_price,
-            reserve_price,
-            time
-        )
-        .await;
+        use super::*;
 
-        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+        #[tokio::test]
+        async fn buys_reserve_tokens() {
+            let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(reserve_price), Some(AssetId::from(*buy_asset_id)));
+            let buy_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: 0,
+                nft_id: Option::None()
+            };
+        
+            let sell_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: amount_selling,
+                nft_id: Option::None()
+            };
 
-        assert!(
-            buyer1
-                .auction
-                .buy_reserve()
-                .tx_params(tx_params)
-                .call_params(call_params)
-                .append_variable_outputs(2)
-                .call()
-                .await
-                .unwrap()
-                .value
-        );
+            let auction_id = init_token(
+                    &deploy_wallet, 
+                    &seller, 
+                    sell_asset_id, 
+                    amount_selling, 
+                    buy_asset_id, 
+                    inital_price, 
+                    reserve_price, 
+                    time, 
+                    buy_asset_struct, 
+                    sell_asset_struct
+                ).await;
 
-        // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
-        // assert_eq!(
-        //     buyer1.auction.get_highest_bidder().call().await.unwrap().value,
-        //     buyer1.wallet.address
-        // );
+            let bid_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: reserve_price,
+                nft_id: Option::None()
+            };
+            buy_reserve_tokens(&buyer1, &buyer1, auction_id, buy_asset_id, reserve_price, bid_asset_struct).await;
 
-        assert_eq!(
-            buyer1
-                .auction
-                .deposits(englishauction_mod::Identity::Address(buyer1.wallet.address()))
-                .call()
-                .await
-                .unwrap()
-                .value,
-            0
-        );
+            // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
+            // assert_eq!(highest_bidder(&deploy_wallet, auction_id).await, buyer1.wallet.address);
+            assert_eq!(current_bid(&deploy_wallet, auction_id).await, reserve_price);
+            // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
+            //assert_eq!(deposits(&buyer1, auction_id).await, 0);
+            assert_eq!(state(&deploy_wallet, auction_id).await, 2);
+        }
 
-        assert_eq!(
-            buyer1.auction.current_bid().call().await.unwrap().value,
-            reserve_price
-        );
+        #[tokio::test]
+        async fn buys_after_bid() {
+            let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
 
-        assert_eq!(
-            buyer1.auction.state().call().await.unwrap().value,
-            2
-        );
+            let buy_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: 0,
+                nft_id: Option::None()
+            };
+        
+            let sell_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: amount_selling,
+                nft_id: Option::None()
+            };
+            
+            let auction_id = init_token(
+                    &deploy_wallet, 
+                    &seller, 
+                    sell_asset_id, 
+                    amount_selling, 
+                    buy_asset_id, 
+                    inital_price, 
+                    reserve_price, 
+                    time, 
+                    buy_asset_struct, 
+                    sell_asset_struct
+                ).await;
+
+            let bid_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: inital_price,
+                nft_id: Option::None()
+            };
+            
+            bid_tokens(&buyer1, &buyer1, auction_id, buy_asset_id, inital_price, bid_asset_struct).await;
+        
+            let remaining_deposit = reserve_price - inital_price;
+        
+            let bid_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: remaining_deposit,
+                nft_id: Option::None()
+            };
+            buy_reserve_tokens(&buyer1, &buyer1, auction_id, buy_asset_id, remaining_deposit, bid_asset_struct).await;
+
+            // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
+            // assert_eq!(highest_bidder(&deploy_wallet, auction_id).await, buyer1.wallet.address);
+            assert_eq!(current_bid(&deploy_wallet, auction_id).await, reserve_price);
+            // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
+            //assert_eq!(deposits(&buyer1, auction_id).await, 0);
+            assert_eq!(state(&deploy_wallet, auction_id).await, 2);
+        }
+
+        #[tokio::test]
+        async fn buys_over_reserve() {
+            let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
+
+            let buy_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: 0,
+                nft_id: Option::None()
+            };
+        
+            let sell_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: amount_selling,
+                nft_id: Option::None()
+            };
+            
+            let auction_id = init_token(
+                    &deploy_wallet, 
+                    &seller, 
+                    sell_asset_id, 
+                    amount_selling, 
+                    buy_asset_id, 
+                    inital_price, 
+                    reserve_price, 
+                    time, 
+                    buy_asset_struct, 
+                    sell_asset_struct
+                ).await;
+
+            let bid_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: reserve_price + 1,
+                nft_id: Option::None()
+            };
+            buy_reserve_tokens(&buyer1, &buyer1, auction_id, buy_asset_id, reserve_price + 1, bid_asset_struct).await;
+
+            // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
+            // assert_eq!(highest_bidder(&deploy_wallet, auction_id).await, buyer1.wallet.address);
+            assert_eq!(current_bid(&deploy_wallet, auction_id).await, reserve_price);
+            // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
+            //assert_eq!(deposits(&buyer1, auction_id).await, 0);
+            assert_eq!(state(&deploy_wallet, auction_id).await, 2);
+        }
     }
 
-    #[tokio::test]
-    async fn buys_after_bid() {
-        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+    mod reverts {
 
-        init(&deploy_wallet,
-            &seller,
-            sell_asset_id,
-            sell_amount,
-            buy_asset_id,
-            inital_price,
-            reserve_price,
-            time
-        )
-        .await;
+        use super::*;
 
-        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn panics_when_not_initalized() {
+            let (_deploy_wallet, _seller, buyer1, _buyer2, _sell_asset_id, buy_asset_id, _sell_amount, _inital_price, reserve_price, _time) = setup().await;
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+            let bid_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: reserve_price,
+                nft_id: Option::None()
+            };
+            buy_reserve_tokens(&buyer1, &buyer1, 0, buy_asset_id, reserve_price, bid_asset_struct).await;
+        }
 
-        let _bid1 = buyer1
-            .auction
-            .bid()
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value;
-    
-        let remaining_deposit = reserve_price - inital_price;
-    
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(remaining_deposit), Some(AssetId::from(*buy_asset_id)));
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn panics_when_over_time() {
+            let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, _time) = setup().await;
 
-        assert!(
-            buyer1
-                .auction
-                .buy_reserve()
-                .tx_params(tx_params)
-                .call_params(call_params)
-                .append_variable_outputs(2)
-                .call()
-                .await
-                .unwrap()
-                .value
-        );
+            let buy_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: 0,
+                nft_id: Option::None()
+            };
+        
+            let sell_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: amount_selling,
+                nft_id: Option::None()
+            };
+            
+            let auction_id = init_token(
+                    &deploy_wallet, 
+                    &seller, 
+                    sell_asset_id, 
+                    amount_selling, 
+                    buy_asset_id, 
+                    inital_price, 
+                    reserve_price, 
+                    1, 
+                    buy_asset_struct, 
+                    sell_asset_struct
+                ).await;
 
-        // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
-        // assert_eq!(
-        //     buyer1.auction.get_highest_bidder().call().await.unwrap().value,
-        //     buyer1.wallet.address
-        // );
+            let bid_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: reserve_price,
+                nft_id: Option::None()
+            };
+            buy_reserve_tokens(&buyer1, &buyer1, auction_id, buy_asset_id, reserve_price, bid_asset_struct).await;
+        }
 
-        assert_eq!(
-            buyer1
-                .auction
-                .deposits(englishauction_mod::Identity::Address(buyer1.wallet.address()))
-                .call()
-                .await
-                .unwrap()
-                .value,
-            0
-        );
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn panics_when_no_reserve_set() {
+            let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
 
-        assert_eq!(
-            buyer1.auction.current_bid().call().await.unwrap().value,
-            reserve_price
-        );
+            let buy_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: 0,
+                nft_id: Option::None()
+            };
+        
+            let sell_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: amount_selling,
+                nft_id: Option::None()
+            };
+            
+            let auction_id = init_token(
+                    &deploy_wallet, 
+                    &seller, 
+                    sell_asset_id, 
+                    amount_selling, 
+                    buy_asset_id, 
+                    inital_price, 
+                    0, 
+                    time, 
+                    buy_asset_struct, 
+                    sell_asset_struct
+                ).await;
 
-        assert_eq!(
-            buyer1.auction.state().call().await.unwrap().value,
-            2
-        );
-    }
+            let bid_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: reserve_price,
+                nft_id: Option::None()
+            };
+            buy_reserve_tokens(&buyer1, &buyer1, auction_id, buy_asset_id, reserve_price, bid_asset_struct).await;
+        }
 
-    #[tokio::test]
-    async fn buys_over_reserve() {
-        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn panics_when_bidder_is_seller() {
+            let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
 
-        init(&deploy_wallet,
-            &seller,
-            sell_asset_id,
-            sell_amount,
-            buy_asset_id,
-            inital_price,
-            reserve_price,
-            time
-        )
-        .await;
+            let buy_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: 0,
+                nft_id: Option::None()
+            };
+        
+            let sell_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: amount_selling,
+                nft_id: Option::None()
+            };
+            
+            let auction_id = init_token(
+                    &deploy_wallet, 
+                    &seller, 
+                    sell_asset_id, 
+                    amount_selling, 
+                    buy_asset_id, 
+                    inital_price, 
+                    reserve_price, 
+                    time, 
+                    buy_asset_struct, 
+                    sell_asset_struct
+                ).await;
 
-        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
+            let bid_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: reserve_price,
+                nft_id: Option::None()
+            };
+            buy_reserve_tokens(&buyer1, &seller, auction_id, buy_asset_id, reserve_price, bid_asset_struct).await;
+        }
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(reserve_price + 1), Some(AssetId::from(*buy_asset_id)));
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn panics_when_reserve_not_met() {
+            let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
 
-        assert!(
-            buyer1
-                .auction
-                .buy_reserve()
-                .tx_params(tx_params)
-                .call_params(call_params)
-                .append_variable_outputs(2)
-                .call()
-                .await
-                .unwrap()
-                .value
-        );
+            let buy_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: 0,
+                nft_id: Option::None()
+            };
+        
+            let sell_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: amount_selling,
+                nft_id: Option::None()
+            };
+            
+            let auction_id = init_token(
+                    &deploy_wallet, 
+                    &seller, 
+                    sell_asset_id, 
+                    amount_selling, 
+                    buy_asset_id, 
+                    inital_price, 
+                    reserve_price, 
+                    time, 
+                    buy_asset_struct, 
+                    sell_asset_struct
+                ).await;
 
-        // Uncommment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
-        // assert_eq!(
-        //     buyer1.auction.get_highest_bidder().call().await.unwrap().value,
-        //     buyer1.wallet.address
-        // );
+            let bid_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: reserve_price - 1,
+                nft_id: Option::None()
+            };
+            buy_reserve_tokens(&buyer1, &buyer1, auction_id, buy_asset_id, reserve_price - 1, bid_asset_struct).await;
+        }
 
-        assert_eq!(
-            buyer1
-                .auction
-                .deposits(englishauction_mod::Identity::Address(buyer1.wallet.address()))
-                .call()
-                .await
-                .unwrap()
-                .value,
-            0
-        );
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn panics_when_sending_incorrect_asset_token() {
+            let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
 
-        assert_eq!(
-            buyer1.auction.current_bid().call().await.unwrap().value,
-            reserve_price
-        );
+            let buy_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: 0,
+                nft_id: Option::None()
+            };
+        
+            let sell_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: amount_selling,
+                nft_id: Option::None()
+            };
+            
+            let auction_id = init_token(
+                    &deploy_wallet, 
+                    &seller, 
+                    sell_asset_id, 
+                    amount_selling, 
+                    buy_asset_id, 
+                    inital_price, 
+                    reserve_price, 
+                    time, 
+                    buy_asset_struct, 
+                    sell_asset_struct
+                ).await;
 
-        assert_eq!(
-            buyer1.auction.state().call().await.unwrap().value,
-            2
-        );
-    }
+            let bid_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: reserve_price,
+                nft_id: Option::None()
+            };
+            buy_reserve_tokens(&deploy_wallet, &buyer1, auction_id, sell_asset_id, reserve_price, bid_asset_struct).await;
+        }
 
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_not_initalized() {
-        let (_deploy_wallet, _seller, buyer1, _buyer2, _sell_asset_id, buy_asset_id, _sell_amount, _inital_price, reserve_price, _time) = setup().await;
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn panics_when_asset_struct_mismatch_token() {
+            let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
 
-        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
-    
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(reserve_price), Some(AssetId::from(*buy_asset_id)));
+            let buy_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: 0,
+                nft_id: Option::None()
+            };
+        
+            let sell_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: amount_selling,
+                nft_id: Option::None()
+            };
+            
+            let auction_id = init_token(
+                    &deploy_wallet, 
+                    &seller, 
+                    sell_asset_id, 
+                    amount_selling, 
+                    buy_asset_id, 
+                    inital_price, 
+                    reserve_price, 
+                    time, 
+                    buy_asset_struct, 
+                    sell_asset_struct
+                ).await;
 
-        assert!(
-            buyer1
-                .auction
-                .buy_reserve()
-                .tx_params(tx_params)
-                .call_params(call_params)
-                .append_variable_outputs(2)
-                .call()
-                .await
-                .unwrap()
-                .value
-        );
-    }
+            let bid_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: reserve_price,
+                nft_id: Option::None()
+            };
+            buy_reserve_tokens(&buyer1, &buyer1, auction_id, buy_asset_id, reserve_price, bid_asset_struct).await;
+        }
 
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_over_time() {
-        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, _time) = setup().await;
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn panics_when_amount_struct_mismatch_token() {
+            let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
 
-        init(&deploy_wallet,
-            &seller,
-            sell_asset_id,
-            sell_amount,
-            buy_asset_id,
-            inital_price,
-            reserve_price,
-            1
-        )
-        .await;
+            let buy_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: 0,
+                nft_id: Option::None()
+            };
+        
+            let sell_asset_struct = Asset {
+                contract_id: sell_asset_id,
+                amount: amount_selling,
+                nft_id: Option::None()
+            };
+            
+            let auction_id = init_token(
+                    &deploy_wallet, 
+                    &seller, 
+                    sell_asset_id, 
+                    amount_selling, 
+                    buy_asset_id, 
+                    inital_price, 
+                    reserve_price, 
+                    time, 
+                    buy_asset_struct, 
+                    sell_asset_struct
+                ).await;
 
-        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
-    
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(reserve_price), Some(AssetId::from(*buy_asset_id)));
+            let bid_asset_struct = Asset {
+                contract_id: buy_asset_id,
+                amount: 0,
+                nft_id: Option::None()
+            };
+            buy_reserve_tokens(&buyer1, &buyer1, auction_id, buy_asset_id, reserve_price, bid_asset_struct).await;
+        }
 
-        assert!(
-            buyer1
-                .auction
-                .buy_reserve()
-                .tx_params(tx_params)
-                .call_params(call_params)
-                .append_variable_outputs(2)
-                .call()
-                .await
-                .unwrap()
-                .value
-        );
-    }
+        // TODO: Implement NFT
+        // #[tokio::test]
+        // #[should_panic(expected = "Revert(42)")]
+        // async fn panics_when_sending_incorrect_asset_nft() {
+        //     let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
 
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_no_reserve_set() {
-        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+        //     let buy_asset_struct = Asset {
+        //         contract_id: buy_asset_id,
+        //         amount: 0,
+        //         nft_id: Option::None()
+        //     };
+        
+        //     let sell_asset_struct = Asset {
+        //         contract_id: sell_asset_id,
+        //         amount: amount_selling,
+        //         nft_id: Option::None()
+        //     };
+            
+        //     let auction_id = init_nft(
+        //             &deploy_wallet, 
+        //             &seller, 
+        //             sell_asset_id, 
+        //             amount_selling, 
+        //             buy_asset_id, 
+        //             inital_price, 
+        //             reserve_price, 
+        //             time, 
+        //             buy_asset_struct, 
+        //             sell_asset_struct
+        //         ).await;
 
-        init(&deploy_wallet,
-            &seller,
-            sell_asset_id,
-            sell_amount,
-            buy_asset_id,
-            inital_price,
-            0,
-            time
-        )
-        .await;
+        //     let bid_asset_struct = Asset {
+        //         contract_id: sell_asset_id,
+        //         amount: reserve_price,
+        //         nft_id: Option::None()
+        //     };
+        //     buy_reserve_nft(&deploy_wallet, &buyer1, auction_id, buy_asset_id, reserve_price, bid_asset_struct).await;
+        // }
 
-        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
-    
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(reserve_price), Some(AssetId::from(*buy_asset_id)));
+        // #[tokio::test]
+        // #[should_panic(expected = "Revert(42)")]
+        // async fn panics_when_asset_struct_mismatch_nft() {
+        //     let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
 
-        assert!(
-            buyer1
-                .auction
-                .buy_reserve()
-                .tx_params(tx_params)
-                .call_params(call_params)
-                .append_variable_outputs(2)
-                .call()
-                .await
-                .unwrap()
-                .value
-        );
-    }
+        //     let buy_asset_struct = Asset {
+        //         contract_id: buy_asset_id,
+        //         amount: 0,
+        //         nft_id: Option::None()
+        //     };
+        
+        //     let sell_asset_struct = Asset {
+        //         contract_id: sell_asset_id,
+        //         amount: amount_selling,
+        //         nft_id: Option::None()
+        //     };
+            
+        //     let auction_id = init_nft(
+        //             &deploy_wallet, 
+        //             &seller, 
+        //             sell_asset_id, 
+        //             amount_selling, 
+        //             buy_asset_id, 
+        //             inital_price, 
+        //             reserve_price, 
+        //             time, 
+        //             buy_asset_struct, 
+        //             sell_asset_struct
+        //         ).await;
 
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_bidder_is_seller() {
-        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
+        //     let bid_asset_struct = Asset {
+        //         contract_id: sell_asset_id,
+        //         amount: reserve_price,
+        //         nft_id: Option::None()
+        //     };
+        //     buy_reserve_nft(&buyer1, &buyer1, auction_id, buy_asset_id, reserve_price, bid_asset_struct).await;
+        // }
 
-        init(&deploy_wallet,
-            &seller,
-            sell_asset_id,
-            sell_amount,
-            buy_asset_id,
-            inital_price,
-            reserve_price,
-            time
-        )
-        .await;
+        // #[tokio::test]
+        // #[should_panic(expected = "Revert(42)")]
+        // async fn panics_when_amount_struct_mismatch_nft() {
+        //     let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, amount_selling, inital_price, reserve_price, time) = setup().await;
 
-        deploy_funds(&buyer1, &seller.wallet, 100).await;
-    
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(inital_price), Some(AssetId::from(*buy_asset_id)));
+        //     let buy_asset_struct = Asset {
+        //         contract_id: buy_asset_id,
+        //         amount: 0,
+        //         nft_id: Option::None()
+        //     };
+        
+        //     let sell_asset_struct = Asset {
+        //         contract_id: sell_asset_id,
+        //         amount: amount_selling,
+        //         nft_id: Option::None()
+        //     };
+            
+        //     let auction_id = init_nft(
+        //             &deploy_wallet, 
+        //             &seller, 
+        //             sell_asset_id, 
+        //             amount_selling, 
+        //             buy_asset_id, 
+        //             inital_price, 
+        //             reserve_price, 
+        //             time, 
+        //             buy_asset_struct, 
+        //             sell_asset_struct
+        //         ).await;
 
-        assert!(
-            seller
-                .auction
-                .buy_reserve()
-                .tx_params(tx_params)
-                .call_params(call_params)
-                .append_variable_outputs(2)
-                .call()
-                .await
-                .unwrap()
-                .value
-        );
-    }
-
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_reserve_not_met() {
-        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
-
-        init(&deploy_wallet,
-            &seller,
-            sell_asset_id,
-            sell_amount,
-            buy_asset_id,
-            inital_price,
-            reserve_price,
-            time
-        )
-        .await;
-
-        deploy_funds(&buyer1, &buyer1.wallet, 100).await;
-    
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(reserve_price - 1), Some(AssetId::from(*buy_asset_id)));
-
-        assert!(
-            buyer1
-                .auction
-                .buy_reserve()
-                .tx_params(tx_params)
-                .call_params(call_params)
-                .append_variable_outputs(2)
-                .call()
-                .await
-                .unwrap()
-                .value
-        );
-    }
-
-    #[tokio::test]
-    #[should_panic]
-    async fn panics_when_sending_incorrect_asset() {
-        let (deploy_wallet, seller, buyer1, _buyer2, sell_asset_id, buy_asset_id, sell_amount, inital_price, reserve_price, time) = setup().await;
-
-        init(&deploy_wallet,
-            &seller,
-            sell_asset_id,
-            sell_amount,
-            buy_asset_id,
-            inital_price,
-            reserve_price,
-            time
-        )
-        .await;
-
-        deploy_funds(&deploy_wallet, &buyer1.wallet, 100).await;
-    
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(reserve_price), Some(AssetId::from(*sell_asset_id)));
-
-        assert!(
-            buyer1
-                .auction
-                .buy_reserve()
-                .tx_params(tx_params)
-                .call_params(call_params)
-                .append_variable_outputs(2)
-                .call()
-                .await
-                .unwrap()
-                .value
-        );
+        //     let bid_asset_struct = Asset {
+        //         contract_id: buy_asset_id,
+        //         amount: 0,
+        //         nft_id: Option::None()
+        //     };
+        //     buy_reserve_nft(&buyer1, &buyer1, auction_id, buy_asset_id, reserve_price, bid_asset_struct).await;
+        // }
     }
 }
 
+/*
 mod withdraw {
 
     use super::*;

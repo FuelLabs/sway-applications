@@ -209,7 +209,8 @@ pub mod abi_calls {
         bidder: &Metadata,
         auction_id: u64, 
         asset_id: ContractId, 
-        amount: u64
+        amount: u64,
+        asset: Asset
     ) -> CallResponse<()> {
 
         deploy_funds(&deploy_wallet, &bidder.wallet, 100).await;
@@ -217,15 +218,9 @@ pub mod abi_calls {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(amount), Some(AssetId::from(*asset_id)), None);
 
-        let buy_asset_struct = Asset {
-            contract_id: asset_id,
-            amount,
-            nft_id: Option::None()
-        };
-
-        deploy_wallet
+        bidder
             .auction
-            .buy_reserve(auction_id, buy_asset_struct)
+            .buy_reserve(auction_id, asset)
             .tx_params(tx_params)
             .call_params(call_params)
             .append_variable_outputs(2)
