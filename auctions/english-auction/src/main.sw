@@ -299,14 +299,14 @@ impl EnglishAuction for Contract {
         auction.buy_asset.amount
     }
 
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
+    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
     /// Returns the balance of the Address's buy asset deposits
     // #[storage(read)]
     // fn deposits(identity: Identity, auction_id: u64) -> Option<Asset> {
     //     storage.deposits.get((identity, auction_id))
     // }
 
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
+    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
     /// Returns the current bidder of the auction
     ///
     /// # Panics
@@ -320,7 +320,7 @@ impl EnglishAuction for Contract {
     //     auction.unwrap().bidder
     // }
 
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/375 is resolved
+    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
     /// Returns the reserve price of the auction
     ///
     /// # Panics
