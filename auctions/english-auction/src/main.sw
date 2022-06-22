@@ -105,7 +105,7 @@ impl EnglishAuction for Contract {
         // TODO: Support bidding of mutliple NFTs
         // Make sure this is greater than inital bid
         if (auction.buy_asset.amount == 0 && nft_id.is_none()) {
-            require(msg_amount() >= auction.inital_price, InputError::InitalPriceNotMet);
+            require(new_bid >= auction.inital_price, InputError::InitalPriceNotMet);
         }
 
         // TODO: Allow for bidding of mutliple NFTs

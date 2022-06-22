@@ -97,7 +97,7 @@ pub mod abi_calls {
         seller: &Metadata,
         sell_asset_id: ContractId,
         sell_amount: u64,
-        buy_asset_id: ContractId,
+        _buy_asset_id: ContractId,
         inital_price: u64,
         reserve_price: u64,
         time: u64,
@@ -128,12 +128,12 @@ pub mod abi_calls {
     }
 
     pub async fn init_nft(
-        deploy_wallet: &Metadata,
+        _deploy_wallet: &Metadata,
         seller: &Metadata,
-        sell_asset_id: ContractId,
-        sell_amount: u64,
-        sell_nft_id: u64,
-        buy_asset_id: ContractId,
+        _sell_asset_id: ContractId,
+        _sell_amount: u64,
+        _sell_nft_id: u64,
+        _buy_asset_id: ContractId,
         inital_price: u64,
         reserve_price: u64,
         time: u64,
@@ -161,7 +161,8 @@ pub mod abi_calls {
         bidder: &Metadata,
         auction_id: u64, 
         asset_id: ContractId, 
-        amount: u64
+        amount: u64,
+        asset: Asset
     ) -> CallResponse<()> {
 
         deploy_funds(&deploy_wallet, &bidder.wallet, 100).await;
@@ -169,24 +170,18 @@ pub mod abi_calls {
         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         let call_params = CallParameters::new(Some(amount), Some(AssetId::from(*asset_id)), None);
 
-        let buy_asset_struct = Asset {
-            contract_id: asset_id,
-            amount,
-            nft_id: Option::None()
-        };
-
-        deploy_wallet
+        bidder
             .auction
-            .bid(auction_id, buy_asset_struct)
+            .bid(auction_id, asset)
             .tx_params(tx_params)
             .call_params(call_params)
+            .append_variable_outputs(2)
             .call()
             .await
             .unwrap()
     }
 
     pub async fn bid_nft(
-        deploy_wallet: &Metadata, 
         bidder: &Metadata,
         auction_id: u64, 
         asset_id: ContractId, 
@@ -200,9 +195,10 @@ pub mod abi_calls {
             nft_id: Option::Some(nft_id)
         };
 
-        deploy_wallet
+        bidder
             .auction
             .bid(auction_id, buy_asset_struct)
+            .append_variable_outputs(2)
             .call()
             .await
             .unwrap()
@@ -232,29 +228,22 @@ pub mod abi_calls {
             .buy_reserve(auction_id, buy_asset_struct)
             .tx_params(tx_params)
             .call_params(call_params)
+            .append_variable_outputs(2)
             .call()
             .await
             .unwrap()
     }
 
     pub async fn buy_reserve_nft(
-        deploy_wallet: &Metadata, 
         bidder: &Metadata,
         auction_id: u64, 
-        asset_id: ContractId, 
-        amount: u64,
-        nft_id: u64
+        asset: Asset
     ) -> CallResponse<()> {
 
-        let buy_asset_struct = Asset {
-            contract_id: asset_id,
-            amount,
-            nft_id: Option::Some(nft_id)
-        };
-
-        deploy_wallet
+        bidder
             .auction
-            .buy_reserve(auction_id, buy_asset_struct)
+            .buy_reserve(auction_id, asset)
+            .append_variable_outputs(2)
             .call()
             .await
             .unwrap()
