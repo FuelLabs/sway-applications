@@ -67,10 +67,11 @@ storage {
 impl Escrow for Contract {
     /// Sets the owner of the contract allowing them to create new escrows
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// The function will panic when
     /// - The constructor is called more than once
+    #[storage(read, write)]
     fn constructor(owner: Identity) {
         require(!storage.initialized, InitError::CannotReinitialize);
         storage.owner = owner;
@@ -79,7 +80,7 @@ impl Escrow for Contract {
 
     /// Creates an internal representation of an escrow by setting the users and assets
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// The function will panic when
     /// - The calling identity is the 0x000.. asset
@@ -139,7 +140,7 @@ impl Escrow for Contract {
     /// Accepts a deposit from an authorized user for any of the specified assets
     /// A successful deposit unlocks the approval functionality for that user
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// The function will panic when
     /// - The specified escrow identifier is not in the valid range of existing escrows
@@ -148,6 +149,7 @@ impl Escrow for Contract {
     /// - The user deposits when they still have their previous deposit in the escrow
     /// - The user deposits an asset that has not been specified in the constructor
     /// - The user sends an incorrect amount of an asset for the specified asset in the escrow
+    #[storage(read, write)]
     fn deposit(identifier: u64) {
         // Escrow must exist in order to retrieve valid data
         validate_id(identifier);
@@ -198,13 +200,14 @@ impl Escrow for Contract {
     /// Once all of the users approve the escrow will lock the approve() & deposit() functions
     /// leaving withdrawal as the last function unlocked
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// The function will panic when
     /// - The specified escrow identifier is not in the valid range of existing escrows
     /// - The escrow is not in the State::Pending state
     /// - The user has not successfully deposited through the deposit() function
     /// - The user approves again after they have already approved
+    #[storage(read, write)]
     fn approve(identifier: u64) {
         // Escrow must exist in order to retrieve valid data
         validate_id(identifier);
@@ -251,11 +254,12 @@ impl Escrow for Contract {
 
     /// Returns the deposited asset back to the user and resets their deposit & approval flags to false
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// The function will panic when
     /// - The specified escrow identifier is not in the valid range of existing escrows
     /// - The user has not successfully deposited through the deposit() function
+    #[storage(read, write)]
     fn withdraw(identifier: u64) {
         // Escrow must exist in order to retrieve valid data
         validate_id(identifier);
@@ -309,10 +313,11 @@ impl Escrow for Contract {
     /// Returns data regarding the state of a user i.e. whether they have deposited, approved, their
     /// chosen asset and whether they are a valid user
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// The function will panic when
     /// - The specified escrow identifier is not in the valid range of existing escrows
+    #[storage(read)]
     fn user_data(identifier: u64, user: Identity) -> User {
         validate_id(identifier);
         storage.authorized_users.get((identifier, user))
@@ -325,10 +330,11 @@ impl Escrow for Contract {
     }
 
     /// Returns the meta data regarding a created escrow
-    /// # Panics
+    /// # Reverts
     ///
     /// The function will panic when
     /// - The specified escrow identifier is not in the valid range of existing escrows
+    #[storage(read)]
     fn escrow_data(identifier: u64) -> EscrowData {
         validate_id(identifier);
         storage.escrows.get(identifier)
@@ -336,6 +342,7 @@ impl Escrow for Contract {
 }
 
 // Keep the code dry
+#[storage(read)]
 fn validate_id(identifier: u64) {
     require(identifier != 0 && identifier <= storage.escrow_count, AccessError::InvalidIdentifier);
 }
