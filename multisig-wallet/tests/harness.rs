@@ -1,49 +1,53 @@
-use fuels::prelude::*;
-use fuels_abigen_macro::abigen;
+mod utils;
 
-// Load abi from json
-abigen!(Multisig, "out/debug/multisig-wallet-abi.json");
-
-async fn setup() -> (Multisig, LocalWallet, LocalWallet, LocalWallet) {
-    let num_wallets = 3;
-    let coins_per_wallet = 1;
-    let amount_per_coin = 1_000_000;
-
-    let config = WalletsConfig::new(
-        Some(num_wallets),
-        Some(coins_per_wallet),
-        Some(amount_per_coin),
-    );
-
-    let mut wallets = launch_provider_and_get_wallets(config).await;
-
-    let wallet1 = wallets.pop().unwrap();
-    let wallet2 = wallets.pop().unwrap();
-    let wallet3 = wallets.pop().unwrap();
-
-    let id = Contract::deploy(
-        "./out/debug/multisig-wallet.bin",
-        &wallet1,
-        TxParameters::default(),
-    )
-    .await
-    .unwrap();
-
-    (
-        Multisig::new(id.to_string(), wallet1.clone()),
-        wallet1,
-        wallet2,
-        wallet3,
-    )
-}
+use utils::{
+    abi_calls::{
+        balance, constructor, execute_transaction, is_owner, nonce, transaction_hash, transfer,
+    },
+    test_helpers::setup,
+};
 
 mod constructor {
 
     use super::*;
 
-    #[tokio::test]
-    async fn placeholder() {
-        let (multisig, wallet1, wallet2, wallet3) = setup().await;
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn initializes() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+    }
+
+    mod revert {
+
+        use super::*;
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_nonce_is_not_zero() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_threshold_is_zero() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_user_identity_is_zero() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_user_weight_is_zero() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
     }
 }
 
@@ -51,9 +55,94 @@ mod execute_transaction {
 
     use super::*;
 
-    #[tokio::test]
-    async fn placeholder() {
-        let (multisig, wallet1, wallet2, wallet3) = setup().await;
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn executes() {
+            // TODO: add call to call function in order to execute data
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+    }
+
+    mod revert {
+
+        use super::*;
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_nonce_is_zero() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_unrecoverable_public_key() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_incorrect_signer_ordering() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_insufficient_approval_count() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+    }
+}
+
+mod transfer {
+
+    use super::*;
+
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn transfers() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+    }
+
+    mod revert {
+
+        use super::*;
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_nonce_is_zero() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_transferring_more_than_contract_balance() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_unrecoverable_public_key() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_incorrect_signer_ordering() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_insufficient_approval_count() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
     }
 }
 
@@ -61,18 +150,79 @@ mod is_owner {
 
     use super::*;
 
-    #[tokio::test]
-    async fn placeholder() {
-        let (multisig, wallet1, wallet2, wallet3) = setup().await;
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn returns_info() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+    }
+
+    mod revert {
+
+        use super::*;
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn when_nonce_is_zero() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
     }
 }
 
-mod get_transaction_hash {
+mod nonce {
 
     use super::*;
 
-    #[tokio::test]
-    async fn placeholder() {
-        let (multisig, wallet1, wallet2, wallet3) = setup().await;
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn returns_zero() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        async fn returns_one() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+    }
+}
+
+mod balance {
+
+    use super::*;
+
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn returns_zero_for_nonexistent_asset() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+
+        #[tokio::test]
+        async fn returns_correct_balance() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
+    }
+}
+
+mod transaction_hash {
+
+    use super::*;
+
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn returns_hash() {
+            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+        }
     }
 }

@@ -1,6 +1,6 @@
 library data_structures;
 
-use std::{address::Address, contract_id::ContractId, identity::Identity};
+use std::{address::Address, contract_id::ContractId, identity::Identity, vec::Vec};
 
 pub struct User {
     // Contracts cannot sign therefore restrict scope to Address
@@ -17,8 +17,8 @@ pub struct Transaction {
     /// instance of the multisig
     contract_identifier: ContractId,
 
-    /// Payload sent to destination  // TODO: change to vec when implemented
-    data: b256,
+    /// Payload sent to destination
+    data: Vec<u64>,
 
     /// The recipient (output / contract) regarding the Tx details
     destination: Identity,
