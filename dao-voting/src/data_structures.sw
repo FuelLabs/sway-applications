@@ -1,18 +1,23 @@
 library data_structures;
 
-use std::contract_id::ContractId;
+use std::{contract_id::ContractId, identity::Identity};
 
 pub struct CallData {
     memory_address: MemoryAddress,
-    num_coins_to_forward: u64,
     asset_id_of_coins_to_forward: ContractId,
+    num_coins_to_forward: u64,
     amount_of_gas_to_forward: u64,
 }
 
 struct MemoryAddress {
     contract_id: ContractId,
     function_selector: u64,
-    function_data: u64,
+    function_data: FunctionArgs,
+}
+
+struct FunctionArgs {
+    amount: u64,
+    recipient: Identity,
 }
 
 pub struct Proposal {

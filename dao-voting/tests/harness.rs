@@ -1,6 +1,8 @@
 #![allow(unused_variables)]
 #![allow(unused_imports)]
 
+use std::ops::Add;
+
 use fuels::{
     prelude::*,
     tx::{AssetId, ContractId},
@@ -83,6 +85,29 @@ async fn initialize() -> bool {
         .value
 }
 
+fn get_call_data(recipient: Address, asset_id: ContractId) -> daovoting_mod::CallData {
+    // TODO make more general for other use cases besides mint_to_address
+    let func_args = daovoting_mod::FunctionArgs {
+        amount: 500,
+        recipient: daovoting_mod::Identity::Address(recipient),
+    };
+
+    let mem_address = daovoting_mod::MemoryAddress {
+        contract_id: asset_id,
+        function_selector: 0,
+        function_data: func_args,
+    };
+
+    let call_data = daovoting_mod::CallData {
+        memory_address: mem_address,
+        num_coins_to_forward: 0,
+        asset_id_of_coins_to_forward: asset_id,
+        amount_of_gas_to_forward: 20000,
+    };
+
+    call_data
+}
+
 #[tokio::test]
 async fn user_proposal_can_execute() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
@@ -106,7 +131,11 @@ async fn user_proposal_can_execute() {
     );
 
     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
+    let call_params = CallParameters::new(
+        Some(asset_amount),
+        Some(AssetId::from(*gov_token_id)),
+        Some(100_000),
+    );
     assert!(
         user.dao_voting
             .deposit()
@@ -118,22 +147,11 @@ async fn user_proposal_can_execute() {
             .value
     );
 
-    let mem_address = daovoting_mod::MemoryAddress {
-        contract_id: gov_token_id,
-        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
-        function_data: (500, user.wallet.address()),
-    };
-
-    let call_data = daovoting_mod::CallData {
-        memory_address: mem_address,
-        num_coins_to_forward: 0,
-        asset_id_of_coins_to_forward: gov_token_id,
-        amount_of_gas_to_forward: 20000,
-    };
+    let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
     assert!(
         user.dao_voting
-            .add_proposal(10, 10, call_data)
+            .add_proposal(10, 10, call_data.clone())
             .call()
             .await
             .unwrap()
@@ -142,7 +160,7 @@ async fn user_proposal_can_execute() {
 
     assert!(
         user.dao_voting
-            .vote(0, asset_amount / 4, true)
+            .vote(0, asset_amount / 2, true)
             .call()
             .await
             .unwrap()
@@ -154,10 +172,10 @@ async fn user_proposal_can_execute() {
     assert_eq!(
         proposal,
         daovoting_mod::Proposal {
-            yes_votes: 10,
+            yes_votes: 5,
             no_votes: 0,
             call_data: call_data,
-            end_height: 13,
+            end_height: 15,
             approval_percentage: 10
         }
     );
@@ -200,18 +218,7 @@ async fn panics_with_incorrect_voting_period() {
         .unwrap()
         .value;
 
-    let mem_address = daovoting_mod::MemoryAddress {
-        contract_id: gov_token_id,
-        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
-        function_data: (500, user.wallet.address()),
-    };
-
-    let call_data = daovoting_mod::CallData {
-        memory_address: mem_address,
-        num_coins_to_forward: 0,
-        asset_id_of_coins_to_forward: gov_token_id,
-        amount_of_gas_to_forward: 20000,
-    };
+    let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
     deployer
         .dao_voting
@@ -234,18 +241,7 @@ async fn panics_with_incorrect_approval_percentage() {
         .unwrap()
         .value;
 
-    let mem_address = daovoting_mod::MemoryAddress {
-        contract_id: gov_token_id,
-        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
-        function_data: (500, user.wallet.address()),
-    };
-
-    let call_data = daovoting_mod::CallData {
-        memory_address: mem_address,
-        num_coins_to_forward: 0,
-        asset_id_of_coins_to_forward: gov_token_id,
-        amount_of_gas_to_forward: 20000,
-    };
+    let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
     deployer
         .dao_voting
@@ -302,7 +298,11 @@ async fn user_can_deposit() {
     );
 
     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
+    let call_params = CallParameters::new(
+        Some(asset_amount),
+        Some(AssetId::from(*gov_token_id)),
+        Some(100_000),
+    );
     assert!(
         user.dao_voting
             .deposit()
@@ -382,7 +382,11 @@ async fn user_can_withdraw() {
     );
 
     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
+    let call_params = CallParameters::new(
+        Some(asset_amount),
+        Some(AssetId::from(*gov_token_id)),
+        Some(100_000),
+    );
     assert!(
         user.dao_voting
             .deposit()
@@ -415,6 +419,8 @@ async fn user_can_withdraw() {
         asset_amount
     );
 
+    println!("here1");
+
     assert!(
         user.dao_voting
             .withdraw(asset_amount)
@@ -423,6 +429,8 @@ async fn user_can_withdraw() {
             .unwrap()
             .value
     );
+
+    println!("here2");
 
     assert_eq!(
         user.dao_voting
@@ -455,14 +463,19 @@ async fn panics_when_not_initialized() {
     );
 
     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
+    let call_params = CallParameters::new(
+        Some(asset_amount),
+        Some(AssetId::from(*gov_token_id)),
+        Some(100_000),
+    );
     user.dao_voting
         .deposit()
         .tx_params(tx_params)
         .call_params(call_params)
         .call()
         .await
-        .unwrap();
+        .unwrap()
+        .value;
 }
 
 #[tokio::test]
@@ -500,15 +513,19 @@ async fn panics_with_incorrect_asset() {
         .value;
 
     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params =
-        CallParameters::new(Some(asset_amount), Some(AssetId::from(*another_asset_id)));
+    let call_params = CallParameters::new(
+        Some(asset_amount),
+        Some(AssetId::from(*gov_token_id)),
+        Some(100_000),
+    );
     user.dao_voting
         .deposit()
         .tx_params(tx_params)
         .call_params(call_params)
         .call()
         .await
-        .unwrap();
+        .unwrap()
+        .value;
 }
 
 #[tokio::test]
@@ -546,16 +563,20 @@ async fn panics_with_incorrect_amount() {
             .value,
         0
     );
-
     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(0), Some(AssetId::from(*gov_token_id)));
+    let call_params = CallParameters::new(
+        Some(0),
+        Some(AssetId::from(*gov_token_id)),
+        Some(100_000),
+    );
     user.dao_voting
         .deposit()
         .tx_params(tx_params)
         .call_params(call_params)
         .call()
         .await
-        .unwrap();
+        .unwrap()
+        .value;
 }
 
 #[tokio::test]
@@ -569,22 +590,11 @@ async fn user_can_add_proposal() {
         .unwrap()
         .value;
 
-    let mem_address = daovoting_mod::MemoryAddress {
-        contract_id: gov_token_id,
-        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
-        function_data: (500, user.wallet.address()),
-    };
-
-    let call_data = daovoting_mod::CallData {
-        memory_address: mem_address,
-        num_coins_to_forward: 0,
-        asset_id_of_coins_to_forward: gov_token_id,
-        amount_of_gas_to_forward: 20000,
-    };
+    let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
     assert!(
         user.dao_voting
-            .add_proposal(10, 10, call_data)
+            .add_proposal(10, 10, call_data.clone())
             .call()
             .await
             .unwrap()
@@ -636,7 +646,11 @@ async fn user_can_vote() {
     );
 
     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
+    let call_params = CallParameters::new(
+        Some(asset_amount),
+        Some(AssetId::from(*gov_token_id)),
+        Some(100_000),
+    );
     assert!(
         user.dao_voting
             .deposit()
@@ -648,22 +662,11 @@ async fn user_can_vote() {
             .value
     );
 
-    let mem_address = daovoting_mod::MemoryAddress {
-        contract_id: gov_token_id,
-        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
-        function_data: (500, user.wallet.address()),
-    };
-
-    let call_data = daovoting_mod::CallData {
-        memory_address: mem_address,
-        num_coins_to_forward: 0,
-        asset_id_of_coins_to_forward: gov_token_id,
-        amount_of_gas_to_forward: 20000,
-    };
+    let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
     assert!(
         user.dao_voting
-            .add_proposal(10, 10, call_data)
+            .add_proposal(10, 10, call_data.clone())
             .call()
             .await
             .unwrap()
@@ -714,18 +717,7 @@ async fn panics_on_not_enough_votes() {
         .unwrap()
         .value;
 
-    let mem_address = daovoting_mod::MemoryAddress {
-        contract_id: gov_token_id,
-        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
-        function_data: (500, user.wallet.address()),
-    };
-
-    let call_data = daovoting_mod::CallData {
-        memory_address: mem_address,
-        num_coins_to_forward: 0,
-        asset_id_of_coins_to_forward: gov_token_id,
-        amount_of_gas_to_forward: 20000,
-    };
+    let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
     assert!(
         user.dao_voting
@@ -768,18 +760,7 @@ async fn panics_on_expired_proposal() {
             .value
     );
 
-    let mem_address = daovoting_mod::MemoryAddress {
-        contract_id: gov_token_id,
-        function_selector: govtoken_mod::GovToken::mint_and_send_to_address,
-        function_data: (500, user.wallet.address()),
-    };
-
-    let call_data = daovoting_mod::CallData {
-        memory_address: mem_address,
-        num_coins_to_forward: 0,
-        asset_id_of_coins_to_forward: gov_token_id,
-        amount_of_gas_to_forward: 20000,
-    };
+    let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
     assert!(
         user.dao_voting
@@ -791,7 +772,11 @@ async fn panics_on_expired_proposal() {
     );
 
     let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-    let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*gov_token_id)));
+    let call_params = CallParameters::new(
+        Some(asset_amount),
+        Some(AssetId::from(*gov_token_id)),
+        Some(100_000),
+    );
     assert!(
         user.dao_voting
             .deposit()
