@@ -1,11 +1,10 @@
 library data_structures;
 
-use std::{address::Address, contract_id::ContractId, identity::Identity};
+use std::{address::Address, contract_id::ContractId, identity::Identity, vec::Vec};
 
-pub struct User {
-    // Contracts cannot sign therefore restrict scope to Address
-    /// The wallet address of a user
-    identity: Address,
+pub struct Owner {
+    /// Has a specific address been marked as an owner in the contract
+    exists: bool,
 
     /// Number of approvals the user provides when approving.
     /// The default is usually 1
@@ -17,8 +16,8 @@ pub struct Transaction {
     /// instance of the multisig
     contract_identifier: ContractId,
 
-    /// Payload sent to destination  // TODO: change to vec when implemented
-    data: b256,
+    /// Payload sent to destination
+    data: Vec<u64>,
 
     /// The recipient (output / contract) regarding the Tx details
     destination: Identity,
@@ -28,4 +27,14 @@ pub struct Transaction {
 
     /// Amount of asset
     value: u64,
+}
+
+pub struct User {
+    // Contracts cannot sign therefore restrict scope to Address
+    /// The wallet address of a user
+    identity: Address,
+
+    /// Number of approvals the user provides when approving.
+    /// The default is usually 1
+    weight: u64,
 }
