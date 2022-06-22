@@ -3,7 +3,7 @@ library abi;
 dep data_structures;
 
 use data_structures::Asset;
-use::std::{identity::Identity, {contract_id::ContractId, option::Option}
+use std::{contract_id::ContractId, identity::Identity, option::Option};
 
 abi EnglishAuction {
     #[storage(read)]fn auction_end_block(auction_id: u64) -> u64;
