@@ -88,7 +88,12 @@ impl EnglishAuction for Contract {
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let reserve: Option<u64> = auction.reserve_price;
         let new_bid = match sender_deposit {
-            Option::Some(Asset) => sender_deposit.unwrap().amount + msg_amount(), Option::None(Asset) => msg_amount(), 
+            Option::Some(Asset) => {
+                sender_deposit.unwrap().amount + msg_amount()
+            },
+            Option::None(Asset) => {
+                msg_amount()
+            },
         };
 
         // The bidder cannot be the seller
@@ -175,7 +180,12 @@ impl EnglishAuction for Contract {
         let nft_id: Option<u64> = auction.buy_asset.nft_id;
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let new_bid = match sender_deposit {
-            Option::Some(Asset) => sender_deposit.unwrap().amount + msg_amount(), Option::None(Asset) => msg_amount(), 
+            Option::Some(Asset) => {
+                sender_deposit.unwrap().amount + msg_amount()
+            },
+            Option::None(Asset) => {
+                msg_amount()
+            },
         };
 
         // Make sure the sender is not the seller
@@ -401,25 +411,45 @@ impl EnglishAuction for Contract {
         if (bidder.is_some() && sender == bidder.unwrap()) {
             // The buyer is withdrawing
             match sell_nft_id {
-                Option::Some(u64) => transfer_nft(Identity::ContractId(contract_id()), sender, auction.sell_asset), Option::None(u64) => send_tokens(sender, auction.sell_asset), 
+                Option::Some(u64) => {
+                    transfer_nft(Identity::ContractId(contract_id()), sender, auction.sell_asset)
+                },
+                Option::None(u64) => {
+                    send_tokens(sender, auction.sell_asset)
+                },
             };
         } else if (sender == auction.seller) {
             // The seller is withdrawing
             if (bidder.is_none()) {
                 // No one placed a bid
                 match sell_nft_id {
-                    Option::Some(u64) => transfer_nft(Identity::ContractId(contract_id()), auction.seller, auction.sell_asset), Option::None(u64) => send_tokens(sender, auction.sell_asset), 
+                    Option::Some(u64) => {
+                        transfer_nft(Identity::ContractId(contract_id()), auction.seller, auction.sell_asset)
+                    },
+                    Option::None(u64) => {
+                        send_tokens(sender, auction.sell_asset)
+                    },
                 }
             } else {
                 // The asset was sold
                 match buy_nft_id {
-                    Option::Some(u64) => transfer_nft(Identity::ContractId(contract_id()), sender, auction.buy_asset), Option::None(u64) => send_tokens(sender, auction.buy_asset), 
+                    Option::Some(u64) => {
+                        transfer_nft(Identity::ContractId(contract_id()), sender, auction.buy_asset)
+                    },
+                    Option::None(u64) => {
+                        send_tokens(sender, auction.buy_asset)
+                    },
                 }
             }
         } else {
             // Anyone with a failed bid is withdrawing
             match buy_nft_id {
-                Option::Some(u64) => transfer_nft(Identity::ContractId(contract_id()), sender, sender_deposit.unwrap()), Option::None(u64) => send_tokens(sender, sender_deposit.unwrap()), 
+                Option::Some(u64) => {
+                    transfer_nft(Identity::ContractId(contract_id()), sender, sender_deposit.unwrap())
+                },
+                Option::None(u64) => {
+                    send_tokens(sender, sender_deposit.unwrap())
+                },
             }
         };
     }

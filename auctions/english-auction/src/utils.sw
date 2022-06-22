@@ -47,7 +47,12 @@ pub fn reserve_met(auction: Auction, balance: u64, reserve: u64) -> Auction {
 
     // Transfer selling asset to sender
     match sell_nft_id {
-        Option::Some(u64) => transfer_nft(Identity::ContractId(contract_id()), sender, auction.sell_asset), Option::None(u64) => send_tokens(sender, auction.sell_asset), 
+        Option::Some(u64) => {
+            transfer_nft(Identity::ContractId(contract_id()), sender, auction.sell_asset)
+        },
+        Option::None(u64) => {
+            send_tokens(sender, auction.sell_asset)
+        },
     };
 
     // Return any amount overpaid
