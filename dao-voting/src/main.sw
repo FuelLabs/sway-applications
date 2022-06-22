@@ -30,8 +30,9 @@ storage {
     Proposal>, proposal_count: u64,
     // The amount of governance tokens a user has deposited
     balances: StorageMap<Identity,
-    u64>, // The amount of votes a user has
-    votes: StorageMap<Identity,
+    u64>,
+    // The amount of votes a user has used on a proposal
+    votes: StorageMap<(Identity, u64),
     u64>, state: u64, 
 }
 
@@ -166,11 +167,11 @@ impl DaoVoting for Contract {
 
         storage.balances.insert(sender, sender_balance - vote_amount);
 
-        let votes = storage.votes.get(sender);
-        storage.votes.insert(sender, votes + vote_amount);
+        let votes = storage.votes.get((sender, proposal_id));
+        storage.votes.insert((sender, proposal_id), votes + vote_amount);
 
         storage.proposals.insert(proposal_id, proposal);
-
+        
         true
     }
 
@@ -219,10 +220,11 @@ impl DaoVoting for Contract {
         storage.balances.get(user)
     }
 
-    /// Return the amount of votes a user can use.
+    /// Return the amount of votes a user has used on a proposal
     #[storage(read)]
-    fn get_user_votes(user: Identity) -> u64 {
-        storage.votes.get(user)
+    fn get_user_votes(user: Identity, proposal_id: u64) -> u64 {
+        require(proposal_id < storage.proposal_count, Error::InvalidId);
+        storage.votes.get((user, proposal_id))
     }
 
     /// Return proposal data for a given id
