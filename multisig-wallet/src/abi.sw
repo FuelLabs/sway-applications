@@ -3,7 +3,7 @@ library abi;
 dep data_structures;
 
 use std::{address::Address, b512::B512, contract_id::ContractId, identity::Identity, vec::Vec};
-use data_structures::User;
+use data_structures::{Owner, User};
 
 abi MultiSignatureWallet {
     #[storage(read, write)]fn constructor(users: Vec<User>, threshold: u64);
@@ -12,7 +12,7 @@ abi MultiSignatureWallet {
 
     #[storage(read, write)]fn transfer(to: Identity, asset_id: ContractId, value: u64, data: Vec<u64>, signatures: Vec<B512>);
 
-    #[storage(read)]fn is_owner(owner: Address) -> bool;
+    #[storage(read)]fn owner(owner: Address) -> Owner;
 
     #[storage(read)]fn nonce() -> u64;
 

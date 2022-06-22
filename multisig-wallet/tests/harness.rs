@@ -146,7 +146,7 @@ mod transfer {
     }
 }
 
-mod is_owner {
+mod owner {
 
     use super::*;
 
@@ -155,18 +155,12 @@ mod is_owner {
         use super::*;
 
         #[tokio::test]
-        async fn returns_info() {
+        async fn returns_info_for_existing_owner() {
             let (multisig, wallet1, wallet2, wallet3) = setup().await;
         }
-    }
-
-    mod revert {
-
-        use super::*;
 
         #[tokio::test]
-        #[should_panic(expected = "Revert(42)")]
-        async fn when_nonce_is_zero() {
+        async fn returns_info_for_non_owner() {
             let (multisig, wallet1, wallet2, wallet3) = setup().await;
         }
     }

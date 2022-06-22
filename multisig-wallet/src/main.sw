@@ -19,7 +19,7 @@ use std::{
     identity::Identity,
     logging::log,
     option::*,
-    result::*,
+    result::Result,
     revert::revert,
     storage::StorageMap,
     token::transfer,
@@ -30,7 +30,7 @@ use core::num::*;
 
 // Our library imports
 use abi::MultiSignatureWallet;
-use data_structures::{Transaction, User};
+use data_structures::{Owner, Transaction, User};
 use errors::{ExecutionError, InitError};
 use events::{ExecutedEvent, TransferEvent};
 
@@ -44,11 +44,16 @@ storage {
 
     /// Number of approvals per user
     weighting: StorageMap<Address,
-    u64>, 
+    Owner>, 
 }
 
 impl MultiSignatureWallet for Contract {
     /// The constructor initializes the necessary values and unlocks further functionlity
+    ///
+    /// # Arguments
+    ///
+    /// - `users` -
+    /// - `threshold` -
     ///
     /// # Reverts
     ///
@@ -66,10 +71,12 @@ impl MultiSignatureWallet for Contract {
             let user: Option<User> = users.get(user_index);
             let user = user.unwrap();
 
-            require(~Address::from(BASE_ASSET_ID) != user.identity, InitError::AddressCannotBeZero);
+            require(BASE_ASSET_ID != user.identity.value, InitError::AddressCannotBeZero);
             require(user.weight != 0, InitError::WeightingCannotBeZero);
 
-            storage.weighting.insert(user.identity, user.weight);
+            storage.weighting.insert(user.identity, Owner {
+                exists: true, weight: user.weight
+            });
             user_index = user_index + 1;
         }
 
@@ -79,6 +86,13 @@ impl MultiSignatureWallet for Contract {
 
     /// Executes a Tx formed from the `to, `value` and `data` parameters if the signatures meet the
     /// threshold requirement
+    ///
+    /// # Arguments
+    ///
+    /// - `to` -
+    /// - `value` -
+    /// - `data` -
+    /// - `signatures` -
     ///
     /// # Reverts
     ///
@@ -105,6 +119,14 @@ impl MultiSignatureWallet for Contract {
 
     /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement
     ///
+    /// # Arguments
+    ///
+    /// - `to` -
+    /// - `value` -
+    /// - `data` -
+    /// - `asset_id` -
+    /// - `signatures` -
+    ///
     /// # Reverts
     ///
     /// - When the constructor has not been called to initialize the contract
@@ -130,15 +152,13 @@ impl MultiSignatureWallet for Contract {
         });
     }
 
-    /// Returns a boolean value indicating if the given address is a user in the contract
+    /// Returns an Owner struct indicating whether the user is an owner and their approval weight
     ///
-    /// # Reverts
+    /// # Arguments
     ///
-    /// - When the constructor has not been called to initialize the contract
-    #[storage(read)]fn is_owner(user: Address) -> bool {
-        // TODO: change to return struct of "owner = true, weight = u64"
-        require(storage.nonce != 0, InitError::NotInitialized);
-        storage.weighting.get(user) != 0
+    /// - `user` -
+    #[storage(read)]fn owner(user: Address) -> Owner {
+        storage.weighting.get(user)
     }
 
     /// Returns the current nonce in the contract
@@ -148,12 +168,23 @@ impl MultiSignatureWallet for Contract {
     }
 
     /// Returns the balance of the specified asset_id for this contract
+    ///
+    /// # Arguments
+    ///
+    /// - `asset_id` -
     fn balance(asset_id: ContractId) -> u64 {
         this_balance(asset_id)
     }
 
     /// Takes in transaction data and hashes it into a unique tx hash
     /// Used for verification of message
+    ///
+    /// # Arguments
+    ///
+    /// - `to` -
+    /// - `value` -
+    /// - `data` -
+    /// - `nonce` -
     fn transaction_hash(to: Identity, value: u64, data: Vec<u64>, nonce: u64) -> b256 {
         create_hash(to, value, data, nonce, contract_id())
     }
@@ -180,7 +211,7 @@ fn create_hash(to: Identity, value: u64, data: Vec<u64>, nonce: u64, self_id: Co
         require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
 
         previous_signer = signer;
-        approval_count = approval_count + storage.weighting.get(~Address::from(signer));
+        approval_count = approval_count + storage.weighting.get(~Address::from(signer)).weight;
 
         // Once break is implemented uncomment below. https://github.com/FuelLabs/sway/pull/1646
         // if storage.threshold <= approval_count {
