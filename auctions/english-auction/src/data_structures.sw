@@ -1,16 +1,10 @@
 library data_structures;
 
-use std::{
-    contract_id::ContractId, 
-    identity::Identity, 
-    option::Option, 
-    storage::StorageMap
-};
+use std::{contract_id::ContractId, identity::Identity, option::Option, storage::StorageMap};
 
 pub struct Asset {
     amount: u64,
-    contract_id: ContractId,
-    // TODO: This should be a Vec in order to auction off multiple NFTs at the same time
+    contract_id: ContractId, // TODO: This should be a Vec in order to auction off multiple NFTs at the same time
     nft_id: Option<u64>,
 }
 

@@ -47,8 +47,7 @@ pub fn reserve_met(auction: Auction, balance: u64, reserve: u64) -> Auction {
 
     // Transfer selling asset to sender
     match sell_nft_id {
-        Option::Some(u64) => transfer_nft(Identity::ContractId(contract_id()), sender, auction.sell_asset),
-        Option::None(u64) => send_tokens(sender, auction.sell_asset),
+        Option::Some(u64) => transfer_nft(Identity::ContractId(contract_id()), sender, auction.sell_asset), Option::None(u64) => send_tokens(sender, auction.sell_asset), 
     };
 
     // Return any amount overpaid
@@ -56,7 +55,7 @@ pub fn reserve_met(auction: Auction, balance: u64, reserve: u64) -> Auction {
     if (overpaid_balance > 0) {
         match sender {
             Identity::Address(sender) => {
-                transfer_to_output(overpaid_balance, auction.buy_asset.contract_id, sender);    
+                transfer_to_output(overpaid_balance, auction.buy_asset.contract_id, sender);
             },
             Identity::ContractId(sender) => {
                 force_transfer_to_contract(overpaid_balance, auction.buy_asset.contract_id, sender);
@@ -77,7 +76,7 @@ pub fn sender_identity() -> Identity {
 pub fn send_tokens(identity: Identity, asset: Asset) {
     match identity {
         Identity::Address(identity) => {
-            transfer_to_output(asset.amount, asset.contract_id, identity);    
+            transfer_to_output(asset.amount, asset.contract_id, identity);
         },
         Identity::ContractId(identity) => {
             force_transfer_to_contract(asset.amount, asset.contract_id, identity);
@@ -103,12 +102,12 @@ pub fn transfer_nft(from: Identity, to: Identity, asset: Asset) {
 /// This function will panic when the recieving assets in a tansaction are incorrect
 ///
 /// # Panics
-/// 
+///
 /// This function will panic when:
 /// - The contract IDs in the buy_asset and recieved_asset are different
 /// - The auction contract is not approved to transfer the NFT specified in recieved_asset struct
 /// - The transaction asset is not the same as the buy_asset
-/// - The transaction asset is not the same as the recieved_asset 
+/// - The transaction asset is not the same as the recieved_asset
 pub fn validate_corrent_asset(buy_asset: Asset, recieved_asset: Asset) {
     let nft_id = recieved_asset.nft_id;
     let sender = sender_identity();
@@ -116,25 +115,13 @@ pub fn validate_corrent_asset(buy_asset: Asset, recieved_asset: Asset) {
     match nft_id {
         // Depositing a NFT
         Option::Some(u64) => {
-            // This is the correct NFT and the auction contract can transfer 
+            // This is the correct NFT and the auction contract can transfer
             require(recieved_asset.contract_id == buy_asset.contract_id, InputError::IncorrectAssetProvided);
-            require(
-                approved_for_nft_transfer(
-                    Identity::ContractId(contract_id()), 
-                    sender, 
-                    recieved_asset.contract_id, 
-                    nft_id.unwrap()
-                ), 
-                AccessError::NFTTransferNotApproved
-            );
+            require(approved_for_nft_transfer(Identity::ContractId(contract_id()), sender, recieved_asset.contract_id, nft_id.unwrap()), AccessError::NFTTransferNotApproved);
         },
         // Depositing a token
         Option::None(u64) => {
-            require(
-                msg_asset_id() == buy_asset.contract_id &&
-                msg_asset_id() == recieved_asset.contract_id,
-                InputError::IncorrectAssetProvided
-            );
+            require(msg_asset_id() == buy_asset.contract_id && msg_asset_id() == recieved_asset.contract_id, InputError::IncorrectAssetProvided);
             require(msg_amount() == recieved_asset.amount, InputError::IncorrectAmountProvided);
         }
     };
