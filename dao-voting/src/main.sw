@@ -171,7 +171,7 @@ impl DaoVoting for Contract {
         storage.votes.insert((sender, proposal_id), votes + vote_amount);
 
         storage.proposals.insert(proposal_id, proposal);
-        
+
         true
     }
 
@@ -203,9 +203,35 @@ impl DaoVoting for Contract {
                 call rA rB rC rD;
         }
 
-        // Give users back their tokens
+        // Users can now convert their votes back into tokens
 
         true
+    }
+
+    /// Unlock tokens used to vote on proposals to allow the user to withdraw
+    /// If the user had not voted in the given expired proposal, nothing happens
+    ///
+    /// # Panics
+    /// This function will panic when:
+    /// - The constructor has not ben called to initialize
+    /// - The proposal id is invalid
+    /// - The proposal is still active
+    #[storage(read, write)]
+    fn convert_votes_to_tokens(proposal_id: u64) {
+        require(storage.state == 1, Error::NotInitialized);
+        require(proposal_id < storage.proposal_count, Error::InvalidId);
+
+        let proposal = storage.proposals.get(proposal_id);
+        require(proposal.end_height > height(), Error::ProposalActive);
+        
+        let result: Result<Identity, AuthError> = msg_sender();
+        let sender: Identity = result.unwrap();
+        let votes = storage.votes.get((sender, proposal_id));
+
+        storage.votes.insert((sender, proposal_id), 0);
+
+        let balance = storage.balances.get(sender);
+        storage.balances.insert(sender, balance + votes);
     }
 
     /// Return the amount of governance tokens in this contract
