@@ -10,8 +10,7 @@ pub enum ApproveError {
 }
 
 pub enum CreationError {
-    AssetAmountCannotBeZero: (),
-    AssetIdCannotBeZero: (),
+    DepositAmountCannotBeZero: (),
 }
 
 pub enum DepositError {
@@ -23,6 +22,8 @@ pub enum DepositError {
 
 pub enum InitError {
     CannotReinitialize: (),
+    NotInitialized: (),
+    OwnerAddressCannotBeZero: (),
 }
 
 pub enum StateError {

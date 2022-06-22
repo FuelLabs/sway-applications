@@ -1,6 +1,6 @@
 library data_structures;
 
-use std::{contract_id::ContractId, identity::Identity, option::*};
+use std::{contract_id::ContractId, identity::Identity, option::*, vec::Vec};
 use core::ops::Eq;
 
 pub enum State {
@@ -24,7 +24,7 @@ pub struct EscrowData {
     approval_count: u64,
 
     /// The assets that this escrow accepts with their required quantities
-    assets: [Asset; 2],
+    assets: Vec<Asset>,
 
     /// Mechanism used to manage the control flow of the escrow
     state: State,
@@ -33,7 +33,7 @@ pub struct EscrowData {
     threshold: u64,
 
     /// The authorized users who are able to interact with this escrow
-    users: [Identity; 2],
+    users: Vec<Identity>,
 }
 
 pub struct User {
@@ -56,20 +56,18 @@ pub struct UserEscrows {
     //       we will be moving active -> completed
 
     /// Array containing unique escrow identifiers for escrows that are State::Pending
-    active: [u64; 1],
+    active: [u64;
+    1],
 
     /// Array containing unique escrow identifiers for escrows that are State::Completed
-    completed: [u64; 1],
+    completed: [u64;
+    1],
 }
 
-// TODO: match not implemented on self yet so it won't compile
-// impl Eq for State {
-//     fn eq(self, other: Self) -> bool {
-//         match (self, other) {
-//             (State::Void, State::Void) => true,
-//             (State::Pending, State::Pending) => true,
-//             (State::Completed, State::Completed) => true,
-//             _ => false,
-//         }
-//     }
-// }
+impl Eq for State {
+    fn eq(self, other: Self) -> bool {
+        match(self, other) {
+            (State::Pending, State::Pending) => true, (State::Completed, State::Completed) => true, _ => false, 
+        }
+    }
+}
