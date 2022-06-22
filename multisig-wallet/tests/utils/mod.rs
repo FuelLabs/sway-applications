@@ -84,8 +84,8 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn is_owner(contract: &Multisig, user: Address) -> CallRepsponse<bool> {
-        contract.is_owner(user).call().await.unwrap()
+    pub async fn owner(contract: &Multisig, user: Address) -> CallRepsponse<bool> {
+        contract.owner(user).call().await.unwrap()
     }
 
     pub async fn balance(contract: &Multisig, asset_id: ContractId) -> CallRepsponse<u64> {
