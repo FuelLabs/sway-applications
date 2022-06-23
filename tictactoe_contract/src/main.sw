@@ -11,6 +11,8 @@ use std::{
     revert::revert,
 };
 
+use player_identity::*;
+
 pub struct Address {
     value: b256,
 }
@@ -19,11 +21,11 @@ storage {
     games_played: u64,
 }
 
-enum Players {
-    None: (),
-    PlayerOne: Address,
-    PlayerTwo: Address,
-}
+// enum Players {
+//     None: (),
+//     PlayerOne: Address,
+//     PlayerTwo: Address,
+// }
 
 enum Winners {
     Player: Players,
@@ -55,9 +57,9 @@ abi TicTacToe {
 }
 
 impl TicTacToe for Contract {
-    fn new_game(player_one:Players, player_two:Players) -> Game {
+    fn new_game(player_one: Players, player_two: Players) -> Game {
         let gameID = storage.games_played;
-        
+
         let mut game = Game {
             gameId: gameID,
             PlayerOne: player_one,
@@ -105,8 +107,6 @@ impl TicTacToe for Contract {
         return(true, "");
     }
 
- 
-
     fn calculate_winner(game: Game) -> Winners {
         let gameID = game.gameId;
         let player = horizontal_alignment(gameID);
@@ -142,7 +142,7 @@ impl TicTacToe for Contract {
         if (player == game.PlayerTwo) {
             game.winner = Winners::Player(Players::PlayerTwo);
             save_winner(gameID, game.winner);
-            
+
             return game.winner;
         }
         // If there is no winner and no more space on the board,
@@ -151,8 +151,7 @@ impl TicTacToe for Contract {
             game.winner = Winners::Draw;
             save_winner(gameID, game.winner);
             game.winner
-        }
-        else {
+        } else {
             game.winner = Winners::None;
             game.winner
         }
@@ -278,7 +277,7 @@ fn is_board_full(gameID: u64) -> bool {
 fn save_player_position(player: Players, position: u64) {
     store(sha256(("player_pos", position)), player);
 }
-    
+
 // get the players position on the board, returns the player or empty
 // if the player returned value is None, that means it's empty
 fn get_player_position_filled(gameID: u64, position: u64) -> Players {
