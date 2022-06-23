@@ -6,6 +6,7 @@ pub enum AccessError {
     AuctionIsNotOpen: (),
     NFTTransferNotApproved: (),
     NoReserveSet: (),
+    SenderIsNotSeller: (),
 }
 
 pub enum InitError {

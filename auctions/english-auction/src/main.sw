@@ -106,6 +106,7 @@ impl EnglishAuction for Contract {
         // Make sure this bid is more than the last
         require(total_bid_asset.amount() > auction.buy_asset.amount(), InputError::IncorrectAmountProvided);
 
+        // Check to see if we've reached the reserve price
         if (reserve.is_some()) {
             require(reserve.unwrap() >= total_bid_asset.amount(), InputError::IncorrectAmountProvided);
             if (reserve.unwrap() == total_bid_asset.amount())
@@ -135,6 +136,27 @@ impl EnglishAuction for Contract {
         log(BidEvent {
             asset: auction.buy_asset, auction_id: auction_id, identity: sender
         });
+    }
+
+    /// Cancels the specified auction
+    ///
+    /// # Panics
+    ///
+    /// The function will panic when:
+    /// - The auction_id does not map to an auction
+    /// - The sender is not the owner of the auction
+    #[storage(read, write)]
+    fn cancel_auction(auction_id: u64) {
+        // Make sure this auction exists
+        let auction: Option<Auction> = storage.auctions.get(auction_id);
+        require(auction.is_some(), AccessError::AuctionDoesNotExist);
+        let mut auction = auction.unwrap();
+
+        let sender = sender_identity();
+        require(sender == auction.seller, AccessError::SenderIsNotSeller);
+        auction.bidder = Option::None();
+        auction.state = 2;
+        storage.auctions.insert(auction_id, Option::Some(auction));
     }
 
     /// Starts a auction with the seller, selling asset, buying asset,
@@ -261,28 +283,25 @@ impl EnglishAuction for Contract {
                     send_tokens(sender, auction.sell_asset)
                 },
             };
-        } else if (sender == auction.seller) {
-            // The seller is withdrawing
-            if (bidder.is_none()) {
-                // No one placed a bid
-                match sender_deposit {
-                    Asset::NFTAsset(asset) => {
-                        transfer_nft(Identity::ContractId(contract_id()), auction.seller, auction.sell_asset)
-                    },
-                    Asset::TokenAsset(asset) => {
-                        send_tokens(sender, auction.sell_asset)
-                    },
-                }
-            } else {
-                // The asset was sold
-                match sender_deposit {
-                    Asset::NFTAsset(asset) => {
-                        transfer_nft(Identity::ContractId(contract_id()), sender, auction.buy_asset)
-                    },
-                    Asset::TokenAsset(asset) => {
-                        send_tokens(sender, auction.buy_asset)
-                    },
-                }
+        } else if (sender == auction.seller && bidder.is_none()) {
+            // The seller is withdrawing and no one placed abid
+            match sender_deposit {
+                Asset::NFTAsset(asset) => {
+                    transfer_nft(Identity::ContractId(contract_id()), auction.seller, auction.sell_asset)
+                },
+                Asset::TokenAsset(asset) => {
+                    send_tokens(sender, auction.sell_asset)
+                },
+            }
+        } else if (sender == auction.seller && bidder.is_some()) {
+            // The seller is withdrawing and the asset was sold
+            match sender_deposit {
+                Asset::NFTAsset(asset) => {
+                    transfer_nft(Identity::ContractId(contract_id()), sender, auction.buy_asset)
+                },
+                Asset::TokenAsset(asset) => {
+                    send_tokens(sender, auction.buy_asset)
+                },
             }
         } else {
             // Anyone with a failed bid is withdrawing
