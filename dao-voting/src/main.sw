@@ -39,6 +39,10 @@ storage {
 impl DaoVoting for Contract {
     /// Initialize the dao with the governance token, voting parameters, and the proposal.
     ///
+    /// # Parameters
+    ///
+    /// gov_token - contract id of the token to use to vote on governance proposals
+    ///
     /// # Panics
     ///
     /// The function will panic when:
@@ -57,6 +61,12 @@ impl DaoVoting for Contract {
     }
 
     /// Add proposal to be voted on
+    ///
+    /// # Parameters
+    ///
+    /// voting_period - the number of blocks during which a proposal can be voted on
+    /// approval_percentage - the percentage of yes votes a proposal needs to be executed
+    /// proposal_data - transaction data to be executed if proposal is approved
     ///
     /// # Panics
     ///
@@ -111,6 +121,10 @@ impl DaoVoting for Contract {
 
     /// Update the user balance to indicate they have withdrawn governance tokens
     ///
+    /// # Parameters
+    ///
+    /// amount - amount of governance tokens to withdraw from the contract
+    ///
     /// # Panics
     ///
     /// This functions will panic when:
@@ -139,6 +153,12 @@ impl DaoVoting for Contract {
     }
 
     /// Vote on a given proposal
+    ///
+    /// # Parameters
+    ///
+    /// proposal_id - proposal to vote on
+    /// vote_amount - amount of votes to use on proposal
+    /// is_yes_vote - determines if you vote yes or no on the proposal
     ///
     /// # Panics
     ///
@@ -181,6 +201,10 @@ impl DaoVoting for Contract {
 
     /// Execute a given proposal
     ///
+    /// # Parameters
+    ///
+    /// proposal_id - proposal to execute
+    ///
     /// # Panics
     ///
     /// This function will panic when:
@@ -215,6 +239,9 @@ impl DaoVoting for Contract {
     /// Unlock tokens used to vote on proposals to allow the user to withdraw
     /// If the user had not voted in the given expired proposal, nothing happens
     ///
+    /// # Parameters
+    /// proposal_id - proposal to turn user votes back into governance tokens
+    ///
     /// # Panics
     ///
     /// This function will panic when:
@@ -246,12 +273,19 @@ impl DaoVoting for Contract {
     }
 
     /// Return the amount of governance tokens a user has in this contract
+    ///
+    /// # Parameters
+    /// user - user of which to get internal balance of governance tokens
     #[storage(read)]
     fn get_user_balance(user: Identity) -> u64 {
         storage.balances.get(user)
     }
 
     /// Return the amount of votes a user has used on a proposal
+    ///
+    /// # Parameters
+    /// user - user of which to get votes spent on a proposal
+    /// proposal_id - proposal of which to get votes spent by user
     #[storage(read)]
     fn get_user_votes(user: Identity, proposal_id: u64) -> u64 {
         require(proposal_id < storage.proposal_count, Error::InvalidId);
@@ -260,15 +294,18 @@ impl DaoVoting for Contract {
 
     /// Return proposal data for a given id
     ///
+    /// # Parameters
+    /// proposal_id - id of proposal to get 
+    ///
     /// # Panics
     ///
     /// The function will panic when:
     /// - The constructor has not been called ot initialize
     /// - The given id is out of range
     #[storage(read)]
-    fn get_proposal(id: u64) -> Proposal {
+    fn get_proposal(proposal_id: u64) -> Proposal {
         require(storage.state == 1, Error::NotInitialized);
-        require(id < storage.proposal_count, Error::InvalidId);
-        storage.proposals.get(id)
+        require(proposal_id < storage.proposal_count, Error::InvalidId);
+        storage.proposals.get(proposal_id)
     }
 }
