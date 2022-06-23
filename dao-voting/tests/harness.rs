@@ -849,6 +849,103 @@ mod withdraw {
             assert_eq!(user.dao_voting.get_balance().call().await.unwrap().value, 0);
         }
     }
+
+    mod revert {
+        use super::*;
+
+        #[tokio::test]
+        #[should_panic]
+        async fn panics_on_not_enough_assets() {
+            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+
+            assert!(
+                deployer
+                    .gov_token
+                    .unwrap()
+                    .mint_and_send_to_address(100, user.wallet.address())
+                    .append_variable_outputs(1)
+                    .call()
+                    .await
+                    .unwrap()
+                    .value
+            );
+
+            deployer
+                .dao_voting
+                .constructor(gov_token_id)
+                .call()
+                .await
+                .unwrap()
+                .value;
+
+            assert_eq!(
+                deployer
+                    .dao_voting
+                    .get_balance()
+                    .call()
+                    .await
+                    .unwrap()
+                    .value,
+                0
+            );
+
+            assert_eq!(
+                user.dao_voting
+                    .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .call()
+                    .await
+                    .unwrap()
+                    .value,
+                0
+            );
+
+            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            assert!(
+                user.dao_voting
+                    .deposit()
+                    .tx_params(tx_params)
+                    .call_params(call_params)
+                    .call()
+                    .await
+                    .unwrap()
+                    .value
+            );
+
+            assert_eq!(
+                deployer
+                    .dao_voting
+                    .get_balance()
+                    .call()
+                    .await
+                    .unwrap()
+                    .value,
+                asset_amount
+            );
+
+            assert_eq!(
+                user.dao_voting
+                    .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .call()
+                    .await
+                    .unwrap()
+                    .value,
+                asset_amount
+            );
+
+            user.dao_voting
+                .withdraw(asset_amount * 100)
+                .append_variable_outputs(1)
+                .call()
+                .await
+                .unwrap()
+                .value;
+        }
+    }
 }
 
 mod convert_votes {
