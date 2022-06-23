@@ -108,6 +108,28 @@ pub mod test_helpers {
             time,
         )
     }
+
+    pub async fn token_asset(
+        contract_id: ContractId,
+        amount: u64
+    ) -> Asset {
+        let token = TokenAsset {
+            contract_id, amount
+        };
+
+        Asset::TokenAsset(token)
+    }
+
+    pub async fn nft_asset(
+        contract_id: ContractId,
+        token_ids: u64
+    ) -> Asset {
+        let token = NFTAsset {
+            contract_id, token_ids
+        };
+
+        Asset::NFTAsset(token)
+    }
 }
 
 pub mod abi_calls {
@@ -206,16 +228,8 @@ pub mod abi_calls {
     pub async fn bid_nft(
         bidder: &Metadata,
         auction_id: u64,
-        asset_id: ContractId,
-        amount: u64,
-        nft_id: u64,
+        buy_asset_struct: Asset,
     ) -> CallResponse<()> {
-        let buy_asset_struct = Asset {
-            contract_id: asset_id,
-            amount,
-            nft_id: Option::Some(nft_id),
-        };
-
         bidder
             .auction
             .bid(auction_id, buy_asset_struct)

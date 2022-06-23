@@ -85,9 +85,12 @@ impl EnglishAuction for Contract {
         // Ensure this is the correct asset in the transaction, the Asset struct has the
         // correct information, and if it's an NFT we can transfer it to the auction contract
         validate_corrent_asset(auction.buy_asset, asset);
-
-        // Set some variables we will need
+       
+        // The bidder cannot be the seller
         let sender = sender_identity();
+        require(sender != auction.seller, UserError::BidderIsSeller);
+        
+        // Set some variables we will need
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let reserve: Option<u64> = auction.reserve_price;
         let total_bid_asset = match sender_deposit {
@@ -98,9 +101,6 @@ impl EnglishAuction for Contract {
                 asset
             }
         };
-
-        // The bidder cannot be the seller
-        require(sender != auction.seller, UserError::BidderIsSeller);
 
         // Make sure this is greater than inital bid
         if (auction.buy_asset.amount() == 0) {
