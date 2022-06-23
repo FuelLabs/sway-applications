@@ -3,12 +3,9 @@ library events;
 dep data_structures;
 
 use std::{contract_id::ContractId, identity::Identity};
-use data_structures::EscrowData;
+use data_structures::EscrowInfo;
 
 pub struct ApproveEvent {
-    /// The number of approvals at the time of event
-    approval_count: u64,
-
     /// Unique escrow identifier
     identifier: u64,
 
@@ -17,8 +14,11 @@ pub struct ApproveEvent {
 }
 
 pub struct CreatedEscrowEvent {
+    /// The user that has created the escrow
+    author: Identity,
+
     // Metadata for the newly created escrow
-    escrow: EscrowData,
+    escrow: EscrowInfo,
 
     /// Unique escrow identifier
     identifier: u64,
@@ -38,6 +38,14 @@ pub struct DepositEvent {
     user: Identity,
 }
 
+pub struct NewUserEscrowEvent {
+    /// Unique escrow identifier
+    identifier: u64,
+
+    /// The user that can interact with the escrow
+    user: Identity
+}
+
 pub struct ThresholdReachedEvent {
     /// Unique escrow identifier
     identifier: u64,
@@ -46,9 +54,6 @@ pub struct ThresholdReachedEvent {
 pub struct WithdrawEvent {
     /// The amount withdrawn by the user
     amount: u64,
-
-    /// The number of approvals at the time of event
-    approval_count: u64,
 
     /// The asset that the user has withdrawn
     asset: ContractId,

@@ -1,6 +1,6 @@
 library data_structures;
 
-use std::{contract_id::ContractId, identity::Identity, option::*, vec::Vec};
+use std::{contract_id::ContractId, identity::Identity, option::Option, vec::Vec};
 use core::ops::Eq;
 
 pub enum State {
@@ -19,7 +19,7 @@ pub struct Asset {
     id: ContractId,
 }
 
-pub struct EscrowData {
+pub struct EscrowInfo {
     /// Current number of successful calls to approve()
     approval_count: u64,
 
@@ -49,19 +49,6 @@ pub struct User {
 
     /// Value indicating whether the user currently holds a deposit in the contract
     deposited: bool,
-}
-
-pub struct UserEscrows {
-    // TODO: must consider "active" being too large to traverse everntually because
-    //       we will be moving active -> completed
-
-    /// Array containing unique escrow identifiers for escrows that are State::Pending
-    active: [u64;
-    1],
-
-    /// Array containing unique escrow identifiers for escrows that are State::Completed
-    completed: [u64;
-    1],
 }
 
 impl Eq for State {

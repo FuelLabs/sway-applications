@@ -1,7 +1,6 @@
 library errors;
 
 pub enum AccessError {
-    InvalidIdentifier: (),
     UnauthorizedUser: (),
 }
 
@@ -20,13 +19,6 @@ pub enum DepositError {
     IncorrectAssetDeposited: (),
 }
 
-pub enum InitError {
-    CannotReinitialize: (),
-    NotInitialized: (),
-    OwnerAddressCannotBeZero: (),
-}
-
 pub enum StateError {
-    StateNotInitialized: (),
     StateNotPending: (),
 }
