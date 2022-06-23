@@ -123,7 +123,16 @@ mod constructor {
         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
 
         let users = [user1.wallet.address(), user1.wallet.address()];
-        let assets = [MetaAsset {id: [1u8; 32], amount: 100}, MetaAsset {id: [2u8; 32], amount: 200}];
+        let assets = [
+            MetaAsset {
+                id: [1u8; 32],
+                amount: 100,
+            },
+            MetaAsset {
+                id: [2u8; 32],
+                amount: 200,
+            },
+        ];
 
         assert!(
             deployer
