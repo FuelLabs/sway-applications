@@ -12,12 +12,7 @@ pub struct CallData {
 struct MemoryAddress {
     contract_id: ContractId,
     function_selector: u64,
-    function_data: FunctionArgs,
-}
-
-struct FunctionArgs {
-    amount: u64,
-    recipient: Identity,
+    function_data: u64,
 }
 
 pub struct Proposal {

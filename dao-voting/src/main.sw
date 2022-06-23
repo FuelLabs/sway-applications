@@ -62,6 +62,8 @@ impl DaoVoting for Contract {
     ///
     /// The function will panic when:
     /// - The constructor has not been called to initialize
+    /// - The voting period is 0
+    /// - The approval percentage is 0
     #[storage(read, write)]
     fn add_proposal(voting_period: u64, approval_percentage: u64, proposal_data: CallData) -> bool {
         require(storage.state == 1, Error::NotInitialized);
@@ -190,7 +192,7 @@ impl DaoVoting for Contract {
         require(proposal_id < storage.proposal_count, Error::InvalidId);
 
         let proposal = storage.proposals.get(proposal_id);
-        require(proposal.end_height > height(), Error::ProposalActive);
+        require(proposal.end_height < height(), Error::ProposalActive);
 
         let approval_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
         require(approval_percentage >= proposal.approval_percentage, Error::ApprovalPercentageNotMet);
@@ -212,6 +214,7 @@ impl DaoVoting for Contract {
     /// If the user had not voted in the given expired proposal, nothing happens
     ///
     /// # Panics
+    ///
     /// This function will panic when:
     /// - The constructor has not ben called to initialize
     /// - The proposal id is invalid
@@ -222,7 +225,7 @@ impl DaoVoting for Contract {
         require(proposal_id < storage.proposal_count, Error::InvalidId);
 
         let proposal = storage.proposals.get(proposal_id);
-        require(proposal.end_height > height(), Error::ProposalActive);
+        require(proposal.end_height < height(), Error::ProposalActive);
         
         let result: Result<Identity, AuthError> = msg_sender();
         let sender: Identity = result.unwrap();

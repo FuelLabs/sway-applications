@@ -17,4 +17,5 @@ abi DaoVoting {
     #[storage(read, write)] fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool;
     #[storage(read, write)] fn execute(proposal_id: u64) -> bool;
     #[storage(read, write)] fn withdraw(amount: u64) -> bool;
+    #[storage(read, write)] fn convert_votes_to_tokens(proposal_id: u64);
 }
