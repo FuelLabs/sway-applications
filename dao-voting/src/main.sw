@@ -64,11 +64,13 @@ impl DaoVoting for Contract {
     /// - The constructor has not been called to initialize
     /// - The voting period is 0
     /// - The approval percentage is 0
+    /// - The approval percentage is above 100
     #[storage(read, write)]
     fn add_proposal(voting_period: u64, approval_percentage: u64, proposal_data: CallData) -> bool {
         require(storage.state == 1, Error::NotInitialized);
         require(voting_period > 0, Error::PeriodCannotBeZero);
         require(approval_percentage > 0, Error::ApprovalPercentageCannotBeZero);
+        require(approval_percentage <= 100, Error::ApprovalPercentageCannotBeAboveHundred);
 
         let proposal = Proposal {
             yes_votes: 0,

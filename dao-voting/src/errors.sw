@@ -8,6 +8,7 @@ pub enum Error {
     VoteAmountCannotBeZero: (),
     TokenAmountCanontBeZero: (),
     ApprovalPercentageCannotBeZero: (),
+    ApprovalPercentageCannotBeAboveHundred: (),
     NoAssetsSent: (),
     NotEnoughAssets: (),
     InvalidId: (),
