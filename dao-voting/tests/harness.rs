@@ -217,7 +217,7 @@ mod add_proposal {
 
         #[tokio::test]
         #[should_panic]
-        async fn panics_with_incorrect_approval_percentage() {
+        async fn panics_with_zero_approval_percentage() {
             let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             deployer
                 .dao_voting
@@ -232,6 +232,29 @@ mod add_proposal {
             deployer
                 .dao_voting
                 .add_proposal(10, 0, call_data)
+                .call()
+                .await
+                .unwrap()
+                .value;
+        }
+
+        #[tokio::test]
+        #[should_panic]
+        async fn panics_with_over_hundred_approval_percentage() {
+            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            deployer
+                .dao_voting
+                .constructor(gov_token_id)
+                .call()
+                .await
+                .unwrap()
+                .value;
+
+            let call_data = get_call_data(user.wallet.address(), gov_token_id);
+
+            deployer
+                .dao_voting
+                .add_proposal(10, 101, call_data)
                 .call()
                 .await
                 .unwrap()
