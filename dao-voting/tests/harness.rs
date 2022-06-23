@@ -829,6 +829,7 @@ mod withdraw {
             assert!(
                 user.dao_voting
                     .withdraw(asset_amount)
+                    .append_variable_outputs(1)
                     .call()
                     .await
                     .unwrap()
