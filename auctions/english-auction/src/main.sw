@@ -44,17 +44,13 @@ storage {
 }
 
 impl EnglishAuction for Contract {
-    /// Returns the block at which the auction will end
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction does not exist
-    #[storage(read)]fn auction_end_block(auction_id: u64) -> u64 {
-        let auction: Option<Auction> = storage.auctions.get(auction_id);
-        require(auction.is_some(), AccessError::AuctionDoesNotExist);
-        auction.unwrap().end_block
-    }
+
+    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
+    /// Returns the auction struct for the corresponding auction id
+    // #[storage(read)]
+    // fn auction_info(auction_id: u64) -> Option<Auction> {
+    //     storage.auctions.get(auction_id)
+    // }
 
     /// Places a bid on the auction specified. If the reserve is met the
     /// asset will be sold and the auction will be over. Any amount over
@@ -141,79 +137,6 @@ impl EnglishAuction for Contract {
         });
     }
 
-    /// Purchases at the reserve price. If a deposit greater than the
-    /// reserve is made, the rest will be returned
-    ///
-    /// # Panics
-    ///
-    /// This function will panic when:
-    /// - The auction does not exists
-    /// - The auction is not in the bidding state
-    /// - The auction is not open
-    /// - There is no reserve price set
-    /// - The bidder is the seller
-    /// - The asset amount does not meet the reserve price
-    /// - The buy assest provided is the incorrect asset
-    #[storage(read, write)]fn buy_reserve(auction_id: u64, asset: Asset) {
-        // Make sure this auction exists
-        let auction: Option<Auction> = storage.auctions.get(auction_id);
-        require(auction.is_some(), AccessError::AuctionDoesNotExist);
-        let mut auction = auction.unwrap();
-
-        // This auction has to be open to bid
-        require(auction.state == 1, AccessError::AuctionIsNotOpen);
-        require(height() <= auction.end_block, AccessError::AuctionIsNotOpen);
-
-        // Can't buy the reserve if it doesn't exist
-        let reserve: Option<u64> = auction.reserve_price;
-        require(reserve.is_some(), AccessError::NoReserveSet);
-
-        // Set some variables we will need
-        let sender = sender_identity();
-        let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
-        let total_bid_asset = match sender_deposit {
-            Option::Some(Asset) => {
-                asset + sender_deposit.unwrap()
-            },
-            Option::None(Asset) => {
-                asset
-            }
-        };
-
-        // Make sure the sender is not the seller
-        require(sender != auction.seller, UserError::BidderIsSeller);
-
-        // Ensure this is the correct asset in the transaction, the Asset struct has the
-        // correct information, and if it's an NFT we can transfer it to the auction contract
-        validate_corrent_asset(auction.buy_asset, asset);
-
-        // Make sure this bid is equal to the reserve
-        require(total_bid_asset.amount() == reserve.unwrap(), InputError::IncorrectAmountProvided);
-
-        // Now the reserve price was met and the sender can purchase at the reserve price
-        // There is no reserve or it was not met
-        match total_bid_asset {
-            Asset::NFTAsset(total_bid_asset) => {
-                // We need to transfer ownership to the auction contract if they are
-                // bidding a NFT
-                transfer_nft(sender, Identity::ContractId(contract_id()), asset);
-            }
-            _ => {}
-        }
-
-        // Transfer the assets and update the auction
-        auction.state = 2;
-        auction.bidder = Option::Some(sender);
-        auction.buy_asset = total_bid_asset;
-        storage.deposits.insert((sender, auction_id), Option::None());
-        storage.auctions.insert(auction_id, Option::Some(auction));
-
-        // Log the bid
-        log(BidEvent {
-            asset: auction.buy_asset, auction_id: auction_id, identity: sender
-        });
-    }
-
     /// Starts a auction with the seller, selling asset, buying asset,
     /// prices, and length of the auction
     ///
@@ -284,91 +207,12 @@ impl EnglishAuction for Contract {
         storage.total_auctions - 1
     }
 
-    /// Returns the current bid of the auction
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction exists
-    #[storage(read)]fn current_bid(auction_id: u64) -> u64 {
-        let auction: Option<Auction> = storage.auctions.get(auction_id);
-        require(auction.is_some(), AccessError::AuctionDoesNotExist);
-        let auction = auction.unwrap();
-        auction.buy_asset.amount()
-    }
-
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
     /// Returns the balance of the Address's buy asset deposits
     // #[storage(read)]
     // fn deposits(identity: Identity, auction_id: u64) -> Option<Asset> {
     //     storage.deposits.get((identity, auction_id))
     // }
-
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
-    /// Returns the current bidder of the auction
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction does not exist
-    // #[storage(read)]
-    // fn highest_bidder(auction_id: u64) -> Option<Identity> {
-    //     let auction: Option<Auction> = storage.auctions.get(auction_id);
-    //     require(auction.is_some(), AccessError::AuctionDoesNotExist);
-    //     auction.unwrap().bidder
-    // }
-
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
-    /// Returns the reserve price of the auction
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction does not exist
-    // #[storage(read)]
-    // fn reserve(auction_id: u64) -> Option<u64> {
-    //     let auction: Option<Auction> = storage.auctions.get(auction_id);
-    //     require(auction.is_some(), AccessError::AuctionDoesNotExist);
-    //     auction.unwrap().reserve_price
-    // }
-
-    /// Returns the amount of asset that is being sold
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction does not exist
-    #[storage(read)]fn sell_amount(auction_id: u64) -> u64 {
-        let auction: Option<Auction> = storage.auctions.get(auction_id);
-        require(auction.is_some(), AccessError::AuctionDoesNotExist);
-        let auction = auction.unwrap();
-        auction.sell_asset.amount()
-    }
-
-    /// Returns the contract id of asset that is being sold
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction does not exist
-    #[storage(read)]fn sell_asset(auction_id: u64) -> ContractId {
-        let auction: Option<Auction> = storage.auctions.get(auction_id);
-        require(auction.is_some(), AccessError::AuctionDoesNotExist);
-        let auction = auction.unwrap();
-        auction.sell_asset.contract_id()
-    }
-
-    /// Returns the current state of the function
-    ///
-    /// # Panics
-    ///
-    /// The function will panic when:
-    /// - The auction does not exist
-    #[storage(read)]fn state(auction_id: u64) -> u64 {
-        let auction: Option<Auction> = storage.auctions.get(auction_id);
-        require(auction.is_some(), AccessError::AuctionDoesNotExist);
-        auction.unwrap().state
-    }
 
     /// Withdraws after the end of the auction
     ///

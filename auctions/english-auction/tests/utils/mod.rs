@@ -239,44 +239,6 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn buy_reserve_tokens(
-        deploy_wallet: &Metadata,
-        bidder: &Metadata,
-        auction_id: u64,
-        asset_id: ContractId,
-        amount: u64,
-        asset: Asset,
-    ) -> CallResponse<()> {
-        deploy_funds(&deploy_wallet, &bidder.wallet, 100).await;
-
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(amount), Some(AssetId::from(*asset_id)), None);
-
-        bidder
-            .auction
-            .buy_reserve(auction_id, asset)
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .append_variable_outputs(2)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn buy_reserve_nft(
-        bidder: &Metadata,
-        auction_id: u64,
-        asset: Asset,
-    ) -> CallResponse<()> {
-        bidder
-            .auction
-            .buy_reserve(auction_id, asset)
-            .append_variable_outputs(2)
-            .call()
-            .await
-            .unwrap()
-    }
-
     pub async fn withdraw(call_wallet: &Metadata, auction_id: u64) -> CallResponse<()> {
         call_wallet
             .auction
@@ -287,25 +249,29 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn auction_end_block(call_wallet: &Metadata, auction_id: u64) -> u64 {
-        call_wallet
-            .auction
-            .auction_end_block(auction_id)
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
+    // pub async fn auction_end_block(call_wallet: &Metadata, auction_id: u64) -> u64 {
+    //     let auction = call_wallet
+    //         .auction
+    //         .auction_info(auction_id)
+    //         .call()
+    //         .await
+    //         .unwrap()
+    //         .value;
 
-    pub async fn current_bid(call_wallet: &Metadata, auction_id: u64) -> u64 {
-        call_wallet
-            .auction
-            .current_bid(auction_id)
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
+    //     auction.end_block
+    // }
+
+    // pub async fn current_bid(call_wallet: &Metadata, auction_id: u64) -> u64 {
+    //     let auction = call_wallet
+    //         .auction
+    //         .auction_info(auction_id)
+    //         .call()
+    //         .await
+    //         .unwrap()
+    //         .value;
+
+    //     auction.buy_asset.amount()
+    // }
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
     // pub async fn deposits(call_wallet: &Metadata, auction_id: u64) -> englishauction_mod::Option {
@@ -314,43 +280,53 @@ pub mod abi_calls {
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
     // pub async fn highest_bidder(call_wallet: &Metadata, auction_id: u64) -> englishauction_mod::Option {
-    //     call_wallet.auction.highest_bidder(auction_id).call().await.unwrap().value
+    //     let auction = call_wallet.auction.auction_info(auction_id).call().await.unwrap().value;
+
+    //     auction.bidder
     // }
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
     // pub async fn reserve(call_wallet: &Metadata, auction_id: u64) -> englishauction_mod::Option {
-    //     call_wallet.auction.reserve(auction_id).call().await.unwrap().value
+    //     let auction = call_wallet.auction.auction_info(auction_id).call().await.unwrap().value;
+
+    //     auction.reserve_price
     // }
 
-    pub async fn sell_amount(call_wallet: &Metadata, auction_id: u64) -> u64 {
-        call_wallet
-            .auction
-            .sell_amount(auction_id)
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
+    // pub async fn sell_amount(call_wallet: &Metadata, auction_id: u64) -> u64 {
+    //     let auction = call_wallet
+    //         .auction
+    //         .auction_info(auction_id)
+    //         .call()
+    //         .await
+    //         .unwrap()
+    //         .value;
 
-    pub async fn sell_asset(call_wallet: &Metadata, auction_id: u64) -> ContractId {
-        call_wallet
-            .auction
-            .sell_asset(auction_id)
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
+    //     auction.sell_asset.amount()
+    // }
 
-    pub async fn state(call_wallet: &Metadata, auction_id: u64) -> u64 {
-        call_wallet
-            .auction
-            .state(auction_id)
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
+    // pub async fn sell_asset(call_wallet: &Metadata, auction_id: u64) -> ContractId {
+    //     let auction = call_wallet
+    //         .auction
+    //         .auction_info(auction_id)
+    //         .call()
+    //         .await
+    //         .unwrap()
+    //         .value;
+        
+    //     auction.sell_asset.contract_id()
+    // }
+
+    // pub async fn state(call_wallet: &Metadata, auction_id: u64) -> u64 {
+    //     let auction = call_wallet
+    //         .auction
+    //         .auction_info(auction_id)
+    //         .call()
+    //         .await
+    //         .unwrap()
+    //         .value;
+
+    //     auction.state
+    // }
 }
 
 pub async fn deploy_funds(deploy_wallet: &Metadata, wallet: &LocalWallet, asset_amount: u64) {
