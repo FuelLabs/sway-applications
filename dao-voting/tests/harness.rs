@@ -167,7 +167,7 @@ mod add_proposal {
                     .value
             );
 
-            let proposal = user.dao_voting.get_proposal(0).call().await.unwrap().value;
+            let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 
             assert_eq!(
                 proposal,
@@ -189,7 +189,7 @@ mod add_proposal {
         #[should_panic]
         async fn panics_on_incorrect_proposal_id() {
             let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            user.dao_voting.get_proposal(0).call().await.unwrap();
+            user.dao_voting.proposal(0).call().await.unwrap();
         }
 
         #[tokio::test]
@@ -296,7 +296,7 @@ mod deposit {
             assert_eq!(
                 deployer
                     .dao_voting
-                    .get_balance()
+                    .balance()
                     .call()
                     .await
                     .unwrap()
@@ -306,7 +306,7 @@ mod deposit {
 
             assert_eq!(
                 user.dao_voting
-                    .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -334,7 +334,7 @@ mod deposit {
             assert_eq!(
                 deployer
                     .dao_voting
-                    .get_balance()
+                    .balance()
                     .call()
                     .await
                     .unwrap()
@@ -344,7 +344,7 @@ mod deposit {
 
             assert_eq!(
                 user.dao_voting
-                    .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -385,7 +385,7 @@ mod deposit {
             assert_eq!(
                 deployer
                     .dao_voting
-                    .get_balance()
+                    .balance()
                     .call()
                     .await
                     .unwrap()
@@ -566,7 +566,7 @@ mod vote {
                     .value
             );
 
-            let proposal = user.dao_voting.get_proposal(0).call().await.unwrap().value;
+            let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 
             assert_eq!(
                 proposal,
@@ -742,7 +742,7 @@ mod execute_proposal {
                     .value
             );
 
-            let proposal = user.dao_voting.get_proposal(0).call().await.unwrap().value;
+            let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 
             assert_eq!(
                 proposal,
@@ -793,7 +793,7 @@ mod withdraw {
             assert_eq!(
                 deployer
                     .dao_voting
-                    .get_balance()
+                    .balance()
                     .call()
                     .await
                     .unwrap()
@@ -803,7 +803,7 @@ mod withdraw {
 
             assert_eq!(
                 user.dao_voting
-                    .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -831,7 +831,7 @@ mod withdraw {
             assert_eq!(
                 deployer
                     .dao_voting
-                    .get_balance()
+                    .balance()
                     .call()
                     .await
                     .unwrap()
@@ -841,7 +841,7 @@ mod withdraw {
 
             assert_eq!(
                 user.dao_voting
-                    .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -861,7 +861,7 @@ mod withdraw {
 
             assert_eq!(
                 user.dao_voting
-                    .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -869,7 +869,7 @@ mod withdraw {
                 0
             );
 
-            assert_eq!(user.dao_voting.get_balance().call().await.unwrap().value, 0);
+            assert_eq!(user.dao_voting.balance().call().await.unwrap().value, 0);
         }
     }
 
@@ -904,7 +904,7 @@ mod withdraw {
             assert_eq!(
                 deployer
                     .dao_voting
-                    .get_balance()
+                    .balance()
                     .call()
                     .await
                     .unwrap()
@@ -914,7 +914,7 @@ mod withdraw {
 
             assert_eq!(
                 user.dao_voting
-                    .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -942,7 +942,7 @@ mod withdraw {
             assert_eq!(
                 deployer
                     .dao_voting
-                    .get_balance()
+                    .balance()
                     .call()
                     .await
                     .unwrap()
@@ -952,7 +952,7 @@ mod withdraw {
 
             assert_eq!(
                 user.dao_voting
-                    .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -1036,7 +1036,7 @@ mod convert_votes {
                     .value
             );
 
-            let proposal = user.dao_voting.get_proposal(0).call().await.unwrap().value;
+            let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 
             assert_eq!(
                 proposal,
@@ -1057,7 +1057,7 @@ mod convert_votes {
 
             assert_eq!(
                 user.dao_voting
-                    .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()

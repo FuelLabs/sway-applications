@@ -268,7 +268,7 @@ impl DaoVoting for Contract {
 
     /// Return the amount of governance tokens in this contract
     #[storage(read)]
-    fn get_balance() -> u64 {
+    fn balance() -> u64 {
         this_balance(storage.gov_token)
     }
 
@@ -277,7 +277,7 @@ impl DaoVoting for Contract {
     /// # Parameters
     /// user - user of which to get internal balance of governance tokens
     #[storage(read)]
-    fn get_user_balance(user: Identity) -> u64 {
+    fn user_balance(user: Identity) -> u64 {
         storage.balances.get(user)
     }
 
@@ -287,7 +287,7 @@ impl DaoVoting for Contract {
     /// user - user of which to get votes spent on a proposal
     /// proposal_id - proposal of which to get votes spent by user
     #[storage(read)]
-    fn get_user_votes(user: Identity, proposal_id: u64) -> u64 {
+    fn user_votes(user: Identity, proposal_id: u64) -> u64 {
         require(proposal_id < storage.proposal_count, Error::InvalidId);
         storage.votes.get((user, proposal_id))
     }
@@ -303,7 +303,7 @@ impl DaoVoting for Contract {
     /// - The constructor has not been called ot initialize
     /// - The given id is out of range
     #[storage(read)]
-    fn get_proposal(proposal_id: u64) -> Proposal {
+    fn proposal(proposal_id: u64) -> Proposal {
         require(storage.state == 1, Error::NotInitialized);
         require(proposal_id < storage.proposal_count, Error::InvalidId);
         storage.proposals.get(proposal_id)
