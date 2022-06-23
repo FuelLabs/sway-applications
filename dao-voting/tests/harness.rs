@@ -74,6 +74,23 @@ async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {
     (gov_token, gov_token_id, deployer, user, asset_amount)
 }
 
+fn get_call_data(recipient: Address, asset_id: ContractId) -> daovoting_mod::CallData {
+    let mem_address = daovoting_mod::MemoryAddress {
+        contract_id: asset_id,
+        function_selector: 0,
+        function_data: 0,
+    };
+
+    let call_data = daovoting_mod::CallData {
+        memory_address: mem_address,
+        num_coins_to_forward: 0,
+        asset_id_of_coins_to_forward: asset_id,
+        amount_of_gas_to_forward: 20000,
+    };
+
+    call_data
+}
+
 async fn initialize() -> bool {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
@@ -714,6 +731,8 @@ mod execute_proposal {
                     approval_percentage: 10
                 }
             );
+
+            // TODO actually test execution of an arbitrary transaction
         }
     }
 }
@@ -831,25 +850,99 @@ mod withdraw {
     }
 }
 
-fn get_call_data(recipient: Address, asset_id: ContractId) -> daovoting_mod::CallData {
-    // TODO make more general for other use cases besides mint_to_address
-    let func_args = daovoting_mod::FunctionArgs {
-        amount: 500,
-        recipient: daovoting_mod::Identity::Address(recipient),
-    };
+mod convert_votes {
+    use super::*;
 
-    let mem_address = daovoting_mod::MemoryAddress {
-        contract_id: asset_id,
-        function_selector: 0,
-        function_data: func_args,
-    };
+    mod success {
+        use super::*;
 
-    let call_data = daovoting_mod::CallData {
-        memory_address: mem_address,
-        num_coins_to_forward: 0,
-        asset_id_of_coins_to_forward: asset_id,
-        amount_of_gas_to_forward: 20000,
-    };
+        #[tokio::test]
+        async fn user_can_convert_votes_to_tokens() {
+            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            deployer
+                .dao_voting
+                .constructor(gov_token_id)
+                .call()
+                .await
+                .unwrap();
 
-    call_data
+            assert!(
+                deployer
+                    .gov_token
+                    .unwrap()
+                    .mint_and_send_to_address(100, user.wallet.address())
+                    .append_variable_outputs(1)
+                    .call()
+                    .await
+                    .unwrap()
+                    .value
+            );
+
+            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            assert!(
+                user.dao_voting
+                    .deposit()
+                    .tx_params(tx_params)
+                    .call_params(call_params)
+                    .call()
+                    .await
+                    .unwrap()
+                    .value
+            );
+
+            let call_data = get_call_data(user.wallet.address(), gov_token_id);
+
+            assert!(
+                user.dao_voting
+                    .add_proposal(1, 10, call_data.clone())
+                    .call()
+                    .await
+                    .unwrap()
+                    .value
+            );
+
+            assert!(
+                user.dao_voting
+                    .vote(0, asset_amount / 2, true)
+                    .call()
+                    .await
+                    .unwrap()
+                    .value
+            );
+
+            let proposal = user.dao_voting.get_proposal(0).call().await.unwrap().value;
+
+            assert_eq!(
+                proposal,
+                daovoting_mod::Proposal {
+                    yes_votes: 5,
+                    no_votes: 0,
+                    call_data: call_data,
+                    end_height: 6,
+                    approval_percentage: 10
+                }
+            );
+
+            user.dao_voting
+                .convert_votes_to_tokens(0)
+                .call()
+                .await
+                .unwrap();
+
+            assert_eq!(
+                user.dao_voting
+                    .get_user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .call()
+                    .await
+                    .unwrap()
+                    .value,
+                asset_amount
+            );
+        }
+    }
 }
