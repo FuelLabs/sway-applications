@@ -33,37 +33,6 @@ pub fn approved_for_nft_transfer(identity: Identity, seller: Identity, nft_contr
     true
 }
 
-/// This function gets called when the reserve price is met and transfers the sell assets.
-/// If an amount greater than the reserve is provided, the remainder is returned
-pub fn reserve_met(auction: Auction, balance: u64, reserve: u64) {
-    // Set variables
-    let sender = sender_identity();
-    let sell_asset = auction.sell_asset;
-
-    // Transfer selling asset to sender
-    match auction.sell_asset {
-        Asset::NFTAsset(sell_asset) => {
-            transfer_nft(Identity::ContractId(contract_id()), sender, auction.sell_asset)
-        },
-        Asset::TokenAsset(sell_asset) => {
-            send_tokens(sender, auction.sell_asset)
-        },
-    };
-
-    // Return any amount overpaid
-    let overpaid_balance = balance - reserve;
-    if (overpaid_balance > 0) {
-        match sender {
-            Identity::Address(sender) => {
-                transfer_to_output(overpaid_balance, auction.buy_asset.contract_id(), sender);
-            },
-            Identity::ContractId(sender) => {
-                force_transfer_to_contract(overpaid_balance, auction.buy_asset.contract_id(), sender);
-            },
-        };
-    }
-}
-
 /// This function will return the identity of the sender
 pub fn sender_identity() -> Identity {
     let sender: Result<Identity, AuthError> = msg_sender();
