@@ -19,77 +19,111 @@ use std::{
     token::{force_transfer_to_contract, transfer_to_output}
 };
 
-/// This function takes a seller, an identity, and NFT data and returns true if the identity is
-/// approved to transfer or owns the NFT
-pub fn approved_for_nft_transfer(identity: Identity, seller: Identity, nft_contract: ContractId, nft_id: u64) -> bool {
-    let nft_abi = abi(NFT, nft_contract.value);
-    let approved: Option<Identity> = nft_abi.get_approved(nft_id);
-    let owner: Option<Identity> = nft_abi.owner_of(nft_id);
-    let approved_for_all = nft_abi.is_approved_for_all(seller, identity);
+/// This function returns true if the `to` `Identity` is approved to transfer the token.
+///
+/// # Arguments
+///
+/// * `from` - The `Identity` which owns the NFTs.
+/// * `to` - The `Identity` which the NFTs should be transfered to.
+/// * `asset` - The `NFTAsset` struct which contains the NFT data.
+pub fn approved_for_nft_transfer(from: Identity, to: Identity, asset: NFTAsset) -> bool {
+    let nft_contract = asset.contract_id;
+    // TODO: This will be a Vec
+    let nft_id = asset.token_ids;
 
-    approved_for_all || (approved.is_none() && identity == approved.unwrap()) || (owner.is_none() && identity == owner.unwrap())
+    let nft_abi = abi(NFT, nft_contract.value);
+    let approved_for_all = nft_abi.is_approved_for_all(from, to);
+    // TODO: This needs to loop over a Vec of token_ids
+    let approved: Option<Identity> = nft_abi.get_approved(nft_id);
+
+    // The to address either needs to be approved for all or approved for this token id
+    approved_for_all || (approved.is_some() && to == approved.unwrap())
 }
 
-/// This function will return the identity of the sender
+/// This function returns true if the `owner` `Identity` owns the NFT token.
+///
+/// # Arguments
+///
+/// * `owner` - The `Identity` which owns the tokens.
+/// * `asset` - The `NFTAsset` struct which contains the NFT data.
+pub fn owns_nft(owner: Identity, asset: NFTAsset) -> bool {
+    let nft_contract = asset.contract_id;
+    // TODO: This will be a Vec
+    let token_id = asset.token_ids;
+
+    let nft_abi = abi(NFT, nft_contract.value);
+    // TODO: This will need to loop over a Vec of token_ids
+    let token_owner: Option<Identity> = nft_abi.owner_of(token_id);
+    token_owner.is_some() && owner == token_owner.unwrap()
+}
+
+/// This function will return the identity of the sender.
 pub fn sender_identity() -> Identity {
     let sender: Result<Identity, AuthError> = msg_sender();
     sender.unwrap()
 }
 
-/// This function will send tokens to the idenitity provided
-pub fn send_tokens(identity: Identity, asset: Asset) {
+/// This function will send tokens to the `Idenitity`.
+///
+/// # Arguments
+///
+/// * `identity` - The `Identity` which the tokens should be sent to.
+/// * `asset` - The `TokenAsset` which is to be sent.
+pub fn send_tokens(identity: Identity, asset: TokenAsset) {
     match identity {
         Identity::Address(identity) => {
-            transfer_to_output(asset.amount(), asset.contract_id(), identity);
+            transfer_to_output(asset.amount, asset.contract_id, identity);
         },
         Identity::ContractId(identity) => {
-            force_transfer_to_contract(asset.amount(), asset.contract_id(), identity);
+            force_transfer_to_contract(asset.amount, asset.contract_id, identity);
         },
     };
 }
 
-/// This function will transfer a NFT from one identity to another
+/// This function will transfer a NFT from one `Identity` to another.
 ///
-/// # Panics
+/// # Reverts
 ///
 /// This function will panic when:
-/// - The NFT transfer failed
-pub fn transfer_nft(from: Identity, to: Identity, asset: Asset) {
-    let asset_contract_id = asset.contract_id();
-    let nft_abi = abi(NFT, asset_contract_id.value);
+/// * The NFT transfer failed
+pub fn transfer_nft(from: Identity, to: Identity, asset: NFTAsset) {
+    let nft_contract = asset.contract_id;
+    // TODO: This will be a Vec
+    let token_id = asset.token_ids;
 
-    let token_id = match asset {
-        Asset::NFTAsset(asset) => {
-            asset.token_ids
-        },
-        _ => {
-            revert(0)
-        }
-    };
-
+    let nft_abi = abi(NFT, nft_contract.value);
+    // TODO: This will need to itterate over a Vec of token IDs
     nft_abi.transfer_from(from, to, token_id);
 
+    // Make sure that the transfer worked
+    // TODO: This may be removed in the future
     let owner: Option<Identity> = nft_abi.owner_of(token_id);
     require(owner.is_some() && owner.unwrap() == to, AccessError::NFTTransferNotApproved);
 }
 
-/// This function will panic when the recieving assets in a tansaction are incorrect
+/// This function will panic when the `recieved_asset` and `buy_asset` `contract_id`s do not match.
+/// If `received_asset` is of type `TokenAsset` the function also ensures that the amount provided
+/// in the transaction and `recieved_asset` struct match. If the `received_asset` is of type
+/// `NFTAsset` the function will ensure that the auction contract is permissioned to transfer the
+/// NFT tokens.
 ///
-/// # Panics
+/// # Reverts
 ///
-/// This function will panic when:
-/// - The contract IDs in the buy_asset and recieved_asset are different
-/// - The auction contract is not approved to transfer the NFT specified in recieved_asset struct
-/// - The transaction asset is not the same as the buy_asset
-/// - The transaction asset is not the same as the recieved_asset
-pub fn validate_corrent_asset(buy_asset: Asset, recieved_asset: Asset) {
+/// * When the `contract_id`s in the `buy_asset` and `recieved_asset` are different.
+/// * When the `sender` does not own the NFT tokens to be transfered
+/// * When the auction contract is not approved to transfer the NFT tokens specified in the
+///   `recieved_asset` struct.
+/// * When the transaction asset amount is not the same as the amount specified in the
+///   `recieved_asset` struct.
+pub fn validate_asset(buy_asset: Asset, recieved_asset: Asset) {
     let sender = sender_identity();
 
     require(buy_asset == recieved_asset, InputError::IncorrectAssetProvided);
 
     match recieved_asset {
         Asset::NFTAsset(asset) => {
-            require(approved_for_nft_transfer(Identity::ContractId(contract_id()), sender, asset.contract_id, asset.token_ids), AccessError::NFTTransferNotApproved);
+            require(owns_nft(sender, asset), AccessError::NFTTransferNotApproved);
+            require(approved_for_nft_transfer(sender, Identity::ContractId(contract_id()), asset), AccessError::NFTTransferNotApproved);
         },
         Asset::TokenAsset(asset) => {
             require(msg_amount() == asset.amount, InputError::IncorrectAmountProvided);

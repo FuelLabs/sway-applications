@@ -80,7 +80,8 @@ impl core::ops::Ord for Asset {
     pub fn gt(self, other: Self) -> bool {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                nft_asset1.contract_id == nft_asset2.contract_id && nft_asset1.token_ids > nft_asset2.token_ids
+                // TODO: Compare NFT token ID Vec length
+                nft_asset1.contract_id == nft_asset2.contract_id
             },
             (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
                 token_asset1.contract_id == token_asset2.contract_id && token_asset1.amount > token_asset2.amount
@@ -94,7 +95,8 @@ impl core::ops::Ord for Asset {
     pub fn lt(self, other: Self) -> bool {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                nft_asset1.contract_id == nft_asset2.contract_id && nft_asset1.token_ids < nft_asset2.token_ids
+                // TODO: Compare NFT token ID Vec length
+                nft_asset1.contract_id == nft_asset2.contract_id
             },
             (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
                 token_asset1.contract_id == token_asset2.contract_id && token_asset1.amount < token_asset2.amount
@@ -117,7 +119,6 @@ impl core::ops::Add for Asset {
             (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
                 assert(token_asset1.contract_id == token_asset2.contract_id);
                 let total_amount = token_asset1.amount + token_asset2.amount;
-
                 let token = TokenAsset {
                     amount: total_amount, contract_id: token_asset1.contract_id
                 };
@@ -135,13 +136,12 @@ impl core::ops::Subtract for Asset {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 assert(nft_asset1.contract_id == nft_asset2.contract_id);
-                // TODO: Remove vecs
+                // TODO: Remove differences in the Vecs
                 self
             },
             (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
                 assert(token_asset1.contract_id == token_asset2.contract_id);
                 let total_amount = token_asset1.amount - token_asset2.amount;
-
                 let token = TokenAsset {
                     amount: total_amount, contract_id: token_asset1.contract_id
                 };
