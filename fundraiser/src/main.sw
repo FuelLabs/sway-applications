@@ -443,7 +443,7 @@ impl Fundraiser for Contract {
     /// * When an AuthError is generated
     #[storage(read)]fn campaign(id: u64) -> Campaign {
         // Validate the ID to ensure that the user has created the campaign
-        require(id != 0 && id <= storage.user_campaign_count.get(sender_identity()), UserError::InvalidID);
+        validate_id(id, storage.user_campaign_count.get(sender_identity()));
         storage.campaign_history.get((sender_identity(), id))
     }
 
@@ -468,7 +468,7 @@ impl Fundraiser for Contract {
     /// * When an AuthError is generated
     #[storage(read)]fn pledged(pledge_history_index: u64) -> Pledge {
         // Validate the ID to ensure that the user has pledged
-        require(pledge_history_index != 0 && pledge_history_index <= storage.pledge_count.get(sender_identity()), UserError::InvalidID);
+        validate_id(pledge_history_index, storage.pledge_count.get(sender_identity()));
         storage.pledge_history.get((sender_identity(), pledge_history_index))
     }
 

@@ -19,7 +19,6 @@ pub enum UserError {
     AmountCannotBeZero: (),
     IncorrectAssetSent: (),
     InvalidID: (),
-    NoSuchCampaign: (),
     UnauthorizedUser: (),
     UserHasNotPledged: (),
 }

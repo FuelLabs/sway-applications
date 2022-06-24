@@ -14,5 +14,5 @@ pub fn sender_identity() -> Identity {
 }
 
 pub fn validate_id(id: u64, count: u64) {
-    require(id != 0 && id <= count, UserError::NoSuchCampaign);
+    require(id != 0 && id <= count, UserError::InvalidID);
 }
