@@ -1,15 +1,12 @@
 mod utils;
 
-use fuels::{
-    signers::Signer,
-    tx::AssetId,
-};
+use fuels::{signers::Signer, tx::AssetId};
 
 use utils::{
     abi_calls::{
-        asset_count, asset_info_by_address, asset_info_by_count, campaign, user_campaign_count,
-        campaign_info, cancel_campaign, claim_pledges, create_campaign, pledge, pledge_count,
-        pledged, total_campaigns, unpledge,
+        asset_count, asset_info_by_address, asset_info_by_count, campaign, campaign_info,
+        cancel_campaign, claim_pledges, create_campaign, pledge, pledge_count, pledged,
+        total_campaigns, unpledge, user_campaign_count,
     },
     test_helpers::{mint, setup},
     Identity,
