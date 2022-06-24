@@ -179,8 +179,8 @@ pub mod abi_calls {
         contract.campaign_info(id).call().await.unwrap()
     }
 
-    pub async fn campaign_count(contract: &Fundraiser) -> u64 {
-        contract.campaign_count().call().await.unwrap().value
+    pub async fn user_campaign_count(contract: &Fundraiser) -> u64 {
+        contract.user_campaign_count().call().await.unwrap().value
     }
 
     pub async fn campaign(contract: &Fundraiser, id: u64) -> CallResponse<Campaign> {

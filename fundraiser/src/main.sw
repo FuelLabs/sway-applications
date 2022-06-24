@@ -7,6 +7,7 @@ dep events;
 dep utils;
 
 // Identity and result importing via * is a workaround until bug is fixed
+// Related: https://github.com/FuelLabs/sway/pull/1958 and https://github.com/FuelLabs/sway/pull/2034
 use std::{
     assert::require,
     block::height,
@@ -40,10 +41,10 @@ storage {
     ContractId>, /// The total number of unique campaigns that a user has created
     /// This should only be incremented
     /// Cancelling / Claiming should not affect this number
-    campaign_count: StorageMap<Identity,
+    user_campaign_count: StorageMap<Identity,
     u64>, /// Campaigns that have been created by a user
 
-    /// Map(Identity => Map(1...campaign_count => Campaign)
+    /// Map(Identity => Map(1...user_campaign_count => Campaign)
     campaign_history: StorageMap<(Identity,
     u64), Campaign>, /// Data describing the content of a campaign
     /// Map(Campaign ID => CampaignInfo)
@@ -83,10 +84,6 @@ impl Fundraiser for Contract {
     /// * When the `target_amount` is 0
     /// * When an AuthError is generated
     #[storage(read, write)]fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64) {
-        // Prevent a user from ever having the ability to accept the base asset in case that becomes
-        // a contract - which may be used as a burned address similar to ETH 0x0000...
-        require(asset.value != BASE_ASSET_ID, CreationError::CannotUseBaseAsset);
-
         // Users cannot interact with a campaign that has already ended (is in the past)
         require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
 
@@ -120,7 +117,7 @@ impl Fundraiser for Contract {
         }
 
         // Use the user's number of created campaigns as an ID / way to index this new campaign
-        let campaign_count = storage.campaign_count.get(user);
+        let user_campaign_count = storage.user_campaign_count.get(user);
 
         // We've just created a new campaign so increment the number of created campaigns across all
         // users and store the new campaign
@@ -129,14 +126,14 @@ impl Fundraiser for Contract {
 
         // Increment the number of campaigns this user has created and track the ID for the campaign
         // they have just created so that data can be easily retrieved without duplicating data
-        storage.campaign_count.insert(user, campaign_count + 1);
-        storage.campaign_history.insert((user, campaign_count + 1), Campaign {
+        storage.user_campaign_count.insert(user, user_campaign_count + 1);
+        storage.campaign_history.insert((user, user_campaign_count + 1), Campaign {
             id: storage.total_campaigns
         });
 
         // We have changed the state by adding a new data structure therefore we log it
         log(CreatedCampaignEvent {
-            campaign_info, id: storage.total_campaigns
+            author: user, campaign_info, id: storage.total_campaigns
         });
     }
 
@@ -324,7 +321,7 @@ impl Fundraiser for Contract {
 
         // We have updated the state of a campaign therefore we must log it
         log(PledgedEvent {
-            amount: msg_amount(), id
+            amount: msg_amount(), id, user
         });
     }
 
@@ -401,7 +398,7 @@ impl Fundraiser for Contract {
 
         // We have updated the state of a campaign therefore we must log it
         log(UnpledgedEvent {
-            amount, id
+            amount, id, user
         });
     }
 
@@ -430,15 +427,15 @@ impl Fundraiser for Contract {
     /// # Reverts
     ///
     /// * When an AuthError is generated
-    #[storage(read)]fn campaign_count() -> u64 {
-        storage.campaign_count.get(sender_identity())
+    #[storage(read)]fn user_campaign_count() -> u64 {
+        storage.user_campaign_count.get(sender_identity())
     }
 
     /// Returns information about the specified campaign for the campaign author
     ///
     /// # Arguments
     ///
-    /// * `id` - Unique identifier which is a number starting from 1...storage.campaign_count
+    /// * `id` - Unique identifier which is a number starting from 1...storage.user_campaign_count
     ///
     /// # Reverts
     ///
@@ -446,7 +443,7 @@ impl Fundraiser for Contract {
     /// * When an AuthError is generated
     #[storage(read)]fn campaign(id: u64) -> Campaign {
         // Validate the ID to ensure that the user has created the campaign
-        require(id != 0 && id <= storage.campaign_count.get(sender_identity()), UserError::InvalidID);
+        require(id != 0 && id <= storage.user_campaign_count.get(sender_identity()), UserError::InvalidID);
         storage.campaign_history.get((sender_identity(), id))
     }
 

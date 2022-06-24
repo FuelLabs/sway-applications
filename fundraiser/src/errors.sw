@@ -9,7 +9,6 @@ pub enum CampaignError {
 }
 
 pub enum CreationError {
-    CannotUseBaseAsset: (),
     ContractNotInitialized: (),
     DeadlineMustBeInTheFuture: (),
     TargetAmountCannotBeZero: (),

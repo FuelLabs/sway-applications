@@ -20,7 +20,7 @@ abi Fundraiser {
 
     #[storage(read)]fn campaign_info(id: u64) -> CampaignInfo;
 
-    #[storage(read)]fn campaign_count() -> u64;
+    #[storage(read)]fn user_campaign_count() -> u64;
 
     #[storage(read)]fn campaign(campaign_history_index: u64) -> Campaign;
 

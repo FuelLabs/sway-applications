@@ -2,12 +2,12 @@ mod utils;
 
 use fuels::{
     signers::Signer,
-    tx::{AssetId, ContractId},
+    tx::AssetId,
 };
 
 use utils::{
     abi_calls::{
-        asset_count, asset_info_by_address, asset_info_by_count, campaign, campaign_count,
+        asset_count, asset_info_by_address, asset_info_by_count, campaign, user_campaign_count,
         campaign_info, cancel_campaign, claim_pledges, create_campaign, pledge, pledge_count,
         pledged, total_campaigns, unpledge,
     },
@@ -42,7 +42,7 @@ mod create_campaign {
             assert_eq!(0, asset_info.value.amount);
             assert_eq!(false, asset_info.value.exists);
             assert_eq!(0, total_campaigns(&author.contract).await);
-            assert_eq!(0, campaign_count(&author.contract).await);
+            assert_eq!(0, user_campaign_count(&author.contract).await);
 
             create_campaign(
                 &author.contract,
@@ -58,7 +58,7 @@ mod create_campaign {
             assert_eq!(true, asset_info.value.exists);
 
             assert_eq!(1, total_campaigns(&author.contract).await);
-            assert_eq!(1, campaign_count(&author.contract).await);
+            assert_eq!(1, user_campaign_count(&author.contract).await);
             assert_eq!(1, campaign(&author.contract, 1).await.value.id);
             assert_eq!(info.asset, defaults.asset_id);
             assert_eq!(info.author, Identity::Address(author.wallet.address()));
@@ -78,7 +78,7 @@ mod create_campaign {
             assert_eq!(0, asset_info.value.amount);
             assert_eq!(false, asset_info.value.exists);
             assert_eq!(0, total_campaigns(&author.contract).await);
-            assert_eq!(0, campaign_count(&author.contract).await);
+            assert_eq!(0, user_campaign_count(&author.contract).await);
 
             create_campaign(
                 &author.contract,
@@ -107,7 +107,7 @@ mod create_campaign {
             assert_eq!(false, asset_info2.value.exists);
 
             assert_eq!(2, total_campaigns(&author.contract).await);
-            assert_eq!(2, campaign_count(&author.contract).await);
+            assert_eq!(2, user_campaign_count(&author.contract).await);
             assert_eq!(
                 defaults.target_amount,
                 campaign_info(&author.contract, 1).await.value.target_amount
@@ -131,7 +131,7 @@ mod create_campaign {
             assert_eq!(false, asset_info1.value.exists);
             assert_eq!(false, asset_info2.value.exists);
             assert_eq!(0, total_campaigns(&author.contract).await);
-            assert_eq!(0, campaign_count(&author.contract).await);
+            assert_eq!(0, user_campaign_count(&author.contract).await);
 
             create_campaign(
                 &author.contract,
@@ -160,7 +160,7 @@ mod create_campaign {
             assert_eq!(true, asset_info2.value.exists);
 
             assert_eq!(2, total_campaigns(&author.contract).await);
-            assert_eq!(2, campaign_count(&author.contract).await);
+            assert_eq!(2, user_campaign_count(&author.contract).await);
             assert_eq!(
                 defaults.target_amount,
                 campaign_info(&author.contract, 1).await.value.target_amount
@@ -175,23 +175,6 @@ mod create_campaign {
     mod revert {
 
         use super::*;
-
-        #[tokio::test]
-        #[should_panic(expected = "Revert(42)")]
-        async fn when_asset_is_base_asset() {
-            let (author, _, _, _, defaults) = setup().await;
-            let asset_id = ContractId::from([0u8; 32]);
-
-            // Reverts
-            create_campaign(
-                &author.contract,
-                &asset_id,
-                &defaults.beneficiary,
-                defaults.deadline,
-                defaults.target_amount,
-            )
-            .await;
-        }
 
         #[tokio::test]
         #[should_panic(expected = "Revert(42)")]
@@ -1604,7 +1587,7 @@ mod campaign_info {
     }
 }
 
-mod campaign_count {
+mod user_campaign_count {
 
     use super::*;
 
@@ -1616,14 +1599,14 @@ mod campaign_count {
         async fn returns_zero() {
             let (author, _, _, _, _) = setup().await;
 
-            assert_eq!(0, campaign_count(&author.contract).await);
+            assert_eq!(0, user_campaign_count(&author.contract).await);
         }
 
         #[tokio::test]
         async fn returns_one() {
             let (author, _, _, _, defaults) = setup().await;
 
-            assert_eq!(0, campaign_count(&author.contract).await);
+            assert_eq!(0, user_campaign_count(&author.contract).await);
             create_campaign(
                 &author.contract,
                 &defaults.asset_id,
@@ -1632,7 +1615,7 @@ mod campaign_count {
                 defaults.target_amount,
             )
             .await;
-            assert_eq!(1, campaign_count(&author.contract).await);
+            assert_eq!(1, user_campaign_count(&author.contract).await);
         }
     }
 }
