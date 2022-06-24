@@ -109,23 +109,19 @@ pub mod test_helpers {
         )
     }
 
-    pub async fn token_asset(
-        contract_id: ContractId,
-        amount: u64
-    ) -> Asset {
+    pub async fn token_asset(contract_id: ContractId, amount: u64) -> Asset {
         let token = TokenAsset {
-            contract_id, amount
+            contract_id,
+            amount,
         };
 
         Asset::TokenAsset(token)
     }
 
-    pub async fn nft_asset(
-        contract_id: ContractId,
-        token_ids: u64
-    ) -> Asset {
+    pub async fn nft_asset(contract_id: ContractId, token_ids: u64) -> Asset {
         let token = NFTAsset {
-            contract_id, token_ids
+            contract_id,
+            token_ids,
         };
 
         Asset::NFTAsset(token)
@@ -312,7 +308,7 @@ pub mod abi_calls {
     //         .await
     //         .unwrap()
     //         .value;
-        
+
     //     auction.sell_asset.contract_id()
     // }
 
@@ -327,6 +323,16 @@ pub mod abi_calls {
 
     //     auction.state
     // }
+
+    pub async fn total_auctions(call_wallet: &Metadata) -> u64 {
+        call_wallet
+            .auction
+            .total_auctions()
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
 }
 
 pub async fn deploy_funds(deploy_wallet: &Metadata, wallet: &LocalWallet, asset_amount: u64) {

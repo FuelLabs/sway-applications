@@ -1,6 +1,8 @@
 library data_structures;
 
-use std::{assert::assert, contract_id::ContractId, identity::Identity, option::Option, storage::StorageMap};
+use std:: {
+    assert::assert, contract_id::ContractId, identity::Identity, option::Option, storage::StorageMap
+};
 
 pub struct Auction {
     buy_asset: Asset,
@@ -62,10 +64,10 @@ impl core::ops::Eq for Asset {
     pub fn eq(self, other: Self) -> bool {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                nft_asset1.contract_id == nft_asset2.contract_id 
+                nft_asset1.contract_id == nft_asset2.contract_id
             },
             (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
-                token_asset1.contract_id == token_asset2.contract_id 
+                token_asset1.contract_id == token_asset2.contract_id
             },
             _ => {
                 false
@@ -75,7 +77,7 @@ impl core::ops::Eq for Asset {
 }
 
 impl core::ops::Ord for Asset {
-    pub fn gt(self, other:Self) -> bool {
+    pub fn gt(self, other: Self) -> bool {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 nft_asset1.contract_id == nft_asset2.contract_id && nft_asset1.token_ids > nft_asset2.token_ids
@@ -89,7 +91,7 @@ impl core::ops::Ord for Asset {
         }
     }
 
-    pub fn lt(self, other:Self) -> bool {
+    pub fn lt(self, other: Self) -> bool {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 nft_asset1.contract_id == nft_asset2.contract_id && nft_asset1.token_ids < nft_asset2.token_ids
@@ -108,7 +110,7 @@ impl core::ops::Add for Asset {
     pub fn add(self, other: Self) -> Self {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                assert(nft_asset1.contract_id == nft_asset2.contract_id); 
+                assert(nft_asset1.contract_id == nft_asset2.contract_id);
                 // TODO: Combine vecs
                 self
             },
@@ -117,8 +119,7 @@ impl core::ops::Add for Asset {
                 let total_amount = token_asset1.amount + token_asset2.amount;
 
                 let token = TokenAsset {
-                    amount: total_amount,
-                    contract_id: token_asset1.contract_id
+                    amount: total_amount, contract_id: token_asset1.contract_id
                 };
                 Asset::TokenAsset(token)
             },
@@ -133,7 +134,7 @@ impl core::ops::Subtract for Asset {
     pub fn subtract(self, other: Self) -> Self {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                assert(nft_asset1.contract_id == nft_asset2.contract_id); 
+                assert(nft_asset1.contract_id == nft_asset2.contract_id);
                 // TODO: Remove vecs
                 self
             },
@@ -142,8 +143,7 @@ impl core::ops::Subtract for Asset {
                 let total_amount = token_asset1.amount - token_asset2.amount;
 
                 let token = TokenAsset {
-                    amount: total_amount,
-                    contract_id: token_asset1.contract_id
+                    amount: total_amount, contract_id: token_asset1.contract_id
                 };
                 Asset::TokenAsset(token)
             },

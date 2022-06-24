@@ -8,6 +8,7 @@ use utils::{
         // current_bid,
         init_nft,
         init_token,
+        total_auctions,
         // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
         // deposits,
         // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
@@ -18,8 +19,8 @@ use utils::{
         // state,
         withdraw,
     },
-    test_helpers::{setup, nft_asset, token_asset},
-    Asset
+    test_helpers::{nft_asset, setup, token_asset},
+    Asset,
 };
 
 mod asset_test {
@@ -473,7 +474,6 @@ mod constructor {
     }
 }
 
-
 mod bid {
 
     use super::*;
@@ -693,8 +693,9 @@ mod bid {
                 bid_asset_struct,
             )
             .await;
-            
-            let bid_asset_struct: Asset = token_asset(buy_asset_id, inital_price + inital_price).await;
+
+            let bid_asset_struct: Asset =
+                token_asset(buy_asset_id, inital_price + inital_price).await;
             bid_tokens(
                 &buyer2,
                 &buyer2,
@@ -1191,7 +1192,7 @@ mod bid {
                 bid_asset_struct,
             )
             .await;
-            
+
             let bid_asset_struct: Asset = token_asset(buy_asset_id, inital_price).await;
             bid_tokens(
                 &buyer1,
@@ -2301,3 +2302,50 @@ mod sell_asset {
         }
     }
 }*/
+
+mod total_auctions {
+
+    use super::*;
+
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn gets_total_auctions() {
+            let (
+                deploy_wallet,
+                seller,
+                buyer1,
+                _buyer2,
+                sell_asset_id,
+                buy_asset_id,
+                amount_selling,
+                inital_price,
+                reserve_price,
+                time,
+            ) = setup().await;
+
+            for i in 0..10 {
+                assert_eq!(total_auctions(&deploy_wallet).await, i);
+
+                let buy_asset_struct: Asset = token_asset(buy_asset_id, 0).await;
+                let sell_asset_struct: Asset = token_asset(sell_asset_id, amount_selling).await;
+
+                let auction_id = init_token(
+                    &deploy_wallet,
+                    &seller,
+                    sell_asset_id,
+                    amount_selling,
+                    buy_asset_id,
+                    inital_price,
+                    reserve_price,
+                    time,
+                    buy_asset_struct,
+                    sell_asset_struct,
+                )
+                .await;
+            }
+        }
+    }
+}

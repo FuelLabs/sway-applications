@@ -10,12 +10,8 @@ use abi::{EnglishAuction, NFT};
 use data_structures::*;
 use errors::{AccessError, InitError, InputError, UserError};
 use events::{AuctionStartEvent, BidEvent, WithdrawEvent};
-use utils::{
-    approved_for_nft_transfer,
-    send_tokens,
-    sender_identity,
-    transfer_nft,
-    validate_corrent_asset,
+use utils:: {
+    approved_for_nft_transfer, send_tokens, sender_identity, transfer_nft, validate_corrent_asset
 };
 
 use std::{
@@ -44,7 +40,6 @@ storage {
 }
 
 impl EnglishAuction for Contract {
-
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
     /// Returns the auction struct for the corresponding auction id
     // #[storage(read)]
@@ -81,11 +76,11 @@ impl EnglishAuction for Contract {
         // Ensure this is the correct asset in the transaction, the Asset struct has the
         // correct information, and if it's an NFT we can transfer it to the auction contract
         validate_corrent_asset(auction.buy_asset, asset);
-       
+
         // The bidder cannot be the seller
         let sender = sender_identity();
         require(sender != auction.seller, UserError::BidderIsSeller);
-        
+
         // Set some variables we will need
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let reserve: Option<u64> = auction.reserve_price;
@@ -109,8 +104,7 @@ impl EnglishAuction for Contract {
         // Check to see if we've reached the reserve price
         if (reserve.is_some()) {
             require(reserve.unwrap() >= total_bid_asset.amount(), InputError::IncorrectAmountProvided);
-            if (reserve.unwrap() == total_bid_asset.amount())
-            {
+            if (reserve.unwrap() == total_bid_asset.amount()) {
                 // The reserve price was met
                 auction.state = 2;
             }
@@ -124,7 +118,8 @@ impl EnglishAuction for Contract {
                 // bidding a NFT
                 transfer_nft(sender, Identity::ContractId(contract_id()), asset);
             }
-            _ => {}
+            _ => {
+            }
         }
 
         auction.bidder = Option::Some(sender);
@@ -145,8 +140,7 @@ impl EnglishAuction for Contract {
     /// The function will panic when:
     /// - The auction_id does not map to an auction
     /// - The sender is not the owner of the auction
-    #[storage(read, write)]
-    fn cancel_auction(auction_id: u64) {
+    #[storage(read, write)]fn cancel_auction(auction_id: u64) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -314,5 +308,9 @@ impl EnglishAuction for Contract {
                 },
             }
         };
+    }
+
+    #[storage(read)]fn total_auctions() -> u64 {
+        storage.total_auctions
     }
 }

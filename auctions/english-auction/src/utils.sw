@@ -27,9 +27,7 @@ pub fn approved_for_nft_transfer(identity: Identity, seller: Identity, nft_contr
     let owner: Option<Identity> = nft_abi.owner_of(nft_id);
     let approved_for_all = nft_abi.is_approved_for_all(seller, identity);
 
-    approved_for_all ||
-        (approved.is_none() && identity == approved.unwrap()) ||
-        (owner.is_none() && identity == owner.unwrap())
+    approved_for_all || (approved.is_none() && identity == approved.unwrap()) || (owner.is_none() && identity == owner.unwrap())
 }
 
 /// This function will return the identity of the sender
@@ -61,14 +59,18 @@ pub fn transfer_nft(from: Identity, to: Identity, asset: Asset) {
     let nft_abi = abi(NFT, asset_contract_id.value);
 
     let token_id = match asset {
-        Asset::NFTAsset(asset) => { asset.token_ids },
-        _ => { revert(0) }
+        Asset::NFTAsset(asset) => {
+            asset.token_ids
+        },
+        _ => {
+            revert(0)
+        }
     };
 
     nft_abi.transfer_from(from, to, token_id);
 
-    // let owner: Option<Identity> = nft_abi.owner_of(token_id);
-    // require(owner.is_some() && owner.unwrap() == to, AccessError::NFTTransferNotApproved);
+    let owner: Option<Identity> = nft_abi.owner_of(token_id);
+    require(owner.is_some() && owner.unwrap() == to, AccessError::NFTTransferNotApproved);
 }
 
 /// This function will panic when the recieving assets in a tansaction are incorrect
