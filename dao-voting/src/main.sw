@@ -3,6 +3,7 @@ contract;
 dep abi;
 dep data_structures;
 dep errors;
+dep utils;
 
 use std::{
     address::Address,
@@ -21,6 +22,7 @@ use std::{
 use abi::DaoVoting;
 use data_structures::{CallData, Proposal};
 use errors::Error;
+use utils::sender_identity;
 
 storage {
     gov_token: ContractId,
@@ -109,8 +111,7 @@ impl DaoVoting for Contract {
         require(storage.gov_token == msg_asset_id(), Error::NotGovernanceToken);
         require(msg_amount() > 0, Error::NoAssetsSent);
 
-        let result: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = result.unwrap();
+        let sender: Identity = sender_identity();
 
         let prev_balance = storage.balances.get(sender);
         let new_balance = prev_balance + msg_amount();
@@ -134,8 +135,7 @@ impl DaoVoting for Contract {
     fn withdraw(amount: u64) -> bool {
         require(storage.state == 1, Error::NotInitialized);
 
-        let result: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = result.unwrap();
+        let sender: Identity = sender_identity();
 
         let prev_balance = storage.balances.get(sender);
         require(prev_balance >= amount, Error::NotEnoughAssets);
@@ -174,8 +174,7 @@ impl DaoVoting for Contract {
         require(proposal_id < storage.proposal_count, Error::InvalidId);
         require(vote_amount > 0, Error::VoteAmountCannotBeZero);
 
-        let result: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = result.unwrap();
+        let sender: Identity = sender_identity();
         let sender_balance = storage.balances.get(sender);
 
         require(sender_balance >= vote_amount, Error::NotEnoughAssets);
@@ -256,8 +255,7 @@ impl DaoVoting for Contract {
         let proposal = storage.proposals.get(proposal_id);
         require(proposal.end_height < height(), Error::ProposalActive);
         
-        let result: Result<Identity, AuthError> = msg_sender();
-        let sender: Identity = result.unwrap();
+        let sender: Identity = sender_identity();
         let votes = storage.votes.get((sender, proposal_id));
 
         storage.votes.insert((sender, proposal_id), 0);
