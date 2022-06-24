@@ -16,7 +16,7 @@ use std::{
     result::*,
     revert::revert,
     storage::StorageMap,
-    token::{transfer_to_output, force_transfer_to_contract},
+    token::{force_transfer_to_contract, transfer_to_output}
 };
 
 use abi::DaoVoting;
@@ -32,10 +32,9 @@ storage {
     Proposal>, proposal_count: u64,
     // The amount of governance tokens a user has deposited
     balances: StorageMap<Identity,
-    u64>,
-    // The amount of votes a user has used on a proposal
-    votes: StorageMap<(Identity, u64),
-    u64>, state: u64, 
+    u64>, // The amount of votes a user has used on a proposal
+    votes: StorageMap<(Identity,
+    u64), u64>, state: u64,
 }
 
 impl DaoVoting for Contract {
@@ -51,8 +50,7 @@ impl DaoVoting for Contract {
     /// - The constructor is called more than once
     /// - The voting period is not greater than 0
     /// - The approval percentage is not greater than 0
-    #[storage(read, write)]
-    fn constructor(gov_token: ContractId) -> bool {
+    #[storage(read, write)]fn constructor(gov_token: ContractId) -> bool {
         require(storage.state == 0, Error::CannotReinitialize);
 
         storage.gov_token = gov_token;
@@ -77,8 +75,7 @@ impl DaoVoting for Contract {
     /// - The voting period is 0
     /// - The approval percentage is 0
     /// - The approval percentage is above 100
-    #[storage(read, write)]
-    fn add_proposal(voting_period: u64, approval_percentage: u64, proposal_data: CallData) -> bool {
+    #[storage(read, write)]fn add_proposal(voting_period: u64, approval_percentage: u64, proposal_data: CallData) -> bool {
         require(storage.state == 1, Error::NotInitialized);
         require(voting_period > 0, Error::PeriodCannotBeZero);
         require(approval_percentage > 0, Error::ApprovalPercentageCannotBeZero);
@@ -105,8 +102,7 @@ impl DaoVoting for Contract {
     /// - The constructor has not been called to initialize
     /// - The user deposits an asset that is not the specified governance token.
     /// - The user does not deposit and assets
-    #[storage(read, write)]
-    fn deposit() -> bool {
+    #[storage(read, write)]fn deposit() -> bool {
         require(storage.state == 1, Error::NotInitialized);
         require(storage.gov_token == msg_asset_id(), Error::NotGovernanceToken);
         require(msg_amount() > 0, Error::NoAssetsSent);
@@ -131,8 +127,7 @@ impl DaoVoting for Contract {
     /// This functions will panic when:
     /// - The constructor has not been called to initalize
     /// - The user tries to withdraw more than their balance
-    #[storage(read, write)]
-    fn withdraw(amount: u64) -> bool {
+    #[storage(read, write)]fn withdraw(amount: u64) -> bool {
         require(storage.state == 1, Error::NotInitialized);
 
         let sender: Identity = sender_identity();
@@ -145,8 +140,7 @@ impl DaoVoting for Contract {
 
         // Transfer the asset back to the user
         match sender {
-            Identity::Address(address) => transfer_to_output(amount, storage.gov_token, address), 
-            Identity::ContractId(address) => force_transfer_to_contract(amount, storage.gov_token, address), 
+            Identity::Address(address) => transfer_to_output(amount, storage.gov_token, address), Identity::ContractId(address) => force_transfer_to_contract(amount, storage.gov_token, address), 
         }
 
         true
@@ -168,8 +162,7 @@ impl DaoVoting for Contract {
     /// - The vote amount is 0
     /// - The vote amount is greater than the users deposited balance
     /// - The given proposal is expired
-    #[storage(read, write)]
-    fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool {
+    #[storage(read, write)]fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool {
         require(storage.state == 1, Error::NotInitialized);
         require(proposal_id < storage.proposal_count, Error::InvalidId);
         require(vote_amount > 0, Error::VoteAmountCannotBeZero);
@@ -211,8 +204,7 @@ impl DaoVoting for Contract {
     /// - The proposal id is out of range
     /// - The proposal has not expired
     /// - The proposal has not met the necessary approval percentage
-    #[storage(read, write)]
-    fn execute(proposal_id: u64) -> bool {
+    #[storage(read, write)]fn execute(proposal_id: u64) -> bool {
         require(storage.state == 1, Error::NotInitialized);
         require(proposal_id < storage.proposal_count, Error::InvalidId);
 
@@ -225,12 +217,8 @@ impl DaoVoting for Contract {
         let approval_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
         require(approval_percentage >= proposal.approval_percentage, Error::ApprovalPercentageNotMet);
 
-        asm(
-            rA: proposal.call_data.memory_address,
-            rB: proposal.call_data.num_coins_to_forward,
-            rC: proposal.call_data.asset_id_of_coins_to_forward,
-            rD: proposal.call_data.amount_of_gas_to_forward) {
-                call rA rB rC rD;
+        asm(rA: proposal.call_data.memory_address, rB: proposal.call_data.num_coins_to_forward, rC: proposal.call_data.asset_id_of_coins_to_forward, rD: proposal.call_data.amount_of_gas_to_forward) {
+            call rA rB rC rD;
         }
 
         // Users can now convert their votes back into tokens
@@ -250,14 +238,13 @@ impl DaoVoting for Contract {
     /// - The constructor has not ben called to initialize
     /// - The proposal id is invalid
     /// - The proposal is still active
-    #[storage(read, write)]
-    fn convert_votes_to_tokens(proposal_id: u64) {
+    #[storage(read, write)]fn convert_votes_to_tokens(proposal_id: u64) {
         require(storage.state == 1, Error::NotInitialized);
         require(proposal_id < storage.proposal_count, Error::InvalidId);
 
         let proposal = storage.proposals.get(proposal_id);
         require(proposal.end_height < height(), Error::ProposalActive);
-        
+
         let sender: Identity = sender_identity();
         let votes = storage.votes.get((sender, proposal_id));
 
@@ -268,8 +255,7 @@ impl DaoVoting for Contract {
     }
 
     /// Return the amount of governance tokens in this contract
-    #[storage(read)]
-    fn balance() -> u64 {
+    #[storage(read)]fn balance() -> u64 {
         this_balance(storage.gov_token)
     }
 
@@ -277,8 +263,7 @@ impl DaoVoting for Contract {
     ///
     /// # Parameters
     /// user - user of which to get internal balance of governance tokens
-    #[storage(read)]
-    fn user_balance(user: Identity) -> u64 {
+    #[storage(read)]fn user_balance(user: Identity) -> u64 {
         storage.balances.get(user)
     }
 
@@ -287,8 +272,7 @@ impl DaoVoting for Contract {
     /// # Parameters
     /// user - user of which to get votes spent on a proposal
     /// proposal_id - proposal of which to get votes spent by user
-    #[storage(read)]
-    fn user_votes(user: Identity, proposal_id: u64) -> u64 {
+    #[storage(read)]fn user_votes(user: Identity, proposal_id: u64) -> u64 {
         require(proposal_id < storage.proposal_count, Error::InvalidId);
         storage.votes.get((user, proposal_id))
     }
@@ -296,15 +280,14 @@ impl DaoVoting for Contract {
     /// Return proposal data for a given id
     ///
     /// # Parameters
-    /// proposal_id - id of proposal to get 
+    /// proposal_id - id of proposal to get
     ///
     /// # Panics
     ///
     /// The function will panic when:
     /// - The constructor has not been called ot initialize
     /// - The given id is out of range
-    #[storage(read)]
-    fn proposal(proposal_id: u64) -> Proposal {
+    #[storage(read)]fn proposal(proposal_id: u64) -> Proposal {
         require(storage.state == 1, Error::NotInitialized);
         require(proposal_id < storage.proposal_count, Error::InvalidId);
         storage.proposals.get(proposal_id)
