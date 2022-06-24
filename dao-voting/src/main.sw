@@ -219,6 +219,9 @@ impl DaoVoting for Contract {
         let proposal = storage.proposals.get(proposal_id);
         require(proposal.end_height < height(), Error::ProposalActive);
 
+        // TODO figure out how to prevent approval percentage from overflowing
+        // When close to the u64 max
+        // https://github.com/FuelLabs/sway-applications/issues/106
         let approval_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
         require(approval_percentage >= proposal.approval_percentage, Error::ApprovalPercentageNotMet);
 
