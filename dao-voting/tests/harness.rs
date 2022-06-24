@@ -293,16 +293,7 @@ mod deposit {
                 .unwrap()
                 .value;
 
-            assert_eq!(
-                deployer
-                    .dao_voting
-                    .balance()
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
-                0
-            );
+            assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
 
             assert_eq!(
                 user.dao_voting
@@ -332,13 +323,7 @@ mod deposit {
             );
 
             assert_eq!(
-                deployer
-                    .dao_voting
-                    .balance()
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
+                deployer.dao_voting.balance().call().await.unwrap().value,
                 asset_amount
             );
 
@@ -382,16 +367,7 @@ mod deposit {
                 .unwrap()
                 .value;
 
-            assert_eq!(
-                deployer
-                    .dao_voting
-                    .balance()
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
-                0
-            );
+            assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params =
                 CallParameters::new(Some(0), Some(AssetId::from(*gov_token_id)), Some(100_000));
@@ -790,16 +766,7 @@ mod withdraw {
                 .unwrap()
                 .value;
 
-            assert_eq!(
-                deployer
-                    .dao_voting
-                    .balance()
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
-                0
-            );
+            assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
 
             assert_eq!(
                 user.dao_voting
@@ -829,13 +796,7 @@ mod withdraw {
             );
 
             assert_eq!(
-                deployer
-                    .dao_voting
-                    .balance()
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
+                deployer.dao_voting.balance().call().await.unwrap().value,
                 asset_amount
             );
 
@@ -901,16 +862,7 @@ mod withdraw {
                 .unwrap()
                 .value;
 
-            assert_eq!(
-                deployer
-                    .dao_voting
-                    .balance()
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
-                0
-            );
+            assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
 
             assert_eq!(
                 user.dao_voting
@@ -940,13 +892,7 @@ mod withdraw {
             );
 
             assert_eq!(
-                deployer
-                    .dao_voting
-                    .balance()
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
+                deployer.dao_voting.balance().call().await.unwrap().value,
                 asset_amount
             );
 
