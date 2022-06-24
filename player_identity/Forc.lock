@@ -5,18 +5,10 @@ dependencies = []
 
 [[package]]
 name = 'player_identity'
-source = 'path+from-root-D39A761DA5FACEB8'
+source = 'root'
 dependencies = ['std']
 
 [[package]]
 name = 'std'
 source = 'git+https://github.com/fuellabs/sway?tag=v0.16.1#dcf22453aeb054335d96ef810da9d4f756d869b7'
 dependencies = ['core']
-
-[[package]]
-name = 'tictactoe_contract'
-source = 'root'
-dependencies = [
-    'player_identity',
-    'std',
-]

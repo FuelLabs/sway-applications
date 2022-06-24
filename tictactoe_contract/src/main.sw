@@ -1,21 +1,17 @@
 contract;
 
 use core::*;
-use std::*;
 use std::{
     address::Address,
-    assert::assert,
-    chain::auth::{AuthError, msg_sender},
-    identity::Identity,
-    result::*,
-    revert::revert,
+    storage::{store,get},
+    hash::sha256,
+    chain::auth::msg_sender,
 };
+
+
 
 use player_identity::*;
 
-pub struct Address {
-    value: b256,
-}
 
 storage {
     games_played: u64,
@@ -44,16 +40,7 @@ struct Game {
 abi TicTacToe {
     fn new_game(player_one: Players, player_two: Players) -> Game;
     fn make_move(game: Game, position: u64) -> (bool, str[20]);
-    // fn save_player_position(player: Players, position: u64);
-    // fn get_player_position_filled(gameID: u64, position: u64) -> Players;
-    // fn save_winner(gameID: u64, winner: Winners);
-    // fn get_winner(gameID: u64) -> Winners;
     fn calculate_winner(game: Game) -> Winners;
-    //fn next_player(game: Game);
-    // fn horizontal_alignment(gameID: u64) -> Winners;
-    // fn vertical_alignment(gameID: u64) -> Winners;
-    // fn diagonal_alignment(gameID: u64) -> Winners;
-    // fn is_board_full(gameID: u64) -> bool;
 }
 
 impl TicTacToe for Contract {
@@ -66,7 +53,7 @@ impl TicTacToe for Contract {
             PlayerTwo: player_two,
             winner: Winners::None,
             // let error1 = Error::StateError(StateError::Void);
-            playerTurn: player_one,
+            playerTurn:player_one,
         };
         storage.games_played = storage.games_played + 1;
         return game;
@@ -82,7 +69,7 @@ impl TicTacToe for Contract {
             return(false, "The game has ended. ");
         }
         // Only the player whose turn it is may make a move.
-        if (msg_sender != getCurrentPlayer(gameID)) {
+        if (msg_sender() != getCurrentPlayer(gameID)) {
             // TODO: what if the player is not present in the game at all?
             return(false, "It is not your turn.");
         }
@@ -191,7 +178,7 @@ impl TicTacToe for Contract {
 
 //     }
 // }
-
+#[storage(read)]
 fn horizontal_alignment(gameID: u64) -> Players {
     if (get_player_position_filled(gameID, 1) == get_player_position_filled(gameID, 2)) {
         if (get_player_position_filled(gameID, 2) == get_player_position_filled(gameID, 3)) {
@@ -219,6 +206,7 @@ fn horizontal_alignment(gameID: u64) -> Players {
     return Players::None;
 }
 
+#[storage(read)]
 fn vertical_alignment(gameID: u64) -> Players {
     if (get_player_position_filled(gameID, 1) == get_player_position_filled(gameID, 4)) {
         if (get_player_position_filled(gameID, 4) == get_player_position_filled(gameID, 7)) {
@@ -245,6 +233,7 @@ fn vertical_alignment(gameID: u64) -> Players {
     }
 }
 
+#[storage(read)]
 fn diagonal_alignment(gameID: u64) -> Players {
     if (get_player_position_filled(gameID, 1) == get_player_position_filled(gameID, 5)) {
         if (get_player_position_filled(gameID, 5) == get_player_position_filled(gameID, 9)) {
@@ -274,20 +263,24 @@ fn is_board_full(gameID: u64) -> bool {
 }
 
 // player 1 or 2, position is 1-9 (123/456/789)
+#[storage(write)]
 fn save_player_position(player: Players, position: u64) {
     store(sha256(("player_pos", position)), player);
 }
 
 // get the players position on the board, returns the player or empty
 // if the player returned value is None, that means it's empty
+#[storage(read)]
 fn get_player_position_filled(gameID: u64, position: u64) -> Players {
-    get(sha256(("player_pos", gameID, position)));
+   get(sha256(("player_pos", gameID, position)))
 }
 
+#[storage(write)]
 fn save_winner(gameID: u64, winner: Winners) {
     store(sha256(("winner", gameID)), winner);
 }
 
+#[storage(read)]
 fn get_winner(gameID: u64) -> Winners {
-    get(sha256(("winner", gameID, winner)));
+    get(sha256(("winner", gameID, winner)))
 }

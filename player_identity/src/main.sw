@@ -23,20 +23,6 @@ impl core::ops::Eq for Players {
         }
     }
 }
-//     fn neq(self, other: Self) -> bool {
-//         match(self, other) {
-//             (Players::PlayerOne(address1), Players::PlayerTwo(address2)) => {
-//                 address1 != address2
-//             },
-//             (Players::PlayerTwo(address1), Players::PlayerOne(address2)) => {
-//                 address1 != address2
-//             },
-//             _ => {
-//                 false
-//             },
-//         }
-//     }
-// }
-
+    
 
     
