@@ -5,17 +5,17 @@ dep abi;
 dep data_structures;
 dep errors;
 dep events;
-dep utils;
 
 // Standard library code
 use std::{
     assert::require,
+    chain::auth::msg_sender,
     context::{call_frames::msg_asset_id, msg_amount},
     contract_id::ContractId,
     identity::Identity,
     logging::log,
-    option::*,
-    revert::revert,
+    option::Option,
+    result::Result,
     storage::StorageMap,
     token::transfer,
     vec::Vec,
@@ -23,11 +23,9 @@ use std::{
 
 // Bring our code into scope
 use abi::Escrow;
-// use data_structures::{Asset, EscrowInfo, State, User};
-use data_structures::*; // workaround to import Eq for State
+use data_structures::{Asset, EscrowInfo, State, User};
 use errors::{AccessError, ApproveError, CreationError, DepositError, StateError};
 use events::{ApproveEvent, CreatedEscrowEvent, DepositEvent, NewUserEscrowEvent, ThresholdReachedEvent, WithdrawEvent};
-use utils::sender_identity;
 
 storage {
     /// Information describing an escrow created via create_escrow()
@@ -69,9 +67,7 @@ impl Escrow for Contract {
         // This allows the users to select which asset they want to deposit
         let mut asset_index = 0;
         while asset_index < assets.len() {
-            // Workaround until `.unwrap()` can be called directly without annotating
-            let asset: Option<Asset> = assets.get(asset_index);
-            let asset = asset.unwrap();
+            let asset = assets.get(asset_index).unwrap();
 
             // It does not make sense to allow 0 deposits
             // Use 0 as a sentinel to check if the asset is a valid asset in the escrow
@@ -84,9 +80,7 @@ impl Escrow for Contract {
         // Set the users that can interact with the escrow
         let mut user_index = 0;
         while user_index < users.len() {
-            // Workaround until `.unwrap()` can be called directly without annotating
-            let user: Option<Identity> = users.get(user_index);
-            let user = user.unwrap();
+            let user = users.get(user_index).unwrap();
 
             storage.users.insert((storage.escrow_count, user), User {
                 approved: false, 
@@ -113,7 +107,7 @@ impl Escrow for Contract {
 
         storage.escrows.insert(storage.escrow_count, escrow);
 
-        log(CreatedEscrowEvent { author: sender_identity(), escrow, identifier: storage.escrow_count });
+        log(CreatedEscrowEvent { author: msg_sender().unwrap(), escrow, identifier: storage.escrow_count });
     }
 
     /// Accepts a deposit from am authorized user for any of the assets specified in the escrow
@@ -135,7 +129,7 @@ impl Escrow for Contract {
         let mut escrow = storage.escrows.get(identifier);
 
         // Retrieve user data via the specified escrow ID
-        let identity = sender_identity();
+        let identity = msg_sender().unwrap();
         let mut user = storage.users.get((identifier, identity));
 
         // Make sure caller has been specified as a user for this escrow
@@ -194,7 +188,7 @@ impl Escrow for Contract {
         require(escrow.state == State::Pending, StateError::StateNotPending);
 
         // Make sure caller has been specified as a user for this escrow
-        let identity = sender_identity();
+        let identity = msg_sender().unwrap();
         let mut user = storage.users.get((identifier, identity));
 
         // User must deposit before they can approve
@@ -236,7 +230,7 @@ impl Escrow for Contract {
         let mut escrow = storage.escrows.get(identifier);
 
         // Retrieve data from whoever is trying to get access this escrow
-        let identity = sender_identity();
+        let identity = msg_sender().unwrap();
         let mut user = storage.users.get((identifier, identity));
 
         // User can only withdraw their deposit if they have a deposit currently in the escrow
@@ -244,8 +238,7 @@ impl Escrow for Contract {
         require(user.deposited, DepositError::DepositRequired);
 
         // Safe to unwrap since the asset is set during the deposit
-        let deposited_asset: Option<ContractId> = user.asset;
-        let deposited_asset = deposited_asset.unwrap();
+        let deposited_asset = user.asset.unwrap();
 
         // Retrieve the amount the escrow set for the asset
         // No need to validate asset since user can only deposit a specified asset
@@ -256,7 +249,7 @@ impl Escrow for Contract {
         user.deposited = false;
         user.approved = false;
 
-        escrow.approval_count = escrow.approval_count - 1;
+        escrow.approval_count -= 1;
 
         storage.users.insert((identifier, identity), user);
         storage.escrows.insert(identifier, escrow);

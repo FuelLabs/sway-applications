@@ -54,7 +54,9 @@ pub struct User {
 impl Eq for State {
     fn eq(self, other: Self) -> bool {
         match(self, other) {
-            (State::Pending, State::Pending) => true, (State::Completed, State::Completed) => true, _ => false, 
+            (State::Pending, State::Pending) => { true }, 
+            (State::Completed, State::Completed) => { true }, 
+            _ => { false }, 
         }
     }
 }
