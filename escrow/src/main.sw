@@ -1,6 +1,18 @@
 contract;
 
 // TODO: 3rd party arbitor address, fees, expire escrow
+//       make the seller deposit as well so that the user can get refunded some portion of the dispute
+//       over collateralize (additional fee / penalty) in case process is not smooth
+
+/*
+The "!" indicates escrow is locked / completed
+1. USER deposit() -> USER transfer_to_seller() !
+2. USER deposit() -> escrow expires -> SELLER take_payment() !
+3. USER deposit() -> USER disputes() -> escrow locks -> escrow expires -> ARBITOR resolve_dispute(user) !
+4. USER deposit() -> USER dispute() -> locks escrow -> USER transfer_to_seller() !
+
+Only case 3 results in ARBITOR getting a fee if fee != 0
+*/
 
 // Our library dependencies
 dep abi;
@@ -71,10 +83,20 @@ impl Escrow for Contract {
 
         let users: Vec<Buyer> = ~Vec::with_capacity(buyers.len());
 
+        // Make sure that each buyer is unique
+        let safey_check: Vec<Identity> = ~Vec::with_capacity(buyers.len());
+
         index = 0;
         while index < buyers.len() {
             let user = buyers.get(index).unwrap();
             require(user != arbitor, CreationError::BuyerCannotBeArbitor);
+
+            let mut safety_index = 0;
+            while safety_index < safey_check.len() {
+                require(user != safey_check.get(safety_index).unwrap(), "TODO");
+                safety_index += 1;
+            }
+            safey_check.push(user);
 
             users.push(Buyer {
                 address: user,
@@ -134,7 +156,8 @@ impl Escrow for Contract {
         let valid_identity = false;
 
         // TODO: https://github.com/FuelLabs/sway/issues/2014
-        //       once vec has additional utility we won't need to create a new vec and reassign 
+        //       once vec has additional utility we won't need to create a new vec and reassign
+        //       moreover, `.contains()` would clean up these loops
         let mut buyers: Vec<Buyer> = ~Vec::with_capacity(escrow.buyers.len());
 
         let mut index = 0;
@@ -145,26 +168,33 @@ impl Escrow for Contract {
             // Only 1 address is meant to deposit from the whitelist
             require(!buyer.deposited, DepositError::AlreadyDeposited);
 
-            // TODO: Since buyers are not validated to be only once in the Vec they can deposit multiples
             if identity == buyer.address {
                 // Check how much of the deposited asset is required
-                let deposited_asset = msg_asset_id();
+                let valid_deposit = false;
 
-                // TODO: loop over assets
-                let required_amount = storage.required_deposit.get((identifier, deposited_asset));
+                let mut inner_index = 0;
+                while inner_index < escrow.assets.len() {
+                    let asset = escrow.assets.get(inner_index).unwrap();
 
-                // If the amount is 0 then this asset has not been specified at creation of the escrow
-                require(required_amount != 0, DepositError::IncorrectAssetDeposited);
+                    if asset.id == msg_asset_id() {
+                        // Check that the amount deposited is the amount specified at creation of the escrow
+                        // Exact amount reduces bytecode since we are not juggling calculations to ensure the correct
+                        // total is deposited
+                        require(asset.amount == msg_amount(), DepositError::IncorrectAssetAmount);
 
-                // Check that the amount deposited is the amount specified at creation of the escrow
-                // Exact amount reduces bytecode since we are not juggling calculations to ensure the correct
-                // total is deposited
-                require(required_amount == msg_amount(), DepositError::IncorrectAssetAmount);
+                        valid_deposit = true;
+                    }
+
+                    inner_index += 1;
+                }
+
+                require(valid_deposit, DepositError::IncorrectAssetDeposited);
+
 
                 valid_identity = true;
 
                 // Update user state to indicate that they have deposited one of the assets
-                buyer.asset = Option::Some(deposited_asset);
+                buyer.asset = Option::Some(msg_asset_id());
                 buyer.deposited = true;
             }
 
@@ -232,6 +262,19 @@ impl Escrow for Contract {
 
         storage.escrows.insert(identifier, escrow);
     }
+
+    // oh fuck, I can't believe you've done this
+    fn dispute(identifier: u64) {}
+
+    // After a user deposits they can transfer deposit to seller
+    fn transfer_to_seller(identifier: u64) {}
+
+    // If a user has deposited but not transferred in time & they have not disputed then the seller
+    // can take payment themselves
+    fn take_payment(identifier: u64) {}
+
+    // if a dispute has been filed and the escrow expires then the arbitor can choose who the funds are sent to
+    fn resolve_dispute(identifier: u64, user: Identity) {}
 
     /// Returns the deposited asset back to the user and resets their deposit & approval flags to false
     ///
