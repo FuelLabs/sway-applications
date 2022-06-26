@@ -20,17 +20,17 @@ abi Fundraiser {
 
     #[storage(read)]fn campaign_info(id: u64) -> CampaignInfo;
 
-    #[storage(read)]fn user_campaign_count() -> u64;
+    #[storage(read)]fn user_campaign_count(user: Identity) -> u64;
 
-    #[storage(read)]fn campaign(campaign_history_index: u64) -> Campaign;
+    #[storage(read)]fn campaign(campaign_history_index: u64, user: Identity) -> Campaign;
 
-    #[storage(read)]fn pledge_count() -> u64;
+    #[storage(read)]fn pledge_count(user: Identity) -> u64;
 
-    #[storage(read)]fn pledged(pledge_history_index: u64) -> Pledge;
+    #[storage(read)]fn pledged(pledge_history_index: u64, user: Identity) -> Pledge;
 
     #[storage(read)]fn asset_count() -> u64;
 
-    #[storage(read)]fn asset_info_by_address(asset: ContractId) -> AssetInfo;
+    #[storage(read)]fn asset_info_by_id(asset: ContractId) -> AssetInfo;
 
     #[storage(read)]fn asset_info_by_count(index: u64) -> AssetInfo;
 }

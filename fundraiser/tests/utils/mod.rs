@@ -179,31 +179,40 @@ pub mod abi_calls {
         contract.campaign_info(id).call().await.unwrap()
     }
 
-    pub async fn user_campaign_count(contract: &Fundraiser) -> u64 {
-        contract.user_campaign_count().call().await.unwrap().value
+    pub async fn user_campaign_count(contract: &Fundraiser, user: Identity) -> u64 {
+        contract
+            .user_campaign_count(user)
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
-    pub async fn campaign(contract: &Fundraiser, id: u64) -> CallResponse<Campaign> {
-        contract.campaign(id).call().await.unwrap()
+    pub async fn campaign(
+        contract: &Fundraiser,
+        id: u64,
+        user: Identity,
+    ) -> CallResponse<Campaign> {
+        contract.campaign(id, user).call().await.unwrap()
     }
 
-    pub async fn pledge_count(contract: &Fundraiser) -> u64 {
-        contract.pledge_count().call().await.unwrap().value
+    pub async fn pledge_count(contract: &Fundraiser, user: Identity) -> u64 {
+        contract.pledge_count(user).call().await.unwrap().value
     }
 
-    pub async fn pledged(contract: &Fundraiser, id: u64) -> CallResponse<Pledge> {
-        contract.pledged(id).call().await.unwrap()
+    pub async fn pledged(contract: &Fundraiser, id: u64, user: Identity) -> CallResponse<Pledge> {
+        contract.pledged(id, user).call().await.unwrap()
     }
 
     pub async fn asset_count(contract: &Fundraiser) -> u64 {
         contract.asset_count().call().await.unwrap().value
     }
 
-    pub async fn asset_info_by_address(
+    pub async fn asset_info_by_id(
         contract: &Fundraiser,
         asset: &ContractId,
     ) -> CallResponse<AssetInfo> {
-        contract.asset_info_by_address(*asset).call().await.unwrap()
+        contract.asset_info_by_id(*asset).call().await.unwrap()
     }
 
     pub async fn asset_info_by_count(contract: &Fundraiser, id: u64) -> CallResponse<AssetInfo> {

@@ -6,8 +6,6 @@ dep errors;
 dep events;
 dep utils;
 
-// Identity and result importing via * is a workaround until bug is fixed
-// Related: https://github.com/FuelLabs/sway/pull/1958 and https://github.com/FuelLabs/sway/pull/2034
 use std::{
     assert::require,
     block::height,
@@ -15,9 +13,9 @@ use std::{
     constants::BASE_ASSET_ID,
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
-    identity::*,
+    identity::Identity,
     logging::log,
-    result::*,
+    result::Result,
     revert::revert,
     storage::StorageMap,
     token::transfer,
@@ -27,7 +25,7 @@ use abi::Fundraiser;
 use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
 use errors::{CampaignError, CreationError, UserError};
 use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
-use utils::{sender_identity, validate_id};
+use utils::validate_id;
 
 storage {
     /// Total number of unique assets used across all campaigns
@@ -82,7 +80,6 @@ impl Fundraiser for Contract {
     /// * When `asset` is the BASE_ASSET
     /// * When the `deadline` is not ahead of the current block height
     /// * When the `target_amount` is 0
-    /// * When an AuthError is generated
     #[storage(read, write)]fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64) {
         // Users cannot interact with a campaign that has already ended (is in the past)
         require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
@@ -90,7 +87,7 @@ impl Fundraiser for Contract {
         // A campaign must have a target to reach and therefore 0 is an invalid amount
         require(0 < target_amount, CreationError::TargetAmountCannotBeZero);
 
-        let user = sender_identity();
+        let user = msg_sender().unwrap();
 
         // Create an internal representation of a campaign
         let campaign_info = CampaignInfo {
@@ -146,7 +143,6 @@ impl Fundraiser for Contract {
     /// # Reverts
     ///
     /// * When the `id` is either 0 or greater than the total number of campaigns created
-    /// * When an AuthError is generated
     /// * When the user is not the author of the campaign
     /// * When the deadline has been surpassed
     /// * When the campaign has already been cancelled
@@ -158,7 +154,7 @@ impl Fundraiser for Contract {
         let mut campaign_info = storage.campaign_info.get(id);
 
         // Only the creator (author) of the campaign can cancel it
-        require(campaign_info.author == sender_identity(), UserError::UnauthorizedUser);
+        require(campaign_info.author == msg_sender().unwrap(), UserError::UnauthorizedUser);
 
         // The campaign can only be cancelled before it has reached its deadline (ended)
         require(height() < campaign_info.deadline, CampaignError::CampaignEnded);
@@ -188,7 +184,6 @@ impl Fundraiser for Contract {
     /// # Reverts
     ///
     /// * When the `id` is either 0 or greater than the total number of campaigns created
-    /// * When an AuthError is generated
     /// * When the user is not the author of the campaign
     /// * When the deadline has not been reached
     /// * When the total pledge has not reached the minimum `target_amount`
@@ -202,7 +197,7 @@ impl Fundraiser for Contract {
         let mut campaign_info = storage.campaign_info.get(id);
 
         // Only the creator (author) of the campaign can initiate the claiming process
-        require(campaign_info.author == sender_identity(), UserError::UnauthorizedUser);
+        require(campaign_info.author == msg_sender().unwrap(), UserError::UnauthorizedUser);
 
         // The author should only have the ability to claim after the deadline has been reached
         // (campaign has naturally ended i.e. has not been cancelled)
@@ -248,7 +243,6 @@ impl Fundraiser for Contract {
     /// * When the user attempts to pledge when the deadline has been reached
     /// * When the user pledges a different asset to the one specified in the campaign
     /// * When the user pledges after the campaign has been cancelled
-    /// * When an AuthError is generated
     #[storage(read, write)]fn pledge(id: u64) {
         // User cannot interact with a non-existent campaign
         validate_id(id, storage.total_campaigns);
@@ -272,7 +266,7 @@ impl Fundraiser for Contract {
         require(!campaign_info.cancelled, CampaignError::CampaignHasBeenCancelled);
 
         // Use the user's pledges as an ID / way to index this new pledge
-        let user = sender_identity();
+        let user = msg_sender().unwrap();
         let pledge_count = storage.pledge_count.get(user);
 
         // Fetch the index to see if the user has pledged to this campaign before or if this is a
@@ -340,7 +334,6 @@ impl Fundraiser for Contract {
     ///
     /// * When the `id` is either 0 or greater than the total number of campaigns created
     /// * When the user attempts to unpledge after the deadline and `target_amount` have been reached
-    /// * When an AuthError is generated
     /// * When the user has not pledged to the campaign represented by the `id`
     #[storage(read, write)]fn unpledge(id: u64, amount: u64) {
         // User cannot interact with a non-existent campaign
@@ -359,7 +352,7 @@ impl Fundraiser for Contract {
         }
 
         // Check if the user has pledged to the campaign they are attempting to unpledge from
-        let user = sender_identity();
+        let user = msg_sender().unwrap();
         let pledge_history_index = storage.pledge_history_index.get((user, id));
 
         require(pledge_history_index != 0, UserError::UserHasNotPledged);
@@ -423,12 +416,8 @@ impl Fundraiser for Contract {
     }
 
     /// Returns the number of campaigns that the user has created
-    ///
-    /// # Reverts
-    ///
-    /// * When an AuthError is generated
-    #[storage(read)]fn user_campaign_count() -> u64 {
-        storage.user_campaign_count.get(sender_identity())
+    #[storage(read)]fn user_campaign_count(user: Identity) -> u64 {
+        storage.user_campaign_count.get(user)
     }
 
     /// Returns information about the specified campaign for the campaign author
@@ -440,11 +429,10 @@ impl Fundraiser for Contract {
     /// # Reverts
     ///
     /// * When the `id` is either 0 or greater than the total number of campaigns created by the author
-    /// * When an AuthError is generated
-    #[storage(read)]fn campaign(id: u64) -> Campaign {
+    #[storage(read)]fn campaign(id: u64, user: Identity) -> Campaign {
         // Validate the ID to ensure that the user has created the campaign
-        validate_id(id, storage.user_campaign_count.get(sender_identity()));
-        storage.campaign_history.get((sender_identity(), id))
+        validate_id(id, storage.user_campaign_count.get(user));
+        storage.campaign_history.get((user, id))
     }
 
     /// Returns the number of campaigns that the user has pledged to
@@ -452,8 +440,8 @@ impl Fundraiser for Contract {
     /// # Reverts
     ///
     /// * When an AuthError is generated
-    #[storage(read)]fn pledge_count() -> u64 {
-        storage.pledge_count.get(sender_identity())
+    #[storage(read)]fn pledge_count(user: Identity) -> u64 {
+        storage.pledge_count.get(user)
     }
 
     /// Returns information about the specified pledge for the user
@@ -465,11 +453,10 @@ impl Fundraiser for Contract {
     /// # Reverts
     ///
     /// * When the `pledge_history_index` is either 0 or greater than the total number of pledges made by the user
-    /// * When an AuthError is generated
-    #[storage(read)]fn pledged(pledge_history_index: u64) -> Pledge {
+    #[storage(read)]fn pledged(pledge_history_index: u64, user: Identity) -> Pledge {
         // Validate the ID to ensure that the user has pledged
-        validate_id(pledge_history_index, storage.pledge_count.get(sender_identity()));
-        storage.pledge_history.get((sender_identity(), pledge_history_index))
+        validate_id(pledge_history_index, storage.pledge_count.get(user));
+        storage.pledge_history.get((user, pledge_history_index))
     }
 
     /// Returns the number of unique assets that have added across all campaigns
@@ -483,7 +470,7 @@ impl Fundraiser for Contract {
     /// # Arguments
     ///
     /// * `asset` - Uniquie identifier that identifies the asset
-    #[storage(read)]fn asset_info_by_address(asset: ContractId) -> AssetInfo {
+    #[storage(read)]fn asset_info_by_id(asset: ContractId) -> AssetInfo {
         storage.asset_info.get(asset)
     }
 
