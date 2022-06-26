@@ -69,7 +69,7 @@ impl Escrow for Contract {
             index += 1;
         }
 
-        let users: Vec<Buyer> = ~Vec::new();
+        let users: Vec<Buyer> = ~Vec::with_capacity(buyers.len());
 
         index = 0;
         while index < buyers.len() {
@@ -135,7 +135,7 @@ impl Escrow for Contract {
 
         // TODO: https://github.com/FuelLabs/sway/issues/2014
         //       once vec has additional utility we won't need to create a new vec and reassign 
-        let mut buyers: Vec<Buyer> = ~Vec::new();
+        let mut buyers: Vec<Buyer> = ~Vec::with_capacity(escrow.buyers.len());
 
         let mut index = 0;
         while index < escrow.buyers.len() {
