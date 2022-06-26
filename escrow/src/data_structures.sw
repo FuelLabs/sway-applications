@@ -20,23 +20,26 @@ pub struct Asset {
 }
 
 pub struct EscrowInfo {
-    /// Current number of successful calls to approve()
-    approval_count: u64,
+    arbitor: Identity,
+
+    arbitor_fee_percentage: u64,
+
+    deadline: u64,
 
     /// The assets that this escrow accepts with their required quantities
+    /// This allows the buyers to select which asset they want to deposit
     assets: Vec<Asset>,
+
+    /// The authorized users who are able to interact with this escrow
+    buyers: Vec<Buyer>,
 
     /// Mechanism used to manage the control flow of the escrow
     state: State,
-
-    /// Required number of successful calls to approve() to mark the workflow as complete
-    threshold: u64,
-
-    /// The authorized users who are able to interact with this escrow
-    users: Vec<Identity>,
 }
 
-pub struct User {
+pub struct Buyer {
+    address: Identity,
+    
     /// Flag tracking whether the user has successfully called approve() and is currently in the
     /// approved state (has not reset it via withdrawing)
     approved: bool,

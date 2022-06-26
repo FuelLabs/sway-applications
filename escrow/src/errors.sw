@@ -9,7 +9,13 @@ pub enum ApproveError {
 }
 
 pub enum CreationError {
+    ArbitorFeeCannotExceed100Percent: (),
+    BuyerCannotBeArbitor: (),
+    DeadlineMustBeInTheFuture: (),
     DepositAmountCannotBeZero: (),
+    SellerCannotBeArbitor: (),
+    UnspecifiedAssets: (),
+    UnspecifiedBuyers: (),
 }
 
 pub enum DepositError {
