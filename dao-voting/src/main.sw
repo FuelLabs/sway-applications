@@ -25,14 +25,16 @@ use errors::Error;
 use utils::sender_identity;
 
 storage {
-    gov_token: ContractId,
-    voting_period: u64,
-    approval_percentage: u64,
-    proposals: StorageMap<u64,
-    Proposal>, proposal_count: u64,
     // The amount of governance tokens a user has deposited
     balances: StorageMap<Identity,
-    u64>, // The amount of votes a user has used on a proposal
+    u64>, /// Contract Id of the governance token
+    gov_token: ContractId,
+    /// Information describing a proposal created via create_proposal(...)
+    proposals: StorageMap<u64,
+    Proposal>, /// Number of created proposals
+    /// Used to check the validity of a proposal id
+    proposal_count: u64,
+    /// The amount of votes a user has used on a proposal
     votes: StorageMap<(Identity,
     u64), u64>, state: u64,
 }
