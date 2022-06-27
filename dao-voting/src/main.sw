@@ -20,7 +20,7 @@ use std::{
 };
 
 use abi::DaoVoting;
-use data_structures::{CallData, Proposal};
+use data_structures::{Proposal, ProposalInfo};
 use errors::Error;
 use utils::sender_identity;
 
@@ -31,7 +31,7 @@ storage {
     gov_token: ContractId,
     /// Information describing a proposal created via create_proposal(...)
     proposals: StorageMap<u64,
-    Proposal>, /// Number of created proposals
+    ProposalInfo>, /// Number of created proposals
     /// Used to check the validity of a proposal id
     proposal_count: u64,
     /// The amount of votes a user has used on a proposal
@@ -70,13 +70,13 @@ impl DaoVoting for Contract {
     /// * When the end height is 0
     /// * When the acceptance percentage is 0
     /// * When the acceptance percentage is above 100
-    #[storage(read, write)]fn create_proposal(end_height: u64, acceptance_percentage: u64, proposal_data: CallData) {
+    #[storage(read, write)]fn create_proposal(end_height: u64, acceptance_percentage: u64, proposal_data: Proposal) {
         require(storage.state == 1, Error::NotInitialized);
         require(end_height > 0, Error::PeriodCannotBeZero);
         require(acceptance_percentage > 0, Error::ApprovalPercentageCannotBeZero);
         require(acceptance_percentage <= 100, Error::ApprovalPercentageCannotBeAboveHundred);
 
-        let proposal = Proposal {
+        let proposal = ProposalInfo {
             yes_votes: 0,
             no_votes: 0,
             acceptance_percentage: acceptance_percentage,
@@ -268,7 +268,7 @@ impl DaoVoting for Contract {
     ///
     /// * When the constructor has not been called ot initialize
     /// * When the given proposal id is out of range
-    #[storage(read)]fn proposal(proposal_id: u64) -> Proposal {
+    #[storage(read)]fn proposal(proposal_id: u64) -> ProposalInfo {
         require(storage.state == 1, Error::NotInitialized);
         require(proposal_id < storage.proposal_count, Error::InvalidId);
         storage.proposals.get(proposal_id)

@@ -2,7 +2,21 @@ library data_structures;
 
 use std::{contract_id::ContractId, identity::Identity};
 
-pub struct CallData {
+pub struct ProposalInfo {
+    /// The needed percentage of yes votes to execute a proposal.
+    /// 0 < acceptance_percentage <= 100
+    acceptance_percentage: u64,
+    /// Arbitrary call data for executing approved proposals
+    call_data: Proposal,
+    /// Amount of blocks a proposal is valid for after creation
+    end_height: u64,
+    /// The number of no votes for a proposal
+    no_votes: u64,
+    /// The number of yes votes for a proposal
+    yes_votes: u64,
+}
+
+pub struct Proposal {
     /// Specifies the amount of gas to forward to the arbitrary function call
     amount_of_gas_to_forward: u64,
     /// Asset Id of the coins to forward
@@ -21,18 +35,4 @@ struct MemoryAddress {
     function_data: u64,
     /// Function to call on the specified contract
     function_selector: u64,
-}
-
-pub struct Proposal {
-    /// The needed percentage of yes votes to execute a proposal.
-    /// 0 < acceptance_percentage <= 100
-    acceptance_percentage: u64,
-    /// Arbitrary call data for executing approved proposals
-    call_data: CallData,
-    /// Amount of blocks a proposal is valid for after creation
-    end_height: u64,
-    /// The number of no votes for a proposal
-    no_votes: u64,
-    /// The number of yes votes for a proposal
-    yes_votes: u64,
 }
