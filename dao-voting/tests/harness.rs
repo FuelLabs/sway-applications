@@ -893,7 +893,7 @@ mod convert_votes {
         use super::*;
 
         #[tokio::test]
-        async fn user_can_convert_votes_to_tokens() {
+        async fn user_can_unlock_tokens() {
             let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             deployer
                 .dao_voting
@@ -959,7 +959,7 @@ mod convert_votes {
             );
 
             user.dao_voting
-                .convert_votes_to_tokens(0)
+                .unlock_votes(0)
                 .call()
                 .await
                 .unwrap();

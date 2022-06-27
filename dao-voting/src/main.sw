@@ -211,7 +211,7 @@ impl DaoVoting for Contract {
     /// * When the constructor has not ben called to initialize
     /// * When the proposal id is invalid
     /// * When the proposal is still active
-    #[storage(read, write)]fn convert_votes_to_tokens(proposal_id: u64) {
+    #[storage(read, write)]fn unlock_votes(proposal_id: u64) {
         require(storage.state == 1, InitializationError::ContractNotInitialized);
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
 
