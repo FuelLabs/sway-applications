@@ -90,7 +90,7 @@ fn get_call_data(recipient: Address, asset_id: ContractId) -> daovoting_mod::Cal
     call_data
 }
 
-async fn initialize() -> bool {
+async fn initialize() {
     let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
     deployer
         .dao_voting
@@ -109,7 +109,7 @@ mod initialize {
 
         #[tokio::test]
         async fn initializes() {
-            assert!(initialize().await);
+            initialize().await;
         }
     }
 
@@ -157,14 +157,12 @@ mod add_proposal {
 
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
-            assert!(
-                user.dao_voting
-                    .add_proposal(10, 10, call_data.clone())
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .add_proposal(10, 10, call_data.clone())
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 
@@ -310,16 +308,14 @@ mod deposit {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            assert!(
-                user.dao_voting
-                    .deposit()
-                    .tx_params(tx_params)
-                    .call_params(call_params)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .deposit()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             assert_eq!(
                 deployer.dao_voting.balance().call().await.unwrap().value,
@@ -501,45 +497,37 @@ mod vote {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            assert!(
-                user.dao_voting
-                    .deposit()
-                    .tx_params(tx_params)
-                    .call_params(call_params)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .deposit()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
-            assert!(
-                user.dao_voting
-                    .add_proposal(10, 10, call_data.clone())
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .add_proposal(10, 10, call_data.clone())
+                .call()
+                .await
+                .unwrap()
+                .value;
 
-            assert!(
-                user.dao_voting
-                    .vote(0, asset_amount / 4, true)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .vote(0, asset_amount / 4, true)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
-            assert!(
-                user.dao_voting
-                    .vote(0, asset_amount / 4, false)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .vote(0, asset_amount / 4, false)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 
@@ -573,14 +561,12 @@ mod vote {
 
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
-            assert!(
-                user.dao_voting
-                    .add_proposal(10, 10, call_data)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .add_proposal(10, 10, call_data)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             user.dao_voting
                 .vote(0, asset_amount / 4, true)
@@ -616,14 +602,12 @@ mod vote {
 
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
-            assert!(
-                user.dao_voting
-                    .add_proposal(1, 10, call_data)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .add_proposal(1, 10, call_data)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
@@ -631,16 +615,14 @@ mod vote {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            assert!(
-                user.dao_voting
-                    .deposit()
-                    .tx_params(tx_params)
-                    .call_params(call_params)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .deposit()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             user.dao_voting
                 .vote(0, asset_amount / 4, true)
@@ -686,36 +668,30 @@ mod execute_proposal {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            assert!(
-                user.dao_voting
-                    .deposit()
-                    .tx_params(tx_params)
-                    .call_params(call_params)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .deposit()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
-            assert!(
-                user.dao_voting
-                    .add_proposal(10, 10, call_data.clone())
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .add_proposal(10, 10, call_data.clone())
+                .call()
+                .await
+                .unwrap()
+                .value;
 
-            assert!(
-                user.dao_voting
-                    .vote(0, asset_amount / 2, true)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .vote(0, asset_amount / 2, true)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 
@@ -783,16 +759,14 @@ mod withdraw {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            assert!(
-                user.dao_voting
-                    .deposit()
-                    .tx_params(tx_params)
-                    .call_params(call_params)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .deposit()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             assert_eq!(
                 deployer.dao_voting.balance().call().await.unwrap().value,
@@ -809,15 +783,13 @@ mod withdraw {
                 asset_amount
             );
 
-            assert!(
-                user.dao_voting
-                    .withdraw(asset_amount)
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .withdraw(asset_amount)
+                .append_variable_outputs(1)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             assert_eq!(
                 user.dao_voting
@@ -879,16 +851,14 @@ mod withdraw {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            assert!(
-                user.dao_voting
-                    .deposit()
-                    .tx_params(tx_params)
-                    .call_params(call_params)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .deposit()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             assert_eq!(
                 deployer.dao_voting.balance().call().await.unwrap().value,
@@ -950,36 +920,30 @@ mod convert_votes {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            assert!(
-                user.dao_voting
-                    .deposit()
-                    .tx_params(tx_params)
-                    .call_params(call_params)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .deposit()
+                .tx_params(tx_params)
+                .call_params(call_params)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
-            assert!(
-                user.dao_voting
-                    .add_proposal(1, 10, call_data.clone())
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .add_proposal(1, 10, call_data.clone())
+                .call()
+                .await
+                .unwrap()
+                .value;
 
-            assert!(
-                user.dao_voting
-                    .vote(0, asset_amount / 2, true)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
-            );
+            user.dao_voting
+                .vote(0, asset_amount / 2, true)
+                .call()
+                .await
+                .unwrap()
+                .value;
 
             let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 

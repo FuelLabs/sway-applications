@@ -49,14 +49,12 @@ impl DaoVoting for Contract {
     /// # Reverts
     ///
     /// * When the constructor is called more than once
-    #[storage(read, write)]fn constructor(gov_token: ContractId) -> bool {
+    #[storage(read, write)]fn constructor(gov_token: ContractId) {
         require(storage.state == 0, Error::CannotReinitialize);
 
         storage.gov_token = gov_token;
         storage.proposal_count = 0;
         storage.state = 1;
-
-        true
     }
 
     /// Add proposal to be voted on
@@ -67,13 +65,13 @@ impl DaoVoting for Contract {
     /// - `acceptance_percentage` - the percentage of yes votes a proposal needs to be executed
     /// - `proposal_data` - transaction data to be executed if proposal is approved
     ///
-    /// # Revertes
+    /// # Reverts
     ///
     /// * When the constructor has not been called to initialize
     /// * When the end height is 0
     /// * When the acceptance percentage is 0
     /// * When the acceptance percentage is above 100
-    #[storage(read, write)]fn add_proposal(end_height: u64, acceptance_percentage: u64, proposal_data: CallData) -> bool {
+    #[storage(read, write)]fn add_proposal(end_height: u64, acceptance_percentage: u64, proposal_data: CallData) {
         require(storage.state == 1, Error::NotInitialized);
         require(end_height > 0, Error::PeriodCannotBeZero);
         require(acceptance_percentage > 0, Error::ApprovalPercentageCannotBeZero);
@@ -88,7 +86,6 @@ impl DaoVoting for Contract {
         };
         storage.proposals.insert(storage.proposal_count, proposal);
         storage.proposal_count = storage.proposal_count + 1;
-        true
     }
 
     /// Update the user balance to indicate they have deposited governance tokens.
@@ -99,7 +96,7 @@ impl DaoVoting for Contract {
     /// * When the constructor has not been called to initialize
     /// * When the user deposits an asset that is not the specified governance token.
     /// * When the user does not deposit any assets
-    #[storage(read, write)]fn deposit() -> bool {
+    #[storage(read, write)]fn deposit() {
         require(storage.state == 1, Error::NotInitialized);
         require(storage.gov_token == msg_asset_id(), Error::NotGovernanceToken);
         require(msg_amount() > 0, Error::NoAssetsSent);
@@ -109,8 +106,6 @@ impl DaoVoting for Contract {
         let prev_balance = storage.balances.get(sender);
         let new_balance = prev_balance + msg_amount();
         storage.balances.insert(sender, new_balance);
-
-        true
     }
 
     /// Update the user balance to indicate they have withdrawn governance tokens
@@ -123,7 +118,7 @@ impl DaoVoting for Contract {
     ///
     /// * When the constructor has not been called to initalize
     /// * When the user tries to withdraw more than their balance
-    #[storage(read, write)]fn withdraw(amount: u64) -> bool {
+    #[storage(read, write)]fn withdraw(amount: u64) {
         require(storage.state == 1, Error::NotInitialized);
 
         let sender: Identity = sender_identity();
@@ -136,8 +131,6 @@ impl DaoVoting for Contract {
 
         // Transfer the asset back to the user
         transfer(amount, storage.gov_token, sender);
-
-        true
     }
 
     /// Vote on a given proposal
@@ -155,7 +148,7 @@ impl DaoVoting for Contract {
     /// * When the vote amount is 0
     /// * When the vote amount is greater than the users deposited balance
     /// * When the given proposal is expired
-    #[storage(read, write)]fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) -> bool {
+    #[storage(read, write)]fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) {
         require(storage.state == 1, Error::NotInitialized);
         require(proposal_id < storage.proposal_count, Error::InvalidId);
         require(vote_amount > 0, Error::VoteAmountCannotBeZero);
@@ -180,8 +173,6 @@ impl DaoVoting for Contract {
         storage.votes.insert((sender, proposal_id), votes + vote_amount);
 
         storage.proposals.insert(proposal_id, proposal);
-
-        true
     }
 
     /// Execute a given proposal
@@ -196,7 +187,7 @@ impl DaoVoting for Contract {
     /// * When the proposal id is out of range
     /// * When the proposal has not expired
     /// * When the proposal has not met the necessary approval percentage
-    #[storage(read, write)]fn execute(proposal_id: u64) -> bool {
+    #[storage(read, write)]fn execute(proposal_id: u64) {
         require(storage.state == 1, Error::NotInitialized);
         require(proposal_id < storage.proposal_count, Error::InvalidId);
 
@@ -212,10 +203,7 @@ impl DaoVoting for Contract {
         asm(rA: proposal.call_data.memory_address, rB: proposal.call_data.num_coins_to_forward, rC: proposal.call_data.asset_id_of_coins_to_forward, rD: proposal.call_data.amount_of_gas_to_forward) {
             call rA rB rC rD;
         }
-
         // Users can now convert their votes back into tokens
-
-        true
     }
 
     /// Unlock tokens used to vote on proposals to allow the user to withdraw
