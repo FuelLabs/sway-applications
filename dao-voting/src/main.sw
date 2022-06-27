@@ -150,7 +150,7 @@ impl DaoVoting for Contract {
         let sender: Identity = msg_sender().unwrap();
         let sender_balance = storage.balances.get(sender);
 
-        require(sender_balance >= vote_amount, UserError::NotEnoughAssets);
+        require(vote_amount <= sender_balance, UserError::NotEnoughAssets);
 
         let mut proposal = storage.proposals.get(proposal_id);
         require(height() <= proposal.end_height, ProposalError::ProposalExpired);
