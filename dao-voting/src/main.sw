@@ -53,7 +53,6 @@ impl DaoVoting for Contract {
         require(storage.state == 0, Error::CannotReinitialize);
 
         storage.gov_token = gov_token;
-        storage.proposal_count = 0;
         storage.state = 1;
     }
 
