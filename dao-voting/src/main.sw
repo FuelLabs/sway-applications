@@ -56,7 +56,7 @@ impl DaoVoting for Contract {
         storage.state = 1;
     }
 
-    /// Add proposal to be voted on
+    /// Create a new proposal
     ///
     /// # Arguments
     ///
@@ -70,7 +70,7 @@ impl DaoVoting for Contract {
     /// * When the end height is 0
     /// * When the acceptance percentage is 0
     /// * When the acceptance percentage is above 100
-    #[storage(read, write)]fn add_proposal(end_height: u64, acceptance_percentage: u64, proposal_data: CallData) {
+    #[storage(read, write)]fn create_proposal(end_height: u64, acceptance_percentage: u64, proposal_data: CallData) {
         require(storage.state == 1, Error::NotInitialized);
         require(end_height > 0, Error::PeriodCannotBeZero);
         require(acceptance_percentage > 0, Error::ApprovalPercentageCannotBeZero);
