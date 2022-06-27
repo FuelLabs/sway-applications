@@ -11,7 +11,7 @@ pub struct CreatedProposalEvent {
 
     /// The unique Identifier for the proposal
     id: u64,
-    
+
     /// Information about the proposal
     proposal_info: ProposalInfo,
 }

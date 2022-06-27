@@ -24,7 +24,9 @@ use std::{
 use abi::DaoVoting;
 use data_structures::{Proposal, ProposalInfo};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
-use events::{CreatedProposalEvent, DepositEvent, ExecuteEvent, VoteEvent, UnlockVotesEvent, WithdrawEvent};
+eveuse nts:: {
+    CreatedProposalEvent, DepositEvent, ExecuteEvent, UnlockVotesEvent, VoteEvent, WithdrawEvent
+};
 
 enum State {
     NotInitialized: (),
@@ -34,9 +36,7 @@ enum State {
 impl Eq for State {
     fn eq(self, other: Self) -> bool {
         match(self, other) {
-            (State::Initialized, State::Initialized) => true,
-            (State::NotInitialized, State::NotInitialized) => true,
-            _ => false,
+            (State::Initialized, State::Initialized) => true, (State::NotInitialized, State::NotInitialized) => true, _ => false, 
         }
     }
 }
@@ -53,8 +53,7 @@ storage {
     proposal_count: u64,
     /// The amount of votes a user has used on a proposal
     votes: StorageMap<(Identity,
-    u64), u64>,
-    /// The initilization state of the contract.  Defaults to NotInitialized.
+    u64), u64>, /// The initilization state of the contract.  Defaults to NotInitialized.
     state: State,
 }
 
@@ -156,8 +155,7 @@ impl DaoVoting for Contract {
         transfer(amount, storage.gov_token, sender);
 
         log(WithdrawEvent {
-            amount: amount,
-            user: sender,
+            amount: amount, user: sender, 
         })
     }
 
@@ -201,9 +199,7 @@ impl DaoVoting for Contract {
         storage.proposals.insert(proposal_id, proposal);
 
         log(VoteEvent {
-            id: proposal_id,
-            user: sender,
-            vote_amount: vote_amount
+            id: proposal_id, user: sender, vote_amount: vote_amount
         });
     }
 
@@ -241,7 +237,7 @@ impl DaoVoting for Contract {
         }
         // Users can now convert their votes back into tokens
         log(ExecuteEvent {
-            id: proposal_id,
+            id: proposal_id, 
         });
     }
 
@@ -271,8 +267,7 @@ impl DaoVoting for Contract {
         storage.balances.insert(sender, storage.balances.get(sender) + votes);
 
         log(UnlockVotesEvent {
-            id: proposal_id,
-            vote_amount: votes,
+            id: proposal_id, vote_amount: votes, 
         });
     }
 

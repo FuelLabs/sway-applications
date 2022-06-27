@@ -958,11 +958,7 @@ mod convert_votes {
                 }
             );
 
-            user.dao_voting
-                .unlock_votes(0)
-                .call()
-                .await
-                .unwrap();
+            user.dao_voting.unlock_votes(0).call().await.unwrap();
 
             assert_eq!(
                 user.dao_voting
