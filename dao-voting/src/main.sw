@@ -16,7 +16,7 @@ use std::{
     result::*,
     revert::revert,
     storage::StorageMap,
-    token::{force_transfer_to_contract, transfer_to_output}
+    token::transfer,
 };
 
 use abi::DaoVoting;
@@ -139,9 +139,7 @@ impl DaoVoting for Contract {
         storage.balances.insert(sender, new_balance);
 
         // Transfer the asset back to the user
-        match sender {
-            Identity::Address(address) => transfer_to_output(amount, storage.gov_token, address), Identity::ContractId(address) => force_transfer_to_contract(amount, storage.gov_token, address), 
-        }
+        transfer(amount, storage.gov_token, sender);
 
         true
     }
