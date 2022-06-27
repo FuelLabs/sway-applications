@@ -5,7 +5,8 @@ dep data_structures;
 use std::identity::Identity;
 use data_structures::ProposalInfo;
 
-pub struct CreatedProposalEvent {
+// TODO ename once https://github.com/FuelLabs/sway/issues/2106 is fixed
+pub struct CreatePropEvent {
     /// The user who created the proposal
     author: Identity,
 

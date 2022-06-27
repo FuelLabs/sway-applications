@@ -24,9 +24,7 @@ use std::{
 use abi::DaoVoting;
 use data_structures::{Proposal, ProposalInfo};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
-eveuse nts:: {
-    CreatedProposalEvent, DepositEvent, ExecuteEvent, UnlockVotesEvent, VoteEvent, WithdrawEvent
-};
+use events::{CreatePropEvent, DepositEvent, ExecuteEvent, UnlockVotesEvent, VoteEvent, WithdrawEvent};
 
 enum State {
     NotInitialized: (),
