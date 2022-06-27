@@ -7,7 +7,6 @@ use fuels::{
     prelude::*,
     tx::{AssetId, ContractId},
 };
-use fuels_abigen_macro::abigen;
 
 // Load abi from json
 abigen!(DaoVoting, "out/debug/dao-voting-abi.json");
