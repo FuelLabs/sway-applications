@@ -187,6 +187,11 @@ impl DaoVoting for Contract {
         let proposal = storage.proposals.get(proposal_id);
         require(proposal.end_height < height(), ProposalError::ProposalStillActive);
 
+        // Prevents divide by 0 error when calculating acceptance_percentage below
+        if (proposal.yes_votes == 0 && proposal.no_votes == 0) {
+            revert(42);
+        }
+
         // TODO figure out how to prevent approval percentage from overflowing
         // When close to the u64 max
         // https://github.com/FuelLabs/sway-applications/issues/106
@@ -200,7 +205,7 @@ impl DaoVoting for Contract {
     }
 
     /// Unlock governance tokens which have been locked by users who have voted on a proposal
-    /// If the user had not voted on the given, expired proposal, nothing happens
+    /// If the user had not voted on the given, expired proposal then nothing happens
     ///
     /// # Arguments
     ///
