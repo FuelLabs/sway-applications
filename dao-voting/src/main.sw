@@ -75,7 +75,7 @@ impl DaoVoting for Contract {
     /// * When the acceptance percentage is above 100
     #[storage(read, write)]fn add_proposal(end_height: u64, acceptance_percentage: u64, proposal_data: CallData) -> bool {
         require(storage.state == 1, Error::NotInitialized);
-        require(voting_period > 0, Error::PeriodCannotBeZero);
+        require(end_height > 0, Error::PeriodCannotBeZero);
         require(acceptance_percentage > 0, Error::ApprovalPercentageCannotBeZero);
         require(acceptance_percentage <= 100, Error::ApprovalPercentageCannotBeAboveHundred);
 
@@ -84,7 +84,7 @@ impl DaoVoting for Contract {
             no_votes: 0,
             acceptance_percentage: acceptance_percentage,
             call_data: proposal_data,
-            end_height: height() + voting_period,
+            end_height: height() + end_height,
         };
         storage.proposals.insert(storage.proposal_count, proposal);
         storage.proposal_count = storage.proposal_count + 1;
