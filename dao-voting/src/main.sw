@@ -72,8 +72,8 @@ impl DaoVoting for Contract {
     /// * When the acceptance percentage is above 100
     #[storage(read, write)]fn create_proposal(end_height: u64, acceptance_percentage: u64, proposal_data: Proposal) {
         require(storage.state == 1, InitializationError::ContractNotInitialized);
-        require(end_height > 0, CreationError::EndHeightCannotBeZero);
-        require(acceptance_percentage > 0, CreationError::AcceptancePercentageCannotBeZero);
+        require(0 < end_height, CreationError::EndHeightCannotBeZero);
+        require(0 < acceptance_percentage, CreationError::AcceptancePercentageCannotBeZero);
         require(acceptance_percentage <= 100, CreationError::AcceptancePercentageCannotBeAboveOneHundred);
 
         let proposal = ProposalInfo {
@@ -98,7 +98,7 @@ impl DaoVoting for Contract {
     #[storage(read, write)]fn deposit() {
         require(storage.state == 1, InitializationError::ContractNotInitialized);
         require(storage.gov_token == msg_asset_id(), UserError::IncorrectAssetSent);
-        require(msg_amount() > 0, UserError::AmountCannotBeZero);
+        require(0 < msg_amount(), UserError::AmountCannotBeZero);
 
         let sender: Identity = sender_identity();
 
@@ -123,7 +123,7 @@ impl DaoVoting for Contract {
         let sender: Identity = sender_identity();
 
         let prev_balance = storage.balances.get(sender);
-        require(prev_balance >= amount, UserError::NotEnoughAssets);
+        require(amount <= prev_balance, UserError::NotEnoughAssets);
 
         let new_balance = prev_balance - amount;
         storage.balances.insert(sender, new_balance);
@@ -150,7 +150,7 @@ impl DaoVoting for Contract {
     #[storage(read, write)]fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) {
         require(storage.state == 1, InitializationError::ContractNotInitialized);
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
-        require(vote_amount > 0, UserError::VoteAmountCannotBeZero);
+        require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
 
         let sender: Identity = sender_identity();
         let sender_balance = storage.balances.get(sender);
@@ -158,7 +158,7 @@ impl DaoVoting for Contract {
         require(sender_balance >= vote_amount, UserError::NotEnoughAssets);
 
         let mut proposal = storage.proposals.get(proposal_id);
-        require(proposal.end_height >= height(), ProposalError::ProposalExpired);
+        require(height() <= proposal.end_height, ProposalError::ProposalExpired);
 
         if (is_yes_vote) {
             proposal.yes_votes = proposal.yes_votes + vote_amount;
@@ -197,7 +197,7 @@ impl DaoVoting for Contract {
         // When close to the u64 max
         // https://github.com/FuelLabs/sway-applications/issues/106
         let acceptance_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
-        require(acceptance_percentage >= proposal.acceptance_percentage, ProposalError::ApprovalPercentageNotMet);
+        require(proposal.acceptance_percentage <= acceptance_percentage, ProposalError::ApprovalPercentageNotMet);
 
         asm(rA: proposal.call_data.memory_address, rB: proposal.call_data.num_coins_to_forward, rC: proposal.call_data.asset_id_of_coins_to_forward, rD: proposal.call_data.amount_of_gas_to_forward) {
             call rA rB rC rD;
