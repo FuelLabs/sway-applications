@@ -100,9 +100,7 @@ impl DaoVoting for Contract {
 
         let sender: Identity = msg_sender().unwrap();
 
-        let prev_balance = storage.balances.get(sender);
-        let new_balance = prev_balance + msg_amount();
-        storage.balances.insert(sender, new_balance);
+        storage.balances.insert(sender, msg_amount() + storage.balances.get(sender));
     }
 
     /// Update the user balance to indicate they have withdrawn governance tokens
@@ -123,8 +121,7 @@ impl DaoVoting for Contract {
         let prev_balance = storage.balances.get(sender);
         require(amount <= prev_balance, UserError::NotEnoughAssets);
 
-        let new_balance = prev_balance - amount;
-        storage.balances.insert(sender, new_balance);
+        storage.balances.insert(sender, prev_balance - amount);
 
         // Transfer the asset back to the user
         transfer(amount, storage.gov_token, sender);
@@ -159,15 +156,14 @@ impl DaoVoting for Contract {
         require(height() <= proposal.end_height, ProposalError::ProposalExpired);
 
         if (is_yes_vote) {
-            proposal.yes_votes = proposal.yes_votes + vote_amount;
+            proposal.yes_votes += vote_amount;
         } else {
-            proposal.no_votes = proposal.no_votes + vote_amount;
+            proposal.no_votes += vote_amount;
         };
 
         storage.balances.insert(sender, sender_balance - vote_amount);
 
-        let votes = storage.votes.get((sender, proposal_id));
-        storage.votes.insert((sender, proposal_id), votes + vote_amount);
+        storage.votes.insert((sender, proposal_id), storage.votes.get((sender, proposal_id)) + vote_amount);
 
         storage.proposals.insert(proposal_id, proposal);
     }
@@ -227,8 +223,7 @@ impl DaoVoting for Contract {
 
         storage.votes.insert((sender, proposal_id), 0);
 
-        let balance = storage.balances.get(sender);
-        storage.balances.insert(sender, balance + votes);
+        storage.balances.insert(sender, storage.balances.get(sender) + votes);
     }
 
     /// Return the amount of governance tokens in this contract
