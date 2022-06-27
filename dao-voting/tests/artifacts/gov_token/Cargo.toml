@@ -1,13 +1,12 @@
 [project]
 name = "gov_token"
-version = "0.1.0"
+version = "0.0.0"
 authors = ["Fuel Labs <contact@fuel.sh>"]
 edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
 fuels = "0.16"
-fuels-abigen-macro = "0.16"
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]
