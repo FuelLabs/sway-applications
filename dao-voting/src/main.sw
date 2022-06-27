@@ -199,8 +199,8 @@ impl DaoVoting for Contract {
         // Users can now convert their votes back into tokens
     }
 
-    /// Unlock tokens used to vote on proposals to allow the user to withdraw
-    /// If the user had not voted in the given expired proposal, nothing happens
+    /// Unlock governance tokens which have been locked by users who have voted on a proposal
+    /// If the user had not voted on the given, expired proposal, nothing happens
     ///
     /// # Arguments
     ///
