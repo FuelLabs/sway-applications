@@ -73,14 +73,14 @@ async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {
     (gov_token, gov_token_id, deployer, user, asset_amount)
 }
 
-fn get_call_data(recipient: Address, asset_id: ContractId) -> daovoting_mod::CallData {
+fn get_call_data(recipient: Address, asset_id: ContractId) -> daovoting_mod::Proposal {
     let mem_address = daovoting_mod::MemoryAddress {
         contract_id: asset_id,
         function_selector: 0,
         function_data: 0,
     };
 
-    let call_data = daovoting_mod::CallData {
+    let call_data = daovoting_mod::Proposal {
         memory_address: mem_address,
         num_coins_to_forward: 0,
         asset_id_of_coins_to_forward: asset_id,
@@ -158,7 +158,7 @@ mod add_proposal {
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
             user.dao_voting
-                .add_proposal(10, 10, call_data.clone())
+                .create_proposal(10, 10, call_data.clone())
                 .call()
                 .await
                 .unwrap()
@@ -168,7 +168,7 @@ mod add_proposal {
 
             assert_eq!(
                 proposal,
-                daovoting_mod::Proposal {
+                daovoting_mod::ProposalInfo {
                     yes_votes: 0,
                     no_votes: 0,
                     acceptance_percentage: 10,
@@ -205,7 +205,7 @@ mod add_proposal {
 
             deployer
                 .dao_voting
-                .add_proposal(0, 10, call_data)
+                .create_proposal(0, 10, call_data)
                 .call()
                 .await
                 .unwrap()
@@ -228,7 +228,7 @@ mod add_proposal {
 
             deployer
                 .dao_voting
-                .add_proposal(10, 0, call_data)
+                .create_proposal(10, 0, call_data)
                 .call()
                 .await
                 .unwrap()
@@ -251,7 +251,7 @@ mod add_proposal {
 
             deployer
                 .dao_voting
-                .add_proposal(10, 101, call_data)
+                .create_proposal(10, 101, call_data)
                 .call()
                 .await
                 .unwrap()
@@ -509,7 +509,7 @@ mod vote {
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
             user.dao_voting
-                .add_proposal(10, 10, call_data.clone())
+                .create_proposal(10, 10, call_data.clone())
                 .call()
                 .await
                 .unwrap()
@@ -533,7 +533,7 @@ mod vote {
 
             assert_eq!(
                 proposal,
-                daovoting_mod::Proposal {
+                daovoting_mod::ProposalInfo {
                     yes_votes: asset_amount / 4,
                     no_votes: asset_amount / 4,
                     acceptance_percentage: 10,
@@ -562,7 +562,7 @@ mod vote {
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
             user.dao_voting
-                .add_proposal(10, 10, call_data)
+                .create_proposal(10, 10, call_data)
                 .call()
                 .await
                 .unwrap()
@@ -603,7 +603,7 @@ mod vote {
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
             user.dao_voting
-                .add_proposal(1, 10, call_data)
+                .create_proposal(1, 10, call_data)
                 .call()
                 .await
                 .unwrap()
@@ -680,7 +680,7 @@ mod execute_proposal {
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
             user.dao_voting
-                .add_proposal(10, 10, call_data.clone())
+                .create_proposal(10, 10, call_data.clone())
                 .call()
                 .await
                 .unwrap()
@@ -697,7 +697,7 @@ mod execute_proposal {
 
             assert_eq!(
                 proposal,
-                daovoting_mod::Proposal {
+                daovoting_mod::ProposalInfo {
                     yes_votes: 5,
                     no_votes: 0,
                     call_data: call_data,
@@ -932,7 +932,7 @@ mod convert_votes {
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
             user.dao_voting
-                .add_proposal(1, 10, call_data.clone())
+                .create_proposal(1, 10, call_data.clone())
                 .call()
                 .await
                 .unwrap()
@@ -949,7 +949,7 @@ mod convert_votes {
 
             assert_eq!(
                 proposal,
-                daovoting_mod::Proposal {
+                daovoting_mod::ProposalInfo {
                     yes_votes: 5,
                     no_votes: 0,
                     call_data: call_data,
