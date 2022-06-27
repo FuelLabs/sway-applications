@@ -193,8 +193,8 @@ impl DaoVoting for Contract {
         let acceptance_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
         require(proposal.acceptance_percentage <= acceptance_percentage, ProposalError::ApprovalPercentageNotMet);
 
-        asm(rA: proposal.call_data.memory_address, rB: proposal.call_data.num_coins_to_forward, rC: proposal.call_data.asset_id_of_coins_to_forward, rD: proposal.call_data.amount_of_gas_to_forward) {
-            call rA rB rC rD;
+        asm(memory_address: proposal.call_data.memory_address, num_coins_to_forward: proposal.call_data.num_coins_to_forward, asset_id_of_coins_to_forward: proposal.call_data.asset_id_of_coins_to_forward, amount_of_gas_to_forward: proposal.call_data.amount_of_gas_to_forward) {
+            call memory_address num_coins_to_forward asset_id_of_coins_to_forward amount_of_gas_to_forward;
         }
         // Users can now convert their votes back into tokens
     }
