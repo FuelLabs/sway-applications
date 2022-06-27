@@ -102,7 +102,7 @@ impl DaoVoting for Contract {
 
         let author = msg_sender().unwrap();
 
-        log(CreatedProposalEvent {
+        log(CreatePropEvent {
             author: author, proposal_info: proposal, id: storage.proposal_count
         });
 
