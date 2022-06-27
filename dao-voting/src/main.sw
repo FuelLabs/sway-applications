@@ -12,6 +12,7 @@ use std::{
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
+    core::ops::Eq,
     identity::Identity,
     logging::log,
     result::*,
@@ -25,6 +26,21 @@ use data_structures::{Proposal, ProposalInfo};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
 use events::{CreatedProposalEvent, DepositEvent, ExecuteEvent, VoteEvent, UnlockVotesEvent, WithdrawEvent};
 
+enum State {
+    NotInitialized: (),
+    Initialized: (),
+}
+
+impl Eq for State {
+    fn eq(self, other: Self) -> bool {
+        match(self, other) {
+            (State::Initialized, State::Initialized) => true,
+            (State::NotInitialized, State::NotInitialized) => true,
+            _ => false,
+        }
+    }
+}
+
 storage {
     // The amount of governance tokens a user has deposited
     balances: StorageMap<Identity,
@@ -37,7 +53,9 @@ storage {
     proposal_count: u64,
     /// The amount of votes a user has used on a proposal
     votes: StorageMap<(Identity,
-    u64), u64>, state: u64,
+    u64), u64>,
+    /// The initilization state of the contract.  Defaults to NotInitialized.
+    state: State,
 }
 
 impl DaoVoting for Contract {
@@ -51,10 +69,10 @@ impl DaoVoting for Contract {
     ///
     /// * When the constructor is called more than once
     #[storage(read, write)]fn constructor(gov_token: ContractId) {
-        require(storage.state == 0, InitializationError::CannotReinitialize);
+        require(storage.state == State::NotInitialized, InitializationError::CannotReinitialize);
 
         storage.gov_token = gov_token;
-        storage.state = 1;
+        storage.state = State::Initialized;
     }
 
     /// Create a new proposal
@@ -103,7 +121,7 @@ impl DaoVoting for Contract {
     /// * When the user deposits an asset that is not the specified governance token.
     /// * When the user does not deposit any assets
     #[storage(read, write)]fn deposit() {
-        require(storage.state == 1, InitializationError::ContractNotInitialized);
+        require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
         require(storage.gov_token == msg_asset_id(), UserError::IncorrectAssetSent);
         require(0 < msg_amount(), UserError::AmountCannotBeZero);
 
@@ -294,7 +312,7 @@ impl DaoVoting for Contract {
     /// * When the constructor has not been called ot initialize
     /// * When the given proposal id is out of range
     #[storage(read)]fn proposal(proposal_id: u64) -> ProposalInfo {
-        require(storage.state == 1, InitializationError::ContractNotInitialized);
+        require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
         storage.proposals.get(proposal_id)
     }
