@@ -3,6 +3,7 @@ contract;
 dep abi;
 dep data_structures;
 dep errors;
+dep events;
 
 use std::{
     address::Address,
@@ -12,6 +13,7 @@ use std::{
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
     identity::Identity,
+    logging::log,
     result::*,
     revert::revert,
     storage::StorageMap,
@@ -21,6 +23,7 @@ use std::{
 use abi::DaoVoting;
 use data_structures::{Proposal, ProposalInfo};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
+use events::{CreatedProposalEvent, DepositEvent, ExecuteEvent, VoteEvent, UnlockVotesEvent, WithdrawEvent};
 
 storage {
     // The amount of governance tokens a user has deposited
@@ -81,7 +84,14 @@ impl DaoVoting for Contract {
             end_height: height() + end_height,
         };
         storage.proposals.insert(storage.proposal_count, proposal);
-        storage.proposal_count = storage.proposal_count + 1;
+
+        let author = msg_sender().unwrap();
+
+        log(CreatedProposalEvent {
+            author: author, proposal_info: proposal, id: storage.proposal_count
+        });
+
+        storage.proposal_count += 1;
     }
 
     /// Update the user balance to indicate they have deposited governance tokens.
@@ -100,6 +110,10 @@ impl DaoVoting for Contract {
         let sender: Identity = msg_sender().unwrap();
 
         storage.balances.insert(sender, msg_amount() + storage.balances.get(sender));
+
+        log(DepositEvent {
+            amount: msg_amount(), user: sender
+        });
     }
 
     /// Update the user balance to indicate they have withdrawn governance tokens
@@ -122,6 +136,11 @@ impl DaoVoting for Contract {
 
         // Transfer the asset back to the user
         transfer(amount, storage.gov_token, sender);
+
+        log(WithdrawEvent {
+            amount: amount,
+            user: sender,
+        })
     }
 
     /// Vote on a given proposal
@@ -162,6 +181,12 @@ impl DaoVoting for Contract {
         storage.votes.insert((sender, proposal_id), storage.votes.get((sender, proposal_id)) + vote_amount);
 
         storage.proposals.insert(proposal_id, proposal);
+
+        log(VoteEvent {
+            id: proposal_id,
+            user: sender,
+            vote_amount: vote_amount
+        });
     }
 
     /// Execute a given proposal
@@ -197,6 +222,9 @@ impl DaoVoting for Contract {
             call memory_address num_coins_to_forward asset_id_of_coins_to_forward amount_of_gas_to_forward;
         }
         // Users can now convert their votes back into tokens
+        log(ExecuteEvent {
+            id: proposal_id,
+        });
     }
 
     /// Unlock governance tokens which have been locked by users who have voted on a proposal
@@ -223,6 +251,11 @@ impl DaoVoting for Contract {
         storage.votes.insert((sender, proposal_id), 0);
 
         storage.balances.insert(sender, storage.balances.get(sender) + votes);
+
+        log(UnlockVotesEvent {
+            id: proposal_id,
+            vote_amount: votes,
+        });
     }
 
     /// Return the amount of governance tokens in this contract
