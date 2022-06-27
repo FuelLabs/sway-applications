@@ -21,7 +21,7 @@ use std::{
 
 use abi::DaoVoting;
 use data_structures::{Proposal, ProposalInfo};
-use errors::Error;
+use errors::{CreationError, InitializationError, ProposalError, UserError};
 use utils::sender_identity;
 
 storage {
@@ -50,7 +50,7 @@ impl DaoVoting for Contract {
     ///
     /// * When the constructor is called more than once
     #[storage(read, write)]fn constructor(gov_token: ContractId) {
-        require(storage.state == 0, Error::CannotReinitialize);
+        require(storage.state == 0, InitializationError::CannotReinitialize);
 
         storage.gov_token = gov_token;
         storage.state = 1;
@@ -71,10 +71,10 @@ impl DaoVoting for Contract {
     /// * When the acceptance percentage is 0
     /// * When the acceptance percentage is above 100
     #[storage(read, write)]fn create_proposal(end_height: u64, acceptance_percentage: u64, proposal_data: Proposal) {
-        require(storage.state == 1, Error::NotInitialized);
-        require(end_height > 0, Error::PeriodCannotBeZero);
-        require(acceptance_percentage > 0, Error::ApprovalPercentageCannotBeZero);
-        require(acceptance_percentage <= 100, Error::ApprovalPercentageCannotBeAboveHundred);
+        require(storage.state == 1, InitializationError::ContractNotInitialized);
+        require(end_height > 0, CreationError::EndHeightCannotBeZero);
+        require(acceptance_percentage > 0, CreationError::AcceptancePercentageCannotBeZero);
+        require(acceptance_percentage <= 100, CreationError::AcceptancePercentageCannotBeAboveOneHundred);
 
         let proposal = ProposalInfo {
             yes_votes: 0,
@@ -96,9 +96,9 @@ impl DaoVoting for Contract {
     /// * When the user deposits an asset that is not the specified governance token.
     /// * When the user does not deposit any assets
     #[storage(read, write)]fn deposit() {
-        require(storage.state == 1, Error::NotInitialized);
-        require(storage.gov_token == msg_asset_id(), Error::NotGovernanceToken);
-        require(msg_amount() > 0, Error::NoAssetsSent);
+        require(storage.state == 1, InitializationError::ContractNotInitialized);
+        require(storage.gov_token == msg_asset_id(), UserError::IncorrectAssetSent);
+        require(msg_amount() > 0, UserError::AmountCannotBeZero);
 
         let sender: Identity = sender_identity();
 
@@ -118,12 +118,12 @@ impl DaoVoting for Contract {
     /// * When the constructor has not been called to initalize
     /// * When the user tries to withdraw more than their balance
     #[storage(read, write)]fn withdraw(amount: u64) {
-        require(storage.state == 1, Error::NotInitialized);
+        require(storage.state == 1, InitializationError::ContractNotInitialized);
 
         let sender: Identity = sender_identity();
 
         let prev_balance = storage.balances.get(sender);
-        require(prev_balance >= amount, Error::NotEnoughAssets);
+        require(prev_balance >= amount, UserError::NotEnoughAssets);
 
         let new_balance = prev_balance - amount;
         storage.balances.insert(sender, new_balance);
@@ -148,17 +148,17 @@ impl DaoVoting for Contract {
     /// * When the vote amount is greater than the users deposited balance
     /// * When the given proposal is expired
     #[storage(read, write)]fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) {
-        require(storage.state == 1, Error::NotInitialized);
-        require(proposal_id < storage.proposal_count, Error::InvalidId);
-        require(vote_amount > 0, Error::VoteAmountCannotBeZero);
+        require(storage.state == 1, InitializationError::ContractNotInitialized);
+        require(proposal_id < storage.proposal_count, UserError::InvalidId);
+        require(vote_amount > 0, UserError::VoteAmountCannotBeZero);
 
         let sender: Identity = sender_identity();
         let sender_balance = storage.balances.get(sender);
 
-        require(sender_balance >= vote_amount, Error::NotEnoughAssets);
+        require(sender_balance >= vote_amount, UserError::NotEnoughAssets);
 
         let mut proposal = storage.proposals.get(proposal_id);
-        require(proposal.end_height >= height(), Error::ProposalExpired);
+        require(proposal.end_height >= height(), ProposalError::ProposalExpired);
 
         if (is_yes_vote) {
             proposal.yes_votes = proposal.yes_votes + vote_amount;
@@ -187,17 +187,17 @@ impl DaoVoting for Contract {
     /// * When the proposal has not expired
     /// * When the proposal has not met the necessary approval percentage
     #[storage(read, write)]fn execute(proposal_id: u64) {
-        require(storage.state == 1, Error::NotInitialized);
-        require(proposal_id < storage.proposal_count, Error::InvalidId);
+        require(storage.state == 1, InitializationError::ContractNotInitialized);
+        require(proposal_id < storage.proposal_count, UserError::InvalidId);
 
         let proposal = storage.proposals.get(proposal_id);
-        require(proposal.end_height < height(), Error::ProposalActive);
+        require(proposal.end_height < height(), ProposalError::ProposalStillActive);
 
         // TODO figure out how to prevent approval percentage from overflowing
         // When close to the u64 max
         // https://github.com/FuelLabs/sway-applications/issues/106
         let acceptance_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
-        require(acceptance_percentage >= proposal.acceptance_percentage, Error::ApprovalPercentageNotMet);
+        require(acceptance_percentage >= proposal.acceptance_percentage, ProposalError::ApprovalPercentageNotMet);
 
         asm(rA: proposal.call_data.memory_address, rB: proposal.call_data.num_coins_to_forward, rC: proposal.call_data.asset_id_of_coins_to_forward, rD: proposal.call_data.amount_of_gas_to_forward) {
             call rA rB rC rD;
@@ -218,11 +218,11 @@ impl DaoVoting for Contract {
     /// * When the proposal id is invalid
     /// * When the proposal is still active
     #[storage(read, write)]fn convert_votes_to_tokens(proposal_id: u64) {
-        require(storage.state == 1, Error::NotInitialized);
-        require(proposal_id < storage.proposal_count, Error::InvalidId);
+        require(storage.state == 1, InitializationError::ContractNotInitialized);
+        require(proposal_id < storage.proposal_count, UserError::InvalidId);
 
         let proposal = storage.proposals.get(proposal_id);
-        require(proposal.end_height < height(), Error::ProposalActive);
+        require(proposal.end_height < height(), ProposalError::ProposalStillActive);
 
         let sender: Identity = sender_identity();
         let votes = storage.votes.get((sender, proposal_id));
@@ -254,7 +254,7 @@ impl DaoVoting for Contract {
     /// - `user` - Identity to look up votes spent on a specified proposal
     /// - `proposal_id` - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count)
     #[storage(read)]fn user_votes(user: Identity, proposal_id: u64) -> u64 {
-        require(proposal_id < storage.proposal_count, Error::InvalidId);
+        require(proposal_id < storage.proposal_count, UserError::InvalidId);
         storage.votes.get((user, proposal_id))
     }
 
@@ -269,8 +269,8 @@ impl DaoVoting for Contract {
     /// * When the constructor has not been called ot initialize
     /// * When the given proposal id is out of range
     #[storage(read)]fn proposal(proposal_id: u64) -> ProposalInfo {
-        require(storage.state == 1, Error::NotInitialized);
-        require(proposal_id < storage.proposal_count, Error::InvalidId);
+        require(storage.state == 1, InitializationError::ContractNotInitialized);
+        require(proposal_id < storage.proposal_count, UserError::InvalidId);
         storage.proposals.get(proposal_id)
     }
 }

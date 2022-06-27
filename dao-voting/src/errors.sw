@@ -1,18 +1,26 @@
 library errors;
 
-pub enum Error {
+pub enum InitializationError {
     CannotReinitialize: (),
-    NotInitialized: (),
-    NotGovernanceToken: (),
-    PeriodCannotBeZero: (),
-    VoteAmountCannotBeZero: (),
-    TokenAmountCanontBeZero: (),
-    ApprovalPercentageCannotBeZero: (),
-    ApprovalPercentageCannotBeAboveHundred: (),
-    NoAssetsSent: (),
-    NotEnoughAssets: (),
-    InvalidId: (),
-    ProposalExpired: (),
-    ProposalActive: (),
+    ContractNotInitialized: (),
+}
+
+pub enum CreationError {
+    AcceptancePercentageCannotBeAboveOneHundred: (),
+    AcceptancePercentageCannotBeZero: (),
+    EndHeightCannotBeZero: (),
+}
+
+pub enum ProposalError {
     ApprovalPercentageNotMet: (),
+    ProposalExpired: (),
+    ProposalStillActive: (),
+}
+
+pub enum UserError {
+    AmountCannotBeZero: (),
+    IncorrectAssetSent: (),
+    InvalidId: (),
+    NotEnoughAssets: (),
+    VoteAmountCannotBeZero: (),
 }
