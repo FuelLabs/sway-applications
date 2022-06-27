@@ -69,7 +69,6 @@ impl DaoVoting for Contract {
     /// * When the acceptance percentage is 0
     /// * When the acceptance percentage is above 100
     #[storage(read, write)]fn create_proposal(end_height: u64, acceptance_percentage: u64, proposal_data: Proposal) {
-        require(storage.state == 1, InitializationError::ContractNotInitialized);
         require(0 < end_height, CreationError::EndHeightCannotBeZero);
         require(0 < acceptance_percentage, CreationError::AcceptancePercentageCannotBeZero);
         require(acceptance_percentage <= 100, CreationError::AcceptancePercentageCannotBeAboveOneHundred);
@@ -114,8 +113,6 @@ impl DaoVoting for Contract {
     /// * When the constructor has not been called to initalize
     /// * When the user tries to withdraw more than their balance
     #[storage(read, write)]fn withdraw(amount: u64) {
-        require(storage.state == 1, InitializationError::ContractNotInitialized);
-
         let sender: Identity = msg_sender().unwrap();
 
         let prev_balance = storage.balances.get(sender);
@@ -143,7 +140,6 @@ impl DaoVoting for Contract {
     /// * When the vote amount is greater than the users deposited balance
     /// * When the given proposal is expired
     #[storage(read, write)]fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) {
-        require(storage.state == 1, InitializationError::ContractNotInitialized);
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
 
@@ -181,7 +177,6 @@ impl DaoVoting for Contract {
     /// * When the proposal has not expired
     /// * When the proposal has not met the necessary approval percentage
     #[storage(read, write)]fn execute(proposal_id: u64) {
-        require(storage.state == 1, InitializationError::ContractNotInitialized);
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
 
         let proposal = storage.proposals.get(proposal_id);
@@ -217,7 +212,6 @@ impl DaoVoting for Contract {
     /// * When the proposal id is invalid
     /// * When the proposal is still active
     #[storage(read, write)]fn unlock_votes(proposal_id: u64) {
-        require(storage.state == 1, InitializationError::ContractNotInitialized);
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
 
         let proposal = storage.proposals.get(proposal_id);
