@@ -67,7 +67,7 @@ impl DaoVoting for Contract {
     /// # Parameters
     ///
     /// voting_period - the number of blocks during which a proposal can be voted on
-    /// approval_percentage - the percentage of yes votes a proposal needs to be executed
+    /// acceptance_percentage - the percentage of yes votes a proposal needs to be executed
     /// proposal_data - transaction data to be executed if proposal is approved
     ///
     /// # Panics
@@ -77,16 +77,16 @@ impl DaoVoting for Contract {
     /// - The voting period is 0
     /// - The approval percentage is 0
     /// - The approval percentage is above 100
-    #[storage(read, write)]fn add_proposal(voting_period: u64, approval_percentage: u64, proposal_data: CallData) -> bool {
+    #[storage(read, write)]fn add_proposal(voting_period: u64, acceptance_percentage: u64, proposal_data: CallData) -> bool {
         require(storage.state == 1, Error::NotInitialized);
         require(voting_period > 0, Error::PeriodCannotBeZero);
-        require(approval_percentage > 0, Error::ApprovalPercentageCannotBeZero);
-        require(approval_percentage <= 100, Error::ApprovalPercentageCannotBeAboveHundred);
+        require(acceptance_percentage > 0, Error::ApprovalPercentageCannotBeZero);
+        require(acceptance_percentage <= 100, Error::ApprovalPercentageCannotBeAboveHundred);
 
         let proposal = Proposal {
             yes_votes: 0,
             no_votes: 0,
-            approval_percentage: approval_percentage,
+            acceptance_percentage: acceptance_percentage,
             call_data: proposal_data,
             end_height: height() + voting_period,
         };
@@ -214,8 +214,8 @@ impl DaoVoting for Contract {
         // TODO figure out how to prevent approval percentage from overflowing
         // When close to the u64 max
         // https://github.com/FuelLabs/sway-applications/issues/106
-        let approval_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
-        require(approval_percentage >= proposal.approval_percentage, Error::ApprovalPercentageNotMet);
+        let acceptance_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
+        require(acceptance_percentage >= proposal.acceptance_percentage, Error::ApprovalPercentageNotMet);
 
         asm(rA: proposal.call_data.memory_address, rB: proposal.call_data.num_coins_to_forward, rC: proposal.call_data.asset_id_of_coins_to_forward, rD: proposal.call_data.amount_of_gas_to_forward) {
             call rA rB rC rD;

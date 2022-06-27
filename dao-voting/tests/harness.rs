@@ -173,7 +173,7 @@ mod add_proposal {
                 daovoting_mod::Proposal {
                     yes_votes: 0,
                     no_votes: 0,
-                    approval_percentage: 10,
+                    acceptance_percentage: 10,
                     call_data: call_data,
                     end_height: 13,
                 }
@@ -216,7 +216,7 @@ mod add_proposal {
 
         #[tokio::test]
         #[should_panic]
-        async fn panics_with_zero_approval_percentage() {
+        async fn panics_with_zero_acceptance_percentage() {
             let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             deployer
                 .dao_voting
@@ -239,7 +239,7 @@ mod add_proposal {
 
         #[tokio::test]
         #[should_panic]
-        async fn panics_with_over_hundred_approval_percentage() {
+        async fn panics_with_over_hundred_acceptance_percentage() {
             let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             deployer
                 .dao_voting
@@ -548,7 +548,7 @@ mod vote {
                 daovoting_mod::Proposal {
                     yes_votes: asset_amount / 4,
                     no_votes: asset_amount / 4,
-                    approval_percentage: 10,
+                    acceptance_percentage: 10,
                     call_data: call_data,
                     end_height: 15,
                 }
@@ -726,7 +726,7 @@ mod execute_proposal {
                     no_votes: 0,
                     call_data: call_data,
                     end_height: 15,
-                    approval_percentage: 10
+                    acceptance_percentage: 10
                 }
             );
 
@@ -990,7 +990,7 @@ mod convert_votes {
                     no_votes: 0,
                     call_data: call_data,
                     end_height: 6,
-                    approval_percentage: 10
+                    acceptance_percentage: 10
                 }
             );
 
