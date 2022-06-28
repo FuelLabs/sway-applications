@@ -1,15 +1,10 @@
 mod utils;
 
-use fuels::{
-    prelude::*,
-    tx::{AssetId},
-};
+use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
-    test_helpers::{setup, get_call_data},
-    ProposalInfo,
-    Identity,
-    GovToken,
+    test_helpers::{get_call_data, setup},
+    GovToken, Identity, ProposalInfo,
 };
 
 async fn initialize() {
