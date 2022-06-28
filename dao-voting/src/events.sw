@@ -7,9 +7,6 @@ use data_structures::ProposalInfo;
 
 // TODO ename once https://github.com/FuelLabs/sway/issues/2106 is fixed
 pub struct CreatePropEvent {
-    /// The user who created the proposal
-    author: Identity,
-
     /// The unique Identifier for the proposal
     id: u64,
 
