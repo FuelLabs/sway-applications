@@ -2,94 +2,15 @@ mod utils;
 
 use fuels::{
     prelude::*,
-    tx::{AssetId, ContractId},
+    tx::{AssetId},
 };
 
 use utils::{
-    test_helpers::{setup, get_call_data}
+    test_helpers::{setup, get_call_data},
+    ProposalInfo,
+    Identity,
+    GovToken,
 };
-
-// Load abi from json
-// abigen!(DaoVoting, "out/debug/dao-voting-abi.json");
-// abigen!(
-//     GovToken,
-//     "tests/artifacts/gov_token/out/debug/gov_token-abi.json"
-// );
-
-// struct Metadata {
-//     dao_voting: DaoVoting,
-//     gov_token: Option<GovToken>,
-//     wallet: LocalWallet,
-// }
-
-// async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {
-//     let num_wallets = 2;
-//     let coins_per_wallet = 1;
-//     let amount_per_coin = 1_000_000;
-//     let config = WalletsConfig::new(
-//         Some(num_wallets),
-//         Some(coins_per_wallet),
-//         Some(amount_per_coin),
-//     );
-
-//     let mut wallets = launch_provider_and_get_wallets(config).await;
-//     let deployer_wallet = wallets.pop().unwrap();
-//     let user_wallet = wallets.pop().unwrap();
-
-//     let dao_voting_id = Contract::deploy(
-//         "./out/debug/dao-voting.bin",
-//         &deployer_wallet,
-//         TxParameters::default(),
-//     )
-//     .await
-//     .unwrap();
-
-//     let gov_token_id = Contract::deploy(
-//         "./tests/artifacts/gov_token/out/debug/gov_token.bin",
-//         &deployer_wallet,
-//         TxParameters::default(),
-//     )
-//     .await
-//     .unwrap();
-
-//     let gov_token = GovToken::new(gov_token_id.to_string(), deployer_wallet.clone());
-
-//     let deployer = Metadata {
-//         dao_voting: DaoVoting::new(dao_voting_id.to_string(), deployer_wallet.clone()),
-//         gov_token: Some(GovToken::new(
-//             gov_token_id.to_string(),
-//             deployer_wallet.clone(),
-//         )),
-//         wallet: deployer_wallet,
-//     };
-
-//     let user = Metadata {
-//         dao_voting: DaoVoting::new(dao_voting_id.to_string(), user_wallet.clone()),
-//         gov_token: None,
-//         wallet: user_wallet,
-//     };
-
-//     let asset_amount: u64 = 10;
-
-//     (gov_token, gov_token_id, deployer, user, asset_amount)
-// }
-
-// fn get_call_data(asset_id: ContractId) -> daovoting_mod::Proposal {
-//     let call_data = daovoting_mod::CallData {
-//         id: asset_id,
-//         function_selector: 0,
-//         arguments: 0,
-//     };
-
-//     let proposal = daovoting_mod::Proposal {
-//         call_data: call_data,
-//         amount: 0,
-//         asset: asset_id,
-//         gas: 20000,
-//     };
-
-//     proposal
-// }
 
 async fn initialize() {
     let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
@@ -143,6 +64,8 @@ mod add_proposal {
     use super::*;
 
     mod success {
+        use crate::utils::Identity;
+
         use super::*;
 
         #[tokio::test]
@@ -169,8 +92,8 @@ mod add_proposal {
 
             assert_eq!(
                 proposal,
-                daovoting_mod::ProposalInfo {
-                    author: daovoting_mod::Identity::Address(user.wallet.address()),
+                ProposalInfo {
+                    author: Identity::Address(user.wallet.address()),
                     yes_votes: 0,
                     no_votes: 0,
                     acceptance_percentage: 10,
@@ -296,7 +219,7 @@ mod deposit {
 
             assert_eq!(
                 user.dao_voting
-                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -326,7 +249,7 @@ mod deposit {
 
             assert_eq!(
                 user.dao_voting
-                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -535,8 +458,8 @@ mod vote {
 
             assert_eq!(
                 proposal,
-                daovoting_mod::ProposalInfo {
-                    author: daovoting_mod::Identity::Address(user.wallet.address()),
+                ProposalInfo {
+                    author: Identity::Address(user.wallet.address()),
                     yes_votes: asset_amount / 4,
                     no_votes: asset_amount / 4,
                     acceptance_percentage: 10,
@@ -700,8 +623,8 @@ mod execute_proposal {
 
             assert_eq!(
                 proposal,
-                daovoting_mod::ProposalInfo {
-                    author: daovoting_mod::Identity::Address(user.wallet.address()),
+                ProposalInfo {
+                    author: Identity::Address(user.wallet.address()),
                     yes_votes: 5,
                     no_votes: 0,
                     proposal_transaction: call_data,
@@ -749,7 +672,7 @@ mod withdraw {
 
             assert_eq!(
                 user.dao_voting
-                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -779,7 +702,7 @@ mod withdraw {
 
             assert_eq!(
                 user.dao_voting
-                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -797,7 +720,7 @@ mod withdraw {
 
             assert_eq!(
                 user.dao_voting
-                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -841,7 +764,7 @@ mod withdraw {
 
             assert_eq!(
                 user.dao_voting
-                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -871,7 +794,7 @@ mod withdraw {
 
             assert_eq!(
                 user.dao_voting
-                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()
@@ -953,8 +876,8 @@ mod convert_votes {
 
             assert_eq!(
                 proposal,
-                daovoting_mod::ProposalInfo {
-                    author: daovoting_mod::Identity::Address(user.wallet.address()),
+                ProposalInfo {
+                    author: Identity::Address(user.wallet.address()),
                     yes_votes: 5,
                     no_votes: 0,
                     proposal_transaction: call_data,
@@ -967,7 +890,7 @@ mod convert_votes {
 
             assert_eq!(
                 user.dao_voting
-                    .user_balance(daovoting_mod::Identity::Address(user.wallet.address()))
+                    .user_balance(Identity::Address(user.wallet.address()))
                     .call()
                     .await
                     .unwrap()

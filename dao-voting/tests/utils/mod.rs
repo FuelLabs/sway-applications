@@ -1,6 +1,6 @@
 use fuels::{
     prelude::*,
-    tx::{AssetId, ContractId},
+    tx::{ContractId},
 };
 
 // Load abi from json
