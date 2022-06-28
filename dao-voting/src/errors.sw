@@ -11,7 +11,7 @@ pub enum InitializationError {
 }
 
 pub enum ProposalError {
-    ApprovalPercentageNotMet: (),
+    InsufficientApprovals: (),
     ProposalExpired: (),
     ProposalStillActive: (),
 }
@@ -20,6 +20,6 @@ pub enum UserError {
     AmountCannotBeZero: (),
     IncorrectAssetSent: (),
     InvalidId: (),
-    NotEnoughAssets: (),
+    InsuffiecientBalance: (),
     VoteAmountCannotBeZero: (),
 }

@@ -131,7 +131,7 @@ impl DaoVoting for Contract {
         let sender: Identity = msg_sender().unwrap();
 
         let prev_balance = storage.balances.get(sender);
-        require(amount <= prev_balance, UserError::NotEnoughAssets);
+        require(amount <= prev_balance, UserError::InsuffiecientBalance);
 
         storage.balances.insert(sender, prev_balance - amount);
 
@@ -167,7 +167,7 @@ impl DaoVoting for Contract {
         let sender: Identity = msg_sender().unwrap();
         let sender_balance = storage.balances.get(sender);
 
-        require(vote_amount <= sender_balance, UserError::NotEnoughAssets);
+        require(vote_amount <= sender_balance, UserError::InsuffiecientBalance);
 
         if (is_yes_vote) {
             proposal.yes_votes += vote_amount;
@@ -212,7 +212,7 @@ impl DaoVoting for Contract {
         // When close to the u64 max
         // https://github.com/FuelLabs/sway-applications/issues/106
         let acceptance_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
-        require(proposal.acceptance_percentage <= acceptance_percentage, ProposalError::ApprovalPercentageNotMet);
+        require(proposal.acceptance_percentage <= acceptance_percentage, ProposalError::InsufficientApprovals);
 
         asm(call_data: proposal.proposal_transaction.call_data, amount: proposal.proposal_transaction.amount, asset: proposal.proposal_transaction.asset, gas: proposal.proposal_transaction.gas) {
             call call_data amount asset gas;
