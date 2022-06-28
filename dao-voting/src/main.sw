@@ -34,6 +34,7 @@ storage {
     proposals: StorageMap<u64,
     ProposalInfo>, /// Number of created proposals
     /// Used to check the validity of a proposal id
+    /// Used as a unique identifier when creating proposals
     proposal_count: u64,
     /// The amount of votes a user has used on a proposal
     votes: StorageMap<(Identity,
