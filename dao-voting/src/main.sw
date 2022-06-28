@@ -12,7 +12,6 @@ use std::{
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
-    core::ops::Eq,
     identity::Identity,
     logging::log,
     result::*,
