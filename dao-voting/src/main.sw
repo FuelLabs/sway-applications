@@ -62,8 +62,8 @@ impl DaoVoting for Contract {
     ///
     /// # Arguments
     ///
-    /// - `deadline` - the number of blocks during which a proposal can be voted on
     /// - `acceptance_percentage` - the percentage of yes votes a proposal needs to be executed
+    /// - `deadline` - the number of blocks during which a proposal can be voted on
     /// - `proposal_data` - transaction data to be executed if proposal is approved
     ///
     /// # Reverts
@@ -72,7 +72,7 @@ impl DaoVoting for Contract {
     /// * When the deadline is 0
     /// * When the acceptance percentage is not greater than 0
     /// * When the acceptance percentage is not less than or equal to 100
-    #[storage(read, write)]fn create_proposal(deadline: u64, acceptance_percentage: u64, proposal_transaction: Proposal) {
+    #[storage(read, write)]fn create_proposal(acceptance_percentage: u64, deadline: u64, proposal_transaction: Proposal) {
         require(0 < deadline, CreationError::DeadlineCannotBeZero);
         require(0 < acceptance_percentage && acceptance_percentage <= 100, CreationError::InvalidAcceptancePercentage);
 
@@ -146,9 +146,9 @@ impl DaoVoting for Contract {
     ///
     /// # Arguments
     ///
+    /// - `is_yes_vote` - determines if you vote yes or no on the proposal
     /// - `proposal_id` - proposal to vote on
     /// - `vote_amount` - amount of votes to use on proposal
-    /// - `is_yes_vote` - determines if you vote yes or no on the proposal
     ///
     /// # Reverts
     ///
@@ -157,7 +157,7 @@ impl DaoVoting for Contract {
     /// * When the vote amount is 0
     /// * When the vote amount is greater than the users deposited balance
     /// * When the given proposal is expired
-    #[storage(read, write)]fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool) {
+    #[storage(read, write)]fn vote(is_yes_vote: bool, proposal_id: u64, vote_amount: u64,) {
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
 
@@ -272,9 +272,9 @@ impl DaoVoting for Contract {
     ///
     /// # Arguments
     ///
-    /// - `user` - Identity to look up votes spent on a specified proposal
     /// - `proposal_id` - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count)
-    #[storage(read)]fn user_votes(user: Identity, proposal_id: u64) -> u64 {
+    /// - `user` - Identity to look up votes spent on a specified proposal
+    #[storage(read)]fn user_votes(proposal_id: u64, user: Identity) -> u64 {
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
         storage.votes.get((user, proposal_id))
     }

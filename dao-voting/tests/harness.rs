@@ -251,7 +251,7 @@ mod add_proposal {
 
             deployer
                 .dao_voting
-                .create_proposal(10, 101, call_data)
+                .create_proposal(101, 10, call_data)
                 .call()
                 .await
                 .unwrap()
@@ -516,14 +516,14 @@ mod vote {
                 .value;
 
             user.dao_voting
-                .vote(0, asset_amount / 4, true)
+                .vote(true, 0, asset_amount / 4)
                 .call()
                 .await
                 .unwrap()
                 .value;
 
             user.dao_voting
-                .vote(0, asset_amount / 4, false)
+                .vote(false, 0, asset_amount / 4)
                 .call()
                 .await
                 .unwrap()
@@ -569,7 +569,7 @@ mod vote {
                 .value;
 
             user.dao_voting
-                .vote(0, asset_amount / 4, true)
+                .vote(true, 0, asset_amount / 4)
                 .call()
                 .await
                 .unwrap()
@@ -603,7 +603,7 @@ mod vote {
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
             user.dao_voting
-                .create_proposal(1, 10, call_data)
+                .create_proposal(1, 1, call_data)
                 .call()
                 .await
                 .unwrap()
@@ -625,7 +625,7 @@ mod vote {
                 .value;
 
             user.dao_voting
-                .vote(0, asset_amount / 4, true)
+                .vote(true, 0, asset_amount / 4)
                 .call()
                 .await
                 .unwrap()
@@ -687,7 +687,7 @@ mod execute_proposal {
                 .value;
 
             user.dao_voting
-                .vote(0, asset_amount / 2, true)
+                .vote(true, 0, asset_amount / 2)
                 .call()
                 .await
                 .unwrap()
@@ -932,14 +932,14 @@ mod convert_votes {
             let call_data = get_call_data(user.wallet.address(), gov_token_id);
 
             user.dao_voting
-                .create_proposal(1, 10, call_data.clone())
+                .create_proposal(1, 1, call_data.clone())
                 .call()
                 .await
                 .unwrap()
                 .value;
 
             user.dao_voting
-                .vote(0, asset_amount / 2, true)
+                .vote(true, 0, asset_amount / 2)
                 .call()
                 .await
                 .unwrap()
@@ -954,7 +954,7 @@ mod convert_votes {
                     no_votes: 0,
                     proposal_transaction: call_data,
                     deadline: 6,
-                    acceptance_percentage: 10
+                    acceptance_percentage: 1
                 }
             );
 
