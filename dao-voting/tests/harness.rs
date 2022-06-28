@@ -1,8 +1,3 @@
-#![allow(unused_variables)]
-#![allow(unused_imports)]
-
-use std::ops::Add;
-
 use fuels::{
     prelude::*,
     tx::{AssetId, ContractId},
@@ -73,7 +68,7 @@ async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {
     (gov_token, gov_token_id, deployer, user, asset_amount)
 }
 
-fn get_call_data(recipient: Address, asset_id: ContractId) -> daovoting_mod::Proposal {
+fn get_call_data(asset_id: ContractId) -> daovoting_mod::Proposal {
     let call_data = daovoting_mod::CallData {
         id: asset_id,
         function_selector: 0,
@@ -91,7 +86,7 @@ fn get_call_data(recipient: Address, asset_id: ContractId) -> daovoting_mod::Pro
 }
 
 async fn initialize() {
-    let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+    let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
     deployer
         .dao_voting
         .constructor(gov_token_id)
@@ -119,7 +114,7 @@ mod initialize {
         #[tokio::test]
         #[should_panic]
         async fn panics_when_reinitialized() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             deployer
                 .dao_voting
                 .constructor(gov_token_id)
@@ -146,7 +141,7 @@ mod add_proposal {
 
         #[tokio::test]
         async fn user_can_add_proposal() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
             deployer
                 .dao_voting
                 .constructor(gov_token_id)
@@ -155,7 +150,7 @@ mod add_proposal {
                 .unwrap()
                 .value;
 
-            let call_data = get_call_data(user.wallet.address(), gov_token_id);
+            let call_data = get_call_data(gov_token_id);
 
             user.dao_voting
                 .create_proposal(10, 10, call_data.clone())
@@ -186,14 +181,14 @@ mod add_proposal {
         #[tokio::test]
         #[should_panic]
         async fn panics_on_incorrect_proposal_id() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
             user.dao_voting.proposal(0).call().await.unwrap();
         }
 
         #[tokio::test]
         #[should_panic]
         async fn panics_with_incorrect_voting_period() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             deployer
                 .dao_voting
                 .constructor(gov_token_id)
@@ -202,7 +197,7 @@ mod add_proposal {
                 .unwrap()
                 .value;
 
-            let call_data = get_call_data(user.wallet.address(), gov_token_id);
+            let call_data = get_call_data(gov_token_id);
 
             deployer
                 .dao_voting
@@ -216,7 +211,7 @@ mod add_proposal {
         #[tokio::test]
         #[should_panic]
         async fn panics_with_zero_acceptance_percentage() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             deployer
                 .dao_voting
                 .constructor(gov_token_id)
@@ -225,7 +220,7 @@ mod add_proposal {
                 .unwrap()
                 .value;
 
-            let call_data = get_call_data(user.wallet.address(), gov_token_id);
+            let call_data = get_call_data(gov_token_id);
 
             deployer
                 .dao_voting
@@ -239,7 +234,7 @@ mod add_proposal {
         #[tokio::test]
         #[should_panic]
         async fn panics_with_over_hundred_acceptance_percentage() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             deployer
                 .dao_voting
                 .constructor(gov_token_id)
@@ -248,7 +243,7 @@ mod add_proposal {
                 .unwrap()
                 .value;
 
-            let call_data = get_call_data(user.wallet.address(), gov_token_id);
+            let call_data = get_call_data(gov_token_id);
 
             deployer
                 .dao_voting
@@ -269,7 +264,7 @@ mod deposit {
 
         #[tokio::test]
         async fn user_can_deposit() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
             assert!(
                 deployer
@@ -341,7 +336,7 @@ mod deposit {
         #[tokio::test]
         #[should_panic]
         async fn panics_with_incorrect_amount() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
 
             assert!(
                 deployer
@@ -380,7 +375,7 @@ mod deposit {
         #[tokio::test]
         #[should_panic]
         async fn panics_when_not_initialized() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
             assert!(
                 deployer
@@ -413,7 +408,7 @@ mod deposit {
         #[tokio::test]
         #[should_panic]
         async fn panics_with_incorrect_asset() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
             let another_asset_id = Contract::deploy_with_salt(
                 "./tests/artifacts/asset/out/debug/asset.bin",
@@ -471,7 +466,7 @@ mod vote {
 
         #[tokio::test]
         async fn user_can_vote() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             deployer
                 .dao_voting
                 .constructor(gov_token_id)
@@ -507,7 +502,7 @@ mod vote {
                 .unwrap()
                 .value;
 
-            let call_data = get_call_data(user.wallet.address(), gov_token_id);
+            let call_data = get_call_data(gov_token_id);
 
             user.dao_voting
                 .create_proposal(10, 10, call_data.clone())
@@ -552,7 +547,7 @@ mod vote {
         #[tokio::test]
         #[should_panic]
         async fn panics_on_not_enough_votes() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             deployer
                 .dao_voting
                 .constructor(gov_token_id)
@@ -561,7 +556,7 @@ mod vote {
                 .unwrap()
                 .value;
 
-            let call_data = get_call_data(user.wallet.address(), gov_token_id);
+            let call_data = get_call_data(gov_token_id);
 
             user.dao_voting
                 .create_proposal(10, 10, call_data)
@@ -581,7 +576,7 @@ mod vote {
         #[tokio::test]
         #[should_panic]
         async fn panics_on_expired_proposal() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             deployer
                 .dao_voting
                 .constructor(gov_token_id)
@@ -602,7 +597,7 @@ mod vote {
                     .value
             );
 
-            let call_data = get_call_data(user.wallet.address(), gov_token_id);
+            let call_data = get_call_data(gov_token_id);
 
             user.dao_voting
                 .create_proposal(1, 1, call_data)
@@ -644,7 +639,7 @@ mod execute_proposal {
 
         #[tokio::test]
         async fn user_proposal_can_execute() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             deployer
                 .dao_voting
                 .constructor(gov_token_id)
@@ -679,7 +674,7 @@ mod execute_proposal {
                 .unwrap()
                 .value;
 
-            let call_data = get_call_data(user.wallet.address(), gov_token_id);
+            let call_data = get_call_data(gov_token_id);
 
             user.dao_voting
                 .create_proposal(10, 10, call_data.clone())
@@ -722,7 +717,7 @@ mod withdraw {
 
         #[tokio::test]
         async fn user_can_withdraw() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
             assert!(
                 deployer
@@ -814,7 +809,7 @@ mod withdraw {
         #[tokio::test]
         #[should_panic]
         async fn panics_on_not_enough_assets() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
             assert!(
                 deployer
@@ -897,7 +892,7 @@ mod convert_votes {
 
         #[tokio::test]
         async fn user_can_unlock_tokens() {
-            let (gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             deployer
                 .dao_voting
                 .constructor(gov_token_id)
@@ -932,7 +927,7 @@ mod convert_votes {
                 .unwrap()
                 .value;
 
-            let call_data = get_call_data(user.wallet.address(), gov_token_id);
+            let call_data = get_call_data(gov_token_id);
 
             user.dao_voting
                 .create_proposal(1, 1, call_data.clone())
