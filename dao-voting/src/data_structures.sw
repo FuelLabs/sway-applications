@@ -20,6 +20,8 @@ pub struct ProposalInfo {
     /// The needed percentage of yes votes to execute a proposal.
     /// 0 < acceptance_percentage <= 100
     acceptance_percentage: u64,
+    /// Address or contract which created the proposal
+    author: Identity,
     /// Data necessary to execute an arbitrary transaction.
     proposal_transaction: Proposal,
     /// Amount of blocks a proposal is valid for after creation

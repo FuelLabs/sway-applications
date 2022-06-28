@@ -169,6 +169,7 @@ mod add_proposal {
             assert_eq!(
                 proposal,
                 daovoting_mod::ProposalInfo {
+                    author: daovoting_mod::Identity::Address(user.wallet.address()),
                     yes_votes: 0,
                     no_votes: 0,
                     acceptance_percentage: 10,
@@ -534,6 +535,7 @@ mod vote {
             assert_eq!(
                 proposal,
                 daovoting_mod::ProposalInfo {
+                    author: daovoting_mod::Identity::Address(user.wallet.address()),
                     yes_votes: asset_amount / 4,
                     no_votes: asset_amount / 4,
                     acceptance_percentage: 10,
@@ -698,6 +700,7 @@ mod execute_proposal {
             assert_eq!(
                 proposal,
                 daovoting_mod::ProposalInfo {
+                    author: daovoting_mod::Identity::Address(user.wallet.address()),
                     yes_votes: 5,
                     no_votes: 0,
                     proposal_transaction: call_data,
@@ -950,6 +953,7 @@ mod convert_votes {
             assert_eq!(
                 proposal,
                 daovoting_mod::ProposalInfo {
+                    author: daovoting_mod::Identity::Address(user.wallet.address()),
                     yes_votes: 5,
                     no_votes: 0,
                     proposal_transaction: call_data,

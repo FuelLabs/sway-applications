@@ -76,7 +76,10 @@ impl DaoVoting for Contract {
         require(0 < deadline, CreationError::DeadlineCannotBeZero);
         require(0 < acceptance_percentage && acceptance_percentage <= 100, CreationError::InvalidAcceptancePercentage);
 
+        let author = msg_sender().unwrap();
+
         let proposal = ProposalInfo {
+            author,
             yes_votes: 0,
             no_votes: 0,
             acceptance_percentage,
@@ -84,14 +87,12 @@ impl DaoVoting for Contract {
             deadline: height() + deadline,
         };
         storage.proposals.insert(storage.proposal_count, proposal);
-
-        let author = msg_sender().unwrap();
+        storage.proposal_count += 1;
 
         log(CreatePropEvent {
-            author, proposal_info: proposal, id: storage.proposal_count
+            author, proposal_info: proposal, id: storage.proposal_count - 1
         });
 
-        storage.proposal_count += 1;
     }
 
     /// Update the user balance to indicate they have deposited governance tokens.
