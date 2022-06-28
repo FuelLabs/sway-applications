@@ -11,7 +11,7 @@ abi DaoVoting {
     #[storage(read, write)]fn create_proposal(acceptance_percentage: u64, deadline: u64, proposal_transaction: Proposal);
     #[storage(read, write)] fn deposit();
     #[storage(read, write)] fn withdraw(amount: u64);
-    #[storage(read, write)]fn vote(is_yes_vote: bool, proposal_id: u64, vote_amount: u64);
+    #[storage(read, write)]fn vote(approve: bool, proposal_id: u64, vote_amount: u64);
     #[storage(read, write)] fn execute(proposal_id: u64);
     #[storage(read, write)] fn unlock_votes(proposal_id: u64);
     #[storage(read)] fn balance() -> u64;

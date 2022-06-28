@@ -147,7 +147,7 @@ impl DaoVoting for Contract {
     ///
     /// # Arguments
     ///
-    /// - `is_yes_vote` - determines if you vote yes or no on the proposal
+    /// - `approve` - determines if you vote yes or no on the proposal
     /// - `proposal_id` - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count)
     /// - `vote_amount` - the amount of votes to cast on the proposal
     ///
@@ -157,7 +157,7 @@ impl DaoVoting for Contract {
     /// * When the vote amount is 0
     /// * When the proposal has passed its deadline
     /// * When the vote amount is greater than the users deposited balance
-    #[storage(read, write)]fn vote(is_yes_vote: bool, proposal_id: u64, vote_amount: u64,) {
+    #[storage(read, write)]fn vote(approve: bool, proposal_id: u64, vote_amount: u64,) {
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
 
@@ -169,7 +169,7 @@ impl DaoVoting for Contract {
 
         require(vote_amount <= sender_balance, UserError::InsuffiecientBalance);
 
-        if (is_yes_vote) {
+        if (approve) {
             proposal.yes_votes += vote_amount;
         } else {
             proposal.no_votes += vote_amount;
