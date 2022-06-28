@@ -1,14 +1,14 @@
 library errors;
 
-pub enum InitializationError {
-    CannotReinitialize: (),
-    ContractNotInitialized: (),
-}
-
 pub enum CreationError {
     AcceptancePercentageCannotBeAboveOneHundred: (),
     AcceptancePercentageCannotBeZero: (),
     DeadlineCannotBeZero: (),
+}
+
+pub enum InitializationError {
+    CannotReinitialize: (),
+    ContractNotInitialized: (),
 }
 
 pub enum ProposalError {
