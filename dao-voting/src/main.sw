@@ -79,12 +79,9 @@ impl DaoVoting for Contract {
         let author = msg_sender().unwrap();
 
         let proposal = ProposalInfo {
-            author,
-            yes_votes: 0,
+            author, yes_votes: 0,
             no_votes: 0,
-            acceptance_percentage,
-            proposal_transaction,
-            deadline: height() + deadline,
+            acceptance_percentage, proposal_transaction, deadline: height() + deadline,
         };
         storage.proposals.insert(storage.proposal_count, proposal);
         storage.proposal_count += 1;
@@ -92,7 +89,6 @@ impl DaoVoting for Contract {
         log(CreatePropEvent {
             proposal_info: proposal, id: storage.proposal_count - 1
         });
-
     }
 
     /// Update the user balance to indicate they have deposited governance tokens.
@@ -158,7 +154,7 @@ impl DaoVoting for Contract {
     /// * When the vote amount is 0
     /// * When the proposal has passed its deadline
     /// * When the vote amount is greater than the users deposited balance
-    #[storage(read, write)]fn vote(approve: bool, proposal_id: u64, vote_amount: u64,) {
+    #[storage(read, write)]fn vote(approve: bool, proposal_id: u64, vote_amount: u64, ) {
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
 
@@ -215,8 +211,7 @@ impl DaoVoting for Contract {
         }
         // Users can now convert their votes back into tokens
         log(ExecuteEvent {
-            acceptance_percentage,
-            id: proposal_id,
+            acceptance_percentage, id: proposal_id, 
         });
     }
 
