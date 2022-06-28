@@ -20,18 +20,27 @@ pub struct Asset {
 }
 
 pub struct EscrowInfo {
+    /// Trusted 3rd party who handles the resolution of a dispute
     arbitor: Identity,
 
+    /// The fee (as a percentage) paid to the arbitor upon handling a dispute
     arbitor_fee_percentage: u64,
 
-    deadline: u64,
-
-    /// The assets that this escrow accepts with their required quantities
+    /// The assets that the escrow accepts with their required quantities
     /// This allows the buyers to select which asset they want to deposit
     assets: Vec<Asset>,
 
-    /// The authorized users who are able to interact with this escrow
-    buyers: Vec<Buyer>,
+    /// The authorized user who is able to make a payment into the escrow
+    buyer: Buyer,
+
+    ///
+    deadline: u64,
+
+    ///
+    disputed: bool,
+
+    /// The authorized user who is the recipient of payments made by the buyer
+    seller: Seller,
 
     /// Mechanism used to manage the control flow of the escrow
     state: State,
@@ -39,19 +48,23 @@ pub struct EscrowInfo {
 
 pub struct Buyer {
     address: Identity,
-    
-    /// Flag tracking whether the user has successfully called approve() and is currently in the
-    /// approved state (has not reset it via withdrawing)
-    approved: bool,
 
     /// The asset that the user has currently deposited in the contract
     asset: Option<ContractId>,
 
-    /// Dummy value used to ensure that a caller is a valid user
-    exists: bool,
+    // Minor data duplication allows us to not bother validating unique assets upon escrow creation
+    // otherwise the same asset with different values can be added which, if handled incorrectly,
+    // may allow the user to drain the contract
+    /// The amount of asset that has been deposited
+    deposited_amount: u64,
 
-    /// Value indicating whether the user currently holds a deposit in the contract
-    deposited: bool,
+    disputed: bool,
+}
+
+pub struct Seller {
+    address: Identity,
+
+    disputed: bool
 }
 
 impl Eq for State {

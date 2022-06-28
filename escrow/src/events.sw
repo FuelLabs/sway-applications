@@ -46,6 +46,40 @@ pub struct NewUserEscrowEvent {
     user: Identity
 }
 
+pub struct PaymentTakenEvent {
+    /// The amount that has been transferred to the seller
+    amount: u64, 
+
+    /// The asset that has been transferred to the seller
+    asset: ContractId,
+
+    /// The user who is labelled as the buyer in this exchange
+    buyer: Identity, 
+
+    /// Unique escrow identifier
+    identifier: u64,
+
+    /// The user who is labelled as the seller in this exchange 
+    seller: Identity,
+}
+
+pub struct TransferredToSellerEvent {
+    /// The amount that has been transferred to the seller
+    amount: u64, 
+
+    /// The asset that has been transferred to the seller
+    asset: ContractId,
+
+    /// The user who is labelled as the buyer in this exchange
+    buyer: Identity, 
+
+    /// Unique escrow identifier
+    identifier: u64,
+
+    /// The user who is labelled as the seller in this exchange 
+    seller: Identity,
+}
+
 pub struct ThresholdReachedEvent {
     /// Unique escrow identifier
     identifier: u64,
