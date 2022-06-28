@@ -84,12 +84,11 @@ impl DaoVoting for Contract {
     ///
     /// * When the constructor has not been called to initialize
     /// * When the deadline is 0
-    /// * When the acceptance percentage is 0
-    /// * When the acceptance percentage is above 100
+    /// * When the acceptance percentage is not greater than 0
+    /// * When the acceptance percentage is not less than or equal to 100
     #[storage(read, write)]fn create_proposal(deadline: u64, acceptance_percentage: u64, proposal_transaction: Proposal) {
         require(0 < deadline, CreationError::DeadlineCannotBeZero);
-        require(0 < acceptance_percentage, CreationError::AcceptancePercentageCannotBeZero);
-        require(acceptance_percentage <= 100, CreationError::AcceptancePercentageCannotBeAboveOneHundred);
+        require(0 < acceptance_percentage && acceptance_percentage <= 100, CreationError::InvalidAcceptancePercentage);
 
         let proposal = ProposalInfo {
             yes_votes: 0,

@@ -1,8 +1,7 @@
 library errors;
 
 pub enum CreationError {
-    AcceptancePercentageCannotBeAboveOneHundred: (),
-    AcceptancePercentageCannotBeZero: (),
+    InvalidAcceptancePercentage: (),
     DeadlineCannotBeZero: (),
 }
 
