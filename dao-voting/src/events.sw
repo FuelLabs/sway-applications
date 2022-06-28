@@ -23,6 +23,9 @@ pub struct DepositEvent {
 }
 
 pub struct ExecuteEvent {
+    /// Actual acceptance percentage of approved proposal
+    acceptance_percentage: u64,
+
     /// The unique identifier for the proposal
     id: u64,
 }
@@ -30,6 +33,9 @@ pub struct ExecuteEvent {
 pub struct UnlockVotesEvent {
     /// The unique identifier for the proposal
     id: u64,
+
+    /// User who unlocks the tokens
+    sender: Identity,
 
     /// Amount of votes unlocked
     vote_amount: u64,

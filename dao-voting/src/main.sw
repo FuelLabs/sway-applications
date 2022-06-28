@@ -219,7 +219,8 @@ impl DaoVoting for Contract {
         }
         // Users can now convert their votes back into tokens
         log(ExecuteEvent {
-            id: proposal_id, 
+            acceptance_percentage,
+            id: proposal_id,
         });
     }
 
@@ -251,7 +252,7 @@ impl DaoVoting for Contract {
         storage.balances.insert(sender, storage.balances.get(sender) + votes);
 
         log(UnlockVotesEvent {
-            id: proposal_id, vote_amount: votes, 
+            id: proposal_id, sender, vote_amount: votes, 
         });
     }
 
