@@ -48,6 +48,7 @@ sway-applications/
 ### Projects
 
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
+- [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
 
 ## Running a project
