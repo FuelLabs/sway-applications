@@ -79,8 +79,8 @@ impl DaoVoting for Contract {
         let proposal = ProposalInfo {
             yes_votes: 0,
             no_votes: 0,
-            acceptance_percentage: acceptance_percentage,
-            proposal_transaction: proposal_transaction,
+            acceptance_percentage,
+            proposal_transaction,
             deadline: height() + deadline,
         };
         storage.proposals.insert(storage.proposal_count, proposal);
@@ -138,7 +138,7 @@ impl DaoVoting for Contract {
         transfer(amount, storage.token, sender);
 
         log(WithdrawEvent {
-            amount: amount, user: sender, 
+            amount, user: sender, 
         })
     }
 
@@ -182,7 +182,7 @@ impl DaoVoting for Contract {
         storage.proposals.insert(proposal_id, proposal);
 
         log(VoteEvent {
-            id: proposal_id, user: sender, vote_amount: vote_amount
+            id: proposal_id, user: sender, vote_amount
         });
     }
 
