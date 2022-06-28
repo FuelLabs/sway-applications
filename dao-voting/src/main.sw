@@ -68,10 +68,9 @@ impl DaoVoting for Contract {
     ///
     /// # Reverts
     ///
-    /// * When the constructor has not been called to initialize
     /// * When the deadline is 0
-    /// * When the acceptance percentage is not greater than 0
-    /// * When the acceptance percentage is not less than or equal to 100
+    /// * When the acceptance percentage is less than or equal 0
+    /// * When the acceptance percentage is greater than 100
     #[storage(read, write)]fn create_proposal(acceptance_percentage: u64, deadline: u64, proposal_transaction: Proposal) {
         require(0 < deadline, CreationError::DeadlineCannotBeZero);
         require(0 < acceptance_percentage && acceptance_percentage <= 100, CreationError::InvalidAcceptancePercentage);
@@ -97,6 +96,8 @@ impl DaoVoting for Contract {
 
     /// Update the user balance to indicate they have deposited governance tokens.
     /// A successful deposit unlocks voting functionality.
+    /// Voting power is directly proportional to the amount of deposited governance tokens
+    /// That is: 1 governance token = 1 vote
     ///
     /// # Reverts
     ///
@@ -125,7 +126,6 @@ impl DaoVoting for Contract {
     ///
     /// # Reverts
     ///
-    /// * When the constructor has not been called to initalize
     /// * When the user tries to withdraw more than their balance
     #[storage(read, write)]fn withdraw(amount: u64) {
         let sender: Identity = msg_sender().unwrap();
@@ -148,16 +148,15 @@ impl DaoVoting for Contract {
     /// # Arguments
     ///
     /// - `is_yes_vote` - determines if you vote yes or no on the proposal
-    /// - `proposal_id` - proposal to vote on
-    /// - `vote_amount` - amount of votes to use on proposal
+    /// - `proposal_id` - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count)
+    /// - `vote_amount` - the amount of votes to cast on the proposal
     ///
     /// # Reverts
     ///
-    /// * When the constructor has not been called to initialize
-    /// * When the proposal id is out of range
+    /// * When the proposal id is greater than or equal to the proposal count
     /// * When the vote amount is 0
+    /// * When the proposal has passed its deadline
     /// * When the vote amount is greater than the users deposited balance
-    /// * When the given proposal is expired
     #[storage(read, write)]fn vote(is_yes_vote: bool, proposal_id: u64, vote_amount: u64,) {
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
@@ -191,13 +190,12 @@ impl DaoVoting for Contract {
     ///
     /// # Arguments
     ///
-    /// - `proposal_id` - proposal to execute
+    /// - `proposal_id` - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count)
     ///
     /// # Reverts
     ///
-    /// * When the construct has not been called to initialize
     /// * When the proposal id is out of range
-    /// * When the proposal has not expired
+    /// * When the proposal is still active and being voted on
     /// * When the proposal has not met the necessary approval percentage
     #[storage(read, write)]fn execute(proposal_id: u64) {
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
@@ -225,16 +223,18 @@ impl DaoVoting for Contract {
         });
     }
 
-    /// Unlock governance tokens which have been locked by users who have voted on a proposal
+    /// Unlock governance tokens from a proposal
+    /// Governance tokens are locked whenever a user votes on a proposal.
+    /// This is to ensure a user can not vote twice on a proposal with the same governance token.
+    /// As 1 token = 1 vote.
     /// If the user had not voted on the given, expired proposal then nothing happens
     ///
     /// # Arguments
     ///
-    /// - `proposal_id` - proposal to turn user votes back into governance tokens
+    /// - `proposal_id` - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count)
     ///
     /// # Reverts
     ///
-    /// * When the constructor has not ben called to initialize
     /// * When the proposal id is invalid
     /// * When the proposal is still active
     #[storage(read, write)]fn unlock_votes(proposal_id: u64) {
@@ -288,10 +288,8 @@ impl DaoVoting for Contract {
     ///
     /// # Reverts
     ///
-    /// * When the constructor has not been called ot initialize
     /// * When the given proposal id is out of range
     #[storage(read)]fn proposal(proposal_id: u64) -> ProposalInfo {
-        require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
         storage.proposals.get(proposal_id)
     }
