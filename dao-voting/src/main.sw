@@ -29,7 +29,7 @@ storage {
     // The amount of governance tokens a user has deposited
     balances: StorageMap<Identity,
     u64>, /// Contract Id of the governance token
-    gov_token: ContractId,
+    token: ContractId,
     /// Information describing a proposal created via create_proposal(...)
     proposals: StorageMap<u64,
     ProposalInfo>, /// Number of created proposals
@@ -46,15 +46,15 @@ impl DaoVoting for Contract {
     ///
     /// # Arguments
     ///
-    /// - `gov_token` - contract id of the token used to vote on governance proposals
+    /// - `token` - contract id of the token used to vote on governance proposals
     ///
     /// # Reverts
     ///
     /// * When the constructor is called more than once
-    #[storage(read, write)]fn constructor(gov_token: ContractId) {
+    #[storage(read, write)]fn constructor(token: ContractId) {
         require(storage.state == State::NotInitialized, InitializationError::CannotReinitialize);
 
-        storage.gov_token = gov_token;
+        storage.token = token;
         storage.state = State::Initialized;
     }
 
@@ -104,7 +104,7 @@ impl DaoVoting for Contract {
     /// * When the user does not deposit any assets
     #[storage(read, write)]fn deposit() {
         require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
-        require(storage.gov_token == msg_asset_id(), UserError::IncorrectAssetSent);
+        require(storage.token == msg_asset_id(), UserError::IncorrectAssetSent);
         require(0 < msg_amount(), UserError::AmountCannotBeZero);
 
         let sender: Identity = msg_sender().unwrap();
@@ -135,7 +135,7 @@ impl DaoVoting for Contract {
         storage.balances.insert(sender, prev_balance - amount);
 
         // Transfer the asset back to the user
-        transfer(amount, storage.gov_token, sender);
+        transfer(amount, storage.token, sender);
 
         log(WithdrawEvent {
             amount: amount, user: sender, 
@@ -256,7 +256,7 @@ impl DaoVoting for Contract {
 
     /// Return the amount of governance tokens in this contract
     #[storage(read)]fn balance() -> u64 {
-        this_balance(storage.gov_token)
+        this_balance(storage.token)
     }
 
     /// Return the amount of governance tokens a user has in this contract
