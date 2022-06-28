@@ -90,7 +90,7 @@ impl DaoVoting for Contract {
         storage.proposal_count += 1;
 
         log(CreatePropEvent {
-            author, proposal_info: proposal, id: storage.proposal_count - 1
+            proposal_info: proposal, id: storage.proposal_count - 1
         });
 
     }
