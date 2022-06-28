@@ -14,7 +14,7 @@ use std::{
     contract_id::ContractId,
     identity::Identity,
     logging::log,
-    result::*,
+    result::Result,
     revert::revert,
     storage::StorageMap,
     token::transfer,
