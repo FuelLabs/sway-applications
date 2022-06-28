@@ -1,6 +1,20 @@
 library data_structures;
 
 use std::{contract_id::ContractId, identity::Identity};
+use core::ops::Eq;
+
+pub enum State {
+    NotInitialized: (),
+    Initialized: (),
+}
+
+impl Eq for State {
+    fn eq(self, other: Self) -> bool {
+        match(self, other) {
+            (State::Initialized, State::Initialized) => true, (State::NotInitialized, State::NotInitialized) => true, _ => false, 
+        }
+    }
+}
 
 pub struct ProposalInfo {
     /// The needed percentage of yes votes to execute a proposal.

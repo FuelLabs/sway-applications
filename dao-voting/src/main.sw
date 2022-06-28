@@ -22,22 +22,9 @@ use std::{
 };
 
 use abi::DaoVoting;
-use data_structures::{Proposal, ProposalInfo};
+use data_structures::{Proposal, ProposalInfo, State};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
 use events::{CreatePropEvent, DepositEvent, ExecuteEvent, UnlockVotesEvent, VoteEvent, WithdrawEvent};
-
-enum State {
-    NotInitialized: (),
-    Initialized: (),
-}
-
-impl Eq for State {
-    fn eq(self, other: Self) -> bool {
-        match(self, other) {
-            (State::Initialized, State::Initialized) => true, (State::NotInitialized, State::NotInitialized) => true, _ => false, 
-        }
-    }
-}
 
 storage {
     // The amount of governance tokens a user has deposited
