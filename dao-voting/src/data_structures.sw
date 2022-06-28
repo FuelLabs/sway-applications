@@ -6,8 +6,8 @@ pub struct ProposalInfo {
     /// The needed percentage of yes votes to execute a proposal.
     /// 0 < acceptance_percentage <= 100
     acceptance_percentage: u64,
-    /// Arbitrary call data for executing approved proposals
-    call_data: Proposal,
+    /// Data necessary to execute an arbitrary transaction.
+    proposal_transaction: Proposal,
     /// Amount of blocks a proposal is valid for after creation
     end_height: u64,
     /// The number of no votes for a proposal
@@ -18,21 +18,21 @@ pub struct ProposalInfo {
 
 pub struct Proposal {
     /// Specifies the amount of gas to forward to the arbitrary function call
-    amount_of_gas_to_forward: u64,
+    gas: u64,
     /// Asset Id of the coins to forward
-    asset_id_of_coins_to_forward: ContractId,
+    asset: ContractId,
     /// Stores information about an arbitrary contract function call
-    memory_address: MemoryAddress,
+    call_data: CallData,
     /// Number of coins to forward
     /// Coin type is specified by `asset_id_of_coins_to_forward`
-    num_coins_to_forward: u64,
+    amount: u64,
 }
 
-struct MemoryAddress {
+struct CallData {
     /// Contract id to call
-    contract_id: ContractId,
+    id: ContractId,
     /// Data to pass called function
-    function_data: u64,
+    arguments: u64,
     /// Function to call on the specified contract
     function_selector: u64,
 }

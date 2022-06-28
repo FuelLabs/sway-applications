@@ -86,7 +86,7 @@ impl DaoVoting for Contract {
     /// * When the end height is 0
     /// * When the acceptance percentage is 0
     /// * When the acceptance percentage is above 100
-    #[storage(read, write)]fn create_proposal(end_height: u64, acceptance_percentage: u64, proposal_data: Proposal) {
+    #[storage(read, write)]fn create_proposal(end_height: u64, acceptance_percentage: u64, proposal_transaction: Proposal) {
         require(0 < end_height, CreationError::EndHeightCannotBeZero);
         require(0 < acceptance_percentage, CreationError::AcceptancePercentageCannotBeZero);
         require(acceptance_percentage <= 100, CreationError::AcceptancePercentageCannotBeAboveOneHundred);
@@ -95,7 +95,7 @@ impl DaoVoting for Contract {
             yes_votes: 0,
             no_votes: 0,
             acceptance_percentage: acceptance_percentage,
-            call_data: proposal_data,
+            proposal_transaction: proposal_transaction,
             end_height: height() + end_height,
         };
         storage.proposals.insert(storage.proposal_count, proposal);
@@ -230,8 +230,8 @@ impl DaoVoting for Contract {
         let acceptance_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
         require(proposal.acceptance_percentage <= acceptance_percentage, ProposalError::ApprovalPercentageNotMet);
 
-        asm(memory_address: proposal.call_data.memory_address, num_coins_to_forward: proposal.call_data.num_coins_to_forward, asset_id_of_coins_to_forward: proposal.call_data.asset_id_of_coins_to_forward, amount_of_gas_to_forward: proposal.call_data.amount_of_gas_to_forward) {
-            call memory_address num_coins_to_forward asset_id_of_coins_to_forward amount_of_gas_to_forward;
+        asm(call_data: proposal.proposal_transaction.call_data, amount: proposal.proposal_transaction.amount, asset: proposal.proposal_transaction.asset, gas: proposal.proposal_transaction.gas) {
+            call call_data amount asset gas;
         }
         // Users can now convert their votes back into tokens
         log(ExecuteEvent {

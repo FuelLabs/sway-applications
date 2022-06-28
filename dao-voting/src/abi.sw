@@ -12,7 +12,7 @@ abi DaoVoting {
     #[storage(read)] fn balance() -> u64;
     #[storage(read)] fn user_balance(user: Identity) -> u64;
     #[storage(read)] fn user_votes(user: Identity, proposal_id: u64) -> u64;
-    #[storage(read, write)] fn create_proposal(voting_period: u64, approval_percentage: u64, proposal_data: Proposal);
+    #[storage(read, write)] fn create_proposal(voting_period: u64, approval_percentage: u64, proposal_transaction: Proposal);
     #[storage(read)] fn proposal(id: u64) -> ProposalInfo;
     #[storage(read, write)] fn vote(proposal_id: u64, vote_amount: u64, is_yes_vote: bool);
     #[storage(read, write)] fn execute(proposal_id: u64);
