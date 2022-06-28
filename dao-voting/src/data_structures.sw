@@ -29,10 +29,11 @@ pub struct Proposal {
 }
 
 struct CallData {
-    /// Contract id to call
+    /// Id of contract which will be called if a proposal is approved
+    /// The contract will be caled using the provided function selector and arguments
     id: ContractId,
-    /// Data to pass called function
+    /// Data to pass into the called function
     arguments: u64,
-    /// Function to call on the specified contract
+    /// Encoded representation of a function to be called on the specified contract
     function_selector: u64,
 }
