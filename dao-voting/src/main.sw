@@ -76,18 +76,18 @@ impl DaoVoting for Contract {
     ///
     /// # Arguments
     ///
-    /// - `end_height` - the number of blocks during which a proposal can be voted on
+    /// - `deadline` - the number of blocks during which a proposal can be voted on
     /// - `acceptance_percentage` - the percentage of yes votes a proposal needs to be executed
     /// - `proposal_data` - transaction data to be executed if proposal is approved
     ///
     /// # Reverts
     ///
     /// * When the constructor has not been called to initialize
-    /// * When the end height is 0
+    /// * When the deadline is 0
     /// * When the acceptance percentage is 0
     /// * When the acceptance percentage is above 100
-    #[storage(read, write)]fn create_proposal(end_height: u64, acceptance_percentage: u64, proposal_transaction: Proposal) {
-        require(0 < end_height, CreationError::EndHeightCannotBeZero);
+    #[storage(read, write)]fn create_proposal(deadline: u64, acceptance_percentage: u64, proposal_transaction: Proposal) {
+        require(0 < deadline, CreationError::DeadlineCannotBeZero);
         require(0 < acceptance_percentage, CreationError::AcceptancePercentageCannotBeZero);
         require(acceptance_percentage <= 100, CreationError::AcceptancePercentageCannotBeAboveOneHundred);
 
@@ -96,7 +96,7 @@ impl DaoVoting for Contract {
             no_votes: 0,
             acceptance_percentage: acceptance_percentage,
             proposal_transaction: proposal_transaction,
-            end_height: height() + end_height,
+            deadline: height() + deadline,
         };
         storage.proposals.insert(storage.proposal_count, proposal);
 
@@ -177,7 +177,7 @@ impl DaoVoting for Contract {
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
 
         let mut proposal = storage.proposals.get(proposal_id);
-        require(height() <= proposal.end_height, ProposalError::ProposalExpired);
+        require(height() <= proposal.deadline, ProposalError::ProposalExpired);
 
         let sender: Identity = msg_sender().unwrap();
         let sender_balance = storage.balances.get(sender);
@@ -217,7 +217,7 @@ impl DaoVoting for Contract {
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
 
         let proposal = storage.proposals.get(proposal_id);
-        require(proposal.end_height < height(), ProposalError::ProposalStillActive);
+        require(proposal.deadline < height(), ProposalError::ProposalStillActive);
 
         // Prevents divide by 0 error when calculating acceptance_percentage below
         if (proposal.yes_votes == 0 && proposal.no_votes == 0) {
@@ -255,7 +255,7 @@ impl DaoVoting for Contract {
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
 
         let proposal = storage.proposals.get(proposal_id);
-        require(proposal.end_height < height(), ProposalError::ProposalStillActive);
+        require(proposal.deadline < height(), ProposalError::ProposalStillActive);
 
         let sender: Identity = msg_sender().unwrap();
         let votes = storage.votes.get((sender, proposal_id));

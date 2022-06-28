@@ -74,20 +74,20 @@ async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {
 }
 
 fn get_call_data(recipient: Address, asset_id: ContractId) -> daovoting_mod::Proposal {
-    let mem_address = daovoting_mod::MemoryAddress {
-        contract_id: asset_id,
+    let call_data = daovoting_mod::CallData {
+        id: asset_id,
         function_selector: 0,
-        function_data: 0,
+        arguments: 0,
     };
 
-    let call_data = daovoting_mod::Proposal {
-        memory_address: mem_address,
-        num_coins_to_forward: 0,
-        asset_id_of_coins_to_forward: asset_id,
-        amount_of_gas_to_forward: 20000,
+    let proposal = daovoting_mod::Proposal {
+        call_data: call_data,
+        amount: 0,
+        asset: asset_id,
+        gas: 20000,
     };
 
-    call_data
+    proposal
 }
 
 async fn initialize() {
@@ -172,8 +172,8 @@ mod add_proposal {
                     yes_votes: 0,
                     no_votes: 0,
                     acceptance_percentage: 10,
-                    call_data: call_data,
-                    end_height: 13,
+                    proposal_transaction: call_data,
+                    deadline: 13,
                 }
             );
         }
@@ -537,8 +537,8 @@ mod vote {
                     yes_votes: asset_amount / 4,
                     no_votes: asset_amount / 4,
                     acceptance_percentage: 10,
-                    call_data: call_data,
-                    end_height: 15,
+                    proposal_transaction: call_data,
+                    deadline: 15,
                 }
             );
         }
@@ -700,8 +700,8 @@ mod execute_proposal {
                 daovoting_mod::ProposalInfo {
                     yes_votes: 5,
                     no_votes: 0,
-                    call_data: call_data,
-                    end_height: 15,
+                    proposal_transaction: call_data,
+                    deadline: 15,
                     acceptance_percentage: 10
                 }
             );
@@ -952,8 +952,8 @@ mod convert_votes {
                 daovoting_mod::ProposalInfo {
                     yes_votes: 5,
                     no_votes: 0,
-                    call_data: call_data,
-                    end_height: 6,
+                    proposal_transaction: call_data,
+                    deadline: 6,
                     acceptance_percentage: 10
                 }
             );

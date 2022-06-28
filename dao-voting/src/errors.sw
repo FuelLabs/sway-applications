@@ -8,7 +8,7 @@ pub enum InitializationError {
 pub enum CreationError {
     AcceptancePercentageCannotBeAboveOneHundred: (),
     AcceptancePercentageCannotBeZero: (),
-    EndHeightCannotBeZero: (),
+    DeadlineCannotBeZero: (),
 }
 
 pub enum ProposalError {

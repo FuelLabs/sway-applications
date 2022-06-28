@@ -9,7 +9,7 @@ pub struct ProposalInfo {
     /// Data necessary to execute an arbitrary transaction.
     proposal_transaction: Proposal,
     /// Amount of blocks a proposal is valid for after creation
-    end_height: u64,
+    deadline: u64,
     /// The number of no votes for a proposal
     no_votes: u64,
     /// The number of yes votes for a proposal
