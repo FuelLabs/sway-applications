@@ -289,4 +289,13 @@ impl DaoVoting for Contract {
         validate_id(proposal_id, storage.proposal_count);
         storage.proposals.get(proposal_id)
     }
+
+    /// Return governance token id
+    ///
+    /// # Reverts
+    ///
+    /// * When the constructor has not been called to initialize
+    #[storage(read)] fn governance_token_id() -> ContractId {
+        storage.token
+    }
 }
