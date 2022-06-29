@@ -34,7 +34,7 @@ pub struct ProposalInfo {
 
 pub struct Proposal {
     /// Number of coins to forward
-    /// Coin type is specified by `asset_id_of_coins_to_forward`
+    /// Coin type is specified by the `asset` below
     amount: u64,
     /// Asset Id of the coins to forward
     asset: ContractId,

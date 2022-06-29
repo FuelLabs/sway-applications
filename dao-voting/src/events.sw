@@ -45,7 +45,7 @@ pub struct VoteEvent {
     /// The unique identifier for the proposal
     id: u64,
 
-    /// The use who voted
+    /// The user who voted
     user: Identity,
 
     /// The amount of votes to add to the proposal
