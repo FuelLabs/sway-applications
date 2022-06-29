@@ -3,7 +3,7 @@ mod utils;
 use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
-    abi_calls::{constructor, create_proposal, deposit},
+    abi_calls::{constructor, create_proposal, deposit, withdraw},
     test_helpers::{proposal, setup},
     GovToken, Identity, ProposalInfo,
 };
@@ -326,13 +326,7 @@ mod withdraw {
                 asset_amount
             );
 
-            user.dao_voting
-                .withdraw(asset_amount)
-                .append_variable_outputs(1)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            withdraw(&user, asset_amount).await;
 
             assert_eq!(
                 user.dao_voting
@@ -405,14 +399,8 @@ mod withdraw {
                     .value,
                 asset_amount
             );
-
-            user.dao_voting
-                .withdraw(asset_amount * 100)
-                .append_variable_outputs(1)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            
+            withdraw(&user, asset_amount * 100).await;
         }
     }
 }

@@ -49,6 +49,16 @@ pub mod abi_calls {
             .unwrap()
             .value;
     }
+
+    pub async fn withdraw(user: &Metadata, amount: u64) {
+        user.dao_voting
+            .withdraw(amount)
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+            .value;
+    }
 }
 
 pub mod test_helpers {
