@@ -128,7 +128,7 @@ impl DaoVoting for Contract {
         let sender: Identity = msg_sender().unwrap();
 
         let prev_balance = storage.balances.get(sender);
-        require(amount <= prev_balance, UserError::InsuffiecientBalance);
+        require(amount <= prev_balance, UserError::InsufficientBalance);
 
         storage.balances.insert(sender, prev_balance - amount);
 
@@ -164,7 +164,7 @@ impl DaoVoting for Contract {
         let sender: Identity = msg_sender().unwrap();
         let sender_balance = storage.balances.get(sender);
 
-        require(vote_amount <= sender_balance, UserError::InsuffiecientBalance);
+        require(vote_amount <= sender_balance, UserError::InsufficientBalance);
 
         if (approve) {
             proposal.yes_votes += vote_amount;

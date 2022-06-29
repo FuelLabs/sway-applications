@@ -1,8 +1,8 @@
 library errors;
 
 pub enum CreationError {
-    InvalidAcceptancePercentage: (),
     DeadlineCannotBeZero: (),
+    InvalidAcceptancePercentage: (),
 }
 
 pub enum InitializationError {
@@ -19,7 +19,7 @@ pub enum ProposalError {
 pub enum UserError {
     AmountCannotBeZero: (),
     IncorrectAssetSent: (),
+    InsufficientBalance: (),
     InvalidId: (),
-    InsuffiecientBalance: (),
     VoteAmountCannotBeZero: (),
 }
