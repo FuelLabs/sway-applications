@@ -138,6 +138,16 @@ pub mod test_helpers {
         (gov_token, gov_token_id, deployer, user, asset_amount)
     }
 
+    pub async fn mint(contract: &GovToken, amount: u64, address: Address) -> bool {
+        contract
+            .mint_and_send_to_address(amount, address)
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+
     pub fn proposal(asset_id: ContractId) -> Proposal {
         let call_data = CallData {
             id: asset_id,

@@ -6,7 +6,7 @@ use utils::{
     abi_calls::{
         constructor, create_proposal, deposit, unlock_votes, user_balance, vote, withdraw,
     },
-    test_helpers::{proposal, setup},
+    test_helpers::{mint, proposal, setup},
     GovToken, Identity, ProposalInfo,
 };
 
@@ -121,16 +121,12 @@ mod deposit {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
             assert!(
-                deployer
-                    .gov_token
-                    .as_ref()
-                    .unwrap()
-                    .mint_and_send_to_address(100, user.wallet.address())
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
+                mint(
+                    &deployer.gov_token.as_ref().unwrap(),
+                    100,
+                    user.wallet.address()
+                )
+                .await
             );
 
             constructor(&deployer, gov_token_id).await;
@@ -171,16 +167,11 @@ mod deposit {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
 
             assert!(
-                deployer
-                    .gov_token
-                    .as_ref()
-                    .unwrap()
-                    .mint_and_send_to_address(100, user.wallet.address())
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
+                mint(
+                    &deployer.gov_token.as_ref().unwrap(),
+                    100,
+                    user.wallet.address()
+                ).await
             );
 
             constructor(&deployer, gov_token_id).await;
@@ -198,15 +189,11 @@ mod deposit {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
             assert!(
-                deployer
-                    .gov_token
-                    .unwrap()
-                    .mint_and_send_to_address(100, user.wallet.address())
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
+                mint(
+                    &deployer.gov_token.as_ref().unwrap(),
+                    100,
+                    user.wallet.address()
+                ).await
             );
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
@@ -236,13 +223,11 @@ mod deposit {
                 GovToken::new(another_asset_id.to_string(), deployer.wallet.clone());
 
             assert!(
-                another_asset
-                    .mint_and_send_to_address(100, user.wallet.address())
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
+                mint(
+                    &another_asset,
+                    100,
+                    user.wallet.address()
+                ).await
             );
 
             constructor(&deployer, gov_token_id).await;
@@ -269,16 +254,11 @@ mod withdraw {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
             assert!(
-                deployer
-                    .gov_token
-                    .as_ref()
-                    .unwrap()
-                    .mint_and_send_to_address(100, user.wallet.address())
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
+                mint(
+                    &deployer.gov_token.as_ref().unwrap(),
+                    100,
+                    user.wallet.address()
+                ).await
             );
 
             constructor(&deployer, gov_token_id).await;
@@ -328,16 +308,11 @@ mod withdraw {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
             assert!(
-                deployer
-                    .gov_token
-                    .as_ref()
-                    .unwrap()
-                    .mint_and_send_to_address(100, user.wallet.address())
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
+                mint(
+                    &deployer.gov_token.as_ref().unwrap(),
+                    100,
+                    user.wallet.address()
+                ).await
             );
 
             constructor(&deployer, gov_token_id).await;
@@ -384,15 +359,11 @@ mod vote {
             constructor(&deployer, gov_token_id).await;
 
             assert!(
-                deployer
-                    .gov_token
-                    .unwrap()
-                    .mint_and_send_to_address(100, user.wallet.address())
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
+                mint(
+                    &deployer.gov_token.as_ref().unwrap(),
+                    100,
+                    user.wallet.address()
+                ).await
             );
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
@@ -446,15 +417,11 @@ mod vote {
             constructor(&deployer, gov_token_id).await;
 
             assert!(
-                deployer
-                    .gov_token
-                    .unwrap()
-                    .mint_and_send_to_address(100, user.wallet.address())
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
+                mint(
+                    &deployer.gov_token.as_ref().unwrap(),
+                    100,
+                    user.wallet.address()
+                ).await
             );
 
             let proposal_transaction = proposal(gov_token_id);
@@ -484,15 +451,11 @@ mod execute_proposal {
             constructor(&deployer, gov_token_id).await;
 
             assert!(
-                deployer
-                    .gov_token
-                    .unwrap()
-                    .mint_and_send_to_address(100, user.wallet.address())
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
+                mint(
+                    &deployer.gov_token.as_ref().unwrap(),
+                    100,
+                    user.wallet.address()
+                ).await
             );
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
@@ -538,15 +501,11 @@ mod unlock_votes {
             constructor(&deployer, gov_token_id).await;
 
             assert!(
-                deployer
-                    .gov_token
-                    .unwrap()
-                    .mint_and_send_to_address(100, user.wallet.address())
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-                    .value
+                mint(
+                    &deployer.gov_token.as_ref().unwrap(),
+                    100,
+                    user.wallet.address()
+                ).await
             );
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
