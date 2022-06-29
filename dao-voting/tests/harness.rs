@@ -3,8 +3,8 @@ mod utils;
 use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
-    abi_calls::{constructor},
-    test_helpers::{get_call_data, setup},
+    abi_calls::{constructor, create_proposal},
+    test_helpers::{proposal, setup},
     GovToken, Identity, ProposalInfo,
 };
 
@@ -47,14 +47,8 @@ mod create_proposal {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let call_data = get_call_data(gov_token_id);
-
-            user.dao_voting
-                .create_proposal(10, 10, call_data.clone())
-                .call()
-                .await
-                .unwrap()
-                .value;
+            let proposal_transaction = proposal(gov_token_id);
+            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
 
             let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 
@@ -65,7 +59,7 @@ mod create_proposal {
                     yes_votes: 0,
                     no_votes: 0,
                     acceptance_percentage: 10,
-                    proposal_transaction: call_data,
+                    proposal_transaction,
                     deadline: 13,
                 }
             );
@@ -88,7 +82,7 @@ mod create_proposal {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let call_data = get_call_data(gov_token_id);
+            let call_data = proposal(gov_token_id);
 
             deployer
                 .dao_voting
@@ -105,7 +99,7 @@ mod create_proposal {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let call_data = get_call_data(gov_token_id);
+            let call_data = proposal(gov_token_id);
 
             deployer
                 .dao_voting
@@ -122,7 +116,7 @@ mod create_proposal {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let call_data = get_call_data(gov_token_id);
+            let call_data = proposal(gov_token_id);
 
             deployer
                 .dao_voting
@@ -359,7 +353,7 @@ mod vote {
                 .unwrap()
                 .value;
 
-            let call_data = get_call_data(gov_token_id);
+            let call_data = proposal(gov_token_id);
 
             user.dao_voting
                 .create_proposal(10, 10, call_data.clone())
@@ -407,7 +401,7 @@ mod vote {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let call_data = get_call_data(gov_token_id);
+            let call_data = proposal(gov_token_id);
 
             user.dao_voting
                 .create_proposal(10, 10, call_data)
@@ -442,7 +436,7 @@ mod vote {
                     .value
             );
 
-            let call_data = get_call_data(gov_token_id);
+            let call_data = proposal(gov_token_id);
 
             user.dao_voting
                 .create_proposal(1, 1, call_data)
@@ -514,7 +508,7 @@ mod execute_proposal {
                 .unwrap()
                 .value;
 
-            let call_data = get_call_data(gov_token_id);
+            let call_data = proposal(gov_token_id);
 
             user.dao_voting
                 .create_proposal(10, 10, call_data.clone())
@@ -752,7 +746,7 @@ mod convert_votes {
                 .unwrap()
                 .value;
 
-            let call_data = get_call_data(gov_token_id);
+            let call_data = proposal(gov_token_id);
 
             user.dao_voting
                 .create_proposal(1, 1, call_data.clone())

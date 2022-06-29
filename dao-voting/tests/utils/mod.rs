@@ -17,13 +17,21 @@ pub mod abi_calls {
     use super::*;
 
     pub async fn constructor(user: &Metadata, token: ContractId) {
-        user
-            .dao_voting
+        user.dao_voting
             .constructor(token)
             .call()
             .await
             .unwrap()
             .value
+    }
+
+    pub async fn create_proposal(user: &Metadata, acceptance_percentage: u64, deadline: u64, proposal: Proposal) {
+        user.dao_voting
+            .create_proposal(acceptance_percentage, deadline, proposal)
+            .call()
+            .await
+            .unwrap()
+            .value;
     }
 }
 
@@ -82,7 +90,7 @@ pub mod test_helpers {
         (gov_token, gov_token_id, deployer, user, asset_amount)
     }
 
-    pub fn get_call_data(asset_id: ContractId) -> Proposal {
+    pub fn proposal(asset_id: ContractId) -> Proposal {
         let call_data = CallData {
             id: asset_id,
             function_selector: 0,
