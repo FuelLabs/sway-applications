@@ -3,7 +3,7 @@ mod utils;
 use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
-    abi_calls::{constructor, create_proposal, deposit, withdraw, vote},
+    abi_calls::{constructor, create_proposal, deposit, withdraw, vote, unlock_votes},
     test_helpers::{proposal, setup},
     GovToken, Identity, ProposalInfo,
 };
@@ -559,7 +559,7 @@ mod execute_proposal {
     }
 }
 
-mod convert_votes {
+mod unlock_votes {
     use super::*;
 
     mod success {
@@ -608,7 +608,7 @@ mod convert_votes {
                 }
             );
 
-            user.dao_voting.unlock_votes(0).call().await.unwrap();
+            unlock_votes(&user, 0).await;
 
             assert_eq!(
                 user.dao_voting
