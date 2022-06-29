@@ -4,29 +4,51 @@ use std:: {
     assert::assert, contract_id::ContractId, identity::Identity, option::Option, storage::StorageMap
 };
 
-pub struct Auction {
-    buy_asset: Asset,
-    bidder: Option<Identity>,
-    end_block: u64,
-    inital_price: u64,
-    reserve_price: Option<u64>,
-    sell_asset: Asset,
-    seller: Identity,
-    state: u64,
-}
-
 pub enum Asset {
     NFTAsset: NFTAsset,
     TokenAsset: TokenAsset,
 }
 
+pub enum State {
+    Closed: (),
+    Open: (),
+}
+
+pub struct Auction {
+    /// The asset which will be accepted in return for `sell_asset`.
+    /// On initalization, the amount will be set to 0 and the `contract_id` will be set to the 
+    /// `ContractId` of the asset in return.
+    buy_asset: Asset,
+    /// The current highest bidder of the auction. When the auction is over, this is the winner.
+    /// If no one bid on the auction or the auction is canceled, this will be `None`.
+    highest_bidder: Option<Identity>,
+    /// The block at which the auction should end
+    end_block: u64,
+    /// The starting price for the auction to start. This can be 0.
+    inital_price: u64,
+    /// The reserve price for the auction. When this amount is met, the auction will automatically
+    /// close and the `sell_asset` will be sold.
+    reserve_price: Option<u64>,
+    /// The asset that is being auctioned off. This can be a native token or an NFT.
+    sell_asset: Asset,
+    /// The `Identity` of the seller or owner of the auction. Only the seller can cancel an auction.
+    seller: Identity,
+    /// The state of the auction describing if it is open or closed.
+    state: State,
+}
+
 pub struct NFTAsset {
+    /// The `ContractId` of the NFT that the struct is representing.
     contract_id: ContractId,
+    // TODO: This needs to be a Vec to support mutliple NFTs.
+    /// The token id of the NFT that the struct is representing. 
     token_ids: u64,
 }
 
 pub struct TokenAsset {
+    /// The amount of the native asset that the struct is representing.
     amount: u64,
+    /// The `ContractId` of the native asset that the struct is representing.
     contract_id: ContractId,
 }
 
@@ -72,6 +94,14 @@ impl core::ops::Eq for Asset {
             _ => {
                 false
             },
+        }
+    }
+}
+
+impl core::ops::Eq for State {
+    fn eq(self, other: Self) -> bool {
+        match(self, other) {
+            (State::Open, State::Open) => true, (State::Closed, State::Closed) => true, _ => false, 
         }
     }
 }

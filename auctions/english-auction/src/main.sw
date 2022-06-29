@@ -9,8 +9,8 @@ dep utils;
 use abi::{EnglishAuction, NFT};
 use data_structures::*;
 use errors::{AccessError, InitError, InputError, UserError};
-use events::{AuctionStartEvent, BidEvent, WithdrawEvent};
-use utils::{approved_for_nft_transfer, owns_nft, send_tokens, sender_identity, transfer_nft, validate_asset,};
+use events::{AuctionCancelEvent, AuctionStartEvent, BidEvent, WithdrawEvent};
+use utils::{approved_for_nft_transfer, owns_nft, sender_identity, transfer_nft, validate_asset,};
 
 use std::{
     address::Address,
@@ -26,7 +26,7 @@ use std::{
     result::*,
     revert::revert,
     storage::StorageMap,
-    token::{force_transfer_to_contract, transfer_to_output}
+    token::transfer,
 };
 
 storage {
@@ -61,7 +61,7 @@ impl EnglishAuction for Contract {
     /// If the reserve price is met the auction will end and the buyer
     /// will be able to withdraw.
     ///
-    /// # Argument
+    /// # Arguments
     ///
     /// * `auction_id` - The `u64` id number of the auction.
     /// * `asset` - An `Asset` enum that is either a `TokenAsset` struct or a `NFTAsset` struct.
@@ -69,7 +69,7 @@ impl EnglishAuction for Contract {
     /// # Reverts
     ///
     /// * When the `auction_id` does not map to an existing auction.
-    /// * When the auction item has been sold.
+    /// * When the auction has closed.
     /// * When the bidding time for the auction has closed.
     /// * When the `asset` `contract_id` provided does not match the auction's `buy_asset`
     ///   `contract_id`.
@@ -87,7 +87,7 @@ impl EnglishAuction for Contract {
         let mut auction = auction.unwrap();
 
         // Make sure this auction is open to taking bids
-        require(auction.state == 1, AccessError::AuctionIsNotOpen);
+        require(auction.state == State::Open, AccessError::AuctionIsNotOpen);
         require(height() <= auction.end_block, AccessError::AuctionIsNotOpen);
 
         // Ensure the `asset` struct has the correct contract_id, the transaction's amount
@@ -124,7 +124,7 @@ impl EnglishAuction for Contract {
             require(reserve.unwrap() >= total_bid_asset.amount(), InputError::IncorrectAmountProvided);
             if (reserve.unwrap() == total_bid_asset.amount()) {
                 // The reserve price was met
-                auction.state = 2;
+                auction.state = State::Closed;
             }
         }
 
@@ -141,7 +141,7 @@ impl EnglishAuction for Contract {
         }
 
         // Update the auction's information
-        auction.bidder = Option::Some(sender);
+        auction.highest_bidder = Option::Some(sender);
         auction.buy_asset = total_bid_asset;
 
         // Store the new auction information and the user's deposit
@@ -157,7 +157,7 @@ impl EnglishAuction for Contract {
     /// Cancels the specified auction. Once the auction has been canceled
     /// users will be able to withdraw their original deposits.
     ///
-    /// # Argument
+    /// # Arguments
     ///
     /// * `auction_id` - The `u64` id number of the auction.
     ///
@@ -176,9 +176,13 @@ impl EnglishAuction for Contract {
         require(sender == auction.seller, AccessError::SenderIsNotSeller);
 
         // Update and store the auction's information
-        auction.bidder = Option::None();
-        auction.state = 2;
+        auction.highest_bidder = Option::None();
+        auction.state = State::Closed;
         storage.auctions.insert(auction_id, Option::Some(auction));
+
+        log(AuctionCancelEvent {
+            auction, auction_id
+        });
     }
 
     /// Starts an auction with a seller, selling asset, buying asset,
@@ -240,13 +244,13 @@ impl EnglishAuction for Contract {
         // Setup auction
         let auction = Auction {
             buy_asset: buy_asset,
-            bidder: Option::None(),
+            highest_bidder: Option::None(),
             end_block: height() + time,
             inital_price: inital_price,
             reserve_price: reserve,
             sell_asset: sell_asset,
             seller: seller,
-            state: 1,
+            state: State::Open,
         };
 
         // Store the auction information
@@ -296,17 +300,17 @@ impl EnglishAuction for Contract {
         let mut auction = auction.unwrap();
 
         // Cannot withdraw if the auction is over
-        require(auction.state == 2 || height() >= auction.end_block, AccessError::AuctionIsNotClosed);
+        require(auction.state == State::Closed || height() >= auction.end_block, AccessError::AuctionIsNotClosed);
 
         // If time has run out set the contract state to closed
-        if (height() >= auction.end_block && auction.state == 1) {
-            auction.state = 2;
+        if (height() >= auction.end_block && auction.state == State::Open) {
+            auction.state = State::Closed;
             storage.auctions.insert(auction_id, Option::Some(auction));
         }
 
         // Set some variables we will need
         let sender = sender_identity();
-        let bidder: Option<Identity> = auction.bidder;
+        let bidder: Option<Identity> = auction.highest_bidder;
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
 
         // Make sure the sender still has something to withdraw
@@ -322,18 +326,18 @@ impl EnglishAuction for Contract {
                     transfer_nft(Identity::ContractId(contract_id()), sender, asset)
                 },
                 Asset::TokenAsset(asset) => {
-                    send_tokens(sender, asset)
+                    transfer(asset.amount, asset.contract_id, sender)
                 },
             };
             withdrawnAsset = auction.sell_asset;
         } else if (sender == auction.seller && bidder.is_none()) {
-            // The seller is withdrawing and no one placed abid
+            // The seller is withdrawing and no one placed a bid
             match auction.sell_asset {
                 Asset::NFTAsset(asset) => {
                     transfer_nft(Identity::ContractId(contract_id()), auction.seller, asset)
                 },
                 Asset::TokenAsset(asset) => {
-                    send_tokens(sender, asset)
+                    transfer(asset.amount, asset.contract_id, sender)
                 },
             }
             withdrawnAsset = auction.sell_asset;
@@ -344,7 +348,7 @@ impl EnglishAuction for Contract {
                     transfer_nft(Identity::ContractId(contract_id()), sender, asset)
                 },
                 Asset::TokenAsset(asset) => {
-                    send_tokens(sender, asset)
+                    transfer(asset.amount, asset.contract_id, sender)
                 },
             }
             withdrawnAsset = auction.buy_asset;
@@ -355,11 +359,12 @@ impl EnglishAuction for Contract {
                     transfer_nft(Identity::ContractId(contract_id()), sender, asset)
                 },
                 Asset::TokenAsset(asset) => {
-                    send_tokens(sender, asset)
+                    transfer(asset.amount, asset.contract_id, sender)
                 },
             }
         };
 
+        // Log the withdrawal
         log(WithdrawEvent {
             asset: withdrawnAsset, auction_id, identity: sender
         });

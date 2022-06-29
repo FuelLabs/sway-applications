@@ -16,7 +16,6 @@ use std::{
     option::*,
     result::*,
     revert::revert,
-    token::{force_transfer_to_contract, transfer_to_output}
 };
 
 /// This function returns true if the `to` `Identity` is approved to transfer the token.
@@ -61,23 +60,6 @@ pub fn owns_nft(owner: Identity, asset: NFTAsset) -> bool {
 pub fn sender_identity() -> Identity {
     let sender: Result<Identity, AuthError> = msg_sender();
     sender.unwrap()
-}
-
-/// This function will send tokens to the `Idenitity`.
-///
-/// # Arguments
-///
-/// * `identity` - The `Identity` which the tokens should be sent to.
-/// * `asset` - The `TokenAsset` which is to be sent.
-pub fn send_tokens(identity: Identity, asset: TokenAsset) {
-    match identity {
-        Identity::Address(identity) => {
-            transfer_to_output(asset.amount, asset.contract_id, identity);
-        },
-        Identity::ContractId(identity) => {
-            force_transfer_to_contract(asset.amount, asset.contract_id, identity);
-        },
-    };
 }
 
 /// This function will transfer a NFT from one `Identity` to another.
