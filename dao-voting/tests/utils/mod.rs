@@ -14,7 +14,7 @@ pub struct Metadata {
 }
 
 pub mod abi_calls {
-    use super::*;
+    use super::{*, test_helpers::proposal};
 
     pub async fn constructor(user: &Metadata, token: ContractId) {
         user.dao_voting
@@ -54,6 +54,15 @@ pub mod abi_calls {
         user.dao_voting
             .withdraw(amount)
             .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+            .value;
+    }
+
+    pub async fn vote(user: &Metadata, approve: bool, proposal_id: u64, vote_amount: u64) {
+        user.dao_voting
+            .vote(approve, proposal_id, vote_amount)
             .call()
             .await
             .unwrap()

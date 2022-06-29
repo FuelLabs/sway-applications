@@ -3,7 +3,7 @@ mod utils;
 use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
-    abi_calls::{constructor, create_proposal, deposit, withdraw},
+    abi_calls::{constructor, create_proposal, deposit, withdraw, vote},
     test_helpers::{proposal, setup},
     GovToken, Identity, ProposalInfo,
 };
@@ -439,19 +439,8 @@ mod vote {
             let proposal_transaction = proposal(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
 
-            user.dao_voting
-                .vote(true, 0, asset_amount / 4)
-                .call()
-                .await
-                .unwrap()
-                .value;
-
-            user.dao_voting
-                .vote(false, 0, asset_amount / 4)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            vote(&user, true, 0, asset_amount / 4).await;
+            vote(&user, false, 0, asset_amount / 4).await;
 
             let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 
@@ -480,13 +469,7 @@ mod vote {
 
             let proposal_transaction = proposal(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
-
-            user.dao_voting
-                .vote(true, 0, asset_amount / 4)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            vote(&user, true, 0, asset_amount / 4).await;
         }
 
         #[tokio::test]
@@ -517,13 +500,7 @@ mod vote {
                 Some(100_000),
             );
             deposit(&user, tx_params, call_params).await;
-
-            user.dao_voting
-                .vote(true, 0, asset_amount / 4)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            vote(&user, true, 0, asset_amount / 4).await;
         }
     }
 }
@@ -561,13 +538,7 @@ mod execute_proposal {
 
             let proposal_transaction = proposal(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
-
-            user.dao_voting
-                .vote(true, 0, asset_amount / 2)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            vote(&user, true, 0, asset_amount / 2).await;
 
             let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 
@@ -621,13 +592,7 @@ mod convert_votes {
 
             let proposal_transaction = proposal(gov_token_id);
             create_proposal(&user, 1, 1, proposal_transaction.clone()).await;
-
-            user.dao_voting
-                .vote(true, 0, asset_amount / 2)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            vote(&user, true, 0, asset_amount / 2).await;
 
             let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
 
