@@ -40,6 +40,7 @@ sway-applications/
 |    └── P-1 Directories & files
 ├── Project-2
 |    └── P-2 Directories & files
+├── CONTRIBUTING.md
 ├── LICENSE
 └── README.md
 ```
@@ -47,6 +48,7 @@ sway-applications/
 ### Projects
 
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
+- [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
 - [English Auction](./auctions/english-auction/) is a English Auction template where user bid up the price of an asset until time is up or a reserve has been met.
 
