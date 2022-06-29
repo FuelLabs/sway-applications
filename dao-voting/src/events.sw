@@ -2,7 +2,7 @@ library events;
 
 dep data_structures;
 
-use std::identity::Identity;
+use std::{contract_id::ContractId, identity::Identity};
 use data_structures::ProposalInfo;
 
 // TODO ename once https://github.com/FuelLabs/sway/issues/2106 is fixed
@@ -28,6 +28,14 @@ pub struct ExecuteEvent {
 
     /// The unique identifier for the proposal
     id: u64,
+}
+
+pub struct InitializeEvent {
+    /// User who initialized the contract
+    author: Identity,
+
+    /// Contract Id of the token used for DAO governance
+    token: ContractId,
 }
 
 pub struct UnlockVotesEvent {

@@ -24,7 +24,7 @@ use std::{
 use abi::DaoVoting;
 use data_structures::{Proposal, ProposalInfo, State};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
-use events::{CreatePropEvent, DepositEvent, ExecuteEvent, UnlockVotesEvent, VoteEvent, WithdrawEvent};
+use events::{CreatePropEvent, DepositEvent, ExecuteEvent, InitializeEvent, UnlockVotesEvent, VoteEvent, WithdrawEvent};
 use utils::validate_id;
 
 storage {
@@ -60,6 +60,13 @@ impl DaoVoting for Contract {
 
         storage.token = token;
         storage.state = State::Initialized;
+
+        let author = msg_sender().unwrap();
+
+        log(InitializeEvent {
+            author,
+            token
+        });
     }
 
     /// Create a new proposal
