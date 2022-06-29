@@ -3,7 +3,9 @@ mod utils;
 use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
-    abi_calls::{constructor, create_proposal, deposit, withdraw, vote, unlock_votes},
+    abi_calls::{
+        constructor, create_proposal, deposit, unlock_votes, user_balance, vote, withdraw,
+    },
     test_helpers::{proposal, setup},
     GovToken, Identity, ProposalInfo,
 };
@@ -136,12 +138,7 @@ mod deposit {
             assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
 
             assert_eq!(
-                user.dao_voting
-                    .user_balance(Identity::Address(user.wallet.address()))
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
                 0
             );
 
@@ -159,12 +156,7 @@ mod deposit {
             );
 
             assert_eq!(
-                user.dao_voting
-                    .user_balance(Identity::Address(user.wallet.address()))
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
                 asset_amount
             );
         }
@@ -294,12 +286,7 @@ mod withdraw {
             assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
 
             assert_eq!(
-                user.dao_voting
-                    .user_balance(Identity::Address(user.wallet.address()))
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
                 0
             );
 
@@ -317,24 +304,14 @@ mod withdraw {
             );
 
             assert_eq!(
-                user.dao_voting
-                    .user_balance(Identity::Address(user.wallet.address()))
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
                 asset_amount
             );
 
             withdraw(&user, asset_amount).await;
 
             assert_eq!(
-                user.dao_voting
-                    .user_balance(Identity::Address(user.wallet.address()))
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
                 0
             );
 
@@ -368,12 +345,7 @@ mod withdraw {
             assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
 
             assert_eq!(
-                user.dao_voting
-                    .user_balance(Identity::Address(user.wallet.address()))
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
                 0
             );
 
@@ -391,15 +363,10 @@ mod withdraw {
             );
 
             assert_eq!(
-                user.dao_voting
-                    .user_balance(Identity::Address(user.wallet.address()))
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
                 asset_amount
             );
-            
+
             withdraw(&user, asset_amount * 100).await;
         }
     }
@@ -611,12 +578,7 @@ mod unlock_votes {
             unlock_votes(&user, 0).await;
 
             assert_eq!(
-                user.dao_voting
-                    .user_balance(Identity::Address(user.wallet.address()))
-                    .call()
-                    .await
-                    .unwrap()
-                    .value,
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
                 asset_amount
             );
         }

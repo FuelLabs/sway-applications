@@ -72,6 +72,15 @@ pub mod abi_calls {
     pub async fn unlock_votes(user: &Metadata, id: u64) {
         user.dao_voting.unlock_votes(id).call().await.unwrap();
     }
+
+    pub async fn user_balance(user: &Metadata, user_identity: Identity) -> u64 {
+        user.dao_voting
+            .user_balance(user_identity)
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
 }
 
 pub mod test_helpers {
