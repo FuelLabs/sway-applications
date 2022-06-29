@@ -62,6 +62,18 @@ pub fn sender_identity() -> Identity {
     sender.unwrap()
 }
 
+/// This function will transfer an `Asset` to the specified `Identity`
+pub fn transfer_asset(to: Identity, asset: Asset) {
+    match asset {
+        Asset::NFTAsset(asset) => {
+            transfer_nft(Identity::ContractId(contract_id()), to, asset)
+        },
+        Asset::TokenAsset(asset) => {
+            transfer(asset.amount, asset.contract_id, to)
+        },
+    }
+}
+
 /// This function will transfer a NFT from one `Identity` to another.
 ///
 /// # Reverts

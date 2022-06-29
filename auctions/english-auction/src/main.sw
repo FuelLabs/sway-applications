@@ -10,7 +10,7 @@ use abi::{EnglishAuction, NFT};
 use data_structures::*;
 use errors::{AccessError, InitError, InputError, UserError};
 use events::{AuctionCancelEvent, AuctionStartEvent, BidEvent, WithdrawEvent};
-use utils::{approved_for_nft_transfer, owns_nft, sender_identity, transfer_nft, validate_asset,};
+use utils::{approved_for_nft_transfer, owns_nft, sender_identity, transfer_asset, transfer_nft, validate_asset,};
 
 use std::{
     address::Address,
@@ -321,47 +321,18 @@ impl EnglishAuction for Contract {
         // Go ahead and withdraw
         if (bidder.is_some() && sender == bidder.unwrap()) {
             // The buyer is withdrawing
-            match auction.sell_asset {
-                Asset::NFTAsset(asset) => {
-                    transfer_nft(Identity::ContractId(contract_id()), sender, asset)
-                },
-                Asset::TokenAsset(asset) => {
-                    transfer(asset.amount, asset.contract_id, sender)
-                },
-            };
+            transfer_asset(sender, auction.sell_asset);
             withdrawnAsset = auction.sell_asset;
         } else if (sender == auction.seller && bidder.is_none()) {
             // The seller is withdrawing and no one placed a bid
-            match auction.sell_asset {
-                Asset::NFTAsset(asset) => {
-                    transfer_nft(Identity::ContractId(contract_id()), auction.seller, asset)
-                },
-                Asset::TokenAsset(asset) => {
-                    transfer(asset.amount, asset.contract_id, sender)
-                },
-            }
+            transfer_asset(sender, auction.sell_asset);
             withdrawnAsset = auction.sell_asset;
         } else if (sender == auction.seller && bidder.is_some()) {
-            // The seller is withdrawing and the asset was sold
-            match auction.buy_asset {
-                Asset::NFTAsset(asset) => {
-                    transfer_nft(Identity::ContractId(contract_id()), sender, asset)
-                },
-                Asset::TokenAsset(asset) => {
-                    transfer(asset.amount, asset.contract_id, sender)
-                },
-            }
+            transfer_asset(sender, auction.buy_asset);
             withdrawnAsset = auction.buy_asset;
         } else {
             // Anyone with a failed bid is withdrawing
-            match sender_deposit.unwrap() {
-                Asset::NFTAsset(asset) => {
-                    transfer_nft(Identity::ContractId(contract_id()), sender, asset)
-                },
-                Asset::TokenAsset(asset) => {
-                    transfer(asset.amount, asset.contract_id, sender)
-                },
-            }
+            transfer_asset(sender, sender_deposit);
         };
 
         // Log the withdrawal
