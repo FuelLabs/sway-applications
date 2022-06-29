@@ -68,14 +68,14 @@ pub mod test_helpers {
         (gov_token, gov_token_id, deployer, user, asset_amount)
     }
 
-    pub fn get_call_data(asset_id: ContractId) -> daovoting_mod::Proposal {
-        let call_data = daovoting_mod::CallData {
+    pub fn get_call_data(asset_id: ContractId) -> Proposal {
+        let call_data = CallData {
             id: asset_id,
             function_selector: 0,
             arguments: 0,
         };
 
-        let proposal = daovoting_mod::Proposal {
+        let proposal = Proposal {
             call_data: call_data,
             amount: 0,
             asset: asset_id,

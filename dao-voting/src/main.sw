@@ -176,9 +176,7 @@ impl DaoVoting for Contract {
         };
 
         storage.balances.insert(sender, sender_balance - vote_amount);
-
         storage.votes.insert((sender, proposal_id), storage.votes.get((sender, proposal_id)) + vote_amount);
-
         storage.proposals.insert(proposal_id, proposal);
 
         log(VoteEvent {
