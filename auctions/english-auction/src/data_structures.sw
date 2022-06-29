@@ -3,8 +3,12 @@ library data_structures;
 dep errors;
 
 use errors::AssetError;
-use std:: {
-    assert::require, contract_id::ContractId, identity::Identity, option::Option, storage::StorageMap
+use std::{
+    assert::require,
+    contract_id::ContractId,
+    identity::Identity,
+    option::Option,
+    storage::StorageMap,
 };
 
 pub enum Asset {
@@ -19,7 +23,7 @@ pub enum State {
 
 pub struct Auction {
     /// The asset which will be accepted in return for `sell_asset`.
-    /// On initalization, the amount will be set to 0 and the `contract_id` will be set to the 
+    /// On initalization, the amount will be set to 0 and the `contract_id` will be set to the
     /// `ContractId` of the asset in return.
     buy_asset: Asset,
     /// The current highest bidder of the auction. When the auction is over, this is the winner.
@@ -44,7 +48,7 @@ pub struct NFTAsset {
     /// The `ContractId` of the NFT that the struct is representing.
     contract_id: ContractId,
     // TODO: This needs to be a Vec to support mutliple NFTs.
-    /// The token id of the NFT that the struct is representing. 
+    /// The token id of the NFT that the struct is representing.
     token_ids: u64,
 }
 

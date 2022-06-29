@@ -7,10 +7,17 @@ dep events;
 dep utils;
 
 use abi::{EnglishAuction, NFT};
-use data_structures::{Asset, State, Auction};
+use data_structures::{Asset, Auction, State};
 use errors::{AccessError, InitError, InputError, UserError};
 use events::{AuctionCancelEvent, AuctionStartEvent, BidEvent, WithdrawEvent};
-use utils::{approved_for_nft_transfer, owns_nft, sender_identity, transfer_asset, transfer_nft, validate_asset,};
+use utils::{
+    approved_for_nft_transfer,
+    owns_nft,
+    sender_identity,
+    transfer_asset,
+    transfer_nft,
+    validate_asset,
+};
 
 use std::{
     assert::require,
