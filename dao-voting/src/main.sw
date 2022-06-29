@@ -4,6 +4,7 @@ dep abi;
 dep data_structures;
 dep errors;
 dep events;
+dep utils;
 
 use std::{
     address::Address,
@@ -24,6 +25,7 @@ use abi::DaoVoting;
 use data_structures::{Proposal, ProposalInfo, State};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
 use events::{CreatePropEvent, DepositEvent, ExecuteEvent, UnlockVotesEvent, VoteEvent, WithdrawEvent};
+use utils::validate_id;
 
 storage {
     /// The amount of governance tokens a user has deposited
@@ -158,7 +160,7 @@ impl DaoVoting for Contract {
     /// * When the proposal has passed its deadline
     /// * When the vote amount is greater than the users deposited balance
     #[storage(read, write)]fn vote(approve: bool, proposal_id: u64, vote_amount: u64, ) {
-        require(proposal_id < storage.proposal_count, UserError::InvalidId);
+        validate_id(proposal_id, storage.proposal_count);
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
 
         let mut proposal = storage.proposals.get(proposal_id);
@@ -196,7 +198,7 @@ impl DaoVoting for Contract {
     /// * When the proposal is still active and being voted on
     /// * When the proposal has not met the necessary approval percentage
     #[storage(read, write)]fn execute(proposal_id: u64) {
-        require(proposal_id < storage.proposal_count, UserError::InvalidId);
+        validate_id(proposal_id, storage.proposal_count);
 
         let proposal = storage.proposals.get(proposal_id);
         require(proposal.deadline < height(), ProposalError::ProposalStillActive);
@@ -232,7 +234,7 @@ impl DaoVoting for Contract {
     /// * When the given proposal id is greater than or equal to proposal_count
     /// * When the proposal is still active
     #[storage(read, write)]fn unlock_votes(proposal_id: u64) {
-        require(proposal_id < storage.proposal_count, UserError::InvalidId);
+        validate_id(proposal_id, storage.proposal_count);
 
         let proposal = storage.proposals.get(proposal_id);
         require(proposal.deadline < height(), ProposalError::ProposalStillActive);
@@ -270,7 +272,7 @@ impl DaoVoting for Contract {
     /// - `proposal_id` - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count)
     /// - `user` - Identity to look up votes spent on a specified proposal
     #[storage(read)]fn user_votes(proposal_id: u64, user: Identity) -> u64 {
-        require(proposal_id < storage.proposal_count, UserError::InvalidId);
+        validate_id(proposal_id, storage.proposal_count);
         storage.votes.get((user, proposal_id))
     }
 
@@ -284,7 +286,7 @@ impl DaoVoting for Contract {
     ///
     /// * When the given proposal id is greater than or equal to proposal_count
     #[storage(read)]fn proposal(proposal_id: u64) -> ProposalInfo {
-        require(proposal_id < storage.proposal_count, UserError::InvalidId);
+        validate_id(proposal_id, storage.proposal_count);
         storage.proposals.get(proposal_id)
     }
 }
