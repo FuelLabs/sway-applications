@@ -34,7 +34,7 @@ storage {
     /// Used to check the validity of a proposal id
     /// Used as a unique identifier when creating proposals
     proposal_count: u64,
-    /// The initilization state of the contract.  Defaults to NotInitialized.
+    /// The initilization state of the contract.
     state: State,
     /// Contract Id of the governance token
     token: ContractId,
@@ -71,7 +71,7 @@ impl DaoVoting for Contract {
     /// # Reverts
     ///
     /// * When the deadline is 0
-    /// * When the acceptance percentage is less than or equal 0
+    /// * When the acceptance percentage is 0
     /// * When the acceptance percentage is greater than 100
     #[storage(read, write)]fn create_proposal(acceptance_percentage: u64, deadline: u64, proposal_transaction: Proposal) {
         require(0 < deadline, CreationError::DeadlineCannotBeZero);
@@ -92,6 +92,8 @@ impl DaoVoting for Contract {
         });
     }
 
+    /// Deposit governance tokens into contract
+    ///
     /// Update the user balance to indicate they have deposited governance tokens.
     /// A successful deposit unlocks voting functionality.
     /// Voting power is directly proportional to the amount of deposited governance tokens
@@ -151,7 +153,7 @@ impl DaoVoting for Contract {
     ///
     /// # Reverts
     ///
-    /// * When the proposal id is greater than or equal to the proposal count
+    /// * When the given proposal id is greater than or equal to proposal_count
     /// * When the vote amount is 0
     /// * When the proposal has passed its deadline
     /// * When the vote amount is greater than the users deposited balance
@@ -192,7 +194,7 @@ impl DaoVoting for Contract {
     ///
     /// # Reverts
     ///
-    /// * When the proposal id is out of range
+    /// * When the given proposal id is greater than or equal to proposal_count
     /// * When the proposal is still active and being voted on
     /// * When the proposal has not met the necessary approval percentage
     #[storage(read, write)]fn execute(proposal_id: u64) {
@@ -217,10 +219,11 @@ impl DaoVoting for Contract {
     }
 
     /// Unlock governance tokens from a proposal
+    ///
     /// Governance tokens are locked whenever a user votes on a proposal.
     /// This is to ensure a user can not vote twice on a proposal with the same governance token.
     /// As 1 token = 1 vote.
-    /// If the user had not voted on the given, expired proposal then nothing happens
+    /// If the user did not vote on the proposal then nothing happens
     ///
     /// # Arguments
     ///
@@ -228,7 +231,7 @@ impl DaoVoting for Contract {
     ///
     /// # Reverts
     ///
-    /// * When the proposal id is invalid
+    /// * When the given proposal id is greater than or equal to proposal_count
     /// * When the proposal is still active
     #[storage(read, write)]fn unlock_votes(proposal_id: u64) {
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
@@ -281,7 +284,7 @@ impl DaoVoting for Contract {
     ///
     /// # Reverts
     ///
-    /// * When the given proposal id is out of range
+    /// * When the given proposal id is greater than or equal to proposal_count
     #[storage(read)]fn proposal(proposal_id: u64) -> ProposalInfo {
         require(proposal_id < storage.proposal_count, UserError::InvalidId);
         storage.proposals.get(proposal_id)
