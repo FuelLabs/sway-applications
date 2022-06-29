@@ -26,20 +26,21 @@ use errors::{CreationError, InitializationError, ProposalError, UserError};
 use events::{CreatePropEvent, DepositEvent, ExecuteEvent, UnlockVotesEvent, VoteEvent, WithdrawEvent};
 
 storage {
-    // The amount of governance tokens a user has deposited
+    /// The amount of governance tokens a user has deposited
     balances: StorageMap<Identity,
-    u64>, /// Contract Id of the governance token
-    token: ContractId,
-    /// Information describing a proposal created via create_proposal(...)
+    u64>, /// Information describing a proposal created via create_proposal(...)
     proposals: StorageMap<u64,
     ProposalInfo>, /// Number of created proposals
     /// Used to check the validity of a proposal id
     /// Used as a unique identifier when creating proposals
     proposal_count: u64,
+    /// The initilization state of the contract.  Defaults to NotInitialized.
+    state: State,
+    /// Contract Id of the governance token
+    token: ContractId,
     /// The amount of votes a user has used on a proposal
     votes: StorageMap<(Identity,
-    u64), u64>, /// The initilization state of the contract.  Defaults to NotInitialized.
-    state: State,
+    u64), u64>, 
 }
 
 impl DaoVoting for Contract {
