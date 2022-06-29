@@ -34,7 +34,7 @@ mod constructor {
     }
 }
 
-mod add_proposal {
+mod create_proposal {
     use super::*;
 
     mod success {
@@ -43,7 +43,7 @@ mod add_proposal {
         use super::*;
 
         #[tokio::test]
-        async fn user_can_add_proposal() {
+        async fn user_can_create_proposal() {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 

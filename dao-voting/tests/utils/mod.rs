@@ -13,6 +13,20 @@ pub struct Metadata {
     pub wallet: LocalWallet,
 }
 
+pub mod abi_calls {
+    use super::*;
+
+    pub async fn constructor(user: &Metadata, token: ContractId) {
+        user
+            .dao_voting
+            .constructor(token)
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+}
+
 pub mod test_helpers {
     use super::*;
 
@@ -83,19 +97,5 @@ pub mod test_helpers {
         };
 
         proposal
-    }
-}
-
-pub mod abi_calls {
-    use super::*;
-
-    pub async fn constructor(user: &Metadata, token: ContractId) {
-        user
-            .dao_voting
-            .constructor(token)
-            .call()
-            .await
-            .unwrap()
-            .value
     }
 }
