@@ -25,9 +25,25 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn create_proposal(user: &Metadata, acceptance_percentage: u64, deadline: u64, proposal: Proposal) {
+    pub async fn create_proposal(
+        user: &Metadata,
+        acceptance_percentage: u64,
+        deadline: u64,
+        proposal: Proposal,
+    ) {
         user.dao_voting
             .create_proposal(acceptance_percentage, deadline, proposal)
+            .call()
+            .await
+            .unwrap()
+            .value;
+    }
+
+    pub async fn deposit(user: &Metadata, tx_params: TxParameters, call_params: CallParameters) {
+        user.dao_voting
+            .deposit()
+            .tx_params(tx_params)
+            .call_params(call_params)
             .call()
             .await
             .unwrap()
