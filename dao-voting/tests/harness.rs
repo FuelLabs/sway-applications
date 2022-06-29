@@ -3,30 +3,21 @@ mod utils;
 use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
+    abi_calls::{constructor},
     test_helpers::{get_call_data, setup},
     GovToken, Identity, ProposalInfo,
 };
 
-async fn initialize() {
-    let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
-    deployer
-        .dao_voting
-        .constructor(gov_token_id)
-        .call()
-        .await
-        .unwrap()
-        .value
-}
-
-mod initialize {
+mod constructor {
     use super::*;
 
     mod success {
         use super::*;
 
         #[tokio::test]
-        async fn initializes() {
-            initialize().await;
+        async fn constructs() {
+            let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
         }
     }
 
@@ -37,20 +28,8 @@ mod initialize {
         #[should_panic]
         async fn panics_when_reinitialized() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer, gov_token_id).await;
         }
     }
 }
@@ -66,13 +45,7 @@ mod add_proposal {
         #[tokio::test]
         async fn user_can_add_proposal() {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             let call_data = get_call_data(gov_token_id);
 
@@ -113,13 +86,7 @@ mod add_proposal {
         #[should_panic]
         async fn panics_with_incorrect_voting_period() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             let call_data = get_call_data(gov_token_id);
 
@@ -136,13 +103,7 @@ mod add_proposal {
         #[should_panic]
         async fn panics_with_zero_acceptance_percentage() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             let call_data = get_call_data(gov_token_id);
 
@@ -159,13 +120,7 @@ mod add_proposal {
         #[should_panic]
         async fn panics_with_over_hundred_acceptance_percentage() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             let call_data = get_call_data(gov_token_id);
 
@@ -193,6 +148,7 @@ mod deposit {
             assert!(
                 deployer
                     .gov_token
+                    .as_ref()
                     .unwrap()
                     .mint_and_send_to_address(100, user.wallet.address())
                     .append_variable_outputs(1)
@@ -202,13 +158,7 @@ mod deposit {
                     .value
             );
 
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
 
@@ -265,6 +215,7 @@ mod deposit {
             assert!(
                 deployer
                     .gov_token
+                    .as_ref()
                     .unwrap()
                     .mint_and_send_to_address(100, user.wallet.address())
                     .append_variable_outputs(1)
@@ -274,13 +225,7 @@ mod deposit {
                     .value
             );
 
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
@@ -356,13 +301,7 @@ mod deposit {
                     .value
             );
 
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
@@ -391,13 +330,7 @@ mod vote {
         #[tokio::test]
         async fn user_can_vote() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             assert!(
                 deployer
@@ -472,13 +405,7 @@ mod vote {
         #[should_panic]
         async fn panics_on_not_enough_votes() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             let call_data = get_call_data(gov_token_id);
 
@@ -501,13 +428,7 @@ mod vote {
         #[should_panic]
         async fn panics_on_expired_proposal() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             assert!(
                 deployer
@@ -564,12 +485,7 @@ mod execute_proposal {
         #[tokio::test]
         async fn user_proposal_can_execute() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap();
+            constructor(&deployer, gov_token_id).await;
 
             assert!(
                 deployer
@@ -646,6 +562,7 @@ mod withdraw {
             assert!(
                 deployer
                     .gov_token
+                    .as_ref()
                     .unwrap()
                     .mint_and_send_to_address(100, user.wallet.address())
                     .append_variable_outputs(1)
@@ -655,13 +572,7 @@ mod withdraw {
                     .value
             );
 
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
 
@@ -738,6 +649,7 @@ mod withdraw {
             assert!(
                 deployer
                     .gov_token
+                    .as_ref()
                     .unwrap()
                     .mint_and_send_to_address(100, user.wallet.address())
                     .append_variable_outputs(1)
@@ -747,13 +659,7 @@ mod withdraw {
                     .value
             );
 
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap()
-                .value;
+            constructor(&deployer, gov_token_id).await;
 
             assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
 
@@ -817,12 +723,7 @@ mod convert_votes {
         #[tokio::test]
         async fn user_can_unlock_tokens() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            deployer
-                .dao_voting
-                .constructor(gov_token_id)
-                .call()
-                .await
-                .unwrap();
+            constructor(&deployer, gov_token_id).await;
 
             assert!(
                 deployer
