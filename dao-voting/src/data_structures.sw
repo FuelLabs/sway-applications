@@ -22,12 +22,12 @@ pub struct ProposalInfo {
     acceptance_percentage: u64,
     /// Address or contract which created the proposal
     author: Identity,
-    /// Data necessary to execute an arbitrary transaction.
-    proposal_transaction: Proposal,
     /// Amount of blocks a proposal is valid for after creation
     deadline: u64,
     /// The number of no votes for a proposal
     no_votes: u64,
+    /// Data necessary to execute an arbitrary transaction.
+    proposal_transaction: Proposal,
     /// The number of yes votes for a proposal
     yes_votes: u64,
 }
