@@ -9,6 +9,10 @@ pub enum AccessError {
     SenderIsNotSeller: (),
 }
 
+pub enum AssetError {
+    AssetsAreNotTheSame: (),
+}
+
 pub enum InitError {
     AuctionTimeNotProvided: (),
     BuyAssetNotProvided: (),

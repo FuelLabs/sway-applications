@@ -7,26 +7,20 @@ dep events;
 dep utils;
 
 use abi::{EnglishAuction, NFT};
-use data_structures::*;
+use data_structures::{Asset, State, Auction};
 use errors::{AccessError, InitError, InputError, UserError};
 use events::{AuctionCancelEvent, AuctionStartEvent, BidEvent, WithdrawEvent};
 use utils::{approved_for_nft_transfer, owns_nft, sender_identity, transfer_asset, transfer_nft, validate_asset,};
 
 use std::{
-    address::Address,
     assert::require,
     block::height,
-    chain::auth::{AuthError, msg_sender},
-    constants::BASE_ASSET_ID,
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
     contract_id::ContractId,
-    identity::*,
+    identity::Identity,
     logging::log,
-    option::*,
-    result::*,
-    revert::revert,
+    option::Option,
     storage::StorageMap,
-    token::transfer,
 };
 
 storage {
@@ -332,7 +326,7 @@ impl EnglishAuction for Contract {
             withdrawnAsset = auction.buy_asset;
         } else {
             // Anyone with a failed bid is withdrawing
-            transfer_asset(sender, sender_deposit);
+            transfer_asset(sender, sender_deposit.unwrap());
         };
 
         // Log the withdrawal

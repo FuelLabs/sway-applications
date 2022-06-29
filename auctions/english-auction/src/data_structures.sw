@@ -1,7 +1,10 @@
 library data_structures;
 
+dep errors;
+
+use errors::AssetError;
 use std:: {
-    assert::assert, contract_id::ContractId, identity::Identity, option::Option, storage::StorageMap
+    assert::require, contract_id::ContractId, identity::Identity, option::Option, storage::StorageMap
 };
 
 pub enum Asset {
@@ -142,12 +145,12 @@ impl core::ops::Add for Asset {
     pub fn add(self, other: Self) -> Self {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                assert(nft_asset1.contract_id == nft_asset2.contract_id);
+                require(nft_asset1.contract_id == nft_asset2.contract_id, AssetError::AssetsAreNotTheSame);
                 // TODO: Combine vecs
                 self
             },
             (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
-                assert(token_asset1.contract_id == token_asset2.contract_id);
+                require(token_asset1.contract_id == token_asset2.contract_id, AssetError::AssetsAreNotTheSame);
                 let total_amount = token_asset1.amount + token_asset2.amount;
                 let token = TokenAsset {
                     amount: total_amount, contract_id: token_asset1.contract_id
@@ -165,12 +168,12 @@ impl core::ops::Subtract for Asset {
     pub fn subtract(self, other: Self) -> Self {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                assert(nft_asset1.contract_id == nft_asset2.contract_id);
+                require(nft_asset1.contract_id == nft_asset2.contract_id, AssetError::AssetsAreNotTheSame);
                 // TODO: Remove differences in the Vecs
                 self
             },
             (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
-                assert(token_asset1.contract_id == token_asset2.contract_id);
+                require(token_asset1.contract_id == token_asset2.contract_id, AssetError::AssetsAreNotTheSame);
                 let total_amount = token_asset1.amount - token_asset2.amount;
                 let token = TokenAsset {
                     amount: total_amount, contract_id: token_asset1.contract_id

@@ -5,17 +5,16 @@ dep data_structures;
 dep errors;
 
 use abi::NFT;
-use data_structures::*;
+use data_structures::{Asset, NFTAsset, TokenAsset};
 use errors::{AccessError, InputError};
 use std::{
     assert::require,
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
-    contract_id::ContractId,
-    identity::*,
-    option::*,
-    result::*,
-    revert::revert,
+    identity::Identity,
+    option::Option,
+    result::Result,
+    token::transfer,
 };
 
 /// This function returns true if the `to` `Identity` is approved to transfer the token.
