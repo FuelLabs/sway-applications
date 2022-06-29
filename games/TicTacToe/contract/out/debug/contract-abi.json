@@ -1,0 +1,230 @@
+[
+  {
+    "type": "function",
+    "inputs": [
+      {
+        "name": "player_one",
+        "type": "enum Players",
+        "components": [
+          {
+            "name": "None",
+            "type": "()",
+            "components": []
+          },
+          {
+            "name": "PlayerOne",
+            "type": "struct Address",
+            "components": [
+              {
+                "name": "value",
+                "type": "b256",
+                "components": null
+              }
+            ]
+          },
+          {
+            "name": "PlayerTwo",
+            "type": "struct Address",
+            "components": [
+              {
+                "name": "value",
+                "type": "b256",
+                "components": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "player_two",
+        "type": "enum Players",
+        "components": [
+          {
+            "name": "None",
+            "type": "()",
+            "components": []
+          },
+          {
+            "name": "PlayerOne",
+            "type": "struct Address",
+            "components": [
+              {
+                "name": "value",
+                "type": "b256",
+                "components": null
+              }
+            ]
+          },
+          {
+            "name": "PlayerTwo",
+            "type": "struct Address",
+            "components": [
+              {
+                "name": "value",
+                "type": "b256",
+                "components": null
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "name": "new_game",
+    "outputs": [
+      {
+        "name": "",
+        "type": "struct Game",
+        "components": [
+          {
+            "name": "PlayerOne",
+            "type": "enum Players",
+            "components": [
+              {
+                "name": "None",
+                "type": "()",
+                "components": []
+              },
+              {
+                "name": "PlayerOne",
+                "type": "struct Address",
+                "components": [
+                  {
+                    "name": "value",
+                    "type": "b256",
+                    "components": null
+                  }
+                ]
+              },
+              {
+                "name": "PlayerTwo",
+                "type": "struct Address",
+                "components": [
+                  {
+                    "name": "value",
+                    "type": "b256",
+                    "components": null
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "PlayerTwo",
+            "type": "enum Players",
+            "components": [
+              {
+                "name": "None",
+                "type": "()",
+                "components": []
+              },
+              {
+                "name": "PlayerOne",
+                "type": "struct Address",
+                "components": [
+                  {
+                    "name": "value",
+                    "type": "b256",
+                    "components": null
+                  }
+                ]
+              },
+              {
+                "name": "PlayerTwo",
+                "type": "struct Address",
+                "components": [
+                  {
+                    "name": "value",
+                    "type": "b256",
+                    "components": null
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "winner",
+            "type": "enum Winners",
+            "components": [
+              {
+                "name": "Player",
+                "type": "enum Players",
+                "components": [
+                  {
+                    "name": "None",
+                    "type": "()",
+                    "components": []
+                  },
+                  {
+                    "name": "PlayerOne",
+                    "type": "struct Address",
+                    "components": [
+                      {
+                        "name": "value",
+                        "type": "b256",
+                        "components": null
+                      }
+                    ]
+                  },
+                  {
+                    "name": "PlayerTwo",
+                    "type": "struct Address",
+                    "components": [
+                      {
+                        "name": "value",
+                        "type": "b256",
+                        "components": null
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "None",
+                "type": "()",
+                "components": []
+              },
+              {
+                "name": "Draw",
+                "type": "()",
+                "components": []
+              }
+            ]
+          },
+          {
+            "name": "playerTurn",
+            "type": "enum Players",
+            "components": [
+              {
+                "name": "None",
+                "type": "()",
+                "components": []
+              },
+              {
+                "name": "PlayerOne",
+                "type": "struct Address",
+                "components": [
+                  {
+                    "name": "value",
+                    "type": "b256",
+                    "components": null
+                  }
+                ]
+              },
+              {
+                "name": "PlayerTwo",
+                "type": "struct Address",
+                "components": [
+                  {
+                    "name": "value",
+                    "type": "b256",
+                    "components": null
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
