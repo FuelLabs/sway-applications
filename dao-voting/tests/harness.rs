@@ -706,7 +706,7 @@ mod balance {
         use super::*;
 
         #[tokio::test]
-        pub async fn user_can_check_balance() {
+        pub async fn user_can_check_contract_balance() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
