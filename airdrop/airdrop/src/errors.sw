@@ -1,10 +1,14 @@
 library errors;
 
-enum AccessError {
+pub enum AccessError {
     UserAlreadyClaimed: (),
 }
 
-enum StateError {
+pub enum StateError {
     AlreadyInitalized: (),
     NotInitalized: (),
+}
+
+pub enum VerificationError {
+    MerkleProofFailed: (),
 }

@@ -1,13 +1,10 @@
 library abi;
 
-use std::{
-    contract::ContractId,
-    identity::Identity,
-};
+use std::{contract_id::ContractId, identity::Identity, vec::Vec};
 
 abi Airdrop {
-    fn claim(to: Identity, amount: u64, bytes: b256);
-    fn constructor(token_contract: ContractId);
+    #[storage(read, write)]fn claim(to: Identity, amount: u64, bytes: Vec<b256>);
+    #[storage(read, write)]fn constructor(token_contract: ContractId, merkleRoot: b256);
 }
 
 abi Token {

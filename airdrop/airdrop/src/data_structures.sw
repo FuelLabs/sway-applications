@@ -1,11 +1,13 @@
 library data_structures;
 
-struct Claim {
+use std::identity::Identity;
+
+pub struct Claim {
     identity: Identity,
     amount: u64,
 }
 
-enum State {
+pub enum State {
     Initalized: (),
     NotInitalized: (),
 }

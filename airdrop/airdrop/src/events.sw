@@ -1,6 +1,8 @@
 library events;
 
-enum ClaimEvent {
+use std::identity::Identity;
+
+pub struct ClaimEvent {
     to: Identity,
     amount: u64,
 }
