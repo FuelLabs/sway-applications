@@ -215,7 +215,7 @@ mod deposit {
 
         #[tokio::test]
         #[should_panic]
-        async fn panics_with_incorrect_amount() {
+        async fn panics_on_zero_deposit() {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
 
             mint(
