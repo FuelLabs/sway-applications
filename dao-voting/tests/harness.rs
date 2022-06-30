@@ -10,6 +10,14 @@ use utils::{
     GovToken, Identity, ProposalInfo,
 };
 
+// TODO: Until the SDK supports block manipulation changing tests may break them because of the
+//       specifically selected block deadlines so your test might be correct but the deadline is
+//       messing up the test
+// - votes
+//     - panics_on_expired_proposal (need SDK to manipulate block height)
+//
+// When logging is deserialized in the SDK, check logs are correct
+
 mod constructor {
     use super::*;
 
