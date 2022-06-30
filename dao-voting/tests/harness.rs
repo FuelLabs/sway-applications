@@ -300,13 +300,6 @@ mod withdraw {
 
             constructor(&deployer, gov_token_id).await;
 
-            assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
-
-            assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
-                0
-            );
-
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
                 Some(asset_amount),
@@ -314,17 +307,6 @@ mod withdraw {
                 Some(100_000),
             );
             deposit(&user, tx_params, call_params).await;
-
-            assert_eq!(
-                deployer.dao_voting.balance().call().await.unwrap().value,
-                asset_amount
-            );
-
-            assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
-                asset_amount
-            );
-
             withdraw(&user, asset_amount * 100).await;
         }
     }
