@@ -40,8 +40,6 @@ mod create_proposal {
     use super::*;
 
     mod success {
-        use crate::utils::Identity;
-
         use super::*;
 
         #[tokio::test]
