@@ -4,8 +4,8 @@ use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
     abi_calls::{
-        balance, constructor, create_proposal, deposit, execute, unlock_votes, user_balance, user_votes,
-        vote, withdraw,
+        balance, constructor, create_proposal, deposit, execute, unlock_votes, user_balance,
+        user_votes, vote, withdraw,
     },
     test_helpers::{mint, proposal, setup},
     GovToken, Identity, ProposalInfo,
@@ -185,10 +185,7 @@ mod deposit {
             // Make sure that deposit did not erroneously work with 0
             assert!(asset_amount != 0);
 
-            assert_eq!(
-                balance(&user).await,
-                asset_amount
-            );
+            assert_eq!(balance(&user).await, asset_amount);
 
             assert_eq!(
                 user_balance(&user, Identity::Address(user.wallet.address())).await,
@@ -299,10 +296,7 @@ mod withdraw {
             );
             deposit(&user, tx_params, call_params).await;
 
-            assert_eq!(
-                balance(&user).await,
-                asset_amount
-            );
+            assert_eq!(balance(&user).await, asset_amount);
 
             assert_eq!(
                 user_balance(&user, Identity::Address(user.wallet.address())).await,
@@ -723,15 +717,9 @@ mod balance {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            assert_eq!(
-                balance(&user).await,
-                0
-            );
+            assert_eq!(balance(&user).await, 0);
             deposit(&user, tx_params, call_params).await;
-            assert_eq!(
-                balance(&user).await,
-                asset_amount
-            );
+            assert_eq!(balance(&user).await, asset_amount);
         }
     }
 }
@@ -769,6 +757,57 @@ mod user_balance {
                 user_balance(&user, Identity::Address(user.wallet.address())).await,
                 asset_amount
             );
+        }
+    }
+}
+
+mod user_votes {
+    use super::*;
+
+    mod sucess {
+        use super::*;
+
+        #[tokio::test]
+        pub async fn user_can_check_user_votes() {
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
+
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
+
+            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            deposit(&user, tx_params, call_params).await;
+            let proposal_transaction = proposal(gov_token_id);
+            create_proposal(&user, 10, 10, proposal_transaction).await;
+            assert_eq!(
+                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                0
+            );
+            vote(&user, true, 0, asset_amount).await;
+            assert_eq!(
+                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                asset_amount
+            );
+        }
+    }
+
+    mod revert {
+        use super::*;
+
+        #[tokio::test]
+        #[should_panic]
+        pub async fn panics_on_invalid_proposal_id() {
+            let (_gov_token, _gov_token_id, _deployer, user, asset_amount) = setup().await;
+            user_votes(&user, Identity::Address(user.wallet.address()), 0).await;
         }
     }
 }
