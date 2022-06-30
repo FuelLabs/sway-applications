@@ -60,7 +60,7 @@ mod create_proposal {
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
 
             assert_eq!(
-                user.dao_voting.proposal(0).call().await.unwrap().value,
+                proposal(&user, 0).await,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: 0,
@@ -80,7 +80,7 @@ mod create_proposal {
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
             assert_eq!(
-                user.dao_voting.proposal(0).call().await.unwrap().value,
+                proposal(&user, 0).await,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: 0,
@@ -93,7 +93,7 @@ mod create_proposal {
 
             create_proposal(&user, 20, 20, proposal_transaction.clone()).await;
             assert_eq!(
-                user.dao_voting.proposal(1).call().await.unwrap().value,
+                proposal(&user, 1).await,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: 0,
@@ -108,13 +108,6 @@ mod create_proposal {
 
     mod revert {
         use super::*;
-
-        #[tokio::test]
-        #[should_panic]
-        async fn panics_on_incorrect_proposal_id() {
-            let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
-            user.dao_voting.proposal(0).call().await.unwrap();
-        }
 
         #[tokio::test]
         #[should_panic]
@@ -376,7 +369,7 @@ mod vote {
             vote(&user, false, 0, asset_amount / 4).await;
 
             assert_eq!(
-                user.dao_voting.proposal(0).call().await.unwrap().value,
+                proposal(&user, 0).await,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: asset_amount / 4,
@@ -425,7 +418,7 @@ mod vote {
             vote(&user, false, 0, asset_amount / 4).await;
 
             assert_eq!(
-                user.dao_voting.proposal(0).call().await.unwrap().value,
+                proposal(&user, 0).await,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: asset_amount / 4,
@@ -460,6 +453,13 @@ mod vote {
 
     mod revert {
         use super::*;
+
+        #[tokio::test]
+        #[should_panic]
+        async fn panics_on_invalid_proposal_id() {
+            let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
+            proposal(&user, 0).await;
+        }
 
         #[tokio::test]
         #[should_panic]
@@ -550,6 +550,13 @@ mod execute {
 
     mod revert {
         use super::*;
+
+        #[tokio::test]
+        #[should_panic]
+        async fn panics_on_invalid_proposal_id() {
+            let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
+            proposal(&user, 0).await;
+        }
 
         #[tokio::test]
         #[should_panic]
@@ -663,6 +670,13 @@ mod unlock_votes {
 
     mod revert {
         use super::*;
+
+        #[tokio::test]
+        #[should_panic]
+        async fn panics_on_invalid_proposal_id() {
+            let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
+            proposal(&user, 0).await;
+        }
 
         #[tokio::test]
         #[should_panic]
@@ -837,6 +851,17 @@ mod proposal {
                     deadline: 13,
                 }
             );
+        }
+    }
+
+    mod revert {
+        use super::*;
+
+        #[tokio::test]
+        #[should_panic]
+        async fn panics_on_invalid_proposal_id() {
+            let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
+            proposal(&user, 0).await;
         }
     }
 }
