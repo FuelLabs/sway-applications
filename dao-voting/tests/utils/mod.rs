@@ -69,10 +69,9 @@ pub mod abi_calls {
             .value;
     }
 
-    // TODO uncomment once execute test works
-    // pub async fn execute(user: &Metadata, id: u64) {
-    //     user.dao_voting.execute(id).call().await.unwrap();
-    // }
+    pub async fn execute(user: &Metadata, id: u64) {
+        user.dao_voting.execute(id).call().await.unwrap();
+    }
 
     pub async fn unlock_votes(user: &Metadata, id: u64) {
         user.dao_voting.unlock_votes(id).call().await.unwrap();

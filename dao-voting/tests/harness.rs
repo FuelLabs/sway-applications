@@ -4,8 +4,8 @@ use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
     abi_calls::{
-        constructor, create_proposal, deposit, execute, unlock_votes, user_balance, user_votes, vote,
-        withdraw,
+        constructor, create_proposal, deposit, execute, unlock_votes, user_balance, user_votes,
+        vote, withdraw,
     },
     test_helpers::{mint, proposal, setup},
     GovToken, Identity, ProposalInfo,
@@ -554,6 +554,65 @@ mod execute {
         // }
     }
 
+    mod revert {
+        use super::*;
+
+        #[tokio::test]
+        #[should_panic]
+        pub async fn panics_on_active_proposal() {
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
+
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
+
+            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            deposit(&user, tx_params, call_params).await;
+
+            let proposal_transaction = proposal(gov_token_id);
+            create_proposal(&user, 10, 100, proposal_transaction.clone()).await;
+            vote(&user, true, 0, asset_amount / 2).await;
+
+            execute(&user, 0).await;
+        }
+
+        #[tokio::test]
+        #[should_panic]
+        pub async fn panics_on_not_enough_yes_votes() {
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
+
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
+
+            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            deposit(&user, tx_params, call_params).await;
+
+            let proposal_transaction = proposal(gov_token_id);
+            create_proposal(&user, 10, 100, proposal_transaction.clone()).await;
+            vote(&user, false, 0, asset_amount / 2).await;
+
+            execute(&user, 0).await;
+        }
+    }
 }
 
 mod unlock_votes {
