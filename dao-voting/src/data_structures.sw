@@ -3,17 +3,26 @@ library data_structures;
 use std::{contract_id::ContractId, identity::Identity};
 use core::ops::Eq;
 
-pub enum State {
-    NotInitialized: (),
-    Initialized: (),
+struct CallData {
+    /// Data to pass into the called function
+    arguments: u64,
+    /// Encoded representation of a function to be called on the specified contract
+    function_selector: u64,
+    /// Id of contract which will be called if a proposal is approved
+    /// The contract will be caled using the provided function selector and arguments
+    id: ContractId,
 }
 
-impl Eq for State {
-    fn eq(self, other: Self) -> bool {
-        match(self, other) {
-            (State::Initialized, State::Initialized) => true, (State::NotInitialized, State::NotInitialized) => true, _ => false, 
-        }
-    }
+pub struct Proposal {
+    /// Number of coins to forward
+    /// Coin type is specified by the `asset` below
+    amount: u64,
+    /// Asset Id of the coins to forward
+    asset: ContractId,
+    /// Stores information about an arbitrary contract function call
+    call_data: CallData,
+    /// Specifies the amount of gas to forward to the arbitrary function call
+    gas: u64,
 }
 
 pub struct ProposalInfo {
@@ -32,24 +41,15 @@ pub struct ProposalInfo {
     yes_votes: u64,
 }
 
-pub struct Proposal {
-    /// Number of coins to forward
-    /// Coin type is specified by the `asset` below
-    amount: u64,
-    /// Asset Id of the coins to forward
-    asset: ContractId,
-    /// Stores information about an arbitrary contract function call
-    call_data: CallData,
-    /// Specifies the amount of gas to forward to the arbitrary function call
-    gas: u64,
+pub enum State {
+    NotInitialized: (),
+    Initialized: (),
 }
 
-struct CallData {
-    /// Data to pass into the called function
-    arguments: u64,
-    /// Encoded representation of a function to be called on the specified contract
-    function_selector: u64,
-    /// Id of contract which will be called if a proposal is approved
-    /// The contract will be caled using the provided function selector and arguments
-    id: ContractId,
+impl Eq for State {
+    fn eq(self, other: Self) -> bool {
+        match(self, other) {
+            (State::Initialized, State::Initialized) => true, (State::NotInitialized, State::NotInitialized) => true, _ => false, 
+        }
+    }
 }
