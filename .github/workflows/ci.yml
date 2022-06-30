@@ -10,7 +10,6 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  FORC_VERSION: 0.14.4
   REGISTRY: ghcr.io
   RUST_VERSION: 1.61.0
   PATH_TO_SCRIPTS: .github/scripts
@@ -23,16 +22,6 @@ jobs:
         uses: styfle/cancel-workflow-action@0.9.1
         with:
           access_token: ${{ github.token }}
-
-  check-forc-badge-version:
-    needs: cancel-previous-runs
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      
-      - name: Checking versions
-        run: sh ${{ env.PATH_TO_SCRIPTS }}/forc_badge_check.sh
 
   lint-toml-files:
     needs: cancel-previous-runs
@@ -56,7 +45,7 @@ jobs:
 
     strategy:
       matrix:
-        project: ["escrow", "multisig-wallet"]
+        project: ["escrow", "fundraiser", "multisig-wallet"]
 
     steps:
       - name: Checkout repository
@@ -81,21 +70,12 @@ jobs:
                 echo "[target.x86_64-unknown-linux-gnu]" > ~/.cargo/config.toml
                 echo 'linker = "clang"' >> ~/.cargo/config.toml
                 echo 'rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/mold"]' >> ~/.cargo/config.toml
-
+      
       - name: Install rustfmt
         run: rustup component add rustfmt
 
-      - name: Install forc
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: forc --version ${{ env.FORC_VERSION }}
-
-      - name: Install forc-fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: forc-fmt --version ${{ env.FORC_VERSION }}
+      - name: Install Fuel toolchain
+        uses: FuelLabs/action-fuel-toolchain@v0.1.0
 
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
@@ -104,7 +84,7 @@ jobs:
         run: |
           cd ${{ matrix.project }}
           cargo fmt --verbose --check
-
+      
       - name: Build Sway
         run: sh ${{ env.PATH_TO_SCRIPTS }}/build.sh ${{ matrix.project }}
 

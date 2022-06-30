@@ -4,23 +4,18 @@ title: "<title>"
 labels: ["Improvement"]
 body:
   - type: textarea
-    id: description
+    id: motivation
     attributes:
-      label: How does this improve a feature?
-      description: Describe "how" your changes improve the feature.
-      placeholder: It reduces the bytecode and improves the code quality by refactoring the contract which makes the workflow more ergonomic.
+      label: Motivation
+      description: Describe the improvement, motivation behind it and write a mini-specification
+      placeholder: |
+        #### Description
+        This improves the feature by ...
+
+        #### Motivation
+        It allows ...
+
+        #### Specification
+        ...
     validations:
       required: true
-  - type: textarea
-    id: draft
-    attributes:
-      label: Specification
-      description: Tell us a bit about how your feature will work.
-      placeholder: Write some pseudo-code, outline the design or show the "before" vs "after" changes.
-    validations:
-      required: true
-  - type: textarea
-    id: misc
-    attributes:
-      label: Additional context
-      description: Add any other context or screenshots about the feature request here.

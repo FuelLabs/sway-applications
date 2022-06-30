@@ -6,11 +6,14 @@
     <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
         <img src="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml/badge.svg" />
     </a>
-    <a href="https://crates.io/crates/forc/0.14.4" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.14.4-orange" />
+    <a href="https://crates.io/crates/forc" alt="forc">
+        <img src="https://img.shields.io/crates/v/forc?color=orange&label=forc" />
+    </a>
+    <a href="./LICENSE" alt="forc">
+        <img src="https://img.shields.io/github/license/FuelLabs/sway-applications" />
     </a>
     <a href="https://discord.gg/xfpK4Pe">
-        <img src="https://img.shields.io/discord/732892373507375164?color=blue&logo=discord&logoColor=ffffff&labelColor=6A7EC2&label=Discord" />
+        <img src="https://img.shields.io/discord/732892373507375164?color=6A7EC2&logo=discord&logoColor=ffffff&labelColor=6A7EC2&label=Discord" />
     </a>
 </p>
 
@@ -37,6 +40,7 @@ sway-applications/
 |    └── P-1 Directories & files
 ├── Project-2
 |    └── P-2 Directories & files
+├── CONTRIBUTING.md
 ├── LICENSE
 └── README.md
 ```
@@ -44,6 +48,7 @@ sway-applications/
 ### Projects
 
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
+- [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
 
 ## Running a project

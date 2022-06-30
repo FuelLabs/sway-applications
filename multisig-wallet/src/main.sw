@@ -1,172 +1,195 @@
 contract;
 
+// TODO: when vectors are implemented
+//      - change all uses of arrays to vec
+//      - change the "data" in the Tx hashing from b256 to vec
+
+// Our library dependencies
+dep abi;
+dep data_structures;
+dep errors;
+dep events;
+
+// Standard library code
 use std::{
     address::Address,
     assert::require,
     b512::B512,
-    context::call_frames::contract_id,
+    constants::BASE_ASSET_ID,
+    context::{call_frames::contract_id, this_balance},
     contract_id::ContractId,
-    ecr::{EcRecoverError, ec_recover_address},
+    ecr::ec_recover_address,
     hash::sha256,
+    identity::Identity,
     logging::log,
     result::*,
     revert::revert,
-    storage::{get, store}
+    storage::StorageMap,
+    token::{force_transfer_to_contract, transfer_to_output}
 };
 
 use core::num::*;
 
-abi MultiSignatureWallet {
-    fn constructor(owner1: Address, owner2: Address, owner1_weight: u64, owner2_weight: u64, threshold: u64) -> bool;
-    fn execute_transaction(to: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool;
-    fn is_owner(owner: Address) -> bool;
-    fn get_transaction_hash(to: ContractId, value: u64, data: b256, nonce: u64) -> b256;
-}
-
-enum Error {
-    ApprovalThresholdNotReached: (),
-    CannotReinitialize: (),
-    IncorrectSignerOrdering: (),
-    NotAnOwner: (),
-    NotInitialized: (),
-    ThresholdCannotBeZero: (),
-    WeightingCannotBeZero: (),
-}
-
-struct Tx {
-    destination: b256,
-    value: u64,
-    data: b256,
-    nonce: u64,
-    contract_identifier: b256,
-}
-
-struct User {
-    address: Address,
-    weight: u64,
-}
+// Our library imports
+use abi::MultiSignatureWallet;
+use data_structures::{Transaction, User};
+use errors::{ExecutionError, InitError};
+use events::{ExecutedEvent, TransferEvent};
 
 storage {
-    /// Used to add entropy into hashing of Tx to decrease the probability of collisions
+    /// Used to add entropy into hashing of Tx to decrease the probability of collisions / double
+    /// spending
     nonce: u64,
 
-    /// The number of approvals (signatures * weight) required in order to execture a Tx
+    /// The number of approvals required in order to execture a Tx
     threshold: u64,
+
+    /// Number of approvals per user
+    weighting: StorageMap<Address,
+    u64>, 
 }
 
 impl MultiSignatureWallet for Contract {
-    /// Initializes the contract by setting the owners, owner weightings and initializes the nonce
+    /// The constructor initializes the necessary values and unlocks further functionlity
     ///
     /// # Panics
     ///
     /// - When the constructor is called more than once
+    /// - When the user address is the 0th address (0x00000...)
     /// - When the threshold is set to 0
     /// - When an owner has an approval weight of 0
-    fn constructor(owner1: Address, owner2: Address, owner1_weight: u64, owner2_weight: u64, threshold: u64) -> bool {
-        require(storage.nonce == 0, Error::CannotReinitialize);
-        require(storage.threshold != 0, Error::ThresholdCannotBeZero);
+    #[storage(read, write)]fn constructor(users: [User;
+    25], threshold: u64) {
+        require(storage.nonce == 0, InitError::CannotReinitialize);
+        require(storage.threshold != 0, InitError::ThresholdCannotBeZero);
 
-        // TODO: when vectors are implemented change owners to be a Vec<Address>
-        require(owner1_weight != 0, Error::WeightingCannotBeZero);
-        require(owner2_weight != 0, Error::WeightingCannotBeZero);
-
-        store(owner1.value, owner1_weight);
-        store(owner2.value, owner2_weight);
+        let mut user_index = 0;
+        while user_index < 25 {
+            require(~Address::from(BASE_ASSET_ID) != users[user_index].identity, InitError::AddressCannotBeZero);
+            require(users[user_index].weight != 0, InitError::WeightingCannotBeZero);
+            storage.weighting.insert(users[user_index].identity, users[user_index].weight);
+            user_index = user_index + 1;
+        }
 
         storage.nonce = 1;
         storage.threshold = threshold;
-        true
     }
 
-    /// Executes a Tx if the required signatures meet the restrictions on ownership and threshold approval
+    /// Executes a Tx formed from the `to, `value` and `data` parameters if the signatures meet the
+    /// threshold requirement
     ///
     /// # Panics
     ///
     /// - When the constructor has not been called to initialize the contract
     /// - When the public key cannot be recovered from a signature
-    /// - When the signer is not an owner
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
     /// - When the total approval count is less than the required threshold for execution
-    fn execute_transaction(to: ContractId, value: u64, data: b256, signature1: B512, signature2: B512) -> bool {
-        require(storage.nonce != 0, Error::NotInitialized);
+    #[storage(read, write)]fn execute_transaction(to: Identity, value: u64, data: b256, signatures: [B512;
+    25]) {
+        require(storage.nonce != 0, InitError::NotInitialized);
 
-        let tx_hash = _get_transaction_hash(to, value, data, storage.nonce, contract_id());
+        let transaction_hash = create_hash(to, value, data, storage.nonce, contract_id());
+        let approval_count = count_approvals(transaction_hash, signatures);
 
-        // TODO: change to Vec<B512> once implemented and then iterate instead of hardcoding length
-        let signer1: b256 = match ec_recover_address(signature1, tx_hash) {
-            Result::Ok(address) => address.value, _ => revert(42), 
-        };
-
-        let signer2: b256 = match ec_recover_address(signature2, tx_hash) {
-            Result::Ok(address) => address.value, _ => revert(42), 
-        };
-
-        require(~b256::min() < signer1 && signer1 < signer2, Error::IncorrectSignerOrdering);
-
-        let signer1_weight = get::<u64>(signer1);
-        let signer2_weight = get::<u64>(signer2);
-
-        require(signer1_weight != 0 && signer2_weight != 0, Error::NotAnOwner);
-
-        // Hardcoded value, that passes the checks above, until the loop below is unblocked
-        let approval_count = signer1_weight + signer2_weight;
-
-        // The signers must have increasing values in order to check for duplicates or a zero-value
-        // let mut previous_signer: b256 = ~b256::min();
-
-        // let mut approval_count = 0;
-        // let mut index = 0;
-        // while index < 2 {
-        //     let signer: b256 = match ec_recover_address(signatures[index], tx_hash) {
-        //         Result::Ok(address) => address.value, _ => revert(42),
-        //     };
-
-        //     require(previous_signer < signer, Error::IncorrectSignerOrdering);
-
-        //     let signer_weight = get::<u64>(signer);
-        //     require(signer_weight != 0, Error::NotAnOwner);
-
-        //     previous_signer = signer;
-        //     approval_count = approval_count + signer_weight;
-
-        //     // Once break is implemented uncomment below. https://github.com/FuelLabs/sway/pull/1646
-        //     // if storage.threshold <= approval_count {
-        //     //     break;
-        //     // }
-
-        //     index = index + 1;
-        // }
-
-        require(storage.threshold <= approval_count, Error::ApprovalThresholdNotReached);
+        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
         storage.nonce = storage.nonce + 1;
-        log(tx_hash);
 
-        // TODO: Execute (https://github.com/FuelLabs/sway-applications/issues/6 and/or https://github.com/FuelLabs/sway-applications/issues/22)
+        // TODO: Execute https://github.com/FuelLabs/sway-applications/issues/22
 
-        true
+        log(ExecutedEvent {
+            to, value, data, nonce: storage.nonce - 1
+        });
     }
 
-    /// Takes in transaction data and hashes it into a unique tx hash
-    /// Used for verification of message
-    fn get_transaction_hash(to: ContractId, value: u64, data: b256, nonce: u64) -> b256 {
-        // TODO: data > b256?
-        _get_transaction_hash(to, value, data, nonce, contract_id())
-    }
-
-    /// Returns a boolean value indicating if the given address is an owner in the contract
+    /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement
     ///
     /// # Panics
     ///
     /// - When the constructor has not been called to initialize the contract
-    fn is_owner(address: Address) -> bool {
-        require(storage.nonce != 0, Error::NotInitialized);
-        get::<u64>(address.value) != 0
+    /// - When the amount of the asset being sent is greater than the balance in the contract
+    /// - When the public key cannot be recovered from a signature
+    /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
+    /// - When the total approval count is less than the required threshold for execution
+    #[storage(read, write)]fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures: [B512;
+    25]) {
+        require(storage.nonce != 0, InitError::NotInitialized);
+        require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
+
+        let transaction_hash = create_hash(to, value, data, storage.nonce, contract_id());
+        let approval_count = count_approvals(transaction_hash, signatures);
+
+        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
+
+        storage.nonce = storage.nonce + 1;
+
+        match to {
+            Identity::Address(address) => transfer_to_output(value, asset_id, address), Identity::ContractId(contract) => force_transfer_to_contract(value, asset_id, contract), 
+        };
+
+        log(TransferEvent {
+            to, asset: asset_id, value, nonce: storage.nonce - 1
+        });
+    }
+
+    /// Returns a boolean value indicating if the given address is a user in the contract
+    ///
+    /// # Panics
+    ///
+    /// - When the constructor has not been called to initialize the contract
+    #[storage(read)]fn is_owner(user: Address) -> bool {
+        require(storage.nonce != 0, InitError::NotInitialized);
+        storage.weighting.get(user) != 0
+    }
+
+    /// Returns the balance of the specified asset_id for this contract
+    fn balance(asset_id: ContractId) -> u64 {
+        this_balance(asset_id)
+    }
+
+    /// Takes in transaction data and hashes it into a unique tx hash
+    /// Used for verification of message
+    fn transaction_hash(to: Identity, value: u64, data: b256, nonce: u64) -> b256 {
+        create_hash(to, value, data, nonce, contract_id())
+    }
+
+    /// Returns the current nonce in the contract
+    /// Used to check the nonce and create a Tx via transaction_hash()
+    #[storage(read)]fn nonce() -> u64 {
+        storage.nonce
     }
 }
 
-fn _get_transaction_hash(to: ContractId, value: u64, data: b256, nonce: u64, self_id: ContractId) -> b256 {
-    sha256(Tx {
-        contract_identifier: self_id.value, destination: to.value, value, data, nonce
+fn create_hash(to: Identity, value: u64, data: b256, nonce: u64, self_id: ContractId) -> b256 {
+    sha256(Transaction {
+        contract_identifier: self_id, destination: to, value, data, nonce
     })
+}
+
+#[storage(read)]fn count_approvals(transaction_hash: b256, signatures: [B512;
+25]) -> u64 {
+    // The signers must have increasing values in order to check for duplicates or a zero-value
+    let mut previous_signer = ~b256::min();
+
+    let mut approval_count = 0;
+    let mut index = 0;
+    while index < 25 {
+        let signer = match ec_recover_address(signatures[index], transaction_hash) {
+            Result::Ok(address) => address.value, _ => revert(42), 
+        };
+
+        require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
+
+        previous_signer = signer;
+        approval_count = approval_count + storage.weighting.get(~Address::from(signer));
+
+        // Once break is implemented uncomment below. https://github.com/FuelLabs/sway/pull/1646
+        // if storage.threshold <= approval_count {
+        //     break;
+        // }
+
+        index = index + 1;
+    }
+
+    approval_count
 }

@@ -4,18 +4,19 @@ title: "<title>"
 labels: ["New Application"]
 body:
   - type: textarea
-    id: description
-    attributes:
-      label: Application Description
-      description: Tell us what application you are building!
-      placeholder: Is it a smart contract with a user interface or a command line tool, perhaps a plugin?
-    validations:
-      required: true
-  - type: textarea
     id: motivation
     attributes:
-      label: Motivation
-      description: Why are you interested in this application?
+      label: Application Description
+      description: Describe the application, motivation behind it and write a mini-specification
+      placeholder: |
+        #### Description
+        The application ...
+
+        #### Motivation
+        It allows ...
+
+        #### Specification
+        ...
     validations:
       required: true
   - type: textarea
@@ -29,8 +30,3 @@ body:
         - [ ] #(issue number 3)
     validations:
       required: true
-  - type: textarea
-    id: misc
-    attributes:
-      label: Additional context
-      description: Add any other context or screenshots about the feature request here.
