@@ -20,16 +20,17 @@ use std::{
     logging::log,
     option::Option,
     storage::StorageMap,
-    vec::Vec,
     token::transfer,
+    vec::Vec,
 };
 
 storage {
-    airdrops: StorageMap<(ContractId, u64), Option<AirdropData>>,
-    airdrop_count: StorageMap<ContractId, u64>,
-    // TODO: This should be moved into the `AirdropDispersal` struct when strorage maps in structs
+    airdrops: StorageMap<(ContractId,
+    u64), Option<AirdropData>>, airdrop_count: StorageMap<ContractId,
+    u64>, // TODO: This should be moved into the `AirdropDispersal` struct when strorage maps in structs
     // are supported
-    claimed: StorageMap<(b256, ContractId, u64), bool>,
+    claimed: StorageMap<(b256,
+    ContractId, u64), bool>, 
 }
 
 impl AirdropDistributor for Contract {
@@ -48,7 +49,7 @@ impl AirdropDistributor for Contract {
 
         // The claiming period must be open
         require(airdrop.end_block < height(), StateError::ClaimPeriodHasEnded);
-        
+
         // Make sure the `to` `Identity` hasn't already claimed
         let claim_hash = create_claim_hash(to, amount);
         require(!storage.claimed.get((claim_hash, token, claim_id)), AccessError::UserAlreadyClaimed);
@@ -68,7 +69,7 @@ impl AirdropDistributor for Contract {
 
         // Event
         log(ClaimEvent {
-            to, amount, token, claim_id,
+            to, amount, token, claim_id, 
         });
     }
 
@@ -83,14 +84,12 @@ impl AirdropDistributor for Contract {
         require(claim_time != 0, InitError::ClaimTimeCannotBeZero);
         require(msg_amount() != 0, InitError::AirdropAmountCannotBeZero);
         require(msg_asset_id() == token_contract, InitError::IncorrectTokenContract);
-        
+
         let airdrop = AirdropData {
-            admin,
-            claim_remaining: msg_amount(),
+            admin, claim_remaining: msg_amount(),
             end_block: height() + claim_time,
-            merkleRoot,
-            state: State::Open,
-            token_contract,
+            merkleRoot, state: State::Open,
+            token_contract, 
         };
 
         // Store the airdrop data
@@ -98,7 +97,7 @@ impl AirdropDistributor for Contract {
 
         // Log Event
         log(CreateEvent {
-            airdrop, claim_id: storage.airdrop_count.get(token_contract),
+            airdrop, claim_id: storage.airdrop_count.get(token_contract), 
         });
 
         // Update the airdrop count and return the airdrop id
@@ -109,7 +108,7 @@ impl AirdropDistributor for Contract {
     /// This function will return the remaining tokens once the claim period has ended
     ///
     /// # Reverts
-    /// 
+    ///
     /// * When the `token_contract` and `claim_id` do not map to an airdrop
     /// * When the claim period has not ended
     /// * When the sender is not the admin
@@ -137,7 +136,7 @@ impl AirdropDistributor for Contract {
 
         // Log Event
         log(ReClaimEvent {
-            airdrop, claim_id,
+            airdrop, claim_id, 
         });
     }
 

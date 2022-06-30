@@ -3,10 +3,7 @@ library events;
 dep data_structures;
 
 use data_structures::AirdropData;
-use std::{
-    contract_id::ContractId,
-    identity::Identity
-};
+use std::{contract_id::ContractId, identity::Identity};
 
 pub struct CreateEvent {
     airdrop: AirdropData,

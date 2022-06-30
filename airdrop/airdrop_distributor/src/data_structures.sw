@@ -1,9 +1,6 @@
 library data_structures;
 
-use std::{
-    contract_id::ContractId,
-    identity::Identity,
-};
+use std::{contract_id::ContractId, identity::Identity};
 
 pub struct AirdropData {
     admin: Identity,
