@@ -403,6 +403,65 @@ mod vote {
                 4
             );
         }
+
+        #[tokio::test]
+        async fn user_can_vote_on_multiple_proposals() {
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
+
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
+
+            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            deposit(&user, tx_params, call_params).await;
+
+            let proposal_transaction = proposal(gov_token_id);
+            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
+
+            vote(&user, true, 0, asset_amount / 4).await;
+            vote(&user, false, 0, asset_amount / 4).await;
+
+            assert_eq!(
+                user.dao_voting.proposal(0).call().await.unwrap().value,
+                ProposalInfo {
+                    author: Identity::Address(user.wallet.address()),
+                    yes_votes: asset_amount / 4,
+                    no_votes: asset_amount / 4,
+                    acceptance_percentage: 10,
+                    proposal_transaction: proposal_transaction.clone(),
+                    deadline: 15,
+                }
+            );
+            assert_eq!(
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                6
+            );
+            assert_eq!(
+                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                4
+            );
+
+            create_proposal(&user, 20, 20, proposal_transaction.clone()).await;
+            vote(&user, true, 1, 2).await;
+
+            assert_eq!(
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                4
+            );
+            assert_eq!(
+                user_votes(&user, Identity::Address(user.wallet.address()), 1).await,
+                2
+            );
+        }
     }
 
     mod revert {
