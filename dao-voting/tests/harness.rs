@@ -182,6 +182,9 @@ mod deposit {
             );
             deposit(&user, tx_params, call_params).await;
 
+            // Make sure that deposit did not erroneously work with 0
+            assert!(asset_amount != 0);
+
             assert_eq!(
                 deployer.dao_voting.balance().call().await.unwrap().value,
                 asset_amount
