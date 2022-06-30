@@ -462,7 +462,7 @@ mod vote {
         #[should_panic]
         async fn panics_on_invalid_proposal_id() {
             let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
-            proposal(&user, 0).await;
+            vote(&user, true, 0, 10).await;
         }
 
         #[tokio::test]
@@ -560,7 +560,7 @@ mod execute {
         #[should_panic]
         async fn panics_on_invalid_proposal_id() {
             let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
-            proposal(&user, 0).await;
+            execute(&user, 0).await;
         }
 
         #[tokio::test]
@@ -680,7 +680,7 @@ mod unlock_votes {
         #[should_panic]
         async fn panics_on_invalid_proposal_id() {
             let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
-            proposal(&user, 0).await;
+            unlock_votes(&user, 0).await;
         }
 
         #[tokio::test]
