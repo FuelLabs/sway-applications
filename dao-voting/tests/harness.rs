@@ -4,7 +4,7 @@ use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
     abi_calls::{
-        constructor, create_proposal, deposit, execute, unlock_votes, user_balance, user_votes,
+        balance, constructor, create_proposal, deposit, execute, unlock_votes, user_balance, user_votes,
         vote, withdraw,
     },
     test_helpers::{mint, proposal, setup},
@@ -167,7 +167,7 @@ mod deposit {
 
             constructor(&deployer, gov_token_id).await;
 
-            assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
+            assert_eq!(balance(&user).await, 0);
 
             assert_eq!(
                 user_balance(&user, Identity::Address(user.wallet.address())).await,
@@ -186,7 +186,7 @@ mod deposit {
             assert!(asset_amount != 0);
 
             assert_eq!(
-                deployer.dao_voting.balance().call().await.unwrap().value,
+                balance(&user).await,
                 asset_amount
             );
 
@@ -300,7 +300,7 @@ mod withdraw {
             deposit(&user, tx_params, call_params).await;
 
             assert_eq!(
-                deployer.dao_voting.balance().call().await.unwrap().value,
+                balance(&user).await,
                 asset_amount
             );
 
@@ -316,7 +316,7 @@ mod withdraw {
                 0
             );
 
-            assert_eq!(user.dao_voting.balance().call().await.unwrap().value, 0);
+            assert_eq!(balance(&user).await, 0);
         }
     }
 
@@ -695,6 +695,35 @@ mod unlock_votes {
             create_proposal(&user, 10, 100, proposal_transaction.clone()).await;
             vote(&user, true, 0, asset_amount / 2).await;
             unlock_votes(&user, 0).await;
+        }
+    }
+}
+
+mod balance {
+    use super::*;
+
+    mod success {
+        use super::*;
+
+        #[tokio::test]
+        pub async fn user_can_check_balance() {
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
+
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
+
+            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            deposit(&user, tx_params, call_params).await;
         }
     }
 }
