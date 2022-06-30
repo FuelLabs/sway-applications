@@ -8,7 +8,7 @@ dep utils;
 
 use abi::AirdropDistributor;
 use data_structures::{AirdropData, Claim, State};
-use events::ClaimEvent;
+use events::{ClaimEvent, CreateEvent, ReClaimEvent};
 use errors::{AccessError, InitError, StateError, VerificationError};
 use utils::{create_claim_hash, sender_identity, verify_merkle_proof};
 use std::{
@@ -72,9 +72,10 @@ impl AirdropDistributor for Contract {
     ///
     /// # Reverts
     ///
-    /// * The `claim_time` is set to zero
-    /// * The token amount provided in the transaction is zero
-    #[storage(read, write)]fn constructor(token_contract: ContractId, merkleRoot: b256, admin: Identity, claim_time: u64) -> u64 {
+    /// * The `claim_time` is set to zero.
+    /// * The token amount provided in the transaction is zero.
+    /// * The `token_contract` does not match the tokens provided in the transaction.
+    #[storage(read, write)]fn create(token_contract: ContractId, merkleRoot: b256, admin: Identity, claim_time: u64) -> u64 {
         require(claim_time != 0, InitError::ClaimTimeCannotBeZero);
         require(msg_amount() != 0, InitError::AirdropAmountCannotBeZero);
         require(msg_asset_id() == token_contract, InitError::IncorrectTokenContract);
@@ -90,6 +91,11 @@ impl AirdropDistributor for Contract {
 
         // Store the airdrop data
         storage.airdrops.insert((token_contract, storage.airdrop_count.get(token_contract)), Option::Some(airdrop));
+
+        // Log Event
+        log(CreateEvent {
+            airdrop, claim_id: storage.airdrop_count.get(token_contract),
+        });
 
         // Update the airdrop count and return the airdrop id
         storage.airdrop_count.insert(token_contract, storage.airdrop_count.get(token_contract) + 1);
@@ -124,5 +130,10 @@ impl AirdropDistributor for Contract {
 
         // Transfer tokens out of this contract
         transfer(claim_remaining, token_contract, sender);
+
+        // Log Event
+        log(ReClaimEvent {
+            airdrop, claim_id,
+        });
     }
 }

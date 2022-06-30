@@ -1,9 +1,7 @@
 library utils;
 
-dep abi;
 dep data_structures;
 
-use abi::Token;
 use data_structures::Claim;
 use std::{
     chain::auth::{AuthError, msg_sender},
