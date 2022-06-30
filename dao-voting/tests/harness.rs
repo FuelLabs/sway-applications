@@ -207,7 +207,7 @@ mod deposit {
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
                 Some(asset_amount),
-                Some(AssetId::from(*gov_token_id)),
+                Some(AssetId::from(*another_asset_id)),
                 Some(100_000),
             );
             deposit(&user, tx_params, call_params).await;
