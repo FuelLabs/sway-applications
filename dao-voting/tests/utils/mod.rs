@@ -81,6 +81,15 @@ pub mod abi_calls {
             .unwrap()
             .value
     }
+
+    pub async fn user_votes(user: &Metadata, user_identity: Identity, id: u64) -> u64{
+        user.dao_voting
+            .user_votes(id, user_identity)
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
 }
 
 pub mod test_helpers {

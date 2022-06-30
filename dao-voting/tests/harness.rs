@@ -4,7 +4,8 @@ use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
     abi_calls::{
-        constructor, create_proposal, deposit, unlock_votes, user_balance, vote, withdraw,
+        constructor, create_proposal, deposit, unlock_votes, user_balance, user_votes, vote,
+        withdraw,
     },
     test_helpers::{mint, proposal, setup},
     GovToken, Identity, ProposalInfo,
@@ -355,6 +356,16 @@ mod vote {
                     deadline: 15,
                 }
             );
+
+            assert_eq!(
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                6
+            );
+
+            assert_eq!(
+                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                4
+            );
         }
     }
 
@@ -397,7 +408,7 @@ mod vote {
             deposit(&user, tx_params, call_params).await;
             vote(&user, true, 0, asset_amount / 4).await;
         }
-    
+
         #[tokio::test]
         #[should_panic]
         async fn panics_on_not_enough_balance() {
