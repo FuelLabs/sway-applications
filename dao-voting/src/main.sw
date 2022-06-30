@@ -311,6 +311,7 @@ impl DaoVoting for Contract {
     ///
     /// * When the constructor has not been called to initialize
     #[storage(read)] fn governance_token_id() -> ContractId {
+        require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
         storage.token
     }
 }

@@ -4,8 +4,8 @@ use fuels::{prelude::*, tx::AssetId};
 
 use utils::{
     abi_calls::{
-        balance, constructor, create_proposal, deposit, execute, proposal, unlock_votes,
-        user_balance, user_votes, vote, withdraw,
+        balance, constructor, create_proposal, deposit, execute, governance_token_id, proposal,
+        unlock_votes, user_balance, user_votes, vote, withdraw,
     },
     test_helpers::{mint, proposal_transaction, setup},
     GovToken, Identity, ProposalInfo,
@@ -837,6 +837,32 @@ mod proposal {
                     deadline: 13,
                 }
             );
+        }
+    }
+}
+
+mod governance_token_id {
+    use super::*;
+
+    mod success {
+        use super::*;
+
+        #[tokio::test]
+        pub async fn user_can_get_governance_token_id() {
+            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
+            assert_eq!(governance_token_id(&deployer).await, gov_token_id);
+        }
+    }
+
+    mod revert {
+        use super::*;
+
+        #[tokio::test]
+        #[should_panic]
+        pub async fn panics_on_not_inialized() {
+            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+            governance_token_id(&deployer).await;
         }
     }
 }

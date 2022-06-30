@@ -102,6 +102,15 @@ pub mod abi_calls {
     pub async fn proposal(user: &Metadata, id: u64) -> ProposalInfo {
         user.dao_voting.proposal(id).call().await.unwrap().value
     }
+
+    pub async fn governance_token_id(user: &Metadata) -> ContractId {
+        user.dao_voting
+            .governance_token_id()
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
 }
 
 pub mod test_helpers {
