@@ -735,3 +735,40 @@ mod balance {
         }
     }
 }
+
+mod user_balance {
+    use super::*;
+
+    mod success {
+        use super::*;
+
+        #[tokio::test]
+        pub async fn user_can_check_user_balance() {
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
+
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
+
+            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            assert_eq!(
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                0
+            );
+            deposit(&user, tx_params, call_params).await;
+            assert_eq!(
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                asset_amount
+            );
+        }
+    }
+}
