@@ -50,10 +50,8 @@ mod create_proposal {
             let proposal_transaction = proposal(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
 
-            let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
-
             assert_eq!(
-                proposal,
+                user.dao_voting.proposal(0).call().await.unwrap().value,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: 0,
@@ -169,7 +167,8 @@ mod deposit {
                     &deployer.gov_token.as_ref().unwrap(),
                     100,
                     user.wallet.address()
-                ).await
+                )
+                .await
             );
 
             constructor(&deployer, gov_token_id).await;
@@ -191,7 +190,8 @@ mod deposit {
                     &deployer.gov_token.as_ref().unwrap(),
                     100,
                     user.wallet.address()
-                ).await
+                )
+                .await
             );
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
@@ -220,13 +220,7 @@ mod deposit {
             let another_asset =
                 GovToken::new(another_asset_id.to_string(), deployer.wallet.clone());
 
-            assert!(
-                mint(
-                    &another_asset,
-                    100,
-                    user.wallet.address()
-                ).await
-            );
+            assert!(mint(&another_asset, 100, user.wallet.address()).await);
 
             constructor(&deployer, gov_token_id).await;
 
@@ -256,7 +250,8 @@ mod withdraw {
                     &deployer.gov_token.as_ref().unwrap(),
                     100,
                     user.wallet.address()
-                ).await
+                )
+                .await
             );
 
             constructor(&deployer, gov_token_id).await;
@@ -310,7 +305,8 @@ mod withdraw {
                     &deployer.gov_token.as_ref().unwrap(),
                     100,
                     user.wallet.address()
-                ).await
+                )
+                .await
             );
 
             constructor(&deployer, gov_token_id).await;
@@ -361,7 +357,8 @@ mod vote {
                     &deployer.gov_token.as_ref().unwrap(),
                     100,
                     user.wallet.address()
-                ).await
+                )
+                .await
             );
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
@@ -378,10 +375,8 @@ mod vote {
             vote(&user, true, 0, asset_amount / 4).await;
             vote(&user, false, 0, asset_amount / 4).await;
 
-            let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
-
             assert_eq!(
-                proposal,
+                user.dao_voting.proposal(0).call().await.unwrap().value,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: asset_amount / 4,
@@ -419,7 +414,8 @@ mod vote {
                     &deployer.gov_token.as_ref().unwrap(),
                     100,
                     user.wallet.address()
-                ).await
+                )
+                .await
             );
 
             let proposal_transaction = proposal(gov_token_id);
@@ -453,7 +449,8 @@ mod execute_proposal {
                     &deployer.gov_token.as_ref().unwrap(),
                     100,
                     user.wallet.address()
-                ).await
+                )
+                .await
             );
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
@@ -468,10 +465,8 @@ mod execute_proposal {
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
             vote(&user, true, 0, asset_amount / 2).await;
 
-            let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
-
             assert_eq!(
-                proposal,
+                user.dao_voting.proposal(0).call().await.unwrap().value,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: 5,
@@ -503,7 +498,8 @@ mod unlock_votes {
                     &deployer.gov_token.as_ref().unwrap(),
                     100,
                     user.wallet.address()
-                ).await
+                )
+                .await
             );
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
@@ -518,10 +514,8 @@ mod unlock_votes {
             create_proposal(&user, 1, 1, proposal_transaction.clone()).await;
             vote(&user, true, 0, asset_amount / 2).await;
 
-            let proposal = user.dao_voting.proposal(0).call().await.unwrap().value;
-
             assert_eq!(
-                proposal,
+                user.dao_voting.proposal(0).call().await.unwrap().value,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: 5,
