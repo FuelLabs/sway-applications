@@ -14,6 +14,7 @@ pub enum InitError {
 
 pub enum StateError {
     AlreadyInitalized: (),
+    ClaimPeriodHasEnded: (),
     ClaimPeriodHasNotEnded: (),
     NotInitalized: (),
 }

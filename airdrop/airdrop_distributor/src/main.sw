@@ -45,7 +45,11 @@ impl AirdropDistributor for Contract {
         let airdrop: Option<AirdropData> = storage.airdrops.get((token, claim_id));
         require(airdrop.is_some(), AccessError::AirdropDoesNotExist);
         let mut airdrop = airdrop.unwrap();
+
+        // The claiming period must be open
+        require(airdrop.end_block < height(), StateError::ClaimPeriodHasEnded);
         
+        // Make sure the `to` `Identity` hasn't already claimed
         let claim_hash = create_claim_hash(to, amount);
         require(!storage.claimed.get((claim_hash, token, claim_id)), AccessError::UserAlreadyClaimed);
 
