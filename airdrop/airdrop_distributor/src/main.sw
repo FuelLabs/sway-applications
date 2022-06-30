@@ -136,4 +136,9 @@ impl AirdropDistributor for Contract {
             airdrop, claim_id,
         });
     }
+
+    /// Returns the airdrop metadata for the `ContractId` and `u64` airdrop Id provided
+    #[storage(read)]fn airdrop_data(token_contract: ContractId, claim_id: u64) -> Option<AirdropData> {
+        storage.airdrops.get((token_contract, claim_id))
+    }
 }
