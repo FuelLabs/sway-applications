@@ -469,13 +469,13 @@ mod vote {
 
         #[tokio::test]
         #[should_panic]
-        async fn panics_on_invalid_vote_amount() {
+        async fn panics_on_vote_amount_greater_than_balance() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
             let proposal_transaction = proposal(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
-            vote(&user, true, 0, asset_amount / 4).await;
+            vote(&user, true, 0, asset_amount).await;
         }
 
         #[tokio::test]
