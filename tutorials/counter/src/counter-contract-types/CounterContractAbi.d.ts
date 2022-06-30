@@ -10,121 +10,139 @@ import type {
   Overrides,
   BigNumberish,
   BytesLike,
-} from 'fuels';
+} from "fuels";
 
 interface CounterContractAbiInterface extends Interface {
   submit: {
-    increment_counter: FunctionFragment;
-    decrement_counter: FunctionFragment;
+    increment: FunctionFragment;
+    decrement: FunctionFragment;
     get_counter: FunctionFragment;
   };
   submitResult: {
-    increment_counter: FunctionFragment;
-    decrement_counter: FunctionFragment;
+    increment: FunctionFragment;
+    decrement: FunctionFragment;
     get_counter: FunctionFragment;
   };
   dryRun: {
-    increment_counter: FunctionFragment;
-    decrement_counter: FunctionFragment;
+    increment: FunctionFragment;
+    decrement: FunctionFragment;
     get_counter: FunctionFragment;
   };
   dryRunResult: {
-    increment_counter: FunctionFragment;
-    decrement_counter: FunctionFragment;
+    increment: FunctionFragment;
+    decrement: FunctionFragment;
     get_counter: FunctionFragment;
   };
   prepareCall: {
-    increment_counter: FunctionFragment;
-    decrement_counter: FunctionFragment;
+    increment: FunctionFragment;
+    decrement: FunctionFragment;
     get_counter: FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: 'increment_counter', values: [BigNumberish]): Uint8Array;
-  encodeFunctionData(functionFragment: 'decrement_counter', values: [BigNumberish]): Uint8Array;
-  encodeFunctionData(functionFragment: 'get_counter', values?: undefined): Uint8Array;
+  encodeFunctionData(
+    functionFragment: "increment",
+    values?: undefined
+  ): Uint8Array;
+  encodeFunctionData(
+    functionFragment: "decrement",
+    values?: undefined
+  ): Uint8Array;
+  encodeFunctionData(
+    functionFragment: "get_counter",
+    values?: undefined
+  ): Uint8Array;
 
-  decodeFunctionData(functionFragment: 'increment_counter', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'decrement_counter', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'get_counter', data: BytesLike): DecodedValue;
+  decodeFunctionData(
+    functionFragment: "increment",
+    data: BytesLike
+  ): DecodedValue;
+  decodeFunctionData(
+    functionFragment: "decrement",
+    data: BytesLike
+  ): DecodedValue;
+  decodeFunctionData(
+    functionFragment: "get_counter",
+    data: BytesLike
+  ): DecodedValue;
 }
 
 export class CounterContractAbi extends Contract {
   interface: CounterContractAbiInterface;
   submit: {
-    increment_counter(
-      value: BigNumberish,
+    increment(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    decrement_counter(
-      value: BigNumberish,
+    decrement(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
+    get_counter(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<bigint>;
   };
   submitResult: {
-    increment_counter(
-      value: BigNumberish,
+    increment(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    decrement_counter(
-      value: BigNumberish,
+    decrement(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
+    get_counter(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<bigint>;
   };
   dryRun: {
-    increment_counter(
-      value: BigNumberish,
+    increment(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    decrement_counter(
-      value: BigNumberish,
+    decrement(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
+    get_counter(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<bigint>;
   };
   dryRunResult: {
-    increment_counter(
-      value: BigNumberish,
+    increment(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    decrement_counter(
-      value: BigNumberish,
+    decrement(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
+    get_counter(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<bigint>;
   };
   prepareCall: {
-    increment_counter(
-      value: BigNumberish,
+    increment(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    decrement_counter(
-      value: BigNumberish,
+    decrement(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<bigint>;
 
-    get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
+    get_counter(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<bigint>;
   };
 
-  increment_counter(
-    value: BigNumberish,
+  increment(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<bigint>;
 
-  decrement_counter(
-    value: BigNumberish,
+  decrement(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<bigint>;
 
-  get_counter(overrides?: Overrides & { from?: string | Promise<string> }): Promise<bigint>;
+  get_counter(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<bigint>;
 }

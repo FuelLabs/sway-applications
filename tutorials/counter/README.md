@@ -2,7 +2,7 @@
 
 <div align="center">
   <a href="https://github.com/FuelLabs/sway-applications">
-    <img src="../../logo.png" alt="Logo" width="700" height="170">
+    <img src="./img/logo.png" height="120">
   </a>
 
   <h3 align="center">Sway Counter</h3>
@@ -11,13 +11,6 @@
     Sway Counter Smart Contract with React and Fuel v2 TypeScript SDK
     <br />
     <a  href="https://fuellabs.github.io/fuels-ts/"><strong>Explore the Fuel TypeScript SDK docs »</strong></a>
-    <br />
-    Other Example Apps:
-    <br />
-    <br />
-    <a href="https://github.com/FuelLabs/swayswap"><strong>⚡️ SwaySwap ⚡️</strong></a>
-    <br />
-    <a href="https://github.com/FuelLabs/block-explorer-v2"><strong>Block explorer frontend for Fuel</strong></a>
   </p>
 </div>
 
@@ -27,8 +20,14 @@
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-  - [Usage](#usage)
-  - [Walkthrough](#walkthrough)
+  - [How to run the application](#usage)
+  - [Application Development Tutorial](#walkthrough)
+    - [Creating the smart contract](#1-creating-a-deployable-sway-program)
+    - Compiling the contract, generating TypeScript and deploying
+      - [Compiling the contract](#2-compiling-your-sway-contract)
+      - [Generating TypeScript](#3-generating-typescript-for-sway-contract)
+      - [Deploying the contract](#4-deploying-your-sway-contract)
+    - [Using the contract in a React project](#5-using-your-sway-contract-in-a-react-project)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -37,7 +36,7 @@
 In this tutorial, we will build a counter application, using storage on our Sway contract to keep track of a stored number that can be retrieved/ modified as part of our React app. This demonstrates a Sway Program called Smart Contract, and will show you the basics of using Sway with the [TypeScript SDK](https://fuellabs.github.io/fuels-ts/).
 
 <p align="center">
-  ![Demo Screen Shot](img/preview.png)
+  ![Demo Screen Shot](./img/preview.png)
 </p>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -55,7 +54,6 @@ Your machine will need to have a few things installed in order to run a local fu
 
 ### Installation
 
-
 Open this demo application
 
 ```sh
@@ -72,7 +70,7 @@ npm i
 
 To quickly run this demo application, follow these steps, or see detailed tutorial below
 
-Run React application in dev mode, make sure to configure a new `.env` file.
+Run React application in dev mode, make sure to configure a new [`.env`](./.env.example) file.
 
 ```sh
 npm run dev
@@ -129,7 +127,7 @@ Once a Sway program has an Application Binary Interface (ABI) JSON file, TypeScr
 For convenience this npm script will run `forc build` from the previous step and then run the generated ABI through [TypeChain](https://github.com/dethcrypto/TypeChain) to create TypeScript types and helpers for the contract.
 
 ```sh
-npm run build-contract
+npm run build
 ```
 
 The generated TypeScript will be available in `src/counter-contract-types`.
@@ -146,7 +144,6 @@ Create and update `.env` file with relevant values, (see [.env.example](.env.exa
 GENESIS_SECRET="<YOUR SECRET>" # for easiest route, should match whats in your chain config
 PRIVATE_KEY="<YOUR WALLET PRIVATE KEY>" # generate one - see below
 FUEL_PROVIDER_URL="<YOUR FUEL CORE URL>" # will often be http://127.0.0.1:4000/graphql
-### You will obtain a CONTRACT_ID below
 CONTRACT_ID="<YOUR CONTRACT ID>" # see below
 ```
 
@@ -159,7 +156,7 @@ npm run generate-private-key
 For `CONTRACT_ID`, once you have your environment variables ready, run this command in your project folder to deploy your Sway contract to your local Fuel provider:
 
 ```sh
-npm run deploy-contract
+npm run deploy
 ```
 
 This will output a new `CONTRACT_ID` to save inside your `.env`. With that, your Sway contract is compiled, deployed, and available via a TypeScript interface.
@@ -211,13 +208,7 @@ const App = () => {
 };
 ```
 
-Note that this sample above uses
-
-To run the demo React application, use this command in the project folder:
-
-```sh
-npm run dev
-```
+To run the demo React application, see [usage](#usage).
 
 ##### What's going on behind the scenes?
 
@@ -227,7 +218,7 @@ When you share your wallet private key and connect to a provider, you are author
 
 ## Contributing
 
-In order to contribute to this demo, please see the main [sway-applications](https://github.com/FuelLabs/sway-applications) repo.
+In order to contribute to this demo, please see the main [sway-applications](../../CONTRIBUTING.md) repo.
 
 In order to contribute to the `Fuel TypeScript SDK`, please see the main [fuels-ts](https://github.com/FuelLabs/fuels-ts) monorepo.
 
