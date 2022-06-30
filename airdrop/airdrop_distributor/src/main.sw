@@ -10,7 +10,7 @@ use abi::AirdropDistributor;
 use data_structures::{AirdropData, Claim, State};
 use events::ClaimEvent;
 use errors::{AccessError, InitError, StateError, VerificationError};
-use utils::{create_claim_hash, verify_merkle_proof};
+use utils::{create_claim_hash, sender_identity, verify_merkle_proof};
 use std::{
     assert::require,
     block::height,
@@ -36,9 +36,11 @@ impl AirdropDistributor for Contract {
     /// This function will let users claim their airdrop
     ///
     /// # Reverts
-    /// - The airdrop does not map to an existing Airdrop
-    /// - The `to` `Identity` has already claimed
-    /// - The merkle proof verification failed
+    ///
+    /// * When the airdrop does not map to an existing Airdrop.
+    /// * When the claiming period has ended.
+    /// * When the `to` `Identity` has already claimed.
+    /// * When the merkle proof verification failed.
     #[storage(read, write)]fn claim(to: Identity, amount: u64, proof: Vec<b256>, token: ContractId, claim_id: u64) {
         let airdrop: Option<AirdropData> = storage.airdrops.get((token, claim_id));
         require(airdrop.is_some(), AccessError::AirdropDoesNotExist);
@@ -92,5 +94,35 @@ impl AirdropDistributor for Contract {
         // Update the airdrop count and return the airdrop id
         storage.airdrop_count.insert(token_contract, storage.airdrop_count.get(token_contract) + 1);
         storage.airdrop_count.get(token_contract) - 1
+    }
+
+    /// This function will return the remaining tokens once the claim period has ended
+    ///
+    /// # Reverts
+    /// 
+    /// * When the `token_contract` and `claim_id` do not map to an airdrop
+    /// * When the claim period has not ended
+    /// * When the sender is not the admin
+    #[storage(read, write)]fn reclaim(token_contract: ContractId, claim_id: u64) {
+        // Make sure this airdrop exists
+        let airdrop: Option<AirdropData> = storage.airdrops.get((token_contract, claim_id));
+        require(airdrop.is_some(), AccessError::AirdropDoesNotExist);
+        let mut airdrop = airdrop.unwrap();
+
+        // Make sure the claiming period has ended
+        require(height() >= airdrop.end_block, StateError::ClaimPeriodHasNotEnded);
+
+        // Make sure that this is the admin
+        let sender = sender_identity();
+        require(sender == airdrop.admin, AccessError::SenderNotAdmin);
+
+        // Update the auction states
+        let claim_remaining = airdrop.claim_remaining;
+        airdrop.state = State::Closed;
+        airdrop.claim_remaining = 0;
+        storage.airdrops.insert((token_contract, claim_id), Option::Some(airdrop));
+
+        // Transfer tokens out of this contract
+        transfer(claim_remaining, token_contract, sender);
     }
 }

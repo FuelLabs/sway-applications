@@ -2,6 +2,7 @@ library errors;
 
 pub enum AccessError {
     AirdropDoesNotExist: (),
+    SenderNotAdmin: (),
     UserAlreadyClaimed: (),
 }
 
@@ -13,6 +14,7 @@ pub enum InitError {
 
 pub enum StateError {
     AlreadyInitalized: (),
+    ClaimPeriodHasNotEnded: (),
     NotInitalized: (),
 }
 
