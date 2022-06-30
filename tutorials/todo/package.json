@@ -3,23 +3,23 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "dist": "tsc && vite build",
     "preview": "vite preview",
     "prettier:check": "prettier --check src",
     "prettier:format": "prettier --write src",
-    "build-contract": "sh ./scripts/build-contract.sh",
+    "build": "sh ./scripts/build-contract.sh",
     "generate-private-key": "./node_modules/.bin/ts-node ./scripts/generate-private-key",
-    "deploy-contract": "./node_modules/.bin/ts-node ./scripts/deploy-contract.ts"
+    "deploy": "./node_modules/.bin/ts-node ./scripts/deploy-contract.ts"
   },
   "dependencies": {
-    "fuels": "0.0.0-master-1a1fb63d",
+    "fuels": "0.0.0-master-151d0d91",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "todomvc-app-css": "^2.0.0",
     "todomvc-common": "^1.0.1"
   },
   "devDependencies": {
-    "@fuel-ts/wallet": "0.0.0-master-1a1fb63d",
+    "@fuel-ts/wallet": "0.0.0-master-151d0d91",
     "@types/node": "^17.0.35",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
@@ -28,7 +28,7 @@
     "prettier": "^2.5.1",
     "ts-node": "^10.7.0",
     "typechain": "^8.0.0",
-    "typechain-target-fuels": "0.0.0-master-1a1fb63d",
+    "typechain-target-fuels": "0.0.0-master-151d0d91",
     "typescript": "^4.6.4",
     "vite": "^2.9.7"
   }

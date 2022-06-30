@@ -1,11 +1,11 @@
 contract;
 
 dep abi;
-dep tasks;
+dep data_structures;
 
 use std::storage::StorageMap;
 use abi::Todo;
-use tasks::Task;
+use data_structures::Task;
 
 storage {
     tasks: StorageMap<u64, Task>,
