@@ -61,7 +61,7 @@ pub fn sender_identity() -> Identity {
     sender.unwrap()
 }
 
-/// This function will transfer an `Asset` to the specified `Identity`
+/// This function will transfer the `Asset` given to the specified `Identity`.
 pub fn transfer_asset(to: Identity, asset: Asset) {
     match asset {
         Asset::NFTAsset(asset) => {
@@ -94,11 +94,11 @@ pub fn transfer_nft(from: Identity, to: Identity, asset: NFTAsset) {
     require(owner.is_some() && owner.unwrap() == to, AccessError::NFTTransferNotApproved);
 }
 
-/// This function will panic when the `recieved_asset` and `buy_asset` `contract_id`s do not match.
-/// If `received_asset` is of type `TokenAsset` the function also ensures that the amount provided
+/// This function will panic when the `recieved_asset` and `buy_asset` `ContractId`s do not match.
+/// If `received_asset` is of type `TokenAsset`, the function ensures that the amount provided
 /// in the transaction and `recieved_asset` struct match. If the `received_asset` is of type
-/// `NFTAsset` the function will ensure that the auction contract is permissioned to transfer the
-/// NFT tokens.
+/// `NFTAsset`, the function will ensure that the auction contract is permissioned to transfer the
+/// NFT tokens and the sender owns the NFT tokens.
 ///
 /// # Reverts
 ///

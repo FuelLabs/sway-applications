@@ -59,12 +59,38 @@ pub struct TokenAsset {
     contract_id: ContractId,
 }
 
-pub trait AssetTraits {
+pub trait ReturnsAmount {
     pub fn amount(self) -> u64;
+}
+
+pub trait ReturnsContractId {
     pub fn contract_id(self) -> ContractId;
 }
 
-impl AssetTraits for Asset {
+impl core::ops::Add for Asset {
+    pub fn add(self, other: Self) -> Self {
+        match(self, other) {
+            (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
+                require(nft_asset1.contract_id == nft_asset2.contract_id, AssetError::AssetsAreNotTheSame);
+                // TODO: Combine vecs
+                self
+            },
+            (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
+                require(token_asset1.contract_id == token_asset2.contract_id, AssetError::AssetsAreNotTheSame);
+                let total_amount = token_asset1.amount + token_asset2.amount;
+                let token = TokenAsset {
+                    amount: total_amount, contract_id: token_asset1.contract_id
+                };
+                Asset::TokenAsset(token)
+            },
+            _ => {
+                self
+            },
+        }
+    }
+}
+
+impl ReturnsAmount for Asset {
     pub fn amount(self) -> u64 {
         match self {
             Asset::NFTAsset(nft_asset) => {
@@ -76,7 +102,9 @@ impl AssetTraits for Asset {
             },
         }
     }
+}
 
+impl ReturnsContractId for Asset {
     pub fn contract_id(self) -> ContractId {
         match self {
             Asset::NFTAsset(nft_asset) => {
@@ -140,29 +168,6 @@ impl core::ops::Ord for Asset {
             },
             _ => {
                 false
-            },
-        }
-    }
-}
-
-impl core::ops::Add for Asset {
-    pub fn add(self, other: Self) -> Self {
-        match(self, other) {
-            (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                require(nft_asset1.contract_id == nft_asset2.contract_id, AssetError::AssetsAreNotTheSame);
-                // TODO: Combine vecs
-                self
-            },
-            (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
-                require(token_asset1.contract_id == token_asset2.contract_id, AssetError::AssetsAreNotTheSame);
-                let total_amount = token_asset1.amount + token_asset2.amount;
-                let token = TokenAsset {
-                    amount: total_amount, contract_id: token_asset1.contract_id
-                };
-                Asset::TokenAsset(token)
-            },
-            _ => {
-                self
             },
         }
     }

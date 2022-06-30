@@ -56,11 +56,9 @@ impl EnglishAuction for Contract {
     //     storage.auctions.get(auction_id)
     // }
 
-    /// Places a bid on the auction specified. A correctly structured
-    /// `Asset` struct must be provided. A bid is only valid if it is
-    /// greater than the last bid or greater than the inital_price.
-    /// If the reserve price is met the auction will end and the buyer
-    /// will be able to withdraw.
+    /// Places a bid on the auction specified. A correctly structured `Asset` struct must be
+    /// provided. A bid is only valid if it is greater than the last bid or greater than the
+    /// inital_price. If the reserve price is met, the auction will end.
     ///
     /// # Arguments
     ///
@@ -99,10 +97,10 @@ impl EnglishAuction for Contract {
         let sender = sender_identity();
         require(sender != auction.seller, UserError::BidderIsSeller);
 
-        // Combine the user's previous deposits and the current bid for
-        // the total bid the user has made
+        // Combine the user's previous deposits and the current bid for the
+        // total bid the user has made
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
-        let total_bid_asset = match sender_deposit {
+        let total_bid = match sender_deposit {
             Option::Some(Asset) => {
                 asset + sender_deposit.unwrap()
             },
@@ -113,17 +111,18 @@ impl EnglishAuction for Contract {
 
         // Make sure this is greater than inital bid if no bid has been placed
         if (auction.buy_asset.amount() == 0) {
-            require(total_bid_asset.amount() >= auction.inital_price, InputError::InitalPriceNotMet);
+            require(total_bid.amount() >= auction.inital_price, InputError::InitalPriceNotMet);
         }
 
         // Make sure this bid plus the previously placed bids are more than the current bid
-        require(total_bid_asset.amount() > auction.buy_asset.amount(), InputError::IncorrectAmountProvided);
+        require(total_bid.amount() > auction.buy_asset.amount(), InputError::IncorrectAmountProvided);
 
         // Check to see if we've reached the reserve price if there is one
         let reserve: Option<u64> = auction.reserve_price;
         if (reserve.is_some()) {
-            require(reserve.unwrap() >= total_bid_asset.amount(), InputError::IncorrectAmountProvided);
-            if (reserve.unwrap() == total_bid_asset.amount()) {
+            // The bid cannot be greater than the reserve price
+            require(reserve.unwrap() >= total_bid.amount(), InputError::IncorrectAmountProvided);
+            if (reserve.unwrap() == total_bid.amount()) {
                 // The reserve price was met
                 auction.state = State::Closed;
             }
@@ -143,7 +142,7 @@ impl EnglishAuction for Contract {
 
         // Update the auction's information
         auction.highest_bidder = Option::Some(sender);
-        auction.buy_asset = total_bid_asset;
+        auction.buy_asset = total_bid;
 
         // Store the new auction information and the user's deposit
         storage.deposits.insert((sender, auction_id), Option::Some(auction.buy_asset));
@@ -155,8 +154,8 @@ impl EnglishAuction for Contract {
         });
     }
 
-    /// Cancels the specified auction. Once the auction has been canceled
-    /// users will be able to withdraw their original deposits.
+    /// Cancels the specified auction. Once the auction has been canceled user will be able to
+    /// withdraw their original deposits.
     ///
     /// # Arguments
     ///
@@ -181,13 +180,14 @@ impl EnglishAuction for Contract {
         auction.state = State::Closed;
         storage.auctions.insert(auction_id, Option::Some(auction));
 
+        // Log that the auction was canceled
         log(AuctionCancelEvent {
             auction, auction_id
         });
     }
 
-    /// Starts an auction with a seller, selling asset, buying asset,
-    /// prices, and length of the auction.
+    /// Starts an auction with a seller, selling asset, buying asset, prices, and length of the
+    /// auction. This function will return a `u64` for the created auction's ID number.
     ///
     /// # Arguments
     ///
@@ -213,10 +213,12 @@ impl EnglishAuction for Contract {
     /// * When the auction contract is not approved to transfer the NFT's provided in the
     ///   `sell_asset` struct.
     #[storage(read, write)]fn constructor(seller: Identity, sell_asset: Asset, buy_asset: Asset, inital_price: u64, reserve_price: u64, time: u64) -> u64 {
+        // Either there is no reserve price or the reserve must be greater than the inital price
         require((reserve_price >= inital_price && reserve_price != 0) || reserve_price == 0, InitError::ReserveLessThanInitalPrice);
+        // The auction must last for some time
         require(time != 0, InitError::AuctionTimeNotProvided);
 
-        // If this is an NFT to be auctioned we don't have to worry about msg_amount
+        // Ensure that the `sell_asset` struct and what was sent in the transaction match
         match sell_asset {
             Asset::TokenAsset(asset) => {
                 // Selling tokens
@@ -229,10 +231,10 @@ impl EnglishAuction for Contract {
                 let sender = sender_identity();
                 require(owns_nft(sender, asset), AccessError::NFTTransferNotApproved);
 
-                // Ensure that the auction contract and transfer the NFTs' ownerships to itself
+                // Ensure that the auction contract can transfer the NFT tokens to itself
                 require(approved_for_nft_transfer(sender, Identity::ContractId(contract_id()), asset), AccessError::NFTTransferNotApproved);
 
-                // Transfer NFT to this contract
+                // Transfer NFT tokens to this contract
                 transfer_nft(seller, Identity::ContractId(contract_id()), asset);
             }
         }
@@ -281,8 +283,11 @@ impl EnglishAuction for Contract {
     //     storage.deposits.get((identity, auction_id))
     // }
 
-    /// Allows the users to withdraw their assets if the auction has gone over time, been bought
-    /// outright, or been canceled.
+    /// Allows users to withdraw their assets if the auction has gone over time, the reserve has
+    /// been met, or been canceled. If there is a winning bidder, the winning bidder will withdraw
+    /// the `sell_asset`, the failed bidders will withdraw their original deposit, and the seller
+    /// will withdraw the winning bidder's deposit. If there is no winning bidder or the auction
+    /// was canceled, the seller and bidder will withdraw their original deposits.
     ///
     /// # Arguments
     ///
@@ -300,7 +305,7 @@ impl EnglishAuction for Contract {
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
         let mut auction = auction.unwrap();
 
-        // Cannot withdraw if the auction is over
+        // Cannot withdraw if the auction is still on going
         require(auction.state == State::Closed || height() >= auction.end_block, AccessError::AuctionIsNotClosed);
 
         // If time has run out set the contract state to closed
@@ -317,20 +322,17 @@ impl EnglishAuction for Contract {
         // Make sure the sender still has something to withdraw
         require(sender_deposit.is_some(), UserError::UserHasAlreadyWithdrawn);
         storage.deposits.insert((sender, auction_id), Option::None());
-        let mut withdrawnAsset = sender_deposit.unwrap();
+        let mut withdrawn_asset = sender_deposit.unwrap();
 
         // Go ahead and withdraw
-        if (bidder.is_some() && sender == bidder.unwrap()) {
-            // The buyer is withdrawing
+        if ((bidder.is_some() && sender == bidder.unwrap()) || sender == auction.seller) {
+            // The buyer is withdrawing or the seller is withdrawing and no one placed a bid
             transfer_asset(sender, auction.sell_asset);
-            withdrawnAsset = auction.sell_asset;
-        } else if (sender == auction.seller && bidder.is_none()) {
-            // The seller is withdrawing and no one placed a bid
-            transfer_asset(sender, auction.sell_asset);
-            withdrawnAsset = auction.sell_asset;
-        } else if (sender == auction.seller && bidder.is_some()) {
+            withdrawn_asset = auction.sell_asset;
+        } else if (sender == auction.seller) {
+            // The seller is withdrawing and there was a winning bidder
             transfer_asset(sender, auction.buy_asset);
-            withdrawnAsset = auction.buy_asset;
+            withdrawn_asset = auction.buy_asset;
         } else {
             // Anyone with a failed bid is withdrawing
             transfer_asset(sender, sender_deposit.unwrap());
@@ -338,7 +340,7 @@ impl EnglishAuction for Contract {
 
         // Log the withdrawal
         log(WithdrawEvent {
-            asset: withdrawnAsset, auction_id, identity: sender
+            asset: withdrawn_asset, auction_id, identity: sender
         });
     }
 
