@@ -411,7 +411,7 @@ mod vote {
     }
 }
 
-mod execute_proposal {
+mod execute {
     use super::*;
 
     mod success {
