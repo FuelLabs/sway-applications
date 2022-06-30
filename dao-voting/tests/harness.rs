@@ -723,7 +723,15 @@ mod balance {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
+            assert_eq!(
+                balance(&user).await,
+                0
+            );
             deposit(&user, tx_params, call_params).await;
+            assert_eq!(
+                balance(&user).await,
+                asset_amount
+            );
         }
     }
 }
