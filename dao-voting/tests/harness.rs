@@ -464,7 +464,7 @@ mod vote {
         #[tokio::test]
         #[should_panic]
         async fn panics_on_zero_vote_amount() {
-            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
@@ -515,7 +515,7 @@ mod execute {
     use super::*;
 
     mod success {
-        use super::*;
+        //use super::*;
 
         // TODO: uncomment this test once more support is added for the CALL opcode
         // #[tokio::test]
@@ -806,7 +806,7 @@ mod user_votes {
         #[tokio::test]
         #[should_panic]
         pub async fn panics_on_invalid_proposal_id() {
-            let (_gov_token, _gov_token_id, _deployer, user, asset_amount) = setup().await;
+            let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
             user_votes(&user, Identity::Address(user.wallet.address()), 0).await;
         }
     }
@@ -849,7 +849,7 @@ mod governance_token_id {
 
         #[tokio::test]
         pub async fn user_can_get_governance_token_id() {
-            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
             assert_eq!(governance_token_id(&deployer).await, gov_token_id);
         }
@@ -861,7 +861,7 @@ mod governance_token_id {
         #[tokio::test]
         #[should_panic]
         pub async fn panics_on_not_inialized() {
-            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+            let (_gov_token, _gov_token_id, deployer, _user, _asset_amount) = setup().await;
             governance_token_id(&deployer).await;
         }
     }
