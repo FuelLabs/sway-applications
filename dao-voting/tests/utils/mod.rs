@@ -14,8 +14,8 @@ pub struct Metadata {
 }
 
 pub mod abi_calls {
-    use super::{test_helpers::proposal, *};
-
+    use super::*;
+    
     pub async fn constructor(user: &Metadata, token: ContractId) {
         user.dao_voting
             .constructor(token)
@@ -165,7 +165,7 @@ pub mod test_helpers {
             .value
     }
 
-    pub fn proposal(asset_id: ContractId) -> Proposal {
+    pub fn proposal_transaction(asset_id: ContractId) -> Proposal {
         let call_data = CallData {
             id: asset_id,
             function_selector: 0,

@@ -7,7 +7,7 @@ use utils::{
         balance, constructor, create_proposal, deposit, execute, unlock_votes, user_balance,
         user_votes, vote, withdraw,
     },
-    test_helpers::{mint, proposal, setup},
+    test_helpers::{mint, proposal_transaction, setup},
     GovToken, Identity, ProposalInfo,
 };
 
@@ -56,7 +56,7 @@ mod create_proposal {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
 
             assert_eq!(
@@ -77,7 +77,7 @@ mod create_proposal {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
             assert_eq!(
                 user.dao_voting.proposal(0).call().await.unwrap().value,
@@ -122,7 +122,7 @@ mod create_proposal {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&deployer, 10, 0, proposal_transaction.clone()).await;
         }
 
@@ -132,7 +132,7 @@ mod create_proposal {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&deployer, 0, 10, proposal_transaction.clone()).await;
         }
 
@@ -142,7 +142,7 @@ mod create_proposal {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&deployer, 101, 10, proposal_transaction.clone()).await;
         }
     }
@@ -369,7 +369,7 @@ mod vote {
             );
             deposit(&user, tx_params, call_params).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
 
             vote(&user, true, 0, asset_amount / 4).await;
@@ -418,7 +418,7 @@ mod vote {
             );
             deposit(&user, tx_params, call_params).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
 
             vote(&user, true, 0, asset_amount / 4).await;
@@ -467,7 +467,7 @@ mod vote {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
             vote(&user, true, 0, 0).await;
         }
@@ -485,7 +485,7 @@ mod vote {
             )
             .await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 1, 1, proposal_transaction.clone()).await;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
@@ -504,7 +504,7 @@ mod vote {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
             vote(&user, true, 10, asset_amount).await;
         }
@@ -572,7 +572,7 @@ mod execute {
             );
             deposit(&user, tx_params, call_params).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 10, 100, proposal_transaction.clone()).await;
             vote(&user, true, 0, asset_amount / 2).await;
 
@@ -600,7 +600,7 @@ mod execute {
             );
             deposit(&user, tx_params, call_params).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 10, 100, proposal_transaction.clone()).await;
             vote(&user, false, 0, asset_amount / 2).await;
 
@@ -635,7 +635,7 @@ mod unlock_votes {
             );
             deposit(&user, tx_params, call_params).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 1, 1, proposal_transaction.clone()).await;
             vote(&user, true, 0, asset_amount / 2).await;
 
@@ -685,7 +685,7 @@ mod unlock_votes {
             );
             deposit(&user, tx_params, call_params).await;
 
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 10, 100, proposal_transaction.clone()).await;
             vote(&user, true, 0, asset_amount / 2).await;
             unlock_votes(&user, 0).await;
@@ -786,7 +786,7 @@ mod user_votes {
                 Some(100_000),
             );
             deposit(&user, tx_params, call_params).await;
-            let proposal_transaction = proposal(gov_token_id);
+            let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user, 10, 10, proposal_transaction).await;
             assert_eq!(
                 user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
