@@ -646,15 +646,12 @@ mod unlock_votes {
             vote(&user, true, 0, asset_amount / 2).await;
 
             assert_eq!(
-                user.dao_voting.proposal(0).call().await.unwrap().value,
-                ProposalInfo {
-                    author: Identity::Address(user.wallet.address()),
-                    yes_votes: 5,
-                    no_votes: 0,
-                    proposal_transaction,
-                    deadline: 6,
-                    acceptance_percentage: 1
-                }
+                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                asset_amount / 2
+            );
+            assert_eq!(
+                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                asset_amount / 2
             );
 
             unlock_votes(&user, 0).await;
@@ -662,6 +659,10 @@ mod unlock_votes {
             assert_eq!(
                 user_balance(&user, Identity::Address(user.wallet.address())).await,
                 asset_amount
+            );
+            assert_eq!(
+                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                0
             );
         }
     }
