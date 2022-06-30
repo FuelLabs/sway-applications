@@ -124,14 +124,12 @@ mod deposit {
         async fn user_can_deposit() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
-            assert!(
-                mint(
-                    &deployer.gov_token.as_ref().unwrap(),
-                    100,
-                    user.wallet.address()
-                )
-                .await
-            );
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
 
             constructor(&deployer, gov_token_id).await;
 
@@ -170,14 +168,12 @@ mod deposit {
         async fn panics_with_incorrect_amount() {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
 
-            assert!(
-                mint(
-                    &deployer.gov_token.as_ref().unwrap(),
-                    100,
-                    user.wallet.address()
-                )
-                .await
-            );
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
 
             constructor(&deployer, gov_token_id).await;
 
@@ -193,15 +189,12 @@ mod deposit {
         async fn panics_when_not_initialized() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
-            assert!(
-                mint(
-                    &deployer.gov_token.as_ref().unwrap(),
-                    100,
-                    user.wallet.address()
-                )
-                .await
-            );
-
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
                 Some(asset_amount),
@@ -228,7 +221,7 @@ mod deposit {
             let another_asset =
                 GovToken::new(another_asset_id.to_string(), deployer.wallet.clone());
 
-            assert!(mint(&another_asset, 100, user.wallet.address()).await);
+            mint(&another_asset, 100, user.wallet.address()).await;
 
             constructor(&deployer, gov_token_id).await;
 
@@ -253,14 +246,12 @@ mod withdraw {
         async fn user_can_withdraw() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
-            assert!(
-                mint(
-                    &deployer.gov_token.as_ref().unwrap(),
-                    100,
-                    user.wallet.address()
-                )
-                .await
-            );
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
 
             constructor(&deployer, gov_token_id).await;
 
@@ -308,14 +299,12 @@ mod withdraw {
         async fn panics_on_not_enough_assets() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
-            assert!(
-                mint(
-                    &deployer.gov_token.as_ref().unwrap(),
-                    100,
-                    user.wallet.address()
-                )
-                .await
-            );
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
 
             constructor(&deployer, gov_token_id).await;
 
@@ -360,14 +349,12 @@ mod vote {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            assert!(
-                mint(
-                    &deployer.gov_token.as_ref().unwrap(),
-                    100,
-                    user.wallet.address()
-                )
-                .await
-            );
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
@@ -417,14 +404,12 @@ mod vote {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            assert!(
-                mint(
-                    &deployer.gov_token.as_ref().unwrap(),
-                    100,
-                    user.wallet.address()
-                )
-                .await
-            );
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
 
             let proposal_transaction = proposal(gov_token_id);
             create_proposal(&user, 1, 1, proposal_transaction.clone()).await;
@@ -452,14 +437,12 @@ mod execute_proposal {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            assert!(
-                mint(
-                    &deployer.gov_token.as_ref().unwrap(),
-                    100,
-                    user.wallet.address()
-                )
-                .await
-            );
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
@@ -501,14 +484,12 @@ mod unlock_votes {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
-            assert!(
-                mint(
-                    &deployer.gov_token.as_ref().unwrap(),
-                    100,
-                    user.wallet.address()
-                )
-                .await
-            );
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
