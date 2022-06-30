@@ -71,6 +71,39 @@ mod create_proposal {
                 }
             );
         }
+
+        #[tokio::test]
+        async fn user_can_create_multiple_proposals() {
+            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
+
+            let proposal_transaction = proposal(gov_token_id);
+            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
+            assert_eq!(
+                user.dao_voting.proposal(0).call().await.unwrap().value,
+                ProposalInfo {
+                    author: Identity::Address(user.wallet.address()),
+                    yes_votes: 0,
+                    no_votes: 0,
+                    acceptance_percentage: 10,
+                    proposal_transaction: proposal_transaction.clone(),
+                    deadline: 13,
+                }
+            );
+
+            create_proposal(&user, 20, 20, proposal_transaction.clone()).await;
+            assert_eq!(
+                user.dao_voting.proposal(1).call().await.unwrap().value,
+                ProposalInfo {
+                    author: Identity::Address(user.wallet.address()),
+                    yes_votes: 0,
+                    no_votes: 0,
+                    acceptance_percentage: 20,
+                    proposal_transaction: proposal_transaction.clone(),
+                    deadline: 25,
+                }
+            );
+        }
     }
 
     mod revert {
