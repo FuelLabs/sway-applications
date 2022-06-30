@@ -118,7 +118,7 @@ mod create_proposal {
 
         #[tokio::test]
         #[should_panic]
-        async fn panics_with_incorrect_deadline_period() {
+        async fn panics_with_incorrect_deadline() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
