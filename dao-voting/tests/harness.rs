@@ -1,6 +1,10 @@
 mod utils;
 
-use fuels::{signers::Signer, tx::{AssetId, Salt}, prelude::{TxParameters, Contract, CallParameters}};
+use fuels::{
+    prelude::{CallParameters, Contract, TxParameters},
+    signers::Signer,
+    tx::{AssetId, Salt},
+};
 
 use utils::{
     abi_calls::{
