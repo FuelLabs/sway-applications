@@ -15,19 +15,13 @@ use std::{
 };
 
 /// This function returns the hash of a claim struct
-pub fn create_hash(identity: Identity, amount: u64) -> b256 {
+pub fn create_claim_hash(identity: Identity, amount: u64) -> b256 {
     sha256(Claim {
         identity, amount
     })
 }
 
-/// Calls a token contract and mints to an address
-pub fn mint(token: ContractId, to: Identity, amount: u64) {
-    let token_abi = abi(Token, token.value);
-    token_abi.mint_to(to, amount);
-}
-
-pub fn verify(merkleRoot: b256, merkleLeaf: b256, proof: Vec<b256>) -> bool {
+pub fn verify_merkle_proof(merkleRoot: b256, merkleLeaf: b256, proof: Vec<b256>) -> bool {
     let mut computedHash = merkleLeaf;
     let mut index = 0;
 
@@ -39,7 +33,7 @@ pub fn verify(merkleRoot: b256, merkleLeaf: b256, proof: Vec<b256>) -> bool {
             Option::Some(b256) => proofElement.unwrap(), Option::None(b256) => revert(0), 
         };
 
-        if (computedHash < proofElement) {
+        if (computedHash <= proofElement) {
             // Hash(current computed hash + current element of the proof)
             computedHash = sha256(computedHash, proofElement);
         } else {
