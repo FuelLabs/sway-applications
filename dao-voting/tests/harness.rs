@@ -84,7 +84,7 @@ mod create_proposal {
 
         #[tokio::test]
         #[should_panic]
-        async fn panics_with_incorrect_voting_period() {
+        async fn panics_with_incorrect_deadline_period() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
@@ -165,27 +165,6 @@ mod deposit {
 
         #[tokio::test]
         #[should_panic]
-        async fn panics_with_incorrect_amount() {
-            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
-
-            mint(
-                &deployer.gov_token.as_ref().unwrap(),
-                100,
-                user.wallet.address(),
-            )
-            .await;
-
-            constructor(&deployer, gov_token_id).await;
-
-            assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-            let call_params =
-                CallParameters::new(Some(0), Some(AssetId::from(*gov_token_id)), Some(100_000));
-            deposit(&user, tx_params, call_params).await;
-        }
-
-        #[tokio::test]
-        #[should_panic]
         async fn panics_when_not_initialized() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
@@ -231,6 +210,27 @@ mod deposit {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
+            deposit(&user, tx_params, call_params).await;
+        }
+
+        #[tokio::test]
+        #[should_panic]
+        async fn panics_with_incorrect_amount() {
+            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
+
+            constructor(&deployer, gov_token_id).await;
+
+            assert_eq!(deployer.dao_voting.balance().call().await.unwrap().value, 0);
+            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            let call_params =
+                CallParameters::new(Some(0), Some(AssetId::from(*gov_token_id)), Some(100_000));
             deposit(&user, tx_params, call_params).await;
         }
     }
@@ -389,7 +389,7 @@ mod vote {
 
         #[tokio::test]
         #[should_panic]
-        async fn panics_on_not_enough_votes() {
+        async fn panics_on_invalid_vote_amount() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
             constructor(&deployer, gov_token_id).await;
 
@@ -422,6 +422,17 @@ mod vote {
             );
             deposit(&user, tx_params, call_params).await;
             vote(&user, true, 0, asset_amount / 4).await;
+        }
+    
+        #[tokio::test]
+        #[should_panic]
+        async fn panics_on_not_enough_balance() {
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
+
+            let proposal_transaction = proposal(gov_token_id);
+            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
+            vote(&user, true, 10, asset_amount / 4).await;
         }
     }
 }
