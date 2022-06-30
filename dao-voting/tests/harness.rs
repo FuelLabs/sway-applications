@@ -123,7 +123,7 @@ mod create_proposal {
             constructor(&deployer, gov_token_id).await;
 
             let proposal_transaction = proposal(gov_token_id);
-            create_proposal(&deployer, 0, 10, proposal_transaction.clone()).await;
+            create_proposal(&deployer, 10, 0, proposal_transaction.clone()).await;
         }
 
         #[tokio::test]
@@ -133,7 +133,7 @@ mod create_proposal {
             constructor(&deployer, gov_token_id).await;
 
             let proposal_transaction = proposal(gov_token_id);
-            create_proposal(&deployer, 10, 0, proposal_transaction.clone()).await;
+            create_proposal(&deployer, 0, 10, proposal_transaction.clone()).await;
         }
 
         #[tokio::test]
