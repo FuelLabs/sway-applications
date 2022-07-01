@@ -8,17 +8,13 @@ use std::{
     contract_id::ContractId,
     identity::Identity,
     option::Option,
+    revert::revert,
     storage::StorageMap,
 };
 
 pub enum Asset {
     NFTAsset: NFTAsset,
     TokenAsset: TokenAsset,
-}
-
-pub enum State {
-    Closed: (),
-    Open: (),
 }
 
 pub struct Auction {
@@ -32,13 +28,13 @@ pub struct Auction {
     /// The block at which the auction should end
     end_block: u64,
     /// The starting price for the auction to start. This can be 0.
-    inital_price: u64,
+    initial_price: u64,
     /// The reserve price for the auction. When this amount is met, the auction will automatically
     /// close and the `sell_asset` will be sold.
     reserve_price: Option<u64>,
     /// The asset that is being auctioned off. This can be a native token or an NFT.
     sell_asset: Asset,
-    /// The `Identity` of the seller or owner of the auction. Only the seller can cancel an auction.
+    /// The `Identity` of the seller of the auction. Only the seller can cancel an auction.
     seller: Identity,
     /// The state of the auction describing if it is open or closed.
     state: State,
@@ -52,19 +48,24 @@ pub struct NFTAsset {
     token_ids: u64,
 }
 
-pub struct TokenAsset {
-    /// The amount of the native asset that the struct is representing.
-    amount: u64,
-    /// The `ContractId` of the native asset that the struct is representing.
-    contract_id: ContractId,
-}
-
 pub trait ReturnsAmount {
     pub fn amount(self) -> u64;
 }
 
 pub trait ReturnsContractId {
     pub fn contract_id(self) -> ContractId;
+}
+
+pub enum State {
+    Closed: (),
+    Open: (),
+}
+
+pub struct TokenAsset {
+    /// The amount of the native asset that the struct is representing.
+    amount: u64,
+    /// The `ContractId` of the native asset that the struct is representing.
+    contract_id: ContractId,
 }
 
 impl core::ops::Add for Asset {
@@ -85,33 +86,6 @@ impl core::ops::Add for Asset {
             },
             _ => {
                 self
-            },
-        }
-    }
-}
-
-impl ReturnsAmount for Asset {
-    pub fn amount(self) -> u64 {
-        match self {
-            Asset::NFTAsset(nft_asset) => {
-                // TODO: Return Vec length
-                1
-            },
-            Asset::TokenAsset(token_asset) => {
-                token_asset.amount
-            },
-        }
-    }
-}
-
-impl ReturnsContractId for Asset {
-    pub fn contract_id(self) -> ContractId {
-        match self {
-            Asset::NFTAsset(nft_asset) => {
-                nft_asset.contract_id
-            },
-            Asset::TokenAsset(token_asset) => {
-                token_asset.contract_id
             },
         }
     }
@@ -191,6 +165,33 @@ impl core::ops::Subtract for Asset {
             },
             _ => {
                 self
+            },
+        }
+    }
+}
+
+impl ReturnsAmount for Asset {
+    pub fn amount(self) -> u64 {
+        match self {
+            Asset::NFTAsset(nft_asset) => {
+                // TODO: Return Vec length
+                1
+            },
+            Asset::TokenAsset(token_asset) => {
+                token_asset.amount
+            },
+        }
+    }
+}
+
+impl ReturnsContractId for Asset {
+    pub fn contract_id(self) -> ContractId {
+        match self {
+            Asset::NFTAsset(nft_asset) => {
+                nft_asset.contract_id
+            },
+            Asset::TokenAsset(token_asset) => {
+                token_asset.contract_id
             },
         }
     }

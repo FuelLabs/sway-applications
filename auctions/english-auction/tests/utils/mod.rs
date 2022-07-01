@@ -152,7 +152,7 @@ pub mod abi_calls {
 
         seller
             .auction
-            .constructor(
+            .create(
                 englishauction_mod::Identity::Address(seller.wallet.address()),
                 sell_asset_struct,
                 buy_asset_struct,
@@ -183,7 +183,7 @@ pub mod abi_calls {
     ) -> u64 {
         seller
             .auction
-            .constructor(
+            .create(
                 englishauction_mod::Identity::Address(seller.wallet.address()),
                 sell_asset_struct,
                 buy_asset_struct,
@@ -271,7 +271,7 @@ pub mod abi_calls {
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
     // pub async fn deposits(call_wallet: &Metadata, auction_id: u64) -> englishauction_mod::Option {
-    //     call_wallet.auction.deposits(auction_id).call().await.unwrap().value
+    //     call_wallet.auction.deposit(auction_id).call().await.unwrap().value
     // }
 
     // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved

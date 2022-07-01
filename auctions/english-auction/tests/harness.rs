@@ -3,10 +3,10 @@ mod utils;
 use utils::{
     abi_calls::{
         // auction_end_block,
-        bid_nft,
+        // bid_nft,
         bid_tokens,
         // current_bid,
-        init_nft,
+        // init_nft,
         init_token,
         total_auctions,
         // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved

@@ -17,11 +17,11 @@ pub enum InitError {
     AuctionTimeNotProvided: (),
     BuyAssetNotProvided: (),
     CannotReinitialize: (),
-    ReserveLessThanInitalPrice: (),
+    ReserveLessThanInitialPrice: (),
 }
 
 pub enum InputError {
-    InitalPriceNotMet: (),
+    InitialPriceNotMet: (),
     IncorrectAssetProvided: (),
     IncorrectAmountProvided: (),
 }

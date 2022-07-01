@@ -5,24 +5,22 @@ dep data_structures;
 use data_structures::{Asset, Auction};
 use std::identity::Identity;
 
-pub struct AuctionCancelEvent {
-    auction: Auction,
+pub struct CancelAuctionEvent {
     auction_id: u64,
 }
 
-pub struct AuctionStartEvent {
-    auction: Auction,
+pub struct CreateAuctionEvent {
     auction_id: u64,
 }
 
 pub struct BidEvent {
-    asset: Asset,
+    amount: u64,
     auction_id: u64,
     identity: Identity,
 }
 
 pub struct WithdrawEvent {
-    asset: Asset,
+    amount: u64,
     auction_id: u64,
     identity: Identity,
 }

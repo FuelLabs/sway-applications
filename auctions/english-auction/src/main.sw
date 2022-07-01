@@ -9,7 +9,7 @@ dep utils;
 use abi::{EnglishAuction, NFT};
 use data_structures::{Asset, Auction, State};
 use errors::{AccessError, InitError, InputError, UserError};
-use events::{AuctionCancelEvent, AuctionStartEvent, BidEvent, WithdrawEvent};
+use events::{CancelAuctionEvent, CreateAuctionEvent, BidEvent, WithdrawEvent};
 use utils::{
     approved_for_nft_transfer,
     owns_nft,
@@ -58,7 +58,7 @@ impl EnglishAuction for Contract {
 
     /// Places a bid on the auction specified. A correctly structured `Asset` struct must be
     /// provided. A bid is only valid if it is greater than the last bid or greater than the
-    /// inital_price. If the reserve price is met, the auction will end.
+    /// initial_price. If the reserve price is met, the auction will end.
     ///
     /// # Arguments
     ///
@@ -76,7 +76,7 @@ impl EnglishAuction for Contract {
     /// * When the auction contract does not have permission to transfer the NFT to it's ownership.
     /// * When the bidder/sender is the auction's `seller`.
     /// * When the total of previous plus this bid is greater than the reserve price.
-    /// * When the `asset` `amount` provided is less than the inital price if there are no bids.
+    /// * When the `asset` `amount` provided is less than the initial price if there are no bids.
     /// * When the total of previous plus this bid amounts are not greater than the current bid
     ///   amount.
     #[storage(read, write)]fn bid(auction_id: u64, asset: Asset) {
@@ -109,9 +109,9 @@ impl EnglishAuction for Contract {
             }
         };
 
-        // Make sure this is greater than inital bid if no bid has been placed
+        // Make sure this is greater than initial bid if no bid has been placed
         if (auction.buy_asset.amount() == 0) {
-            require(total_bid.amount() >= auction.inital_price, InputError::InitalPriceNotMet);
+            require(total_bid.amount() >= auction.initial_price, InputError::InitialPriceNotMet);
         }
 
         // Make sure this bid plus the previously placed bids are more than the current bid
@@ -150,7 +150,7 @@ impl EnglishAuction for Contract {
 
         // Log the bid
         log(BidEvent {
-            asset: auction.buy_asset, auction_id: auction_id, identity: sender
+            amount: auction.buy_asset.amount(), auction_id: auction_id, identity: sender
         });
     }
 
@@ -165,7 +165,7 @@ impl EnglishAuction for Contract {
     ///
     /// * When the `auction_id` does not map to an existing auction.
     /// * When the `sender` is not the `seller` of the auction.
-    #[storage(read, write)]fn cancel_auction(auction_id: u64) {
+    #[storage(read, write)]fn cancel(auction_id: u64) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -181,8 +181,8 @@ impl EnglishAuction for Contract {
         storage.auctions.insert(auction_id, Option::Some(auction));
 
         // Log that the auction was canceled
-        log(AuctionCancelEvent {
-            auction, auction_id
+        log(CancelAuctionEvent {
+            auction_id
         });
     }
 
@@ -197,13 +197,13 @@ impl EnglishAuction for Contract {
     ///                off.
     /// `buy_asset` - The `Asset` struct that contains the `contract_id` of the asset the seller is
     ///               willing to accept in return for the `sell_asset`.
-    /// `inital_price` - The starting price at which the auction should start.
+    /// `initial_price` - The starting price at which the auction should start.
     /// `reserve_price` - The price at which a buyer may purchase the `sell_asset` outright.
     /// `time` - The duration of the auction in number of blocks.
     ///
     /// # Reverts
     ///
-    /// * When the `inital_price` is higher than the `reserve_price` if a `reserve_price` is set.
+    /// * When the `initial_price` is higher than the `reserve_price` if a `reserve_price` is set.
     /// * When the `time` or duration of the auction is set to zero.
     /// * When the transaction's token amount tranfered is not the amount specified in the
     ///   `sell_asset` struct.
@@ -212,9 +212,9 @@ impl EnglishAuction for Contract {
     /// * When the `sender` is not the owner of the NFT's provided in the `sell_asset` struct.
     /// * When the auction contract is not approved to transfer the NFT's provided in the
     ///   `sell_asset` struct.
-    #[storage(read, write)]fn constructor(seller: Identity, sell_asset: Asset, buy_asset: Asset, inital_price: u64, reserve_price: u64, time: u64) -> u64 {
-        // Either there is no reserve price or the reserve must be greater than the inital price
-        require((reserve_price >= inital_price && reserve_price != 0) || reserve_price == 0, InitError::ReserveLessThanInitalPrice);
+    #[storage(read, write)]fn create(seller: Identity, sell_asset: Asset, buy_asset: Asset, initial_price: u64, reserve_price: u64, time: u64) -> u64 {
+        // Either there is no reserve price or the reserve must be greater than the initial price
+        require((reserve_price >= initial_price && reserve_price != 0) || reserve_price == 0, InitError::ReserveLessThanInitialPrice);
         // The auction must last for some time
         require(time != 0, InitError::AuctionTimeNotProvided);
 
@@ -249,7 +249,7 @@ impl EnglishAuction for Contract {
             buy_asset: buy_asset,
             highest_bidder: Option::None(),
             end_block: height() + time,
-            inital_price: inital_price,
+            initial_price: initial_price,
             reserve_price: reserve,
             sell_asset: sell_asset,
             seller: seller,
@@ -261,8 +261,8 @@ impl EnglishAuction for Contract {
         storage.auctions.insert(storage.total_auctions, Option::Some(auction));
 
         // Log the start of the new auction
-        log(AuctionStartEvent {
-            auction: auction, auction_id: storage.total_auctions
+        log(CreateAuctionEvent {
+            auction_id: storage.total_auctions
         });
 
         // Return the auction ID and increment the total auctions counter
@@ -279,7 +279,7 @@ impl EnglishAuction for Contract {
     /// * `identity` - The `Identity` of the user which has deposited assets
     /// * `auction_id` - The `u64` id number of the auction.
     // #[storage(read)]
-    // fn deposits(identity: Identity, auction_id: u64) -> Option<Asset> {
+    // fn deposit(identity: Identity, auction_id: u64) -> Option<Asset> {
     //     storage.deposits.get((identity, auction_id))
     // }
 
@@ -340,7 +340,7 @@ impl EnglishAuction for Contract {
 
         // Log the withdrawal
         log(WithdrawEvent {
-            asset: withdrawn_asset, auction_id, identity: sender
+            amount: withdrawn_asset.amount(), auction_id, identity: sender
         });
     }
 
