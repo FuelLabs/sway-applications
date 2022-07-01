@@ -767,7 +767,7 @@ mod unlock_votes {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
