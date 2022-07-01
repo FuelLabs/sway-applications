@@ -88,11 +88,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn approve(
-        contract: &Nft,
-        approved: &Option,
-        token_id: u64,
-    ) -> CallResponse<()> {
+    pub async fn approve(contract: &Nft, approved: &Option, token_id: u64) -> CallResponse<()> {
         contract
             .approve(approved.clone(), token_id)
             .call()
@@ -118,12 +114,7 @@ pub mod abi_calls {
     }
 
     pub async fn approved(contract: &Nft, token_id: u64) -> Option {
-        contract
-            .approved(token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+        contract.approved(token_id).call().await.unwrap().value
     }
 
     pub async fn balance_of(contract: &Nft, wallet: &Identity) -> u64 {
@@ -149,12 +140,7 @@ pub mod abi_calls {
     }
 
     pub async fn owner_of(contract: &Nft, token_id: u64) -> Option {
-        contract
-            .owner_of(token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
+        contract.owner_of(token_id).call().await.unwrap().value
     }
 
     pub async fn total_supply(contract: &Nft) -> u64 {
