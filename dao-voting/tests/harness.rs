@@ -572,6 +572,8 @@ mod vote {
             create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
             vote(&user.dao_voting, true, 10, asset_amount).await;
         }
+
+        // TODO add test for reverting on a failed proposal call
     }
 }
 
