@@ -1,6 +1,6 @@
 library data_structures;
 
-use std::{contract_id::ContractId, identity::Identity};
+use std::{block::height, contract_id::ContractId, identity::Identity};
 use core::ops::Eq;
 
 struct CallData {
@@ -40,6 +40,19 @@ pub struct ProposalInfo {
     proposal_transaction: Proposal,
     /// The number of yes votes for a proposal
     yes_votes: u64,
+}
+
+impl ProposalInfo {
+    fn new(acceptance_percentage: u64, author: Identity, duration: u64, proposal_transaction: Proposal) -> Self {
+        ProposalInfo {
+            acceptance_percentage,
+            author,
+            deadline: height() + duration,
+            no_votes: 0,
+            proposal_transaction,
+            yes_votes: 0,
+        }
+    }
 }
 
 pub enum State {
