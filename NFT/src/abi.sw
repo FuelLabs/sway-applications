@@ -3,7 +3,7 @@ library abi;
 use std::{identity::Identity, option::Option};
 
 abi NFT {
-    #[storage(read, write)]fn approve(to: Identity, token_id: u64, approve: bool);
+    #[storage(read, write)]fn approve(approved: Option<Identity>, token_id: u64);
     #[storage(read)] fn approved(token_id: u64) -> Option<Identity>;
     #[storage(read)]fn balance_of(owner: Identity) -> u64;
     #[storage(read, write)]fn burn(token_id: u64);

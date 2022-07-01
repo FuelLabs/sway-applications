@@ -23,41 +23,42 @@ use std::{
 };
 
 storage {
-    /// Determines if only the admin is allowed to call the mint function
-    /// Only set on the initalization of the contract
+    /// Determines if only the `admin` is allowed to call the mint function.
+    /// Only set on the initalization of the contract.
     access_control: bool,
 
-    /// Stores the identity that has permission to mint if `access_control` is set
+    /// Stores the `Identity` that has permission to mint if `access_control` is set to true.
+    /// Only the `admin` is allowed to change the `admin` of the contract.
     admin: Identity,
 
-    /// Used of O(1) lookup of the number of tokens owned by each Identity
-    /// This increments or decrements when minting, transfer of ownership, and burning of tokens
+    /// Used of O(1) lookup of the number of tokens owned by each `Identity`.
+    /// This increments or decrements when minting, transfering ownership, and burning tokens.
     /// Map(Identity => balance)
     balances: StorageMap<Identity,
-    u64>, /// Stores the Metadata for each token based on token id
+    u64>, /// Stores the `Metadata` for each token based on the token's `u64` id
     /// Map(token_id => Metadata)
     meta_data: StorageMap<u64,
-    Option<MetaData>>, /// Maps a b256 hash of the (owner, operator) identities and stores whether the
-    /// operator is allowed to transfer ALL tokens on the owner's behalf
+    Option<MetaData>>, /// Maps a `b256` hash of the (owner, operator) identities and stores whether the
+    /// operator is allowed to transfer ALL tokens on the owner's behalf.
     /// Map(hash => approved)
     operator_approval: StorageMap<b256,
-    bool>, /// The total number of tokens that have been minted
-    /// This should only be incremented
+    bool>, /// The total number of tokens that have been minted.
+    /// This should only be incremented.
     token_count: u64,
 
-    /// The total supply tokens that can be minted. Can only be set
-    /// on the initalization of the contract
+    /// The total supply tokens that can be minted. Can only be set on the initalization of the
+    /// contract. This will decrement when a token is burned.
     token_supply: u64,
 }
 
 impl NFT for Contract {
-    /// Constructor for the NFT. Calling this function will instantiate the total supply, the admin
-    /// `Identity`, and whether access control is enabled. These values can only be set once.
-    /// Before this function is called the contract will not allow any minting or transfering of tokens.
+    /// Constructor for the NFT. Calling this function will instantiate the `total_supply`, the `admin`
+    /// `Identity`, and the `access_control` boolean. These values can only be set once.
+    /// Before this function is called, the contract is unable to perform any minting or transfering of tokens.
     ///
     /// # Arguments
     ///
-    /// * `admin` - The `Identity` which has the ability to mint if `access_control` is set and change the contract's admin.
+    /// * `admin` - The `Identity` which has the ability to mint if `access_control` is set to true and change the contract's admin.
     /// * `access_control` - The `bool` which will determine whether identities will need to approval to mint.
     /// * `token_supply` - The total supply of tokens which will be allowed to mint.
     ///
@@ -78,7 +79,8 @@ impl NFT for Contract {
         storage.token_supply = token_supply;
     }
 
-    /// Mints a specified amount of tokens to the given `Identity`.
+    /// Mints a specified amount of tokens to the given `to` `Identity`. Once a token has been minted,
+    /// it can be transfered and burned. Calling this mint function will increment the `total_count`.
     ///
     /// # Arguments
     ///
@@ -111,11 +113,11 @@ impl NFT for Contract {
             // Increase the balance of the new owner
             storage.balances.insert(to, storage.balances.get(to) + 1);
 
-            // and the number of tokens minted in this transaction
-            index = index + 1;
-
             // Push to minted tokens Vec
             minted_tokens.push(storage.token_count);
+
+            // Increment the number of tokens minted in this transaction
+            index = index + 1;
         }
 
         log(MintEvent {
@@ -124,7 +126,7 @@ impl NFT for Contract {
     }
 
     /// Burns the specified token. When burned, the NFT Metadata of the token is set
-    /// to none. After the token has been burned, no one will be able to fetch any data
+    /// to `None`. After the token has been burned, no one will be able to fetch any data
     /// about this token or have control over it.
     ///
     /// # Arguments
@@ -137,12 +139,12 @@ impl NFT for Contract {
     /// * When sender is not the owner of the `token_id`.
     #[storage(read, write)]fn burn(token_id: u64) {
         // Ensure this is a valid token that has already been minted and exists
-        let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
+        let meta_data = storage.meta_data.get(token_id);
         require(meta_data.is_some(), InputError::TokenDoesNotExist);
 
         // Ensure the sender owns the token that is provided
         let sender = msg_sender().unwrap();
-        let meta_data: MetaData = meta_data.unwrap();
+        let meta_data = meta_data.unwrap();
         require(meta_data.owner == sender, AccessError::SenderNotOwner);
 
         // Burn this token by setting the `token_id` mapping to `None`
@@ -151,13 +153,20 @@ impl NFT for Contract {
         // Reduce the balance of tokens for the owner
         storage.balances.insert(sender, storage.balances.get(sender) - 1);
 
+        // Reduce the total supply
+        storage.token_supply = storage.token_supply - 1;
+
         // Log the burn event
         log(BurnEvent {
             owner: sender, token_id
         });
     }
 
-    /// Transfers ownership of the token from one `Identity` to another.
+    /// Transfers ownership of the token from one `Identity` to another. Transfers can occur under
+    /// one of three conditions:
+    /// 1. The token's owner is transfering the token.
+    /// 2. The token's approved is transfering the token.
+    /// 3. The token's owner has an operator and is transfering the token.
     ///
     /// # Arguments
     ///
@@ -173,7 +182,7 @@ impl NFT for Contract {
     /// * When the sender is not approved to transfer all tokens on the owner's behalf.
     #[storage(read, write)]fn transfer_from(from: Identity, to: Identity, token_id: u64) {
         // Make sure the `token_id` maps to an existing token
-        let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
+        let meta_data = storage.meta_data.get(token_id);
         require(meta_data.is_some(), InputError::TokenDoesNotExist);
 
         // Ensure that the sender is either:
@@ -181,8 +190,8 @@ impl NFT for Contract {
         // 2. Approved for transfer of this `token_id`,
         // 3. Or an operator and the token is owned by the owner
         let sender = msg_sender().unwrap();
-        let mut meta_data: MetaData = meta_data.unwrap();
-        let approved: Option<Identity> = meta_data.approved;
+        let mut meta_data = meta_data.unwrap();
+        let approved = meta_data.approved;
         require(sender == meta_data.owner || (approved.is_some() && sender == approved.unwrap()) || (from == meta_data.owner && storage.operator_approval.get(sha256(from, sender))), AccessError::SenderNotOwnerOrApproved);
 
         // Set the new owner of the token and reset the approved Identity
@@ -202,7 +211,7 @@ impl NFT for Contract {
         });
     }
 
-    /// Gives approval to the 'to' Identity to transfer the specified token on the owner's behalf.
+    /// Gives approval to the 'to' `Identity` to transfer the specified token on the owner's behalf.
     ///
     /// # Arguments
     ///
@@ -215,29 +224,21 @@ impl NFT for Contract {
     /// * When `token_id` does not map to an existing token.
     /// * When the 'to' `Identity` is the owner.
     /// * When the sender is not the owner.
-    #[storage(read, write)]fn approve(approved: Identity, token_id: u64, approve: bool) {
+    #[storage(read, write)]fn approve(approved: Option<Identity>, token_id: u64) {
         // Ensure this  is a valid token
-        let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
+        let meta_data = storage.meta_data.get(token_id);
         require(meta_data.is_some(), InputError::TokenDoesNotExist);
 
         // The owner cannot approve themselves to also be the approver
-        let mut meta_data: MetaData = meta_data.unwrap();
-        require(meta_data.owner != approved, ApprovalError::ApproverCannotBeOwner);
+        let mut meta_data = meta_data.unwrap();
+        require(approved.is_none() || (meta_data.owner != approved.unwrap()), ApprovalError::ApproverCannotBeOwner);
 
         // Ensure that the sender is the owner of the token to be approved
         let sender = msg_sender().unwrap();
         require(meta_data.owner == sender, AccessError::SenderNotOwner);
 
-        // Set and store the approved Identity to the `to` address or to none
-        // based on the `approve` bool
-        match approve {
-            true => {
-                meta_data.approved = Option::Some(approved);
-            },
-            false => {
-                meta_data.approved = Option::None();
-            }
-        }
+        // Set and store the `approved` `Identity`
+        meta_data.approved = approved;
         storage.meta_data.insert(token_id, Option::Some(meta_data));
 
         // Log the approval event
@@ -297,7 +298,7 @@ impl NFT for Contract {
     ///
     /// * `token_id` - The id of the token which the approved `Identity` should be returned.
     #[storage(read)]fn approved(token_id: u64) -> Option<Identity> {
-        let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
+        let meta_data = storage.meta_data.get(token_id);
 
         match meta_data {
             Option::Some(MetaData) => {
@@ -343,13 +344,13 @@ impl NFT for Contract {
     ///
     /// * `token_id` - The `u64` id of the token.
     #[storage(read)]fn owner_of(token_id: u64) -> Option<Identity> {
-        let meta_data: Option<MetaData> = storage.meta_data.get(token_id);
+        let meta_data = storage.meta_data.get(token_id);
 
         match meta_data {
             Option::Some(MetaData) => {
                 // This token id maps to an existing token
                 // Return the owner of the token
-                let meta_data: MetaData = meta_data.unwrap();
+                let meta_data = meta_data.unwrap();
                 Option::Some(meta_data.owner)
             },
             Option::None(MetaData) => Option::None(), 

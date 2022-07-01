@@ -59,7 +59,7 @@ pub mod abi_calls {
 
     use super::*;
 
-    pub async fn init(
+    pub async fn constructor(
         deploy_wallet: &Metadata,
         owner: &Metadata,
         access_control: bool,
@@ -90,7 +90,7 @@ pub mod abi_calls {
         call_wallet.nft.burn(token_id).call().await.unwrap()
     }
 
-    pub async fn transfer(
+    pub async fn transfer_from(
         call_wallet: &Metadata,
         from: &Metadata,
         to: &Metadata,
@@ -114,16 +114,32 @@ pub mod abi_calls {
         token_id: u64,
         approve: bool,
     ) -> CallResponse<()> {
-        call_wallet
-            .nft
-            .approve(
-                nft_mod::Identity::Address(approved.wallet.address()),
-                token_id,
-                approve,
-            )
-            .call()
-            .await
-            .unwrap()
+        match approve {
+            true => {
+                call_wallet
+                    .nft
+                    .approve(
+                        nft_mod::Option::Some(
+                            nft_mod::Identity::Address(approved.wallet.address())
+                        ),
+                        token_id,
+                    )
+                    .call()
+                    .await
+                    .unwrap()
+            },
+            false => {
+                call_wallet
+                .nft
+                .approve(
+                    nft_mod::Option::None(),
+                    token_id,
+                )
+                .call()
+                .await
+                .unwrap()
+            }
+        }
     }
 
     pub async fn set_approval_for_all(
