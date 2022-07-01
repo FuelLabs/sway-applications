@@ -208,6 +208,7 @@ impl DaoVoting for Contract {
     /// # Reverts
     ///
     /// * When the given proposal id is greater than or equal to proposal_count
+    /// * When the proposal has already been executed
     /// * When the proposal is still active and being voted on
     /// * When the proposal has not met the necessary approval percentage
     #[storage(read, write)]fn execute(proposal_id: u64) {
