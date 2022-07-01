@@ -34,7 +34,7 @@ pub struct ProposalInfo {
     /// Represents an end time (block height) for proposals
     /// Proposals can be voted on as long as the block height has not exceeded the deadline
     deadline: u64,
-    /// Whether or not the proposal has been executed
+    /// Whether the proposal has been executed
     executed: bool,
     /// The number of no votes for a proposal
     no_votes: u64,

@@ -80,12 +80,12 @@ impl DaoVoting for Contract {
     /// # Arguments
     ///
     /// - `acceptance_percentage` - the percentage of yes votes a proposal needs to be executed
-    /// - `deadline` - the number of blocks during which a proposal can be voted on
+    /// - `duration` - the number of blocks during which a proposal can be voted on
     /// - `proposal_data` - transaction data to be executed if proposal is approved
     ///
     /// # Reverts
     ///
-    /// * When the deadline is 0
+    /// * When the duration is 0
     /// * When the acceptance percentage is 0
     /// * When the acceptance percentage is greater than 100
     #[storage(read, write)]fn create_proposal(acceptance_percentage: u64, duration: u64, proposal_transaction: Proposal) {
