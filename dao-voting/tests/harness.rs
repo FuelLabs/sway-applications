@@ -122,7 +122,7 @@ mod create_proposal {
 
         #[tokio::test]
         #[should_panic]
-        async fn panics_with_incorrect_deadline() {
+        async fn panics_when_duration_is_zero() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer.dao_voting, gov_token_id).await;
 
