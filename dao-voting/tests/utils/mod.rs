@@ -1,4 +1,4 @@
-use fuels::{prelude::*, tx::ContractId};
+use fuels::{prelude::*, tx::ContractId, contract::contract::CallResponse};
 
 // Load abi from json
 abigen!(DaoVoting, "out/debug/dao-voting-abi.json");
@@ -14,8 +14,6 @@ pub struct Metadata {
 }
 
 pub mod abi_calls {
-    use fuels::contract::contract::CallResponse;
-
     use super::*;
 
     pub async fn constructor(contract: &DaoVoting, token: ContractId) -> CallResponse<()> {
