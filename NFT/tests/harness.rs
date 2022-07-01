@@ -121,7 +121,10 @@ mod mint {
 
             assert_eq!(balance_of(&owner1.nft, &minter).await, 10);
             for itterator in 1..11 {
-                assert_eq!(owner_of(&owner1.nft, itterator).await, Option::Some(minter.clone()));
+                assert_eq!(
+                    owner_of(&owner1.nft, itterator).await,
+                    Option::Some(minter.clone())
+                );
                 assert_eq!(approved(&owner1.nft, itterator).await, Option::None());
             }
         }
