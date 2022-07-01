@@ -164,7 +164,7 @@ mod deposit {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -202,7 +202,7 @@ mod deposit {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -245,7 +245,7 @@ mod deposit {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -275,7 +275,7 @@ mod deposit {
             let another_asset =
                 GovToken::new(another_asset_id.to_string(), deployer.wallet.clone());
 
-            mint(&another_asset, 100, user.wallet.address()).await;
+            mint(&another_asset, asset_amount, user.wallet.address()).await;
 
             constructor(&deployer.dao_voting, gov_token_id).await;
 
@@ -295,7 +295,7 @@ mod deposit {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -322,7 +322,7 @@ mod withdraw {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -365,7 +365,7 @@ mod withdraw {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -389,7 +389,7 @@ mod withdraw {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -421,7 +421,7 @@ mod vote {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -471,7 +471,7 @@ mod vote {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -544,7 +544,7 @@ mod vote {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -589,7 +589,7 @@ mod execute {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -631,7 +631,7 @@ mod execute {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -660,7 +660,7 @@ mod execute {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -688,7 +688,7 @@ mod execute {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -723,7 +723,7 @@ mod unlock_votes {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -846,7 +846,7 @@ mod unlock_votes {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -879,7 +879,7 @@ mod balance {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -909,7 +909,7 @@ mod user_balance {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
@@ -945,7 +945,7 @@ mod user_votes {
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
-                100,
+                asset_amount,
                 user.wallet.address(),
             )
             .await;
