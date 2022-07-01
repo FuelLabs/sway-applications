@@ -5,7 +5,7 @@ contract;
 //      - change the "data" in the Tx hashing from b256 to vec
 
 // Our library dependencies
-dep abi;
+dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
@@ -31,7 +31,7 @@ use std::{
 use core::num::*;
 
 // Our library imports
-use abi::MultiSignatureWallet;
+use contract_abi::MultiSignatureWallet;
 use data_structures::{Transaction, User};
 use errors::{ExecutionError, InitError};
 use events::{ExecutedEvent, TransferEvent};
