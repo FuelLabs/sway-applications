@@ -10,7 +10,7 @@ pub struct MetaData {
 }
 
 impl MetaData {
-    pub fn new(approved: Option<Identity>, owner: Identity) -> Self {
+    fn new(approved: Option<Identity>, owner: Identity) -> Self {
         MetaData {
             approved, owner
         }
