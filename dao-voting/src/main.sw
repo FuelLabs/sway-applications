@@ -181,7 +181,7 @@ impl DaoVoting for Contract {
 
         require(vote_amount <= sender_balance, UserError::InsufficientBalance);
 
-        if (approve) {
+        if approve {
             proposal.yes_votes += vote_amount;
         } else {
             proposal.no_votes += vote_amount;
