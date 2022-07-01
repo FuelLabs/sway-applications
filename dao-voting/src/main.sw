@@ -119,7 +119,7 @@ impl DaoVoting for Contract {
         require(storage.token == msg_asset_id(), UserError::IncorrectAssetSent);
         require(0 < msg_amount(), UserError::AmountCannotBeZero);
 
-        let sender: Identity = msg_sender().unwrap();
+        let sender = msg_sender().unwrap();
 
         storage.balances.insert(sender, msg_amount() + storage.balances.get(sender));
 
