@@ -15,6 +15,7 @@ pub enum ApprovalError {
 }
 
 pub enum InitError {
+    AccessControlSetAndAdminIsNone: (),
     CannotReinitialize: (),
     NFTNotInitalized: (),
 }

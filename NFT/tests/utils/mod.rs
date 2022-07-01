@@ -65,16 +65,34 @@ pub mod abi_calls {
         access_control: bool,
         token_supply: u64,
     ) -> CallResponse<()> {
-        deploy_wallet
-            .nft
-            .constructor(
-                nft_mod::Identity::Address(owner.wallet.address()),
-                access_control,
-                token_supply,
-            )
-            .call()
-            .await
-            .unwrap()
+        match access_control {
+            true => {
+                deploy_wallet
+                    .nft
+                    .constructor(
+                        nft_mod::Option::Some(
+                            nft_mod::Identity::Address(owner.wallet.address())
+                        ),
+                        access_control,
+                        token_supply,
+                    )
+                    .call()
+                    .await
+                    .unwrap()
+            },
+            false => {
+                deploy_wallet
+                    .nft
+                    .constructor(
+                        nft_mod::Option::None(),
+                        access_control,
+                        token_supply,
+                    )
+                    .call()
+                    .await
+                    .unwrap()
+            }
+        }
     }
 
     pub async fn mint(mint_wallet: &Metadata, owner: &Metadata, amount: u64) -> CallResponse<()> {
@@ -115,30 +133,21 @@ pub mod abi_calls {
         approve: bool,
     ) -> CallResponse<()> {
         match approve {
-            true => {
-                call_wallet
-                    .nft
-                    .approve(
-                        nft_mod::Option::Some(
-                            nft_mod::Identity::Address(approved.wallet.address())
-                        ),
-                        token_id,
-                    )
-                    .call()
-                    .await
-                    .unwrap()
-            },
-            false => {
-                call_wallet
+            true => call_wallet
                 .nft
                 .approve(
-                    nft_mod::Option::None(),
+                    nft_mod::Option::Some(nft_mod::Identity::Address(approved.wallet.address())),
                     token_id,
                 )
                 .call()
                 .await
-                .unwrap()
-            }
+                .unwrap(),
+            false => call_wallet
+                .nft
+                .approve(nft_mod::Option::None(), token_id)
+                .call()
+                .await
+                .unwrap(),
         }
     }
 
@@ -163,7 +172,7 @@ pub mod abi_calls {
     pub async fn set_admin(call_wallet: &Metadata, minter: &Metadata) -> CallResponse<()> {
         call_wallet
             .nft
-            .set_admin(nft_mod::Identity::Address(minter.wallet.address()))
+            .set_admin(nft_mod::Option::Some(nft_mod::Identity::Address(minter.wallet.address())))
             .call()
             .await
             .unwrap()
