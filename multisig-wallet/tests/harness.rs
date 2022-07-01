@@ -1,5 +1,3 @@
-#![allow(unused_variables)]
-
 use fuels::prelude::*;
 use fuels_abigen_macro::abigen;
 

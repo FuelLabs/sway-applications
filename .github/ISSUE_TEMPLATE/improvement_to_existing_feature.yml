@@ -9,13 +9,13 @@ body:
       label: Motivation
       description: Describe the improvement, motivation behind it and write a mini-specification
       placeholder: |
-        # Description
+        #### Description
         This improves the feature by ...
 
-        # Motivation
+        #### Motivation
         It allows ...
 
-        # Specification
+        #### Specification
         ...
     validations:
       required: true
