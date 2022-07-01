@@ -88,8 +88,8 @@ impl DaoVoting for Contract {
     /// * When the deadline is 0
     /// * When the acceptance percentage is 0
     /// * When the acceptance percentage is greater than 100
-    #[storage(read, write)]fn create_proposal(acceptance_percentage: u64, deadline: u64, proposal_transaction: Proposal) {
-        require(0 < deadline, CreationError::DeadlineCannotBeZero);
+    #[storage(read, write)]fn create_proposal(acceptance_percentage: u64, duration: u64, proposal_transaction: Proposal) {
+        require(0 < duration, CreationError::DurationCannotBeZero);
         require(0 < acceptance_percentage && acceptance_percentage <= 100, CreationError::InvalidAcceptancePercentage);
 
         let author = msg_sender().unwrap();
@@ -97,7 +97,7 @@ impl DaoVoting for Contract {
         let proposal = ProposalInfo {
             author, yes_votes: 0,
             no_votes: 0,
-            acceptance_percentage, proposal_transaction, deadline: height() + deadline,
+            acceptance_percentage, proposal_transaction, deadline: height() + duration,
         };
         storage.proposals.insert(storage.proposal_count, proposal);
         storage.proposal_count += 1;

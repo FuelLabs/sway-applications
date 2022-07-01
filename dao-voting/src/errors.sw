@@ -1,7 +1,7 @@
 library errors;
 
 pub enum CreationError {
-    DeadlineCannotBeZero: (),
+    DurationCannotBeZero: (),
     InvalidAcceptancePercentage: (),
 }
 
