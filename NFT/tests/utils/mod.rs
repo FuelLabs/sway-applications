@@ -55,35 +55,33 @@ pub mod abi_calls {
     use super::*;
 
     pub async fn constructor(
-        deploy_wallet: &Metadata,
+        contract: &Nft,
         owner: Option,
         access_control: bool,
         token_supply: u64,
     ) -> CallResponse<()> {
-        deploy_wallet
-            .nft
+        contract
             .constructor(owner, access_control, token_supply)
             .call()
             .await
             .unwrap()
     }
 
-    pub async fn mint(mint_wallet: &Metadata, owner: Identity, amount: u64) -> CallResponse<()> {
-        mint_wallet.nft.mint(owner, amount).call().await.unwrap()
+    pub async fn mint(contract: &Nft, owner: Identity, amount: u64) -> CallResponse<()> {
+        contract.mint(owner, amount).call().await.unwrap()
     }
 
-    pub async fn burn(call_wallet: &Metadata, token_id: u64) -> CallResponse<()> {
-        call_wallet.nft.burn(token_id).call().await.unwrap()
+    pub async fn burn(contract: &Nft, token_id: u64) -> CallResponse<()> {
+        contract.burn(token_id).call().await.unwrap()
     }
 
     pub async fn transfer_from(
-        call_wallet: &Metadata,
+        contract: &Nft,
         from: Identity,
         to: Identity,
         token_id: u64,
     ) -> CallResponse<()> {
-        call_wallet
-            .nft
+        contract
             .transfer_from(from, to, token_id)
             .call()
             .await
@@ -91,12 +89,11 @@ pub mod abi_calls {
     }
 
     pub async fn approve(
-        call_wallet: &Metadata,
+        contract: &Nft,
         approved: Option,
         token_id: u64,
     ) -> CallResponse<()> {
-        call_wallet
-            .nft
+        contract
             .approve(approved, token_id)
             .call()
             .await
@@ -104,26 +101,24 @@ pub mod abi_calls {
     }
 
     pub async fn set_approval_for_all(
-        call_wallet: &Metadata,
+        contract: &Nft,
         owner: Identity,
         operator: Identity,
         approve: bool,
     ) -> CallResponse<()> {
-        call_wallet
-            .nft
+        contract
             .set_approval_for_all(owner, operator, approve)
             .call()
             .await
             .unwrap()
     }
 
-    pub async fn set_admin(call_wallet: &Metadata, minter: Option) -> CallResponse<()> {
-        call_wallet.nft.set_admin(minter).call().await.unwrap()
+    pub async fn set_admin(contract: &Nft, minter: Option) -> CallResponse<()> {
+        contract.set_admin(minter).call().await.unwrap()
     }
 
-    pub async fn approved(call_wallet: &Metadata, token_id: u64) -> Option {
-        call_wallet
-            .nft
+    pub async fn approved(contract: &Nft, token_id: u64) -> Option {
+        contract
             .approved(token_id)
             .call()
             .await
@@ -131,9 +126,8 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn balance_of(call_wallet: &Metadata, wallet: Identity) -> u64 {
-        call_wallet
-            .nft
+    pub async fn balance_of(contract: &Nft, wallet: Identity) -> u64 {
+        contract
             .balance_of(wallet)
             .call()
             .await
@@ -142,12 +136,11 @@ pub mod abi_calls {
     }
 
     pub async fn is_approved_for_all(
-        call_wallet: &Metadata,
+        contract: &Nft,
         owner: Identity,
         operator: Identity,
     ) -> bool {
-        call_wallet
-            .nft
+        contract
             .is_approved_for_all(owner, operator)
             .call()
             .await
@@ -155,9 +148,8 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn owner_of(call_wallet: &Metadata, token_id: u64) -> Option {
-        call_wallet
-            .nft
+    pub async fn owner_of(contract: &Nft, token_id: u64) -> Option {
+        contract
             .owner_of(token_id)
             .call()
             .await
@@ -165,7 +157,7 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn total_supply(call_wallet: &Metadata) -> u64 {
-        call_wallet.nft.total_supply().call().await.unwrap().value
+    pub async fn total_supply(contract: &Nft,) -> u64 {
+        contract.total_supply().call().await.unwrap().value
     }
 }
