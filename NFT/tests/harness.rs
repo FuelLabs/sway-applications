@@ -5,7 +5,7 @@ use utils::{
         approve, approved, balance_of, burn, constructor, is_approved_for_all, mint, owner_of,
         set_admin, set_approval_for_all, total_supply, transfer_from,
     },
-    test_helpers::{nft_identity_option, setup},
+    test_helpers::setup,
 };
 use crate::utils::{Option, Identity};
 use fuels::{prelude::*};
@@ -234,11 +234,12 @@ mod approve {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 1).await;
 
-            approve(&owner1, &owner2, 1, true).await;
+            let approved_identity = Option::Some(Identity::Address(owner2.wallet.address()));
+            approve(&owner1, approved_identity, 1).await;
 
             assert_eq!(
                 approved(&owner1, 1).await,
-                nft_identity_option(&owner2).await
+                Option::Some(Identity::Address(owner2.wallet.address()))
             );
         }
     }
@@ -257,7 +258,8 @@ mod approve {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 1).await;
 
-            approve(&owner2, &owner2, 1, true).await;
+            let approved_identity = Option::Some(Identity::Address(owner2.wallet.address()));
+            approve(&owner2, approved_identity, 1).await;
         }
 
         #[tokio::test]
@@ -270,7 +272,8 @@ mod approve {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 1).await;
 
-            approve(&owner1, &owner1, 1, true).await;
+            let approved_identity = Option::Some(Identity::Address(owner1.wallet.address()));
+            approve(&owner1, approved_identity, 1).await;
         }
     }
 }
@@ -390,11 +393,12 @@ mod approved {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 1).await;
 
-            approve(&owner1, &owner2, 1, true).await;
+            let approved_identity = Option::Some(Identity::Address(owner2.wallet.address()));
+            approve(&owner1, approved_identity, 1).await;
 
             assert_eq!(
                 approved(&owner1, 1).await,
-                nft_identity_option(&owner2).await
+                Option::Some(Identity::Address(owner2.wallet.address()))
             );
         }
     }
@@ -459,7 +463,7 @@ mod owner_of {
 
             assert_eq!(
                 owner_of(&owner1, 1).await,
-                nft_identity_option(&owner1).await
+                Option::Some(Identity::Address(owner1.wallet.address()))
             );
         }
     }
@@ -525,7 +529,7 @@ mod transfer_from {
 
             assert_eq!(
                 owner_of(&owner1, 1).await,
-                nft_identity_option(&owner2).await
+                Option::Some(Identity::Address(owner2.wallet.address()))
             );
             assert_eq!(balance_of(&owner1, &owner1).await, 0);
             assert_eq!(balance_of(&owner2, &owner2).await, 1);
@@ -540,7 +544,8 @@ mod transfer_from {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 1).await;
 
-            approve(&owner1, &owner2, 1, true).await;
+            let approved_identity = Option::Some(Identity::Address(owner2.wallet.address()));
+            approve(&owner1, approved_identity, 1).await;
 
             let from = Identity::Address(owner1.wallet.address());
             let to = Identity::Address(owner2.wallet.address());
@@ -548,7 +553,7 @@ mod transfer_from {
 
             assert_eq!(
                 owner_of(&owner1, 1).await,
-                nft_identity_option(&owner2).await
+                Option::Some(Identity::Address(owner2.wallet.address()))
             );
             assert_eq!(balance_of(&owner1, &owner1).await, 0);
             assert_eq!(balance_of(&owner2, &owner2).await, 1);
@@ -571,7 +576,7 @@ mod transfer_from {
 
             assert_eq!(
                 owner_of(&owner1, 1).await,
-                nft_identity_option(&owner2).await
+                Option::Some(Identity::Address(owner2.wallet.address()))
             );
             assert_eq!(balance_of(&owner1, &owner1).await, 0);
             assert_eq!(balance_of(&owner2, &owner2).await, 1);

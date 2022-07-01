@@ -48,11 +48,6 @@ pub mod test_helpers {
 
         (deploy_wallet, owner1, owner2)
     }
-
-    pub async fn nft_identity_option(wallet: &Metadata) -> nft_mod::Option {
-        let identity = Identity::Address(wallet.wallet.address());
-        nft_mod::Option::Some(identity)
-    }
 }
 
 pub mod abi_calls {
@@ -110,27 +105,18 @@ pub mod abi_calls {
 
     pub async fn approve(
         call_wallet: &Metadata,
-        approved: &Metadata,
+        approved: Option,
         token_id: u64,
-        approve: bool,
     ) -> CallResponse<()> {
-        match approve {
-            true => call_wallet
-                .nft
-                .approve(
-                    nft_mod::Option::Some(nft_mod::Identity::Address(approved.wallet.address())),
-                    token_id,
-                )
-                .call()
-                .await
-                .unwrap(),
-            false => call_wallet
-                .nft
-                .approve(nft_mod::Option::None(), token_id)
-                .call()
-                .await
-                .unwrap(),
-        }
+        call_wallet
+            .nft
+            .approve(
+                approved,
+                token_id,
+            )
+            .call()
+            .await
+            .unwrap()
     }
 
     pub async fn set_approval_for_all(
