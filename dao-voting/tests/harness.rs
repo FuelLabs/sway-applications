@@ -316,6 +316,30 @@ mod withdraw {
 
         #[tokio::test]
         #[should_panic]
+        async fn panics_on_withdraw_zero() {
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
+
+            constructor(&deployer, gov_token_id).await;
+
+            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            deposit(&user, tx_params, call_params).await;
+            withdraw(&user, 0).await;
+        }
+
+        #[tokio::test]
+        #[should_panic]
         async fn panics_on_not_enough_assets() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 

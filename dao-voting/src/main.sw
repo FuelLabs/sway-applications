@@ -136,8 +136,10 @@ impl DaoVoting for Contract {
     ///
     /// # Reverts
     ///
+    /// * When the user tries to withdraw 0 from their balance
     /// * When the user tries to withdraw more than their balance
     #[storage(read, write)]fn withdraw(amount: u64) {
+        require(0 < amount, UserError::AmountCannotBeZero);
         let sender: Identity = msg_sender().unwrap();
 
         let prev_balance = storage.balances.get(sender);
