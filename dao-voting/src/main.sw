@@ -159,7 +159,7 @@ impl DaoVoting for Contract {
     ///
     /// # Arguments
     ///
-    /// - `approve` - determines if you vote yes or no on the proposal
+    /// - `approve` - whether the user voted yes or no on the proposal
     /// - `proposal_id` - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count)
     /// - `vote_amount` - the amount of votes to cast on the proposal
     ///
@@ -168,7 +168,7 @@ impl DaoVoting for Contract {
     /// * When the given proposal id is greater than or equal to proposal_count
     /// * When the vote amount is 0
     /// * When the proposal has passed its deadline
-    /// * When the vote amount is greater than the users deposited balance
+    /// * When the vote amount is greater than the user's deposited balance
     #[storage(read, write)]fn vote(approve: bool, proposal_id: u64, vote_amount: u64) {
         validate_id(proposal_id, storage.proposal_count);
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
@@ -231,7 +231,7 @@ impl DaoVoting for Contract {
     /// Unlock governance tokens from a proposal
     ///
     /// Governance tokens are locked whenever a user votes on a proposal.
-    /// This is to ensure a user can not vote twice on a proposal with the same governance token.
+    /// This is to ensure a user cannot vote twice on a proposal with the same governance token.
     /// As 1 token = 1 vote.
     /// If the user did not vote on the proposal then nothing happens
     ///
