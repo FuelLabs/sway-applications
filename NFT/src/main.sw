@@ -4,13 +4,11 @@ dep abi;
 dep data_structures;
 dep errors;
 dep events;
-dep utils;
 
 use abi::NFT;
 use data_structures::MetaData;
 use errors::{AccessError, ApprovalError, InitError, InputError};
 use events::{ApprovalEvent, BurnEvent, MintEvent, OperatorEvent, TransferEvent};
-use utils::sender_identity;
 
 use std::{
     assert::require,
@@ -103,7 +101,7 @@ impl NFT for Contract {
         require(storage.token_supply >= (storage.token_count + amount), InputError::NotEnoughTokensToMint);
 
         // Ensure that the sender is on the approved mint list if this is a accessed mint
-        require(!storage.access_control || sender_identity() == storage.admin, AccessError::SenderDoesNotHaveAccessControl);
+        require(!storage.access_control || msg_sender().unwrap() == storage.admin, AccessError::SenderDoesNotHaveAccessControl);
 
         // Mint as many tokens as the sender has asked for
         let mut index = 0;
@@ -151,7 +149,7 @@ impl NFT for Contract {
         require(meta_data.is_some(), InputError::TokenDoesNotExist);
 
         // Ensure the sender owns the token that is provided
-        let sender = sender_identity();
+        let sender = msg_sender().unwrap();
         let meta_data: MetaData = meta_data.unwrap();
         require(meta_data.owner == sender, AccessError::SenderNotOwner);
 
@@ -190,7 +188,7 @@ impl NFT for Contract {
         // 1. The owner of the token
         // 2. Approved for transfer of this `token_id`,
         // 3. Or an operator and the token is owned by the owner
-        let sender = sender_identity();
+        let sender = msg_sender().unwrap();
         let mut meta_data: MetaData = meta_data.unwrap();
         let approved: Option<Identity> = meta_data.approved;
         require(sender == meta_data.owner || (approved.is_some() && sender == approved.unwrap()) || (from == meta_data.owner && storage.operator_approval.get(sha256(from, sender))), AccessError::SenderNotOwnerOrApproved);
@@ -235,7 +233,8 @@ impl NFT for Contract {
         require(meta_data.owner != approved, ApprovalError::ApproverCannotBeOwner);
 
         // Ensure that the sender is the owner of the token to be approved
-        require(meta_data.owner == sender_identity(), AccessError::SenderNotOwner);
+        let sender = msg_sender().unwrap();
+        require(meta_data.owner == sender, AccessError::SenderNotOwner);
 
         // Set and store the approved Identity to the `to` address or to none
         // based on the `approve` bool
@@ -251,7 +250,7 @@ impl NFT for Contract {
 
         // Log the approval event
         log(ApprovalEvent {
-            owner: sender_identity(), approved, token_id
+            owner: sender, approved, token_id
         });
     }
 
@@ -271,7 +270,7 @@ impl NFT for Contract {
         let hash = sha256(owner, operator);
 
         // The owner cannot set themself as the operator
-        require(owner == sender_identity(), AccessError::SenderNotOwner);
+        require(owner == msg_sender().unwrap(), AccessError::SenderNotOwner);
 
         // Set the identity to have or not have approval to transfer all tokens owned
         storage.operator_approval.insert(hash, allow);
@@ -293,7 +292,7 @@ impl NFT for Contract {
     /// * When the sender `Identity` is not the `admin` in storage.
     #[storage(read, write)]fn set_admin(admin: Identity) {
         // Ensure that the sender is allowed to add identities to the approved list
-        require(sender_identity() == storage.admin, AccessError::SenderCannotSetAccessControl);
+        require(msg_sender().unwrap() == storage.admin, AccessError::SenderCannotSetAccessControl);
 
         // Add the provided `minter` Identity to the list of identities that are approved to mint
         storage.admin = admin;
