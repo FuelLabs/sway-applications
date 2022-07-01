@@ -77,10 +77,10 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn mint(mint_wallet: &Metadata, owner: &Metadata, amount: u64) -> CallResponse<()> {
+    pub async fn mint(mint_wallet: &Metadata, owner: Identity, amount: u64) -> CallResponse<()> {
         mint_wallet
             .nft
-            .mint(nft_mod::Identity::Address(owner.wallet.address()), amount)
+            .mint(owner, amount)
             .call()
             .await
             .unwrap()

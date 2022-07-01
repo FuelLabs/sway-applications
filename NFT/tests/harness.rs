@@ -86,7 +86,9 @@ mod mint {
             let (deploy_wallet, owner1, _owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             assert_eq!(balance_of(&owner1, &owner1).await, 1);
         }
@@ -97,7 +99,9 @@ mod mint {
 
             let admin = Option::Some(Identity::Address(owner1.wallet.address()));
             constructor(&deploy_wallet, admin, true, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             assert_eq!(balance_of(&owner1, &owner1).await, 1);
         }
@@ -107,7 +111,9 @@ mod mint {
             let (deploy_wallet, owner1, _owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 5).await;
-            mint(&owner1, &owner1, 3).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 3).await;
 
             assert_eq!(balance_of(&owner1, &owner1).await, 3);
         }
@@ -117,7 +123,9 @@ mod mint {
             let (deploy_wallet, owner1, _owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 0).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 0).await;
 
             assert_eq!(balance_of(&owner1, &owner1).await, 0);
         }
@@ -131,7 +139,9 @@ mod mint {
         #[should_panic(expected = "Revert(42)")]
         async fn panics_when_not_initalized() {
             let (_deploy_wallet, owner1, _owner2) = setup().await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
         }
 
         #[tokio::test]
@@ -140,7 +150,9 @@ mod mint {
             let (deploy_wallet, owner1, _owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 2).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 2).await;
         }
 
         #[tokio::test]
@@ -150,7 +162,9 @@ mod mint {
 
             let admin = Option::Some(Identity::Address(owner1.wallet.address()));
             constructor(&deploy_wallet, admin, true, 1).await;
-            mint(&owner2, &owner2, 1).await;
+
+            let minter = Identity::Address(owner2.wallet.address());
+            mint(&owner2, minter, 1).await;
         }
     }
 }
@@ -171,7 +185,8 @@ mod set_admin {
             constructor(&deploy_wallet, admin, true, 1).await;
             set_admin(&owner1, &owner2).await;
 
-            mint(&owner2, &owner2, 1).await;
+            let minter = Identity::Address(owner2.wallet.address());
+            mint(&owner2, minter, 1).await;
 
             assert_eq!(balance_of(&owner2, &owner2).await, 1);
         }
@@ -215,7 +230,9 @@ mod approve {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             approve(&owner1, &owner2, 1, true).await;
 
@@ -236,7 +253,9 @@ mod approve {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             approve(&owner2, &owner2, 1, true).await;
         }
@@ -247,7 +266,9 @@ mod approve {
             let (deploy_wallet, owner1, _owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             approve(&owner1, &owner1, 1, true).await;
         }
@@ -267,7 +288,9 @@ mod balance_of {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             assert_eq!(balance_of(&owner1, &owner1).await, 1);
             assert_eq!(balance_of(&owner1, &owner2).await, 0);
@@ -296,7 +319,9 @@ mod burn {
             let (deploy_wallet, owner1, _owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             burn(&owner1, 1).await;
 
@@ -324,7 +349,9 @@ mod burn {
             let (deploy_wallet, owner1, _owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             let token_id = 2;
 
@@ -337,7 +364,9 @@ mod burn {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             burn(&owner2, 1).await;
         }
@@ -357,7 +386,9 @@ mod approved {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             approve(&owner1, &owner2, 1, true).await;
 
@@ -422,7 +453,9 @@ mod owner_of {
             let (deploy_wallet, owner1, _owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             assert_eq!(
                 owner_of(&owner1, 1).await,
@@ -482,7 +515,9 @@ mod transfer_from {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             transfer_from(&owner1, &owner1, &owner2, 1).await;
 
@@ -499,7 +534,9 @@ mod transfer_from {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             approve(&owner1, &owner2, 1, true).await;
 
@@ -518,7 +555,9 @@ mod transfer_from {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             set_approval_for_all(&owner1, &owner1, &owner2, true).await;
 
@@ -552,7 +591,9 @@ mod transfer_from {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            mint(&owner1, &owner1, 1).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(&owner1, minter, 1).await;
 
             transfer_from(&owner2, &owner1, &owner2, 1).await;
         }
