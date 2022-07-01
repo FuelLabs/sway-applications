@@ -228,7 +228,7 @@ impl DaoVoting for Contract {
         storage.proposals.insert(proposal_id, proposal);
         // Users can now convert their votes back into tokens
         log(ExecuteEvent {
-            acceptance_percentage, id: proposal_id, 
+            user: msg_sender().unwrap(), acceptance_percentage, id: proposal_id, 
         });
     }
 

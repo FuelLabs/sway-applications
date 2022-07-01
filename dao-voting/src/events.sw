@@ -28,6 +28,9 @@ pub struct ExecuteEvent {
 
     /// The unique identifier for the proposal
     id: u64,
+
+    /// User who executed the event
+    user: Identity,
 }
 
 pub struct InitializeEvent {
