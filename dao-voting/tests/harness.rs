@@ -195,6 +195,44 @@ mod deposit {
                 asset_amount
             );
         }
+
+        #[tokio::test]
+        async fn user_can_make_multiple_deposits() {
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
+
+            constructor(&deployer.dao_voting, gov_token_id).await;
+
+            assert_eq!(balance(&user.dao_voting).await, 0);
+
+            assert_eq!(
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+                0
+            );
+
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            deposit(&user.dao_voting, call_params).await;
+
+            // Make sure that deposit did not erroneously work with 0
+            assert!(asset_amount != 0);
+
+            assert_eq!(balance(&user.dao_voting).await, asset_amount);
+
+            assert_eq!(
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+                asset_amount
+            );
+        }
     }
 
     mod revert {
@@ -438,7 +476,6 @@ mod vote {
             )
             .await;
 
-            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -453,33 +490,24 @@ mod vote {
             vote(&user.dao_voting, false, 0, asset_amount / 4).await;
 
             assert_eq!(
-                proposal(&user.dao_voting, 0).await,
-                ProposalInfo {
-                    author: Identity::Address(user.wallet.address()),
-                    yes_votes: asset_amount / 4,
-                    no_votes: asset_amount / 4,
-                    acceptance_percentage: 10,
-                    proposal_transaction: proposal_transaction.clone(),
-                    deadline: 15,
-                    executed: false
-                }
-            );
-            assert_eq!(
                 user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 6
             );
+
             assert_eq!(
                 user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
                 4
             );
 
             create_proposal(&user.dao_voting, 20, 20, proposal_transaction.clone()).await;
-            vote(&user.dao_voting, true, 1, 2).await;
+            
+            vote(&user.dao_voting, true, 1, asset_amount / 4).await;
 
             assert_eq!(
                 user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 4
             );
+
             assert_eq!(
                 user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 1).await,
                 2
