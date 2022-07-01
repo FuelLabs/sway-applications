@@ -291,7 +291,7 @@ mod deposit {
         #[tokio::test]
         #[should_panic]
         async fn panics_on_zero_deposit() {
-            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
