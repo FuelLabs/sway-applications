@@ -550,7 +550,6 @@ mod execute {
     mod success {
         use super::*;
 
-        // TODO: uncomment this test once more support is added for the CALL opcode
         #[tokio::test]
         #[ignore]
         async fn user_proposal_can_execute() {
@@ -589,6 +588,36 @@ mod execute {
         #[should_panic]
         async fn panics_on_invalid_proposal_id() {
             let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
+            execute(&user, 0).await;
+        }
+
+        #[tokio::test]
+        #[should_panic]
+        #[ignore]
+        async fn panics_on_already_executed_proposal() {
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
+
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
+
+            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            deposit(&user, tx_params, call_params).await;
+
+            let proposal_transaction = proposal_transaction(gov_token_id);
+            create_proposal(&user, 10, 1, proposal_transaction.clone()).await;
+            vote(&user, true, 0, asset_amount / 2).await;
+
+            execute(&user, 0).await;
             execute(&user, 0).await;
         }
 
