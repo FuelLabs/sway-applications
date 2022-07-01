@@ -759,6 +759,73 @@ mod unlock_votes {
                 0
             );
         }
+
+        #[tokio::test]
+        async fn user_can_unlock_tokens_from_multiple_proposals() {
+            let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
+
+            mint(
+                &deployer.gov_token.as_ref().unwrap(),
+                100,
+                user.wallet.address(),
+            )
+            .await;
+
+            let call_params = CallParameters::new(
+                Some(asset_amount),
+                Some(AssetId::from(*gov_token_id)),
+                Some(100_000),
+            );
+            deposit(&user.dao_voting, call_params).await;
+
+            let proposal_transaction = proposal_transaction(gov_token_id);
+            create_proposal(&user.dao_voting, 1, 1, proposal_transaction.clone()).await;
+            vote(&user.dao_voting, true, 0, asset_amount / 2).await;
+
+            assert_eq!(
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+                asset_amount / 2
+            );
+            assert_eq!(
+                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
+                asset_amount / 2
+            );
+
+            unlock_votes(&user.dao_voting, 0).await;
+
+            assert_eq!(
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+                asset_amount
+            );
+            assert_eq!(
+                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
+                0
+            );
+
+            create_proposal(&user.dao_voting, 10, 1, proposal_transaction.clone()).await;
+            vote(&user.dao_voting, true, 1, asset_amount / 2).await;
+
+            assert_eq!(
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+                asset_amount / 2
+            );
+            assert_eq!(
+                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 1).await,
+                asset_amount / 2
+            );
+
+            unlock_votes(&user.dao_voting, 1).await;
+
+            assert_eq!(
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+                asset_amount
+            );
+            assert_eq!(
+                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 1).await,
+                0
+            );
+        }
     }
 
     mod revert {
