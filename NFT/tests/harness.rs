@@ -1,5 +1,7 @@
 mod utils;
 
+use crate::utils::{Identity, Option};
+use fuels::prelude::*;
 use utils::{
     abi_calls::{
         approve, approved, balance_of, burn, constructor, is_approved_for_all, mint, owner_of,
@@ -7,8 +9,6 @@ use utils::{
     },
     test_helpers::setup,
 };
-use crate::utils::{Option, Identity};
-use fuels::{prelude::*};
 
 mod constructor {
 
@@ -90,7 +90,8 @@ mod mint {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 1).await;
 
-            assert_eq!(balance_of(&owner1, &owner1).await, 1);
+            let balance_identity = Identity::Address(owner1.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity).await, 1);
         }
 
         #[tokio::test]
@@ -103,7 +104,8 @@ mod mint {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 1).await;
 
-            assert_eq!(balance_of(&owner1, &owner1).await, 1);
+            let balance_identity = Identity::Address(owner1.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity).await, 1);
         }
 
         #[tokio::test]
@@ -115,7 +117,8 @@ mod mint {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 3).await;
 
-            assert_eq!(balance_of(&owner1, &owner1).await, 3);
+            let balance_identity = Identity::Address(owner1.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity).await, 3);
         }
 
         #[tokio::test]
@@ -127,7 +130,8 @@ mod mint {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 0).await;
 
-            assert_eq!(balance_of(&owner1, &owner1).await, 0);
+            let balance_identity = Identity::Address(owner1.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity).await, 0);
         }
     }
 
@@ -183,12 +187,15 @@ mod set_admin {
 
             let admin = Option::Some(Identity::Address(owner1.wallet.address()));
             constructor(&deploy_wallet, admin, true, 1).await;
-            set_admin(&owner1, &owner2).await;
+
+            let new_admin = Option::Some(Identity::Address(owner2.wallet.address()));
+            set_admin(&owner1, new_admin).await;
 
             let minter = Identity::Address(owner2.wallet.address());
             mint(&owner2, minter, 1).await;
 
-            assert_eq!(balance_of(&owner2, &owner2).await, 1);
+            let balance_identity = Identity::Address(owner2.wallet.address());
+            assert_eq!(balance_of(&owner2, balance_identity).await, 1);
         }
     }
 
@@ -201,7 +208,8 @@ mod set_admin {
         async fn panics_when_not_initalized() {
             let (_deploy_wallet, owner1, _owner2) = setup().await;
 
-            set_admin(&owner1, &owner1).await;
+            let admin = Option::Some(Identity::Address(owner1.wallet.address()));
+            set_admin(&owner1, admin).await;
         }
 
         #[tokio::test]
@@ -212,7 +220,8 @@ mod set_admin {
             let admin = Option::Some(Identity::Address(owner1.wallet.address()));
             constructor(&deploy_wallet, admin, true, 1).await;
 
-            set_admin(&owner2, &owner1).await;
+            let admin = Option::Some(Identity::Address(owner1.wallet.address()));
+            set_admin(&owner2, admin).await;
         }
     }
 }
@@ -295,16 +304,22 @@ mod balance_of {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 1).await;
 
-            assert_eq!(balance_of(&owner1, &owner1).await, 1);
-            assert_eq!(balance_of(&owner1, &owner2).await, 0);
+            let balance_identity_1 = Identity::Address(owner1.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity_1).await, 1);
+
+            let balance_identity_2 = Identity::Address(owner2.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity_2).await, 0);
         }
 
         #[tokio::test]
         async fn gets_balance_before_initalized() {
             let (_deploy_wallet, owner1, owner2) = setup().await;
 
-            assert_eq!(balance_of(&owner1, &owner1).await, 0);
-            assert_eq!(balance_of(&owner1, &owner2).await, 0);
+            let balance_identity_1 = Identity::Address(owner1.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity_1).await, 0);
+
+            let balance_identity_2 = Identity::Address(owner2.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity_2).await, 0);
         }
     }
 }
@@ -328,7 +343,8 @@ mod burn {
 
             burn(&owner1, 1).await;
 
-            assert_eq!(balance_of(&owner1, &owner1).await, 0);
+            let balance_identity = Identity::Address(owner1.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity).await, 0);
         }
     }
 
@@ -548,8 +564,12 @@ mod transfer_from {
                 owner_of(&owner1, 1).await,
                 Option::Some(Identity::Address(owner2.wallet.address()))
             );
-            assert_eq!(balance_of(&owner1, &owner1).await, 0);
-            assert_eq!(balance_of(&owner2, &owner2).await, 1);
+
+            let balance_identity_1 = Identity::Address(owner1.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity_1).await, 0);
+
+            let balance_identity_2 = Identity::Address(owner2.wallet.address());
+            assert_eq!(balance_of(&owner2, balance_identity_2).await, 1);
         }
 
         #[tokio::test]
@@ -572,8 +592,12 @@ mod transfer_from {
                 owner_of(&owner1, 1).await,
                 Option::Some(Identity::Address(owner2.wallet.address()))
             );
-            assert_eq!(balance_of(&owner1, &owner1).await, 0);
-            assert_eq!(balance_of(&owner2, &owner2).await, 1);
+
+            let balance_identity_1 = Identity::Address(owner1.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity_1).await, 0);
+
+            let balance_identity_2 = Identity::Address(owner2.wallet.address());
+            assert_eq!(balance_of(&owner2, balance_identity_2).await, 1);
         }
 
         #[tokio::test]
@@ -597,8 +621,12 @@ mod transfer_from {
                 owner_of(&owner1, 1).await,
                 Option::Some(Identity::Address(owner2.wallet.address()))
             );
-            assert_eq!(balance_of(&owner1, &owner1).await, 0);
-            assert_eq!(balance_of(&owner2, &owner2).await, 1);
+
+            let balance_identity_1 = Identity::Address(owner1.wallet.address());
+            assert_eq!(balance_of(&owner1, balance_identity_1).await, 0);
+
+            let balance_identity_2 = Identity::Address(owner2.wallet.address());
+            assert_eq!(balance_of(&owner2, balance_identity_2).await, 1);
         }
     }
 
