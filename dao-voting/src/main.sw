@@ -1,6 +1,6 @@
 contract;
 
-dep abi;
+dep dao_voting_abi;
 dep data_structures;
 dep errors;
 dep events;
@@ -21,7 +21,7 @@ use std::{
     token::transfer,
 };
 
-use abi::DaoVoting;
+use dao_voting_abi::DaoVoting;
 use data_structures::{Proposal, ProposalInfo, State, Votes};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
 use events::{
