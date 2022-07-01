@@ -9,7 +9,7 @@ use fuels::{
 use utils::{
     abi_calls::{
         balance, constructor, create_proposal, deposit, execute, governance_token_id, proposal,
-        unlock_votes, user_balance, user_votes, vote, withdraw,
+        unlock_votes, user_balance, user_votes, vote, withdraw, proposal_count,
     },
     test_helpers::{mint, proposal_transaction, setup},
     GovToken, Identity, ProposalInfo,
@@ -952,6 +952,28 @@ mod governance_token_id {
         pub async fn panics_on_not_inialized() {
             let (_gov_token, _gov_token_id, deployer, _user, _asset_amount) = setup().await;
             governance_token_id(&deployer).await;
+        }
+    }
+}
+
+mod proposal_count {
+    use super::*;
+
+    mod success {
+        use super::*; 
+        
+        #[tokio::test]
+        async fn use_can_get_proposal_count() {
+            let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+            constructor(&deployer, gov_token_id).await;
+
+            let proposal_transaction = proposal_transaction(gov_token_id);
+            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
+
+            assert_eq!(
+                proposal_count(&user).await,
+                1
+            );
         }
     }
 }

@@ -313,4 +313,9 @@ impl DaoVoting for Contract {
         require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
         storage.token
     }
+
+    /// Return proposal count
+    #[storage(read)] fn proposal_count() -> u64 {
+        storage.proposal_count
+    }
 }

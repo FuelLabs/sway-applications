@@ -111,6 +111,10 @@ pub mod abi_calls {
             .unwrap()
             .value
     }
+
+    pub async fn proposal_count(user: &Metadata) -> u64 {
+        user.dao_voting.proposal_count().call().await.unwrap().value
+    }
 }
 
 pub mod test_helpers {

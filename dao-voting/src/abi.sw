@@ -19,4 +19,5 @@ abi DaoVoting {
     #[storage(read)] fn user_votes(proposal_id: u64, user: Identity) -> u64;
     #[storage(read)] fn proposal(id: u64) -> ProposalInfo;
     #[storage(read)] fn governance_token_id() -> ContractId;
+    #[storage(read)] fn proposal_count() -> u64;
 }
