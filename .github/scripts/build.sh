@@ -2,7 +2,10 @@
 
 PROJECT=$1
 
-if [ $PROJECT = 'escrow' ]; then
+if [ $PROJECT = 'auctions/english-auction' ]; then
+    forc build --path $PROJECT
+    forc build --path $PROJECT/tests/artifacts/asset
+elif [ $PROJECT = 'escrow' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/asset
 elif [ $PROJECT = 'fundraiser' ]; then

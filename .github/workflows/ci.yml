@@ -45,7 +45,7 @@ jobs:
 
     strategy:
       matrix:
-        project: ["escrow", "fundraiser", "multisig-wallet"]
+        project: ["english-auction", "escrow", "fundraiser", "multisig-wallet"]
 
     steps:
       - name: Checkout repository
