@@ -56,19 +56,19 @@ pub mod abi_calls {
 
     pub async fn constructor(
         contract: &Nft,
-        owner: Option,
+        owner: &Option,
         access_control: bool,
         token_supply: u64,
     ) -> CallResponse<()> {
         contract
-            .constructor(owner, access_control, token_supply)
+            .constructor(owner.clone(), access_control, token_supply)
             .call()
             .await
             .unwrap()
     }
 
-    pub async fn mint(contract: &Nft, owner: Identity, amount: u64) -> CallResponse<()> {
-        contract.mint(owner, amount).call().await.unwrap()
+    pub async fn mint(contract: &Nft, owner: &Identity, amount: u64) -> CallResponse<()> {
+        contract.mint(owner.clone(), amount).call().await.unwrap()
     }
 
     pub async fn burn(contract: &Nft, token_id: u64) -> CallResponse<()> {
@@ -77,12 +77,12 @@ pub mod abi_calls {
 
     pub async fn transfer_from(
         contract: &Nft,
-        from: Identity,
-        to: Identity,
+        from: &Identity,
+        to: &Identity,
         token_id: u64,
     ) -> CallResponse<()> {
         contract
-            .transfer_from(from, to, token_id)
+            .transfer_from(from.clone(), to.clone(), token_id)
             .call()
             .await
             .unwrap()
@@ -90,11 +90,11 @@ pub mod abi_calls {
 
     pub async fn approve(
         contract: &Nft,
-        approved: Option,
+        approved: &Option,
         token_id: u64,
     ) -> CallResponse<()> {
         contract
-            .approve(approved, token_id)
+            .approve(approved.clone(), token_id)
             .call()
             .await
             .unwrap()
@@ -102,19 +102,19 @@ pub mod abi_calls {
 
     pub async fn set_approval_for_all(
         contract: &Nft,
-        owner: Identity,
-        operator: Identity,
+        owner: &Identity,
+        operator: &Identity,
         approve: bool,
     ) -> CallResponse<()> {
         contract
-            .set_approval_for_all(owner, operator, approve)
+            .set_approval_for_all(owner.clone(), operator.clone(), approve)
             .call()
             .await
             .unwrap()
     }
 
-    pub async fn set_admin(contract: &Nft, minter: Option) -> CallResponse<()> {
-        contract.set_admin(minter).call().await.unwrap()
+    pub async fn set_admin(contract: &Nft, minter: &Option) -> CallResponse<()> {
+        contract.set_admin(minter.clone()).call().await.unwrap()
     }
 
     pub async fn approved(contract: &Nft, token_id: u64) -> Option {
@@ -126,9 +126,9 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn balance_of(contract: &Nft, wallet: Identity) -> u64 {
+    pub async fn balance_of(contract: &Nft, wallet: &Identity) -> u64 {
         contract
-            .balance_of(wallet)
+            .balance_of(wallet.clone())
             .call()
             .await
             .unwrap()
@@ -137,11 +137,11 @@ pub mod abi_calls {
 
     pub async fn is_approved_for_all(
         contract: &Nft,
-        owner: Identity,
-        operator: Identity,
+        owner: &Identity,
+        operator: &Identity,
     ) -> bool {
         contract
-            .is_approved_for_all(owner, operator)
+            .is_approved_for_all(owner.clone(), operator.clone())
             .call()
             .await
             .unwrap()
@@ -157,7 +157,7 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn total_supply(contract: &Nft,) -> u64 {
+    pub async fn total_supply(contract: &Nft) -> u64 {
         contract.total_supply().call().await.unwrap().value
     }
 }
