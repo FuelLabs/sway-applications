@@ -3,7 +3,7 @@ mod utils;
 use utils::{
     abi_calls::{
         approve, approved, balance_of, burn, init, is_approved_for_all, mint, owner_of, set_admin,
-        set_approval_for_all, tokens_owned, total_supply, transfer,
+        set_approval_for_all, total_supply, transfer,
     },
     test_helpers::{nft_identity_option, setup},
 };
@@ -191,12 +191,10 @@ mod approve {
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
 
-            let token_id = tokens_owned(&owner1, &owner1).await;
-
-            approve(&owner1, &owner2, token_id, true).await;
+            approve(&owner1, &owner2, 1, true).await;
 
             assert_eq!(
-                approved(&owner1, token_id).await,
+                approved(&owner1, 1).await,
                 nft_identity_option(&owner2).await
             );
         }
@@ -214,9 +212,7 @@ mod approve {
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
 
-            let token_id = tokens_owned(&owner1, &owner1).await;
-
-            approve(&owner2, &owner2, token_id, true).await;
+            approve(&owner2, &owner2, 1, true).await;
         }
 
         #[tokio::test]
@@ -227,9 +223,7 @@ mod approve {
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
 
-            let token_id = tokens_owned(&owner1, &owner1).await;
-
-            approve(&owner1, &owner1, token_id, true).await;
+            approve(&owner1, &owner1, 1, true).await;
         }
     }
 }
@@ -278,9 +272,7 @@ mod burn {
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
 
-            let token_id = tokens_owned(&owner1, &owner1).await;
-
-            burn(&owner1, token_id).await;
+            burn(&owner1, 1).await;
 
             assert_eq!(balance_of(&owner1, &owner1).await, 0);
         }
@@ -321,9 +313,7 @@ mod burn {
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
 
-            let token_id = tokens_owned(&owner1, &owner1).await;
-
-            burn(&owner2, token_id).await;
+            burn(&owner2, 1).await;
         }
     }
 }
@@ -343,36 +333,12 @@ mod approved {
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
 
-            let token_id = tokens_owned(&owner1, &owner1).await;
-
-            approve(&owner1, &owner2, token_id, true).await;
+            approve(&owner1, &owner2, 1, true).await;
 
             assert_eq!(
-                approved(&owner1, token_id).await,
+                approved(&owner1, 1).await,
                 nft_identity_option(&owner2).await
             );
-        }
-    }
-}
-
-mod tokens_owned {
-
-    use super::*;
-
-    mod success {
-
-        use super::*;
-
-        #[tokio::test]
-        async fn gets_tokens() {
-            let (deploy_wallet, owner1, _owner2) = setup().await;
-
-            init(&deploy_wallet, &owner1, false, 1).await;
-            mint(&owner1, &owner1, 1).await;
-
-            let token_id = tokens_owned(&owner1, &owner1).await;
-
-            assert_eq!(1, token_id);
         }
     }
 }
@@ -432,10 +398,8 @@ mod owner_of {
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
 
-            let token_id = tokens_owned(&owner1, &owner1).await;
-
             assert_eq!(
-                owner_of(&owner1, token_id).await,
+                owner_of(&owner1, 1).await,
                 nft_identity_option(&owner1).await
             );
         }
@@ -494,18 +458,14 @@ mod transfer_from {
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
 
-            let token_id = tokens_owned(&owner1, &owner1).await;
-
-            transfer(&owner1, &owner1, &owner2, token_id).await;
+            transfer(&owner1, &owner1, &owner2, 1).await;
 
             assert_eq!(
-                owner_of(&owner1, token_id).await,
+                owner_of(&owner1, 1).await,
                 nft_identity_option(&owner2).await
             );
             assert_eq!(balance_of(&owner1, &owner1).await, 0);
             assert_eq!(balance_of(&owner2, &owner2).await, 1);
-            assert_eq!(tokens_owned(&owner2, &owner2).await, token_id);
-            assert_eq!(tokens_owned(&owner1, &owner1).await, 0);
         }
 
         #[tokio::test]
@@ -515,20 +475,16 @@ mod transfer_from {
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
 
-            let token_id = tokens_owned(&owner1, &owner1).await;
+            approve(&owner1, &owner2, 1, true).await;
 
-            approve(&owner1, &owner2, token_id, true).await;
-
-            transfer(&owner2, &owner1, &owner2, token_id).await;
+            transfer(&owner2, &owner1, &owner2, 1).await;
 
             assert_eq!(
-                owner_of(&owner1, token_id).await,
+                owner_of(&owner1, 1).await,
                 nft_identity_option(&owner2).await
             );
             assert_eq!(balance_of(&owner1, &owner1).await, 0);
             assert_eq!(balance_of(&owner2, &owner2).await, 1);
-            assert_eq!(tokens_owned(&owner2, &owner2).await, token_id);
-            assert_eq!(tokens_owned(&owner1, &owner1).await, 0);
         }
 
         #[tokio::test]
@@ -538,20 +494,16 @@ mod transfer_from {
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
 
-            let token_id = tokens_owned(&owner1, &owner1).await;
-
             set_approval_for_all(&owner1, &owner1, &owner2, true).await;
 
-            transfer(&owner2, &owner1, &owner2, token_id).await;
+            transfer(&owner2, &owner1, &owner2, 1).await;
 
             assert_eq!(
-                owner_of(&owner1, token_id).await,
+                owner_of(&owner1, 1).await,
                 nft_identity_option(&owner2).await
             );
             assert_eq!(balance_of(&owner1, &owner1).await, 0);
             assert_eq!(balance_of(&owner2, &owner2).await, 1);
-            assert_eq!(tokens_owned(&owner2, &owner2).await, token_id);
-            assert_eq!(tokens_owned(&owner1, &owner1).await, 0);
         }
     }
 
@@ -576,9 +528,7 @@ mod transfer_from {
             init(&deploy_wallet, &owner1, false, 1).await;
             mint(&owner1, &owner1, 1).await;
 
-            let token_id = tokens_owned(&owner1, &owner1).await;
-
-            transfer(&owner2, &owner1, &owner2, token_id).await;
+            transfer(&owner2, &owner1, &owner2, 1).await;
         }
     }
 }

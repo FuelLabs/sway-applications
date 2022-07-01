@@ -200,16 +200,6 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn tokens_owned(call_wallet: &Metadata, wallet: &Metadata) -> u64 {
-        call_wallet
-            .nft
-            .tokens_owned(nft_mod::Identity::Address(wallet.wallet.address()))
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
-
     pub async fn total_supply(call_wallet: &Metadata) -> u64 {
         call_wallet.nft.total_supply().call().await.unwrap().value
     }

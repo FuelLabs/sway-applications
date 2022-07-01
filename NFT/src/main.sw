@@ -37,19 +37,18 @@ storage {
     /// Used of O(1) lookup of the number of tokens owned by each Identity
     /// This increments or decrements when minting, transfer of ownership, and burning of tokens
     /// Map(Identity => balance)
-    balances: StorageMap<Identity,
-    u64>, /// Stores the Metadata for each token based on token id
+    balances: StorageMap<Identity,u64>, 
+    
+    /// Stores the Metadata for each token based on token id
     /// Map(token_id => Metadata)
-    meta_data: StorageMap<u64,
-    Option<MetaData>>, /// Maps a b256 hash of the (owner, operator) identities and stores whether the
+    meta_data: StorageMap<u64,Option<MetaData>>, 
+    
+    /// Maps a b256 hash of the (owner, operator) identities and stores whether the
     /// operator is allowed to transfer ALL tokens on the owner's behalf
     /// Map(hash => approved)
-    operator_approval: StorageMap<b256,
-    bool>, /// TODO: Use a Vec here to support multiple ownerships
-    /// Maintains the token ids owned by the specified identity
-    /// Map(Identity => owned tokens)
-    owners: StorageMap<Identity,
-    u64>, /// The total number of tokens that have been minted
+    operator_approval: StorageMap<b256,bool>, 
+
+    /// The total number of tokens that have been minted
     /// This should only be incremented
     token_count: u64,
 
@@ -118,7 +117,6 @@ impl NFT for Contract {
                 owner: to, approved: Option::None()
             };
             storage.meta_data.insert(storage.token_count, Option::Some(meta_data));
-            storage.owners.insert(to, storage.token_count);
 
             // Increase the balance of the new owner
             storage.balances.insert(to, storage.balances.get(to) + 1);
@@ -163,10 +161,6 @@ impl NFT for Contract {
         // Reduce the balance of tokens for the owner
         storage.balances.insert(sender, storage.balances.get(sender) - 1);
 
-        // NOTE: Until we have a vec tokens_owned will now return
-        //       owning nothing, even if mutliple tokens are owned
-        storage.owners.insert(sender, 0);
-
         // Log the burn event
         log(BurnEvent {
             owner: sender, token_id
@@ -205,11 +199,6 @@ impl NFT for Contract {
         meta_data.owner = to;
         meta_data.approved = Option::None();
         storage.meta_data.insert(token_id, Option::Some(meta_data));
-
-        // Note: Until Vec is supported, getting the tokens owned by the old owner
-        //        will return nothing after transfer
-        storage.owners.insert(from, 0);
-        storage.owners.insert(to, token_id);
 
         // Decrease the previous owner's balance of tokens
         storage.balances.insert(from, storage.balances.get(from) - 1);
@@ -366,15 +355,6 @@ impl NFT for Contract {
             },
             Option::None(MetaData) => Option::None(), 
         }
-    }
-
-    /// Returns a `u64` of the tokens IDs owned by the `Identity` given.
-    ///
-    /// # Arguments
-    ///
-    /// * `identity` - The `Identity` which the owned tokens should be checked.
-    #[storage(read)]fn tokens_owned(identity: Identity) -> u64 {
-        storage.owners.get(identity)
     }
 
     /// Returns a `u64` of the `total_supply` of tokens which can be minted for the NFT contract.
