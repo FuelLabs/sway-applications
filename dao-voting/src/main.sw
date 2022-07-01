@@ -70,10 +70,8 @@ impl DaoVoting for Contract {
         storage.token = token;
         storage.state = State::Initialized;
 
-        let author = msg_sender().unwrap();
-
         log(InitializeEvent {
-            author, token
+            author: msg_sender().unwrap(), token
         });
     }
 
