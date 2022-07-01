@@ -174,13 +174,12 @@ mod deposit {
                 0
             );
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
 
             // Make sure that deposit did not erroneously work with 0
             assert!(asset_amount != 0);
@@ -208,13 +207,13 @@ mod deposit {
                 user.wallet.address(),
             )
             .await;
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
         }
 
         #[tokio::test]
@@ -238,13 +237,13 @@ mod deposit {
 
             constructor(&deployer.dao_voting, gov_token_id).await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*another_asset_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
         }
 
         #[tokio::test]
@@ -261,10 +260,10 @@ mod deposit {
 
             constructor(&deployer.dao_voting, gov_token_id).await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params =
                 CallParameters::new(Some(0), Some(AssetId::from(*gov_token_id)), Some(100_000));
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
         }
     }
 }
@@ -288,13 +287,13 @@ mod withdraw {
 
             constructor(&deployer.dao_voting, gov_token_id).await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
 
             assert_eq!(balance(&user.dao_voting).await, asset_amount);
 
@@ -331,13 +330,13 @@ mod withdraw {
 
             constructor(&deployer.dao_voting, gov_token_id).await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
             withdraw(&user.dao_voting, 0).await;
         }
 
@@ -355,13 +354,13 @@ mod withdraw {
 
             constructor(&deployer.dao_voting, gov_token_id).await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
             withdraw(&user.dao_voting, asset_amount * 100).await;
         }
     }
@@ -385,13 +384,13 @@ mod vote {
             )
             .await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
@@ -435,13 +434,13 @@ mod vote {
             )
             .await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
@@ -521,13 +520,13 @@ mod vote {
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 1, 1, proposal_transaction.clone()).await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
             vote(&user.dao_voting, true, 0, asset_amount / 4).await;
         }
 
@@ -563,13 +562,13 @@ mod execute {
             )
             .await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 10, 1, proposal_transaction.clone()).await;
@@ -605,13 +604,13 @@ mod execute {
             )
             .await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 10, 1, proposal_transaction.clone()).await;
@@ -634,13 +633,13 @@ mod execute {
             )
             .await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 10, 100, proposal_transaction.clone()).await;
@@ -662,13 +661,13 @@ mod execute {
             )
             .await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 10, 100, proposal_transaction.clone()).await;
@@ -697,13 +696,12 @@ mod unlock_votes {
             )
             .await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 1, 1, proposal_transaction.clone()).await;
@@ -754,13 +752,12 @@ mod unlock_votes {
             )
             .await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 10, 100, proposal_transaction.clone()).await;
@@ -788,14 +785,13 @@ mod balance {
             )
             .await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
             assert_eq!(balance(&user.dao_voting).await, 0);
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
             assert_eq!(balance(&user.dao_voting).await, asset_amount);
         }
     }
@@ -819,7 +815,6 @@ mod user_balance {
             )
             .await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -829,7 +824,7 @@ mod user_balance {
                 user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 0
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
             assert_eq!(
                 user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 asset_amount
@@ -856,13 +851,12 @@ mod user_votes {
             )
             .await;
 
-            let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user.dao_voting, tx_params, call_params).await;
+            deposit(&user.dao_voting, call_params).await;
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 10, 10, proposal_transaction).await;
             assert_eq!(

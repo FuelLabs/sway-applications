@@ -39,7 +39,8 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn deposit(contract: &DaoVoting, tx_params: TxParameters, call_params: CallParameters) -> CallResponse<()> {
+    pub async fn deposit(contract: &DaoVoting, call_params: CallParameters) -> CallResponse<()> {
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
         contract
             .deposit()
             .tx_params(tx_params)
