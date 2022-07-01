@@ -92,15 +92,15 @@ pub mod abi_calls {
 
     pub async fn transfer_from(
         call_wallet: &Metadata,
-        from: &Metadata,
-        to: &Metadata,
+        from: Identity,
+        to: Identity,
         token_id: u64,
     ) -> CallResponse<()> {
         call_wallet
             .nft
             .transfer_from(
-                nft_mod::Identity::Address(from.wallet.address()),
-                nft_mod::Identity::Address(to.wallet.address()),
+                from,
+                to,
                 token_id,
             )
             .call()

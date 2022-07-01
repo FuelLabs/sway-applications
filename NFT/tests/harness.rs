@@ -519,7 +519,9 @@ mod transfer_from {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 1).await;
 
-            transfer_from(&owner1, &owner1, &owner2, 1).await;
+            let from = Identity::Address(owner1.wallet.address());
+            let to = Identity::Address(owner2.wallet.address());
+            transfer_from(&owner1, from, to, 1).await;
 
             assert_eq!(
                 owner_of(&owner1, 1).await,
@@ -540,7 +542,9 @@ mod transfer_from {
 
             approve(&owner1, &owner2, 1, true).await;
 
-            transfer_from(&owner2, &owner1, &owner2, 1).await;
+            let from = Identity::Address(owner1.wallet.address());
+            let to = Identity::Address(owner2.wallet.address());
+            transfer_from(&owner2, from, to, 1).await;
 
             assert_eq!(
                 owner_of(&owner1, 1).await,
@@ -561,7 +565,9 @@ mod transfer_from {
 
             set_approval_for_all(&owner1, &owner1, &owner2, true).await;
 
-            transfer_from(&owner2, &owner1, &owner2, 1).await;
+            let from = Identity::Address(owner1.wallet.address());
+            let to = Identity::Address(owner2.wallet.address());
+            transfer_from(&owner2, from, to, 1).await;
 
             assert_eq!(
                 owner_of(&owner1, 1).await,
@@ -578,11 +584,13 @@ mod transfer_from {
 
         #[tokio::test]
         #[should_panic(expected = "Revert(42)")]
-        async fn panics_when_not_initalized() {
+        async fn panics_when_token_does_not_exist() {
             let (_deploy_wallet, owner1, owner2) = setup().await;
             let token_id = 0;
 
-            transfer_from(&owner1, &owner1, &owner2, token_id).await;
+            let from = Identity::Address(owner1.wallet.address());
+            let to = Identity::Address(owner2.wallet.address());
+            transfer_from(&owner1, from, to, token_id).await;
         }
 
         #[tokio::test]
@@ -595,7 +603,9 @@ mod transfer_from {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 1).await;
 
-            transfer_from(&owner2, &owner1, &owner2, 1).await;
+            let from = Identity::Address(owner1.wallet.address());
+            let to = Identity::Address(owner2.wallet.address());
+            transfer_from(&owner2, from, to, 1).await;
         }
     }
 }
