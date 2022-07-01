@@ -72,7 +72,7 @@ impl DaoVoting for Contract {
 
         log(InitializeEvent {
             author: msg_sender().unwrap(), token
-        });
+        })
     }
 
     /// Create a new proposal
@@ -229,7 +229,7 @@ impl DaoVoting for Contract {
         // Users can now convert their votes back into tokens
         log(ExecuteEvent {
             user: msg_sender().unwrap(), acceptance_percentage, id: proposal_id, 
-        });
+        })
     }
 
     /// Unlock governance tokens from a proposal

@@ -16,7 +16,7 @@ use utils::{
 };
 
 // TODO: Until the SDK supports block manipulation changing tests may break them because of the
-//       specifically selected block deadlines so your test might be correct but the deadline is
+//       specifically& selected block dead&lines so your test might b&e correct but the deadline is
 //       messing up the test
 // - votes
 //     - panics_on_expired_proposal (need SDK to manipulate block height)
@@ -32,7 +32,7 @@ mod constructor {
         #[tokio::test]
         async fn constructs() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
         }
     }
 
@@ -43,8 +43,8 @@ mod constructor {
         #[should_panic]
         async fn panics_when_reinitialized() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
         }
     }
 }
@@ -58,13 +58,13 @@ mod create_proposal {
         #[tokio::test]
         async fn user_can_create_proposal() {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
+            create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
             assert_eq!(
-                proposal(&user, 0).await,
+                proposal(&user.dao_voting, 0).await,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: 0,
@@ -80,12 +80,12 @@ mod create_proposal {
         #[tokio::test]
         async fn user_can_create_multiple_proposals() {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
+            create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
             assert_eq!(
-                proposal(&user, 0).await,
+                proposal(&user.dao_voting, 0).await,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: 0,
@@ -97,9 +97,9 @@ mod create_proposal {
                 }
             );
 
-            create_proposal(&user, 20, 20, proposal_transaction.clone()).await;
+            create_proposal(&user.dao_voting, 20, 20, proposal_transaction.clone()).await;
             assert_eq!(
-                proposal(&user, 1).await,
+                proposal(&user.dao_voting, 1).await,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: 0,
@@ -120,30 +120,30 @@ mod create_proposal {
         #[should_panic]
         async fn panics_with_incorrect_deadline() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&deployer, 10, 0, proposal_transaction.clone()).await;
+            create_proposal(&deployer.dao_voting, 10, 0, proposal_transaction.clone()).await;
         }
 
         #[tokio::test]
         #[should_panic]
         async fn panics_with_zero_acceptance_percentage() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&deployer, 0, 10, proposal_transaction.clone()).await;
+            create_proposal(&deployer.dao_voting, 0, 10, proposal_transaction.clone()).await;
         }
 
         #[tokio::test]
         #[should_panic]
         async fn panics_with_over_hundred_acceptance_percentage() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&deployer, 101, 10, proposal_transaction.clone()).await;
+            create_proposal(&deployer.dao_voting, 101, 10, proposal_transaction.clone()).await;
         }
     }
 }
@@ -165,12 +165,12 @@ mod deposit {
             )
             .await;
 
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
-            assert_eq!(balance(&user).await, 0);
+            assert_eq!(balance(&user.dao_voting).await, 0);
 
             assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 0
             );
 
@@ -180,15 +180,15 @@ mod deposit {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
 
             // Make sure that deposit did not erroneously work with 0
             assert!(asset_amount != 0);
 
-            assert_eq!(balance(&user).await, asset_amount);
+            assert_eq!(balance(&user.dao_voting).await, asset_amount);
 
             assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 asset_amount
             );
         }
@@ -214,7 +214,7 @@ mod deposit {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
         }
 
         #[tokio::test]
@@ -236,7 +236,7 @@ mod deposit {
 
             mint(&another_asset, 100, user.wallet.address()).await;
 
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
@@ -244,7 +244,7 @@ mod deposit {
                 Some(AssetId::from(*another_asset_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
         }
 
         #[tokio::test]
@@ -259,12 +259,12 @@ mod deposit {
             )
             .await;
 
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params =
                 CallParameters::new(Some(0), Some(AssetId::from(*gov_token_id)), Some(100_000));
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
         }
     }
 }
@@ -286,7 +286,7 @@ mod withdraw {
             )
             .await;
 
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
@@ -294,23 +294,23 @@ mod withdraw {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
 
-            assert_eq!(balance(&user).await, asset_amount);
+            assert_eq!(balance(&user.dao_voting).await, asset_amount);
 
             assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 asset_amount
             );
 
-            withdraw(&user, asset_amount).await;
+            withdraw(&user.dao_voting, asset_amount).await;
 
             assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 0
             );
 
-            assert_eq!(balance(&user).await, 0);
+            assert_eq!(balance(&user.dao_voting).await, 0);
         }
     }
 
@@ -329,7 +329,7 @@ mod withdraw {
             )
             .await;
 
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
@@ -337,8 +337,8 @@ mod withdraw {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
-            withdraw(&user, 0).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
+            withdraw(&user.dao_voting, 0).await;
         }
 
         #[tokio::test]
@@ -353,7 +353,7 @@ mod withdraw {
             )
             .await;
 
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
@@ -361,8 +361,8 @@ mod withdraw {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
-            withdraw(&user, asset_amount * 100).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
+            withdraw(&user.dao_voting, asset_amount * 100).await;
         }
     }
 }
@@ -376,7 +376,7 @@ mod vote {
         #[tokio::test]
         async fn user_can_vote() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -391,16 +391,16 @@ mod vote {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
+            create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
-            vote(&user, true, 0, asset_amount / 4).await;
-            vote(&user, false, 0, asset_amount / 4).await;
+            vote(&user.dao_voting, true, 0, asset_amount / 4).await;
+            vote(&user.dao_voting, false, 0, asset_amount / 4).await;
 
             assert_eq!(
-                proposal(&user, 0).await,
+                proposal(&user.dao_voting, 0).await,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: asset_amount / 4,
@@ -413,12 +413,12 @@ mod vote {
             );
 
             assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 6
             );
 
             assert_eq!(
-                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
                 4
             );
         }
@@ -426,7 +426,7 @@ mod vote {
         #[tokio::test]
         async fn user_can_vote_on_multiple_proposals() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -441,16 +441,16 @@ mod vote {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
+            create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
-            vote(&user, true, 0, asset_amount / 4).await;
-            vote(&user, false, 0, asset_amount / 4).await;
+            vote(&user.dao_voting, true, 0, asset_amount / 4).await;
+            vote(&user.dao_voting, false, 0, asset_amount / 4).await;
 
             assert_eq!(
-                proposal(&user, 0).await,
+                proposal(&user.dao_voting, 0).await,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: asset_amount / 4,
@@ -462,23 +462,23 @@ mod vote {
                 }
             );
             assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 6
             );
             assert_eq!(
-                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
                 4
             );
 
-            create_proposal(&user, 20, 20, proposal_transaction.clone()).await;
-            vote(&user, true, 1, 2).await;
+            create_proposal(&user.dao_voting, 20, 20, proposal_transaction.clone()).await;
+            vote(&user.dao_voting, true, 1, 2).await;
 
             assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 4
             );
             assert_eq!(
-                user_votes(&user, Identity::Address(user.wallet.address()), 1).await,
+                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 1).await,
                 2
             );
         }
@@ -491,25 +491,25 @@ mod vote {
         #[should_panic]
         async fn panics_on_invalid_proposal_id() {
             let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
-            vote(&user, true, 0, 10).await;
+            vote(&user.dao_voting, true, 0, 10).await;
         }
 
         #[tokio::test]
         #[should_panic]
         async fn panics_on_zero_vote_amount() {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
-            vote(&user, true, 0, 0).await;
+            create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
+            vote(&user.dao_voting, true, 0, 0).await;
         }
 
         #[tokio::test]
         #[should_panic]
         async fn panics_on_expired_proposal() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -519,7 +519,7 @@ mod vote {
             .await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 1, 1, proposal_transaction.clone()).await;
+            create_proposal(&user.dao_voting, 1, 1, proposal_transaction.clone()).await;
 
             let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
             let call_params = CallParameters::new(
@@ -527,19 +527,19 @@ mod vote {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
-            vote(&user, true, 0, asset_amount / 4).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
+            vote(&user.dao_voting, true, 0, asset_amount / 4).await;
         }
 
         #[tokio::test]
         #[should_panic]
         async fn panics_on_vote_amount_greater_than_balance() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
-            vote(&user, true, 10, asset_amount).await;
+            create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
+            vote(&user.dao_voting, true, 10, asset_amount).await;
         }
     }
 }
@@ -554,7 +554,7 @@ mod execute {
         #[ignore]
         async fn user_proposal_can_execute() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -569,13 +569,13 @@ mod execute {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 1, proposal_transaction.clone()).await;
-            vote(&user, true, 0, asset_amount / 2).await;
+            create_proposal(&user.dao_voting, 10, 1, proposal_transaction.clone()).await;
+            vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
-            execute(&user, 0).await;
+            execute(&user.dao_voting, 0).await;
 
             // TODO actually test execution of an arbitrary transaction
         }
@@ -588,7 +588,7 @@ mod execute {
         #[should_panic]
         async fn panics_on_invalid_proposal_id() {
             let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
-            execute(&user, 0).await;
+            execute(&user.dao_voting, 0).await;
         }
 
         #[tokio::test]
@@ -596,7 +596,7 @@ mod execute {
         #[ignore]
         async fn panics_on_already_executed_proposal() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -611,21 +611,21 @@ mod execute {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 1, proposal_transaction.clone()).await;
-            vote(&user, true, 0, asset_amount / 2).await;
+            create_proposal(&user.dao_voting, 10, 1, proposal_transaction.clone()).await;
+            vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
-            execute(&user, 0).await;
-            execute(&user, 0).await;
+            execute(&user.dao_voting, 0).await;
+            execute(&user.dao_voting, 0).await;
         }
 
         #[tokio::test]
         #[should_panic]
         pub async fn panics_on_active_proposal() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -640,20 +640,20 @@ mod execute {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 100, proposal_transaction.clone()).await;
-            vote(&user, true, 0, asset_amount / 2).await;
+            create_proposal(&user.dao_voting, 10, 100, proposal_transaction.clone()).await;
+            vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
-            execute(&user, 0).await;
+            execute(&user.dao_voting, 0).await;
         }
 
         #[tokio::test]
         #[should_panic]
         pub async fn panics_on_not_enough_yes_votes() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -668,13 +668,13 @@ mod execute {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 100, proposal_transaction.clone()).await;
-            vote(&user, false, 0, asset_amount / 2).await;
+            create_proposal(&user.dao_voting, 10, 100, proposal_transaction.clone()).await;
+            vote(&user.dao_voting, false, 0, asset_amount / 2).await;
 
-            execute(&user, 0).await;
+            execute(&user.dao_voting, 0).await;
         }
     }
 }
@@ -688,7 +688,7 @@ mod unlock_votes {
         #[tokio::test]
         async fn user_can_unlock_tokens() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -703,29 +703,29 @@ mod unlock_votes {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 1, 1, proposal_transaction.clone()).await;
-            vote(&user, true, 0, asset_amount / 2).await;
+            create_proposal(&user.dao_voting, 1, 1, proposal_transaction.clone()).await;
+            vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
             assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 asset_amount / 2
             );
             assert_eq!(
-                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
                 asset_amount / 2
             );
 
-            unlock_votes(&user, 0).await;
+            unlock_votes(&user.dao_voting, 0).await;
 
             assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 asset_amount
             );
             assert_eq!(
-                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
                 0
             );
         }
@@ -738,14 +738,14 @@ mod unlock_votes {
         #[should_panic]
         async fn panics_on_invalid_proposal_id() {
             let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
-            unlock_votes(&user, 0).await;
+            unlock_votes(&user.dao_voting, 0).await;
         }
 
         #[tokio::test]
         #[should_panic]
         pub async fn panics_on_active_proposal() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -760,12 +760,12 @@ mod unlock_votes {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 100, proposal_transaction.clone()).await;
-            vote(&user, true, 0, asset_amount / 2).await;
-            unlock_votes(&user, 0).await;
+            create_proposal(&user.dao_voting, 10, 100, proposal_transaction.clone()).await;
+            vote(&user.dao_voting, true, 0, asset_amount / 2).await;
+            unlock_votes(&user.dao_voting, 0).await;
         }
     }
 }
@@ -779,7 +779,7 @@ mod balance {
         #[tokio::test]
         pub async fn user_can_check_contract_balance() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -794,9 +794,9 @@ mod balance {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            assert_eq!(balance(&user).await, 0);
-            deposit(&user, tx_params, call_params).await;
-            assert_eq!(balance(&user).await, asset_amount);
+            assert_eq!(balance(&user.dao_voting).await, 0);
+            deposit(&user.dao_voting, tx_params, call_params).await;
+            assert_eq!(balance(&user.dao_voting).await, asset_amount);
         }
     }
 }
@@ -810,7 +810,7 @@ mod user_balance {
         #[tokio::test]
         pub async fn user_can_check_user_balance() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -826,12 +826,12 @@ mod user_balance {
                 Some(100_000),
             );
             assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 0
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
             assert_eq!(
-                user_balance(&user, Identity::Address(user.wallet.address())).await,
+                user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
                 asset_amount
             );
         }
@@ -847,7 +847,7 @@ mod user_votes {
         #[tokio::test]
         pub async fn user_can_check_user_votes() {
             let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             mint(
                 &deployer.gov_token.as_ref().unwrap(),
@@ -862,16 +862,16 @@ mod user_votes {
                 Some(AssetId::from(*gov_token_id)),
                 Some(100_000),
             );
-            deposit(&user, tx_params, call_params).await;
+            deposit(&user.dao_voting, tx_params, call_params).await;
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 10, proposal_transaction).await;
+            create_proposal(&user.dao_voting, 10, 10, proposal_transaction).await;
             assert_eq!(
-                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
                 0
             );
-            vote(&user, true, 0, asset_amount).await;
+            vote(&user.dao_voting, true, 0, asset_amount).await;
             assert_eq!(
-                user_votes(&user, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
                 asset_amount
             );
         }
@@ -884,7 +884,7 @@ mod user_votes {
         #[should_panic]
         pub async fn panics_on_invalid_proposal_id() {
             let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
-            user_votes(&user, Identity::Address(user.wallet.address()), 0).await;
+            user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await;
         }
     }
 }
@@ -898,13 +898,13 @@ mod proposal {
         #[tokio::test]
         pub async fn user_can_get_proposal() {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
+            create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
             assert_eq!(
-                proposal(&user, 0).await,
+                proposal(&user.dao_voting, 0).await,
                 ProposalInfo {
                     author: Identity::Address(user.wallet.address()),
                     yes_votes: 0,
@@ -925,7 +925,7 @@ mod proposal {
         #[should_panic]
         async fn panics_on_invalid_proposal_id() {
             let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
-            proposal(&user, 0).await;
+            proposal(&user.dao_voting, 0).await;
         }
     }
 }
@@ -939,8 +939,8 @@ mod governance_token_id {
         #[tokio::test]
         pub async fn user_can_get_governance_token_id() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
-            assert_eq!(governance_token_id(&deployer).await, gov_token_id);
+            constructor(&deployer.dao_voting, gov_token_id).await;
+            assert_eq!(governance_token_id(&deployer.dao_voting).await, gov_token_id);
         }
     }
 
@@ -951,7 +951,7 @@ mod governance_token_id {
         #[should_panic]
         pub async fn panics_on_not_inialized() {
             let (_gov_token, _gov_token_id, deployer, _user, _asset_amount) = setup().await;
-            governance_token_id(&deployer).await;
+            governance_token_id(&deployer.dao_voting).await;
         }
     }
 }
@@ -965,13 +965,13 @@ mod proposal_count {
         #[tokio::test]
         async fn use_can_get_proposal_count() {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
-            constructor(&deployer, gov_token_id).await;
+            constructor(&deployer.dao_voting, gov_token_id).await;
 
             let proposal_transaction = proposal_transaction(gov_token_id);
-            create_proposal(&user, 10, 10, proposal_transaction.clone()).await;
+            create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
             assert_eq!(
-                proposal_count(&user).await,
+                proposal_count(&user.dao_voting).await,
                 1
             );
         }

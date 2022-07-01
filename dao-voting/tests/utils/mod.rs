@@ -14,75 +14,72 @@ pub struct Metadata {
 }
 
 pub mod abi_calls {
+    use fuels::contract::contract::CallResponse;
+
     use super::*;
 
-    pub async fn constructor(user: &Metadata, token: ContractId) {
-        user.dao_voting
+    pub async fn constructor(contract: &DaoVoting, token: ContractId) -> CallResponse<()> {
+        contract
             .constructor(token)
             .call()
             .await
             .unwrap()
-            .value
     }
 
     pub async fn create_proposal(
-        user: &Metadata,
+        contract: &DaoVoting,
         acceptance_percentage: u64,
         deadline: u64,
         proposal: Proposal,
-    ) {
-        user.dao_voting
+    ) -> CallResponse<()> {
+        contract
             .create_proposal(acceptance_percentage, deadline, proposal)
             .call()
             .await
             .unwrap()
-            .value;
     }
 
-    pub async fn deposit(user: &Metadata, tx_params: TxParameters, call_params: CallParameters) {
-        user.dao_voting
+    pub async fn deposit(contract: &DaoVoting, tx_params: TxParameters, call_params: CallParameters) -> CallResponse<()> {
+        contract
             .deposit()
             .tx_params(tx_params)
             .call_params(call_params)
             .call()
             .await
             .unwrap()
-            .value;
     }
 
-    pub async fn withdraw(user: &Metadata, amount: u64) {
-        user.dao_voting
+    pub async fn withdraw(contract: &DaoVoting, amount: u64) -> CallResponse<()> {
+        contract
             .withdraw(amount)
             .append_variable_outputs(1)
             .call()
             .await
             .unwrap()
-            .value;
     }
 
-    pub async fn vote(user: &Metadata, approve: bool, proposal_id: u64, vote_amount: u64) {
-        user.dao_voting
+    pub async fn vote(contract: &DaoVoting, approve: bool, proposal_id: u64, vote_amount: u64) -> CallResponse<()> {
+        contract
             .vote(approve, proposal_id, vote_amount)
             .call()
             .await
             .unwrap()
-            .value;
     }
 
-    pub async fn execute(user: &Metadata, id: u64) {
-        user.dao_voting.execute(id).call().await.unwrap();
+    pub async fn execute(contract: &DaoVoting, id: u64) -> CallResponse<()> {
+        contract.execute(id).call().await.unwrap()
     }
 
-    pub async fn unlock_votes(user: &Metadata, id: u64) {
-        user.dao_voting.unlock_votes(id).call().await.unwrap();
+    pub async fn unlock_votes(contract: &DaoVoting, id: u64) -> CallResponse<()> {
+        contract.unlock_votes(id).call().await.unwrap()
     }
 
-    pub async fn balance(user: &Metadata) -> u64 {
-        user.dao_voting.balance().call().await.unwrap().value
+    pub async fn balance(contract: &DaoVoting) -> u64 {
+        contract.balance().call().await.unwrap().value
     }
 
-    pub async fn user_balance(user: &Metadata, user_identity: Identity) -> u64 {
-        user.dao_voting
+    pub async fn user_balance(contract: &DaoVoting, user_identity: Identity) -> u64 {
+        contract
             .user_balance(user_identity)
             .call()
             .await
@@ -90,8 +87,8 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn user_votes(user: &Metadata, user_identity: Identity, id: u64) -> u64 {
-        user.dao_voting
+    pub async fn user_votes(contract: &DaoVoting, user_identity: Identity, id: u64) -> u64 {
+        contract
             .user_votes(id, user_identity)
             .call()
             .await
@@ -99,12 +96,12 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn proposal(user: &Metadata, id: u64) -> ProposalInfo {
-        user.dao_voting.proposal(id).call().await.unwrap().value
+    pub async fn proposal(contract: &DaoVoting, id: u64) -> ProposalInfo {
+        contract.proposal(id).call().await.unwrap().value
     }
 
-    pub async fn governance_token_id(user: &Metadata) -> ContractId {
-        user.dao_voting
+    pub async fn governance_token_id(contract: &DaoVoting) -> ContractId {
+        contract
             .governance_token_id()
             .call()
             .await
@@ -112,8 +109,8 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn proposal_count(user: &Metadata) -> u64 {
-        user.dao_voting.proposal_count().call().await.unwrap().value
+    pub async fn proposal_count(contract: &DaoVoting) -> u64 {
+        contract.proposal_count().call().await.unwrap().value
     }
 }
 
