@@ -22,7 +22,7 @@ use std::{
 };
 
 use abi::DaoVoting;
-use data_structures::{Proposal, ProposalInfo, State};
+use data_structures::{Proposal, ProposalInfo, State, Votes};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
 use events::{
     CreatePropEvent,
@@ -51,7 +51,7 @@ storage {
     token: ContractId,
     /// The amount of votes a user has used on a proposal
     votes: StorageMap<(Identity,
-    u64), u64>, 
+    u64), Votes>,
 }
 
 impl DaoVoting for Contract {
@@ -181,14 +181,17 @@ impl DaoVoting for Contract {
 
         require(vote_amount <= user_balance, UserError::InsufficientBalance);
 
+        let mut votes = storage.votes.get((user, proposal_id));
         if approve {
             proposal.yes_votes += vote_amount;
+            votes.yes_votes += vote_amount;
         } else {
             proposal.no_votes += vote_amount;
+            votes.no_votes += vote_amount;
         };
 
         storage.balances.insert(user, user_balance - vote_amount);
-        storage.votes.insert((user, proposal_id), storage.votes.get((user, proposal_id)) + vote_amount);
+        storage.votes.insert((user, proposal_id), votes);
         storage.proposals.insert(proposal_id, proposal);
 
         log(VoteEvent {
@@ -256,12 +259,13 @@ impl DaoVoting for Contract {
         let user: Identity = msg_sender().unwrap();
         let votes = storage.votes.get((user, proposal_id));
 
-        storage.votes.insert((user, proposal_id), 0);
+        storage.votes.insert((user, proposal_id), Votes { no_votes: 0, yes_votes: 0 });
 
-        storage.balances.insert(user, storage.balances.get(user) + votes);
+        let vote_amount = votes.yes_votes + votes.no_votes;
+        storage.balances.insert(user, storage.balances.get(user) + vote_amount);
 
         log(UnlockVotesEvent {
-            id: proposal_id, user, vote_amount: votes, 
+            id: proposal_id, user, vote_amount, 
         });
     }
 
@@ -285,7 +289,7 @@ impl DaoVoting for Contract {
     ///
     /// - `proposal_id` - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count)
     /// - `user` - Identity to look up votes spent on a specified proposal
-    #[storage(read)]fn user_votes(proposal_id: u64, user: Identity) -> u64 {
+    #[storage(read)]fn user_votes(proposal_id: u64, user: Identity) -> Votes {
         validate_id(proposal_id, storage.proposal_count);
         storage.votes.get((user, proposal_id))
     }

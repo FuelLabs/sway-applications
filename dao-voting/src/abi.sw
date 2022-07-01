@@ -4,7 +4,7 @@ dep data_structures;
 
 use std::{contract_id::ContractId, identity::Identity};
 
-use data_structures::{Proposal, ProposalInfo};
+use data_structures::{Proposal, ProposalInfo, Votes};
 
 abi DaoVoting {
     #[storage(read, write)] fn constructor(gov_token: ContractId);
@@ -16,7 +16,7 @@ abi DaoVoting {
     #[storage(read, write)] fn unlock_votes(proposal_id: u64);
     #[storage(read)] fn balance() -> u64;
     #[storage(read)] fn user_balance(user: Identity) -> u64;
-    #[storage(read)] fn user_votes(proposal_id: u64, user: Identity) -> u64;
+    #[storage(read)] fn user_votes(proposal_id: u64, user: Identity) -> Votes;
     #[storage(read)] fn proposal(id: u64) -> ProposalInfo;
     #[storage(read)] fn governance_token_id() -> ContractId;
     #[storage(read)] fn proposal_count() -> u64;

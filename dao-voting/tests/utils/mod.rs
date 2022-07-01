@@ -88,7 +88,7 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn user_votes(contract: &DaoVoting, user_identity: Identity, id: u64) -> u64 {
+    pub async fn user_votes(contract: &DaoVoting, user_identity: Identity, id: u64) -> Votes {
         contract
             .user_votes(id, user_identity)
             .call()

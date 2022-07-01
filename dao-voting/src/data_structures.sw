@@ -70,3 +70,11 @@ impl Eq for State {
         }
     }
 }
+
+pub struct Votes {
+    /// Stores the number of no votes for a proposal
+    no_votes: u64,
+
+    /// Stores the number of yes votes for a proposal
+    yes_votes: u64,
+}
