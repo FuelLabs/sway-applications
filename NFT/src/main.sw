@@ -13,13 +13,11 @@ use events::{ApprovalEvent, BurnEvent, MintEvent, OperatorEvent, TransferEvent};
 use std::{
     assert::require,
     chain::auth::{AuthError, msg_sender},
-    context::{call_frames::{contract_id, msg_asset_id}, msg_amount, this_balance},
     hash::sha256,
-    identity::*,
+    identity::Identity,
     logging::log,
-    option::*,
-    result::*,
-    revert::revert,
+    option::Option,
+    result::Result,
     storage::StorageMap,
     vec::Vec,
 };
@@ -35,18 +33,15 @@ storage {
     /// Used of O(1) lookup of the number of tokens owned by each Identity
     /// This increments or decrements when minting, transfer of ownership, and burning of tokens
     /// Map(Identity => balance)
-    balances: StorageMap<Identity,u64>, 
-    
-    /// Stores the Metadata for each token based on token id
+    balances: StorageMap<Identity,
+    u64>, /// Stores the Metadata for each token based on token id
     /// Map(token_id => Metadata)
-    meta_data: StorageMap<u64,Option<MetaData>>, 
-    
-    /// Maps a b256 hash of the (owner, operator) identities and stores whether the
+    meta_data: StorageMap<u64,
+    Option<MetaData>>, /// Maps a b256 hash of the (owner, operator) identities and stores whether the
     /// operator is allowed to transfer ALL tokens on the owner's behalf
     /// Map(hash => approved)
-    operator_approval: StorageMap<b256,bool>, 
-
-    /// The total number of tokens that have been minted
+    operator_approval: StorageMap<b256,
+    bool>, /// The total number of tokens that have been minted
     /// This should only be incremented
     token_count: u64,
 
@@ -68,8 +63,8 @@ impl NFT for Contract {
     ///
     /// # Reverts
     ///
-    /// * The constructor function has already been called.
-    /// * The `token_count` is set to 0.
+    /// * When the constructor function has already been called.
+    /// * When the `token_count` is set to 0.
     #[storage(read, write)]fn constructor(admin: Identity, access_control: bool, token_supply: u64) {
         // This function can only be called once so if the token supply is already set it has
         // already been called
@@ -92,7 +87,6 @@ impl NFT for Contract {
     ///
     /// # Reverts
     ///
-    /// * When the `amount` is set to 0.
     /// * When the sender attempts to mint more tokens than total supply.
     /// * When the sender is not the admin and `access_control` is set.
     #[storage(read, write)]fn mint(to: Identity, amount: u64) {
@@ -111,9 +105,7 @@ impl NFT for Contract {
             storage.token_count = storage.token_count + 1;
 
             // Create the metadata for this new token with the owner
-            let meta_data = MetaData {
-                owner: to, approved: Option::None()
-            };
+            let meta_data = ~MetaData::new(Option::None(), to);
             storage.meta_data.insert(storage.token_count, Option::Some(meta_data));
 
             // Increase the balance of the new owner
@@ -309,11 +301,17 @@ impl NFT for Contract {
 
         match meta_data {
             Option::Some(MetaData) => {
-                let meta_data: MetaData = meta_data.unwrap();
+                // This token id maps to an existing token
+                let meta_data = meta_data.unwrap();
                 let approved = meta_data.approved;
 
+                // If there is a `Identity` that is approved, return that `Identity`
+                // Otherwise return `None`
                 match approved {
-                    Option::Some(Identity) => Option::Some(approved.unwrap()), Option::None(Identity) => Option::None(), 
+                    Option::Some(Identity) => {
+                        Option::Some(approved.unwrap())
+                    },
+                    Option::None(Identity) => Option::None(), 
                 }
             },
             Option::None(MetaData) => Option::None(), 
@@ -349,6 +347,8 @@ impl NFT for Contract {
 
         match meta_data {
             Option::Some(MetaData) => {
+                // This token id maps to an existing token
+                // Return the owner of the token
                 let meta_data: MetaData = meta_data.unwrap();
                 Option::Some(meta_data.owner)
             },
