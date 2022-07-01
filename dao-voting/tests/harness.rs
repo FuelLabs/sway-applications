@@ -33,6 +33,10 @@ mod constructor {
         async fn constructs() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer.dao_voting, gov_token_id).await;
+            assert_eq!(
+                governance_token_id(&deployer.dao_voting).await,
+                gov_token_id
+            );
         }
     }
 
