@@ -121,15 +121,15 @@ pub mod abi_calls {
 
     pub async fn set_approval_for_all(
         call_wallet: &Metadata,
-        owner: &Metadata,
-        operator: &Metadata,
+        owner: Identity,
+        operator: Identity,
         approve: bool,
     ) -> CallResponse<()> {
         call_wallet
             .nft
             .set_approval_for_all(
-                nft_mod::Identity::Address(owner.wallet.address()),
-                nft_mod::Identity::Address(operator.wallet.address()),
+                owner,
+                operator,
                 approve,
             )
             .call()
@@ -170,14 +170,14 @@ pub mod abi_calls {
 
     pub async fn is_approved_for_all(
         call_wallet: &Metadata,
-        owner: &Metadata,
-        operator: &Metadata,
+        owner: Identity,
+        operator: Identity,
     ) -> bool {
         call_wallet
             .nft
             .is_approved_for_all(
-                nft_mod::Identity::Address(owner.wallet.address()),
-                nft_mod::Identity::Address(operator.wallet.address()),
+                owner,
+                operator,
             )
             .call()
             .await

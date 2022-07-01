@@ -436,10 +436,18 @@ mod is_approved_for_all {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
-            set_approval_for_all(&owner1, &owner1, &owner2, true).await;
 
-            assert_eq! {is_approved_for_all(&owner1, &owner1, &owner2).await, true};
-            assert_eq! {is_approved_for_all(&owner1, &owner2, &owner1).await, false};
+            let owner = Identity::Address(owner1.wallet.address());
+            let operator = Identity::Address(owner2.wallet.address());
+            set_approval_for_all(&owner1, owner, operator, true).await;
+
+            let owner = Identity::Address(owner1.wallet.address());
+            let operator = Identity::Address(owner2.wallet.address());
+            assert_eq! {is_approved_for_all(&owner1, owner, operator).await, true};
+
+            let owner = Identity::Address(owner1.wallet.address());
+            let operator = Identity::Address(owner2.wallet.address());
+            assert_eq! {is_approved_for_all(&owner1, operator, owner).await, false};
         }
     }
 }
@@ -483,10 +491,17 @@ mod set_approval_for_all {
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
 
-            set_approval_for_all(&owner1, &owner1, &owner2, true).await;
+            let owner = Identity::Address(owner1.wallet.address());
+            let operator = Identity::Address(owner2.wallet.address());
+            set_approval_for_all(&owner1, owner, operator, true).await;
 
-            assert_eq!(is_approved_for_all(&owner1, &owner1, &owner2).await, true);
-            assert_eq!(is_approved_for_all(&owner1, &owner2, &owner1).await, false);
+            let owner = Identity::Address(owner1.wallet.address());
+            let operator = Identity::Address(owner2.wallet.address());
+            assert_eq!(is_approved_for_all(&owner1, owner, operator).await, true);
+
+            let owner = Identity::Address(owner1.wallet.address());
+            let operator = Identity::Address(owner2.wallet.address());
+            assert_eq!(is_approved_for_all(&owner1, operator, owner).await, false);
         }
     }
 
@@ -501,7 +516,9 @@ mod set_approval_for_all {
 
             constructor(&deploy_wallet, Option::None(), false, 1).await;
 
-            set_approval_for_all(&owner2, &owner1, &owner2, true).await;
+            let owner = Identity::Address(owner1.wallet.address());
+            let operator = Identity::Address(owner2.wallet.address());
+            set_approval_for_all(&owner2, owner, operator, true).await;
         }
     }
 }
@@ -568,7 +585,9 @@ mod transfer_from {
             let minter = Identity::Address(owner1.wallet.address());
             mint(&owner1, minter, 1).await;
 
-            set_approval_for_all(&owner1, &owner1, &owner2, true).await;
+            let owner = Identity::Address(owner1.wallet.address());
+            let operator = Identity::Address(owner2.wallet.address());
+            set_approval_for_all(&owner1, owner, operator, true).await;
 
             let from = Identity::Address(owner1.wallet.address());
             let to = Identity::Address(owner2.wallet.address());
