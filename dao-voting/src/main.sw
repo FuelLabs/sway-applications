@@ -223,12 +223,13 @@ impl DaoVoting for Contract {
         let acceptance_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
         require(proposal.acceptance_percentage <= acceptance_percentage, ProposalError::InsufficientApprovals);
 
+        proposal.executed = true;
+        storage.proposals.insert(proposal_id, proposal);
+        
         asm(call_data: proposal.proposal_transaction.call_data, amount: proposal.proposal_transaction.amount, asset: proposal.proposal_transaction.asset, gas: proposal.proposal_transaction.gas) {
             call call_data amount asset gas;
         }
 
-        proposal.executed = true;
-        storage.proposals.insert(proposal_id, proposal);
         // Users can now convert their votes back into tokens
         log(ExecuteEvent {
             user: msg_sender().unwrap(), acceptance_percentage, id: proposal_id, 
