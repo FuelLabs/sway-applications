@@ -254,15 +254,15 @@ impl DaoVoting for Contract {
         let proposal = storage.proposals.get(proposal_id);
         require(proposal.deadline < height(), ProposalError::ProposalStillActive);
 
-        let sender: Identity = msg_sender().unwrap();
-        let votes = storage.votes.get((sender, proposal_id));
+        let user: Identity = msg_sender().unwrap();
+        let votes = storage.votes.get((user, proposal_id));
 
-        storage.votes.insert((sender, proposal_id), 0);
+        storage.votes.insert((user, proposal_id), 0);
 
-        storage.balances.insert(sender, storage.balances.get(sender) + votes);
+        storage.balances.insert(user, storage.balances.get(user) + votes);
 
         log(UnlockVotesEvent {
-            id: proposal_id, sender, vote_amount: votes, 
+            id: proposal_id, user, vote_amount: votes, 
         });
     }
 

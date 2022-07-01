@@ -43,7 +43,7 @@ pub struct UnlockVotesEvent {
     id: u64,
 
     /// User who unlocks the tokens
-    sender: Identity,
+    user: Identity,
 
     /// Amount of votes unlocked
     vote_amount: u64,
