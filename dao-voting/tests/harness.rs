@@ -9,7 +9,7 @@ use fuels::{
 use utils::{
     abi_calls::{
         balance, constructor, create_proposal, deposit, execute, governance_token_id, proposal,
-        unlock_votes, user_balance, user_votes, vote, withdraw, proposal_count,
+        proposal_count, unlock_votes, user_balance, user_votes, vote, withdraw,
     },
     test_helpers::{mint, proposal_transaction, setup},
     GovToken, Identity, ProposalInfo, Votes,
@@ -249,7 +249,7 @@ mod deposit {
                 user.wallet.address(),
             )
             .await;
-            
+
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -279,7 +279,6 @@ mod deposit {
 
             constructor(&deployer.dao_voting, gov_token_id).await;
 
-            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*another_asset_id)),
@@ -302,7 +301,6 @@ mod deposit {
 
             constructor(&deployer.dao_voting, gov_token_id).await;
 
-            
             let call_params =
                 CallParameters::new(Some(0), Some(AssetId::from(*gov_token_id)), Some(100_000));
             deposit(&user.dao_voting, call_params).await;
@@ -329,7 +327,6 @@ mod withdraw {
 
             constructor(&deployer.dao_voting, gov_token_id).await;
 
-            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -372,7 +369,6 @@ mod withdraw {
 
             constructor(&deployer.dao_voting, gov_token_id).await;
 
-            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -396,7 +392,6 @@ mod withdraw {
 
             constructor(&deployer.dao_voting, gov_token_id).await;
 
-            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -426,7 +421,6 @@ mod vote {
             )
             .await;
 
-            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -459,7 +453,12 @@ mod vote {
             );
 
             assert_eq!(
-                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(
+                    &user.dao_voting,
+                    Identity::Address(user.wallet.address()),
+                    0
+                )
+                .await,
                 Votes {
                     no_votes: 2,
                     yes_votes: 2,
@@ -498,7 +497,12 @@ mod vote {
             );
 
             assert_eq!(
-                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(
+                    &user.dao_voting,
+                    Identity::Address(user.wallet.address()),
+                    0
+                )
+                .await,
                 Votes {
                     no_votes: 2,
                     yes_votes: 2,
@@ -506,7 +510,7 @@ mod vote {
             );
 
             create_proposal(&user.dao_voting, 20, 20, proposal_transaction.clone()).await;
-            
+
             vote(&user.dao_voting, true, 1, asset_amount / 4).await;
 
             assert_eq!(
@@ -515,7 +519,12 @@ mod vote {
             );
 
             assert_eq!(
-                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 1).await,
+                user_votes(
+                    &user.dao_voting,
+                    Identity::Address(user.wallet.address()),
+                    1
+                )
+                .await,
                 Votes {
                     yes_votes: 2,
                     no_votes: 0,
@@ -561,7 +570,6 @@ mod vote {
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 1, 1, proposal_transaction.clone()).await;
 
-            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -605,7 +613,6 @@ mod execute {
             )
             .await;
 
-            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -647,7 +654,6 @@ mod execute {
             )
             .await;
 
-            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -676,7 +682,6 @@ mod execute {
             )
             .await;
 
-            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -704,7 +709,6 @@ mod execute {
             )
             .await;
 
-            
             let call_params = CallParameters::new(
                 Some(asset_amount),
                 Some(AssetId::from(*gov_token_id)),
@@ -755,7 +759,12 @@ mod unlock_votes {
                 asset_amount / 2
             );
             assert_eq!(
-                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(
+                    &user.dao_voting,
+                    Identity::Address(user.wallet.address()),
+                    0
+                )
+                .await,
                 Votes {
                     yes_votes: asset_amount / 2,
                     no_votes: 0
@@ -769,7 +778,12 @@ mod unlock_votes {
                 asset_amount
             );
             assert_eq!(
-                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(
+                    &user.dao_voting,
+                    Identity::Address(user.wallet.address()),
+                    0
+                )
+                .await,
                 Votes {
                     yes_votes: 0,
                     no_votes: 0
@@ -805,7 +819,12 @@ mod unlock_votes {
                 asset_amount / 2
             );
             assert_eq!(
-                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(
+                    &user.dao_voting,
+                    Identity::Address(user.wallet.address()),
+                    0
+                )
+                .await,
                 Votes {
                     yes_votes: asset_amount / 2,
                     no_votes: 0
@@ -819,7 +838,12 @@ mod unlock_votes {
                 asset_amount
             );
             assert_eq!(
-                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(
+                    &user.dao_voting,
+                    Identity::Address(user.wallet.address()),
+                    0
+                )
+                .await,
                 Votes {
                     yes_votes: 0,
                     no_votes: 0
@@ -834,7 +858,12 @@ mod unlock_votes {
                 asset_amount / 2
             );
             assert_eq!(
-                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 1).await,
+                user_votes(
+                    &user.dao_voting,
+                    Identity::Address(user.wallet.address()),
+                    1
+                )
+                .await,
                 Votes {
                     yes_votes: asset_amount / 2,
                     no_votes: 0
@@ -848,7 +877,12 @@ mod unlock_votes {
                 asset_amount
             );
             assert_eq!(
-                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 1).await,
+                user_votes(
+                    &user.dao_voting,
+                    Identity::Address(user.wallet.address()),
+                    1
+                )
+                .await,
                 Votes {
                     yes_votes: 0,
                     no_votes: 0
@@ -988,7 +1022,12 @@ mod user_votes {
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 10, 10, proposal_transaction).await;
             assert_eq!(
-                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(
+                    &user.dao_voting,
+                    Identity::Address(user.wallet.address()),
+                    0
+                )
+                .await,
                 Votes {
                     yes_votes: 0,
                     no_votes: 0
@@ -996,7 +1035,12 @@ mod user_votes {
             );
             vote(&user.dao_voting, true, 0, asset_amount).await;
             assert_eq!(
-                user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await,
+                user_votes(
+                    &user.dao_voting,
+                    Identity::Address(user.wallet.address()),
+                    0
+                )
+                .await,
                 Votes {
                     yes_votes: asset_amount,
                     no_votes: 0
@@ -1012,7 +1056,12 @@ mod user_votes {
         #[should_panic]
         pub async fn panics_on_invalid_proposal_id() {
             let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
-            user_votes(&user.dao_voting, Identity::Address(user.wallet.address()), 0).await;
+            user_votes(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address()),
+                0,
+            )
+            .await;
         }
     }
 }
@@ -1068,7 +1117,10 @@ mod governance_token_id {
         pub async fn user_can_get_governance_token_id() {
             let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
             constructor(&deployer.dao_voting, gov_token_id).await;
-            assert_eq!(governance_token_id(&deployer.dao_voting).await, gov_token_id);
+            assert_eq!(
+                governance_token_id(&deployer.dao_voting).await,
+                gov_token_id
+            );
         }
     }
 
@@ -1088,8 +1140,8 @@ mod proposal_count {
     use super::*;
 
     mod success {
-        use super::*; 
-        
+        use super::*;
+
         #[tokio::test]
         async fn use_can_get_proposal_count() {
             let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
@@ -1098,10 +1150,7 @@ mod proposal_count {
             let proposal_transaction = proposal_transaction(gov_token_id);
             create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
-            assert_eq!(
-                proposal_count(&user.dao_voting).await,
-                1
-            );
+            assert_eq!(proposal_count(&user.dao_voting).await, 1);
         }
     }
 }

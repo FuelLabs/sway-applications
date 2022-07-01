@@ -51,7 +51,7 @@ storage {
     token: ContractId,
     /// The amount of votes a user has used on a proposal
     votes: StorageMap<(Identity,
-    u64), Votes>,
+    u64), Votes>, 
 }
 
 impl DaoVoting for Contract {
@@ -259,7 +259,9 @@ impl DaoVoting for Contract {
         let user: Identity = msg_sender().unwrap();
         let votes = storage.votes.get((user, proposal_id));
 
-        storage.votes.insert((user, proposal_id), Votes { no_votes: 0, yes_votes: 0 });
+        storage.votes.insert((user, proposal_id), Votes {
+            no_votes: 0, yes_votes: 0
+        });
 
         let vote_amount = votes.yes_votes + votes.no_votes;
         storage.balances.insert(user, storage.balances.get(user) + vote_amount);

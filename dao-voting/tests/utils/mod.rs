@@ -19,11 +19,7 @@ pub mod abi_calls {
     use super::*;
 
     pub async fn constructor(contract: &DaoVoting, token: ContractId) -> CallResponse<()> {
-        contract
-            .constructor(token)
-            .call()
-            .await
-            .unwrap()
+        contract.constructor(token).call().await.unwrap()
     }
 
     pub async fn create_proposal(
@@ -59,7 +55,12 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn vote(contract: &DaoVoting, approve: bool, proposal_id: u64, vote_amount: u64) -> CallResponse<()> {
+    pub async fn vote(
+        contract: &DaoVoting,
+        approve: bool,
+        proposal_id: u64,
+        vote_amount: u64,
+    ) -> CallResponse<()> {
         contract
             .vote(approve, proposal_id, vote_amount)
             .call()
@@ -102,12 +103,7 @@ pub mod abi_calls {
     }
 
     pub async fn governance_token_id(contract: &DaoVoting) -> ContractId {
-        contract
-            .governance_token_id()
-            .call()
-            .await
-            .unwrap()
-            .value
+        contract.governance_token_id().call().await.unwrap().value
     }
 
     pub async fn proposal_count(contract: &DaoVoting) -> u64 {

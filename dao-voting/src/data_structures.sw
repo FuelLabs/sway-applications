@@ -47,13 +47,10 @@ pub struct ProposalInfo {
 impl ProposalInfo {
     fn new(acceptance_percentage: u64, author: Identity, duration: u64, proposal_transaction: Proposal) -> Self {
         ProposalInfo {
-            acceptance_percentage,
-            author,
-            deadline: height() + duration,
+            acceptance_percentage, author, deadline: height() + duration,
             executed: false,
             no_votes: 0,
-            proposal_transaction,
-            yes_votes: 0,
+            proposal_transaction, yes_votes: 0,
         }
     }
 }
