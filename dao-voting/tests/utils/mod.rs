@@ -1,4 +1,4 @@
-use fuels::{prelude::*, tx::ContractId, contract::contract::CallResponse};
+use fuels::{contract::contract::CallResponse, prelude::*, tx::ContractId};
 
 // Load abi from json
 abigen!(DaoVoting, "out/debug/dao-voting-abi.json");
