@@ -210,7 +210,8 @@ impl DaoVoting for Contract {
     #[storage(read, write)]fn execute(proposal_id: u64) {
         validate_id(proposal_id, storage.proposal_count);
 
-        let proposal = storage.proposals.get(proposal_id);
+        let mut proposal = storage.proposals.get(proposal_id);
+        require(!proposal.executed, ProposalError::ProposalExecuted);
         require(proposal.deadline < height(), ProposalError::ProposalStillActive);
 
         // TODO figure out how to prevent approval percentage from overflowing
@@ -222,6 +223,9 @@ impl DaoVoting for Contract {
         asm(call_data: proposal.proposal_transaction.call_data, amount: proposal.proposal_transaction.amount, asset: proposal.proposal_transaction.asset, gas: proposal.proposal_transaction.gas) {
             call call_data amount asset gas;
         }
+
+        proposal.executed = true;
+        storage.proposals.insert(proposal_id, proposal);
         // Users can now convert their votes back into tokens
         log(ExecuteEvent {
             acceptance_percentage, id: proposal_id, 

@@ -72,6 +72,7 @@ mod create_proposal {
                     acceptance_percentage: 10,
                     proposal_transaction,
                     deadline: 13,
+                    executed: false,
                 }
             );
         }
@@ -92,6 +93,7 @@ mod create_proposal {
                     acceptance_percentage: 10,
                     proposal_transaction: proposal_transaction.clone(),
                     deadline: 13,
+                    executed: false,
                 }
             );
 
@@ -105,6 +107,7 @@ mod create_proposal {
                     acceptance_percentage: 20,
                     proposal_transaction: proposal_transaction.clone(),
                     deadline: 25,
+                    executed: false,
                 }
             );
         }
@@ -405,6 +408,7 @@ mod vote {
                     acceptance_percentage: 10,
                     proposal_transaction,
                     deadline: 15,
+                    executed: false,
                 }
             );
 
@@ -454,6 +458,7 @@ mod vote {
                     acceptance_percentage: 10,
                     proposal_transaction: proposal_transaction.clone(),
                     deadline: 15,
+                    executed: false
                 }
             );
             assert_eq!(
@@ -878,6 +883,7 @@ mod proposal {
                     acceptance_percentage: 10,
                     proposal_transaction,
                     deadline: 13,
+                    executed: false,
                 }
             );
         }

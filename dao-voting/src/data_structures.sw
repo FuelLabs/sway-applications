@@ -34,6 +34,8 @@ pub struct ProposalInfo {
     /// Represents an end time (block height) for proposals
     /// Proposals can be voted on as long as the block height has not exceeded the deadline
     deadline: u64,
+    /// Whether or not the proposal has been executed
+    executed: bool,
     /// The number of no votes for a proposal
     no_votes: u64,
     /// Data necessary to execute an arbitrary transaction.
@@ -48,6 +50,7 @@ impl ProposalInfo {
             acceptance_percentage,
             author,
             deadline: height() + duration,
+            executed: false,
             no_votes: 0,
             proposal_transaction,
             yes_votes: 0,

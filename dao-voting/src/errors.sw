@@ -12,6 +12,7 @@ pub enum InitializationError {
 
 pub enum ProposalError {
     InsufficientApprovals: (),
+    ProposalExecuted: (),
     ProposalExpired: (),
     ProposalStillActive: (),
 }
