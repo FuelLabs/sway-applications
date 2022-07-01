@@ -31,7 +31,8 @@ pub struct ProposalInfo {
     acceptance_percentage: u64,
     /// Address or contract which created the proposal
     author: Identity,
-    /// Amount of blocks a proposal is valid for after creation
+    /// Represents an end time (block height) for proposals
+    /// Proposals can be voted on as long as the block height has not exceeded the deadline
     deadline: u64,
     /// The number of no votes for a proposal
     no_votes: u64,
