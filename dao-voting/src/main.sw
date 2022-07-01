@@ -119,12 +119,12 @@ impl DaoVoting for Contract {
         require(storage.token == msg_asset_id(), UserError::IncorrectAssetSent);
         require(0 < msg_amount(), UserError::AmountCannotBeZero);
 
-        let sender = msg_sender().unwrap();
+        let user = msg_sender().unwrap();
 
-        storage.balances.insert(sender, msg_amount() + storage.balances.get(sender));
+        storage.balances.insert(user, msg_amount() + storage.balances.get(user));
 
         log(DepositEvent {
-            amount: msg_amount(), user: sender
+            amount: msg_amount(), user: user
         });
     }
 
@@ -140,18 +140,18 @@ impl DaoVoting for Contract {
     /// * When the user tries to withdraw more than their balance
     #[storage(read, write)]fn withdraw(amount: u64) {
         require(0 < amount, UserError::AmountCannotBeZero);
-        let sender: Identity = msg_sender().unwrap();
+        let user: Identity = msg_sender().unwrap();
 
-        let prev_balance = storage.balances.get(sender);
+        let prev_balance = storage.balances.get(user);
         require(amount <= prev_balance, UserError::InsufficientBalance);
 
-        storage.balances.insert(sender, prev_balance - amount);
+        storage.balances.insert(user, prev_balance - amount);
 
         // Transfer the asset back to the user
-        transfer(amount, storage.token, sender);
+        transfer(amount, storage.token, user);
 
         log(WithdrawEvent {
-            amount, user: sender, 
+            amount, user: user, 
         })
     }
 
@@ -176,10 +176,10 @@ impl DaoVoting for Contract {
         let mut proposal = storage.proposals.get(proposal_id);
         require(height() <= proposal.deadline, ProposalError::ProposalExpired);
 
-        let sender: Identity = msg_sender().unwrap();
-        let sender_balance = storage.balances.get(sender);
+        let user = msg_sender().unwrap();
+        let user_balance = storage.balances.get(user);
 
-        require(vote_amount <= sender_balance, UserError::InsufficientBalance);
+        require(vote_amount <= user_balance, UserError::InsufficientBalance);
 
         if approve {
             proposal.yes_votes += vote_amount;
@@ -187,12 +187,12 @@ impl DaoVoting for Contract {
             proposal.no_votes += vote_amount;
         };
 
-        storage.balances.insert(sender, sender_balance - vote_amount);
-        storage.votes.insert((sender, proposal_id), storage.votes.get((sender, proposal_id)) + vote_amount);
+        storage.balances.insert(user, user_balance - vote_amount);
+        storage.votes.insert((user, proposal_id), storage.votes.get((user, proposal_id)) + vote_amount);
         storage.proposals.insert(proposal_id, proposal);
 
         log(VoteEvent {
-            id: proposal_id, user: sender, vote_amount
+            id: proposal_id, user, vote_amount
         });
     }
 
