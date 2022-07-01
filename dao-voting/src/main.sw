@@ -169,7 +169,7 @@ impl DaoVoting for Contract {
     /// * When the vote amount is 0
     /// * When the proposal has passed its deadline
     /// * When the vote amount is greater than the users deposited balance
-    #[storage(read, write)]fn vote(approve: bool, proposal_id: u64, vote_amount: u64, ) {
+    #[storage(read, write)]fn vote(approve: bool, proposal_id: u64, vote_amount: u64) {
         validate_id(proposal_id, storage.proposal_count);
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
 
