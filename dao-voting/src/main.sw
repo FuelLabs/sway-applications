@@ -124,7 +124,7 @@ impl DaoVoting for Contract {
         storage.balances.insert(user, msg_amount() + storage.balances.get(user));
 
         log(DepositEvent {
-            amount: msg_amount(), user: user
+            amount: msg_amount(), user
         });
     }
 
@@ -151,7 +151,7 @@ impl DaoVoting for Contract {
         transfer(amount, storage.token, user);
 
         log(WithdrawEvent {
-            amount, user: user, 
+            amount, user, 
         })
     }
 
