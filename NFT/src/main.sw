@@ -1,11 +1,11 @@
 contract;
 
-dep abi;
+dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
 
-use abi::NFT;
+use contract_abi::NFT;
 use data_structures::MetaData;
 use errors::{AccessError, ApprovalError, InitError, InputError};
 use events::{ApprovalEvent, BurnEvent, MintEvent, OperatorEvent, TransferEvent};
@@ -193,7 +193,7 @@ impl NFT for Contract {
         let sender = msg_sender().unwrap();
         let mut meta_data = meta_data.unwrap();
         let approved = meta_data.approved;
-        require(sender == meta_data.owner || (approved.is_some() && sender == approved.unwrap()) || (from == meta_data.owner && storage.operator_approval.get(sha256(from, sender))), AccessError::SenderNotOwnerOrApproved);
+        require(sender == meta_data.owner || (approved.is_some() && sender == approved.unwrap()) || (from == meta_data.owner && storage.operator_approval.get(sha256((from, sender)))), AccessError::SenderNotOwnerOrApproved);
 
         // Set the new owner of the token and reset the approved Identity
         meta_data.owner = to;
@@ -261,7 +261,7 @@ impl NFT for Contract {
     /// * When the sender is not the `owner`.
     #[storage(read, write)]fn set_approval_for_all(owner: Identity, operator: Identity, allow: bool) {
         // Create the hash of the owner and operator
-        let hash = sha256(owner, operator);
+        let hash = sha256((owner, operator));
 
         // Only the owner is allowed to set an operator for themselves
         require(owner == msg_sender().unwrap(), AccessError::SenderNotOwner);
@@ -339,7 +339,7 @@ impl NFT for Contract {
     /// * `owner` - The `Identity` which has given approval.
     /// * `operator` - The `Identity` which has recieved approval to transfer tokens on the `owner`s behalf.
     #[storage(read)]fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
-        storage.operator_approval.get(sha256(owner, operator))
+        storage.operator_approval.get(sha256((owner, operator)))
     }
 
     /// Returns an `Option` of an `Identity` which owns the specified token id.
