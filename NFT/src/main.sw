@@ -48,7 +48,7 @@ storage {
     token_count: u64,
 
     /// The total supply tokens that can be minted. Can only be set on the initalization of the
-    /// contract. This will decrement when a token is burned.
+    /// contract.
     token_supply: u64,
 }
 
@@ -74,7 +74,7 @@ impl NFT for Contract {
         require(storage.token_supply == 0, InitError::CannotReinitialize);
         // The number of tokens that can be minted cannot be 0
         require(token_supply != 0, InputError::TokenSupplyCannotBeZero);
-        // Access control is set but there was no admin set
+        // Access control is set to true but there was no admin given
         require((access_control && admin.is_some()) || admin.is_none(), InitError::AccessControlSetAndAdminIsNone);
 
         // Store the information given
@@ -100,7 +100,7 @@ impl NFT for Contract {
         // greater than the total supply
         require(storage.token_supply >= (storage.token_count + amount), InputError::NotEnoughTokensToMint);
 
-        // Ensure that the sender is on the approved mint list if this is a accessed mint
+        // Ensure that the sender is on the admin if this is a controlled access mint
         require(!storage.access_control || (storage.admin.is_some() && msg_sender().unwrap() == storage.admin.unwrap()), AccessError::SenderDoesNotHaveAccessControl);
 
         // Mint as many tokens as the sender has asked for
@@ -151,14 +151,11 @@ impl NFT for Contract {
         let meta_data = meta_data.unwrap();
         require(meta_data.owner == sender, AccessError::SenderNotOwner);
 
-        // Burn this token by setting the `token_id` mapping to `None`
+        // Burn this token by setting the `token_id` Metadata mapping to `None`
         storage.meta_data.insert(token_id, Option::None());
 
         // Reduce the balance of tokens for the owner
         storage.balances.insert(sender, storage.balances.get(sender) - 1);
-
-        // Reduce the total supply
-        storage.token_supply = storage.token_supply - 1;
 
         // Log the burn event
         log(BurnEvent {
@@ -191,7 +188,7 @@ impl NFT for Contract {
 
         // Ensure that the sender is either:
         // 1. The owner of the token
-        // 2. Approved for transfer of this `token_id`,
+        // 2. Approved for transfer of this `token_id`
         // 3. Or an operator and the token is owned by the owner
         let sender = msg_sender().unwrap();
         let mut meta_data = meta_data.unwrap();
@@ -211,7 +208,7 @@ impl NFT for Contract {
 
         // Log the transfer event
         log(TransferEvent {
-            from, to, token_id
+            from, sender, to, token_id
         });
     }
 
@@ -292,7 +289,7 @@ impl NFT for Contract {
         // Ensure that the sender is the admin
         require(storage.admin.is_some() && msg_sender().unwrap() == storage.admin.unwrap(), AccessError::SenderCannotSetAccessControl);
 
-        // Add the provided `minter` Identity to the list of identities that are approved to mint
+        // Set the new admin
         storage.admin = admin;
     }
 

@@ -45,6 +45,9 @@ pub struct TransferEvent {
     /// The `Identity` which previously owned the token.
     from: Identity,
 
+    // The `Identity` that made the transfer, this can be the owner, the approved `Identity`, or the operator.
+    sender: Identity,
+
     /// The `Identity` which now owns the token.
     to: Identity,
 
