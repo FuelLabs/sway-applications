@@ -45,7 +45,7 @@ jobs:
 
     strategy:
       matrix:
-        project: ["escrow", "fundraiser", "multisig-wallet", "NFT"]
+        project: ["dao-voting", "escrow", "fundraiser", "multisig-wallet", "NFT"]
 
     steps:
       - name: Checkout repository
