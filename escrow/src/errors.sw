@@ -1,17 +1,9 @@
 library errors;
 
-pub enum AccessError {
-    UnauthorizedUser: (),
-}
-
-pub enum ApproveError {
-    AlreadyApproved: (),
-}
-
 pub enum CreationError {
-    ArbitorFeeCannotExceed100Percent: (),
-    ArbitorCannotBeBuyer: (),
-    ArbitorCannotBeSeller: (),
+    ArbiterFeeCannotExceed100Percent: (),
+    ArbiterCannotBeBuyer: (),
+    ArbiterCannotBeSeller: (),
     DeadlineMustBeInTheFuture: (),
     DepositAmountCannotBeZero: (),
     UnspecifiedAssets: (),
@@ -27,4 +19,17 @@ pub enum DepositError {
 
 pub enum StateError {
     StateNotPending: (),
+}
+
+pub enum UserError {
+    AlreadyDisputed: (),
+    CannotDisputeBeforeDesposit: (),
+    CannotTakePaymentBeforeDeadline: (),
+    CannotTakePaymentDuringDispute: (),
+    CannotTransferBeforeDesposit: (),
+    CannotTransferPaymentDuringDispute: (),
+    CannotResolveBeforeDesposit: (),
+    InvalidRecipient: (),
+    NotDisputed: (),
+    UnauthorizedUser: (),
 }

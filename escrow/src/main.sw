@@ -1,21 +1,23 @@
 contract;
 
-// TODO: 3rd party arbitor address, fees, expire escrow
-//       make the seller deposit as well so that the user can get refunded some portion of the dispute
+// TODO: arbiter fees
+//       make the seller deposit as well so that the user can get refunded some portion of the dispute?
+//
 //       over collateralize (additional fee / penalty) in case process is not smooth
+//
+//       In the distant future it *should* be cheaper to interact with each escrow therefore this would
+//       need to be split into a factory script and a single escrow contract each time
 
 /*
-The "!" indicates escrow is locked / completed
-1. USER deposit() -> USER transfer_to_seller() !
-2. USER deposit() -> escrow expires -> SELLER take_payment() !
-3. USER deposit() -> USER disputes() -> escrow locks -> escrow expires -> ARBITOR resolve_dispute(user) !
-4. USER deposit() -> USER dispute() -> locks escrow -> USER transfer_to_seller() !
+1. USER deposit() -> USER transfer_to_seller()
+2. USER deposit() -> escrow expires -> SELLER take_payment()
+3. USER deposit() -> USER dispute() -> locks escrow -> Arbiter resolve_dispute(user)
 
-Only case 3 results in ARBITOR getting a fee if fee != 0
+Only case 3 results in Arbiter getting a fee if fee != 0
 */
 
 // Our library dependencies
-dep abi;
+dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
@@ -37,96 +39,75 @@ use std::{
 };
 
 // Bring our code into scope
-use abi::Escrow;
+use contract_abi::Escrow;
 use data_structures::{Asset, Buyer, EscrowInfo, Seller, State};
-use errors::{AccessError, ApproveError, CreationError, DepositError, StateError};
-use events::{ApproveEvent, CreatedEscrowEvent, DepositEvent, NewUserEscrowEvent, ThresholdReachedEvent, WithdrawEvent, PaymentTakenEvent, TransferredToSellerEvent};
+use errors::{CreationError, DepositError, StateError, UserError};
+use events::{
+    CreatedEscrowEvent,
+    DepositEvent,
+    DisputeEvent,
+    PaymentTakenEvent,
+    ResolvedDisputeEvent,
+    TransferredToSellerEvent,
+};
 
 storage {
     /// Information describing an escrow created via create_escrow()
     /// Map(ID => Info)
-    escrows: StorageMap<u64, EscrowInfo>, 
-    
-    /// Number of created escrows
+    escrows: StorageMap<u64,
+    EscrowInfo>, /// Number of created escrows
     /// Used as an identifier for O(1) look-up in mappings
     escrow_count: u64,
 }
 
 impl Escrow for Contract {
-    /// Creates an internal representation of an escrow instead of deploying a contract per escrow
-    /// 
-    /// This sets the available addresses that can make a deposit (instead of forcing a single buyer), 
-    /// the assets which the escrow accepts and the seller who will receive the funds
-    ///
-    /// # Arguments
-    ///
-    /// - `assets` - The assets, with the required deposit amounts, that the campaign accepts
-    /// - `buyers` - A whitelist of addresses one of which much deposit funds into the escrow
-    /// - `seller` - The seller of the product to whom the funds will be transferred to
-    ///
-    /// # Reverts
-    ///
-    /// - When the amount of any asset required for deposit is set to 0
-    #[storage(read, write)]
-    fn create_escrow(assets: Vec<Asset>, arbitor: Identity, arbitor_fee_percentage: u64, buyer: Identity, deadline: u64, seller: Identity) {
+    #[storage(read, write)]fn create_escrow(assets: Vec<Asset>, arbiter: Identity, arbiter_fee_percentage: u64, buyer: Identity, deadline: u64, seller: Identity) {
         require(0 < assets.len(), CreationError::UnspecifiedAssets);
-        require(arbitor_fee_percentage <= 100, CreationError::ArbitorFeeCannotExceed100Percent);
+        require(arbiter_fee_percentage <= 100, CreationError::ArbiterFeeCannotExceed100Percent);
         require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
-        require(arbitor != seller, CreationError::ArbitorCannotBeSeller);
-        require(arbitor != buyer, CreationError::ArbitorCannotBeBuyer);
-        
+        require(arbiter != buyer, CreationError::ArbiterCannotBeBuyer);
+        require(arbiter != seller, CreationError::ArbiterCannotBeSeller);
+
         let mut index = 0;
-        while asset_index < assets.len() {
+        while index < assets.len() {
             require(0 < assets.get(index).unwrap().amount, CreationError::DepositAmountCannotBeZero);
             index += 1;
         }
 
         let escrow = EscrowInfo {
-            arbitor,
-            arbitor_fee_percentage,
-            assets,
-            buyer: Buyer {
+            arbiter, arbiter_fee_percentage, assets, buyer: Buyer {
                 address: buyer,
                 asset: Option::None::<ContractId>(),
                 deposited_amount: 0,
                 disputed: false,
             },
-            deadline,
-            disputed: false,
+            deadline, disputed: false,
             seller: Seller {
                 address: seller,
                 disputed: false,
-            }
+            },
             state: State::Pending,
         };
 
         storage.escrows.insert(storage.escrow_count, escrow);
         storage.escrow_count += 1;
 
-        log(CreatedEscrowEvent { author: msg_sender().unwrap(), escrow, identifier: storage.escrow_count - 1 });
+        // TODO: should the author be in the EscrowInfo?
+        log(CreatedEscrowEvent {
+            author: msg_sender().unwrap(), escrow, identifier: storage.escrow_count - 1
+        });
     }
 
-    /// Accepts a deposit from am authorized user for any of the assets specified in the escrow
-    /// A successful deposit unlocks the approval functionality for that user
-    ///
-    /// # Arguments
-    ///
-    /// - `identifier` - Unique escrow identifier in the storage.escrow_count range
-    ///
-    /// # Reverts
-    ///
-    /// - When the escrow is not in the State::Pending state
-    /// - When the user is not an authorized user (buyer)
-    /// - When the user deposits and they still have their previous deposit in the escrow
-    /// - When the user sends an incorrect amount of an asset for the specified asset in the escrow
-    /// - When the user deposits an asset that has not been specified in the escrow
-    #[storage(read, write)]
-    fn deposit(identifier: u64) {
-        let mut escrow = storage.escrows.get(identifier); 
+    #[storage(read, write)]fn deposit(identifier: u64) {
+        let mut escrow = storage.escrows.get(identifier);
 
         // User can only deposit when the escrow state has not reached completion
         require(escrow.state == State::Pending, StateError::StateNotPending);
+
+        // Only the buyer should be able to deposit
         require(msg_sender().unwrap() == escrow.buyer.address, UserError::UnauthorizedUser);
+
+        // Prevent multiple deposits at once
         require(escrow.buyer.asset.is_none(), DepositError::AlreadyDeposited);
 
         // TODO: https://github.com/FuelLabs/sway/issues/2014
@@ -141,12 +122,7 @@ impl Escrow for Contract {
                 // correct total is deposited
                 require(asset.amount == msg_amount(), DepositError::IncorrectAssetAmount);
 
-                // Update user state to indicate that they have deposited one of the assets
-                escrow.buyer.asset = Option::Some(asset.id);
-                escrow.buyer.deposited_amount = asset.amount;
-
-                // TODO: https://github.com/FuelLabs/sway/pull/2112
-                // break
+                break;
             }
 
             index += 1;
@@ -158,26 +134,12 @@ impl Escrow for Contract {
         storage.escrows.insert(identifier, escrow);
 
         log(DepositEvent {
-            amount: msg_amount(), 
-            asset: msg_asset_id(), 
-            identifier, 
-            user: msg_sender().unwrap(),
+            amount: msg_amount(), asset: msg_asset_id(), identifier, user: msg_sender().unwrap()
         });
     }
 
-    /// After a buyer deposits they can transfer the deposit to the seller
-    ///
-    /// # Arguments
-    ///
-    /// - `identifier` - Unique escrow identifier in the storage.escrow_count range
-    ///
-    /// # Reverts
-    ///
-    /// - When the escrow is not in the State::Pending state
-    /// - When the user is not an authorized user (buyer)
-    #[storage(read, write)]
-    fn transfer_to_seller(identifier: u64) {
-        let mut escrow = storage.escrows.get(identifier); 
+    #[storage(read, write)]fn transfer_to_seller(identifier: u64) {
+        let mut escrow = storage.escrows.get(identifier);
 
         // User can only transfer when the escrow state has not reached completion
         require(escrow.state == State::Pending, StateError::StateNotPending);
@@ -185,154 +147,103 @@ impl Escrow for Contract {
         // Only the buyer can dictate when their deposit is ready to be sent
         require(msg_sender().unwrap() == escrow.buyer.address, UserError::UnauthorizedUser);
 
+        // If a party has initiated a dispute then the user cannot tranfer the funds
+        require(!escrow.disputed, UserError::CannotTransferPaymentDuringDispute);
+
+        require(escrow.buyer.asset.is_some(), UserError::CannotTransferBeforeDesposit);
+
+        // Conditions have been cleared, lock the escrow down and transfer funds to seller
+        escrow.state = State::Completed;
+        storage.escrows.insert(identifier, escrow);
+
+        // Note that there is no conditional check upon the deadline since it is unnecessary
+        transfer(escrow.buyer.deposited_amount, escrow.buyer.asset.unwrap(), escrow.seller.address);
+
+        log(TransferredToSellerEvent {
+            amount: escrow.buyer.deposited_amount, asset: escrow.buyer.asset.unwrap(), buyer: msg_sender().unwrap(), identifier, seller: escrow.seller.address
+        });
+    }
+
+    #[storage(read, write)]fn take_payment(identifier: u64) {
+        let mut escrow = storage.escrows.get(identifier);
+
+        // User can only take payment when the escrow state has not reached completion
+        require(escrow.state == State::Pending, StateError::StateNotPending);
+
+        // User cannot take payment unless the escrow has expired
+        require(escrow.deadline < height(), UserError::CannotTakePaymentBeforeDeadline);
+
+        // If a party has initiated a dispute then the user cannot suddenly take the funds
+        require(!escrow.disputed, UserError::CannotTakePaymentDuringDispute);
+
+        // Only the seller can transfer the payment to themselves
+        require(msg_sender().unwrap() == escrow.seller.address, UserError::UnauthorizedUser);
+
+        require(escrow.buyer.asset.is_some(), UserError::CannotTransferBeforeDesposit);
+
         // Conditions have been cleared, lock the escrow down and transfer funds to seller
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
 
         transfer(escrow.buyer.deposited_amount, escrow.buyer.asset.unwrap(), escrow.seller.address);
 
-        log(TransferredToSellerEvent { 
-            amount: escrow.buyer.deposited_amount, 
-            asset: escrow.buyer.asset.unwrap(), 
-            buyer: msg_sender().unwrap(), 
-            identifier, 
-            seller: escrow.seller.address,
+        log(PaymentTakenEvent {
+            amount: escrow.buyer.deposited_amount, asset: escrow.buyer.asset.unwrap(), buyer: escrow.buyer.address, identifier, seller: msg_sender().unwrap()
         });
     }
 
-    /// If a user has deposited but not transferred in time & they have not disputed then the seller
-    /// can take payment themselves
-    //
-    /// # Arguments
-    ///
-    /// - `identifier` - Unique escrow identifier in the storage.escrow_count range
-    ///
-    /// # Reverts
-    ///
-    /// - When the escrow is not in the State::Pending state
-    /// - When a user attempts to take payment before the deadline
-    /// - When a user attempts to take payment during a dispute
-    /// - When the user is not an authorized user (seller)
-    #[storage(read, write)]
-    fn take_payment(identifier: u64) {
-        let mut escrow = storage.escrows.get(identifier); 
+    #[storage(read, write)]fn dispute(identifier: u64) {
+        let mut escrow = storage.escrows.get(identifier);
 
-        // User can only take payment when the escrow state has not reached completion
+        // User can only dispute when the escrow state has not reached completion
         require(escrow.state == State::Pending, StateError::StateNotPending);
-        require(escrow.deadline < height(), UserError::CannotTakePaymentBeforeDeadline)
-        require(!escrow.disputed, UserError::CannotTakePaymentDuringDispute);
-        require(msg_sender().unwrap() == escrow.seller.address, UserError::UnauthorizedUser);
+
+        // Note that a dispute can happen before or after deadline therefore no check for deadline
+
+        // Cannot dispute when already in the disputed state
+        require(!escrow.disputed, UserError::AlreadyDisputed);
+
+        // Only the buyer can initiate a dispute
+        require(msg_sender().unwrap() == escrow.buyer.address, UserError::UnauthorizedUser);
+
+        require(escrow.buyer.asset.is_some(), UserError::CannotDisputeBeforeDesposit);
+
+        escrow.disputed = true;
+        escrow.buyer.disputed = true;
+        storage.escrows.insert(identifier, escrow);
+
+        log(DisputeEvent {
+            identifier, user: msg_sender().unwrap()
+        });
+    }
+
+    #[storage(read, write)]fn resolve_dispute(identifier: u64, user: Identity) {
+        let mut escrow = storage.escrows.get(identifier);
+
+        // User can only dispute when the escrow state has not reached completion
+        require(escrow.state == State::Pending, StateError::StateNotPending);
+
+        // Note that a resolution cannot occur before or after deadline therefore no check for deadline
+
+        // Cannot resolve a dispute if not in the disputed state
+        require(escrow.disputed, UserError::NotDisputed);
+
+        // Only the arbiter can resolve a dispute
+        require(msg_sender().unwrap() == escrow.arbiter, UserError::UnauthorizedUser);
+
+        require(user == escrow.buyer.address || user == escrow.seller.address, UserError::InvalidRecipient);
+
+        require(escrow.buyer.asset.is_some(), UserError::CannotResolveBeforeDesposit);
 
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
 
-        transfer(escrow.buyer.deposited_amount, escrow.buyer.asset.unwrap(), escrow.seller.address);
+        transfer(escrow.buyer.deposited_amount, escrow.buyer.asset.unwrap(), user);
+        // Add fee to arbiter
+        // transfer(some fee ,some asset, escrow.arbiter);
 
-        log(PaymentTakenEvent {
-            amount: escrow.buyer.deposited_amount, 
-            asset: escrow.buyer.asset.unwrap(), 
-            buyer: escrow.buyer.address, 
-            identifier, 
-            seller: msg_sender().unwrap(),
-        })
-    }
-
-    /// Updates the user state to indicate a user has approved
-    /// Once all of the buyers approve the escrow will lock the approve() & deposit() functions
-    /// leaving withdrawal as the last function unlocked
-    ///
-    /// # Arguments
-    ///
-    /// - `identifier` - Unique escrow identifier in the storage.escrow_count range
-    ///
-    /// # Reverts
-    ///
-    /// - When the escrow is not in the State::Pending state
-    /// - When the user has not successfully deposited through the deposit() function
-    /// - When the user approves again after they have already approved
-    #[storage(read, write)]
-    fn approve(identifier: u64) {
-        let mut escrow = storage.escrows.get(identifier);
-
-        // User can only approve when the escrow state has not reached completion
-        require(escrow.state == State::Pending, StateError::StateNotPending);
-
-        // Make sure caller has been specified as a user for this escrow
-        let identity = msg_sender().unwrap();
-        let mut user = storage.buyers.get((identifier, identity));
-
-        // User must deposit before they can approve
-        // No need to check ".exists" since the deposit flag is only set after that check is made
-        require(user.deposited, DepositError::DepositRequired);
-
-        // To prevent approval count manipulation and (some) event spam ensure they haven't approved
-        require(!user.approved, ApproveError::AlreadyApproved);
-
-        user.approved = true;
-
-        storage.buyers.insert((identifier, identity), user);
-        escrow.approval_count = escrow.approval_count + 1;
-
-        log(ApproveEvent { identifier, user: identity });
-
-        if escrow.threshold <= escrow.approval_count {
-            // Everyone has approved so lock the escrow down from further use
-            // Locks: deposit() & approve()
-            escrow.state = State::Completed;
-
-            log(ThresholdReachedEvent { identifier });
-        }
-
-        storage.escrows.insert(identifier, escrow);
-    }
-
-    // oh fuck, I can't believe you've done this
-    fn dispute(identifier: u64) {}
-
-    // if a dispute has been filed and the escrow expires then the arbitor can choose who the funds are sent to
-    fn resolve_dispute(identifier: u64, user: Identity) {}
-
-    /// Returns the deposited asset back to the user and resets their deposit & approval flags to false
-    ///
-    /// # Arguments
-    ///
-    /// - `identifier` - Unique escrow identifier in the storage.escrow_count range
-    ///
-    /// # Reverts
-    ///
-    /// - When the user has not successfully deposited through the deposit() function
-    #[storage(read, write)]
-    fn withdraw(identifier: u64) {
-        let mut escrow = storage.escrows.get(identifier);
-
-        // Retrieve data from whoever is trying to get access this escrow
-        let identity = msg_sender().unwrap();
-        let mut user = storage.buyers.get((identifier, identity));
-
-        // User can only withdraw their deposit if they have a deposit currently in the escrow
-        // No need to check ".exists" since the deposit flag is only set after that check is made
-        require(user.deposited, DepositError::DepositRequired);
-
-        // Safe to unwrap since the asset is set during the deposit
-        let deposited_asset = user.asset.unwrap();
-
-        // Retrieve the amount the escrow set for the asset
-        // No need to validate asset since user can only deposit a specified asset
-        let amount = storage.required_deposit.get((identifier, deposited_asset));
-
-        // They're about to withdraw so reset their currently deposited asset back to None
-        user.asset = Option::None::<ContractId>();
-        user.deposited = false;
-        user.approved = false;
-
-        escrow.approval_count -= 1;
-
-        storage.buyers.insert((identifier, identity), user);
-        storage.escrows.insert(identifier, escrow);
-
-        // Transfer the asset back to the user
-        transfer(amount, deposited_asset, identity);
-
-        log(WithdrawEvent { amount, asset: deposited_asset, identifier, user: identity });
+        log(ResolvedDisputeEvent {
+            identifier, user
+        });
     }
 }
