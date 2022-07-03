@@ -5,7 +5,7 @@ contract;
 //      - change the "data" in the Tx hashing from b256 to vec
 
 // Our library dependencies
-dep abi;
+dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
@@ -15,7 +15,7 @@ use std::{
     address::Address,
     assert::require,
     b512::B512,
-    constants::BASE_ASSET_ID,
+    constants::ZERO_B256,
     context::{call_frames::contract_id, this_balance},
     contract_id::ContractId,
     ecr::ec_recover_address,
@@ -31,7 +31,7 @@ use std::{
 use core::num::*;
 
 // Our library imports
-use abi::MultiSignatureWallet;
+use contract_abi::MultiSignatureWallet;
 use data_structures::{Transaction, User};
 use errors::{ExecutionError, InitError};
 use events::{ExecutedEvent, TransferEvent};
@@ -65,7 +65,7 @@ impl MultiSignatureWallet for Contract {
 
         let mut user_index = 0;
         while user_index < 25 {
-            require(~Address::from(BASE_ASSET_ID) != users[user_index].identity, InitError::AddressCannotBeZero);
+            require(~Address::from(ZERO_B256) != users[user_index].identity, InitError::AddressCannotBeZero);
             require(users[user_index].weight != 0, InitError::WeightingCannotBeZero);
             storage.weighting.insert(users[user_index].identity, users[user_index].weight);
             user_index = user_index + 1;
@@ -124,7 +124,7 @@ impl MultiSignatureWallet for Contract {
         storage.nonce = storage.nonce + 1;
 
         match to {
-            Identity::Address(address) => transfer_to_output(value, asset_id, address), Identity::ContractId(contract) => force_transfer_to_contract(value, asset_id, contract), 
+            Identity::Address(address) => transfer_to_output(value, asset_id, address), Identity::ContractId(address) => force_transfer_to_contract(value, asset_id, address), 
         };
 
         log(TransferEvent {
