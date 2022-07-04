@@ -226,5 +226,46 @@
         ]
       }
     ]
+  },
+  {
+    "type": "function",
+    "inputs": [
+      {
+        "name": "key",
+        "type": "u64",
+        "components": null
+      },
+      {
+        "name": "value",
+        "type": "u64",
+        "components": null
+      }
+    ],
+    "name": "insert_into_map",
+    "outputs": [
+      {
+        "name": "",
+        "type": "()",
+        "components": []
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "inputs": [
+      {
+        "name": "key",
+        "type": "u64",
+        "components": null
+      }
+    ],
+    "name": "get_from_map",
+    "outputs": [
+      {
+        "name": "",
+        "type": "u64",
+        "components": null
+      }
+    ]
   }
 ]
