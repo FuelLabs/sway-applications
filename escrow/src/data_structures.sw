@@ -1,7 +1,28 @@
 library data_structures;
 
+// TODO: docs
+
 use core::ops::Eq;
 use std::{contract_id::ContractId, identity::Identity, option::Option, vec::Vec};
+
+pub struct Arbiter {
+    address: Identity,
+    fee_percentage: u64,
+}
+
+impl Eq for Arbiter {
+    fn eq(self, other: Self) -> bool {
+        self.address == other.address && self.fee_percentage == other.fee_percentage
+    }
+}
+
+pub struct ArbiterProposal {
+    /// New arbiter proposal made by the buyer
+    buyer: Option<Arbiter>,
+
+    /// New arbiter proposal made by the seller
+    seller: Option<Arbiter>,
+}
 
 pub struct Asset {
     /// Amount of asset the user must deposit

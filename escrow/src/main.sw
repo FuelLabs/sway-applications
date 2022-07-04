@@ -75,19 +75,25 @@ use std::{
 
 // Bring our code into scope
 use contract_abi::Escrow;
-use data_structures::{Asset, Buyer, EscrowInfo, Seller, State};
+use data_structures::{Arbiter, ArbiterProposal, Asset, Buyer, EscrowInfo, Seller, State};
 use errors::{CreationError, DepositError, StateError, UserError};
 use events::{
+    ChangedArbiterEvent,
     CreatedEscrowEvent,
     DepositEvent,
     DisputeEvent,
     PaymentTakenEvent,
+    ProposedArbiterEvent,
     ResolvedDisputeEvent,
     ReturnedDepositEvent,
     TransferredToSellerEvent,
 };
 
 storage {
+    /// If either party want to change the arbiter that data must be stored somewhere as "temporary"
+    /// data. This does not belong in EscrowInfo hence a separate variable
+    arbiter_proposal: StorageMap<u64, ArbiterProposal>,
+
     /// Information describing an escrow created via create_escrow()
     /// Map(ID => Info)
     escrows: StorageMap<u64,
@@ -97,7 +103,71 @@ storage {
 }
 
 impl Escrow for Contract {
-    #[storage(read, write)]fn change_arbiter(identifier: u64, user: Identity) {
+    #[storage(read, write)]fn change_arbiter(arbiter: Arbiter, identifier: u64) {
+        // TODO
+        // The assertions ensure that
+        //  - 
+
+        require(arbiter.fee_percentage <= 100, CreationError::ArbiterFeeCannotExceed100Percent);
+
+        let mut escrow = storage.escrows.get(identifier);
+
+        require(escrow.state == State::Pending, StateError::StateNotPending);
+
+        let user = msg_sender().unwrap();
+
+        require(user == escrow.buyer.address || user == escrow.seller.address, UserError::UnauthorizedUser);
+        require(arbiter.address != escrow.buyer.address, CreationError::ArbiterCannotBeBuyer);
+        require(arbiter.address != escrow.seller.address, CreationError::ArbiterCannotBeSeller);
+
+        let mut proposal = storage.arbiter_proposal.get(identifier);
+
+        // TODO: can this spaghetti be cleaned up (function maybe)?
+        if user == escrow.buyer.address {
+            if proposal.seller.is_some() {
+                let sellers_arbiter = proposal.seller.unwrap();
+
+                if arbiter.address == sellers_arbiter.address && arbiter.fee_percentage == sellers_arbiter.fee_percentage {
+                    escrow.arbiter = arbiter.address;
+                    escrow.arbiter_fee_percentage = arbiter.fee_percentage;
+
+                    proposal.buyer = Option::None;
+                    proposal.seller = Option::None;
+
+                    storage.arbiter_proposal.insert(identifier, proposal);
+                    storage.escrows.insert(identifier, escrow);
+                    log(ChangedArbiterEvent { address: arbiter.address, fee_percentage: arbiter.fee_percentage, identifier });
+                } else {
+                    proposal.buyer = Option::Some( arbiter );
+                    log(ProposedArbiterEvent { arbiter, identifier, user });
+                }
+            } else {
+                proposal.buyer = Option::Some( arbiter );
+                log(ProposedArbiterEvent { arbiter, identifier, user });
+            }
+        } else {
+            if proposal.buyer.is_some() {
+                let buyers_arbiter = proposal.buyer.unwrap();
+
+                if arbiter.address == buyers_arbiter.address && arbiter.fee_percentage == buyers_arbiter.fee_percentage {
+                    escrow.arbiter = arbiter.address;
+                    escrow.arbiter_fee_percentage = arbiter.fee_percentage;
+
+                    proposal.buyer = Option::None;
+                    proposal.seller = Option::None;
+
+                    storage.arbiter_proposal.insert(identifier, proposal);
+                    storage.escrows.insert(identifier, escrow);
+                    log(ChangedArbiterEvent { address: arbiter.address, fee_percentage: arbiter.fee_percentage, identifier });
+                } else {
+                    proposal.seller = Option::Some( arbiter );
+                    log(ProposedArbiterEvent { arbiter, identifier, user });
+                }
+            } else {
+                proposal.seller = Option::Some( arbiter );
+                log(ProposedArbiterEvent { arbiter, identifier, user });
+            }
+        }
     }
 
     #[storage(read, write)]fn create_escrow(assets: Vec<Asset>, arbiter: Identity, arbiter_fee_percentage: u64, buyer: Identity, deadline: u64) {

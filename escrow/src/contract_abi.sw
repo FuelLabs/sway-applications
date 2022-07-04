@@ -2,11 +2,11 @@ library contract_abi;
 
 dep data_structures;
 
-use data_structures::Asset;
+use data_structures::{Arbiter, Asset};
 use std::{identity::Identity, vec::Vec};
 
 abi Escrow {
-    #[storage(read, write)]fn change_arbiter(identifier: u64, user: Identity);
+    #[storage(read, write)]fn change_arbiter(arbiter: Arbiter, identifier: u64);
 
     /// Creates an internal representation of an escrow instead of deploying a contract per escrow
     ///
