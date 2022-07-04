@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./.docs/dao-voting-logo.png" height="120">
+    <img src="./.docs/dao-logo.png" height="120">
 </p>
 
 ## Overview
