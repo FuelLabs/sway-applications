@@ -13,6 +13,7 @@ pub enum CreationError {
 pub enum DepositError {
     AlreadyDeposited: (),
     DepositRequired: (),
+    EscrowExpired: (),
     IncorrectAssetAmount: (),
     IncorrectAssetDeposited: (),
 }
