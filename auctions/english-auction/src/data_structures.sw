@@ -21,7 +21,7 @@ pub struct Auction {
     /// The asset which will be accepted in return for `sell_asset`.
     /// On initalization, the amount will be set to 0 and the `contract_id` will be set to the
     /// `ContractId` of the asset in return.
-    buy_asset: Asset,
+    bid_asset: Asset,
     /// The current highest bidder of the auction. When the auction is over, this is the winner.
     /// If no one bid on the auction or the auction is canceled, this will be `None`.
     highest_bidder: Option<Identity>,
@@ -48,14 +48,6 @@ pub struct NFTAsset {
     token_ids: u64,
 }
 
-pub trait ReturnsAmount {
-    pub fn amount(self) -> u64;
-}
-
-pub trait ReturnsContractId {
-    pub fn contract_id(self) -> ContractId;
-}
-
 pub enum State {
     Closed: (),
     Open: (),
@@ -66,6 +58,31 @@ pub struct TokenAsset {
     amount: u64,
     /// The `ContractId` of the native asset that the struct is representing.
     contract_id: ContractId,
+}
+
+impl Asset {
+    pub fn amount(self) -> u64 {
+        match self {
+            Asset::NFTAsset(nft_asset) => {
+                // TODO: Return Vec length
+                1
+            },
+            Asset::TokenAsset(token_asset) => {
+                token_asset.amount
+            },
+        }
+    }
+
+    pub fn contract_id(self) -> ContractId {
+        match self {
+            Asset::NFTAsset(nft_asset) => {
+                nft_asset.contract_id
+            },
+            Asset::TokenAsset(token_asset) => {
+                token_asset.contract_id
+            },
+        }
+    }
 }
 
 impl core::ops::Add for Asset {
@@ -165,33 +182,6 @@ impl core::ops::Subtract for Asset {
             },
             _ => {
                 self
-            },
-        }
-    }
-}
-
-impl ReturnsAmount for Asset {
-    pub fn amount(self) -> u64 {
-        match self {
-            Asset::NFTAsset(nft_asset) => {
-                // TODO: Return Vec length
-                1
-            },
-            Asset::TokenAsset(token_asset) => {
-                token_asset.amount
-            },
-        }
-    }
-}
-
-impl ReturnsContractId for Asset {
-    pub fn contract_id(self) -> ContractId {
-        match self {
-            Asset::NFTAsset(nft_asset) => {
-                nft_asset.contract_id
-            },
-            Asset::TokenAsset(token_asset) => {
-                token_asset.contract_id
             },
         }
     }

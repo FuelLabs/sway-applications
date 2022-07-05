@@ -88,7 +88,7 @@ pub fn transfer_nft(from: Identity, to: Identity, asset: NFTAsset) {
     require(owner.is_some() && owner.unwrap() == to, AccessError::NFTTransferNotApproved);
 }
 
-/// This function will panic when the `recieved_asset` and `buy_asset` `ContractId`s do not match.
+/// This function will panic when the `recieved_asset` and `bid_asset` `ContractId`s do not match.
 /// If `received_asset` is of type `TokenAsset`, the function ensures that the amount provided
 /// in the transaction and `recieved_asset` struct match. If the `received_asset` is of type
 /// `NFTAsset`, the function will ensure that the auction contract is permissioned to transfer the
@@ -96,16 +96,16 @@ pub fn transfer_nft(from: Identity, to: Identity, asset: NFTAsset) {
 ///
 /// # Reverts
 ///
-/// * When the `contract_id`s in the `buy_asset` and `recieved_asset` are different.
+/// * When the `contract_id`s in the `bid_asset` and `recieved_asset` are different.
 /// * When the `sender` does not own the NFT tokens to be transfered
 /// * When the auction contract is not approved to transfer the NFT tokens specified in the
 ///   `recieved_asset` struct.
 /// * When the transaction asset amount is not the same as the amount specified in the
 ///   `recieved_asset` struct.
-pub fn validate_asset(buy_asset: Asset, recieved_asset: Asset) {
+pub fn validate_asset(bid_asset: Asset, recieved_asset: Asset) {
     let sender = msg_sender().unwrap();
 
-    require(buy_asset == recieved_asset, InputError::IncorrectAssetProvided);
+    require(bid_asset == recieved_asset, InputError::IncorrectAssetProvided);
 
     match recieved_asset {
         Asset::NFTAsset(asset) => {
