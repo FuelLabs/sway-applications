@@ -13,6 +13,8 @@ Table of Content
       - [Technical specification](#technical-specification)
   - [Testing](#testing)
 - [Pull Requests](#pull-requests)
+  - [Committing your work](#committing-your-work)
+  - [Creating the pull request](#creating-the-pull-request)
 
 ----
 
@@ -152,6 +154,10 @@ Example
 ```rust
 library interface;
 
+dep data_structures;
+
+use data_structures::{Game, Player};
+
 abi ConnectFour {
    /// Creates a new game
    ///
@@ -247,7 +253,7 @@ Here are some uses cases:
   - What funds can they deposit?
     - `Answer:` A user can deposit tokens: X, Y, Z because they have been vetted by the organization
   - How often can they deposit?
-    - `Answer:` A user can deposit as often as they like given that the no fault has been detected by the organization which resulted in deposits being paused
+    - `Answer:` A user can deposit as often as they like given that no fault has been detected by the organization which resulted in deposits being paused
   - When can they withdraw their funds?
     - `Answer:` There is a 24 lock up period after which the user can withdraw their deposit in full
 - A user can lend out a portion of their funds
@@ -296,23 +302,37 @@ TODO
 ---
 ## Pull Requests
 
-TODO. Throw away and rewrite. Add a section for commits, maybe here
+### Committing your work
 
-If you are looking to do more than just raise an issue then check to see if there are any issues labelled under `good first issue` and no one is assigned to them.
-These issues should be relatively easy to do and they are there specifically to let others jump in and have a go.
-Before you go off and make a pull request (PR) make sure to first fork the repository and work in your local repo. 
-Once you are ready to submit a PR make sure to mark it as a draft until it is ready to go into the master branch.
-When making a pull request there are many things to consider depending on the type of request.
+Before a pull request can be made there must be work that has been committed and pushed. The content and descriptive message for the commit is important because it makes it easier to track the changes between each commit. Commits should generally be small and specific rather than megalithic changes that touch multiple parts of the codebase that conceptually have nothing to do with each other. The reason is that a small amount of work done is easier to reason about, alter and revert than 1 massive change across the entire codebase.
+
+For example, let's say there are two changes that need to be made:
+
+- A deposit function has a flaw in its assertion
+- A separate contract needs additional data structures added in order to log events in a formalized structure (in a struct rather than emitting multiple logs, one per variable)
+
+The correct approach would be to fix the deposit function in 1 commit and then add the formalized logging in a separate commit.
+
+The commit message should be a short sentence describing the changes
+
+- `Good commit message:` Fixed a conditional check in the deposit function which did not fail under condition XYZ
+- `Bad commit message:`
+  - Fix
+  - Fixed function
+  - Fixed assertion
+
+It should be clear that the "bad" commit messages do not tell you what the change to the code is because they are too vague. Likewise, the "good" message _could_ be argued to be too long and thus it _could_ deemed as a bad commit message by some - in this case the commit is acceptable because it addresses a single change nevertheless it's a good idea to refine your commit messages so that they are not too verbose / long. If you cannot cut down on the content of the commit message then that can be an indicator that too much work was done in 1 commit. That's not to say that you cannot write a paragraph in a commit however you need to know when that is applicable. For most use cases you shouldn't encounter problems if you keep your work small with a short descriptive sentence like the one above.
+
+If you are unsure of what to write in a commit message then take a look at:
+
+- The README from [joelparkerhenderson](https://github.com/joelparkerhenderson/git-commit-message/#git-commit-message)
+- The [Medium article](https://medium.com/swlh/writing-better-commit-messages-9b0b6ff60c67) by Apurva Jain
+
+### Creating the pull request
+
+TODO
 
 Here are some things to consider otherwise your PR may require multiple changes.
 
-- [ ] Have you formatted your code via `cargo fmt` and `forc fmt` ?
 - [ ] What is your test coverage like?
-- [ ] Is your code clean and high quality?
-- [ ] Have you extensively documented the code and also added documentation regarding its usage?
 - [ ] Does your code require any updates to the CI and if so do all of the cases still pass?
-- [ ] Are your commit messages descriptive and address small changes or do you bulk update everything into one giant commit (bad idea)?
-
-If you are unsure of what to write in a commit message then take a look at
-- README from [joelparkerhenderson](https://github.com/joelparkerhenderson/git-commit-message/#git-commit-message)
-- [Medium article](https://medium.com/swlh/writing-better-commit-messages-9b0b6ff60c67) by Apurva Jain
