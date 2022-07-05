@@ -4,16 +4,17 @@ dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
+dep utils;
 
 use contract_abi::NFT;
 use data_structures::MetaData;
 use errors::{AccessError, ApprovalError, InitError, InputError};
 use events::{ApprovalEvent, BurnEvent, MintEvent, OperatorEvent, TransferEvent};
+use utils::token_metadata;
 
 use std::{
     assert::require,
     chain::auth::{AuthError, msg_sender},
-    hash::sha256,
     identity::Identity,
     logging::log,
     option::Option,
@@ -39,11 +40,11 @@ storage {
     u64>, /// Stores the `Metadata` for each token based on the token's `u64` id
     /// Map(token_id => Metadata)
     meta_data: StorageMap<u64,
-    Option<MetaData>>, /// Maps a `b256` hash of the (owner, operator) identities and stores whether the
+    Option<MetaData>>, /// Maps a tuple of (owner, operator) identities and stores whether the
     /// operator is allowed to transfer ALL tokens on the owner's behalf.
-    /// Map(hash => approved)
-    operator_approval: StorageMap<b256,
-    bool>, /// The total number of tokens that have been minted.
+    /// Map((owner, operator) => approved)
+    operator_approval: StorageMap<(Identity,
+    Identity), bool>, /// The total number of tokens that have been minted.
     /// This should only be incremented.
     token_count: u64,
 
@@ -61,7 +62,7 @@ impl NFT for Contract {
     ///
     /// * `admin` - The `Identity` which has the ability to mint if `access_control` is set to true and change the contract's admin.
     /// * `access_control` - The `bool` which will determine whether identities will need to approval to mint.
-    /// * `token_supply` - The total supply of tokens which will be allowed to mint.
+    /// * `token_supply` - The `u64` number representing the total supply of tokens which will be allowed to mint.
     ///
     /// # Reverts
     ///
@@ -85,11 +86,13 @@ impl NFT for Contract {
 
     /// Mints a specified amount of tokens to the given `to` `Identity`. Once a token has been minted,
     /// it can be transfered and burned. Calling this mint function will increment the `total_count`.
+    /// If the NFT contract has not yet been initalized, any attempts to mint will fail as the
+    /// `total_supply` has not yet been set.
     ///
     /// # Arguments
     ///
     /// * `to` - The `Identity` which will own the minted tokens.
-    /// * `amount` - The number of tokens to be minted in this transaction.
+    /// * `amount` - The `u64` number of tokens to be minted in this transaction.
     ///
     /// # Reverts
     ///
@@ -100,12 +103,12 @@ impl NFT for Contract {
         // greater than the total supply
         require(storage.token_supply >= (storage.token_count + amount), InputError::NotEnoughTokensToMint);
 
-        // Ensure that the sender is on the admin if this is a controlled access mint
+        // Ensure that the sender is the admin if this is a controlled access mint
         require(!storage.access_control || (storage.admin.is_some() && msg_sender().unwrap() == storage.admin.unwrap()), AccessError::SenderDoesNotHaveAccessControl);
 
         // Mint as many tokens as the sender has asked for
         let mut index = 0;
-        let mut minted_tokens: Vec<u64> = ~Vec::new::<u64>();
+        let mut minted_tokens = ~Vec::new::<u64>();
         while index < amount {
             // Increment the token count
             storage.token_count = storage.token_count + 1;
@@ -135,7 +138,7 @@ impl NFT for Contract {
     ///
     /// # Arguments
     ///
-    /// * `token_id` - The ID of the token which is to be burned.
+    /// * `token_id` - The `u64` ID of the token which is to be burned.
     ///
     /// * Reverts
     ///
@@ -143,23 +146,21 @@ impl NFT for Contract {
     /// * When sender is not the owner of the `token_id`.
     #[storage(read, write)]fn burn(token_id: u64) {
         // Ensure this is a valid token that has already been minted and exists
-        let meta_data = storage.meta_data.get(token_id);
-        require(meta_data.is_some(), InputError::TokenDoesNotExist);
+        let mut meta_data = token_metadata(storage.meta_data.get(token_id));
 
         // Ensure the sender owns the token that is provided
-        let sender = msg_sender().unwrap();
-        let meta_data = meta_data.unwrap();
-        require(meta_data.owner == sender, AccessError::SenderNotOwner);
+        let owner = msg_sender().unwrap();
+        require(meta_data.owner == owner, AccessError::SenderNotOwner);
 
         // Burn this token by setting the `token_id` Metadata mapping to `None`
         storage.meta_data.insert(token_id, Option::None());
 
         // Reduce the balance of tokens for the owner
-        storage.balances.insert(sender, storage.balances.get(sender) - 1);
+        storage.balances.insert(owner, storage.balances.get(owner) - 1);
 
         // Log the burn event
         log(BurnEvent {
-            owner: sender, token_id
+            owner, token_id
         });
     }
 
@@ -173,7 +174,7 @@ impl NFT for Contract {
     ///
     /// * `from` - The `Identity` which currently owns the token to be transfered.
     /// * `to` - The `Identity` which the ownership of the token should be set to.
-    /// * `token_id` - The `u64` id of the token which should be transfered.
+    /// * `token_id` - The `u64` ID of the token which should be transfered.
     ///
     /// # Reverts
     ///
@@ -183,17 +184,15 @@ impl NFT for Contract {
     /// * When the sender is not approved to transfer all tokens on the owner's behalf.
     #[storage(read, write)]fn transfer_from(from: Identity, to: Identity, token_id: u64) {
         // Make sure the `token_id` maps to an existing token
-        let meta_data = storage.meta_data.get(token_id);
-        require(meta_data.is_some(), InputError::TokenDoesNotExist);
+        let mut meta_data = token_metadata(storage.meta_data.get(token_id));
 
         // Ensure that the sender is either:
         // 1. The owner of the token
         // 2. Approved for transfer of this `token_id`
         // 3. Or an operator and the token is owned by the owner
         let sender = msg_sender().unwrap();
-        let mut meta_data = meta_data.unwrap();
         let approved = meta_data.approved;
-        require(sender == meta_data.owner || (approved.is_some() && sender == approved.unwrap()) || (from == meta_data.owner && storage.operator_approval.get(sha256((from, sender)))), AccessError::SenderNotOwnerOrApproved);
+        require(sender == meta_data.owner || (approved.is_some() && sender == approved.unwrap()) || (from == meta_data.owner && storage.operator_approval.get((from, sender))), AccessError::SenderNotOwnerOrApproved);
 
         // Set the new owner of the token and reset the approved Identity
         meta_data.owner = to;
@@ -217,7 +216,7 @@ impl NFT for Contract {
     /// # Arguments
     ///
     /// * `approved` - The `Identity` which will be allowed to transfer the token.
-    /// * `token_id` - The specific token which the owner is giving approval to.
+    /// * `token_id` - The `u64` ID of the specific token which the owner is giving approval to.
     /// * `approve` - The `bool` which wil allow or disallow transfers.
     ///
     /// # Reverts
@@ -227,11 +226,9 @@ impl NFT for Contract {
     /// * When the sender is not the token's owner.
     #[storage(read, write)]fn approve(approved: Option<Identity>, token_id: u64) {
         // Ensure this is a valid token
-        let meta_data = storage.meta_data.get(token_id);
-        require(meta_data.is_some(), InputError::TokenDoesNotExist);
+        let mut meta_data = token_metadata(storage.meta_data.get(token_id));
 
         // The owner cannot approve themselves
-        let mut meta_data = meta_data.unwrap();
         require(approved.is_none() || (meta_data.owner != approved.unwrap()), ApprovalError::ApproverCannotBeOwner);
 
         // Ensure that the sender is the owner of the token to be approved
@@ -260,14 +257,11 @@ impl NFT for Contract {
     ///
     /// * When the sender is not the `owner`.
     #[storage(read, write)]fn set_approval_for_all(owner: Identity, operator: Identity, allow: bool) {
-        // Create the hash of the owner and operator
-        let hash = sha256((owner, operator));
-
         // Only the owner is allowed to set an operator for themselves
         require(owner == msg_sender().unwrap(), AccessError::SenderNotOwner);
 
         // Set the identity to have or not have approval to transfer all tokens owned
-        storage.operator_approval.insert(hash, allow);
+        storage.operator_approval.insert((owner, operator), allow);
 
         // Log the operator event
         log(OperatorEvent {
@@ -299,7 +293,7 @@ impl NFT for Contract {
     ///
     /// # Arguments
     ///
-    /// * `token_id` - The `u64` id of the token which the `approved` `Identity` should be returned.
+    /// * `token_id` - The `u64` ID of the token which the `approved` `Identity` should be returned.
     #[storage(read)]fn approved(token_id: u64) -> Option<Identity> {
         let meta_data = storage.meta_data.get(token_id);
 
@@ -313,10 +307,7 @@ impl NFT for Contract {
                 // If there is a `Identity` that is approved, return that `Identity`
                 // Otherwise return `None`
                 match approved {
-                    Option::Some(Identity) => {
-                        Option::Some(approved.unwrap())
-                    },
-                    Option::None(Identity) => Option::None(), 
+                    Option::Some(Identity) => Option::Some(approved.unwrap()), Option::None(Identity) => Option::None(), 
                 }
             },
             Option::None(MetaData) => Option::None(), 
@@ -339,7 +330,7 @@ impl NFT for Contract {
     /// * `owner` - The `Identity` which has given approval.
     /// * `operator` - The `Identity` which has recieved approval to transfer tokens on the `owner`s behalf.
     #[storage(read)]fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
-        storage.operator_approval.get(sha256((owner, operator)))
+        storage.operator_approval.get((owner, operator))
     }
 
     /// Returns an `Option` of an `Identity` which owns the specified token id.
