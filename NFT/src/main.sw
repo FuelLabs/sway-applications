@@ -67,7 +67,7 @@ impl NFT for Contract {
     /// # Reverts
     ///
     /// * When the constructor function has already been called.
-    /// * When the `token_count` is set to 0.
+    /// * When the `token_supply` is set to 0.
     /// * When `access_control` is set to true and no admin was given.
     #[storage(read, write)]fn constructor(admin: Option<Identity>, access_control: bool, token_supply: u64) {
         // This function can only be called once so if the token supply is already set it has
