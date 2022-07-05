@@ -75,7 +75,7 @@ To be explicit
 - All imports must be in alphabetical order and any modules within those imports must be in alphabetical order
 - All functions, structs, enums, fields inside structs and enums, parameters of a function, parameters in documentation etc. must be in alphabetical order in all files (this does not apply to variables inside a function)
 
-Example:
+Example
 
 ```rust
 contract;
@@ -90,9 +90,15 @@ use std::identity::Identity;
 use utils::validate_move;
 
 storage {
+   /// The total number of created games
    games_played: u64,
+
+   /// The number of times player 2 has won against player 1
    player_two_wins: u64,
+
+   /// The number of times player 1 has won against player 2
    player_one_wins: u64,
+   
    ...
 }
 
