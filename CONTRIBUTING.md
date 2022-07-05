@@ -9,6 +9,8 @@ Table of Content
   - [Documentation](#documentation)
     - [Code](#code)
     - [Specification](#specification)
+      - [Non-technical specification](#non-technical-specification)
+      - [Technical specification](#technical-specification)
   - [Testing](#testing)
 - [Pull Requests](#pull-requests)
 
@@ -229,7 +231,63 @@ There are many guides online indicating how to create meaningful names. If you a
 
 #### Specification
 
-TODO
+A specification can be broken into two levels of detail and the one you choose depends on your target audiance:
+
+- Non-techincal specification
+- Technical specification
+
+##### Non-technical specification
+
+This type of specification is meant to be a higher level overview of your project and is meant to be communicated to parties that may not be as tech-savy or even understand the technology at all. For example, when introducing someone to blockchain for the first time one might start to explain how real world transactions work followed by what a ledger is and how that data is stored. Thereafter, conversation of a blockchain might follow etc. The idea is that concepts, real world use cases and explanations are presented to a user in order to gently introduce them to the area. One would absolutely not expect to start the conversation with peer-to-peer communication, node infrastructure, how transactions are selected from a mempool etc.
+
+To be a little more pragmatic, the expectation from a document would be to outline the use cases of your application and explain them.
+Here are some uses cases:
+
+- A user can deposit funds
+  - What funds can they deposit?
+    - `Answer:` A user can deposit tokens: X, Y, Z because they have been vetted by the organization
+  - How often can they deposit?
+    - `Answer:` A user can deposit as often as they like given that the no fault has been detected by the organization which resulted in deposits being paused
+  - When can they withdraw their funds?
+    - `Answer:` There is a 24 lock up period after which the user can withdraw their deposit in full
+- A user can lend out a portion of their funds
+  - How much can a user lend out?
+    - `Answer:` A user can lend out up to 100% of their currently unlocked deposit
+- A user can borrow against a portion of their funds
+  - How much can a user borrow?
+    - `Answer:` A user can borrow up to at most 50% of their deposit in order to maintain a sufficient collateralization ratio after which liquidation may occur
+
+Each of those use cases would be broken down into steps to see all the possibilities and they would all be evaluated.
+
+> *Note*
+> Diagrams are often a very helpful tool to aid in explanations within a specification and thus a diagram for each use case is encouraged
+
+##### Technical specification
+
+The technical specification is an extension of the non-technical specification. This part goes into all of the details that have been deemed too complex to include in the "introduction" (non-technical specification).
+
+> *NOTE*
+> A technical specification includes a lot of detail and thus the following does not provide example answers because that depends on your specific use case, your risk profile and trade-offs.
+
+For example, using some of the bullet points above:
+
+- A user can deposit funds
+  - What funds can they deposit?
+    - How does the system know to only accept tokens: X, Y, Z?
+      - Are the token addresses hardcoded or can someone add them at runtime?
+    - Who has the authority to tell the system to include that information?
+      - If changes can be made at runtime then who is the "owner" who is authorized to make those changes?
+    - Do they have authority to make further additions / remove the current tokens?
+      - Is there any mechanism that specifies how many tokens they can add, which tokens they can select, how often they can make changes, which addresses they are able to use in order to interact with the system?
+    - What happens when a different token is deposited?
+      - Do you revert or transfer the funds back - is there some easter egg where you send back a wrapped version of the asset (who knows, it's your system so why not)?
+    - Where are the funds stored when a deposit is made?
+      - Does the contract that accepts the deposit custody the funds or are they transferred to some vault that is managed by a DAO?
+
+As you can see, a single question spawns more questions which can spawn more technical questions regarding how contracts will be designed (monolithic vs modular, proxies or no proxies, upgradeable?), implemented (each concept can have many implementations - some better than others), deployed etc.
+
+> *NOTE*
+> Diagrams are also important in technical documentation because it may be easier to follow a complex workflow visually than having to remember all of the branching sentences / paths
 
 ### Testing
 
