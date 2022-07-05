@@ -36,7 +36,7 @@ If you cannot find any mention of your concern then feel free to file an issue. 
 
 If you have decided to file a new issue then we encourage the use of the provided templates. They exist in order to help the reader provide the information that we would like to see relating to the type of change that the user wants to make.
 
-Please carefully consider what you want to say and why you want to say it. The issue may be obvious to you however we do not know what you think so structuring your comments and explaning your reasoning will help us understand your concern. The greater the detail the easier it is for us to implement a change.
+Please carefully consider what you want to say and why you want to say it. The issue may be obvious to you; however, we do not know what you are thinking. So structuring your comments and explaining your reasoning will help us understand your concern. The greater the detail the easier it is for us to implement a change.
 
 ## Code Quality
 
@@ -141,9 +141,9 @@ There are two ways to document your code
   - These are helper comments within the code to guide the developer who is reading your code
   - They do not get parsed out via automatic doc generation
 
-Each function that is written should be documented (the `///`). The only exception applies to the functions inside the `impl` of your contract (notice that the example above does not have an documentation, that would be on the `abi` that is imported). The documentation for those functions should be on the `abi` because a developer will have access to your `abi` and not necessarily your implementation.
+Each function that is written should be documented (the `///`). The only exception applies to the functions inside the `impl` of your contract (notice that the example above does not have any documentation, that would be on the `abi` that is imported). The documentation for those functions should be on the `abi` because a developer will have access to your `abi` and not necessarily your implementation.
 
-When writing documentation make sure that your arguments are in alphabetical order and any assertion that you have in your function is also documented in the same order. It makes it easier to read the code when you see everything in sequential order rather than searching for where an assertion is placed in the function.
+When writing documentation make sure that your arguments are in alphabetical order and any assertions that you have in your function are also documented in the same order. It makes it easier to read the code when you see everything in sequential order rather than searching for where an assertion is placed in the function.
 
 Example
 
@@ -207,9 +207,9 @@ pub struct Item {
 }
 ```
 
-Documenting your code does not stop at writing documentation. It is also important to name your variables, functions and data structures appropriately. This is a difficult task and it can be argued to be a skill and an art because if your name is too verbose then it will be difficult to read (because of how much screenspace it takes up) and annoying to use while an abbreviated name requires insider knowledge to be able to infer what the variable is (you could document it extensively however that still means the reader must remember what the documentation says).
+Documenting your code does not stop at writing documentation. It is also important to name your variables, functions and data structures appropriately. This is a difficult task and it can be argued to be a skill and an art. If your name is too verbose, then it will be difficult to read (because of how much screenspace it takes up) and annoying to use. On the other hand, an abbreviated name requires insider knowledge to be able to infer what the variable is (you could document it extensively however that still means the reader must remember what the documentation says).
 
-There are two general rules to follow
+There are two general rules to follow:
 
 - Do not abbreviate your names (or use acronyms) unless the abbreviation is used extensively in the area and it is easy to perform an online search and find out more information
   - Remember, if someone starts to abbreviate variables / uses notation that you are unfamiliar with then that forces you to start searching for the information and remembering what something represents
