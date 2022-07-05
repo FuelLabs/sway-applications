@@ -163,26 +163,3 @@ impl core::ops::Ord for Asset {
         }
     }
 }
-
-impl core::ops::Subtract for Asset {
-    pub fn subtract(self, other: Self) -> Self {
-        match(self, other) {
-            (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                require(nft_asset1.contract_id == nft_asset2.contract_id, AssetError::AssetsAreNotTheSame);
-                // TODO: Remove differences in the Vecs
-                self
-            },
-            (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
-                require(token_asset1.contract_id == token_asset2.contract_id, AssetError::AssetsAreNotTheSame);
-                let total_amount = token_asset1.amount - token_asset2.amount;
-                let token = TokenAsset {
-                    amount: total_amount, contract_id: token_asset1.contract_id
-                };
-                Asset::TokenAsset(token)
-            },
-            _ => {
-                self
-            },
-        }
-    }
-}
