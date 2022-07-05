@@ -1,5 +1,4 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
-use fuels_abigen_macro::abigen;
 
 // Load abi from json
 abigen!(Nft, "out/debug/NFT-abi.json");
