@@ -1,19 +1,18 @@
 contract;
 
-dep abi;
+dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
 dep utils;
 
-use abi::{EnglishAuction, NFT};
+use contract_abi::{EnglishAuction, NFT};
 use data_structures::{Asset, Auction, State};
 use errors::{AccessError, InitError, InputError, UserError};
 use events::{CancelAuctionEvent, CreateAuctionEvent, BidEvent, WithdrawEvent};
 use utils::{
     approved_for_nft_transfer,
     owns_nft,
-    sender_identity,
     transfer_asset,
     transfer_nft,
     validate_asset,
@@ -22,11 +21,13 @@ use utils::{
 use std::{
     assert::require,
     block::height,
+    chain::auth::{AuthError, msg_sender},
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
     contract_id::ContractId,
     identity::Identity,
     logging::log,
     option::Option,
+    result::Result,
     storage::StorageMap,
 };
 
@@ -94,7 +95,7 @@ impl EnglishAuction for Contract {
         validate_asset(auction.buy_asset, asset);
 
         // The bidder cannot be the seller
-        let sender = sender_identity();
+        let sender =  msg_sender().unwrap();
         require(sender != auction.seller, UserError::BidderIsSeller);
 
         // Combine the user's previous deposits and the current bid for the
@@ -109,12 +110,8 @@ impl EnglishAuction for Contract {
             }
         };
 
-        // Make sure this is greater than initial bid if no bid has been placed
-        if (auction.buy_asset.amount() == 0) {
-            require(total_bid.amount() >= auction.initial_price, InputError::InitialPriceNotMet);
-        }
-
-        // Make sure this bid plus the previously placed bids are more than the current bid
+        // Make sure this is greater than initial bid and this bid plus the previously placed bids are more than the current bid
+        require(total_bid.amount() >= auction.initial_price, InputError::InitialPriceNotMet);
         require(total_bid.amount() > auction.buy_asset.amount(), InputError::IncorrectAmountProvided);
 
         // Check to see if we've reached the reserve price if there is one
@@ -172,8 +169,7 @@ impl EnglishAuction for Contract {
         let mut auction = auction.unwrap();
 
         // The sender has to be the seller in order to cancel their auction
-        let sender = sender_identity();
-        require(sender == auction.seller, AccessError::SenderIsNotSeller);
+        require(msg_sender().unwrap() == auction.seller, AccessError::SenderIsNotSeller);
 
         // Update and store the auction's information
         auction.highest_bidder = Option::None();
@@ -228,7 +224,7 @@ impl EnglishAuction for Contract {
             Asset::NFTAsset(asset) => {
                 // Selling NFTs
                 // Ensure that the sender is the owner
-                let sender = sender_identity();
+                let sender = msg_sender().unwrap();
                 require(owns_nft(sender, asset), AccessError::NFTTransferNotApproved);
 
                 // Ensure that the auction contract can transfer the NFT tokens to itself
@@ -315,7 +311,7 @@ impl EnglishAuction for Contract {
         }
 
         // Set some variables we will need
-        let sender = sender_identity();
+        let sender = msg_sender().unwrap();
         let bidder: Option<Identity> = auction.highest_bidder;
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
 

@@ -1,10 +1,10 @@
 library utils;
 
-dep abi;
+dep contract_abi;
 dep data_structures;
 dep errors;
 
-use abi::NFT;
+use contract_abi::NFT;
 use data_structures::{Asset, NFTAsset, TokenAsset};
 use errors::{AccessError, InputError};
 use std::{
@@ -55,12 +55,6 @@ pub fn owns_nft(owner: Identity, asset: NFTAsset) -> bool {
     token_owner.is_some() && owner == token_owner.unwrap()
 }
 
-/// This function will return the identity of the sender.
-pub fn sender_identity() -> Identity {
-    let sender: Result<Identity, AuthError> = msg_sender();
-    sender.unwrap()
-}
-
 /// This function will transfer the `Asset` given to the specified `Identity`.
 pub fn transfer_asset(to: Identity, asset: Asset) {
     match asset {
@@ -109,7 +103,7 @@ pub fn transfer_nft(from: Identity, to: Identity, asset: NFTAsset) {
 /// * When the transaction asset amount is not the same as the amount specified in the
 ///   `recieved_asset` struct.
 pub fn validate_asset(buy_asset: Asset, recieved_asset: Asset) {
-    let sender = sender_identity();
+    let sender = msg_sender().unwrap();
 
     require(buy_asset == recieved_asset, InputError::IncorrectAssetProvided);
 
