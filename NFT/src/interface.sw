@@ -9,7 +9,6 @@ abi NFT {
     ///
     /// * `approved` - The `Identity` which will be allowed to transfer the token.
     /// * `token_id` - The `u64` ID of the specific token which the owner is giving approval to.
-    /// * `approve` - The `bool` which wil allow or disallow transfers.
     ///
     /// # Reverts
     ///
@@ -54,9 +53,9 @@ abi NFT {
     ///
     /// # Arguments
     ///
+    /// * `access_control` - The `bool` which will determine whether identities will need approval to mint.
     /// * `admin` - The `Identity` which has the ability to mint if `access_control` is set to true and change the contract's admin.
-    /// * `access_control` - The `bool` which will determine whether identities will need to approval to mint.
-    /// * `token_supply` - The `u64` number representing the total supply of tokens which will be allowed to mint.
+    /// * `token_supply` - The `u64` number representing the total supply of tokens that can be minted.
     ///
     /// # Reverts
     ///
@@ -69,19 +68,18 @@ abi NFT {
     ///
     /// # Arguments
     ///
-    /// * `owner` - The `Identity` which has given approval.
     /// * `operator` - The `Identity` which has recieved approval to transfer tokens on the `owner`s behalf.
+    /// * `owner` - The `Identity` which has given approval.
     #[storage(read)]fn is_approved_for_all(operator: Identity, owner: Identity) -> bool;
 
-    /// Mints a specified amount of tokens to the given `to` `Identity`. Once a token has been minted,
-    /// it can be transfered and burned. Calling this mint function will increment the `total_count`.
-    /// If the NFT contract has not yet been initalized, any attempts to mint will fail as the
-    /// `total_supply` has not yet been set.
+    /// Mints `amount` number of tokens to the `to` identity. 
+    /// 
+    /// Once a token has been minted, it can be transfered and burned.
     ///
     /// # Arguments
     ///
-    /// * `to` - The `Identity` which will own the minted tokens.
     /// * `amount` - The `u64` number of tokens to be minted in this transaction.
+    /// * `to` - The `Identity` which will own the minted tokens.
     ///
     /// # Reverts
     ///
@@ -113,8 +111,8 @@ abi NFT {
     ///
     /// # Arguments
     ///
-    /// * `owner` - The `Identity` which owns tokens.
     /// * `operator` - The `Identity` which may transfer all tokens owned by the `owner`.
+    /// * `owner` - The `Identity` which owns tokens.
     ///
     /// # Reverts
     ///
