@@ -51,6 +51,71 @@ storage {
 }
 
 impl NFT for Contract {
+    #[storage(read, write)]fn approve(approved: Option<Identity>, token_id: u64) {
+        // Ensure this is a valid token
+        let mut meta_data = token_metadata(storage.meta_data.get(token_id));
+
+        // The owner cannot approve themselves
+        require(approved.is_none() || (meta_data.owner != approved.unwrap()), ApprovalError::ApproverCannotBeOwner);
+
+        // Ensure that the sender is the owner of the token to be approved
+        let sender = msg_sender().unwrap();
+        require(meta_data.owner == sender, AccessError::SenderNotOwner);
+
+        // Set and store the `approved` `Identity`
+        meta_data.approved = approved;
+        storage.meta_data.insert(token_id, Option::Some(meta_data));
+
+        // Log the approval event
+        log(ApprovalEvent {
+            owner: sender, approved, token_id
+        });
+    }
+
+    #[storage(read)]fn approved(token_id: u64) -> Option<Identity> {
+        let meta_data = storage.meta_data.get(token_id);
+
+        // If the `u64` id maps to an existing token either return `Some` or `None`
+        match meta_data {
+            Option::Some(MetaData) => {
+                // This token id maps to an existing token
+                let meta_data = meta_data.unwrap();
+                let approved = meta_data.approved;
+
+                // If there is a `Identity` that is approved, return that `Identity`
+                // Otherwise return `None`
+                match approved {
+                    Option::Some(Identity) => Option::Some(approved.unwrap()), Option::None(Identity) => Option::None(), 
+                }
+            },
+            Option::None(MetaData) => Option::None(), 
+        }
+    }
+
+    #[storage(read)]fn balance_of(owner: Identity) -> u64 {
+        storage.balances.get(owner)
+    }
+
+    #[storage(read, write)]fn burn(token_id: u64) {
+        // Ensure this is a valid token that has already been minted and exists
+        let mut meta_data = token_metadata(storage.meta_data.get(token_id));
+
+        // Ensure the sender owns the token that is provided
+        let owner = msg_sender().unwrap();
+        require(meta_data.owner == owner, AccessError::SenderNotOwner);
+
+        // Burn this token by setting the `token_id` Metadata mapping to `None`
+        storage.meta_data.insert(token_id, Option::None());
+
+        // Reduce the balance of tokens for the owner
+        storage.balances.insert(owner, storage.balances.get(owner) - 1);
+
+        // Log the burn event
+        log(BurnEvent {
+            owner, token_id
+        });
+    }
+
     #[storage(read, write)]fn constructor(access_control: bool, admin: Option<Identity>, token_supply: u64) {
         // This function can only be called once so if the token supply is already set it has
         // already been called
@@ -64,6 +129,10 @@ impl NFT for Contract {
         storage.access_control = access_control;
         storage.admin = admin;
         storage.token_supply = token_supply;
+    }
+
+    #[storage(read)]fn is_approved_for_all(operator: Identity, owner: Identity) -> bool {
+        storage.operator_approval.get((owner, operator))
     }
 
     #[storage(read, write)]fn mint(amount: u64, to: Identity) {
@@ -101,24 +170,43 @@ impl NFT for Contract {
         });
     }
 
-    #[storage(read, write)]fn burn(token_id: u64) {
-        // Ensure this is a valid token that has already been minted and exists
-        let mut meta_data = token_metadata(storage.meta_data.get(token_id));
+    #[storage(read)]fn owner_of(token_id: u64) -> Option<Identity> {
+        let meta_data = storage.meta_data.get(token_id);
 
-        // Ensure the sender owns the token that is provided
-        let owner = msg_sender().unwrap();
-        require(meta_data.owner == owner, AccessError::SenderNotOwner);
+        // If the `u64` id maps to an existing token either return `Some` or `None`
+        match meta_data {
+            Option::Some(MetaData) => {
+                // This token id maps to an existing token and return the owner of the token
+                let meta_data = meta_data.unwrap();
+                Option::Some(meta_data.owner)
+            },
+            Option::None(MetaData) => Option::None(), 
+        }
+    }
 
-        // Burn this token by setting the `token_id` Metadata mapping to `None`
-        storage.meta_data.insert(token_id, Option::None());
+    #[storage(read, write)]fn set_admin(admin: Option<Identity>) {
+        // Ensure that the sender is the admin
+        require(storage.admin.is_some() && msg_sender().unwrap() == storage.admin.unwrap(), AccessError::SenderCannotSetAccessControl);
 
-        // Reduce the balance of tokens for the owner
-        storage.balances.insert(owner, storage.balances.get(owner) - 1);
+        // Set the new admin
+        storage.admin = admin;
+    }
 
-        // Log the burn event
-        log(BurnEvent {
-            owner, token_id
+    #[storage(read, write)]fn set_approval_for_all(approve: bool, operator: Identity, owner: Identity) {
+        // Only the owner is allowed to set an operator for themselves
+        require(owner == msg_sender().unwrap(), AccessError::SenderNotOwner);
+
+        // Set the identity to have or not have approval to transfer all tokens owned
+        storage.operator_approval.insert((owner, operator), approve);
+
+        // Log the operator event
+        log(OperatorEvent {
+            approve, owner, operator
         });
+    }
+
+    #[storage(read)]fn total_supply() -> u64 {
+        storage.token_supply
     }
 
     #[storage(read, write)]fn transfer_from(from: Identity, to: Identity, token_id: u64) {
@@ -148,93 +236,5 @@ impl NFT for Contract {
         log(TransferEvent {
             from, sender, to, token_id
         });
-    }
-
-    #[storage(read, write)]fn approve(approved: Option<Identity>, token_id: u64) {
-        // Ensure this is a valid token
-        let mut meta_data = token_metadata(storage.meta_data.get(token_id));
-
-        // The owner cannot approve themselves
-        require(approved.is_none() || (meta_data.owner != approved.unwrap()), ApprovalError::ApproverCannotBeOwner);
-
-        // Ensure that the sender is the owner of the token to be approved
-        let sender = msg_sender().unwrap();
-        require(meta_data.owner == sender, AccessError::SenderNotOwner);
-
-        // Set and store the `approved` `Identity`
-        meta_data.approved = approved;
-        storage.meta_data.insert(token_id, Option::Some(meta_data));
-
-        // Log the approval event
-        log(ApprovalEvent {
-            owner: sender, approved, token_id
-        });
-    }
-
-    #[storage(read, write)]fn set_approval_for_all(approve: bool, operator: Identity, owner: Identity) {
-        // Only the owner is allowed to set an operator for themselves
-        require(owner == msg_sender().unwrap(), AccessError::SenderNotOwner);
-
-        // Set the identity to have or not have approval to transfer all tokens owned
-        storage.operator_approval.insert((owner, operator), approve);
-
-        // Log the operator event
-        log(OperatorEvent {
-            approve, owner, operator
-        });
-    }
-
-    #[storage(read, write)]fn set_admin(admin: Option<Identity>) {
-        // Ensure that the sender is the admin
-        require(storage.admin.is_some() && msg_sender().unwrap() == storage.admin.unwrap(), AccessError::SenderCannotSetAccessControl);
-
-        // Set the new admin
-        storage.admin = admin;
-    }
-
-    #[storage(read)]fn approved(token_id: u64) -> Option<Identity> {
-        let meta_data = storage.meta_data.get(token_id);
-
-        // If the `u64` id maps to an existing token either return `Some` or `None`
-        match meta_data {
-            Option::Some(MetaData) => {
-                // This token id maps to an existing token
-                let meta_data = meta_data.unwrap();
-                let approved = meta_data.approved;
-
-                // If there is a `Identity` that is approved, return that `Identity`
-                // Otherwise return `None`
-                match approved {
-                    Option::Some(Identity) => Option::Some(approved.unwrap()), Option::None(Identity) => Option::None(), 
-                }
-            },
-            Option::None(MetaData) => Option::None(), 
-        }
-    }
-
-    #[storage(read)]fn balance_of(owner: Identity) -> u64 {
-        storage.balances.get(owner)
-    }
-
-    #[storage(read)]fn is_approved_for_all(operator: Identity, owner: Identity) -> bool {
-        storage.operator_approval.get((owner, operator))
-    }
-
-    #[storage(read)]fn owner_of(token_id: u64) -> Option<Identity> {
-        let meta_data = storage.meta_data.get(token_id);
-
-        // If the `u64` id maps to an existing token either return `Some` or `None`
-        match meta_data {
-            Option::Some(MetaData) => {
-                // This token id maps to an existing token and return the owner of the token
-                let meta_data = meta_data.unwrap();
-                Option::Some(meta_data.owner)
-            },
-            Option::None(MetaData) => Option::None(), 
-        }
-    }
-
-    #[storage(read)]fn total_supply() -> u64 {
-        storage.token_supply
     }
 }
