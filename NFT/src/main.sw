@@ -203,16 +203,14 @@ impl NFT for Contract {
         });
     }
 
-    #[storage(read, write)]fn set_approval_for_all(approve: bool, operator: Identity, owner: Identity) {
-        // Only the owner is allowed to set an operator for themselves
-        require(owner == msg_sender().unwrap(), AccessError::SenderNotOwner);
-
+    #[storage(read, write)]fn set_approval_for_all(approve: bool, operator: Identity) {
+        let sender = msg_sender().unwrap();
         // Set the identity to have or not have approval to transfer all tokens owned
-        storage.operator_approval.insert((owner, operator), approve);
+        storage.operator_approval.insert((sender, operator), approve);
 
         // Log the operator event
         log(OperatorEvent {
-            approve, owner, operator
+            approve, owner: sender, operator
         });
     }
 

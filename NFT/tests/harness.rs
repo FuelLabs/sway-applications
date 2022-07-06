@@ -316,7 +316,7 @@ mod is_approved_for_all {
 
             let owner = Identity::Address(owner1.wallet.address());
             let operator = Identity::Address(owner2.wallet.address());
-            set_approval_for_all(true, &owner1.nft, &operator, &owner).await;
+            set_approval_for_all(true, &owner1.nft, &operator).await;
 
             assert_eq! {is_approved_for_all(&owner1.nft, &operator, &owner).await, true};
             assert_eq! {is_approved_for_all(&owner1.nft, &owner, &operator).await, false};
@@ -571,10 +571,10 @@ mod set_approval_for_all {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(false, &deploy_wallet.nft, &Option::None(), 1).await;
-
+            
             let owner = Identity::Address(owner1.wallet.address());
             let operator = Identity::Address(owner2.wallet.address());
-            set_approval_for_all(true, &owner1.nft, &operator, &owner).await;
+            set_approval_for_all(true, &owner1.nft, &operator).await;
 
             assert_eq!(
                 is_approved_for_all(&owner1.nft,  &operator, &owner).await,
@@ -584,23 +584,6 @@ mod set_approval_for_all {
                 is_approved_for_all(&owner1.nft, &owner, &operator).await,
                 false
             );
-        }
-    }
-
-    mod reverts {
-
-        use super::*;
-
-        #[tokio::test]
-        #[should_panic(expected = "Revert(42)")]
-        async fn panics_when_sender_is_not_owner() {
-            let (deploy_wallet, owner1, owner2) = setup().await;
-
-            constructor(false, &deploy_wallet.nft, &Option::None(), 1).await;
-
-            let owner = Identity::Address(owner1.wallet.address());
-            let operator = Identity::Address(owner2.wallet.address());
-            set_approval_for_all(true, &owner2.nft, &operator, &owner).await;
         }
     }
 }
@@ -688,7 +671,7 @@ mod transfer_from {
             mint(1, &owner1.nft, &minter).await;
 
             let operator = Identity::Address(owner2.wallet.address());
-            set_approval_for_all(true, &owner1.nft, &operator, &minter).await;
+            set_approval_for_all(true, &owner1.nft, &operator).await;
 
             transfer_from(&owner2.nft, &minter, &operator, 1).await;
 

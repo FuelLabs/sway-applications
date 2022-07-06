@@ -120,10 +120,9 @@ pub mod abi_calls {
         approve: bool,
         contract: &Nft,
         operator: &Identity,
-        owner: &Identity,
     ) -> CallResponse<()> {
         contract
-            .set_approval_for_all(approve, operator.clone(), owner.clone())
+            .set_approval_for_all(approve, operator.clone())
             .call()
             .await
             .unwrap()

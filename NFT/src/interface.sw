@@ -116,12 +116,11 @@ abi NFT {
     ///
     /// * `approve` - The boolean representing whether the owner is giving or revoking operator status.
     /// * `operator` - The `Identity` which may transfer all tokens owned by the `owner`.
-    /// * `owner` - The `Identity` which owns tokens.
     ///
     /// # Reverts
     ///
     /// * When the sender is not the `owner`.
-    #[storage(read, write)]fn set_approval_for_all(approve: bool, operator: Identity, owner: Identity);
+    #[storage(read, write)]fn set_approval_for_all(approve: bool, operator: Identity);
 
     /// Returns the total supply of tokens which are currently in existence.
     #[storage(read)]fn total_supply() -> u64;
