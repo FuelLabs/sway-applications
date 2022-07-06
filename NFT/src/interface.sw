@@ -63,7 +63,7 @@ abi NFT {
     /// * When the constructor function has already been called.
     /// * When the `token_supply` is set to 0.
     /// * When `access_control` is set to true and no admin was given.
-    #[storage(read, write)]fn constructor(admin: Option<Identity>, access_control: bool, token_supply: u64);
+    #[storage(read, write)]fn constructor(access_control: bool, admin: Option<Identity>, token_supply: u64);
 
     /// Returns a `bool` of whether the `Identity` is approved to transfer all tokens on the `owner`s behalf.
     ///
@@ -71,7 +71,7 @@ abi NFT {
     ///
     /// * `owner` - The `Identity` which has given approval.
     /// * `operator` - The `Identity` which has recieved approval to transfer tokens on the `owner`s behalf.
-    #[storage(read)]fn is_approved_for_all(owner: Identity, operator: Identity) -> bool;
+    #[storage(read)]fn is_approved_for_all(operator: Identity, owner: Identity) -> bool;
 
     /// Mints a specified amount of tokens to the given `to` `Identity`. Once a token has been minted,
     /// it can be transfered and burned. Calling this mint function will increment the `total_count`.
@@ -87,7 +87,7 @@ abi NFT {
     ///
     /// * When the sender attempts to mint more tokens than total supply.
     /// * When the sender is not the admin and `access_control` is set.
-    #[storage(read, write)]fn mint(to: Identity, amount: u64);
+    #[storage(read, write)]fn mint(amount: u64, to: Identity);
 
     /// Returns an `Option` of an `Identity` which owns the specified token id.
     ///
@@ -119,7 +119,7 @@ abi NFT {
     /// # Reverts
     ///
     /// * When the sender is not the `owner`.
-    #[storage(read, write)]fn set_approval_for_all(owner: Identity, operator: Identity, approve: bool);
+    #[storage(read, write)]fn set_approval_for_all(approve: bool, operator: Identity, owner: Identity);
 
     /// Returns a `u64` of the total supply of tokens which can be minted for the NFT contract.
     #[storage(read)]fn total_supply() -> u64;

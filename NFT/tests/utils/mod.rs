@@ -53,7 +53,7 @@ pub mod abi_calls {
 
     use super::*;
 
-    pub async fn approve(contract: &Nft, approved: &Option, token_id: u64) -> CallResponse<()> {
+    pub async fn approve(approved: &Option, contract: &Nft, token_id: u64) -> CallResponse<()> {
         contract
             .approve(approved.clone(), token_id)
             .call()
@@ -79,13 +79,13 @@ pub mod abi_calls {
     }
 
     pub async fn constructor(
+        access_control: bool,
         contract: &Nft,
         owner: &Option,
-        access_control: bool,
         token_supply: u64,
     ) -> CallResponse<()> {
         contract
-            .constructor(owner.clone(), access_control, token_supply)
+            .constructor(access_control, owner.clone(), token_supply)
             .call()
             .await
             .unwrap()
@@ -93,19 +93,19 @@ pub mod abi_calls {
 
     pub async fn is_approved_for_all(
         contract: &Nft,
-        owner: &Identity,
         operator: &Identity,
+        owner: &Identity,
     ) -> bool {
         contract
-            .is_approved_for_all(owner.clone(), operator.clone())
+            .is_approved_for_all(operator.clone(), owner.clone())
             .call()
             .await
             .unwrap()
             .value
     }
 
-    pub async fn mint(contract: &Nft, owner: &Identity, amount: u64) -> CallResponse<()> {
-        contract.mint(owner.clone(), amount).call().await.unwrap()
+    pub async fn mint(amount: u64, contract: &Nft, owner: &Identity) -> CallResponse<()> {
+        contract.mint(amount, owner.clone()).call().await.unwrap()
     }
 
     pub async fn owner_of(contract: &Nft, token_id: u64) -> Option {
@@ -113,13 +113,13 @@ pub mod abi_calls {
     }
 
     pub async fn set_approval_for_all(
-        contract: &Nft,
-        owner: &Identity,
-        operator: &Identity,
         approve: bool,
+        contract: &Nft,
+        operator: &Identity,
+        owner: &Identity,
     ) -> CallResponse<()> {
         contract
-            .set_approval_for_all(owner.clone(), operator.clone(), approve)
+            .set_approval_for_all(approve, operator.clone(), owner.clone())
             .call()
             .await
             .unwrap()

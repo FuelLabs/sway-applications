@@ -54,7 +54,7 @@ storage {
 }
 
 impl NFT for Contract {
-    #[storage(read, write)]fn constructor(admin: Option<Identity>, access_control: bool, token_supply: u64) {
+    #[storage(read, write)]fn constructor(access_control: bool, admin: Option<Identity>, token_supply: u64) {
         // This function can only be called once so if the token supply is already set it has
         // already been called
         require(storage.token_supply == 0, InitError::CannotReinitialize);
@@ -69,7 +69,7 @@ impl NFT for Contract {
         storage.token_supply = token_supply;
     }
 
-    #[storage(read, write)]fn mint(to: Identity, amount: u64) {
+    #[storage(read, write)]fn mint(amount: u64, to: Identity) {
         // The current number of tokens minted plus the amount to be minted cannot be
         // greater than the total supply
         let token_count = storage.token_count;
@@ -174,16 +174,16 @@ impl NFT for Contract {
         });
     }
 
-    #[storage(read, write)]fn set_approval_for_all(owner: Identity, operator: Identity, allow: bool) {
+    #[storage(read, write)]fn set_approval_for_all(approve: bool, operator: Identity, owner: Identity) {
         // Only the owner is allowed to set an operator for themselves
         require(owner == msg_sender().unwrap(), AccessError::SenderNotOwner);
 
         // Set the identity to have or not have approval to transfer all tokens owned
-        storage.operator_approval.insert((owner, operator), allow);
+        storage.operator_approval.insert((owner, operator), approve);
 
         // Log the operator event
         log(OperatorEvent {
-            owner, operator, allow
+            approve, owner, operator
         });
     }
 
@@ -219,7 +219,7 @@ impl NFT for Contract {
         storage.balances.get(owner)
     }
 
-    #[storage(read)]fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
+    #[storage(read)]fn is_approved_for_all(operator: Identity, owner: Identity) -> bool {
         storage.operator_approval.get((owner, operator))
     }
 

@@ -31,14 +31,14 @@ pub struct MintEvent {
 }
 
 pub struct OperatorEvent {
+    /// The `bool` which determines whether approval has been given or revoked to be an operator.
+    approve: bool,
+    
     /// The `Identity` which has been given or revoked approval to be an operator to the owner.
     operator: Identity,
 
     /// The `Identity` which has given or revoked approval to the operator.
     owner: Identity,
-
-    /// The `bool` which determines whether approval has been given or revoked to be an operator.
-    allow: bool,
 }
 
 pub struct TransferEvent {
