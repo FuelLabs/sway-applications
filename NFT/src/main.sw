@@ -98,7 +98,7 @@ impl NFT for Contract {
 
     #[storage(read, write)]fn burn(token_id: u64) {
         // Ensure this is a valid token that has already been minted and exists
-        let mut meta_data = token_metadata(storage.meta_data.get(token_id));
+        let meta_data = token_metadata(storage.meta_data.get(token_id));
 
         // Ensure the sender owns the token that is provided
         let owner = msg_sender().unwrap();
@@ -136,10 +136,10 @@ impl NFT for Contract {
     }
 
     #[storage(read, write)]fn mint(amount: u64, to: Identity) {
-        // The current number of tokens minted plus the amount to be minted cannot be
-        // greater than the total supply
         let token_count = storage.token_count;
         let total_mint = token_count + amount;
+        // The current number of tokens minted plus the amount to be minted cannot be
+        // greater than the total supply
         require(storage.token_supply >= total_mint, InputError::NotEnoughTokensToMint);
 
         // Ensure that the sender is the admin if this is a controlled access mint
@@ -147,23 +147,18 @@ impl NFT for Contract {
 
         // Mint as many tokens as the sender has asked for
         let mut index = token_count + 1;
-        let mut minted_tokens = ~Vec::new::<u64>();
+        let mut minted_tokens = ~Vec::with_capacity(amount);
         while index <= total_mint {
             // Create the metadata for this new token with the owner
-            let meta_data = ~MetaData::new(Option::None(), to);
-            storage.meta_data.insert(index, Option::Some(meta_data));
+            storage.meta_data.insert(index, Option::Some(~MetaData::new(Option::None, to)));
 
-            // Push to minted tokens Vec
             minted_tokens.push(index);
-
-            // Increment the number of tokens minted in this transaction
             index = index + 1;
         }
 
-        // Increment the token count
-        storage.token_count = total_mint;
-        // Increase the balance of the new owner
+        // Increment the balance of the `to` address and total tokens minted
         storage.balances.insert(to, storage.balances.get(to) + amount);
+        storage.token_count = total_mint;
 
         log(MintEvent {
             owner: to, token_ids: minted_tokens
@@ -175,12 +170,11 @@ impl NFT for Contract {
 
         // If the `u64` id maps to an existing token either return `Some` or `None`
         match meta_data {
-            Option::Some(MetaData) => {
+            Option::Some(meta_data) => {
                 // This token id maps to an existing token and return the owner of the token
-                let meta_data = meta_data.unwrap();
                 Option::Some(meta_data.owner)
             },
-            Option::None(MetaData) => Option::None(), 
+            Option::None(meta_data) => Option::None(), 
         }
     }
 

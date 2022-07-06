@@ -5,7 +5,6 @@ dep errors;
 
 use data_structures::MetaData;
 use errors::InputError;
-
 use std::{assert::require, option::Option};
 
 /// This function will take an `Option` of type `MetaData` and returns the `MetaData`. It will

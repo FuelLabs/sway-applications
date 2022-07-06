@@ -111,6 +111,7 @@ abi NFT {
     ///
     /// # Arguments
     ///
+    /// * `approve` - The boolean representing whether the owner is giving or revoking operator status.
     /// * `operator` - The `Identity` which may transfer all tokens owned by the `owner`.
     /// * `owner` - The `Identity` which owns tokens.
     ///
