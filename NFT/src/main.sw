@@ -33,7 +33,7 @@ storage {
     /// Only the `admin` is allowed to change the `admin` of the contract.
     admin: Option<Identity>,
 
-    /// Used of O(1) lookup of the number of tokens owned by each `Identity`.
+    /// Used for O(1) lookup of the number of tokens owned by each `Identity`.
     /// This increments or decrements when minting, transfering ownership, and burning tokens.
     /// Map(Identity => balance)
     balances: StorageMap<Identity,
@@ -54,7 +54,7 @@ storage {
 }
 
 impl NFT for Contract {
-    /// Constructor for the NFT. Calling this function will instantiate the `total_supply`, the `admin`
+    /// Constructor for the NFT. Calling this function will initalize the `total_supply`, the `admin`
     /// `Identity`, and the `access_control` boolean. These values can only be set once.
     /// Before this function is called, the contract is unable to perform any minting or transfering of tokens.
     ///
@@ -101,31 +101,32 @@ impl NFT for Contract {
     #[storage(read, write)]fn mint(to: Identity, amount: u64) {
         // The current number of tokens minted plus the amount to be minted cannot be
         // greater than the total supply
-        require(storage.token_supply >= (storage.token_count + amount), InputError::NotEnoughTokensToMint);
+        let token_count = storage.token_count;
+        let total_mint = token_count + amount;
+        require(storage.token_supply >= total_mint, InputError::NotEnoughTokensToMint);
 
         // Ensure that the sender is the admin if this is a controlled access mint
         require(!storage.access_control || (storage.admin.is_some() && msg_sender().unwrap() == storage.admin.unwrap()), AccessError::SenderDoesNotHaveAccessControl);
 
         // Mint as many tokens as the sender has asked for
-        let mut index = 0;
+        let mut index = token_count + 1;
         let mut minted_tokens = ~Vec::new::<u64>();
-        while index < amount {
-            // Increment the token count
-            storage.token_count = storage.token_count + 1;
-
+        while index <= total_mint {
             // Create the metadata for this new token with the owner
             let meta_data = ~MetaData::new(Option::None(), to);
-            storage.meta_data.insert(storage.token_count, Option::Some(meta_data));
-
-            // Increase the balance of the new owner
-            storage.balances.insert(to, storage.balances.get(to) + 1);
+            storage.meta_data.insert(index, Option::Some(meta_data));
 
             // Push to minted tokens Vec
-            minted_tokens.push(storage.token_count);
+            minted_tokens.push(index);
 
             // Increment the number of tokens minted in this transaction
             index = index + 1;
         }
+
+        // Increment the token count
+        storage.token_count = total_mint;
+        // Increase the balance of the new owner
+        storage.balances.insert(to, storage.balances.get(to) + amount);
 
         log(MintEvent {
             owner: to, token_ids: minted_tokens
