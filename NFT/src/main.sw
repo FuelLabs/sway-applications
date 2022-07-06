@@ -18,42 +18,40 @@ use std::{
     storage::StorageMap,
     vec::Vec,
 };
+
 use utils::token_metadata;
 
 storage {
-    /// Determines if only the `admin` is allowed to call the mint function.
+    /// Determines if only the contract's `admin` is allowed to call the mint function.
     /// This is only set on the initalization of the contract.
     access_control: bool,
 
-    /// Stores an `Option` of the `Identity` that has permission to mint if `access_control` is set to true.
+    /// Stores the user that is permitted to mint if `access_control` is set to true.
     /// Will store `None` if this contract does not have `access_control` set.
     /// Only the `admin` is allowed to change the `admin` of the contract.
     admin: Option<Identity>,
 
-    /// Used for O(1) lookup of the number of tokens owned by each `Identity`.
+    /// Used for O(1) lookup of the number of tokens owned by each user.
     /// This increments or decrements when minting, transfering ownership, and burning tokens.
     /// Map(Identity => balance)
     balances: StorageMap<Identity,
-    u64>, 
-    
-    /// The total supply tokens that can be minted. Can only be set on the initalization of the
-    /// contract.
+    u64>, /// The total supply tokens that can ever be minted.
+    /// This can only be set on the initalization of the contract.
     max_supply: u64,
 
-    /// Stores the `TokenMetadata` for each token based on the token's `u64` id
+    /// Stores the `TokenMetadata` for each token based on the token's unique identifier.
     /// Map(token_id => TokenMetadata)
-    meta_data: StorageMap<u64, Option<TokenMetaData>>, 
-    
-    /// Maps a tuple of (owner, operator) identities and stores whether the
-    /// operator is allowed to transfer ALL tokens on the owner's behalf.
+    meta_data: StorageMap<u64,
+    Option<TokenMetaData>>, /// Maps a tuple of (owner, operator) identities and stores whether the operator is allowed to
+    /// transfer ALL tokens on the owner's behalf.
     /// Map((owner, operator) => approved)
     operator_approval: StorageMap<(Identity,
-    Identity), bool>, /// The total number of tokens that have been minted.
-    /// This should only be incremented.
+    Identity), bool>, /// The total number of tokens that ever have been minted.
+    /// This will only be incremented.
     tokens_ever_minted: u64,
 
-    /// The number of tokens currently in existence. This is incremented on mint and decreminted
-    /// on burn.
+    /// The number of tokens currently in existence.
+    /// This is incremented on mint and decreminted on burn.
     total_supply: u64,
 }
 
@@ -61,9 +59,6 @@ impl NFT for Contract {
     #[storage(read, write)]fn approve(approved: Option<Identity>, token_id: u64) {
         // Ensure this is a valid token
         let mut meta_data = token_metadata(storage.meta_data.get(token_id));
-
-        // The owner cannot approve themselves
-        require(approved.is_none() || (meta_data.owner != approved.unwrap()), ApprovalError::ApproverCannotBeOwner);
 
         // Ensure that the sender is the owner of the token to be approved
         let sender = msg_sender().unwrap();

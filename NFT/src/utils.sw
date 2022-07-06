@@ -7,12 +7,11 @@ use data_structures::TokenMetaData;
 use errors::InputError;
 use std::{assert::require, option::Option};
 
-/// This function will take an `Option` of type `MetaData` and returns the `MetaData`. It will
-/// panic if the `Option` is `None`.
+/// This function is called to ensure that a token's unqiue identifier maps to an existing token.
 ///
 /// # Arguments
 ///
-/// * `meta_data` - The `Option` of type `MetaData` which is to be returned.
+/// * `meta_data` - The result of checking the contract's storage for a token's unique identifier.
 ///
 /// # Reverts
 ///

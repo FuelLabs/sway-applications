@@ -3,9 +3,9 @@ library data_structures;
 use std::{identity::Identity, option::Option};
 
 pub struct TokenMetaData {
-    /// The `Identity` that is allowed to transfer this token.
+    /// The user that is allowed to transfer this token.
     approved: Option<Identity>,
-    /// The `Identity` that owns this token.
+    /// The user that owns this token.
     owner: Identity,
 }
 

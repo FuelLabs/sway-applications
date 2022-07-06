@@ -4,8 +4,8 @@ use crate::utils::{Identity, Option};
 use fuels::prelude::*;
 use utils::{
     abi_calls::{
-        approve, approved, balance_of, burn, constructor, is_approved_for_all, max_supply, mint, owner_of,
-        set_admin, set_approval_for_all, total_supply, transfer_from,
+        approve, approved, balance_of, burn, constructor, is_approved_for_all, max_supply, mint,
+        owner_of, set_admin, set_approval_for_all, total_supply, transfer_from,
     },
     test_helpers::setup,
 };
@@ -61,20 +61,6 @@ mod approve {
 
             let approved_identity = Option::Some(Identity::Address(owner2.wallet.address()));
             approve(&approved_identity, &owner2.nft, 1).await;
-        }
-
-        #[tokio::test]
-        #[should_panic(expected = "Revert(42)")]
-        async fn panics_when_approver_is_owner() {
-            let (deploy_wallet, owner1, _owner2) = setup().await;
-
-            constructor(false, &deploy_wallet.nft, &Option::None(), 1).await;
-
-            let minter = Identity::Address(owner1.wallet.address());
-            mint(1, &owner1.nft, &minter).await;
-
-            let approved_identity = Option::Some(minter.clone());
-            approve(&approved_identity, &owner1.nft, 1).await;
         }
     }
 }
@@ -571,13 +557,13 @@ mod set_approval_for_all {
             let (deploy_wallet, owner1, owner2) = setup().await;
 
             constructor(false, &deploy_wallet.nft, &Option::None(), 1).await;
-            
+
             let owner = Identity::Address(owner1.wallet.address());
             let operator = Identity::Address(owner2.wallet.address());
             set_approval_for_all(true, &owner1.nft, &operator).await;
 
             assert_eq!(
-                is_approved_for_all(&owner1.nft,  &operator, &owner).await,
+                is_approved_for_all(&owner1.nft, &operator, &owner).await,
                 true
             );
             assert_eq!(
