@@ -2,16 +2,16 @@ library data_structures;
 
 use std::{identity::Identity, option::Option};
 
-pub struct MetaData {
+pub struct TokenMetaData {
     /// The `Identity` that is allowed to transfer this token.
     approved: Option<Identity>,
     /// The `Identity` that owns this token.
     owner: Identity,
 }
 
-impl MetaData {
+impl TokenMetaData {
     fn new(approved: Option<Identity>, owner: Identity) -> Self {
-        MetaData {
+        TokenMetaData {
             approved, owner
         }
     }

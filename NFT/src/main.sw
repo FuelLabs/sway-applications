@@ -5,7 +5,7 @@ dep errors;
 dep interface;
 dep utils;
 
-use data_structures::MetaData;
+use data_structures::TokenMetaData;
 use errors::{AccessError, ApprovalError, InitError, InputError};
 use interface::{AdminEvent, ApprovalEvent, BurnEvent, MintEvent, NFT, OperatorEvent, TransferEvent};
 use std::{
@@ -18,7 +18,6 @@ use std::{
     storage::StorageMap,
     vec::Vec,
 };
-
 use utils::token_metadata;
 
 storage {
@@ -41,9 +40,9 @@ storage {
     /// contract.
     max_supply: u64,
 
-    /// Stores the `Metadata` for each token based on the token's `u64` id
-    /// Map(token_id => Metadata)
-    meta_data: StorageMap<u64, Option<MetaData>>, 
+    /// Stores the `TokenMetadata` for each token based on the token's `u64` id
+    /// Map(token_id => TokenMetadata)
+    meta_data: StorageMap<u64, Option<TokenMetaData>>, 
     
     /// Maps a tuple of (owner, operator) identities and stores whether the
     /// operator is allowed to transfer ALL tokens on the owner's behalf.
@@ -111,7 +110,7 @@ impl NFT for Contract {
         let owner = msg_sender().unwrap();
         require(meta_data.owner == owner, AccessError::SenderNotOwner);
 
-        // Burn this token by setting the `token_id` Metadata mapping to `None`
+        // Burn this token by setting the `token_id` TokenMetadata mapping to `None`
         storage.meta_data.insert(token_id, Option::None());
 
         // Reduce the balance of tokens for the owner
@@ -161,8 +160,8 @@ impl NFT for Contract {
         let mut index = tokens_ever_minted + 1;
         let mut minted_tokens = ~Vec::with_capacity(amount);
         while index <= total_mint {
-            // Create the metadata for this new token with the owner
-            storage.meta_data.insert(index, Option::Some(~MetaData::new(Option::None, to)));
+            // Create the TokenMetaAata for this new token with the owner
+            storage.meta_data.insert(index, Option::Some(~TokenMetaData::new(Option::None, to)));
 
             minted_tokens.push(index);
             index = index + 1;
@@ -241,7 +240,6 @@ impl NFT for Contract {
         // Increase the new owner's balance of tokens
         storage.balances.insert(to, storage.balances.get(to) + 1);
 
-        // Log the transfer event
         log(TransferEvent {
             from, sender, to, token_id
         });

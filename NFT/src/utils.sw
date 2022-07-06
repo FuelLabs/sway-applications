@@ -3,7 +3,7 @@ library utils;
 dep data_structures;
 dep errors;
 
-use data_structures::MetaData;
+use data_structures::TokenMetaData;
 use errors::InputError;
 use std::{assert::require, option::Option};
 
@@ -17,7 +17,7 @@ use std::{assert::require, option::Option};
 /// # Reverts
 ///
 /// * When the `meta_data` provided is `None`.
-pub fn token_metadata(meta_data: Option<MetaData>) -> MetaData {
+pub fn token_metadata(meta_data: Option<TokenMetaData>) -> TokenMetaData {
     require(meta_data.is_some(), InputError::TokenDoesNotExist);
     meta_data.unwrap()
 }
