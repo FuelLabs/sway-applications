@@ -1,27 +1,22 @@
 library errors;
 
 pub enum AccessError {
-    AccessControlNotSet: (),
     SenderCannotSetAccessControl: (),
-    SenderDoesNotHaveAccessControl: (),
+    SenderNotAdmin: (),
     SenderNotOwner: (),
     SenderNotOwnerOrApproved: (),
 }
 
 pub enum ApprovalError {
-    AddressAlreadyGivenAccess: (),
-    AddressAlreadyGivenApproval: (),
     ApproverCannotBeOwner: (),
 }
 
 pub enum InitError {
-    AccessControlSetAndAdminIsNone: (),
+    AdminIsNone: (),
     CannotReinitialize: (),
-    NFTNotInitalized: (),
 }
 
 pub enum InputError {
-    InputAddressCannotBeZero: (),
     NotEnoughTokensToMint: (),
     TokenDoesNotExist: (),
     TokenSupplyCannotBeZero: (),

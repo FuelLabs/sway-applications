@@ -61,7 +61,7 @@ impl NFT for Contract {
         // The number of tokens that can be minted cannot be 0
         require(token_supply != 0, InputError::TokenSupplyCannotBeZero);
         // Access control is set to true but there was no admin given
-        require((access_control && admin.is_some()) || admin.is_none(), InitError::AccessControlSetAndAdminIsNone);
+        require((access_control && admin.is_some()) || admin.is_none(), InitError::AdminIsNone);
 
         // Store the information given
         storage.access_control = access_control;
@@ -77,7 +77,7 @@ impl NFT for Contract {
         require(storage.token_supply >= total_mint, InputError::NotEnoughTokensToMint);
 
         // Ensure that the sender is the admin if this is a controlled access mint
-        require(!storage.access_control || (storage.admin.is_some() && msg_sender().unwrap() == storage.admin.unwrap()), AccessError::SenderDoesNotHaveAccessControl);
+        require(!storage.access_control || (storage.admin.is_some() && msg_sender().unwrap() == storage.admin.unwrap()), AccessError::SenderNotAdmin);
 
         // Mint as many tokens as the sender has asked for
         let mut index = token_count + 1;
