@@ -1,12 +1,12 @@
 contract;
 
-dep contract_abi;
+dep interface;
 dep data_structures;
 dep errors;
 dep events;
 dep utils;
 
-use contract_abi::NFT;
+use interface::NFT;
 use data_structures::MetaData;
 use errors::{AccessError, ApprovalError, InitError, InputError};
 use events::{ApprovalEvent, BurnEvent, MintEvent, OperatorEvent, TransferEvent};

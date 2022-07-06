@@ -1,4 +1,4 @@
-library contract_abi;
+library interface;
 
 use std::{identity::Identity, option::Option};
 
