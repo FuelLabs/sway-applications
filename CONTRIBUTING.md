@@ -299,6 +299,8 @@ As you can see, a single question spawns more questions which can spawn more tec
 
 TODO
 
+What is your test coverage like?
+
 ---
 ## Pull Requests
 
@@ -321,7 +323,7 @@ The commit message should be a short sentence describing the changes
   - Fixed function
   - Fixed assertion
 
-It should be clear that the "bad" commit messages do not tell you what the change to the code is because they are too vague. Likewise, the "good" message _could_ be argued to be too long and thus it _could_ deemed as a bad commit message by some - in this case the commit is acceptable because it addresses a single change nevertheless it's a good idea to refine your commit messages so that they are not too verbose / long. If you cannot cut down on the content of the commit message then that can be an indicator that too much work was done in 1 commit. That's not to say that you cannot write a paragraph in a commit however you need to know when that is applicable. For most use cases you shouldn't encounter problems if you keep your work small with a short descriptive sentence like the one above.
+It should be clear that the "bad" commit messages do not tell you what the change to the code is because they are too vague. Likewise, the "good" message _could_ be argued to be too long and thus it _could_ be deemed as a bad commit message by some - in this case the commit is acceptable because it addresses a single change nevertheless it's a good idea to refine your commit messages so that they are not too verbose / long. If you cannot cut down on the content of the commit message then that can be an indicator that too much work was done in 1 commit. That's not to say that you cannot write a paragraph in a commit however you need to know when that is applicable. For most use cases you shouldn't encounter problems if you keep your work small with a short descriptive sentence like the one above.
 
 If you are unsure of what to write in a commit message then take a look at:
 
@@ -330,9 +332,26 @@ If you are unsure of what to write in a commit message then take a look at:
 
 ### Creating the pull request
 
-TODO
+Creating a pull request is the last step if everything preceding it has been done correctly. 
 
-Here are some things to consider otherwise your PR may require multiple changes.
+In the description you should list
 
-- [ ] What is your test coverage like?
-- [ ] Does your code require any updates to the CI and if so do all of the cases still pass?
+- The changes that have been made
+- Limitations
+- Assumptions 
+- Future work if this PR is part of a set of PRs
+- Additional notes (if relevant)
+ 
+The information in your pull request should be structured neatly through the use of headings, bullet points, screenshots etc. This makes it easier to immediately see the changes rather than having to parse through 1 big paragraph. 
+
+Lastly, you should reference the issue which spawned your pull request. 
+
+You can 
+
+- Reference it in a way that will not close the issue when the pull request is merged
+  - Using a hyperlink 
+  - GitHub syntax which is a hash symbol followed by the issue number e.g. #123
+- Reference it in a way that will automatically close the original issue when the pull request is merged
+  - GitHub has some special keywords referenced [here](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue) which should be used in addition to the #123 syntax
+
+The reason is that this allows the reviewer to quickly find the issue and check to see what work needed to be done and compare that against the pull request.
