@@ -72,8 +72,8 @@ abi NFT {
     /// * `owner` - The `Identity` which has given approval.
     #[storage(read)]fn is_approved_for_all(operator: Identity, owner: Identity) -> bool;
 
-    /// Mints `amount` number of tokens to the `to` identity. 
-    /// 
+    /// Mints `amount` number of tokens to the `to` identity.
+    ///
     /// Once a token has been minted, it can be transfered and burned.
     ///
     /// # Arguments
@@ -144,6 +144,11 @@ abi NFT {
     #[storage(read, write)]fn transfer_from(from: Identity, to: Identity, token_id: u64);
 }
 
+pub struct AdminEvent {
+    /// The `Identity` of the new admin for the contract.
+    admin: Option<Identity>,
+}
+
 pub struct ApprovalEvent {
     /// An `Option` of the `Identity` that has gotten approval. If an approval was revoked, the
     /// `Option` will be `None`.
@@ -175,7 +180,7 @@ pub struct MintEvent {
 pub struct OperatorEvent {
     /// The `bool` which determines whether approval has been given or revoked to be an operator.
     approve: bool,
-    
+
     /// The `Identity` which has been given or revoked approval to be an operator to the owner.
     operator: Identity,
 

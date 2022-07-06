@@ -7,7 +7,7 @@ dep utils;
 
 use data_structures::MetaData;
 use errors::{AccessError, ApprovalError, InitError, InputError};
-use interface::{ApprovalEvent, BurnEvent, MintEvent, NFT, OperatorEvent, TransferEvent};
+use interface::{AdminEvent, ApprovalEvent, BurnEvent, MintEvent, NFT, OperatorEvent, TransferEvent};
 use std::{
     assert::require,
     chain::auth::{AuthError, msg_sender},
@@ -18,6 +18,7 @@ use std::{
     storage::StorageMap,
     vec::Vec,
 };
+
 use utils::token_metadata;
 
 storage {
@@ -184,6 +185,10 @@ impl NFT for Contract {
 
         // Set the new admin
         storage.admin = admin;
+
+        log(AdminEvent {
+            admin
+        });
     }
 
     #[storage(read, write)]fn set_approval_for_all(approve: bool, operator: Identity, owner: Identity) {
