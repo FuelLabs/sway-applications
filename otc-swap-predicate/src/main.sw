@@ -19,7 +19,7 @@ use std::{
 ///    - An order can not be partially filled - the taker must pay the entire ask amount
 ///    - There is no on-chain matching engine, so an order placed 'offside' would not be matched with an existing order with a better price (on the contrary, it would be vulnerable to arbitrage)
 ///
-/// As such, this mechanism is most useful for OTC trades and atomic swaps. 
+/// As such, this mechanism is most useful for OTC trades and atomic swaps.
 ///
 /// # Arguments
 ///
@@ -27,7 +27,6 @@ use std::{
 /// - `output_index` - The index of the Coin output which pays the order maker.
 ///
 fn main(input_index: u8, output_index: u8) -> bool {
-    
     // Order conditions: This must be hardcoded here.
     // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `maker`
     let maker = ~Address::from(0x0303030303030303030303030303030303030303030303030303030303030303);

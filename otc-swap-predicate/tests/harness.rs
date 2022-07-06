@@ -24,7 +24,7 @@ async fn otc_swap_with_predicate() {
 
     // Get predicate bytecode and root
     let predicate_bytecode =
-        std::fs::read("../otc_swap_predicate/out/debug/OTC_swap_predicate.bin").unwrap();
+        std::fs::read("../otc-swap-predicate/out/debug/otc-swap-predicate.bin").unwrap();
     let predicate_root: [u8; 32] = (*Contract::root_from_code(&predicate_bytecode)).into();
     let predicate_root = Address::from(predicate_root);
 
