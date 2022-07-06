@@ -35,20 +35,27 @@ storage {
     /// This increments or decrements when minting, transfering ownership, and burning tokens.
     /// Map(Identity => balance)
     balances: StorageMap<Identity,
-    u64>, /// Stores the `Metadata` for each token based on the token's `u64` id
+    u64>, 
+    
+    /// The total supply tokens that can be minted. Can only be set on the initalization of the
+    /// contract.
+    max_supply: u64,
+
+    /// Stores the `Metadata` for each token based on the token's `u64` id
     /// Map(token_id => Metadata)
-    meta_data: StorageMap<u64,
-    Option<MetaData>>, /// Maps a tuple of (owner, operator) identities and stores whether the
+    meta_data: StorageMap<u64, Option<MetaData>>, 
+    
+    /// Maps a tuple of (owner, operator) identities and stores whether the
     /// operator is allowed to transfer ALL tokens on the owner's behalf.
     /// Map((owner, operator) => approved)
     operator_approval: StorageMap<(Identity,
     Identity), bool>, /// The total number of tokens that have been minted.
     /// This should only be incremented.
-    token_count: u64,
+    tokens_ever_minted: u64,
 
-    /// The total supply tokens that can be minted. Can only be set on the initalization of the
-    /// contract.
-    token_supply: u64,
+    /// The number of tokens currently in existence. This is incremented on mint and decreminted
+    /// on burn.
+    total_supply: u64,
 }
 
 impl NFT for Contract {
@@ -78,9 +85,8 @@ impl NFT for Contract {
 
         // If the `u64` id maps to an existing token either return `Some` or `None`
         match meta_data {
-            Option::Some(MetaData) => {
+            Option::Some(meta_data) => {
                 // This token id maps to an existing token
-                let meta_data = meta_data.unwrap();
                 let approved = meta_data.approved;
 
                 // If there is a `Identity` that is approved, return that `Identity`
@@ -89,7 +95,7 @@ impl NFT for Contract {
                     Option::Some(Identity) => Option::Some(approved.unwrap()), Option::None(Identity) => Option::None(), 
                 }
             },
-            Option::None(MetaData) => Option::None(), 
+            Option::None(meta_data) => Option::None(), 
         }
     }
 
@@ -110,6 +116,7 @@ impl NFT for Contract {
 
         // Reduce the balance of tokens for the owner
         storage.balances.insert(owner, storage.balances.get(owner) - 1);
+        storage.total_supply = storage.total_supply - 1;
 
         // Log the burn event
         log(BurnEvent {
@@ -117,37 +124,41 @@ impl NFT for Contract {
         });
     }
 
-    #[storage(read, write)]fn constructor(access_control: bool, admin: Option<Identity>, token_supply: u64) {
+    #[storage(read, write)]fn constructor(access_control: bool, admin: Option<Identity>, max_supply: u64) {
         // This function can only be called once so if the token supply is already set it has
         // already been called
-        require(storage.token_supply == 0, InitError::CannotReinitialize);
+        require(storage.max_supply == 0, InitError::CannotReinitialize);
         // The number of tokens that can be minted cannot be 0
-        require(token_supply != 0, InputError::TokenSupplyCannotBeZero);
+        require(max_supply != 0, InputError::TokenSupplyCannotBeZero);
         // Access control is set to true but there was no admin given
         require((access_control && admin.is_some()) || admin.is_none(), InitError::AdminIsNone);
 
         // Store the information given
         storage.access_control = access_control;
         storage.admin = admin;
-        storage.token_supply = token_supply;
+        storage.max_supply = max_supply;
     }
 
     #[storage(read)]fn is_approved_for_all(operator: Identity, owner: Identity) -> bool {
         storage.operator_approval.get((owner, operator))
     }
 
+    #[storage(read)]fn max_supply() -> u64 {
+        storage.max_supply
+    }
+
     #[storage(read, write)]fn mint(amount: u64, to: Identity) {
-        let token_count = storage.token_count;
-        let total_mint = token_count + amount;
+        let tokens_ever_minted = storage.tokens_ever_minted;
+        let total_mint = tokens_ever_minted + amount;
         // The current number of tokens minted plus the amount to be minted cannot be
         // greater than the total supply
-        require(storage.token_supply >= total_mint, InputError::NotEnoughTokensToMint);
+        require(storage.max_supply >= total_mint, InputError::NotEnoughTokensToMint);
 
         // Ensure that the sender is the admin if this is a controlled access mint
         require(!storage.access_control || (storage.admin.is_some() && msg_sender().unwrap() == storage.admin.unwrap()), AccessError::SenderNotAdmin);
 
         // Mint as many tokens as the sender has asked for
-        let mut index = token_count + 1;
+        let mut index = tokens_ever_minted + 1;
         let mut minted_tokens = ~Vec::with_capacity(amount);
         while index <= total_mint {
             // Create the metadata for this new token with the owner
@@ -159,7 +170,8 @@ impl NFT for Contract {
 
         // Increment the balance of the `to` address and total tokens minted
         storage.balances.insert(to, storage.balances.get(to) + amount);
-        storage.token_count = total_mint;
+        storage.tokens_ever_minted = total_mint;
+        storage.total_supply = storage.total_supply + amount;
 
         log(MintEvent {
             owner: to, token_ids: minted_tokens
@@ -205,7 +217,7 @@ impl NFT for Contract {
     }
 
     #[storage(read)]fn total_supply() -> u64 {
-        storage.token_supply
+        storage.total_supply
     }
 
     #[storage(read, write)]fn transfer_from(from: Identity, to: Identity, token_id: u64) {

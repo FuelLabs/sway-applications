@@ -4,7 +4,7 @@ use crate::utils::{Identity, Option};
 use fuels::prelude::*;
 use utils::{
     abi_calls::{
-        approve, approved, balance_of, burn, constructor, is_approved_for_all, mint, owner_of,
+        approve, approved, balance_of, burn, constructor, is_approved_for_all, max_supply, mint, owner_of,
         set_admin, set_approval_for_all, total_supply, transfer_from,
     },
     test_helpers::setup,
@@ -175,11 +175,16 @@ mod burn {
 
             constructor(false, &deploy_wallet.nft, &Option::None(), 1).await;
 
+            assert_eq!(total_supply(&owner1.nft).await, 0);
+
             let minter = Identity::Address(owner1.wallet.address());
             mint(1, &owner1.nft, &minter).await;
 
+            assert_eq!(total_supply(&owner1.nft).await, 1);
+
             burn(&owner1.nft, 1).await;
 
+            assert_eq!(total_supply(&owner1.nft).await, 0);
             assert_eq!(balance_of(&owner1.nft, &minter).await, 0);
         }
     }
@@ -241,11 +246,13 @@ mod constructor {
             let (deploy_wallet, owner1, _owner2) = setup().await;
 
             assert_eq!(total_supply(&owner1.nft).await, 0);
+            assert_eq!(max_supply(&owner1.nft).await, 0);
 
             let admin = Option::Some(Identity::Address(owner1.wallet.address()));
             constructor(true, &deploy_wallet.nft, &admin, 1).await;
 
-            assert_eq!(total_supply(&owner1.nft).await, 1);
+            assert_eq!(total_supply(&owner1.nft).await, 0);
+            assert_eq!(max_supply(&owner1.nft).await, 1);
         }
 
         #[tokio::test]
@@ -253,10 +260,12 @@ mod constructor {
             let (deploy_wallet, owner1, _owner2) = setup().await;
 
             assert_eq!(total_supply(&owner1.nft).await, 0);
+            assert_eq!(max_supply(&owner1.nft).await, 0);
 
             constructor(false, &deploy_wallet.nft, &Option::None(), 1).await;
 
-            assert_eq!(total_supply(&owner1.nft).await, 1);
+            assert_eq!(total_supply(&owner1.nft).await, 0);
+            assert_eq!(max_supply(&owner1.nft).await, 1);
         }
     }
 
@@ -315,6 +324,27 @@ mod is_approved_for_all {
     }
 }
 
+mod max_supply {
+
+    use super::*;
+
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn gets_max_supply() {
+            let (deploy_wallet, owner1, _owner2) = setup().await;
+
+            assert_eq!(max_supply(&owner1.nft).await, 0);
+
+            constructor(false, &deploy_wallet.nft, &Option::None(), 10).await;
+
+            assert_eq!(max_supply(&owner1.nft).await, 10);
+        }
+    }
+}
+
 mod mint {
 
     use super::*;
@@ -330,11 +360,17 @@ mod mint {
             constructor(false, &deploy_wallet.nft, &Option::None(), 1).await;
 
             let minter = Identity::Address(owner1.wallet.address());
+            assert_eq!(total_supply(&owner1.nft).await, 0);
+            assert_eq!(max_supply(&owner1.nft).await, 1);
+            assert_eq!(balance_of(&owner1.nft, &minter).await, 0);
+
             mint(1, &owner1.nft, &minter).await;
 
             assert_eq!(balance_of(&owner1.nft, &minter).await, 1);
             assert_eq!(owner_of(&owner1.nft, 1).await, Option::Some(minter.clone()));
             assert_eq!(approved(&owner1.nft, 1).await, Option::None());
+            assert_eq!(total_supply(&owner1.nft).await, 1);
+            assert_eq!(max_supply(&owner1.nft).await, 1);
         }
 
         #[tokio::test]
@@ -345,11 +381,17 @@ mod mint {
             let admin = Option::Some(minter.clone());
             constructor(true, &deploy_wallet.nft, &admin, 1).await;
 
+            assert_eq!(max_supply(&owner1.nft).await, 1);
+            assert_eq!(total_supply(&owner1.nft).await, 0);
+            assert_eq!(balance_of(&owner1.nft, &minter).await, 0);
+
             mint(1, &owner1.nft, &minter).await;
 
             assert_eq!(balance_of(&owner1.nft, &minter).await, 1);
             assert_eq!(owner_of(&owner1.nft, 1).await, Option::Some(minter.clone()));
             assert_eq!(approved(&owner1.nft, 1).await, Option::None());
+            assert_eq!(total_supply(&owner1.nft).await, 1);
+            assert_eq!(max_supply(&owner1.nft).await, 1);
         }
 
         #[tokio::test]
@@ -359,9 +401,15 @@ mod mint {
             constructor(false, &deploy_wallet.nft, &Option::None(), 10).await;
 
             let minter = Identity::Address(owner1.wallet.address());
+            assert_eq!(max_supply(&owner1.nft).await, 10);
+            assert_eq!(total_supply(&owner1.nft).await, 0);
+            assert_eq!(balance_of(&owner1.nft, &minter).await, 0);
+
             mint(10, &owner1.nft, &minter).await;
 
             assert_eq!(balance_of(&owner1.nft, &minter).await, 10);
+            assert_eq!(total_supply(&owner1.nft).await, 10);
+            assert_eq!(max_supply(&owner1.nft).await, 10);
             for itterator in 1..11 {
                 assert_eq!(
                     owner_of(&owner1.nft, itterator).await,
@@ -378,9 +426,14 @@ mod mint {
             constructor(false, &deploy_wallet.nft, &Option::None(), 1).await;
 
             let minter = Identity::Address(owner1.wallet.address());
+            assert_eq!(balance_of(&owner1.nft, &minter).await, 0);
+            assert_eq!(max_supply(&owner1.nft).await, 1);
+            assert_eq!(total_supply(&owner1.nft).await, 0);
+
             mint(0, &owner1.nft, &minter).await;
 
             assert_eq!(balance_of(&owner1.nft, &minter).await, 0);
+            assert_eq!(total_supply(&owner1.nft).await, 0);
         }
     }
 
@@ -564,9 +617,16 @@ mod total_supply {
         async fn gets_total_supply() {
             let (deploy_wallet, owner1, _owner2) = setup().await;
 
+            assert_eq!(total_supply(&owner1.nft).await, 0);
+
             constructor(false, &deploy_wallet.nft, &Option::None(), 10).await;
 
-            assert_eq!(total_supply(&owner1.nft).await, 10);
+            assert_eq!(total_supply(&owner1.nft).await, 0);
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(1, &owner1.nft, &minter).await;
+
+            assert_eq!(total_supply(&owner1.nft).await, 1);
         }
     }
 }

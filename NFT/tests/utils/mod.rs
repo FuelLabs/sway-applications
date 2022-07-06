@@ -104,6 +104,10 @@ pub mod abi_calls {
             .value
     }
 
+    pub async fn max_supply(contract: &Nft) -> u64 {
+        contract.max_supply().call().await.unwrap().value
+    }
+
     pub async fn mint(amount: u64, contract: &Nft, owner: &Identity) -> CallResponse<()> {
         contract.mint(amount, owner.clone()).call().await.unwrap()
     }

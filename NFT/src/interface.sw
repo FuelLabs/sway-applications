@@ -72,6 +72,9 @@ abi NFT {
     /// * `owner` - The `Identity` which has given approval.
     #[storage(read)]fn is_approved_for_all(operator: Identity, owner: Identity) -> bool;
 
+    /// Returns the total number of tokens which will ever be minted.
+    #[storage(read)]fn max_supply() -> u64;
+
     /// Mints `amount` number of tokens to the `to` identity.
     ///
     /// Once a token has been minted, it can be transfered and burned.
@@ -120,7 +123,7 @@ abi NFT {
     /// * When the sender is not the `owner`.
     #[storage(read, write)]fn set_approval_for_all(approve: bool, operator: Identity, owner: Identity);
 
-    /// Returns a `u64` of the total supply of tokens which can be minted for the NFT contract.
+    /// Returns the total supply of tokens which are currently in existence.
     #[storage(read)]fn total_supply() -> u64;
 
     /// Transfers ownership of the token from one `Identity` to another. Transfers can occur under
