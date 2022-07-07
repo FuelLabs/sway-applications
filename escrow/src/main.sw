@@ -103,13 +103,15 @@ storage {
 
 impl Escrow for Contract {
     #[storage(read, write)]fn change_arbiter(arbiter: Arbiter, identifier: u64) {
-        // TODO
         // The assertions ensure that
-        //  - 
+        //  - Arbiter fee cannot exceed 100%
+        //  - The escrow has not been completed
+        //  - Caller is either buyer or seller of escrow
+        //  - Caller is not setting the buyer or seller as the new arbiter
 
         require(arbiter.fee_percentage <= 100, CreationError::ArbiterFeeCannotExceed100Percent);
 
-        let mut escrow = storage.escrows.get(identifier);
+        let escrow = storage.escrows.get(identifier);
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
 
@@ -119,7 +121,7 @@ impl Escrow for Contract {
         require(arbiter.address != escrow.buyer.address, CreationError::ArbiterCannotBeBuyer);
         require(arbiter.address != escrow.seller.address, CreationError::ArbiterCannotBeSeller);
 
-        let mut proposal = storage.arbiter_proposal.get(identifier);
+        let proposal = storage.arbiter_proposal.get(identifier);
 
         let user_proposal = if user == escrow.buyer.address { proposal.seller } else { proposal.buyer };
         let (update_state, escrow, proposal) = change_arbiter(arbiter, escrow, identifier, proposal, user, user_proposal);
@@ -129,12 +131,19 @@ impl Escrow for Contract {
         }
     }
 
-    #[storage(read, write)]fn create_escrow(assets: Vec<Asset>, arbiter: Identity, arbiter_fee_percentage: u64, buyer: Identity, deadline: u64) {
+    #[storage(read, write)]fn create_escrow(assets: Vec<Asset>, arbiter: Arbiter, buyer: Identity, deadline: u64) {
+        // The assertions ensure that
+        //  - At least 1 asset is specified for a deposit
+        //  - Deadline is set in the future
+        //  - Arbiter fee cannot exceed 100%
+        //  - Caller (assumed seller) is not setting the buyer or seller as the new arbiter
+        //  - Any specified asset accepts a deposit that is greater than 0
+
         require(0 < assets.len(), CreationError::UnspecifiedAssets);
-        require(arbiter_fee_percentage <= 100, CreationError::ArbiterFeeCannotExceed100Percent);
         require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
-        require(arbiter != buyer, CreationError::ArbiterCannotBeBuyer);
-        require(arbiter != msg_sender().unwrap(), CreationError::ArbiterCannotBeSeller);
+        require(arbiter.fee_percentage <= 100, CreationError::ArbiterFeeCannotExceed100Percent);
+        require(arbiter.address != buyer, CreationError::ArbiterCannotBeBuyer);
+        require(arbiter.address != msg_sender().unwrap(), CreationError::ArbiterCannotBeSeller);
 
         let mut index = 0;
         while index < assets.len() {
@@ -143,13 +152,17 @@ impl Escrow for Contract {
         }
 
         let escrow = EscrowInfo {
-            arbiter, arbiter_fee_percentage, assets, buyer: Buyer {
+            arbiter: arbiter.address, 
+            arbiter_fee_percentage: arbiter.fee_percentage, 
+            assets, 
+            buyer: Buyer {
                 address: buyer,
                 asset: Option::None::<ContractId>(),
                 deposited_amount: 0,
                 disputed: false,
             },
-            deadline, disputed: false,
+            deadline, 
+            disputed: false,
             seller: Seller {
                 address: msg_sender().unwrap(),
                 disputed: false,
@@ -179,7 +192,7 @@ impl Escrow for Contract {
         require(escrow.buyer.asset.is_none(), DepositError::AlreadyDeposited);
 
         // TODO: https://github.com/FuelLabs/sway/issues/2014
-        //       `.contains()` would clean up the loop
+        //       `.contains() -> bool / .position() -> u64` would clean up the loop
         let mut index = 0;
         while index < escrow.assets.len() {
             let asset = escrow.assets.get(index).unwrap();
@@ -197,7 +210,6 @@ impl Escrow for Contract {
         // User must deposit one of the specified assets in the correct amount
         require(escrow.buyer.asset.is_some(), DepositError::IncorrectAssetDeposited);
 
-        // Update escrow state in storage
         storage.escrows.insert(identifier, escrow);
 
         log(DepositEvent {
@@ -263,7 +275,7 @@ impl Escrow for Contract {
     #[storage(read, write)]fn return_deposit(identifier: u64) {
         // The assertions ensure that
         //  - The escrow has not been completed
-        //  - Only the seller can "return" the deposit in the escrow
+        //  - Only the seller can "return" the deposit from the escrow
         //  - The buyer has made a deposit
         // Note that you can dispute even after the deadline
 
@@ -273,7 +285,6 @@ impl Escrow for Contract {
         require(msg_sender().unwrap() == escrow.seller.address, UserError::UnauthorizedUser);
         require(escrow.buyer.asset.is_some(), UserError::CannotTransferBeforeDesposit);
 
-        // Conditions have been cleared, lock the escrow down and transfer funds back to buyer
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
 
@@ -323,7 +334,6 @@ impl Escrow for Contract {
         require(escrow.buyer.asset.is_some(), UserError::CannotTransferBeforeDesposit);
         require(msg_sender().unwrap() == escrow.buyer.address, UserError::UnauthorizedUser);
 
-        // Conditions have been cleared, lock the escrow down and transfer funds to seller
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
 
