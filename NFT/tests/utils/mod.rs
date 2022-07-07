@@ -1,0 +1,155 @@
+use fuels::{contract::contract::CallResponse, prelude::*};
+
+// Load abi from json
+abigen!(Nft, "out/debug/NFT-abi.json");
+
+pub struct Metadata {
+    pub nft: Nft,
+    pub wallet: LocalWallet,
+}
+
+pub mod test_helpers {
+
+    use super::*;
+
+    pub async fn setup() -> (Metadata, Metadata, Metadata) {
+        // Setup 3 test wallets
+        let mut wallets = launch_provider_and_get_wallets(WalletsConfig {
+            num_wallets: 3,
+            coins_per_wallet: 1,
+            coin_amount: 1000000,
+        })
+        .await;
+
+        // Get the wallets from that provider
+        let wallet1 = wallets.pop().unwrap();
+        let wallet2 = wallets.pop().unwrap();
+        let wallet3 = wallets.pop().unwrap();
+
+        let nft_id = Contract::deploy("./out/debug/NFT.bin", &wallet1, TxParameters::default())
+            .await
+            .unwrap();
+
+        let deploy_wallet = Metadata {
+            nft: Nft::new(nft_id.to_string(), wallet1.clone()),
+            wallet: wallet1.clone(),
+        };
+
+        let owner1 = Metadata {
+            nft: Nft::new(nft_id.to_string(), wallet2.clone()),
+            wallet: wallet2.clone(),
+        };
+
+        let owner2 = Metadata {
+            nft: Nft::new(nft_id.to_string(), wallet3.clone()),
+            wallet: wallet3.clone(),
+        };
+
+        (deploy_wallet, owner1, owner2)
+    }
+}
+
+pub mod abi_calls {
+
+    use super::*;
+
+    pub async fn approve(approved: &Option, contract: &Nft, token_id: u64) -> CallResponse<()> {
+        contract
+            .approve(approved.clone(), token_id)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn approved(contract: &Nft, token_id: u64) -> Option {
+        contract.approved(token_id).call().await.unwrap().value
+    }
+
+    pub async fn balance_of(contract: &Nft, wallet: &Identity) -> u64 {
+        contract
+            .balance_of(wallet.clone())
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+
+    pub async fn burn(contract: &Nft, token_id: u64) -> CallResponse<()> {
+        contract.burn(token_id).call().await.unwrap()
+    }
+
+    pub async fn constructor(
+        access_control: bool,
+        contract: &Nft,
+        owner: &Option,
+        token_supply: u64,
+    ) -> CallResponse<()> {
+        contract
+            .constructor(access_control, owner.clone(), token_supply)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn is_approved_for_all(
+        contract: &Nft,
+        operator: &Identity,
+        owner: &Identity,
+    ) -> bool {
+        contract
+            .is_approved_for_all(operator.clone(), owner.clone())
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+
+    pub async fn max_supply(contract: &Nft) -> u64 {
+        contract.max_supply().call().await.unwrap().value
+    }
+
+    pub async fn mint(amount: u64, contract: &Nft, owner: &Identity) -> CallResponse<()> {
+        contract.mint(amount, owner.clone()).call().await.unwrap()
+    }
+
+    pub async fn meta_data(contract: &Nft, token_id: u64) -> TokenMetaData {
+        contract.meta_data(token_id).call().await.unwrap().value
+    }
+
+    pub async fn owner_of(contract: &Nft, token_id: u64) -> Option {
+        contract.owner_of(token_id).call().await.unwrap().value
+    }
+
+    pub async fn set_approval_for_all(
+        approve: bool,
+        contract: &Nft,
+        operator: &Identity,
+    ) -> CallResponse<()> {
+        contract
+            .set_approval_for_all(approve, operator.clone())
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn set_admin(contract: &Nft, minter: &Option) -> CallResponse<()> {
+        contract.set_admin(minter.clone()).call().await.unwrap()
+    }
+
+    pub async fn total_supply(contract: &Nft) -> u64 {
+        contract.total_supply().call().await.unwrap().value
+    }
+
+    pub async fn transfer_from(
+        contract: &Nft,
+        from: &Identity,
+        to: &Identity,
+        token_id: u64,
+    ) -> CallResponse<()> {
+        contract
+            .transfer_from(from.clone(), to.clone(), token_id)
+            .call()
+            .await
+            .unwrap()
+    }
+}
