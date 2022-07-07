@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ROOT_DIR=$(realpath ../)
-ESCROW_CONTRACT=$ROOT_DIR/contracts/escrow
+ESCROW_CONTRACT=$ROOT_DIR/contracts/
 
 echo $ESCROW_CONTRACT
 
