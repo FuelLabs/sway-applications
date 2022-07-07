@@ -6,14 +6,14 @@ use data_structures::{Arbiter, EscrowInfo};
 use std::{contract_id::ContractId, identity::Identity};
 
 pub struct ChangedArbiterEvent {
-    /// The address of the new arbiter
-    address: Identity,
-
-    /// The fee (%) that the new arbiter takes upon resolving a dispute
-    fee_percentage: u64,
+    /// Data describing the address, asset to be paid in and amount of asset (fee)
+    arbiter: Arbiter,
 
     /// Unique escrow identifier
     identifier: u64,
+
+    /// Buyer or seller
+    user: Identity,
 }
 
 pub struct CreatedEscrowEvent {
@@ -43,7 +43,7 @@ pub struct PaymentTakenEvent {
 }
 
 pub struct ProposedArbiterEvent {
-    /// Arbiter address and fee %
+    /// Data describing the address, asset to be paid in and amount of asset (fee)
     arbiter: Arbiter,
 
     /// Unique escrow identifier

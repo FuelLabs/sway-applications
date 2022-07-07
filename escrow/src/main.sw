@@ -1,55 +1,11 @@
 contract;
 
-// TODO: arbiter fees
-//       make the seller deposit as well so that the user can get refunded some portion of the dispute?
+// TODO:
 //
 //      deadline for withdrawal?
 //
-//       over collateralize (additional fee / penalty) in case process is not smooth, set base price and fee price
-//
-//       In the distant future it *should* be cheaper to interact with each escrow therefore this would
-//       need to be split into a factory script and a single escrow contract each time
-
-/*
-As a buyer I should be able to
-    1. Deposit
-    2. Transfer my deposit to the seller
-    3. Retrieve my deposit if the conditions of sale have not been met
-    4. File a dispute
-
-Buyer ->
-    deposit() -> transfer_to_seller()
-    deposit() -> "retrieve deposit"
-    deposit() -> dispute()
-
-----
-
-As a seller I should be able to
-    1. Specify payment conditions (create escrow)
-    2. Receive payment
-
-Seller ->
-    create_escrow()
-    ... -> "receive payment"
-
----- 
-
-1. USER deposit() -> USER transfer_to_seller()
-2. USER deposit() -> escrow expires -> SELLER take_payment()
-3. USER deposit() -> USER dispute() -> locks escrow -> Arbiter resolve_dispute(user)
-4. USER deposit() -> SELLER return_deposit()
-
-In
-1. Buyer is honest and transfers themselves
-2. Buyer may be busy or not have enough funds to transfer therefore seller can take payment since 
-   no dispute has been initiated (assumed that no problems so seller can take)
-3. Buyer may not have received advertised item or in the correct condition or they are malicious
-   therefore arbiter must resolve now
-4. Seller may choose to return deposit if their item is faulty or returned to them in time but there
-   is no incentive for them to pay the additional Tx to release the funds so user can dispute
-
-Only case 3 results in Arbiter getting a fee if fee != 0
-*/
+//      In the distant future it *should* be cheaper to interact with each escrow therefore this would
+//      need to be split into a factory script and a single escrow contract each time
 
 // Our library dependencies
 dep data_structures;
@@ -104,12 +60,12 @@ storage {
 impl Escrow for Contract {
     #[storage(read, write)]fn change_arbiter(arbiter: Arbiter, identifier: u64) {
         // The assertions ensure that
-        //  - Arbiter fee cannot exceed 100%
+        //  - Arbiter fee is greater than 0
         //  - The escrow has not been completed
         //  - Caller is either buyer or seller of escrow
         //  - Caller is not setting the buyer or seller as the new arbiter
 
-        require(arbiter.fee_percentage <= 100, CreationError::ArbiterFeeCannotExceed100Percent);
+        require(0 < arbiter.fee_amount, CreationError::ArbiterFeeCannotBeZero);
 
         let escrow = storage.escrows.get(identifier);
 
@@ -124,24 +80,24 @@ impl Escrow for Contract {
         let proposal = storage.arbiter_proposal.get(identifier);
 
         let user_proposal = if user == escrow.buyer.address { proposal.seller } else { proposal.buyer };
-        let (update_state, escrow, proposal) = change_arbiter(arbiter, escrow, identifier, proposal, user, user_proposal);
-        if update_state {
-            storage.arbiter_proposal.insert(identifier, proposal);
-            storage.escrows.insert(identifier, escrow);
-        }
+        let (escrow, proposal) = change_arbiter(arbiter, escrow, identifier, proposal, user, user_proposal);
+        storage.arbiter_proposal.insert(identifier, proposal);
+        storage.escrows.insert(identifier, escrow);
     }
 
     #[storage(read, write)]fn create_escrow(assets: Vec<Asset>, arbiter: Arbiter, buyer: Identity, deadline: u64) {
         // The assertions ensure that
         //  - At least 1 asset is specified for a deposit
         //  - Deadline is set in the future
-        //  - Arbiter fee cannot exceed 100%
+        //  - Arbiter fee is greater than 0
+        //  - Caller has deposited arbitration fee
         //  - Caller (assumed seller) is not setting the buyer or seller as the new arbiter
         //  - Any specified asset accepts a deposit that is greater than 0
 
         require(0 < assets.len(), CreationError::UnspecifiedAssets);
         require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
-        require(arbiter.fee_percentage <= 100, CreationError::ArbiterFeeCannotExceed100Percent);
+        require(0 < arbiter.fee_amount, CreationError::ArbiterFeeCannotBeZero);
+        require(arbiter.fee_amount == msg_amount(), CreationError::ArbiterFeeDoesNotMatchAmountSent);
         require(arbiter.address != buyer, CreationError::ArbiterCannotBeBuyer);
         require(arbiter.address != msg_sender().unwrap(), CreationError::ArbiterCannotBeSeller);
 
@@ -152,20 +108,17 @@ impl Escrow for Contract {
         }
 
         let escrow = EscrowInfo {
-            arbiter: arbiter.address, 
-            arbiter_fee_percentage: arbiter.fee_percentage, 
+            arbiter: arbiter, 
             assets, 
             buyer: Buyer {
                 address: buyer,
                 asset: Option::None::<ContractId>(),
                 deposited_amount: 0,
-                disputed: false,
             },
             deadline, 
             disputed: false,
             seller: Seller {
                 address: msg_sender().unwrap(),
-                disputed: false,
             },
             state: State::Pending,
         };
@@ -232,9 +185,8 @@ impl Escrow for Contract {
         require(msg_sender().unwrap() == escrow.buyer.address, UserError::UnauthorizedUser);
         require(escrow.buyer.asset.is_some(), UserError::CannotDisputeBeforeDesposit);
 
-        // Lock the escrow down
+        // Lock the escrow
         escrow.disputed = true;
-        escrow.buyer.disputed = true;
         storage.escrows.insert(identifier, escrow);
 
         log(DisputeEvent {
@@ -242,30 +194,33 @@ impl Escrow for Contract {
         });
     }
 
-    #[storage(read, write)]fn resolve_dispute(identifier: u64, user: Identity) {
+    #[storage(read, write)]fn resolve_dispute(identifier: u64, payment_amount: u64, user: Identity) {
+        // The assertions ensure that
+        //  - The escrow has not been completed
+        //  - The escrow is in dispute
+        //  - Only the arbiter can resolve
+        //  - The deposit will be sent to either the buyer or seller
+        //  - The buyer has made a deposit
+        //  - The payment taken by the arbiter is not greater than the seller has deposited
+
         let mut escrow = storage.escrows.get(identifier);
 
-        // User can only dispute when the escrow state has not reached completion
         require(escrow.state == State::Pending, StateError::StateNotPending);
-
-        // Note that a resolution cannot occur before or after deadline therefore no check for deadline
-
-        // Cannot resolve a dispute if not in the disputed state
         require(escrow.disputed, UserError::NotDisputed);
-
-        // Only the arbiter can resolve a dispute
-        require(msg_sender().unwrap() == escrow.arbiter, UserError::UnauthorizedUser);
-
+        require(msg_sender().unwrap() == escrow.arbiter.address, UserError::UnauthorizedUser);
         require(user == escrow.buyer.address || user == escrow.seller.address, UserError::InvalidRecipient);
-
         require(escrow.buyer.asset.is_some(), UserError::CannotResolveBeforeDesposit);
+        require(payment_amount <= escrow.arbiter.fee_amount, UserError::ArbiterPaymentCannotBeGreaterThanDepositFromSeller);
 
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
 
         transfer(escrow.buyer.deposited_amount, escrow.buyer.asset.unwrap(), user);
-        // Add fee to arbiter
-        // transfer(some fee ,some asset, escrow.arbiter);
+        transfer(payment_amount, escrow.arbiter.asset, escrow.arbiter.address);
+
+        if payment_amount != escrow.arbiter.fee_amount {
+            transfer(escrow.arbiter.fee_amount - payment_amount, escrow.arbiter.asset, escrow.seller.address);
+        }
 
         log(ResolvedDisputeEvent {
             identifier, user
@@ -289,6 +244,7 @@ impl Escrow for Contract {
         storage.escrows.insert(identifier, escrow);
 
         transfer(escrow.buyer.deposited_amount, escrow.buyer.asset.unwrap(), escrow.buyer.address);
+        transfer(escrow.arbiter.fee_amount, escrow.arbiter.asset, escrow.seller.address);
 
         log(ReturnedDepositEvent {
             identifier
@@ -311,11 +267,11 @@ impl Escrow for Contract {
         require(msg_sender().unwrap() == escrow.seller.address, UserError::UnauthorizedUser);
         require(escrow.buyer.asset.is_some(), UserError::CannotTransferBeforeDesposit);
 
-        // Conditions have been cleared, lock the escrow down and transfer funds to seller
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
 
         transfer(escrow.buyer.deposited_amount, escrow.buyer.asset.unwrap(), escrow.seller.address);
+        transfer(escrow.arbiter.fee_amount, escrow.arbiter.asset, escrow.seller.address);
 
         log(PaymentTakenEvent {
             identifier
@@ -338,6 +294,7 @@ impl Escrow for Contract {
         storage.escrows.insert(identifier, escrow);
 
         transfer(escrow.buyer.deposited_amount, escrow.buyer.asset.unwrap(), escrow.seller.address);
+        transfer(escrow.arbiter.fee_amount, escrow.arbiter.asset, escrow.seller.address);
 
         log(TransferredToSellerEvent {
             identifier

@@ -1,9 +1,10 @@
 library errors;
 
 pub enum CreationError {
-    ArbiterFeeCannotExceed100Percent: (),
     ArbiterCannotBeBuyer: (),
     ArbiterCannotBeSeller: (),
+    ArbiterFeeCannotBeZero: (),
+    ArbiterFeeDoesNotMatchAmountSent: (),
     DeadlineMustBeInTheFuture: (),
     DepositAmountCannotBeZero: (),
     UnspecifiedAssets: (),
@@ -24,6 +25,7 @@ pub enum StateError {
 
 pub enum UserError {
     AlreadyDisputed: (),
+    ArbiterPaymentCannotBeGreaterThanDepositFromSeller: (),
     CannotDisputeBeforeDesposit: (),
     CannotTakePaymentBeforeDeadline: (),
     CannotTakePaymentDuringDispute: (),
