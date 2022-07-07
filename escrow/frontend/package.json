@@ -1,0 +1,41 @@
+{
+  "name": "escrow",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "jest",
+    "build-contracts": "sh ./scripts/build-contracts.sh",
+    "deploy-contracts": "sh ./scripts/deploy-contracts.sh"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^4.5.10",
+    "@fontsource/raleway": "^4.5.8",
+    "@fuels-ui/css": "workspace:*",
+    "@fuels-ui/react": "workspace:*",
+    "clipboard": "^2.0.11",
+    "ethers": "^5.6.5",
+    "fuels": "0.0.0-master-92cc35d4",
+    "jotai": "^1.6.6",
+    "path-browserify": "^1.0.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-helmet": "^6.1.0",
+    "react-hot-toast": "^2.2.0",
+    "react-icons": "^4.3.1",
+    "react-query": "^3.39.1",
+    "react-router-dom": "^6.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@types/react-helmet": "^6.1.5",
+    "@vitejs/plugin-react": "^1.3.0",
+    "typechain": "^8.0.0",
+    "typechain-target-fuels": "0.0.0-master-92cc35d4",
+    "typescript": "^4.6.3",
+    "vite": "^2.9.7"
+  }
+}
