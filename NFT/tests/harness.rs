@@ -522,7 +522,7 @@ mod owner_of {
             let (deploy_wallet, _owner1, _owner2) = setup().await;
 
             constructor(false, &deploy_wallet.nft, &Option::None(), 1).await;
-            
+
             // Uncomment when https://github.com/FuelLabs/sway/issues/2238 is resolved
             // assert_eq!(owner_of(&owner1.nft, 0).await, Option::None());
         }
