@@ -20,14 +20,6 @@ impl Eq for Arbiter {
     }
 }
 
-pub struct ArbiterProposal {
-    /// New arbiter proposal made by the buyer
-    buyer: Option<Arbiter>,
-
-    /// New arbiter proposal made by the seller
-    seller: Option<Arbiter>,
-}
-
 pub struct Asset {
     /// Amount of asset the user must deposit
     amount: u64,

@@ -12,9 +12,8 @@ dep data_structures;
 dep errors;
 dep events;
 dep interface;
-dep utils;
 
-use data_structures::{Arbiter, ArbiterProposal, Asset, Buyer, EscrowInfo, Seller, State};
+use data_structures::{Arbiter, Asset, Buyer, EscrowInfo, Seller, State};
 use errors::{CreationError, DepositError, StateError, UserError};
 use events::{
     ChangedArbiterEvent,
@@ -42,12 +41,10 @@ use std::{
     token::transfer,
     vec::Vec,
 };
-use utils::change_arbiter;
 
 storage {
-    /// If either party want to change the arbiter that data must be stored somewhere as "temporary"
-    /// data. This does not belong in EscrowInfo hence a separate variable
-    arbiter_proposal: StorageMap<u64, ArbiterProposal>,
+    /// TODO
+    arbiter_proposal: StorageMap<u64, Option<Arbiter>>,
 
     /// Information describing an escrow created via create_escrow()
     /// Map(ID => Info)
@@ -58,11 +55,34 @@ storage {
 }
 
 impl Escrow for Contract {
+
+    #[storage(read, write)]
+    fn accept_arbiter(identifier: u64) {
+        // The assertions ensure that
+        //  - The escrow has not been completed
+        //  - Caller is the buyer of escrow
+        //  - Arbiter has been proposed by seller
+
+        let mut escrow = storage.escrows.get(identifier);
+
+        require(escrow.state == State::Pending, StateError::StateNotPending);
+        require(msg_sender().unwrap() == escrow.buyer.address, UserError::UnauthorizedUser);
+
+        let arbiter = storage.arbiter_proposal.get(identifier);
+
+        require(arbiter.is_some(), "TODO");
+
+        escrow.arbiter = arbiter.unwrap();
+        storage.arbiter_proposal.insert(identifier, Option::None);
+        storage.escrows.insert(identifier, escrow);
+        // TODO: event
+    }
+
     #[storage(read, write)]fn change_arbiter(arbiter: Arbiter, identifier: u64) {
         // The assertions ensure that
         //  - Arbiter fee is greater than 0
         //  - The escrow has not been completed
-        //  - Caller is either buyer or seller of escrow
+        //  - Caller is the seller of escrow
         //  - Caller is not setting the buyer or seller as the new arbiter
 
         require(0 < arbiter.fee_amount, CreationError::ArbiterFeeCannotBeZero);
@@ -71,18 +91,16 @@ impl Escrow for Contract {
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
 
+        // TODO: send back funds from previous arbiter settings
+
         let user = msg_sender().unwrap();
 
-        require(user == escrow.buyer.address || user == escrow.seller.address, UserError::UnauthorizedUser);
+        require(user == escrow.seller.address, UserError::UnauthorizedUser);
         require(arbiter.address != escrow.buyer.address, CreationError::ArbiterCannotBeBuyer);
         require(arbiter.address != escrow.seller.address, CreationError::ArbiterCannotBeSeller);
 
-        let proposal = storage.arbiter_proposal.get(identifier);
-
-        let user_proposal = if user == escrow.buyer.address { proposal.seller } else { proposal.buyer };
-        let (escrow, proposal) = change_arbiter(arbiter, escrow, identifier, proposal, user, user_proposal);
-        storage.arbiter_proposal.insert(identifier, proposal);
-        storage.escrows.insert(identifier, escrow);
+        storage.arbiter_proposal.insert(identifier, Option::Some(arbiter));
+        // TODO event
     }
 
     #[storage(read, write)]fn create_escrow(assets: Vec<Asset>, arbiter: Arbiter, buyer: Identity, deadline: u64) {

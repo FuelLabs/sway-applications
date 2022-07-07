@@ -6,11 +6,26 @@ use data_structures::{Arbiter, Asset};
 use std::{identity::Identity, vec::Vec};
 
 abi Escrow {
+
+    /// Buyer confirms that they accept the new arbiter details as a replacement for the old details
+    ///
+    /// # Arguments
+    ///
+    /// * `identifier` - Identifier used to find a specific escrow
+    ///
+    /// # Reverts
+    ///
+    /// * When the escrow is not in the State::Pending state
+    /// * When the caller is not the buyer
+    /// * When the arbiter has not been proposed by the seller
+    #[storage(read, write)]
+    fn accept_arbiter(identifier: u64);
+
     /// Allows the buyer and seller to propose a new arbiter and/or change the arbiter fee
     ///
-    /// If a dispute has been initiated and the arbiter is taking too long then the users can change
-    /// the arbiter and the fee percentage for the new arbiter
-    /// Users can also set the same arbiter but with a lower fee
+    /// If a dispute has been initiated and the arbiter is taking too long then the seller can change
+    /// the arbiter, the asset for payment and the fee amount for the new arbiter
+    /// Seller can also set the same arbiter but with a lower fee
     /// The arbiter in the escrow will only be changed if both users set the same address and fee
     ///
     /// # Arguments
@@ -21,6 +36,7 @@ abi Escrow {
     /// # Reverts
     ///
     /// * When the arbiter fee is set to 0
+    /// * When the escrow is not in the State::Pending state
     /// * When the caller is not the buyer or the seller
     /// * When the caller is setting the buyer or seller as the new arbiter
     #[storage(read, write)]fn change_arbiter(arbiter: Arbiter, identifier: u64);
