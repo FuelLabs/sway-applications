@@ -1,6 +1,9 @@
-<p align="center">
-    <img src="./.docs/logo.png" height="120">
-</p>
+<div style="text-align:center; margin-bottom: 40px; margin-top: 20px;">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/sway-apps-logo-dark-theme.png">
+        <img alt="SwayApps logo" width="400px" src=".docs/sway-apps-logo-light-theme.png">
+    </picture>
+</div>
 
 <p align="center">
     <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
