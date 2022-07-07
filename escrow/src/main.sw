@@ -52,12 +52,26 @@ Only case 3 results in Arbiter getting a fee if fee != 0
 */
 
 // Our library dependencies
-dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
+dep interface;
+dep utils;
 
-// Standard library code
+use data_structures::{Arbiter, ArbiterProposal, Asset, Buyer, EscrowInfo, Seller, State};
+use errors::{CreationError, DepositError, StateError, UserError};
+use events::{
+    ChangedArbiterEvent,
+    CreatedEscrowEvent,
+    DepositEvent,
+    DisputeEvent,
+    PaymentTakenEvent,
+    ProposedArbiterEvent,
+    ResolvedDisputeEvent,
+    ReturnedDepositEvent,
+    TransferredToSellerEvent,
+};
+use interface::Escrow;
 use std::{
     assert::require,
     block::height,
@@ -72,22 +86,7 @@ use std::{
     token::transfer,
     vec::Vec,
 };
-
-// Bring our code into scope
-use contract_abi::Escrow;
-use data_structures::{Arbiter, ArbiterProposal, Asset, Buyer, EscrowInfo, Seller, State};
-use errors::{CreationError, DepositError, StateError, UserError};
-use events::{
-    ChangedArbiterEvent,
-    CreatedEscrowEvent,
-    DepositEvent,
-    DisputeEvent,
-    PaymentTakenEvent,
-    ProposedArbiterEvent,
-    ResolvedDisputeEvent,
-    ReturnedDepositEvent,
-    TransferredToSellerEvent,
-};
+use utils::change_arbiter;
 
 storage {
     /// If either party want to change the arbiter that data must be stored somewhere as "temporary"
@@ -122,51 +121,11 @@ impl Escrow for Contract {
 
         let mut proposal = storage.arbiter_proposal.get(identifier);
 
-        // TODO: can this spaghetti be cleaned up (function maybe)?
-        if user == escrow.buyer.address {
-            if proposal.seller.is_some() {
-                let sellers_arbiter = proposal.seller.unwrap();
-
-                if arbiter.address == sellers_arbiter.address && arbiter.fee_percentage == sellers_arbiter.fee_percentage {
-                    escrow.arbiter = arbiter.address;
-                    escrow.arbiter_fee_percentage = arbiter.fee_percentage;
-
-                    proposal.buyer = Option::None;
-                    proposal.seller = Option::None;
-
-                    storage.arbiter_proposal.insert(identifier, proposal);
-                    storage.escrows.insert(identifier, escrow);
-                    log(ChangedArbiterEvent { address: arbiter.address, fee_percentage: arbiter.fee_percentage, identifier });
-                } else {
-                    proposal.buyer = Option::Some( arbiter );
-                    log(ProposedArbiterEvent { arbiter, identifier, user });
-                }
-            } else {
-                proposal.buyer = Option::Some( arbiter );
-                log(ProposedArbiterEvent { arbiter, identifier, user });
-            }
-        } else {
-            if proposal.buyer.is_some() {
-                let buyers_arbiter = proposal.buyer.unwrap();
-
-                if arbiter.address == buyers_arbiter.address && arbiter.fee_percentage == buyers_arbiter.fee_percentage {
-                    escrow.arbiter = arbiter.address;
-                    escrow.arbiter_fee_percentage = arbiter.fee_percentage;
-
-                    proposal.buyer = Option::None;
-                    proposal.seller = Option::None;
-
-                    storage.arbiter_proposal.insert(identifier, proposal);
-                    storage.escrows.insert(identifier, escrow);
-                    log(ChangedArbiterEvent { address: arbiter.address, fee_percentage: arbiter.fee_percentage, identifier });
-                } else {
-                    proposal.seller = Option::Some( arbiter );
-                    log(ProposedArbiterEvent { arbiter, identifier, user });
-                }
-            } else {
-                proposal.seller = Option::Some( arbiter );
-                log(ProposedArbiterEvent { arbiter, identifier, user });
-            }
+        let user_proposal = if user == escrow.buyer.address { proposal.seller } else { proposal.buyer };
+        let (update_state, escrow, proposal) = change_arbiter(arbiter, escrow, identifier, proposal, user, user_proposal);
+        if update_state {
+            storage.arbiter_proposal.insert(identifier, proposal);
+            storage.escrows.insert(identifier, escrow);
         }
     }
 

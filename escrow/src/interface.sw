@@ -1,4 +1,4 @@
-library contract_abi;
+library interface;
 
 dep data_structures;
 
