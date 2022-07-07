@@ -1,9 +1,9 @@
-<div style="text-align:center; margin-bottom: 40px; margin-top: 20px;">
+<p align="center">
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset=".docs/sway-apps-logo-dark-theme.png">
         <img alt="SwayApps logo" width="400px" src=".docs/sway-apps-logo-light-theme.png">
     </picture>
-</div>
+</p>
 
 <p align="center">
     <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
