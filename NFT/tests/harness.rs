@@ -1,10 +1,10 @@
 mod utils;
 
-use crate::utils::{Identity, Option};
+use crate::utils::{Identity, Option, TokenMetaData};
 use fuels::prelude::*;
 use utils::{
     abi_calls::{
-        approve, approved, balance_of, burn, constructor, is_approved_for_all, max_supply, mint,
+        approve, approved, balance_of, burn, constructor, is_approved_for_all, max_supply, mint, meta_data,
         owner_of, set_admin, set_approval_for_all, total_supply, transfer_from,
     },
     test_helpers::setup,
@@ -28,9 +28,9 @@ mod approve {
             mint(1, &owner1.nft, &minter).await;
 
             let approved_identity = Option::Some(Identity::Address(owner2.wallet.address()));
-            approve(&approved_identity, &owner1.nft, 1).await;
+            approve(&approved_identity, &owner1.nft, 0).await;
 
-            assert_eq!(approved(&owner1.nft, 1).await, approved_identity);
+            assert_eq!(approved(&owner1.nft, 0).await, approved_identity);
         }
     }
 
@@ -60,7 +60,7 @@ mod approve {
             mint(1, &owner1.nft, &minter).await;
 
             let approved_identity = Option::Some(Identity::Address(owner2.wallet.address()));
-            approve(&approved_identity, &owner2.nft, 1).await;
+            approve(&approved_identity, &owner2.nft, 0).await;
         }
     }
 }
@@ -83,9 +83,9 @@ mod approved {
             mint(1, &owner1.nft, &minter).await;
 
             let approved_identity = Option::Some(Identity::Address(owner2.wallet.address()));
-            approve(&approved_identity, &owner1.nft, 1).await;
+            approve(&approved_identity, &owner1.nft, 0).await;
 
-            assert_eq!(approved(&owner1.nft, 1).await, approved_identity);
+            assert_eq!(approved(&owner1.nft, 0).await, approved_identity);
         }
 
         #[tokio::test]
@@ -97,7 +97,7 @@ mod approved {
             let minter = Identity::Address(owner1.wallet.address());
             mint(1, &owner1.nft, &minter).await;
 
-            assert_eq!(approved(&owner1.nft, 1).await, Option::None());
+            assert_eq!(approved(&owner1.nft, 0).await, Option::None());
         }
 
         #[tokio::test]
@@ -168,7 +168,7 @@ mod burn {
 
             assert_eq!(total_supply(&owner1.nft).await, 1);
 
-            burn(&owner1.nft, 1).await;
+            burn(&owner1.nft, 0).await;
 
             assert_eq!(total_supply(&owner1.nft).await, 0);
             assert_eq!(balance_of(&owner1.nft, &minter).await, 0);
@@ -184,9 +184,7 @@ mod burn {
         async fn panics_when_not_initalized() {
             let (_deploy_wallet, owner1, _owner2) = setup().await;
 
-            let token_id = 0;
-
-            burn(&owner1.nft, token_id).await;
+            burn(&owner1.nft, 0).await;
         }
 
         #[tokio::test]
@@ -199,9 +197,7 @@ mod burn {
             let minter = Identity::Address(owner1.wallet.address());
             mint(1, &owner1.nft, &minter).await;
 
-            let token_id = 2;
-
-            burn(&owner1.nft, token_id).await;
+            burn(&owner1.nft, 1).await;
         }
 
         #[tokio::test]
@@ -214,7 +210,7 @@ mod burn {
             let minter = Identity::Address(owner1.wallet.address());
             mint(1, &owner1.nft, &minter).await;
 
-            burn(&owner2.nft, 1).await;
+            burn(&owner2.nft, 0).await;
         }
     }
 }
@@ -353,8 +349,8 @@ mod mint {
             mint(1, &owner1.nft, &minter).await;
 
             assert_eq!(balance_of(&owner1.nft, &minter).await, 1);
-            assert_eq!(owner_of(&owner1.nft, 1).await, Option::Some(minter.clone()));
-            assert_eq!(approved(&owner1.nft, 1).await, Option::None());
+            assert_eq!(owner_of(&owner1.nft, 0).await, Option::Some(minter.clone()));
+            assert_eq!(approved(&owner1.nft, 0).await, Option::None());
             assert_eq!(total_supply(&owner1.nft).await, 1);
             assert_eq!(max_supply(&owner1.nft).await, 1);
         }
@@ -374,8 +370,8 @@ mod mint {
             mint(1, &owner1.nft, &minter).await;
 
             assert_eq!(balance_of(&owner1.nft, &minter).await, 1);
-            assert_eq!(owner_of(&owner1.nft, 1).await, Option::Some(minter.clone()));
-            assert_eq!(approved(&owner1.nft, 1).await, Option::None());
+            assert_eq!(owner_of(&owner1.nft, 0).await, Option::Some(minter.clone()));
+            assert_eq!(approved(&owner1.nft, 0).await, Option::None());
             assert_eq!(total_supply(&owner1.nft).await, 1);
             assert_eq!(max_supply(&owner1.nft).await, 1);
         }
@@ -396,7 +392,7 @@ mod mint {
             assert_eq!(balance_of(&owner1.nft, &minter).await, 10);
             assert_eq!(total_supply(&owner1.nft).await, 10);
             assert_eq!(max_supply(&owner1.nft).await, 10);
-            for itterator in 1..11 {
+            for itterator in 0..10 {
                 assert_eq!(
                     owner_of(&owner1.nft, itterator).await,
                     Option::Some(minter.clone())
@@ -461,6 +457,41 @@ mod mint {
     }
 }
 
+mod meta_data {
+
+    use super::*;
+
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn gets_meta_data() {
+            let (deploy_wallet, owner1, _owner2) = setup().await;
+
+            constructor(false, &deploy_wallet.nft, &Option::None(), 10).await;
+
+            let minter = Identity::Address(owner1.wallet.address());
+            mint(1, &owner1.nft, &minter).await;
+
+            assert_eq!(meta_data(&owner1.nft, 0).await, TokenMetaData{});
+        }
+    }
+
+    mod reverts {
+
+        use super::*;
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn panics_when_token_does_not_exist() {
+            let (_deploy_wallet, owner1, _owner2) = setup().await;
+
+            meta_data(&owner1.nft, 1).await;
+        }
+    }
+}
+
 mod owner_of {
 
     use super::*;
@@ -478,7 +509,7 @@ mod owner_of {
             let minter = Identity::Address(owner1.wallet.address());
             mint(1, &owner1.nft, &minter).await;
 
-            assert_eq!(owner_of(&owner1.nft, 1).await, Option::Some(minter.clone()));
+            assert_eq!(owner_of(&owner1.nft, 0).await, Option::Some(minter.clone()));
         }
 
         #[tokio::test]
@@ -618,9 +649,9 @@ mod transfer_from {
             mint(1, &owner1.nft, &minter).await;
 
             let to = Identity::Address(owner2.wallet.address());
-            transfer_from(&owner1.nft, &minter, &to, 1).await;
+            transfer_from(&owner1.nft, &minter, &to, 0).await;
 
-            assert_eq!(owner_of(&owner1.nft, 1).await, Option::Some(to.clone()));
+            assert_eq!(owner_of(&owner1.nft, 0).await, Option::Some(to.clone()));
 
             assert_eq!(balance_of(&owner1.nft, &minter).await, 0);
             assert_eq!(balance_of(&owner2.nft, &to).await, 1);
@@ -637,11 +668,11 @@ mod transfer_from {
 
             let to = Identity::Address(owner2.wallet.address());
             let approved_identity = Option::Some(to.clone());
-            approve(&approved_identity, &owner1.nft, 1).await;
+            approve(&approved_identity, &owner1.nft, 0).await;
 
-            transfer_from(&owner2.nft, &minter, &to, 1).await;
+            transfer_from(&owner2.nft, &minter, &to, 0).await;
 
-            assert_eq!(owner_of(&owner1.nft, 1).await, approved_identity);
+            assert_eq!(owner_of(&owner1.nft, 0).await, approved_identity);
 
             assert_eq!(balance_of(&owner1.nft, &minter).await, 0);
             assert_eq!(balance_of(&owner2.nft, &to).await, 1);
@@ -659,10 +690,10 @@ mod transfer_from {
             let operator = Identity::Address(owner2.wallet.address());
             set_approval_for_all(true, &owner1.nft, &operator).await;
 
-            transfer_from(&owner2.nft, &minter, &operator, 1).await;
+            transfer_from(&owner2.nft, &minter, &operator, 0).await;
 
             assert_eq!(
-                owner_of(&owner1.nft, 1).await,
+                owner_of(&owner1.nft, 0).await,
                 Option::Some(operator.clone())
             );
 
@@ -679,11 +710,10 @@ mod transfer_from {
         #[should_panic(expected = "Revert(42)")]
         async fn panics_when_token_does_not_exist() {
             let (_deploy_wallet, owner1, owner2) = setup().await;
-            let token_id = 0;
 
             let from = Identity::Address(owner1.wallet.address());
             let to = Identity::Address(owner2.wallet.address());
-            transfer_from(&owner1.nft, &from, &to, token_id).await;
+            transfer_from(&owner1.nft, &from, &to, 0).await;
         }
 
         #[tokio::test]
@@ -697,7 +727,7 @@ mod transfer_from {
             mint(1, &owner1.nft, &minter).await;
 
             let to = Identity::Address(owner2.wallet.address());
-            transfer_from(&owner2.nft, &minter, &to, 1).await;
+            transfer_from(&owner2.nft, &minter, &to, 0).await;
         }
     }
 }

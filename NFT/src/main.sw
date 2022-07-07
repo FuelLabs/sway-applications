@@ -145,9 +145,9 @@ impl NFT for Contract {
         require(!storage.access_control || (admin.is_some() && msg_sender().unwrap() == admin.unwrap()), AccessError::SenderNotAdmin);
 
         // Mint as many tokens as the sender has asked for
-        let mut index = tokens_ever_minted + 1;
+        let mut index = tokens_ever_minted;
         let mut minted_tokens = ~Vec::with_capacity(amount);
-        while index <= total_mint {
+        while index < total_mint {
             // Create the TokenMetaData for this new token
             storage.meta_data.insert(index, ~TokenMetaData::new());
             storage.owners.insert(index, Option::Some(to));

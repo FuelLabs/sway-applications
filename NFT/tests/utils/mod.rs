@@ -112,6 +112,10 @@ pub mod abi_calls {
         contract.mint(amount, owner.clone()).call().await.unwrap()
     }
 
+    pub async fn meta_data(contract: &Nft, token_id: u64) -> TokenMetaData {
+        contract.meta_data(token_id).call().await.unwrap().value
+    }
+
     pub async fn owner_of(contract: &Nft, token_id: u64) -> Option {
         contract.owner_of(token_id).call().await.unwrap().value
     }
