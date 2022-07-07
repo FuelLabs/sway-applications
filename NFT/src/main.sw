@@ -31,6 +31,12 @@ storage {
     /// Only the `admin` is allowed to change the `admin` of the contract.
     admin: Option<Identity>,
 
+    /// Stores the user which is approved to transfer a token based on it's unique identifier.
+    /// In the case that no user is approved to transfer a token based on the token owner's behalf,
+    /// `None` will be stored.
+    /// Map(token_id => approved)
+    approved: StorageMap<u64, Option<Identity>>,
+
     /// Used for O(1) lookup of the number of tokens owned by each user.
     /// This increments or decrements when minting, transfering ownership, and burning tokens.
     /// Map(Identity => balance)
@@ -41,12 +47,20 @@ storage {
 
     /// Stores the `TokenMetadata` for each token based on the token's unique identifier.
     /// Map(token_id => TokenMetadata)
-    meta_data: StorageMap<u64,
-    Option<TokenMetaData>>, /// Maps a tuple of (owner, operator) identities and stores whether the operator is allowed to
+    meta_data: StorageMap<u64,TokenMetaData>, 
+    
+    /// Maps a tuple of (owner, operator) identities and stores whether the operator is allowed to
     /// transfer ALL tokens on the owner's behalf.
     /// Map((owner, operator) => approved)
     operator_approval: StorageMap<(Identity,
-    Identity), bool>, /// The total number of tokens that ever have been minted.
+    Identity), bool>, 
+    
+    /// Stores the user which owns a token based on it's unique identifier.
+    /// If the token has been burned then `None` will be stored.
+    /// Map(token_id => owner)
+    owners: StorageMap<u64, Option<Identity>>,
+
+    /// The total number of tokens that ever have been minted.
     /// This will only be incremented.
     tokens_ever_minted: u64,
 
@@ -58,15 +72,15 @@ storage {
 impl NFT for Contract {
     #[storage(read, write)]fn approve(approved: Option<Identity>, token_id: u64) {
         // Ensure this is a valid token
-        let mut meta_data = token_metadata(storage.meta_data.get(token_id));
+        let token_owner = storage.owners.get(token_id);
+        require(token_owner.is_some(), InputError::TokenDoesNotExist);
 
         // Ensure that the sender is the owner of the token to be approved
         let sender = msg_sender().unwrap();
-        require(meta_data.owner == sender, AccessError::SenderNotOwner);
+        require(token_owner.unwrap() == sender, AccessError::SenderNotOwner);
 
         // Set and store the `approved` `Identity`
-        meta_data.approved = approved;
-        storage.meta_data.insert(token_id, Option::Some(meta_data));
+        storage.approved.insert(token_id, approved);
 
         log(ApprovalEvent {
             owner: sender, approved, token_id
@@ -74,20 +88,7 @@ impl NFT for Contract {
     }
 
     #[storage(read)]fn approved(token_id: u64) -> Option<Identity> {
-        let meta_data = storage.meta_data.get(token_id);
-
-        // If the `token_id` maps to an existing token either return `Some` or `None`
-        match meta_data {
-            Option::Some(meta_data) => {
-                let approved = meta_data.approved;
-
-                // If there is an `Identity` that is approved, return that `Identity` or `None`
-                match approved {
-                    Option::Some(Identity) => Option::Some(approved.unwrap()), Option::None(Identity) => Option::None(), 
-                }
-            },
-            Option::None(meta_data) => Option::None(), 
-        }
+        storage.approved.get(token_id)
     }
 
     #[storage(read)]fn balance_of(owner: Identity) -> u64 {
@@ -96,18 +97,19 @@ impl NFT for Contract {
 
     #[storage(read, write)]fn burn(token_id: u64) {
         // Ensure this is a valid token
-        let meta_data = token_metadata(storage.meta_data.get(token_id));
+        let token_owner = storage.owners.get(token_id);
+        require(token_owner.is_some(), InputError::TokenDoesNotExist);
 
         // Ensure the sender owns the token that is provided
-        let owner = msg_sender().unwrap();
-        require(meta_data.owner == owner, AccessError::SenderNotOwner);
+        let sender = msg_sender().unwrap();
+        require(token_owner.unwrap() == sender, AccessError::SenderNotOwner);
 
-        storage.meta_data.insert(token_id, Option::None());
-        storage.balances.insert(owner, storage.balances.get(owner) - 1);
+        storage.owners.insert(token_id, Option::None());
+        storage.balances.insert(sender, storage.balances.get(sender) - 1);
         storage.total_supply = storage.total_supply - 1;
 
         log(BurnEvent {
-            owner, token_id
+            owner: sender, token_id
         });
     }
 
@@ -116,7 +118,7 @@ impl NFT for Contract {
         // already been called
         require(storage.max_supply == 0, InitError::CannotReinitialize);
         require(max_supply != 0, InputError::TokenSupplyCannotBeZero);
-        require((access_control && admin.is_some()) || (access_control && admin.is_none()), InitError::AdminIsNone);
+        require((access_control && admin.is_some()) || (!access_control && admin.is_none()), InitError::AdminIsNone);
 
         storage.access_control = access_control;
         storage.admin = admin;
@@ -146,8 +148,9 @@ impl NFT for Contract {
         let mut index = tokens_ever_minted + 1;
         let mut minted_tokens = ~Vec::with_capacity(amount);
         while index <= total_mint {
-            // Create the TokenMetaAata for this new token with the owner
-            storage.meta_data.insert(index, Option::Some(~TokenMetaData::new(Option::None, to)));
+            // Create the TokenMetaData for this new token with the owner
+            storage.meta_data.insert(index, ~TokenMetaData::new(Option::None, to));
+            storage.owners.insert(index, Option::Some(to));
 
             minted_tokens.push(index);
             index = index + 1;
@@ -163,15 +166,7 @@ impl NFT for Contract {
     }
 
     #[storage(read)]fn owner_of(token_id: u64) -> Option<Identity> {
-        let meta_data = storage.meta_data.get(token_id);
-
-        // If the `token_id` maps to an existing token, either return `Some` or `None`
-        match meta_data {
-            Option::Some(meta_data) => {
-                Option::Some(meta_data.owner)
-            },
-            Option::None(meta_data) => Option::None(), 
-        }
+        storage.owners.get(token_id)
     }
 
     #[storage(read, write)]fn set_admin(admin: Option<Identity>) {
@@ -201,20 +196,23 @@ impl NFT for Contract {
 
     #[storage(read, write)]fn transfer_from(from: Identity, to: Identity, token_id: u64) {
         // Make sure the `token_id` maps to an existing token
-        let mut meta_data = token_metadata(storage.meta_data.get(token_id));
+        let token_owner = storage.owners.get(token_id);
+        require(token_owner.is_some(), InputError::TokenDoesNotExist);
+        let token_owner = token_owner.unwrap();
 
         // Ensure that the sender is either:
         // 1. The owner of the token
         // 2. Approved for transfer of this `token_id`
         // 3. Has operator approval for the `from` identity and this token belongs to the `from` identity
         let sender = msg_sender().unwrap();
-        let approved = meta_data.approved;
-        require(sender == meta_data.owner || (approved.is_some() && sender == approved.unwrap()) || (from == meta_data.owner && storage.operator_approval.get((from, sender))), AccessError::SenderNotOwnerOrApproved);
+        let approved = storage.approved.get(token_id);
+        require(sender == token_owner || (approved.is_some() && sender == approved.unwrap()) || (from == token_owner && storage.operator_approval.get((from, sender))), AccessError::SenderNotOwnerOrApproved);
 
         // Set the new owner of the token and reset the approved Identity
-        meta_data.owner = to;
-        meta_data.approved = Option::None();
-        storage.meta_data.insert(token_id, Option::Some(meta_data));
+        storage.owners.insert(token_id, Option::Some(to));
+        if approved.is_some() {
+            storage.approved.insert(token_id, Option::None());
+        }
 
         storage.balances.insert(from, storage.balances.get(from) - 1);
         storage.balances.insert(to, storage.balances.get(to) + 1);
