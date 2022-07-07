@@ -4,8 +4,8 @@ use crate::utils::{Identity, Option, TokenMetaData};
 use fuels::prelude::*;
 use utils::{
     abi_calls::{
-        approve, approved, balance_of, burn, constructor, is_approved_for_all, max_supply, mint, meta_data,
-        owner_of, set_admin, set_approval_for_all, total_supply, transfer_from,
+        approve, approved, balance_of, burn, constructor, is_approved_for_all, max_supply,
+        meta_data, mint, owner_of, set_admin, set_approval_for_all, total_supply, transfer_from,
     },
     test_helpers::setup,
 };
@@ -474,7 +474,7 @@ mod meta_data {
             let minter = Identity::Address(owner1.wallet.address());
             mint(1, &owner1.nft, &minter).await;
 
-            assert_eq!(meta_data(&owner1.nft, 0).await, TokenMetaData{});
+            assert_eq!(meta_data(&owner1.nft, 0).await, TokenMetaData {});
         }
     }
 
