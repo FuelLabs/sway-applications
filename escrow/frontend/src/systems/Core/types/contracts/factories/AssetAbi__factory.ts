@@ -2,35 +2,35 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { Provider, Wallet } from 'fuels';
-import { Interface, Contract } from 'fuels';
-import type { AssetAbi, AssetAbiInterface } from '../AssetAbi';
+import type { Provider, Wallet } from "fuels";
+import { Interface, Contract } from "fuels";
+import type { AssetAbi, AssetAbiInterface } from "../AssetAbi";
 const _abi = [
   {
-    type: 'function',
+    type: "function",
     inputs: [
       {
-        name: 'amount',
-        type: 'u64',
+        name: "amount",
+        type: "u64",
         components: null,
       },
       {
-        name: 'recipient',
-        type: 'struct Address',
+        name: "recipient",
+        type: "struct Address",
         components: [
           {
-            name: 'value',
-            type: 'b256',
+            name: "value",
+            type: "b256",
             components: null,
           },
         ],
       },
     ],
-    name: 'mint_and_send_to_address',
+    name: "mint_and_send_to_address",
     outputs: [
       {
-        name: '',
-        type: 'bool',
+        name: "",
+        type: "bool",
         components: null,
       },
     ],

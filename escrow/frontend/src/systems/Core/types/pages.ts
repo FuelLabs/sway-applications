@@ -1,4 +1,4 @@
 export enum Pages {
-  'createWallet' = '/create-wallet',
-  'escrow' = '/escrow',
+  "createWallet" = "/create-wallet",
+  "escrow" = "/escrow",
 }

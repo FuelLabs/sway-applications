@@ -13,7 +13,7 @@ import type {
   CallResult,
   ScriptTransactionRequest,
   TransactionResult,
-} from 'fuels';
+} from "fuels";
 
 export type AddressInput = { value: string };
 
@@ -43,11 +43,14 @@ interface AssetAbiInterface extends Interface {
   };
 
   encodeFunctionData(
-    functionFragment: 'mint_and_send_to_address',
+    functionFragment: "mint_and_send_to_address",
     values: [BigNumberish, AddressInput]
   ): Uint8Array;
 
-  decodeFunctionData(functionFragment: 'mint_and_send_to_address', data: BytesLike): DecodedValue;
+  decodeFunctionData(
+    functionFragment: "mint_and_send_to_address",
+    data: BytesLike
+  ): DecodedValue;
 }
 
 export class AssetAbi extends Contract {
