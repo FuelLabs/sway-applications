@@ -1,5 +1,8 @@
 library interface;
 
+dep data_structures;
+
+use data_structures::TokenMetaData;
 use std::{identity::Identity, option::Option, vec::Vec};
 
 abi NFT {
@@ -93,6 +96,17 @@ abi NFT {
     /// * When the sender attempts to mint more tokens than total supply.
     /// * When the sender is not the admin and `access_control` is set.
     #[storage(read, write)]fn mint(amount: u64, to: Identity);
+
+    /// Returns the metadata for the token specified
+    ///
+    /// # Arguments
+    ///
+    /// * `token_id` - The unique identifier of the token.
+    ///
+    /// # Reverts
+    ///
+    /// * When the `token_id` does not map to an exsiting token.
+    #[storage(read)]fn meta_data(token_id: u64) -> TokenMetaData;
 
     /// Returns the user which owns the specified token.
     ///

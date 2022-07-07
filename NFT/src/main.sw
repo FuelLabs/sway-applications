@@ -148,8 +148,8 @@ impl NFT for Contract {
         let mut index = tokens_ever_minted + 1;
         let mut minted_tokens = ~Vec::with_capacity(amount);
         while index <= total_mint {
-            // Create the TokenMetaData for this new token with the owner
-            storage.meta_data.insert(index, ~TokenMetaData::new(Option::None, to));
+            // Create the TokenMetaData for this new token
+            storage.meta_data.insert(index, ~TokenMetaData::new());
             storage.owners.insert(index, Option::Some(to));
 
             minted_tokens.push(index);
@@ -163,6 +163,11 @@ impl NFT for Contract {
         log(MintEvent {
             owner: to, token_ids: minted_tokens
         });
+    }
+
+    #[storage(read)]fn meta_data(token_id: u64) -> TokenMetaData {
+        require(token_id <= storage.tokens_ever_minted, InputError::TokenDoesNotExist);
+        storage.meta_data.get(token_id)
     }
 
     #[storage(read)]fn owner_of(token_id: u64) -> Option<Identity> {
