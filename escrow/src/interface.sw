@@ -7,7 +7,7 @@ use std::{identity::Identity, vec::Vec};
 
 abi Escrow {
 
-    /// Buyer confirms that they accept the new arbiter details as a replacement for the old details
+    /// Buyer accepts proposal to change arbiter details
     ///
     /// # Arguments
     ///
@@ -21,34 +21,14 @@ abi Escrow {
     #[storage(read, write)]
     fn accept_arbiter(identifier: u64);
 
-    /// Allows the buyer and seller to propose a new arbiter and/or change the arbiter fee
-    ///
-    /// If a dispute has been initiated and the arbiter is taking too long then the seller can change
-    /// the arbiter, the asset for payment and the fee amount for the new arbiter
-    /// Seller can also set the same arbiter but with a lower fee
-    /// The arbiter in the escrow will only be changed if both users set the same address and fee
-    ///
-    /// # Arguments
-    ///
-    /// * `arbiter` - A third party which decides how a dispute is resolved
-    /// * `identifier` - Identifier used to find a specific escrow
-    ///
-    /// # Reverts
-    ///
-    /// * When the arbiter fee is set to 0
-    /// * When the escrow is not in the State::Pending state
-    /// * When the caller is not the buyer or the seller
-    /// * When the caller is setting the buyer or seller as the new arbiter
-    #[storage(read, write)]fn change_arbiter(arbiter: Arbiter, identifier: u64);
-
     /// Creates an internal representation of an escrow instead of deploying a contract per escrow
     ///
     /// The escrow allows the buyer to deposit any asset from the specified assets
     ///
     /// # Arguments
     ///
-    /// * `assets` - The assets, with the required deposit amounts, that the campaign accepts
     /// * `arbiter` - A third party which decides how a dispute is resolved
+    /// * `assets` - The assets, with the required deposit amounts, that the campaign accepts
     /// * `buyer` - User who deposits funds into the escrow
     /// * `deadline` - End height after which the buyer can no longer deposit and the seller can take payment
     ///
@@ -57,10 +37,11 @@ abi Escrow {
     /// * When the caller does not specify any assets
     /// * When the deadline is not in the future
     /// * When the arbiter fee is set to 0
-    /// * When the caller does not deposit the arbitration fee
+    /// * When the caller does not deposit the amount specified for the arbiter fee
+    /// * When the caller does not deposit the specified asset for the arbiter fee
     /// * When the caller is setting the buyer or themselves as the arbiter
     /// * When the amount of any asset required for deposit is set to 0
-    #[storage(read, write)] fn create_escrow(assets: Vec<Asset>, arbiter: Arbiter, buyer: Identity, deadline: u64);
+    #[storage(read, write)] fn create_escrow(arbiter: Arbiter, assets: Vec<Asset>, buyer: Identity, deadline: u64);
 
     /// Accepts a deposit from the buyer for any of the assets specified in the escrow
     ///
@@ -72,7 +53,7 @@ abi Escrow {
     ///
     /// # Reverts
     ///
-    /// * When the deposit is made after the deadline
+    /// * When the deposit is made during / after the deadline
     /// * When the escrow is not in the State::Pending state
     /// * When the caller is not the buyer
     /// * When the caller deposits more than once
@@ -96,6 +77,27 @@ abi Escrow {
     /// * When the caller does not currently have a deposit in the escrow
     #[storage(read, write)]fn dispute(identifier: u64);
 
+    /// Allows the seller to propose a new arbiter and/or change the arbiter fee
+    ///
+    /// If a dispute has been initiated and the arbiter is taking too long then the seller can change
+    /// the arbiter, the asset for payment and the fee amount
+    /// Seller can also set the same arbiter but with a lower fee
+    ///
+    /// # Arguments
+    ///
+    /// * `arbiter` - A third party which decides how a dispute is resolved
+    /// * `identifier` - Identifier used to find a specific escrow
+    ///
+    /// # Reverts
+    ///
+    /// * When the escrow is not in the State::Pending state
+    /// * When the caller is not the seller
+    /// * When the caller is setting the buyer or seller as the new arbiter
+    /// * When the arbiter fee is set to 0
+    /// * When the caller does not deposit the amount specified for the arbiter fee
+    /// * When the caller does not deposit the specified asset for the arbiter fee
+    #[storage(read, write)]fn propose_arbiter(arbiter: Arbiter, identifier: u64);
+
     /// The arbiter decides who the deposit is sent to and how much of the designated payment they 
     /// will take
     ///
@@ -110,9 +112,9 @@ abi Escrow {
     /// * When the escrow is not in the State::Pending state
     /// * When the escrow is not in dispute
     /// * When the caller is not the arbiter
-    /// * When the user is not the buyer or seller
+    /// * When the `user` is not the buyer or seller
     /// * When the buyer does not currently have a deposit in the escrow
-    /// * When the payment amount is greater than the deposit by the seller
+    /// * When the `payment_amount` is greater than the deposit by the seller
     #[storage(read, write)]fn resolve_dispute(identifier: u64, payment_amount: u64, user: Identity);
 
     /// The seller transfers the funds from the escrow to the buyer
@@ -138,7 +140,7 @@ abi Escrow {
     /// # Reverts
     ///
     /// * When the escrow is not in the State::Pending state
-    /// * When the caller attempts to take payment before the deadline
+    /// * When the caller attempts to take payment before / during the deadline
     /// * When the caller attempts to take payment during a dispute
     /// * When the caller is not the seller
     /// * When the buyer does not currently have a deposit in the escrow

@@ -1,5 +1,7 @@
 library errors;
 
+// TODO
+
 pub enum CreationError {
     ArbiterCannotBeBuyer: (),
     ArbiterCannotBeSeller: (),
