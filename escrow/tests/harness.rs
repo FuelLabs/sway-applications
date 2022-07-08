@@ -1,11 +1,18 @@
+#![allow(unused_imports)]
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
 mod utils;
+
+use fuels::signers::Signer;
 
 use utils::{
     abi_calls::{
         accept_arbiter, create_escrow, deposit, dispute, propose_arbiter, resolve_dispute, 
         return_deposit, take_payment, transfer_to_seller
     },
-    test_helpers::{setup},
+    test_helpers::{create_arbiter, create_asset, setup},
+    Identity,
 };
 
 mod accept_arbiter {
@@ -14,25 +21,34 @@ mod accept_arbiter {
 
     mod success {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         async fn accepts_proposal() {}
 
         #[tokio::test]
+        #[ignore]
         async fn accepts_proposal_in_two_escrows() {}
 
     }
 
     mod revert {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_escrow_is_not_pending() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_caller_is_not_buyer() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_arbiter_proposal_is_not_set() {}
         
@@ -46,45 +62,66 @@ mod create_escrow {
 
     mod success {
 
-        #[tokio::test]
-        async fn creates_escrow() {}
+        use super::*;
 
         #[tokio::test]
+        async fn creates_escrow() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            // TODO: pass in TxParams, CallParams in order to deposit arbiter fee
+            create_escrow(&seller.contract, arbiter_obj, vec![asset], Identity::Address(buyer.wallet.address()), defaults.deadline).await;
+        }
+
+        #[tokio::test]
+        #[ignore]
         async fn creates_two_escrow() {}
 
     }
 
     mod revert {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_assets_are_not_specified() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_deadline_is_not_in_the_future() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_arbiter_fee_is_zero() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_deposit_for_arbiter_fee_is_unequal() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_asset_used_for_arbiter_fee_is_unequal() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_arbiter_address_is_set_to_buyer() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_arbiter_address_is_set_to_seller() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_asset_amount_is_zero() {}
         
@@ -98,37 +135,49 @@ mod deposit {
 
     mod success {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         async fn deposits() {}
 
         #[tokio::test]
+        #[ignore]
         async fn deposits_to_two_escrows() {}
 
     }
 
     mod revert {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_deadline_is_reached() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_escrow_is_not_pending() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_caller_is_not_buyer() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_depositing_more_than_once() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_incorrect_asset_amount_is_sent() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_incorrect_asset_is_sent() {}
         
@@ -142,29 +191,39 @@ mod dispute {
 
     mod success {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         async fn disputes() {}
 
         #[tokio::test]
+        #[ignore]
         async fn disputes_in_two_escrows() {}
 
     }
 
     mod revert {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_escrow_is_not_pending() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_disputing_more_than_once() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_caller_is_not_buyer() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_buyer_has_not_deposited() {}
         
@@ -178,47 +237,62 @@ mod propose_arbiter {
 
     mod success {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         async fn proposes_arbiter() {}
 
         #[tokio::test]
+        #[ignore]
         async fn proposes_arbiter_twice() {}
 
         #[tokio::test]
+        #[ignore]
         async fn proposes_arbiter_in_two_escrows() {}
 
         #[tokio::test]
+        #[ignore]
         async fn proposes_arbiter_in_two_escrows_twice() {}
 
     }
 
     mod revert {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_escrow_is_not_pending() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_caller_is_not_seller() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_arbiter_address_is_set_to_buyer() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_arbiter_address_is_set_to_seller() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_arbiter_fee_is_zero() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_deposit_for_arbiter_fee_is_unequal() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_asset_used_for_arbiter_fee_is_unequal() {}
         
@@ -232,40 +306,53 @@ mod resolve_dispute {
 
     mod success {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         async fn resolves_in_buyers_favour() {}
 
         #[tokio::test]
+        #[ignore]
         async fn resolves_in_sellers_favour() {}
 
         #[tokio::test]
+        #[ignore]
         async fn resolves_in_two_escrows() {}
 
     }
 
     mod revert {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_escrow_is_not_pending() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_not_disputed() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_caller_is_not_arbiter() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_user_is_not_buyer_or_seller() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_buyer_has_not_deposited() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_payment_amount_is_too_large() {}
         
@@ -279,25 +366,34 @@ mod return_deposit {
 
     mod success {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         async fn returns_deposit() {}
 
         #[tokio::test]
+        #[ignore]
         async fn returns_deposit_in_two_escrows() {}
 
     }
 
     mod revert {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_escrow_is_not_pending() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_caller_is_not_seller() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_buyer_has_not_deposited() {}
         
@@ -311,33 +407,44 @@ mod take_payment {
 
     mod success {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         async fn takes_payment() {}
 
         #[tokio::test]
+        #[ignore]
         async fn takes_payment_in_two_escrows() {}
 
     }
 
     mod revert {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_escrow_is_not_pending() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_deadline_is_not_in_the_past() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_disputed() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_caller_is_not_seller() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_buyer_has_not_deposited() {}
         
@@ -351,25 +458,34 @@ mod transfer_to_seller {
 
     mod success {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         async fn transfers_to_seller() {}
 
         #[tokio::test]
+        #[ignore]
         async fn transfers_to_seller_in_two_escrows() {}
 
     }
 
     mod revert {
 
+        use super::*;
+
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_escrow_is_not_pending() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_buyer_has_not_deposited() {}
 
         #[tokio::test]
+        #[ignore]
         #[should_panic]
         async fn when_caller_is_not_buyer() {}
         
@@ -381,22 +497,13 @@ mod transfer_to_seller {
 //     deployer: &Metadata,
 //     user1: &LocalWallet,
 //     user2: &LocalWallet,
-//     asset_id: ContractId,
-//     asset_amount: u64,
-// ) -> bool {
+//     asset_id: ContractId,#[tokio::test]
 //     deployer
 //         .escrow
 //         .constructor(user1.address(), user2.address(), asset_id, asset_amount)
 //         .call()
 //         .await
-//         .unwrap()
-//         .value
-// }
-
-// async fn mint(deployer: &Metadata, user: &LocalWallet, asset_amount: u64) {
-//     deployer
-//         .asset
-//         .as_ref()
+//         .unwrap()#[tokio::test]
 //         .unwrap()
 //         .mint_and_send_to_address(asset_amount, user.address())
 //         .append_variable_outputs(1)

@@ -1,26 +1,27 @@
-use fuels::prelude::*;
-use fuels::tx::{AssetId, ContractId, Salt};
+use fuels::{contract::contract::CallResponse, prelude::*};
+// use fuels::tx::{AssetId, ContractId, Salt};
 
 abigen!(Escrow, "out/debug/escrow-abi.json");
 abigen!(MyAsset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
-struct MetaAsset {
-    amount: u64,
-    id: [u8; 32],
+pub struct User {
+    pub contract: Escrow,
+    pub wallet: LocalWallet,
 }
 
-struct Metadata {
-    escrow: Escrow,
-    asset: Option<MyAsset>,
-    wallet: LocalWallet,
+pub struct Defaults {
+    pub asset: MyAsset,
+    pub asset_id: ContractId,
+    pub asset_amount: u64,
+    pub deadline: u64,
 }
 
 pub mod test_helpers {
 
     use super::*;
 
-    pub async fn setup() -> (Metadata, Metadata, Metadata, ContractId, u64) {
-        let num_wallets = 3;
+    pub async fn setup() -> (User, User, User, Defaults) {
+        let num_wallets = 4;
         let coins_per_wallet = 1;
         let amount_per_coin = 1_000_000;
     
@@ -33,8 +34,9 @@ pub mod test_helpers {
         let mut wallets = launch_provider_and_get_wallets(config).await;
     
         let deployer_wallet = wallets.pop().unwrap();
-        let user1_wallet = wallets.pop().unwrap();
-        let user2_wallet = wallets.pop().unwrap();
+        let arbiter_wallet = wallets.pop().unwrap();
+        let buyer_wallet = wallets.pop().unwrap();
+        let seller_wallet = wallets.pop().unwrap();
     
         let escrow_id = Contract::deploy(
             "./out/debug/escrow.bin",
@@ -43,7 +45,7 @@ pub mod test_helpers {
         )
         .await
         .unwrap();
-    
+
         let asset_id = Contract::deploy(
             "./tests/artifacts/asset/out/debug/asset.bin",
             &deployer_wallet,
@@ -51,28 +53,35 @@ pub mod test_helpers {
         )
         .await
         .unwrap();
-    
-        let deployer = Metadata {
-            escrow: Escrow::new(escrow_id.to_string(), deployer_wallet.clone()),
-            asset: Some(MyAsset::new(asset_id.to_string(), deployer_wallet.clone())),
-            wallet: deployer_wallet,
+
+        let asset = MyAsset::new(asset_id.to_string(), deployer_wallet.clone());
+
+        let arbiter = User {
+            contract: Escrow::new(escrow_id.to_string(), arbiter_wallet.clone()),
+            wallet: arbiter_wallet,
         };
     
-        let user1 = Metadata {
-            escrow: Escrow::new(escrow_id.to_string(), user1_wallet.clone()),
-            asset: None,
-            wallet: user1_wallet,
+        let buyer = User {
+            contract: Escrow::new(escrow_id.to_string(), buyer_wallet.clone()),
+            wallet: buyer_wallet,
         };
     
-        let user2 = Metadata {
-            escrow: Escrow::new(escrow_id.to_string(), user2_wallet.clone()),
-            asset: None,
-            wallet: user2_wallet,
+        let seller = User {
+            contract: Escrow::new(escrow_id.to_string(), seller_wallet.clone()),
+            wallet: seller_wallet,
         };
+
+        let defaults = Defaults { asset, asset_id, asset_amount: 100, deadline: 100 };
     
-        let asset_amount: u64 = 100;
-    
-        (deployer, user1, user2, asset_id, asset_amount)
+        (arbiter, buyer, seller, defaults)
+    }
+
+    pub async fn create_arbiter(address: Address, asset: ContractId, fee_amount: u64) -> Arbiter {
+        Arbiter { address: Identity::Address(address), asset, fee_amount }
+    }
+
+    pub async fn create_asset(amount:u64, id: ContractId) -> Asset {
+        Asset { amount, id }
     }
 
 }
@@ -111,11 +120,11 @@ pub mod abi_calls {
     }
 
     pub async fn take_payment(contract: &Escrow, identifier: u64) -> CallResponse<()> {
-        contract.take_payment(identifier).call().append_variable_outputs(1).await.unwrap()
+        contract.take_payment(identifier).append_variable_outputs(1).call().await.unwrap()
     }
 
     pub async fn transfer_to_seller(contract: &Escrow, identifier: u64) -> CallResponse<()> {
-        contract.transfer_to_seller(identifier).call().append_variable_outputs(1).await.unwrap()
+        contract.transfer_to_seller(identifier).append_variable_outputs(1).call().await.unwrap()
     }
 
 }

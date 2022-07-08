@@ -1,7 +1,7 @@
 library data_structures;
 
 use core::ops::Eq;
-use std::{contract_id::ContractId, identity::Identity, option::Option, vec::Vec};
+use std::{contract_id::ContractId, identity::Identity, option::Option};
 
 pub struct Arbiter {
     /// Address identifying the arbiter
@@ -48,7 +48,7 @@ pub struct EscrowInfo {
 
     /// The assets that the escrow accepts with their required quantities
     /// This allows the buyer to select which asset they want to deposit
-    assets: Vec<Asset>,
+    assets: [Asset; 2],
 
     /// The authorized user who is able to make a payment into the escrow
     buyer: Buyer,

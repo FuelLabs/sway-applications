@@ -32,7 +32,6 @@ use std::{
     result::Result,
     storage::StorageMap,
     token::transfer,
-    vec::Vec,
 };
 
 storage {
@@ -77,12 +76,12 @@ impl Escrow for Contract {
         log(AcceptedArbiterEvent { identifier });
     }
 
-    #[storage(read, write)]fn create_escrow(arbiter: Arbiter, assets: Vec<Asset>, buyer: Identity, deadline: u64) {
+    #[storage(read, write)]fn create_escrow(arbiter: Arbiter, assets: [Asset; 2], buyer: Identity, deadline: u64) {
         // The assertions ensure that assets are specified with a none-zero amount, the arbiter is 
         // not the buyer / seller, the arbiter has a fee that they can take upon resolving a dispute
         // and the escrow deadline is set in the future
 
-        require(0 < assets.len(), AssetInputError::UnspecifiedAssets);
+        // require(0 < assets.len(), AssetInputError::UnspecifiedAssets);
         require(height() < deadline, DeadlineInputError::MustBeInTheFuture);
         require(0 < arbiter.fee_amount, ArbiterInputError::FeeCannotBeZero);
         require(arbiter.fee_amount == msg_amount(), ArbiterInputError::FeeDoesNotMatchAmountSent);
@@ -91,8 +90,10 @@ impl Escrow for Contract {
         require(arbiter.address != msg_sender().unwrap(), ArbiterInputError::CannotBeSeller);
 
         let mut index = 0;
-        while index < assets.len() {
-            require(0 < assets.get(index).unwrap().amount, AssetInputError::AssetAmountCannotBeZero);
+        // while index < assets.len() {
+            // require(0 < assets.get(index).unwrap().amount, AssetInputError::AssetAmountCannotBeZero);
+        while index < 2 {
+            require(0 < assets[index].amount, AssetInputError::AssetAmountCannotBeZero);
             index += 1;
         }
 
@@ -134,8 +135,10 @@ impl Escrow for Contract {
         // TODO: https://github.com/FuelLabs/sway/issues/2014
         //       `.contains() -> bool / .position() -> u64` would clean up the loop
         let mut index = 0;
-        while index < escrow.assets.len() {
-            let asset = escrow.assets.get(index).unwrap();
+        // while index < escrow.assets.len() {
+            // let asset = escrow.assets.get(index).unwrap();
+        while index < 2 {
+            let asset = escrow.assets[index];
 
             if asset.id == msg_asset_id() {
                 require(asset.amount == msg_amount(), DepositError::IncorrectAssetAmount);
