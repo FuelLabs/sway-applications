@@ -7,7 +7,7 @@ dep events;
 dep interface;
 
 use data_structures::{Arbiter, Asset, Buyer, EscrowInfo, Seller, State};
-use errors::{CreationError, DepositError, StateError, UserError};
+use errors::{ArbiterInputError, AssetInputError, DeadlineInputError, DepositError, StateError, UserError, UserInputError};
 use events::{
     AcceptedArbiterEvent,
     CreatedEscrowEvent,
@@ -59,11 +59,11 @@ impl Escrow for Contract {
         let mut escrow = storage.escrows.get(identifier);
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
-        require(msg_sender().unwrap() == escrow.buyer.address, UserError::UnauthorizedUser);
+        require(msg_sender().unwrap() == escrow.buyer.address, UserError::Unauthorized);
 
         let arbiter = storage.arbiter_proposal.get(identifier);
 
-        require(arbiter.is_some(), "TODO");
+        require(arbiter.is_some(), StateError::ArbiterHasNotBeenProposed);
 
         // Upon acceptance we must transfer back the previous fee the seller deposited
         transfer(escrow.arbiter.fee_amount, escrow.arbiter.asset, escrow.seller.address);
@@ -82,17 +82,17 @@ impl Escrow for Contract {
         // not the buyer / seller, the arbiter has a fee that they can take upon resolving a dispute
         // and the escrow deadline is set in the future
 
-        require(0 < assets.len(), CreationError::UnspecifiedAssets);
-        require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
-        require(0 < arbiter.fee_amount, CreationError::ArbiterFeeCannotBeZero);
-        require(arbiter.fee_amount == msg_amount(), CreationError::ArbiterFeeDoesNotMatchAmountSent);
-        require(arbiter.asset == msg_asset_id(), "TODO");
-        require(arbiter.address != buyer, CreationError::ArbiterCannotBeBuyer);
-        require(arbiter.address != msg_sender().unwrap(), CreationError::ArbiterCannotBeSeller);
+        require(0 < assets.len(), AssetInputError::UnspecifiedAssets);
+        require(height() < deadline, DeadlineInputError::MustBeInTheFuture);
+        require(0 < arbiter.fee_amount, ArbiterInputError::FeeCannotBeZero);
+        require(arbiter.fee_amount == msg_amount(), ArbiterInputError::FeeDoesNotMatchAmountSent);
+        require(arbiter.asset == msg_asset_id(), ArbiterInputError::AssetDoesNotMatch);
+        require(arbiter.address != buyer, ArbiterInputError::CannotBeBuyer);
+        require(arbiter.address != msg_sender().unwrap(), ArbiterInputError::CannotBeSeller);
 
         let mut index = 0;
         while index < assets.len() {
-            require(0 < assets.get(index).unwrap().amount, CreationError::DepositAmountCannotBeZero);
+            require(0 < assets.get(index).unwrap().amount, AssetInputError::AssetAmountCannotBeZero);
             index += 1;
         }
 
@@ -126,10 +126,10 @@ impl Escrow for Contract {
 
         let mut escrow = storage.escrows.get(identifier);
 
-        require(height() < escrow.deadline, DepositError::EscrowExpired);
+        require(height() < escrow.deadline, StateError::EscrowExpired);
         require(escrow.state == State::Pending, StateError::StateNotPending);
-        require(msg_sender().unwrap() == escrow.buyer.address, UserError::UnauthorizedUser);
-        require(escrow.buyer.asset.is_none(), DepositError::AlreadyDeposited);
+        require(msg_sender().unwrap() == escrow.buyer.address, UserError::Unauthorized);
+        require(escrow.buyer.asset.is_none(), StateError::AlreadyDeposited);
 
         // TODO: https://github.com/FuelLabs/sway/issues/2014
         //       `.contains() -> bool / .position() -> u64` would clean up the loop
@@ -148,7 +148,7 @@ impl Escrow for Contract {
         }
 
         // User must deposit one of the specified assets in the correct amount
-        require(escrow.buyer.asset.is_some(), DepositError::IncorrectAssetDeposited);
+        require(escrow.buyer.asset.is_some(), DepositError::IncorrectAssetSent);
 
         storage.escrows.insert(identifier, escrow);
 
@@ -164,9 +164,9 @@ impl Escrow for Contract {
         let mut escrow = storage.escrows.get(identifier);
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
-        require(!escrow.disputed, UserError::AlreadyDisputed);
-        require(msg_sender().unwrap() == escrow.buyer.address, UserError::UnauthorizedUser);
-        require(escrow.buyer.asset.is_some(), UserError::CannotDisputeBeforeDesposit);
+        require(!escrow.disputed, StateError::AlreadyDisputed);
+        require(msg_sender().unwrap() == escrow.buyer.address, UserError::Unauthorized);
+        require(escrow.buyer.asset.is_some(), StateError::CannotDisputeBeforeDesposit);
 
         // Lock the escrow
         escrow.disputed = true;
@@ -187,12 +187,12 @@ impl Escrow for Contract {
 
         let user = msg_sender().unwrap();
 
-        require(user == escrow.seller.address, UserError::UnauthorizedUser);
-        require(arbiter.address != escrow.buyer.address, CreationError::ArbiterCannotBeBuyer);
-        require(arbiter.address != escrow.seller.address, CreationError::ArbiterCannotBeSeller);
-        require(0 < arbiter.fee_amount, CreationError::ArbiterFeeCannotBeZero);
-        require(arbiter.fee_amount == msg_amount(), "TODO");
-        require(arbiter.asset == msg_asset_id(), "TODO");
+        require(user == escrow.seller.address, UserError::Unauthorized);
+        require(arbiter.address != escrow.buyer.address, ArbiterInputError::CannotBeBuyer);
+        require(arbiter.address != escrow.seller.address, ArbiterInputError::CannotBeSeller);
+        require(0 < arbiter.fee_amount, ArbiterInputError::FeeCannotBeZero);
+        require(arbiter.fee_amount == msg_amount(), ArbiterInputError::FeeDoesNotMatchAmountSent);
+        require(arbiter.asset == msg_asset_id(), ArbiterInputError::AssetDoesNotMatch);
 
         // If there is a previous proposal then we must transfer those funds back to the seller
         let proposal = storage.arbiter_proposal.get(identifier);
@@ -213,11 +213,11 @@ impl Escrow for Contract {
         let mut escrow = storage.escrows.get(identifier);
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
-        require(escrow.disputed, UserError::NotDisputed);
-        require(msg_sender().unwrap() == escrow.arbiter.address, UserError::UnauthorizedUser);
-        require(user == escrow.buyer.address || user == escrow.seller.address, UserError::InvalidRecipient);
-        require(escrow.buyer.asset.is_some(), UserError::CannotResolveBeforeDesposit);
-        require(payment_amount <= escrow.arbiter.fee_amount, UserError::ArbiterPaymentCannotBeGreaterThanDepositFromSeller);
+        require(escrow.disputed, StateError::NotDisputed);
+        require(msg_sender().unwrap() == escrow.arbiter.address, UserError::Unauthorized);
+        require(user == escrow.buyer.address || user == escrow.seller.address, UserInputError::InvalidRecipient);
+        require(escrow.buyer.asset.is_some(), StateError::CannotResolveBeforeDesposit);
+        require(payment_amount <= escrow.arbiter.fee_amount, ArbiterInputError::PaymentTooLarge);
 
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
@@ -250,8 +250,8 @@ impl Escrow for Contract {
         let mut escrow = storage.escrows.get(identifier);
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
-        require(msg_sender().unwrap() == escrow.seller.address, UserError::UnauthorizedUser);
-        require(escrow.buyer.asset.is_some(), UserError::CannotTransferBeforeDesposit);
+        require(msg_sender().unwrap() == escrow.seller.address, UserError::Unauthorized);
+        require(escrow.buyer.asset.is_some(), StateError::CannotTransferBeforeDesposit);
 
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
@@ -280,10 +280,10 @@ impl Escrow for Contract {
         let mut escrow = storage.escrows.get(identifier);
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
-        require(escrow.deadline < height(), UserError::CannotTakePaymentBeforeDeadline);
-        require(!escrow.disputed, UserError::CannotTakePaymentDuringDispute);
-        require(msg_sender().unwrap() == escrow.seller.address, UserError::UnauthorizedUser);
-        require(escrow.buyer.asset.is_some(), UserError::CannotTransferBeforeDesposit);
+        require(escrow.deadline < height(), StateError::CannotTakePaymentBeforeDeadline);
+        require(!escrow.disputed, StateError::CannotTakePaymentDuringDispute);
+        require(msg_sender().unwrap() == escrow.seller.address, UserError::Unauthorized);
+        require(escrow.buyer.asset.is_some(), StateError::CannotTransferBeforeDesposit);
 
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
@@ -311,8 +311,8 @@ impl Escrow for Contract {
         let mut escrow = storage.escrows.get(identifier);
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
-        require(escrow.buyer.asset.is_some(), UserError::CannotTransferBeforeDesposit);
-        require(msg_sender().unwrap() == escrow.buyer.address, UserError::UnauthorizedUser);
+        require(escrow.buyer.asset.is_some(), StateError::CannotTransferBeforeDesposit);
+        require(msg_sender().unwrap() == escrow.buyer.address, UserError::Unauthorized);
 
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);

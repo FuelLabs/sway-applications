@@ -1,40 +1,46 @@
 library errors;
 
-// TODO
+pub enum ArbiterInputError {
+    AssetDoesNotMatch: (),
+    CannotBeBuyer: (),
+    CannotBeSeller: (),
+    FeeCannotBeZero: (),
+    FeeDoesNotMatchAmountSent: (),
+    PaymentTooLarge: () ,
+}
 
-pub enum CreationError {
-    ArbiterCannotBeBuyer: (),
-    ArbiterCannotBeSeller: (),
-    ArbiterFeeCannotBeZero: (),
-    ArbiterFeeDoesNotMatchAmountSent: (),
-    DeadlineMustBeInTheFuture: (),
-    DepositAmountCannotBeZero: (),
+pub enum AssetInputError {
     UnspecifiedAssets: (),
-    UnspecifiedBuyers: (),
+    AssetAmountCannotBeZero: (),
+}
+
+pub enum DeadlineInputError {
+    MustBeInTheFuture: (),
 }
 
 pub enum DepositError {
-    AlreadyDeposited: (),
-    DepositRequired: (),
-    EscrowExpired: (),
     IncorrectAssetAmount: (),
-    IncorrectAssetDeposited: (),
+    IncorrectAssetSent: (),
 }
 
 pub enum StateError {
+    AlreadyDeposited: (),
+    AlreadyDisputed: (),
+    ArbiterHasNotBeenProposed: (),
+    CannotDisputeBeforeDesposit: (),
+    CannotResolveBeforeDesposit: (),
+    CannotTakePaymentBeforeDeadline: (),
+    CannotTakePaymentDuringDispute: (),
+    CannotTransferBeforeDesposit: (),
+    EscrowExpired: (),
+    NotDisputed: (),
     StateNotPending: (),
 }
 
 pub enum UserError {
-    AlreadyDisputed: (),
-    ArbiterPaymentCannotBeGreaterThanDepositFromSeller: (),
-    CannotDisputeBeforeDesposit: (),
-    CannotTakePaymentBeforeDeadline: (),
-    CannotTakePaymentDuringDispute: (),
-    CannotTransferBeforeDesposit: (),
-    CannotTransferPaymentDuringDispute: (),
-    CannotResolveBeforeDesposit: (),
+    Unauthorized: (),
+}
+
+pub enum UserInputError {
     InvalidRecipient: (),
-    NotDisputed: (),
-    UnauthorizedUser: (),
 }

@@ -4,6 +4,8 @@
 
 ## Overview
 
+TODO: overview and logo
+
 https://www.geeksforgeeks.org/what-is-escrow-smart-contract/
 
 Escrow is the third party which holds the asset(asset can be money, bond, stocks) on the presence of two parties. Escrow will release the fund when certain conditions are met.
@@ -13,9 +15,11 @@ For Example, “A” is a seller and wants to sell his car, “B” is a buyer w
 
 ## Repository Structure
 
+TODO: need UI for this to be relevant
 
 ## Running the project
 
+TODO: need UI for this to be relevant
 
 ## Contributing
 
