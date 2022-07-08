@@ -1,75 +1,380 @@
-use fuels::prelude::*;
-use fuels::tx::{AssetId, ContractId, Salt};
-use fuels_abigen_macro::abigen;
+mod utils;
 
-abigen!(Escrow, "out/debug/escrow-abi.json");
-abigen!(MyAsset, "tests/artifacts/asset/out/debug/asset-abi.json");
+use utils::{
+    abi_calls::{
+        accept_arbiter, create_escrow, deposit, dispute, propose_arbiter, resolve_dispute, 
+        return_deposit, take_payment, transfer_to_seller
+    },
+    test_helpers::{setup},
+};
 
-struct MetaAsset {
-    amount: u64,
-    id: [u8; 32],
+mod accept_arbiter {
+
+    use super::*;
+
+    mod success {
+
+        #[tokio::test]
+        async fn accepts_proposal() {}
+
+        #[tokio::test]
+        async fn accepts_proposal_in_two_escrows() {}
+
+    }
+
+    mod revert {
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_escrow_is_not_pending() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_caller_is_not_buyer() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_arbiter_proposal_is_not_set() {}
+        
+    }
+
 }
 
-struct Metadata {
-    escrow: Escrow,
-    asset: Option<MyAsset>,
-    wallet: LocalWallet,
+mod create_escrow {
+
+    use super::*;
+
+    mod success {
+
+        #[tokio::test]
+        async fn creates_escrow() {}
+
+        #[tokio::test]
+        async fn creates_two_escrow() {}
+
+    }
+
+    mod revert {
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_assets_are_not_specified() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_deadline_is_not_in_the_future() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_arbiter_fee_is_zero() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_deposit_for_arbiter_fee_is_unequal() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_asset_used_for_arbiter_fee_is_unequal() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_arbiter_address_is_set_to_buyer() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_arbiter_address_is_set_to_seller() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_asset_amount_is_zero() {}
+        
+    }
+
 }
 
-async fn setup() -> (Metadata, Metadata, Metadata, ContractId, u64) {
-    let num_wallets = 3;
-    let coins_per_wallet = 1;
-    let amount_per_coin = 1_000_000;
+mod deposit {
 
-    let config = WalletsConfig::new(
-        Some(num_wallets),
-        Some(coins_per_wallet),
-        Some(amount_per_coin),
-    );
+    use super::*;
 
-    let mut wallets = launch_provider_and_get_wallets(config).await;
+    mod success {
 
-    let deployer_wallet = wallets.pop().unwrap();
-    let user1_wallet = wallets.pop().unwrap();
-    let user2_wallet = wallets.pop().unwrap();
+        #[tokio::test]
+        async fn deposits() {}
 
-    let escrow_id = Contract::deploy(
-        "./out/debug/escrow.bin",
-        &deployer_wallet,
-        TxParameters::default(),
-    )
-    .await
-    .unwrap();
+        #[tokio::test]
+        async fn deposits_to_two_escrows() {}
 
-    let asset_id = Contract::deploy(
-        "./tests/artifacts/asset/out/debug/asset.bin",
-        &deployer_wallet,
-        TxParameters::default(),
-    )
-    .await
-    .unwrap();
+    }
 
-    let deployer = Metadata {
-        escrow: Escrow::new(escrow_id.to_string(), deployer_wallet.clone()),
-        asset: Some(MyAsset::new(asset_id.to_string(), deployer_wallet.clone())),
-        wallet: deployer_wallet,
-    };
+    mod revert {
 
-    let user1 = Metadata {
-        escrow: Escrow::new(escrow_id.to_string(), user1_wallet.clone()),
-        asset: None,
-        wallet: user1_wallet,
-    };
+        #[tokio::test]
+        #[should_panic]
+        async fn when_deadline_is_reached() {}
 
-    let user2 = Metadata {
-        escrow: Escrow::new(escrow_id.to_string(), user2_wallet.clone()),
-        asset: None,
-        wallet: user2_wallet,
-    };
+        #[tokio::test]
+        #[should_panic]
+        async fn when_escrow_is_not_pending() {}
 
-    let asset_amount: u64 = 100;
+        #[tokio::test]
+        #[should_panic]
+        async fn when_caller_is_not_buyer() {}
 
-    (deployer, user1, user2, asset_id, asset_amount)
+        #[tokio::test]
+        #[should_panic]
+        async fn when_depositing_more_than_once() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_incorrect_asset_amount_is_sent() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_incorrect_asset_is_sent() {}
+        
+    }
+
+}
+
+mod dispute {
+
+    use super::*;
+
+    mod success {
+
+        #[tokio::test]
+        async fn disputes() {}
+
+        #[tokio::test]
+        async fn disputes_in_two_escrows() {}
+
+    }
+
+    mod revert {
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_escrow_is_not_pending() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_disputing_more_than_once() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_caller_is_not_buyer() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_buyer_has_not_deposited() {}
+        
+    }
+
+}
+
+mod propose_arbiter {
+
+    use super::*;
+
+    mod success {
+
+        #[tokio::test]
+        async fn proposes_arbiter() {}
+
+        #[tokio::test]
+        async fn proposes_arbiter_twice() {}
+
+        #[tokio::test]
+        async fn proposes_arbiter_in_two_escrows() {}
+
+        #[tokio::test]
+        async fn proposes_arbiter_in_two_escrows_twice() {}
+
+    }
+
+    mod revert {
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_escrow_is_not_pending() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_caller_is_not_seller() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_arbiter_address_is_set_to_buyer() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_arbiter_address_is_set_to_seller() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_arbiter_fee_is_zero() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_deposit_for_arbiter_fee_is_unequal() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_asset_used_for_arbiter_fee_is_unequal() {}
+        
+    }
+
+}
+
+mod resolve_dispute {
+
+    use super::*;
+
+    mod success {
+
+        #[tokio::test]
+        async fn resolves_in_buyers_favour() {}
+
+        #[tokio::test]
+        async fn resolves_in_sellers_favour() {}
+
+        #[tokio::test]
+        async fn resolves_in_two_escrows() {}
+
+    }
+
+    mod revert {
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_escrow_is_not_pending() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_not_disputed() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_caller_is_not_arbiter() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_user_is_not_buyer_or_seller() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_buyer_has_not_deposited() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_payment_amount_is_too_large() {}
+        
+    }
+
+}
+
+mod return_deposit {
+
+    use super::*;
+
+    mod success {
+
+        #[tokio::test]
+        async fn returns_deposit() {}
+
+        #[tokio::test]
+        async fn returns_deposit_in_two_escrows() {}
+
+    }
+
+    mod revert {
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_escrow_is_not_pending() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_caller_is_not_seller() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_buyer_has_not_deposited() {}
+        
+    }
+
+}
+
+mod take_payment {
+
+    use super::*;
+
+    mod success {
+
+        #[tokio::test]
+        async fn takes_payment() {}
+
+        #[tokio::test]
+        async fn takes_payment_in_two_escrows() {}
+
+    }
+
+    mod revert {
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_escrow_is_not_pending() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_deadline_is_not_in_the_past() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_disputed() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_caller_is_not_seller() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_buyer_has_not_deposited() {}
+        
+    }
+
+}
+
+mod transfer_to_seller {
+
+    use super::*;
+
+    mod success {
+
+        #[tokio::test]
+        async fn transfers_to_seller() {}
+
+        #[tokio::test]
+        async fn transfers_to_seller_in_two_escrows() {}
+
+    }
+
+    mod revert {
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_escrow_is_not_pending() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_buyer_has_not_deposited() {}
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_caller_is_not_buyer() {}
+        
+    }
+
 }
 
 // async fn init(
@@ -114,48 +419,48 @@ async fn setup() -> (Metadata, Metadata, Metadata, ContractId, u64) {
 //         .value
 // }
 
-mod constructor {
+// mod constructor {
 
-    use super::*;
+//     use super::*;
 
-    #[tokio::test]
-    async fn initializes() {
-        let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
+//     #[tokio::test]
+//     async fn initializes() {
+//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
 
-        let users = [user1.wallet.address(), user1.wallet.address()];
-        let assets = [
-            MetaAsset {
-                id: [1u8; 32],
-                amount: 100,
-            },
-            MetaAsset {
-                id: [2u8; 32],
-                amount: 200,
-            },
-        ];
+//         let users = [user1.wallet.address(), user1.wallet.address()];
+//         let assets = [
+//             MetaAsset {
+//                 id: [1u8; 32],
+//                 amount: 100,
+//             },
+//             MetaAsset {
+//                 id: [2u8; 32],
+//                 amount: 200,
+//             },
+//         ];
 
-        assert!(
-            deployer
-                .escrow
-                .constructor(users, assets)
-                .call()
-                .await
-                .unwrap()
-                .value
-        )
+//         assert!(
+//             deployer
+//                 .escrow
+//                 .constructor(users, assets)
+//                 .call()
+//                 .await
+//                 .unwrap()
+//                 .value
+//         )
 
-        // assert!(
-        //     init(
-        //         &deployer,
-        //         &user1.wallet,
-        //         &user2.wallet,
-        //         asset_id,
-        //         asset_amount
-        //     )
-        //     .await
-        // );
-    }
-}
+//         // assert!(
+//         //     init(
+//         //         &deployer,
+//         //         &user1.wallet,
+//         //         &user2.wallet,
+//         //         asset_id,
+//         //         asset_amount
+//         //     )
+//         //     .await
+//         // );
+//     }
+// }
 
 // mod deposit {
 
