@@ -1,5 +1,8 @@
 <p align="center">
-    <img src="./.docs/logo.png" height="120">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/sway-apps-logo-dark-theme.png">
+        <img alt="SwayApps logo" width="400px" src=".docs/sway-apps-logo-light-theme.png">
+    </picture>
 </p>
 
 <p align="center">
