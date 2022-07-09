@@ -24,44 +24,49 @@ use utils::token_metadata;
 storage {
     /// Determines if only the contract's `admin` is allowed to call the mint function.
     /// This is only set on the initalization of the contract.
-    access_control: bool,
+    access_control: bool = false,
 
     /// Stores the user that is permitted to mint if `access_control` is set to true.
     /// Will store `None` if this contract does not have `access_control` set.
     /// Only the `admin` is allowed to change the `admin` of the contract.
-    admin: Option<Identity>,
+    admin: Option<Identity> = Option::None,
 
     /// Stores the user which is approved to transfer a token based on it's unique identifier.
     /// In the case that no user is approved to transfer a token based on the token owner's behalf,
     /// `None` will be stored.
     /// Map(token_id => approved)
     approved: StorageMap<u64,
-    Option<Identity>>, /// Used for O(1) lookup of the number of tokens owned by each user.
+    Option<Identity>> = StorageMap {
+    }, /// Used for O(1) lookup of the number of tokens owned by each user.
     /// This increments or decrements when minting, transfering ownership, and burning tokens.
     /// Map(Identity => balance)
     balances: StorageMap<Identity,
-    u64>, /// The total supply tokens that can ever be minted.
+    u64> = StorageMap {
+    }, /// The total supply tokens that can ever be minted.
     /// This can only be set on the initalization of the contract.
-    max_supply: u64,
+    max_supply: u64 = 0,
 
     /// Stores the `TokenMetadata` for each token based on the token's unique identifier.
     /// Map(token_id => TokenMetadata)
     meta_data: StorageMap<u64,
-    TokenMetaData>, /// Maps a tuple of (owner, operator) identities and stores whether the operator is allowed to
+    TokenMetaData> = StorageMap {
+    }, /// Maps a tuple of (owner, operator) identities and stores whether the operator is allowed to
     /// transfer ALL tokens on the owner's behalf.
     /// Map((owner, operator) => approved)
     operator_approval: StorageMap<(Identity,
-    Identity), bool>, /// Stores the user which owns a token based on it's unique identifier.
+    Identity), bool> = StorageMap {
+    }, /// Stores the user which owns a token based on it's unique identifier.
     /// If the token has been burned then `None` will be stored.
     /// Map(token_id => owner)
     owners: StorageMap<u64,
-    Option<Identity>>, /// The total number of tokens that ever have been minted.
+    Option<Identity>> = StorageMap {
+    }, /// The total number of tokens that ever have been minted.
     /// This will only be incremented.
-    tokens_ever_minted: u64,
+    tokens_ever_minted: u64 = 0,
 
     /// The number of tokens currently in existence.
     /// This is incremented on mint and decreminted on burn.
-    total_supply: u64,
+    total_supply: u64 = 0,
 }
 
 impl NFT for Contract {

@@ -1,8 +1,7 @@
 library data_structures;
 
-use std::{identity::Identity, option::Option};
-
 pub struct TokenMetaData {
+    // This is left as an example
 }
 
 impl TokenMetaData {
