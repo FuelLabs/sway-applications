@@ -39,14 +39,15 @@ use events::{ExecutedEvent, TransferEvent};
 storage {
     /// Used to add entropy into hashing of Tx to decrease the probability of collisions / double
     /// spending
-    nonce: u64,
+    nonce: u64 = 0,
 
     /// The number of approvals required in order to execture a Tx
-    threshold: u64,
+    threshold: u64 = 0,
 
     /// Number of approvals per user
     weighting: StorageMap<Address,
-    u64>, 
+    u64> = StorageMap {
+    },
 }
 
 impl MultiSignatureWallet for Contract {
