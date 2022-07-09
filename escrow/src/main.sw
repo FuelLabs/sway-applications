@@ -37,15 +37,15 @@ use std::{
 storage {
     /// Used as a temporary variable for containing a change, proposed by the seller, to the arbiter
     /// Map(ID => Info)
-    arbiter_proposal: StorageMap<u64, Option<Arbiter>>,
+    arbiter_proposal: StorageMap<u64, Option<Arbiter>> = StorageMap {},
 
     /// Information describing an escrow created via create_escrow()
     /// Map(ID => Info)
-    escrows: StorageMap<u64, EscrowInfo>, 
+    escrows: StorageMap<u64, EscrowInfo> = StorageMap {}, 
     
     /// Number of created escrows
     /// Used as an identifier for O(1) look-up in mappings
-    escrow_count: u64,
+    escrow_count: u64 = 0,
 }
 
 impl Escrow for Contract {
