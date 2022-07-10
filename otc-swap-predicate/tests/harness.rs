@@ -1,14 +1,11 @@
+mod utils;
+
 use fuel_core::service::Config;
 use fuel_gql_client::fuel_tx::{AssetId, Contract, Input, Output, Transaction};
 use fuel_gql_client::fuel_vm::{consts::REG_ONE, prelude::Opcode};
 use fuels::prelude::*;
 use fuels::test_helpers::WalletsConfig;
 use fuels_contract::script::Script;
-
-async fn get_balance(provider: &Provider, address: Address, asset: AssetId) -> u64 {
-    let balance = provider.get_asset_balance(&address, asset).await.unwrap();
-    balance
-}
 
 #[tokio::test]
 async fn otc_swap_with_predicate() {
@@ -46,10 +43,11 @@ async fn otc_swap_with_predicate() {
         .await
         .unwrap();
 
-    let initial_predicate_balance = get_balance(&provider, predicate_root, base_asset).await;
-    let initial_wallet_balance = get_balance(&provider, wallet.address(), base_asset).await;
+    let initial_predicate_balance = utils::get_balance(&provider, predicate_root, base_asset).await;
+    let initial_wallet_balance = utils::get_balance(&provider, wallet.address(), base_asset).await;
     let receiver_address = Address::new([3u8; 32]);
-    let initial_receiver_balance = get_balance(&provider, receiver_address, base_asset).await;
+    let initial_receiver_balance =
+        utils::get_balance(&provider, receiver_address, base_asset).await;
 
     // The predicate root has received the coin
     assert_eq!(initial_predicate_balance, offered_amount);
@@ -130,9 +128,9 @@ async fn otc_swap_with_predicate() {
     let script = Script::new(tx);
     let _receipts = script.call(&client).await.unwrap();
 
-    let predicate_balance = get_balance(&provider, predicate_root, base_asset).await;
-    let wallet_balance = get_balance(&provider, wallet.address(), base_asset).await;
-    let receiver_balance = get_balance(&provider, receiver_address, base_asset).await;
+    let predicate_balance = utils::get_balance(&provider, predicate_root, base_asset).await;
+    let wallet_balance = utils::get_balance(&provider, wallet.address(), base_asset).await;
+    let receiver_balance = utils::get_balance(&provider, receiver_address, base_asset).await;
 
     // The predicate root's coin has been spent
     assert_eq!(predicate_balance, 0);
