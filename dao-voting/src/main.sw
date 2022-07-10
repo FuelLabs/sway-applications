@@ -39,19 +39,24 @@ use utils::validate_id;
 storage {
     /// The amount of governance tokens a user has deposited
     balances: StorageMap<Identity,
-    u64>, /// Information describing a proposal created via create_proposal(...)
+    u64> = StorageMap {
+    }, /// Information describing a proposal created via create_proposal(...)
     proposals: StorageMap<u64,
-    ProposalInfo>, /// Number of created proposals
+    ProposalInfo> = StorageMap {
+    }, /// Number of created proposals
     /// Used to check the validity of a proposal id
     /// Used as a unique identifier when creating proposals
-    proposal_count: u64,
+    proposal_count: u64 = 0,
     /// The initilization state of the contract.
-    state: State,
+    state: State = State::NotInitialized,
     /// Contract Id of the governance token
-    token: ContractId,
+    token: ContractId = ContractId {
+        value: 0x0000000000000000000000000000000000000000000000000000000000000000,
+    },
     /// The amount of votes a user has used on a proposal
     votes: StorageMap<(Identity,
-    u64), Votes>, 
+    u64), Votes> = StorageMap {
+    },
 }
 
 impl DaoVoting for Contract {

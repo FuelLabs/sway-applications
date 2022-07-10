@@ -1,5 +1,8 @@
 <p align="center">
-    <img src="./.docs/multi-signature-logo.png" height="120">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/multi-signature-logo-dark-theme.png">
+        <img alt="multisig logo" width="400px" src=".docs/multi-signature-logo-light-theme.png">
+    </picture>
 </p>
 
 ## Overview
