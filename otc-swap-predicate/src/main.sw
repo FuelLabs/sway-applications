@@ -13,8 +13,8 @@ use std::{
 
 /// Order / OTC swap Predicate
 ///
-/// Sending tokens to this predicate root creates an "order" that anyone can fill
-/// This coin can be unlocked by any transaction which has an output which meets the conditions of the order
+/// This predicate root serves as an "order" that anyone can fill
+/// The coin sent to the predicate root can be unlocked by any transaction which has an output which meets the conditions of the order
 /// The order maker can "cancel" the order by spending the predicate's coins in any transaction containing an input they have signed
 ///
 /// Limitations:

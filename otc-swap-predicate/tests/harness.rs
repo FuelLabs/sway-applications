@@ -32,7 +32,6 @@ async fn otc_swap_with_predicate() {
 
     // Transfer some coins to the predicate root
     let offered_amount = 1000;
-
     let _receipt = wallet
         .transfer(
             &predicate_root,
@@ -67,7 +66,7 @@ async fn otc_swap_with_predicate() {
     // This must match the amount in the predicate
     let ask_amount = 42;
 
-    // This is the coin belonging to the predicate root
+    // Coin belonging to the predicate root
     let input_predicate = Input::CoinPredicate {
         utxo_id: predicate_coin_utxo_id,
         owner: predicate_root,
@@ -78,7 +77,7 @@ async fn otc_swap_with_predicate() {
         predicate_data: vec![1u8, 0u8], // Predicate data is the index of the input and output that pay the receiver
     };
 
-    // This is the coin belonging to the wallet taking the order
+    // Coin belonging to the wallet taking the order
     let input_from_taker = Input::CoinSigned {
         utxo_id: swap_coin_utxo_id,
         owner: wallet.address(),
@@ -88,21 +87,21 @@ async fn otc_swap_with_predicate() {
         maturity: 0,
     };
 
-    // A coin output for the transfer to the receiver
+    // Output for the coin transferred to the receiver
     let output_to_receiver = Output::Coin {
         to: receiver_address,
         amount: ask_amount,
         asset_id: base_asset,
     };
 
-    // A coin output for the transfer to the order taker
+    // Output for the coin transferred to the order taker
     let output_to_taker = Output::Coin {
         to: wallet.address(),
         amount: offered_amount,
         asset_id: base_asset,
     };
 
-    // A Change output
+    // Change output for unspent fees
     let output_change = Output::Change {
         to: wallet.address(),
         amount: 0,
@@ -135,10 +134,10 @@ async fn otc_swap_with_predicate() {
     // The predicate root's coin has been spent
     assert_eq!(predicate_balance, 0);
 
-    // Receiver has been paid the ask amount
+    // Receiver has been paid `ask_amount`
     assert_eq!(receiver_balance, initial_receiver_balance + ask_amount);
 
-    // Taker has send `ask_amount` tokens and got `offered_amount` in return
+    // Taker has sent `ask_amount` tokens and received `offered_amount` in return
     assert_eq!(
         wallet_balance,
         initial_wallet_balance - ask_amount + offered_amount
