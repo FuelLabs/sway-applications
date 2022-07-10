@@ -383,6 +383,11 @@
             ]
           }
         ]
+      },
+      {
+        "name": "position",
+        "type": "u64",
+        "components": null
       }
     ],
     "name": "make_move",

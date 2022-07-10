@@ -29,22 +29,20 @@ storage {
 
 abi TicTacToe {
     #[storage(write)]fn new_game(player_one: Players, player_two: Players) -> Game;
-    #[storage(read, write)]fn make_move(game: Game);
-    fn end_game(game: Game) -> Winners;
+    #[storage(read, write)]fn make_move(game: Game, position: u64);
+    #[storage(write)]fn end_game(game: Game) -> Winners;
     #[storage(read)]fn map_is_full() -> bool;
 }
 
 impl TicTacToe for Contract {
 
-    #[storage(write)]
-    fn new_game(player_one: Players, player_two: Players) -> Game {
+    #[storage(write)]fn new_game(player_one: Players, player_two: Players) -> Game {
         let mut game = Game {
             PlayerOne: player_one,
             PlayerTwo: player_two,
             winner: Winners::None,
             playerTurn: player_one,
         };
-        storage.game = game;
         let mut counter = 0;
         while counter < 9 {
             counter += 1;
@@ -53,8 +51,13 @@ impl TicTacToe for Contract {
         return game;
     }
 
-    #[storage(read, write)]fn make_move(game: Game) {
-         
+    #[storage(read, write)]fn make_move(game: Game, position: u64) {
+        if game.playerTurn == game.PlayerOne {
+            insert_into_map(1, position);
+        }
+        if game.playerTurn == game.PlayerTwo {
+            insert_into_map(2, position);
+        }
     }
 
     //Check each cell. If one of them is empty (contains 0), then the map isn't full yet.
@@ -76,7 +79,8 @@ impl TicTacToe for Contract {
         return result;
     }
 
-    fn end_game(game: Game) -> Winners{
+    #[storage(write)]fn end_game(game: Game) -> Winners{
+        storage.game = game;
         return game.winner;
     }
 }
