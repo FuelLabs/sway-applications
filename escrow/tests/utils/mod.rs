@@ -1,4 +1,7 @@
-use fuels::{contract::contract::CallResponse, prelude::*};
+use fuels::{
+    contract::contract::CallResponse, 
+    prelude::*,
+};
 // use fuels::tx::{AssetId, ContractId, Salt};
 
 abigen!(Escrow, "out/debug/escrow-abi.json");
@@ -19,6 +22,23 @@ pub struct Defaults {
 pub mod test_helpers {
 
     use super::*;
+
+    pub async fn create_arbiter(address: Address, asset: ContractId, fee_amount: u64) -> Arbiter {
+        Arbiter { address: Identity::Address(address), asset, fee_amount }
+    }
+
+    pub async fn create_asset(amount:u64, id: ContractId) -> Asset {
+        Asset { amount, id }
+    }
+
+    pub async fn mint(contract: &MyAsset, address: Address, amount: u64) {
+        contract
+            .mint_and_send_to_address(amount, address)
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap();
+    }
 
     pub async fn setup() -> (User, User, User, Defaults) {
         let num_wallets = 4;
@@ -76,14 +96,6 @@ pub mod test_helpers {
         (arbiter, buyer, seller, defaults)
     }
 
-    pub async fn create_arbiter(address: Address, asset: ContractId, fee_amount: u64) -> Arbiter {
-        Arbiter { address: Identity::Address(address), asset, fee_amount }
-    }
-
-    pub async fn create_asset(amount:u64, id: ContractId) -> Asset {
-        Asset { amount, id }
-    }
-
 }
 
 pub mod abi_calls {
@@ -94,8 +106,11 @@ pub mod abi_calls {
         contract.accept_arbiter(identifier).append_variable_outputs(1).call().await.unwrap()
     }
 
-    pub async fn create_escrow(contract: &Escrow, arbiter: Arbiter, assets: Vec<Asset>, buyer: Identity, deadline: u64) -> CallResponse<()> {
-        contract.create_escrow(arbiter, assets, buyer, deadline).call().await.unwrap()
+    pub async fn create_escrow(contract: &Escrow, amount: u64, arbiter: &Arbiter, asset: &ContractId, assets: Vec<Asset>, buyer: Identity, deadline: u64) -> CallResponse<()> {
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(100_000));
+
+        contract.create_escrow(arbiter.clone(), assets, buyer, deadline).tx_params(tx_params).call_params(call_params).call().await.unwrap()
     }
 
     pub async fn deposit(contract: &Escrow, identifier: u64) -> CallResponse<()> {
