@@ -20,16 +20,17 @@ struct Game {
     PlayerOne: Players,
     PlayerTwo: Players,
     winner: Winners,
-    playerTurn: Players,
 }
 storage {
     game: Game,
+    player_turn: u64,
     map: StorageMap<u64,u64>,
 }
 
 abi TicTacToe {
     #[storage(write)]fn new_game(player_one: Players, player_two: Players) -> Game;
-    #[storage(read, write)]fn make_move(game: Game, position: u64);
+    #[storage(read, write)]fn make_move(position: u64);
+    #[storage(read, write)]fn next_player();
     #[storage(write)]fn end_game(game: Game) -> Winners;
     #[storage(read)]fn map_is_full() -> bool;
 }
@@ -41,8 +42,8 @@ impl TicTacToe for Contract {
             PlayerOne: player_one,
             PlayerTwo: player_two,
             winner: Winners::None,
-            playerTurn: player_one,
         };
+        storage.player_turn = 1;
         let mut counter = 0;
         while counter < 9 {
             counter += 1;
@@ -51,12 +52,22 @@ impl TicTacToe for Contract {
         return game;
     }
 
-    #[storage(read, write)]fn make_move(game: Game, position: u64) {
-        if game.playerTurn == game.PlayerOne {
+
+    #[storage(read, write)]fn make_move(position: u64) {
+        if storage.player_turn == 1 {
             insert_into_map(1, position);
         }
-        if game.playerTurn == game.PlayerTwo {
+        if storage.player_turn == 2 {
             insert_into_map(2, position);
+        }
+    }
+
+    #[storage(read, write)]fn next_player() {
+        if storage.player_turn == 1 {
+            storage.player_turn = 2;
+        }
+        if storage.player_turn == 2 {
+            storage.player_turn = 1;
         }
     }
 
