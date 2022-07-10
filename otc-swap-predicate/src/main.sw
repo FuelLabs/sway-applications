@@ -5,8 +5,10 @@ use std::{
     assert::assert,
     constants::BASE_ASSET_ID,
     contract_id::ContractId,
+    option::Option,
     result::Result,
-    tx::{b256_from_pointer_offset, tx_input_coin_owner, tx_output_amount, tx_output_pointer}
+    revert::revert,
+    tx::{b256_from_pointer_offset, tx_input_owner, tx_output_amount, tx_output_pointer}
 };
 
 /// Order / OTC swap Predicate
@@ -34,7 +36,14 @@ fn main(input_index: u8, output_index: u8) -> bool {
     let ask_token = BASE_ASSET_ID;
 
     // First, check if the transaction contains an input coin from the maker, to cancel their own order:
-    let taker = tx_input_coin_owner(input_index);
+    let taker = match tx_input_owner(input_index) {
+        Option::Some(inner) => {
+            inner
+        },
+        _ => {
+            revert(0)
+        },
+    };
 
     if (taker == maker) {
         true

@@ -2,6 +2,7 @@ use fuel_core::service::Config;
 use fuel_gql_client::fuel_tx::{AssetId, Contract, Input, Output, Transaction};
 use fuel_gql_client::fuel_vm::{consts::REG_ONE, prelude::Opcode};
 use fuels::prelude::*;
+use fuels::test_helpers::WalletsConfig;
 use fuels_contract::script::Script;
 
 async fn get_balance(provider: &Provider, address: Address, asset: AssetId) -> u64 {
@@ -16,7 +17,11 @@ async fn otc_swap_with_predicate() {
 
     let mut provider_config = Config::local_node();
     provider_config.predicates = true; // predicates are currently disabled by default
-    let wallet = launch_custom_provider_and_get_single_wallet(Some(provider_config)).await;
+    let wallet = &launch_custom_provider_and_get_wallets(
+        WalletsConfig::new_single(None, None),
+        Some(provider_config),
+    )
+    .await[0];
 
     // Get provider and client
     let provider = wallet.get_provider().unwrap();
