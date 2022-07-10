@@ -36,14 +36,7 @@ fn main(input_index: u8, output_index: u8) -> bool {
     let ask_token = BASE_ASSET_ID;
 
     // First, check if the transaction contains an input coin from the maker, to cancel their own order:
-    let taker = match tx_input_owner(input_index) {
-        Option::Some(inner) => {
-            inner
-        },
-        _ => {
-            revert(0)
-        },
-    };
+    let taker = tx_input_owner(input_index).unwrap();
 
     if (taker == maker) {
         true
