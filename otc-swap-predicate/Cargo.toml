@@ -1,6 +1,6 @@
 [project]
 name = "otc-swap-predicate"
-version = "0.1.0"
+version = "0.0.0"
 authors = ["Fuel Labs <contact@fuel.sh>"]
 edition = "2021"
 license = "Apache-2.0"
