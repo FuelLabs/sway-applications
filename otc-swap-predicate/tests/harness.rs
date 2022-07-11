@@ -1,14 +1,14 @@
 mod utils;
 
 use fuel_core::service::Config;
-use fuel_gql_client::fuel_tx::{AssetId, Contract, Input, Output, Transaction};
 use fuel_gql_client::fuel_vm::{consts::REG_ONE, prelude::Opcode};
 use fuels::contract::script::Script;
 use fuels::prelude::*;
 use fuels::test_helpers::WalletsConfig;
+use fuels::tx::{AssetId, Contract, Input, Output, Transaction};
 
-#[tokio::test]
-async fn otc_swap_with_predicate() {
+/// Test function to be parameterized by test cases
+async fn otc_swap_with_predicate(ask_amount: u64, ask_token: AssetId, receiver_address: Address) {
     // Set up a wallet and send some base asset to the predicate root
     let base_asset: AssetId = Default::default();
 
@@ -44,9 +44,7 @@ async fn otc_swap_with_predicate() {
 
     let initial_predicate_balance = utils::get_balance(&provider, predicate_root, base_asset).await;
     let initial_wallet_balance = utils::get_balance(&provider, wallet.address(), base_asset).await;
-    let receiver_address = Address::new([3u8; 32]);
-    let initial_receiver_balance =
-        utils::get_balance(&provider, receiver_address, base_asset).await;
+    let initial_receiver_balance = utils::get_balance(&provider, receiver_address, ask_token).await;
 
     // The predicate root has received the coin
     assert_eq!(initial_predicate_balance, offered_amount);
@@ -63,8 +61,6 @@ async fn otc_swap_with_predicate() {
     // Configure inputs and outputs to send coins from the predicate root to another address
 
     // The predicate allows to spend its tokens if `ask_amount` is sent to the offer maker.
-    // This must match the amount in the predicate
-    let ask_amount = 42;
 
     // Coin belonging to the predicate root
     let input_predicate = Input::CoinPredicate {
@@ -82,7 +78,7 @@ async fn otc_swap_with_predicate() {
         utxo_id: swap_coin_utxo_id,
         owner: wallet.address(),
         amount: swap_coin_amount,
-        asset_id: base_asset,
+        asset_id: ask_token,
         witness_index: 0,
         maturity: 0,
     };
@@ -91,7 +87,7 @@ async fn otc_swap_with_predicate() {
     let output_to_receiver = Output::Coin {
         to: receiver_address,
         amount: ask_amount,
-        asset_id: base_asset,
+        asset_id: ask_token,
     };
 
     // Output for the coin transferred to the order taker
@@ -142,4 +138,49 @@ async fn otc_swap_with_predicate() {
         wallet_balance,
         initial_wallet_balance - ask_amount + offered_amount
     );
+}
+
+// Test cases
+
+// These constants should match those hard-coded in the predicate
+const CORRECT_ASK_AMOUNT: u64 = 42;
+const CORRECT_ASK_TOKEN: AssetId = AssetId::new([0u8; 32]);
+const CORRECT_RECEIVER_ADDRESS: Address = Address::new([3u8; 32]);
+
+#[tokio::test]
+async fn valid_predicate_spend() {
+    otc_swap_with_predicate(
+        CORRECT_ASK_AMOUNT,
+        CORRECT_ASK_TOKEN,
+        CORRECT_RECEIVER_ADDRESS,
+    )
+    .await;
+}
+
+#[tokio::test]
+#[should_panic]
+async fn incorrect_ask_amount() {
+    otc_swap_with_predicate(41, CORRECT_ASK_TOKEN, CORRECT_RECEIVER_ADDRESS).await;
+}
+
+#[tokio::test]
+#[should_panic]
+async fn incorrect_ask_token() {
+    otc_swap_with_predicate(
+        CORRECT_ASK_AMOUNT,
+        AssetId::new([1u8; 32]),
+        CORRECT_RECEIVER_ADDRESS,
+    )
+    .await;
+}
+
+#[tokio::test]
+#[should_panic]
+async fn incorrect_receiver_address() {
+    otc_swap_with_predicate(
+        CORRECT_ASK_AMOUNT,
+        CORRECT_ASK_TOKEN,
+        Address::new([2u8; 32]),
+    )
+    .await;
 }

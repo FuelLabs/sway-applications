@@ -13,13 +13,13 @@ use std::{
 
 /// Order / OTC swap Predicate
 ///
-/// This predicate root serves as an "order" that anyone can fill
+/// This predicate serves as an "order" that anyone can fill
 /// The coin sent to the predicate root can be unlocked by any transaction which has an output which meets the conditions of the order
 /// The order maker can "cancel" the order by spending the predicate's coins in any transaction containing an input they have signed
 ///
 /// Limitations:
 ///    - An order can not be partially filled - the taker must pay the entire ask amount
-///    - There is no on-chain matching engine, so an order placed 'offside' would not be matched with an existing order with a better price (on the contrary, it would be vulnerable to arbitrage)
+///    - There is no on-chain matching engine, so an order placed "offside" would not be matched with an existing order with a better price (on the contrary, it would be vulnerable to arbitrage)
 ///
 /// As such, this mechanism is most useful for OTC trades and atomic swaps.
 ///
