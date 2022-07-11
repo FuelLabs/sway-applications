@@ -3,9 +3,9 @@ mod utils;
 use fuel_core::service::Config;
 use fuel_gql_client::fuel_tx::{AssetId, Contract, Input, Output, Transaction};
 use fuel_gql_client::fuel_vm::{consts::REG_ONE, prelude::Opcode};
+use fuels::contract::script::Script;
 use fuels::prelude::*;
 use fuels::test_helpers::WalletsConfig;
-use fuels_contract::script::Script;
 
 #[tokio::test]
 async fn otc_swap_with_predicate() {

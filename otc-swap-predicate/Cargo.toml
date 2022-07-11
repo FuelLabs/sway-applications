@@ -9,8 +9,6 @@ license = "Apache-2.0"
 fuel-core = { version = "0.9", default-features = false }
 fuel-gql-client = { version = "0.9", default-features = false }
 fuels = { version = "0.17", features = ["fuel-core-lib"] }
-fuels-contract = { version = "0.17" }
-
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]
