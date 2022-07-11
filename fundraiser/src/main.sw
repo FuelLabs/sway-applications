@@ -1,6 +1,6 @@
 contract;
 
-dep abi;
+dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
@@ -21,7 +21,7 @@ use std::{
     token::transfer,
 };
 
-use abi::Fundraiser;
+use contract_abi::Fundraiser;
 use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
 use errors::{CampaignError, CreationError, UserError};
 use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
