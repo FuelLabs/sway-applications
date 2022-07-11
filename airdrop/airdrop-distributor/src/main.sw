@@ -22,28 +22,27 @@ use std::{
 };
 
 storage {
-    claimed: StorageMap<(Identity, u64),
-    bool> = StorageMap {
+    /// Stores true if a user has claimed their airdrop. Maps a tuple of a user and an amount to a
+    /// boolean.
+    /// Maps ((user, amount) => claim)
+    claimed: StorageMap<(Identity,
+    u64), bool> = StorageMap {
     },
+    /// The block at which the claiming period will end.
     end_block: u64 = 0,
+    /// The computer merkle root which is to be verified against.
     merkleRoot: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
+    /// The contract of the token which is to be distributed.
     token_contract: Option<ContractId> = Option::None,
 }
 
 impl AirdropDistributor for Contract {
-    /// This function will let users claim their airdrop.
-    ///
-    /// # Reverts
-    ///
-    /// * When the claiming period has ended.
-    /// * When the `to` `Identity` has already claimed.
-    /// * When the merkle proof verification failed.
     #[storage(read, write)]fn claim(amount: u64, proof: Vec<b256>, to: Identity) {
         // The claiming period must be open and the `to` identity hasn't already claimed
         require(storage.end_block < height(), StateError::ClaimPeriodHasEnded);
         require(!storage.claimed.get((to, amount)), AccessError::UserAlreadyClaimed);
 
-        // Verify valid leaf
+        // Verify the merkle proof against the user and amount
         require(verify_merkle_proof(sha256((to, amount)), storage.merkleRoot, proof), VerificationError::MerkleProofFailed);
 
         // Mint tokens
@@ -55,19 +54,13 @@ impl AirdropDistributor for Contract {
         });
     }
 
-    /// Starts an airdrop.
-    ///
-    /// # Reverts
-    ///
-    /// * The constructor has already been called.
-    /// * The `claim_time` is set to zero.
     #[storage(read, write)]fn constructor(claim_time: u64, merkleRoot: b256, token_contract: ContractId) {
-        // If `end_block` is set to something, we know that the contructor has been called because 
-        // the given `claim_time` cannot be zero and it will be set below.
+        // If `end_block` is set to a value other than 0, we know that the contructor has already
+        // been called.
         require(storage.end_block == 0, InitError::AlreadyInitialized);
         require(claim_time != 0, InitError::ClaimTimeCannotBeZero);
 
-        storage.end_block = claim_time;
+        storage.end_block = height() + claim_time;
         storage.merkleRoot = merkleRoot;
         storage.token_contract = Option::Some(token_contract);
 
