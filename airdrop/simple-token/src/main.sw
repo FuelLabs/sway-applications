@@ -18,7 +18,7 @@ use std::{
 
 storage {
     /// The airdrop distribution contract that has permission to mint.
-    airdrop_contract: Option<ContractId> = Option::None,
+    airdrop_contract: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
     /// The maximum number of tokens ever to be minted.
     token_supply: u64 = 0,
     /// The current number of tokens minted.
@@ -26,7 +26,7 @@ storage {
 }
 
 impl SimpleToken for Contract {
-    #[storage(read, write)]fn constructor(airdrop_contract: Option<ContractId>, token_supply: u64) {
+    #[storage(read, write)]fn constructor(airdrop_contract: ContractId, token_supply: u64) {
         // If the token supply is anything other than 0, we know that the constructor has already
         // been called.
         require(storage.token_supply == 0, InitError::AlreadyInitialized);
@@ -37,13 +37,10 @@ impl SimpleToken for Contract {
     }
 
     #[storage(read, write)]fn mint_to(amount: u64, to: Identity) {
-        let airdrop_contract = storage.airdrop_contract;
-        let sender = msg_sender().unwrap();
-
         // Ensure that the sender is the airdrop distributor contract.
-        match sender {
+        match msg_sender().unwrap() {
             Identity::ContractId(sender) => {
-                require(airdrop_contract.is_some() && sender == airdrop_contract.unwrap(), AccessError::SenderNotPermittedToMint);
+                require(sender == storage.airdrop_contract, AccessError::SenderNotPermittedToMint);
             }
             _ => revert(0), 
         }

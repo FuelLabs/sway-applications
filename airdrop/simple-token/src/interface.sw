@@ -1,6 +1,6 @@
 library interface;
 
-use std::{contract_id::ContractId, identity::Identity, option::Option};
+use std::{contract_id::ContractId, identity::Identity};
 
 abi SimpleToken {
     /// An example function that is to be called by the airdrop distributor contract.
@@ -29,5 +29,5 @@ abi SimpleToken {
     ///
     /// * When the constructor has already been called.
     /// * When the provided `token_supply` is zero.
-    #[storage(read, write)]fn constructor(airdrop_contract: Option<ContractId>, token_supply: u64);
+    #[storage(read, write)]fn constructor(airdrop_contract: ContractId, token_supply: u64);
 }

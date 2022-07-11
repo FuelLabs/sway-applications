@@ -16,7 +16,6 @@ use std::{
     hash::sha256,
     identity::Identity,
     logging::log,
-    option::Option,
     storage::StorageMap,
     vec::Vec,
 };
@@ -33,7 +32,7 @@ storage {
     /// The computer merkle root which is to be verified against.
     merkleRoot: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
     /// The contract of the token which is to be distributed.
-    token_contract: Option<ContractId> = Option::None,
+    token_contract: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
 }
 
 impl AirdropDistributor for Contract {
@@ -47,7 +46,7 @@ impl AirdropDistributor for Contract {
 
         // Mint tokens
         storage.claimed.insert((to, amount), true);
-        mint_to(amount, to, storage.token_contract.unwrap());
+        mint_to(amount, to, storage.token_contract);
 
         log(ClaimEvent {
             to, amount, 
@@ -62,7 +61,7 @@ impl AirdropDistributor for Contract {
 
         storage.end_block = height() + claim_time;
         storage.merkleRoot = merkleRoot;
-        storage.token_contract = Option::Some(token_contract);
+        storage.token_contract = token_contract;
 
         log(InitializeEvent {
             end_block: claim_time, merkleRoot, token_contract
