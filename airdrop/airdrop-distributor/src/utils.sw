@@ -10,7 +10,7 @@ pub fn mint_to(amount: u64, to: Identity, token: ContractId) {
     token_abi.mint_to(amount, to);
 }
 
-pub fn verify_merkle_proof(merkleRoot: b256, merkleLeaf: b256, proof: Vec<b256>) -> bool {
+pub fn verify_merkle_proof(merkleLeaf: b256, merkleRoot: b256, proof: Vec<b256>) -> bool {
     let mut computedHash = merkleLeaf;
     let mut index = 0;
 

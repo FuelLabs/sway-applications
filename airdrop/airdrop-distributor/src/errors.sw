@@ -5,8 +5,8 @@ pub enum AccessError {
 }
 
 pub enum InitError {
+    AlreadyInitialized: (),
     ClaimTimeCannotBeZero: (),
-    AlreadyInitalized: (),
 }
 
 pub enum StateError {

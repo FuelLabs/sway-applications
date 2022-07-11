@@ -22,7 +22,7 @@ use std::{
 };
 
 storage {
-    claimed: StorageMap<Identity,
+    claimed: StorageMap<(Identity, u64),
     bool> = StorageMap {
     },
     end_block: u64 = 0,
@@ -38,19 +38,18 @@ impl AirdropDistributor for Contract {
     /// * When the claiming period has ended.
     /// * When the `to` `Identity` has already claimed.
     /// * When the merkle proof verification failed.
-    #[storage(read, write)]fn claim(to: Identity, amount: u64, proof: Vec<b256>) {
+    #[storage(read, write)]fn claim(amount: u64, proof: Vec<b256>, to: Identity) {
         // The claiming period must be open and the `to` identity hasn't already claimed
         require(storage.end_block < height(), StateError::ClaimPeriodHasEnded);
-        require(!storage.claimed.get(to), AccessError::UserAlreadyClaimed);
+        require(!storage.claimed.get((to, amount)), AccessError::UserAlreadyClaimed);
 
         // Verify valid leaf
-        require(verify_merkle_proof(storage.merkleRoot, sha256((to, amount)), proof), VerificationError::MerkleProofFailed);
+        require(verify_merkle_proof(sha256((to, amount)), storage.merkleRoot, proof), VerificationError::MerkleProofFailed);
 
         // Mint tokens
-        storage.claimed.insert(to, true);
+        storage.claimed.insert((to, amount), true);
         mint_to(amount, to, storage.token_contract.unwrap());
 
-        // Event
         log(ClaimEvent {
             to, amount, 
         });
@@ -62,15 +61,16 @@ impl AirdropDistributor for Contract {
     ///
     /// * The constructor has already been called.
     /// * The `claim_time` is set to zero.
-    #[storage(read, write)]fn constructor(merkleRoot: b256, claim_time: u64, token_contract: ContractId) {
-        require(storage.end_block == 0, InitError::AlreadyInitalized);
+    #[storage(read, write)]fn constructor(claim_time: u64, merkleRoot: b256, token_contract: ContractId) {
+        // If `end_block` is set to something, we know that the contructor has been called because 
+        // the given `claim_time` cannot be zero and it will be set below.
+        require(storage.end_block == 0, InitError::AlreadyInitialized);
         require(claim_time != 0, InitError::ClaimTimeCannotBeZero);
 
         storage.end_block = claim_time;
         storage.merkleRoot = merkleRoot;
         storage.token_contract = Option::Some(token_contract);
 
-        // Log Event
         log(InitializeEvent {
             end_block: claim_time, merkleRoot, token_contract
         });
