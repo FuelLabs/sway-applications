@@ -5,6 +5,40 @@ dep data_structures;
 use data_structures::TokenMetaData;
 use std::{identity::Identity, option::Option, vec::Vec};
 
+pub struct AdminEvent {
+    /// The user which is now the admin of this contract.
+    /// If there is no longer an admin then the `Option` will be `None`.
+    admin: Option<Identity>,
+}
+
+pub struct ApprovalEvent {
+    /// The user that has gotten approval to tranfer the specified token.
+    /// If an approval was revoked, the `Option` will be `None`.
+    approved: Option<Identity>,
+
+    /// The user that has given or revoked approval to tranfer his/her tokens.
+    owner: Identity,
+
+    /// The unique identifier of the token which the approved may transfer.
+    token_id: u64,
+}
+
+pub struct BurnEvent {
+    /// The user that has burned their token.
+    owner: Identity,
+
+    /// The unique identifier of the token which has been burned.
+    token_id: u64,
+}
+
+pub struct MintEvent {
+    /// The owner of the newly minted tokens.
+    owner: Identity,
+
+    /// The list of unique identifiers for the tokens which have been minted in this transaction.
+    token_ids: Vec<u64>,
+}
+
 abi NFT {
     /// Gives approval to the `approved` user to transfer a specific token on another user's behalf.
     ///
@@ -163,40 +197,6 @@ abi NFT {
     /// * When the sender is not approved to transfer the token on the owner's behalf.
     /// * When the sender is not approved to transfer all tokens on the owner's behalf.
     #[storage(read, write)]fn transfer_from(from: Identity, to: Identity, token_id: u64);
-}
-
-pub struct AdminEvent {
-    /// The user which is now the admin of this contract.
-    /// If there is no longer an admin then the `Option` will be `None`.
-    admin: Option<Identity>,
-}
-
-pub struct ApprovalEvent {
-    /// The user that has gotten approval to tranfer the specified token.
-    /// If an approval was revoked, the `Option` will be `None`.
-    approved: Option<Identity>,
-
-    /// The user that has given or revoked approval to tranfer his/her tokens.
-    owner: Identity,
-
-    /// The unique identifier of the token which the approved may transfer.
-    token_id: u64,
-}
-
-pub struct BurnEvent {
-    /// The user that has burned their token.
-    owner: Identity,
-
-    /// The unique identifier of the token which has been burned.
-    token_id: u64,
-}
-
-pub struct MintEvent {
-    /// The owner of the newly minted tokens.
-    owner: Identity,
-
-    /// The list of unique identifiers for the tokens which have been minted in this transaction.
-    token_ids: Vec<u64>,
 }
 
 pub struct OperatorEvent {
