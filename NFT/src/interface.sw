@@ -3,7 +3,7 @@ library interface;
 dep data_structures;
 
 use data_structures::TokenMetaData;
-use std::{identity::Identity, option::Option, vec::Vec};
+use std::{identity::Identity, option::Option};
 
 pub struct AdminEvent {
     /// The user which is now the admin of this contract.
@@ -35,8 +35,11 @@ pub struct MintEvent {
     /// The owner of the newly minted tokens.
     owner: Identity,
 
-    /// The list of unique identifiers for the tokens which have been minted in this transaction.
-    token_ids: Vec<u64>,
+    /// The starting range of token ids that have been minted in this transaction.
+    token_id_start: u64,
+
+    /// The total number of tokens minted in this transaction.
+    total_tokens: u64,
 }
 
 abi NFT {

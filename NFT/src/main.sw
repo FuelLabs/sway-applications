@@ -16,7 +16,6 @@ use std::{
     option::Option,
     result::Result,
     storage::StorageMap,
-    vec::Vec,
 };
 
 use utils::token_metadata;
@@ -146,13 +145,10 @@ impl NFT for Contract {
 
         // Mint as many tokens as the sender has asked for
         let mut index = tokens_ever_minted;
-        let mut minted_tokens = ~Vec::with_capacity(amount);
         while index < total_mint {
             // Create the TokenMetaData for this new token
             storage.meta_data.insert(index, ~TokenMetaData::new());
             storage.owners.insert(index, Option::Some(to));
-
-            minted_tokens.push(index);
             index = index + 1;
         }
 
@@ -161,7 +157,7 @@ impl NFT for Contract {
         storage.total_supply = storage.total_supply + amount;
 
         log(MintEvent {
-            owner: to, token_ids: minted_tokens
+            owner: to, token_id_start: tokens_ever_minted, total_tokens: amount
         });
     }
 
