@@ -8,7 +8,7 @@ dep utils;
 use events::{ClaimEvent, InitializeEvent};
 use errors::{AccessError, InitError, StateError, VerificationError};
 use interface::AirdropDistributor;
-use utils::{verify_merkle_proof};
+use utils::verify_merkle_proof;
 use std::{
     assert::require,
     block::height,
@@ -22,7 +22,9 @@ use std::{
 };
 
 storage {
-    claimed: StorageMap<Identity, bool> = StorageMap {}, 
+    claimed: StorageMap<Identity,
+    bool> = StorageMap {
+    },
     end_block: u64 = 0,
     merkleRoot: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
 }
@@ -72,7 +74,7 @@ impl AirdropDistributor for Contract {
 
         // Log Event
         log(InitializeEvent {
-            end_block: claim_time, merkleRoot 
+            end_block: claim_time, merkleRoot
         });
     }
 }

@@ -1,6 +1,6 @@
 library events;
 
-use std::{identity::Identity};
+use std::identity::Identity;
 
 pub struct ClaimEvent {
     amount: u64,
