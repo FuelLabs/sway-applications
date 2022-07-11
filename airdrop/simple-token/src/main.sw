@@ -3,7 +3,7 @@ contract;
 dep errors;
 dep interface;
 
-use errors::{AccessError, InitError};
+use errors::{AccessError, InitError, InputError};
 use interface::SimpleToken;
 use std::{
     assert::require,
@@ -21,6 +21,8 @@ storage {
     airdrop_contract: Option<ContractId> = Option::None,
     /// The maximum number of tokens ever to be minted.
     token_supply: u64 = 0,
+    /// The current number of tokens minted.
+    tokens_minted: u64 = 0,
 }
 
 impl SimpleToken for Contract {
@@ -45,6 +47,9 @@ impl SimpleToken for Contract {
             }
             _ => revert(0), 
         }
+
+        let tokens_minted = storage.tokens_minted;
+        require(amount + tokens_minted <= storage.token_supply, InputError::GreaterThanMaximumSupply);
 
         mint_to(amount, to);
     }

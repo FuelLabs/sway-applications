@@ -8,3 +8,7 @@ pub enum InitError {
     AlreadyInitialized: (),
     TokenSupplyCannotBeZero: (),
 }
+
+pub enum InputError {
+    GreaterThanMaximumSupply: (),
+}
