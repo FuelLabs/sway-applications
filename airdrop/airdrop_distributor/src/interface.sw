@@ -1,4 +1,4 @@
-library abi;
+library interface;
 
 dep data_structures;
 

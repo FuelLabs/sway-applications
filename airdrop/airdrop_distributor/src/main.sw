@@ -1,15 +1,15 @@
 contract;
 
-dep abi;
 dep data_structures;
 dep events;
 dep errors;
+dep interface;
 dep utils;
 
-use abi::AirdropDistributor;
 use data_structures::{AirdropData, Claim, State};
 use events::{ClaimEvent, CreateEvent, ReClaimEvent};
 use errors::{AccessError, InitError, StateError, VerificationError};
+use interface::AirdropDistributor;
 use utils::{create_claim_hash, sender_identity, verify_merkle_proof};
 use std::{
     assert::require,
@@ -25,15 +25,19 @@ use std::{
 };
 
 storage {
-    airdrops: StorageMap<(ContractId,
-    u64), Option<AirdropData>>, airdrop_count: StorageMap<ContractId,
-    u64>, // TODO: This should be moved into the `AirdropDispersal` struct when strorage maps in structs
+    airdrops: StorageMap<(ContractId, u64), Option<AirdropData>> = StorageMap {}, 
+    airdrop_count: StorageMap<ContractId, u64> = StorageMap {},
+    // TODO: This should be moved into the `AirdropDispersal` struct when strorage maps in structs
     // are supported
-    claimed: StorageMap<(b256,
-    ContractId, u64), bool>, 
+    claimed: StorageMap<(b256, ContractId, u64), bool> = StorageMap {}, 
 }
 
 impl AirdropDistributor for Contract {
+    /// Returns the airdrop metadata for the `ContractId` and `u64` airdrop Id provided
+    #[storage(read)]fn airdrop_data(token_contract: ContractId, claim_id: u64) -> Option<AirdropData> {
+        storage.airdrops.get((token_contract, claim_id))
+    }
+
     /// This function will let users claim their airdrop
     ///
     /// # Reverts
@@ -73,7 +77,7 @@ impl AirdropDistributor for Contract {
         });
     }
 
-    /// Initalizes the contract
+    /// Starts an airdrop
     ///
     /// # Reverts
     ///
@@ -138,10 +142,5 @@ impl AirdropDistributor for Contract {
         log(ReClaimEvent {
             airdrop, claim_id, 
         });
-    }
-
-    /// Returns the airdrop metadata for the `ContractId` and `u64` airdrop Id provided
-    #[storage(read)]fn airdrop_data(token_contract: ContractId, claim_id: u64) -> Option<AirdropData> {
-        storage.airdrops.get((token_contract, claim_id))
     }
 }

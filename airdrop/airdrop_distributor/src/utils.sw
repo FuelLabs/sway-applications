@@ -41,10 +41,10 @@ pub fn verify_merkle_proof(merkleRoot: b256, merkleLeaf: b256, proof: Vec<b256>)
 
         if (computedHash <= proofElement) {
             // Hash(current computed hash + current element of the proof)
-            computedHash = sha256(computedHash, proofElement);
+            computedHash = sha256((computedHash, proofElement));
         } else {
             // Hash(current element of the proof + current computed hash)
-            computedHash = sha256(proofElement, computedHash);
+            computedHash = sha256((proofElement, computedHash));
         }
 
         index = index + 1;
