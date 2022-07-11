@@ -1,6 +1,6 @@
 library events;
 
-use std::identity::Identity;
+use std::{contract_id::ContractId, identity::Identity};
 
 pub struct ClaimEvent {
     amount: u64,
@@ -10,4 +10,5 @@ pub struct ClaimEvent {
 pub struct InitializeEvent {
     end_block: u64,
     merkleRoot: b256,
+    token_contract: ContractId,
 }

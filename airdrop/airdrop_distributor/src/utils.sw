@@ -1,6 +1,14 @@
 library utils;
 
-use std::{hash::sha256, identity::Identity, option::Option, revert::revert, vec::Vec};
+dep interface;
+
+use interface::Token;
+use std::{contract_id::ContractId, hash::sha256, identity::Identity, option::Option, revert::revert, vec::Vec};
+
+pub fn mint_to(amount: u64, to: Identity, token: ContractId) {
+    let token_abi = abi(Token, token.value);
+    token_abi.mint_to(amount, to);
+}
 
 pub fn verify_merkle_proof(merkleRoot: b256, merkleLeaf: b256, proof: Vec<b256>) -> bool {
     let mut computedHash = merkleLeaf;
