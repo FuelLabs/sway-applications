@@ -1,7 +1,9 @@
 contract;
 
+dep errors;
 dep interface;
 
+use errors::{InitError, AccessError};
 use interface::SimpleToken;
 use std::{
     assert::require,
@@ -20,12 +22,12 @@ storage {
 }
 
 impl SimpleToken for Contract {
-    #[storage(read, write)]fn constructor(airdrop_contract: Option<ContractId>, total_supply: u64) {
-        require(storage.token_supply == 0, "Already Initalized");
-        require(total_supply != 0, "total supply cannot be 0");
+    #[storage(read, write)]fn constructor(airdrop_contract: Option<ContractId>, token_supply: u64) {
+        require(storage.token_supply == 0, InitError::AlreadyInitialized);
+        require(token_supply != 0, InitError::TokenSupplyCannotBeZero);
 
         storage.airdrop_contract = airdrop_contract;
-        storage.token_supply = total_supply;
+        storage.token_supply = token_supply;
     }
 
     #[storage(read, write)]fn mint_to(amount: u64, to: Identity) {
@@ -34,7 +36,7 @@ impl SimpleToken for Contract {
 
         match sender {
             Identity::ContractId(sender) => {
-                require(airdrop_contract.is_some() && sender == airdrop_contract.unwrap(), "Not aidrop contract");
+                require(airdrop_contract.is_some() && sender == airdrop_contract.unwrap(), AccessError::SenderNotPermittedToMint);
             }
             _ => revert(0), 
         }

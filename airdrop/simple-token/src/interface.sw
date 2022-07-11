@@ -4,5 +4,5 @@ use std::{contract_id::ContractId, identity::Identity, option::Option};
 
 abi SimpleToken {
     #[storage(read, write)]fn mint_to(amount: u64, to: Identity);
-    #[storage(read, write)]fn constructor(airdrop_contract: Option<ContractId>, total_supply: u64);
+    #[storage(read, write)]fn constructor(airdrop_contract: Option<ContractId>, token_supply: u64);
 }
