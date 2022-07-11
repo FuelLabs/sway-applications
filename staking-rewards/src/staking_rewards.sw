@@ -9,11 +9,14 @@ use std::{
     assert::require,
     chain::auth::msg_sender,
     constants::ZERO_B256,
+    context::call_frames::msg_asset_id,
+    context::msg_amount,
     contract_id::ContractId,
     identity::Identity,
     logging::log,
     result::Result,
     storage::StorageMap,
+    token::transfer,
 };
 
 use staking_rewards_abi::StakingRewards;
@@ -90,15 +93,18 @@ impl StakingRewards for Contract {
         _get_reward();
     }
 
-    #[storage(read, write)]fn stake(amount: u64) {
+    #[storage(read, write)]fn stake() {
+        let amount = msg_amount();
         require(amount > 0, StakingRewardsError::StakeZero);
+
+        let asset_id = msg_asset_id();
+        require(asset_id == storage.staking_token, StakingRewardsError::StakeIncorrectToken);
 
         let sender = msg_sender().unwrap();
         _update_reward(sender);
 
         storage.total_supply += amount;
         storage.balances.insert(sender, storage.balances.get(sender) + amount);
-        // todo transfer
         log(Staked {
             user: sender, amount: amount
         });
@@ -145,7 +151,7 @@ impl StakingRewards for Contract {
 
     if (reward > 0) {
         storage.rewards.insert(sender, 0);
-        // todo transfer
+        transfer(reward, storage.rewards_token, sender);
         log(RewardPaid {
             user: sender, reward: reward
         });
@@ -160,7 +166,7 @@ impl StakingRewards for Contract {
 
     storage.total_supply -= amount;
     storage.balances.insert(sender, storage.balances.get(sender) - amount);
-    // todo transfer
+    transfer(amount, storage.staking_token, sender);
     log(Withdrawn {
         user: sender, amount: amount
     });

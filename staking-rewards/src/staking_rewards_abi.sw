@@ -15,6 +15,6 @@ abi StakingRewards {
 
     #[storage(read, write)]fn exit();
     #[storage(read, write)]fn get_reward();
-    #[storage(read, write)]fn stake(amount: u64);
+    #[storage(read, write)]fn stake();
     #[storage(read, write)]fn withdraw(amount: u64);
 }
