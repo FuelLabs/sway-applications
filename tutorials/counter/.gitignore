@@ -68,4 +68,4 @@ tsconfig.tsbuildinfo
 storybook-static
 
 # general
-contracts/token_contract/.rustc_info.json
+src/countr-contract-types
