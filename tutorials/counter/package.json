@@ -12,12 +12,12 @@
     "deploy": "./node_modules/.bin/ts-node ./scripts/deploy-contract.ts"
   },
   "dependencies": {
-    "fuels": "0.0.0-master-151d0d91",
+    "fuels": "0.0.0-master-3bed0aad",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
   },
   "devDependencies": {
-    "@fuel-ts/wallet": "0.0.0-master-151d0d91",
+    "@fuel-ts/wallet": "0.0.0-master-3bed0aad",
     "@types/node": "^17.0.35",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
@@ -26,7 +26,7 @@
     "prettier": "^2.5.1",
     "ts-node": "^10.7.0",
     "typechain": "^8.0.0",
-    "typechain-target-fuels": "0.0.0-master-151d0d91",
+    "typechain-target-fuels": "0.0.0-master-3bed0aad",
     "typescript": "^4.6.4",
     "vite": "^2.9.7"
   }
