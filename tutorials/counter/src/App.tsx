@@ -1,6 +1,7 @@
 import { Wallet } from "fuels";
-import { FC, Fragment } from "react";
+import type { FC } from "react";
 import React, { useState, useEffect } from "react";
+
 import { CounterContractAbi__factory as Factory } from "./counter-contract-types";
 
 const wallet = new Wallet(
@@ -17,14 +18,26 @@ const failCatch = (error: Error) => {
   return -1n;
 };
 
-const loadCounter = (): Promise<bigint> =>
-  contractInstance.submit.get_counter().catch(failCatch);
+const loadCounter = async (): Promise<bigint> => {
+  try {
+    const { value } = await contractInstance.functions.get_counter().call();
+    return value;
+  } catch (e) {
+    return failCatch(e as any);
+  }
+};
 
-const incrementCounter = (): Promise<bigint> =>
-  contractInstance.submit.increment_counter(100n).catch(failCatch);
+const incrementCounter = async (): Promise<bigint> => {
+  await contractInstance.functions.increment().call().catch(failCatch);
 
-const decrementCounter = (): Promise<bigint> =>
-  contractInstance.submit.decrement_counter(100n).catch(failCatch);
+  return loadCounter();
+};
+
+const decrementCounter = async (): Promise<bigint> => {
+  await contractInstance.functions.decrement().call().catch(failCatch);
+
+  return loadCounter();
+};
 
 const App: FC = () => {
   const [counterValue, setCounterValue] = useState<bigint>(-10n);

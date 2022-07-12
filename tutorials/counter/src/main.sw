@@ -10,12 +10,12 @@ storage {
 
 impl Counter for Contract {
     fn increment() {
-        storage.counter = storage.counter + 1;
+        storage.counter = storage.counter + 10;
     }
 
     fn decrement() {
         if storage.counter != 0 {
-            storage.counter = storage.counter - 1;
+            storage.counter = storage.counter - 10;
         }
     }
 

@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react';
-import {resolve} from 'path';
-import {config} from 'dotenv';
-import {defineConfig} from 'vite';
+import { config } from 'dotenv';
+import { resolve } from 'path';
+import { defineConfig } from 'vite';
 
 config();
 

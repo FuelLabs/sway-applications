@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+dist/
+src/counter-contract-types/
+out
+CHANGELOG.md
