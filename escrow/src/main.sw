@@ -53,12 +53,26 @@ struct User {
 }
 
 storage {
-    asset_amount: u64,
-    buyer: User,
-    seller: User,
-    asset: ContractId,
+    asset_amount: u64 = 0,
+    buyer: User = User {
+        address: Address {
+            value: 0x0000000000000000000000000000000000000000000000000000000000000000,
+        },
+        approved: false,
+        deposited: false,
+    },
+    seller: User = User {
+        address: Address {
+            value: 0x0000000000000000000000000000000000000000000000000000000000000000,
+        },
+        approved: false,
+        deposited: false,
+    },
+    asset: ContractId = ContractId {
+        value: 0x0000000000000000000000000000000000000000000000000000000000000000,
+    },
     // state: State,
-    state: u64,
+    state: u64 = 0,
 }
 
 impl Escrow for Contract {

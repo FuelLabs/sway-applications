@@ -1,6 +1,6 @@
 contract;
 
-dep abi;
+dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
@@ -21,7 +21,7 @@ use std::{
     token::transfer,
 };
 
-use abi::Fundraiser;
+use contract_abi::Fundraiser;
 use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
 use errors::{CampaignError, CreationError, UserError};
 use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
@@ -29,37 +29,45 @@ use utils::validate_id;
 
 storage {
     /// Total number of unique assets used across all campaigns
-    asset_count: u64,
+    asset_count: u64 = 0,
 
     /// Direct look-up for asset data if the user wants to check via a known ID
     asset_info: StorageMap<ContractId,
-    AssetInfo>, /// O(1) look-up to allow searching via asset_count
+    AssetInfo> = StorageMap {
+    }, /// O(1) look-up to allow searching via asset_count
     /// Map(1...asset_count => asset)
     asset_index: StorageMap<u64,
-    ContractId>, /// The total number of unique campaigns that a user has created
+    ContractId> = StorageMap {
+    }, /// The total number of unique campaigns that a user has created
     /// This should only be incremented
     /// Cancelling / Claiming should not affect this number
     user_campaign_count: StorageMap<Identity,
-    u64>, /// Campaigns that have been created by a user
+    u64> = StorageMap {
+    }, /// Campaigns that have been created by a user
 
     /// Map(Identity => Map(1...user_campaign_count => Campaign)
     campaign_history: StorageMap<(Identity,
-    u64), Campaign>, /// Data describing the content of a campaign
+    u64), Campaign> = StorageMap {
+    }, /// Data describing the content of a campaign
     /// Map(Campaign ID => CampaignInfo)
     campaign_info: StorageMap<u64,
-    CampaignInfo>, /// The total number of unique campaigns that a user has pledged to
+    CampaignInfo> = StorageMap {
+    }, /// The total number of unique campaigns that a user has pledged to
     /// This should only be incremented.
     /// Unpledging should not affect this number
     pledge_count: StorageMap<Identity,
-    u64>, /// Record of how much a user has pledged to a specific campaign
+    u64> = StorageMap {
+    }, /// Record of how much a user has pledged to a specific campaign
     /// Locked after the deadline
     /// Map(Identity => Map(1...pledge_count => Pledge))
     pledge_history: StorageMap<(Identity,
-    u64), Pledge>, /// O(1) look-up to prevent iterating over pledge_history
+    u64), Pledge> = StorageMap {
+    }, /// O(1) look-up to prevent iterating over pledge_history
     /// Map(Identity => Map(Campaign ID => Pledge History Index))
     pledge_history_index: StorageMap<(Identity,
-    u64), u64>, /// The number of campaigns created by all users
-    total_campaigns: u64,
+    u64), u64> = StorageMap {
+    }, /// The number of campaigns created by all users
+    total_campaigns: u64 = 0,
 }
 
 impl Fundraiser for Contract {
