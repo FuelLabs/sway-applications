@@ -1,0 +1,9 @@
+dist
+.coverage_*
+coverage
+node_modules
+src/counter-contract-types/
+__generated__
+out
+CHANGELOG.md
+.chglog/CHANGELOG.tpl.md

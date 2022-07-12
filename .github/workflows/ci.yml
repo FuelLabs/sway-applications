@@ -86,3 +86,35 @@ jobs:
         run: |
           cd ${{ matrix.project }}
           forc test
+
+  build-tutorial:
+    needs: cancel-previous-runs
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        project: ["counter"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Init cache
+        uses: Swatinem/rust-cache@v1
+
+      - name: Check Sway formatting
+        run: forc fmt --path ${{ matrix.project }} --check
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.19
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Check JS formatting
+        run: |
+          cd ${{ matrix.project }}
+          npm run lint
+
+      - name: Build Sway
+        run: npm run build
