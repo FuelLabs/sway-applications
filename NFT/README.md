@@ -1,5 +1,8 @@
 <p align="center">
-    <img src="./.docs/nft-logo.png" height="120">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/nft-logo_white.png">
+        <img alt="light theme" src=".docs/nft-logo_black.png">
+    </picture>
 </p>
 
 ## Overview
