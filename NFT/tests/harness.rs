@@ -106,18 +106,16 @@ mod approved {
             let minter = Identity::Address(owner1.wallet.address());
             mint(1, &owner1.nft, &minter).await;
 
-            // Uncomment when https://github.com/FuelLabs/sway/issues/2238 is resolved
-            // assert_eq!(approved(&owner1.nft, 0).await, Option::None());
+            assert_eq!(approved(&owner1.nft, 0).await, Option::None());
         }
 
         #[tokio::test]
         async fn gets_approval_for_non_existing_token() {
-            let (deploy_wallet, _owner1, _owner2) = setup().await;
+            let (deploy_wallet, owner1, _owner2) = setup().await;
 
             constructor(false, &deploy_wallet.nft, &Option::None(), 1).await;
 
-            // Uncomment when https://github.com/FuelLabs/sway/issues/2238 is resolved
-            // assert_eq!(approved(&owner1.nft, 0).await, Option::None());
+            assert_eq!(approved(&owner1.nft, 0).await, Option::None());
         }
     }
 }
@@ -382,8 +380,7 @@ mod mint {
 
             assert_eq!(balance_of(&owner1.nft, &minter).await, 1);
             assert_eq!(owner_of(&owner1.nft, 0).await, Option::Some(minter.clone()));
-            // Uncomment when https://github.com/FuelLabs/sway/issues/2238 is resolved
-            // assert_eq!(approved(&owner1.nft, 0).await, Option::None());
+            assert_eq!(approved(&owner1.nft, 0).await, Option::None());
             assert_eq!(total_supply(&owner1.nft).await, 1);
             assert_eq!(max_supply(&owner1.nft).await, 1);
         }
@@ -404,8 +401,7 @@ mod mint {
 
             assert_eq!(balance_of(&owner1.nft, &minter).await, 1);
             assert_eq!(owner_of(&owner1.nft, 0).await, Option::Some(minter.clone()));
-            // Uncomment when https://github.com/FuelLabs/sway/issues/2238 is resolved
-            // assert_eq!(approved(&owner1.nft, 0).await, Option::None());
+            assert_eq!(approved(&owner1.nft, 0).await, Option::None());
             assert_eq!(total_supply(&owner1.nft).await, 1);
             assert_eq!(max_supply(&owner1.nft).await, 1);
         }
@@ -559,12 +555,11 @@ mod owner_of {
 
         #[tokio::test]
         async fn gets_owner_of_none() {
-            let (deploy_wallet, _owner1, _owner2) = setup().await;
+            let (deploy_wallet, owner1, _owner2) = setup().await;
 
             constructor(false, &deploy_wallet.nft, &Option::None(), 1).await;
 
-            // Uncomment when https://github.com/FuelLabs/sway/issues/2238 is resolved
-            // assert_eq!(owner_of(&owner1.nft, 0).await, Option::None());
+            assert_eq!(owner_of(&owner1.nft, 0).await, Option::None());
         }
     }
 }
