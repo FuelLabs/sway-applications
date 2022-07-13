@@ -3,7 +3,6 @@ contract;
 dep data_structures;
 dep errors;
 dep interface;
-dep utils;
 
 use data_structures::TokenMetaData;
 use errors::{AccessError, ApprovalError, InitError, InputError};
@@ -17,8 +16,6 @@ use std::{
     result::Result,
     storage::StorageMap,
 };
-
-use utils::token_metadata;
 
 storage {
     /// Determines if only the contract's `admin` is allowed to call the mint function.
