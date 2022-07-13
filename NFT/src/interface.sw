@@ -12,11 +12,11 @@ pub struct AdminEvent {
 }
 
 pub struct ApprovalEvent {
-    /// The user that has gotten approval to tranfer the specified token.
+    /// The user that has gotten approval to transfer the specified token.
     /// If an approval was revoked, the `Option` will be `None`.
     approved: Option<Identity>,
 
-    /// The user that has given or revoked approval to tranfer his/her tokens.
+    /// The user that has given or revoked approval to transfer his/her tokens.
     owner: Identity,
 
     /// The unique identifier of the token which the approved may transfer.
