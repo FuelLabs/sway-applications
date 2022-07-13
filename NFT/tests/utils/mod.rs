@@ -14,20 +14,28 @@ pub mod test_helpers {
 
     pub async fn setup() -> (Metadata, Metadata, Metadata) {
         // Setup 3 test wallets
-        let mut wallets = launch_provider_and_get_wallets(WalletsConfig {
-            num_wallets: 3,
-            coins_per_wallet: 1,
-            coin_amount: 1000000,
-        })
-        .await;
+        let mut wallets = launch_custom_provider_and_get_wallets(
+            WalletsConfig {
+                num_wallets: 3,
+                coins_per_wallet: 1,
+                coin_amount: 1000000,
+            },
+            None
+        ).await;
 
         // Get the wallets from that provider
         let wallet1 = wallets.pop().unwrap();
         let wallet2 = wallets.pop().unwrap();
         let wallet3 = wallets.pop().unwrap();
 
-        let nft_id = Contract::deploy("./out/debug/NFT.bin", &wallet1, TxParameters::default())
-            .await
+        let nft_id = Contract::deploy(
+                "./out/debug/NFT.bin", 
+                &wallet1, 
+                TxParameters::default(),
+                StorageConfiguration::with_storage_path(Some(
+                    "./out/debug/NFT-storage_slots.json".to_string(),
+                ))
+            ).await
             .unwrap();
 
         let deploy_wallet = Metadata {
