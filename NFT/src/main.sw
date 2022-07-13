@@ -60,11 +60,12 @@ storage {
     owners: StorageMap<u64,
     Option<Identity>> = StorageMap {
     }, /// The total number of tokens that ever have been minted.
-    /// This will only be incremented.
-    tokens_ever_minted: u64 = 0,
+    /// This is used to assign token identifiers when minting. This will only be incremented.
+    tokens_minted: u64 = 0,
 
     /// The number of tokens currently in existence.
-    /// This is incremented on mint and decreminted on burn.
+    /// This is incremented on mint and decremented on burn. This should not be used to assign
+    /// unqiue identifiers due to the decementation of the value on burning of tokens.
     total_supply: u64 = 0,
 }
 
@@ -133,8 +134,8 @@ impl NFT for Contract {
     }
 
     #[storage(read, write)]fn mint(amount: u64, to: Identity) {
-        let tokens_ever_minted = storage.tokens_ever_minted;
-        let total_mint = tokens_ever_minted + amount;
+        let tokens_minted = storage.tokens_minted;
+        let total_mint = tokens_minted + amount;
         // The current number of tokens minted plus the amount to be minted cannot be
         // greater than the total supply
         require(storage.max_supply >= total_mint, InputError::NotEnoughTokensToMint);
@@ -144,7 +145,7 @@ impl NFT for Contract {
         require(!storage.access_control || (admin.is_some() && msg_sender().unwrap() == admin.unwrap()), AccessError::SenderNotAdmin);
 
         // Mint as many tokens as the sender has asked for
-        let mut index = tokens_ever_minted;
+        let mut index = tokens_minted;
         while index < total_mint {
             // Create the TokenMetaData for this new token
             storage.meta_data.insert(index, ~TokenMetaData::new());
@@ -153,16 +154,16 @@ impl NFT for Contract {
         }
 
         storage.balances.insert(to, storage.balances.get(to) + amount);
-        storage.tokens_ever_minted = total_mint;
+        storage.tokens_minted = total_mint;
         storage.total_supply = storage.total_supply + amount;
 
         log(MintEvent {
-            owner: to, token_id_start: tokens_ever_minted, total_tokens: amount
+            owner: to, token_id_start: tokens_minted, total_tokens: amount
         });
     }
 
     #[storage(read)]fn meta_data(token_id: u64) -> TokenMetaData {
-        require(token_id <= storage.tokens_ever_minted, InputError::TokenDoesNotExist);
+        require(token_id <= storage.tokens_minted, InputError::TokenDoesNotExist);
         storage.meta_data.get(token_id)
     }
 
