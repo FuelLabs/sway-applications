@@ -62,7 +62,9 @@ impl Escrow for Contract {
 
         let arbiter = storage.arbiter_proposal.get(identifier);
 
-        require(arbiter.is_some(), StateError::ArbiterHasNotBeenProposed);
+        // TODO: incomplete compiler defaults the Option<Arbiter> to not be None therefore fee check
+        // https://github.com/FuelLabs/sway/issues/2326
+        require(arbiter.is_some() && 0 < arbiter.unwrap().fee_amount, StateError::ArbiterHasNotBeenProposed);
 
         // Upon acceptance we must transfer back the previous fee the seller deposited
         transfer(escrow.arbiter.fee_amount, escrow.arbiter.asset, escrow.seller.address);

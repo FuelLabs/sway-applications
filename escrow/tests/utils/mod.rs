@@ -113,9 +113,11 @@ pub mod abi_calls {
         contract.create_escrow(arbiter.clone(), assets, buyer, deadline).tx_params(tx_params).call_params(call_params).call().await.unwrap()
     }
 
-    pub async fn deposit(contract: &Escrow, identifier: u64) -> CallResponse<()> {
-        // TxParams, CallParams refactor into here?
-        contract.deposit(identifier).call().await.unwrap()
+    pub async fn deposit(amount: u64, asset: &ContractId, contract: &Escrow, identifier: u64) -> CallResponse<()> {
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(100_000));
+
+        contract.deposit(identifier).tx_params(tx_params).call_params(call_params).call().await.unwrap()
     }
 
     pub async fn dispute(contract: &Escrow, identifier: u64) -> CallResponse<()> {
@@ -123,7 +125,10 @@ pub mod abi_calls {
     }
 
     pub async fn propose_arbiter(contract: &Escrow, arbiter: Arbiter, identifier: u64) -> CallResponse<()> {
-        contract.propose_arbiter(arbiter, identifier).append_variable_outputs(1).call().await.unwrap()
+        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let call_params = CallParameters::new(Some(arbiter.fee_amount), Some(AssetId::from(*arbiter.asset)), Some(100_000));
+
+        contract.propose_arbiter(arbiter, identifier).tx_params(tx_params).call_params(call_params).append_variable_outputs(1).call().await.unwrap()
     }
 
     pub async fn resolve_dispute(contract: &Escrow, identifier: u64, payment_amount: u64, user: Identity) -> CallResponse<()> {
@@ -139,7 +144,7 @@ pub mod abi_calls {
     }
 
     pub async fn transfer_to_seller(contract: &Escrow, identifier: u64) -> CallResponse<()> {
-        contract.transfer_to_seller(identifier).append_variable_outputs(1).call().await.unwrap()
+        contract.transfer_to_seller(identifier).append_variable_outputs(3).call().await.unwrap()
     }
 
 }
