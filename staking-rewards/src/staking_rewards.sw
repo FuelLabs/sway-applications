@@ -33,7 +33,7 @@ storage {
     period_finish: u64 = 0,
     reward_rate: u64 = 0,
     rewards_duration: u64 = 0,
-    last_update_time: u64 = 1,
+    last_update_time: u64 = 0,
     reward_per_token_stored: u64 = 0,
     user_reward_per_token_paid: StorageMap<Identity,
     u64> = StorageMap {
@@ -173,6 +173,7 @@ impl StakingRewards for Contract {
 }
 
 #[storage(read, write)]fn _update_reward(account: Identity, test_timestamp: u64) {
+    storage.last_update_time = _last_time_reward_applicable(test_timestamp);
     storage.rewards.insert(account, _earned(account, test_timestamp));
     storage.user_reward_per_token_paid.insert(account, storage.reward_per_token_stored);
 }
