@@ -30,7 +30,7 @@ storage {
     staking_token: ContractId = ContractId {
         value: 0x0000000000000000000000000000000000000000000000000000000000000000,
     },
-    period_finish: u64 = 1000,
+    period_finish: u64 = 1000, // Should be start timestamp + rewards_duration
     reward_rate: u64 = 2,
     rewards_duration: u64 = 1000,
     last_update_time: u64 = 0,
@@ -173,6 +173,7 @@ impl StakingRewards for Contract {
 }
 
 #[storage(read, write)]fn _update_reward(account: Identity, test_timestamp: u64) {
+    storage.reward_per_token_stored = _reward_per_token(test_timestamp);
     storage.last_update_time = _last_time_reward_applicable(test_timestamp);
     storage.rewards.insert(account, _earned(account, test_timestamp));
     storage.user_reward_per_token_paid.insert(account, storage.reward_per_token_stored);
