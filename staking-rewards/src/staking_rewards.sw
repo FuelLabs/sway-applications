@@ -30,9 +30,9 @@ storage {
     staking_token: ContractId = ContractId {
         value: 0x0000000000000000000000000000000000000000000000000000000000000000,
     },
-    period_finish: u64 = 0,
-    reward_rate: u64 = 0,
-    rewards_duration: u64 = 0,
+    period_finish: u64 = 1000,
+    reward_rate: u64 = 2,
+    rewards_duration: u64 = 1000,
     last_update_time: u64 = 0,
     reward_per_token_stored: u64 = 0,
     user_reward_per_token_paid: StorageMap<Identity,
@@ -140,7 +140,7 @@ impl StakingRewards for Contract {
         return reward_per_token;
     }
 
-    reward_per_token + _last_time_reward_applicable(test_timestamp) - storage.last_update_time * storage.reward_rate * 1_000_000_000 / storage.total_supply
+    reward_per_token + ((_last_time_reward_applicable(test_timestamp) - storage.last_update_time) * storage.reward_rate * 1_000_000_000 / storage.total_supply)
 }
 
 #[storage(read, write)]fn _get_reward(test_timestamp: u64) {
