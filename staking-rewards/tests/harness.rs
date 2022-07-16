@@ -49,7 +49,7 @@ async fn setup() -> (StakingRewards, ContractId, LocalWallet) {
 // Timestamps of each action must be specified. Contract is deployed at t=0
 
 #[tokio::test]
-async fn can_stake() {
+async fn stake_tokens() {
     let (staking_contract, _id, wallet) = setup().await;
 
     let amount_to_stake = 10 * ONE;
@@ -78,7 +78,7 @@ async fn can_stake() {
 }
 
 #[tokio::test]
-async fn can_earn() {
+async fn calculate_earned_tokens() {
     let (staking_contract, _id, wallet) = setup().await;
 
     let amount_to_stake = 10 * ONE;
@@ -115,7 +115,7 @@ async fn can_earn() {
 }
 
 #[tokio::test]
-async fn can_claim_reward() {
+async fn claim_reward() {
     let (staking_contract, _id, wallet) = setup().await;
 
     let amount_to_stake = 10 * ONE;
