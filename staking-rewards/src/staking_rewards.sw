@@ -23,6 +23,10 @@ use staking_rewards_abi::StakingRewards;
 use staking_rewards_errors::*;
 use staking_rewards_events::*;
 
+// Precision for staking and rewards token
+//const PRECISION: u64 = 9;
+const ONE: u64 = 1_000_000_000; // Can this be constant-evaluated from `PRECISION` ?
+
 storage {
     rewards_token: ContractId = ContractId {
         value: 0x0000000000000000000000000000000000000000000000000000000000000000,
@@ -31,7 +35,7 @@ storage {
         value: 0x0000000000000000000000000000000000000000000000000000000000000000,
     },
     period_finish: u64 = 1000, // Should be start timestamp + rewards_duration
-    reward_rate: u64 = 2,
+    reward_rate: u64 = 42,
     rewards_duration: u64 = 1000,
     last_update_time: u64 = 0,
     reward_per_token_stored: u64 = 0,
@@ -116,7 +120,7 @@ impl StakingRewards for Contract {
 }
 
 #[storage(read)]fn _earned(account: Identity, test_timestamp: u64) -> u64 {
-    storage.balances.get(account) * (_reward_per_token(test_timestamp) - storage.user_reward_per_token_paid.get(account)) / 1_000_000_000 + storage.rewards.get(account)
+    storage.balances.get(account) * (_reward_per_token(test_timestamp) - storage.user_reward_per_token_paid.get(account)) / ONE + storage.rewards.get(account)
 }
 
 #[storage(read)]fn _last_time_reward_applicable(test_timestamp: u64) -> u64 {
@@ -140,7 +144,7 @@ impl StakingRewards for Contract {
         return reward_per_token;
     }
 
-    reward_per_token + ((_last_time_reward_applicable(test_timestamp) - storage.last_update_time) * storage.reward_rate * 1_000_000_000 / storage.total_supply)
+    reward_per_token + ((_last_time_reward_applicable(test_timestamp) - storage.last_update_time) * storage.reward_rate * ONE / storage.total_supply)
 }
 
 #[storage(read, write)]fn _get_reward(test_timestamp: u64) {

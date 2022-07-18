@@ -3,7 +3,8 @@ use fuels::{prelude::*, tx::ContractId};
 // Load abi from json
 abigen!(StakingRewards, "out/debug/staking-rewards-abi.json");
 
-pub const ONE: u64 = 1_000_000_000;
+pub const PRECISION: u32 = 9; // Should match precision in staking contract
+pub const ONE: u64 = 10_i32.pow(PRECISION) as u64;
 pub const BASE_ASSET: AssetId = AssetId::new([0u8; 32]);
 
 pub async fn get_balance(wallet: &LocalWallet, asset: AssetId) -> u64 {
@@ -21,7 +22,7 @@ pub async fn setup(
 ) -> (StakingRewards, ContractId, LocalWallet) {
     // Launch a local network and deploy the contract
 
-    let config = WalletsConfig::new_single(Some(1), Some(1_000_000 * ONE));
+    let config = WalletsConfig::new_single(Some(1), Some(1_000_000_000 * ONE));
     let wallet = &launch_custom_provider_and_get_wallets(config, None).await[0];
 
     let id = Contract::deploy(
