@@ -11,7 +11,10 @@ pub async fn get_balance(provider: &Provider, address: Address, asset: AssetId) 
     balance
 }
 
-pub async fn setup() -> (StakingRewards, ContractId, LocalWallet) {
+pub async fn setup(
+    initial_stake: u64,
+    initial_timestamp: u64,
+) -> (StakingRewards, ContractId, LocalWallet) {
     // Launch a local network and deploy the contract
 
     let config = WalletsConfig::new_single(Some(1), Some(10000 * ONE));
@@ -28,7 +31,7 @@ pub async fn setup() -> (StakingRewards, ContractId, LocalWallet) {
     .await
     .unwrap();
 
-    let instance = StakingRewards::new(id.to_string(), wallet.clone());
+    let staking_contract = StakingRewards::new(id.to_string(), wallet.clone());
 
     // Seed the contract with some reward tokens
     let seed_amount = 1000 * ONE;
@@ -42,15 +45,14 @@ pub async fn setup() -> (StakingRewards, ContractId, LocalWallet) {
         .await
         .unwrap();
 
-    (instance, id, wallet.clone())
-}
-
-pub async fn stake(staking_contract: &StakingRewards, amount_to_stake: u64, timestamp: u64) {
-    let staking_call_params = CallParameters::new(Some(amount_to_stake), None, None);
+    // Stake some tokens from the wallet
+    let staking_call_params = CallParameters::new(Some(initial_stake), None, None);
     let _receipts = staking_contract
-        .stake(timestamp)
+        .stake(initial_timestamp)
         .call_params(staking_call_params)
         .call()
         .await
         .unwrap();
+
+    (staking_contract, id, wallet.clone())
 }
