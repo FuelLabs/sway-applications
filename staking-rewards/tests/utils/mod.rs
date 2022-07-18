@@ -6,8 +6,12 @@ abigen!(StakingRewards, "out/debug/staking-rewards-abi.json");
 pub const ONE: u64 = 1_000_000_000;
 pub const BASE_ASSET: AssetId = AssetId::new([0u8; 32]);
 
-pub async fn get_balance(provider: &Provider, address: Address, asset: AssetId) -> u64 {
-    let balance = provider.get_asset_balance(&address, asset).await.unwrap();
+pub async fn get_balance(wallet: &LocalWallet, asset: AssetId) -> u64 {
+    let provider = wallet.get_provider().unwrap();
+    let balance = provider
+        .get_asset_balance(&wallet.address(), asset)
+        .await
+        .unwrap();
     balance
 }
 
@@ -17,7 +21,7 @@ pub async fn setup(
 ) -> (StakingRewards, ContractId, LocalWallet) {
     // Launch a local network and deploy the contract
 
-    let config = WalletsConfig::new_single(Some(1), Some(10000 * ONE));
+    let config = WalletsConfig::new_single(Some(1), Some(1_000_000 * ONE));
     let wallet = &launch_custom_provider_and_get_wallets(config, None).await[0];
 
     let id = Contract::deploy(
@@ -34,7 +38,7 @@ pub async fn setup(
     let staking_contract = StakingRewards::new(id.to_string(), wallet.clone());
 
     // Seed the contract with some reward tokens
-    let seed_amount = 1000 * ONE;
+    let seed_amount = 100_000 * ONE;
     let _receipt = wallet
         .transfer(
             &Address::new(*id),
