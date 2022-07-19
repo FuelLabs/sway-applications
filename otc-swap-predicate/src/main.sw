@@ -5,13 +5,9 @@ use std::{
     constants::BASE_ASSET_ID,
     contract_id::ContractId,
     option::Option,
-    tx::{
-        b256_from_pointer_offset,
-        tx_input_owner,
-        tx_inputs_count,
-        tx_output_amount,
-        tx_output_pointer
-    }
+tx:: {
+    b256_from_pointer_offset, tx_input_owner, tx_inputs_count, tx_output_amount, tx_output_pointer
+}
 };
 
 /// Order / OTC swap Predicate
@@ -41,8 +37,7 @@ fn main(output_index: u8) -> bool {
     // Note that the predicate is necessarily one of the inputs, so the other must be the coin input.
     if (tx_inputs_count() == 2) {
         let owner = match tx_input_owner(0) {
-            Option::Some(owner) => owner,
-            _ => tx_input_owner(1).unwrap(), 
+            Option::Some(owner) => owner, _ => tx_input_owner(1).unwrap(), 
         };
 
         if (owner == maker) {
