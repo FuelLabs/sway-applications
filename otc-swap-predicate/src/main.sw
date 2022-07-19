@@ -8,9 +8,14 @@ use std::{
     option::Option,
     result::Result,
     revert::revert,
-tx:: {
-    b256_from_pointer_offset, tx_input_owner, tx_inputs_count, tx_output_amount, tx_output_pointer
-}
+    tx::{
+        INPUT_COIN,
+        b256_from_pointer_offset,
+        tx_input_owner,
+        tx_input_type,
+        tx_inputs_count,
+        tx_output_amount,
+    tx_output_pointer}
 };
 
 /// Order / OTC swap Predicate
@@ -37,8 +42,8 @@ fn main(output_index: u8) -> bool {
     let ask_token = BASE_ASSET_ID;
 
     // First, check if the transaction contains a single input coin from the maker, to cancel their own order
-    // Note that this predicate is an input, so the other must be the coin input.
-    if (tx_inputs_count() == 2 && (tx_input_owner(0).unwrap() == maker || tx_input_owner(1).unwrap() == maker)) {
+    // Note that this predicate is an input, so the other must be the coin input. The signed input must be the 2nd one
+    if (tx_inputs_count() == 2 && tx_input_owner(1).unwrap() == maker) {
         true
     }
 
