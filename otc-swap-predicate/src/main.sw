@@ -41,31 +41,35 @@ fn main(output_index: u8) -> bool {
     let ask_amount = 42;
     let ask_token = BASE_ASSET_ID;
 
-    // First, check if the transaction contains a single input coin from the maker, to cancel their own order
-    // Note that this predicate is an input, so the other must be the coin input. The signed input must be the 2nd one
-    if (tx_inputs_count() == 2 && tx_input_owner(1).unwrap() == maker) {
-        true
-    }
+    // Check if the transaction contains a single input coin from the maker, to cancel their own order
+    // Note that the predicate is necessarily one of the inputs, so the other must be the coin input.
+    if (tx_inputs_count() == 2) {
+        let owner = match tx_input_owner(0) {
+            Option::Some(owner) => owner, _ => tx_input_owner(1).unwrap(), 
+        };
 
-    else {
-        // Otherwise, evaluate the terms of the order:
+        if (owner == maker) {
+            return true;
+        };
+    };
 
-        let amount = tx_output_amount(output_index);
+    // Otherwise, evaluate the terms of the order:
 
-        // Get the token contract ID and receiver from the output at the given index
-        let output_pointer = tx_output_pointer(output_index);
+    let amount = tx_output_amount(output_index);
 
-        // `Output::Coin` is serialized as :
-        //    `type`     (8 bytes)
-        //    `to`       (32 bytes)
-        //    `amount`   (8 bytes)
-        //    `asset_id` (32 bytes)
-        // Offsets from the output pointer to each property are set accordingly:
+    // Get the token contract ID and receiver from the output at the given index
+    let output_pointer = tx_output_pointer(output_index);
 
-        let to = ~Address::from(b256_from_pointer_offset(output_pointer, 8));
-        let asset_id = ~ContractId::from(b256_from_pointer_offset(output_pointer, 48));
+    // `Output::Coin` is serialized as :
+    //    `type`     (8 bytes)
+    //    `to`       (32 bytes)
+    //    `amount`   (8 bytes)
+    //    `asset_id` (32 bytes)
+    // Offsets from the output pointer to each property are set accordingly:
 
-        // Evaluate the predicate
-        (to == maker) && (amount == ask_amount) && (asset_id == ask_token)
-    }
+    let to = ~Address::from(b256_from_pointer_offset(output_pointer, 8));
+    let asset_id = ~ContractId::from(b256_from_pointer_offset(output_pointer, 48));
+
+    // Evaluate the predicate
+    (to == maker) && (amount == ask_amount) && (asset_id == ask_token)
 }
