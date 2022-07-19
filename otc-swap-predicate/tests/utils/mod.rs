@@ -11,7 +11,7 @@ async fn get_balance(provider: &Provider, address: Address, asset: AssetId) -> u
 }
 
 /// Test function to be parameterized by test cases
-pub async fn test_predicate_with_parameters(
+pub async fn test_predicate_spend_with_parameters(
     ask_amount: u64,
     ask_token: AssetId,
     receiver_address: Address,
@@ -77,7 +77,7 @@ pub async fn test_predicate_with_parameters(
         asset_id: base_asset,
         maturity: 0,
         predicate: predicate_bytecode,
-        predicate_data: vec![1u8, 0u8], // Predicate data is the index of the input and output that pay the receiver
+        predicate_data: vec![0u8], // Predicate data is the index of the output that pays the receiver
     };
 
     // Coin belonging to the wallet taking the order

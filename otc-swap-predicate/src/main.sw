@@ -8,14 +8,16 @@ use std::{
     option::Option,
     result::Result,
     revert::revert,
-    tx::{b256_from_pointer_offset, tx_input_owner, tx_output_amount, tx_output_pointer}
+tx:: {
+    b256_from_pointer_offset, tx_input_owner, tx_inputs_count, tx_output_amount, tx_output_pointer
+}
 };
 
 /// Order / OTC swap Predicate
 ///
 /// This predicate serves as an "order" that anyone can fill
 /// The coin sent to the predicate root can be unlocked by any transaction which has an output which meets the conditions of the order
-/// The order maker can "cancel" the order by spending the predicate's coins in any transaction containing an input they have signed
+/// The order maker can "cancel" the order by spending the predicate's coins in a transaction containing a single input they have signed
 ///
 /// Limitations:
 ///    - An order can not be partially filled - the taker must pay the entire ask amount
@@ -25,20 +27,18 @@ use std::{
 ///
 /// # Arguments
 ///
-/// - `input_index` - The index of the Coin input signed by the order maker, if the order is to be cancelled.
 /// - `output_index` - The index of the Coin output which pays the order maker.
 ///
-fn main(input_index: u8, output_index: u8) -> bool {
+fn main(output_index: u8) -> bool {
     // Order conditions: This must be hardcoded here.
     // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `maker`
     let maker = ~Address::from(0x0303030303030303030303030303030303030303030303030303030303030303);
     let ask_amount = 42;
     let ask_token = BASE_ASSET_ID;
 
-    // First, check if the transaction contains an input coin from the maker, to cancel their own order:
-    let taker = tx_input_owner(input_index).unwrap();
-
-    if (taker == maker) {
+    // First, check if the transaction contains a single input coin from the maker, to cancel their own order
+    // Note that this predicate is an input, so the other must be the coin input.
+    if (tx_inputs_count() == 2 && (tx_input_owner(0).unwrap() == maker || tx_input_owner(1).unwrap() == maker)) {
         true
     }
 
