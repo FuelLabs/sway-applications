@@ -4,14 +4,14 @@
 
 mod utils;
 
-use fuels::{signers::Signer, tx::ContractId};
+use fuels::{signers::Signer, tx::{AssetId, ContractId}};
 
 use utils::{
     abi_calls::{
         accept_arbiter, create_escrow, deposit, dispute, propose_arbiter, resolve_dispute, 
         return_deposit, take_payment, transfer_to_seller
     },
-    test_helpers::{create_arbiter, create_asset, mint, setup},
+    test_helpers::{create_arbiter, create_asset, create_asset_with_salt, mint, setup},
     Identity,
 };
 
@@ -280,12 +280,81 @@ mod deposit {
         use super::*;
 
         #[tokio::test]
-        #[ignore]
-        async fn deposits() {}
+        async fn deposits() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount).await;
+            mint(&defaults.asset, buyer.wallet.address(), defaults.asset_amount).await;
+
+            assert_eq!(
+                defaults.asset_amount,
+                buyer
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), defaults.deadline).await;
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 0).await;
+
+            assert_eq!(
+                0,
+                buyer
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+        }
 
         #[tokio::test]
-        #[ignore]
-        async fn deposits_to_two_escrows() {}
+        async fn deposits_to_two_escrows() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount * 2).await;
+            mint(&defaults.asset, buyer.wallet.address(), defaults.asset_amount * 2).await;
+
+            assert_eq!(
+                defaults.asset_amount * 2,
+                buyer
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), defaults.deadline).await;
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), defaults.deadline).await;
+
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 0).await;
+
+            assert_eq!(
+                defaults.asset_amount,
+                buyer
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 1).await;
+
+            assert_eq!(
+                0,
+                buyer
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+        }
 
     }
 
@@ -294,34 +363,98 @@ mod deposit {
         use super::*;
 
         #[tokio::test]
-        #[ignore]
         #[should_panic]
-        async fn when_deadline_is_reached() {}
+        async fn when_deadline_is_reached() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount).await;
+            mint(&defaults.asset, buyer.wallet.address(), defaults.asset_amount).await;
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), 5).await;
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 0).await;
+        }
 
         #[tokio::test]
-        #[ignore]
         #[should_panic]
-        async fn when_escrow_is_not_pending() {}
+        async fn when_escrow_is_not_pending() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount).await;
+            mint(&defaults.asset, buyer.wallet.address(), defaults.asset_amount * 2).await;
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), defaults.deadline).await;
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 0).await;
+            transfer_to_seller(&buyer.contract, 0).await;
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 0).await;
+        }
 
         #[tokio::test]
-        #[ignore]
         #[should_panic]
-        async fn when_caller_is_not_buyer() {}
+        async fn when_caller_is_not_buyer() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount * 2).await;
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), defaults.deadline).await;
+            deposit(defaults.asset_amount, &defaults.asset_id, &seller.contract, 0).await;
+        }
 
         #[tokio::test]
-        #[ignore]
         #[should_panic]
-        async fn when_depositing_more_than_once() {}
+        async fn when_depositing_more_than_once() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount).await;
+            mint(&defaults.asset, buyer.wallet.address(), defaults.asset_amount * 2).await;
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), defaults.deadline).await;
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 0).await;
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 0).await;
+        }
 
         #[tokio::test]
-        #[ignore]
         #[should_panic]
-        async fn when_incorrect_asset_amount_is_sent() {}
+        async fn when_incorrect_asset_amount_is_sent() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount).await;
+            mint(&defaults.asset, buyer.wallet.address(), defaults.asset_amount * 2).await;
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), defaults.deadline).await;
+            deposit(defaults.asset_amount-1, &defaults.asset_id, &buyer.contract, 0).await;
+        }
 
         #[tokio::test]
-        #[ignore]
         #[should_panic]
-        async fn when_incorrect_asset_is_sent() {}
+        async fn when_incorrect_asset_is_sent() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            let (id, salted_asset) = create_asset_with_salt([1u8; 32], buyer.wallet.clone()).await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount).await;
+            mint(&salted_asset, buyer.wallet.address(), defaults.asset_amount * 2).await;
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), defaults.deadline).await;
+            deposit(defaults.asset_amount, &ContractId::from(*id), &buyer.contract, 0).await;
+        }
         
     }
 

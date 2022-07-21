@@ -96,6 +96,19 @@ pub mod test_helpers {
         (arbiter, buyer, seller, defaults)
     }
 
+    pub async fn create_asset_with_salt(salt: [u8; 32], wallet: LocalWallet) -> (ContractId, MyAsset) {
+        let asset_id = Contract::deploy_with_salt(
+            "./tests/artifacts/asset/out/debug/asset.bin",
+            &wallet,
+            TxParameters::default(),
+            Salt::from(salt),
+        )
+        .await
+        .unwrap();
+
+        (asset_id, MyAsset::new(asset_id.to_string(), wallet.clone()))
+    }
+
 }
 
 pub mod abi_calls {
