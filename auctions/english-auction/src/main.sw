@@ -35,13 +35,13 @@ storage {
     /// Stores the auction information based on auction ID
     /// Map(auction_id => auction)
     auctions: StorageMap<u64,
-    Option<Auction>>, // TODO: Move deposits into the Auction struct when StorageMaps are
+    Option<Auction>> = StorageMap { }, // TODO: Move deposits into the Auction struct when StorageMaps are
     //       supported inside structs
     ///
     deposits: StorageMap<(Identity,
-    u64), Option<Asset>>, /// The total number of auctions that have been created
+    u64), Option<Asset>> = StorageMap { }, /// The total number of auctions that have been created
     /// This should only be incremented
-    total_auctions: u64,
+    total_auctions: u64 = 0,
 }
 
 impl EnglishAuction for Contract {
