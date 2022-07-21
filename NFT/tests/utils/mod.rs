@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*};
+use fuels::{contract::contract::CallResponse, prelude::*, tx::ContractId};
 
 // Load abi from json
 abigen!(Nft, "out/debug/NFT-abi.json");
@@ -39,17 +39,17 @@ pub mod test_helpers {
             .unwrap();
 
         let deploy_wallet = Metadata {
-            nft: Nft::new(nft_id.to_string(), wallet1.clone()),
+            nft: NftBuilder::new(nft_id.to_string(), wallet1.clone()).build(),
             wallet: wallet1.clone(),
         };
 
         let owner1 = Metadata {
-            nft: Nft::new(nft_id.to_string(), wallet2.clone()),
+            nft: NftBuilder::new(nft_id.to_string(), wallet2.clone()).build(),
             wallet: wallet2.clone(),
         };
 
         let owner2 = Metadata {
-            nft: Nft::new(nft_id.to_string(), wallet3.clone()),
+            nft: NftBuilder::new(nft_id.to_string(), wallet3.clone()).build(),
             wallet: wallet3.clone(),
         };
 
