@@ -1191,11 +1191,120 @@ mod take_payment {
 
         #[tokio::test]
         #[ignore]
-        async fn takes_payment() {}
+        async fn takes_payment() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount).await;
+            mint(&defaults.asset, buyer.wallet.address(), defaults.asset_amount).await;
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), 6).await;
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 0).await;
+
+            // TODO: need to shift block by one, waiting on SDK then uncomment below
+
+            assert_eq!(
+                0,
+                buyer
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+
+            assert_eq!(
+                0,
+                seller
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+
+            // take_payment(&seller.contract, 0).await;
+
+            // assert_eq!(
+            //     defaults.asset_amount,
+            //     seller
+            //         .wallet
+            //         .get_asset_balance(&AssetId::from(*defaults.asset_id))
+            //         .await
+            //         .unwrap()
+            // );
+
+            assert_eq!(
+                0,
+                buyer
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+        }
+
+        #[tokio::test]
+        async fn takes_payment_after_proposing_arbiter() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount * 2).await;
+            mint(&defaults.asset, buyer.wallet.address(), defaults.asset_amount).await;
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), 6).await;
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 0).await;
+
+            // This should really be above `deposit` but given SDK limitations for block manipulation
+            // we put this here
+            propose_arbiter(&seller.contract, arbiter_obj, 0).await;
+
+            assert_eq!(
+                0,
+                buyer
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+
+            assert_eq!(
+                0,
+                seller
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+
+            take_payment(&seller.contract, 0).await;
+
+            assert_eq!(
+                defaults.asset_amount * 3,
+                seller
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+
+            assert_eq!(
+                0,
+                buyer
+                    .wallet
+                    .get_asset_balance(&AssetId::from(*defaults.asset_id))
+                    .await
+                    .unwrap()
+            );
+        }
 
         #[tokio::test]
         #[ignore]
-        async fn takes_payment_in_two_escrows() {}
+        async fn takes_payment_in_two_escrows() {
+            // TODO: skipping similar to takes_payment
+        }
 
     }
 
@@ -1204,29 +1313,60 @@ mod take_payment {
         use super::*;
 
         #[tokio::test]
-        #[ignore]
         #[should_panic]
-        async fn when_escrow_is_not_pending() {}
+        async fn when_escrow_is_not_pending() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount).await;
+            mint(&defaults.asset, buyer.wallet.address(), defaults.asset_amount).await;
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), defaults.deadline).await;
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 0).await;
+            return_deposit(&seller.contract, 0).await;
+
+            take_payment(&seller.contract, 0).await;
+        }
+
+        #[tokio::test]
+        #[should_panic]
+        async fn when_deadline_is_not_in_the_past() {
+            let (arbiter, buyer, seller, defaults) = setup().await;
+
+            mint(&defaults.asset, seller.wallet.address(), defaults.asset_amount).await;
+            mint(&defaults.asset, buyer.wallet.address(), defaults.asset_amount).await;
+
+            let arbiter_obj = create_arbiter(arbiter.wallet.address(), defaults.asset_id, defaults.asset_amount).await;
+            let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+            create_escrow(&seller.contract, defaults.asset_amount, &arbiter_obj, &defaults.asset_id, vec![asset.clone(), asset.clone()], Identity::Address(buyer.wallet.address()), defaults.deadline).await;
+            deposit(defaults.asset_amount, &defaults.asset_id, &buyer.contract, 0).await;
+
+            take_payment(&seller.contract, 0).await;
+        }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
-        async fn when_deadline_is_not_in_the_past() {}
+        async fn when_disputed() {
+            // TODO: skipping similar to takes_payment
+        }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
-        async fn when_disputed() {}
+        async fn when_caller_is_not_seller() {
+            // TODO: skipping similar to takes_payment
+        }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
-        async fn when_caller_is_not_seller() {}
-
-        #[tokio::test]
-        #[ignore]
-        #[should_panic]
-        async fn when_buyer_has_not_deposited() {}
+        async fn when_buyer_has_not_deposited() {
+            // TODO: skipping similar to takes_payment
+        }
         
     }
 
@@ -1272,941 +1412,3 @@ mod transfer_to_seller {
     }
 
 }
-
-// async fn init(
-//     deployer: &Metadata,
-//     user1: &LocalWallet,
-//     user2: &LocalWallet,
-//     asset_id: ContractId,#[tokio::test]
-//     deployer
-//         .escrow
-//         .constructor(user1.address(), user2.address(), asset_id, asset_amount)
-//         .call()
-//         .await
-//         .unwrap()#[tokio::test]
-//         .unwrap()
-//         .mint_and_send_to_address(asset_amount, user.address())
-//         .append_variable_outputs(1)
-//         .call()
-//         .await
-//         .unwrap()
-//         .value;
-// }
-
-// async fn balance(escrow: &Escrow) -> (MetaAsset, MetaAsset) {
-//     escrow.get_balance().call().await.unwrap().value
-// }
-
-// async fn user_data(escrow: &Escrow, user: &LocalWallet) -> (bool, bool) {
-//     escrow
-//         .get_user_data(user.address())
-//         .call()
-//         .await
-//         .unwrap()
-//         .value
-// }
-
-// mod constructor {
-
-//     use super::*;
-
-//     #[tokio::test]
-//     async fn initializes() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let users = [user1.wallet.address(), user1.wallet.address()];
-//         let assets = [
-//             MetaAsset {
-//                 id: [1u8; 32],
-//                 amount: 100,
-//             },
-//             MetaAsset {
-//                 id: [2u8; 32],
-//                 amount: 200,
-//             },
-//         ];
-
-//         assert!(
-//             deployer
-//                 .escrow
-//                 .constructor(users, assets)
-//                 .call()
-//                 .await
-//                 .unwrap()
-//                 .value
-//         )
-
-//         // assert!(
-//         //     init(
-//         //         &deployer,
-//         //         &user1.wallet,
-//         //         &user2.wallet,
-//         //         asset_id,
-//         //         asset_amount
-//         //     )
-//         //     .await
-//         // );
-//     }
-// }
-
-// mod deposit {
-
-//     use super::*;
-
-//     #[tokio::test]
-//     async fn deposits() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-//         let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &user1.wallet, asset_amount).await;
-
-//         assert_eq!(balance(&deployer.escrow).await, 0);
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user1.wallet).await,
-//             (false, false)
-//         );
-
-//         // Test
-//         assert!(
-//             user1
-//                 .escrow
-//                 .deposit()
-//                 .tx_params(tx_params)
-//                 .call_params(call_params)
-//                 .call()
-//                 .await
-//                 .unwrap()
-//                 .value
-//         );
-
-//         assert_eq!(balance(&deployer.escrow).await, asset_amount);
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user1.wallet).await,
-//             (true, false)
-//         );
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_when_not_initialized() {
-//         let (_, user1, _, _, _) = setup().await;
-
-//         // Should panic
-//         user1.escrow.deposit().call().await.unwrap();
-//     }
-
-//     // Uncomment when https://github.com/FuelLabs/fuels-rs/pull/305 (deploy_with_salt) lands in a new release
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_with_incorrect_asset() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let another_asset_id = Contract::deploy_with_salt(
-//             "./tests/artifacts/asset/out/debug/asset.bin",
-//             &deployer.wallet,
-//             TxParameters::default(),
-//             Salt::from([1u8; 32]),
-//         )
-//         .await
-//         .unwrap();
-
-//         let another_asset = MyAsset::new(another_asset_id.to_string(), deployer.wallet.clone());
-
-//         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-//         let call_params =
-//             CallParameters::new(Some(asset_amount), Some(AssetId::from(*another_asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-
-//         another_asset
-//             .mint_and_send_to_address(asset_amount, user1.wallet.address())
-//             .append_variable_outputs(1)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         // Should panic
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params)
-//             .call_params(call_params)
-//             .call()
-//             .await
-//             .unwrap();
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_with_incorrect_asset_amount() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-//         let call_params =
-//             CallParameters::new(Some(asset_amount - 1), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &user1.wallet, asset_amount).await;
-
-//         // Should panic
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params)
-//             .call_params(call_params)
-//             .call()
-//             .await
-//             .unwrap();
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_when_sender_is_not_the_correct_address() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-//         let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &deployer.wallet, asset_amount).await;
-
-//         // Should panic
-//         deployer
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params)
-//             .call_params(call_params)
-//             .call()
-//             .await
-//             .unwrap();
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_when_already_deposited() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params1 = TxParameters::new(None, Some(1_000_000), None, None);
-//         let tx_params2 = TxParameters::new(None, Some(1_000_000), None, None);
-
-//         let call_params1 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-//         let call_params2 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &user1.wallet, 2 * asset_amount).await;
-
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params1)
-//             .call_params(call_params1)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         // Should panic
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params2)
-//             .call_params(call_params2)
-//             .call()
-//             .await
-//             .unwrap();
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_after_both_parties_approve() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params1 = TxParameters::new(None, Some(1_000_000), None, None);
-//         let tx_params2 = TxParameters::new(None, Some(1_000_000), None, None);
-//         let tx_params3 = TxParameters::new(None, Some(1_000_000), None, None);
-
-//         let call_params1 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-//         let call_params2 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-//         let call_params3 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &user1.wallet, asset_amount).await;
-//         mint(&deployer, &user2.wallet, asset_amount).await;
-
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params1)
-//             .call_params(call_params1)
-//             .call()
-//             .await
-//             .unwrap();
-//         user2
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params2)
-//             .call_params(call_params2)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         user1.escrow.approve().call().await.unwrap();
-//         user2
-//             .escrow
-//             .approve()
-//             .append_variable_outputs(2)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         // Should panic
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params3)
-//             .call_params(call_params3)
-//             .call()
-//             .await
-//             .unwrap();
-//     }
-// }
-
-// mod approve {
-
-//     use super::*;
-
-//     #[tokio::test]
-//     async fn approves() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params1 = TxParameters::new(None, Some(1_000_000), None, None);
-//         let tx_params2 = TxParameters::new(None, Some(1_000_000), None, None);
-
-//         let call_params1 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-//         let call_params2 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &user1.wallet, asset_amount).await;
-//         mint(&deployer, &user2.wallet, asset_amount).await;
-
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params1)
-//             .call_params(call_params1)
-//             .call()
-//             .await
-//             .unwrap();
-//         user2
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params2)
-//             .call_params(call_params2)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user1.wallet).await,
-//             (true, false)
-//         );
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user2.wallet).await,
-//             (true, false)
-//         );
-//         assert_eq!(balance(&deployer.escrow).await, 2 * asset_amount);
-
-//         // Test
-//         assert!(user1.escrow.approve().call().await.unwrap().value);
-//         assert!(
-//             user2
-//                 .escrow
-//                 .approve()
-//                 .append_variable_outputs(2)
-//                 .call()
-//                 .await
-//                 .unwrap()
-//                 .value
-//         );
-
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user1.wallet).await,
-//             (true, true)
-//         );
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user2.wallet).await,
-//             (true, true)
-//         );
-//         assert_eq!(balance(&deployer.escrow).await, 0);
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_when_not_initialized() {
-//         let (_, user1, _, _, _) = setup().await;
-
-//         // Should panic
-//         user1.escrow.approve().call().await.unwrap();
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_when_sender_is_not_the_correct_address() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-
-//         // Should panic
-//         deployer.escrow.approve().call().await.unwrap();
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_when_not_deposited() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-
-//         // Should panic
-//         user1.escrow.approve().call().await.unwrap();
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_after_both_parties_approve() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params1 = TxParameters::new(None, Some(1_000_000), None, None);
-//         let tx_params2 = TxParameters::new(None, Some(1_000_000), None, None);
-
-//         let call_params1 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-//         let call_params2 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &user1.wallet, asset_amount).await;
-//         mint(&deployer, &user2.wallet, asset_amount).await;
-
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params1)
-//             .call_params(call_params1)
-//             .call()
-//             .await
-//             .unwrap();
-//         user2
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params2)
-//             .call_params(call_params2)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         user1.escrow.approve().call().await.unwrap();
-//         user2
-//             .escrow
-//             .approve()
-//             .append_variable_outputs(2)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         // Should panic
-//         user1.escrow.approve().call().await.unwrap();
-//     }
-// }
-
-// mod withdraw {
-
-//     use super::*;
-
-//     #[tokio::test]
-//     async fn withdraws() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-//         let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &user1.wallet, asset_amount).await;
-
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params)
-//             .call_params(call_params)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         user1.escrow.approve().call().await.unwrap();
-
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user1.wallet).await,
-//             (true, true)
-//         );
-//         assert_eq!(balance(&deployer.escrow).await, asset_amount);
-
-//         // Test
-//         assert!(
-//             user1
-//                 .escrow
-//                 .withdraw()
-//                 .append_variable_outputs(1)
-//                 .call()
-//                 .await
-//                 .unwrap()
-//                 .value
-//         );
-
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user1.wallet).await,
-//             (false, false)
-//         );
-//         assert_eq!(balance(&deployer.escrow).await, 0);
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_when_not_initialized() {
-//         let (_, user1, _, _, _) = setup().await;
-
-//         // Should panic
-//         user1.escrow.withdraw().call().await.unwrap();
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_when_sender_is_not_the_correct_address() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-
-//         // Should panic
-//         deployer.escrow.withdraw().call().await.unwrap();
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_when_not_deposited() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-
-//         // Should panic
-//         user1.escrow.withdraw().call().await.unwrap();
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_after_both_parties_approve() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params1 = TxParameters::new(None, Some(1_000_000), None, None);
-//         let tx_params2 = TxParameters::new(None, Some(1_000_000), None, None);
-
-//         let call_params1 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-//         let call_params2 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &user1.wallet, asset_amount).await;
-//         mint(&deployer, &user2.wallet, asset_amount).await;
-
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params1)
-//             .call_params(call_params1)
-//             .call()
-//             .await
-//             .unwrap();
-//         user2
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params2)
-//             .call_params(call_params2)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         user1.escrow.approve().call().await.unwrap();
-//         user2
-//             .escrow
-//             .approve()
-//             .append_variable_outputs(2)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         // Should panic
-//         user1
-//             .escrow
-//             .withdraw()
-//             .append_variable_outputs(1)
-//             .call()
-//             .await
-//             .unwrap();
-//     }
-// }
-
-// mod get_balance {
-
-//     use super::*;
-
-//     #[tokio::test]
-//     async fn returns_zero() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-
-//         assert_eq!(balance(&deployer.escrow).await, 0);
-//     }
-
-//     #[tokio::test]
-//     async fn returns_asset_amount() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-//         let call_params = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &user1.wallet, asset_amount).await;
-
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params)
-//             .call_params(call_params)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         assert_eq!(balance(&deployer.escrow).await, asset_amount);
-//     }
-// }
-
-// mod get_user_data {
-
-//     use super::*;
-
-//     #[tokio::test]
-//     async fn gets_user_data() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params1 = TxParameters::new(None, Some(1_000_000), None, None);
-//         let tx_params2 = TxParameters::new(None, Some(1_000_000), None, None);
-
-//         let call_params1 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-//         let call_params2 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &user1.wallet, asset_amount).await;
-//         mint(&deployer, &user2.wallet, asset_amount).await;
-
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user1.wallet).await,
-//             (false, false)
-//         );
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user2.wallet).await,
-//             (false, false)
-//         );
-
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params1)
-//             .call_params(call_params1)
-//             .call()
-//             .await
-//             .unwrap();
-//         user2
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params2)
-//             .call_params(call_params2)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         user1.escrow.approve().call().await.unwrap();
-//         user2
-//             .escrow
-//             .approve()
-//             .append_variable_outputs(2)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user1.wallet).await,
-//             (true, true)
-//         );
-//         assert_eq!(
-//             user_data(&deployer.escrow, &user2.wallet).await,
-//             (true, true)
-//         );
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_when_not_initialized() {
-//         let (_, user1, _, _, _) = setup().await;
-
-//         // Should panic
-//         user1
-//             .escrow
-//             .get_user_data(user1.wallet.address())
-//             .call()
-//             .await
-//             .unwrap();
-//     }
-
-//     #[tokio::test]
-//     #[should_panic(expected = "Revert(42)")]
-//     async fn panics_when_sender_is_not_the_correct_address() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-
-//         // Should panic
-//         user1
-//             .escrow
-//             .get_user_data(deployer.wallet.address())
-//             .call()
-//             .await
-//             .unwrap();
-//     }
-// }
-
-// mod get_state {
-
-//     use super::*;
-
-//     #[tokio::test]
-//     async fn not_initialized() {
-//         let (deployer, _, _, _, _) = setup().await;
-
-//         assert_eq!(deployer.escrow.get_state().call().await.unwrap().value, 0);
-//     }
-
-//     #[tokio::test]
-//     async fn initialized() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         // Init conditions
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-
-//         assert_eq!(deployer.escrow.get_state().call().await.unwrap().value, 1);
-//     }
-
-//     #[tokio::test]
-//     async fn completed() {
-//         let (deployer, user1, user2, asset_id, asset_amount) = setup().await;
-
-//         let tx_params1 = TxParameters::new(None, Some(1_000_000), None, None);
-//         let tx_params2 = TxParameters::new(None, Some(1_000_000), None, None);
-
-//         let call_params1 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-//         let call_params2 = CallParameters::new(Some(asset_amount), Some(AssetId::from(*asset_id)));
-
-//         // Init conditions
-//         assert_eq!(deployer.escrow.get_state().call().await.unwrap().value, 0);
-
-//         init(
-//             &deployer,
-//             &user1.wallet,
-//             &user2.wallet,
-//             asset_id,
-//             asset_amount,
-//         )
-//         .await;
-//         mint(&deployer, &user1.wallet, asset_amount).await;
-//         mint(&deployer, &user2.wallet, asset_amount).await;
-
-//         assert_eq!(deployer.escrow.get_state().call().await.unwrap().value, 1);
-
-//         user1
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params1)
-//             .call_params(call_params1)
-//             .call()
-//             .await
-//             .unwrap();
-//         user2
-//             .escrow
-//             .deposit()
-//             .tx_params(tx_params2)
-//             .call_params(call_params2)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         // Test
-//         user1.escrow.approve().call().await.unwrap();
-//         user2
-//             .escrow
-//             .approve()
-//             .append_variable_outputs(2)
-//             .call()
-//             .await
-//             .unwrap();
-
-//         assert_eq!(deployer.escrow.get_state().call().await.unwrap().value, 2);
-//     }
-// }

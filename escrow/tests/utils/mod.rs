@@ -153,7 +153,7 @@ pub mod abi_calls {
     }
 
     pub async fn take_payment(contract: &Escrow, identifier: u64) -> CallResponse<()> {
-        contract.take_payment(identifier).append_variable_outputs(1).call().await.unwrap()
+        contract.take_payment(identifier).append_variable_outputs(3).call().await.unwrap()
     }
 
     pub async fn transfer_to_seller(contract: &Escrow, identifier: u64) -> CallResponse<()> {
