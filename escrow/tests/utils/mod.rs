@@ -109,6 +109,14 @@ pub mod test_helpers {
         (asset_id, MyAsset::new(asset_id.to_string(), wallet.clone()))
     }
 
+    pub async fn asset_amount(wallet: &LocalWallet, asset: &ContractId) -> u64 {
+        wallet
+            .clone()
+            .get_asset_balance(&AssetId::from(**asset))
+            .await
+            .unwrap()
+    }
+
 }
 
 pub mod abi_calls {
@@ -145,7 +153,7 @@ pub mod abi_calls {
     }
 
     pub async fn resolve_dispute(contract: &Escrow, identifier: u64, payment_amount: u64, user: Identity) -> CallResponse<()> {
-        contract.resolve_dispute(identifier, payment_amount, user).append_variable_outputs(3).call().await.unwrap()
+        contract.resolve_dispute(identifier, payment_amount, user).append_variable_outputs(4).call().await.unwrap()
     }
 
     pub async fn return_deposit(contract: &Escrow, identifier: u64) -> CallResponse<()> {
