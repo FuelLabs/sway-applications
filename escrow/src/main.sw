@@ -7,7 +7,16 @@ dep events;
 dep interface;
 
 use data_structures::{Arbiter, Asset, Buyer, EscrowInfo, Seller, State};
-use errors::{ArbiterInputError, AssetInputError, DeadlineInputError, DepositError, StateError, UserError, UserInputError};
+use errors::{
+    ArbiterInputError,
+    AssetInputError,
+    DeadlineInputError,
+    DepositError,
+    StateError,
+    UserError,
+    UserInputError,
+};
+
 use events::{
     AcceptedArbiterEvent,
     CreatedEscrowEvent,
@@ -19,6 +28,7 @@ use events::{
     ReturnedDepositEvent,
     TransferredToSellerEvent,
 };
+
 use interface::Escrow;
 use std::{
     assert::require,
@@ -37,22 +47,24 @@ use std::{
 storage {
     /// Used as a temporary variable for containing a change, proposed by the seller, to the arbiter
     /// Map(ID => Info)
-    arbiter_proposal: StorageMap<u64, Option<Arbiter>> = StorageMap {},
+    arbiter_proposal: StorageMap<u64,
+    Option<Arbiter>> = StorageMap {
+    },
 
     /// Information describing an escrow created via create_escrow()
     /// Map(ID => Info)
-    escrows: StorageMap<u64, EscrowInfo> = StorageMap {}, 
-    
+    escrows: StorageMap<u64,
+    EscrowInfo> = StorageMap {
+    },
+
     /// Number of created escrows
     /// Used as an identifier for O(1) look-up in mappings
     escrow_count: u64 = 0,
 }
 
 impl Escrow for Contract {
-
-    #[storage(read, write)]
-    fn accept_arbiter(identifier: u64) {
-        // The assertions ensure that only the buyer can accept a proposal if the escrow has not 
+    #[storage(read, write)]fn accept_arbiter(identifier: u64) {
+        // The assertions ensure that only the buyer can accept a proposal if the escrow has not
         // been completed and the seller has proposed a new arbiter
 
         let mut escrow = storage.escrows.get(identifier);
@@ -75,11 +87,14 @@ impl Escrow for Contract {
         storage.arbiter_proposal.insert(identifier, Option::None);
         storage.escrows.insert(identifier, escrow);
 
-        log(AcceptedArbiterEvent { identifier });
+        log(AcceptedArbiterEvent {
+            identifier
+        });
     }
 
-    #[storage(read, write)]fn create_escrow(arbiter: Arbiter, assets: [Asset; 2], buyer: Identity, deadline: u64) {
-        // The assertions ensure that assets are specified with a none-zero amount, the arbiter is 
+    #[storage(read, write)]fn create_escrow(arbiter: Arbiter, assets: [Asset;
+    2], buyer: Identity, deadline: u64) {
+        // The assertions ensure that assets are specified with a none-zero amount, the arbiter is
         // not the buyer / seller, the arbiter has a fee that they can take upon resolving a dispute
         // and the escrow deadline is set in the future
 
@@ -93,22 +108,19 @@ impl Escrow for Contract {
 
         let mut index = 0;
         // while index < assets.len() {
-            // require(0 < assets.get(index).unwrap().amount, AssetInputError::AssetAmountCannotBeZero);
+        // require(0 < assets.get(index).unwrap().amount, AssetInputError::AssetAmountCannotBeZero);
         while index < 2 {
             require(0 < assets[index].amount, AssetInputError::AssetAmountCannotBeZero);
             index += 1;
         }
 
         let escrow = EscrowInfo {
-            arbiter, 
-            assets, 
-            buyer: Buyer {
+            arbiter, assets, buyer: Buyer {
                 address: buyer,
                 asset: Option::None::<ContractId>(),
                 deposited_amount: 0,
             },
-            deadline, 
-            disputed: false,
+            deadline, disputed: false,
             seller: Seller {
                 address: msg_sender().unwrap(),
             },
@@ -124,7 +136,7 @@ impl Escrow for Contract {
     }
 
     #[storage(read, write)]fn deposit(identifier: u64) {
-        // The assertions ensure that only the buyer can deposit (only once) prior to the deadline 
+        // The assertions ensure that only the buyer can deposit (only once) prior to the deadline
         // and escrow completion
 
         let mut escrow = storage.escrows.get(identifier);
@@ -138,7 +150,7 @@ impl Escrow for Contract {
         //       `.contains() -> bool / .position() -> u64` would clean up the loop
         let mut index = 0;
         // while index < escrow.assets.len() {
-            // let asset = escrow.assets.get(index).unwrap();
+        // let asset = escrow.assets.get(index).unwrap();
         while index < 2 {
             let asset = escrow.assets[index];
 
@@ -207,11 +219,13 @@ impl Escrow for Contract {
 
         storage.arbiter_proposal.insert(identifier, Option::Some(arbiter));
 
-        log(ProposedArbiterEvent { arbiter, identifier });
+        log(ProposedArbiterEvent {
+            arbiter, identifier
+        });
     }
 
     #[storage(read, write)]fn resolve_dispute(identifier: u64, payment_amount: u64, user: Identity) {
-        // The assertions ensure that a resolution can only occur during a dispute and only once 
+        // The assertions ensure that a resolution can only occur during a dispute and only once
         // by the specified arbiter. The deposit will be sent to either the buyer or seller and the
         // arbiter can choose their payment amount up to the deposit from the seller
 
@@ -279,7 +293,7 @@ impl Escrow for Contract {
     }
 
     #[storage(read, write)]fn take_payment(identifier: u64) {
-        // The assertions ensure that only the seller can take payment before the escrow has been 
+        // The assertions ensure that only the seller can take payment before the escrow has been
         // completed and after the deadline as long as there is no disupte and it contains a deposit
 
         let mut escrow = storage.escrows.get(identifier);

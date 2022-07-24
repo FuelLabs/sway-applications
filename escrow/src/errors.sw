@@ -6,7 +6,7 @@ pub enum ArbiterInputError {
     CannotBeSeller: (),
     FeeCannotBeZero: (),
     FeeDoesNotMatchAmountSent: (),
-    PaymentTooLarge: () ,
+    PaymentTooLarge: (),
 }
 
 pub enum AssetInputError {

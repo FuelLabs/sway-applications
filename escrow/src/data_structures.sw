@@ -48,7 +48,8 @@ pub struct EscrowInfo {
 
     /// The assets that the escrow accepts with their required quantities
     /// This allows the buyer to select which asset they want to deposit
-    assets: [Asset; 2],
+    assets: [Asset;
+    2],
 
     /// The authorized user who is able to make a payment into the escrow
     buyer: Buyer,
