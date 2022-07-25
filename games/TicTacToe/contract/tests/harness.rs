@@ -8,9 +8,13 @@ async fn get_contract_instance() -> (MyContract, ContractId) {
     // Launch a local network and deploy the contract
     let wallet = launch_provider_and_get_single_wallet().await;
 
-    let id = Contract::deploy("./out/debug/tictactoe.bin", &wallet, TxParameters::default())
-        .await
-        .unwrap();
+    let id = Contract::deploy(
+        "./out/debug/tictactoe.bin",
+        &wallet,
+        TxParameters::default(),
+    )
+    .await
+    .unwrap();
 
     let instance = MyContract::new(id.to_string(), wallet);
 

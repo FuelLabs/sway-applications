@@ -1,47 +1,45 @@
 contract;
 
 use core::*;
-use std::{
-    address::Address,
-    storage::{store, get, StorageMap},
-    hash::sha256,
-    chain::auth::msg_sender,
-};
+use std::{address::Address, chain::auth::msg_sender, hash::sha256, storage::{StorageMap, get, store}};
 
 use player_identity::{Players, core::ops::Eq};
 
-enum Winners {
+// The Winner state is set to None during the game until it's over. Then it's either a Draw or one of the Players
+enum Winner {
     Player: Players,
     None: (),
     Draw: (),
 }
 
+// A game is defined by the Players and the winner.
 struct Game {
     PlayerOne: Players,
     PlayerTwo: Players,
-    winner: Winners,
+    winner: Winner,
 }
 storage {
     game: Game,
     player_turn: u64,
-    map: StorageMap<u64,u64>,
+    map: StorageMap<u64,
+    u64>, 
 }
 
 abi TicTacToe {
     #[storage(write)]fn new_game(player_one: Players, player_two: Players) -> Game;
     #[storage(read, write)]fn make_move(position: u64);
     #[storage(read, write)]fn next_player();
-    #[storage(write)]fn end_game(game: Game) -> Winners;
+    #[storage(write)]fn end_game(game: Game) -> Winner;
     #[storage(read)]fn map_is_full() -> bool;
 }
 
 impl TicTacToe for Contract {
-
-    #[storage(write)]fn new_game(player_one: Players, player_two: Players) -> Game {
+    #[storage(write)]
+    fn new_game(player_one: Players, player_two: Players) -> Game {
         let mut game = Game {
             PlayerOne: player_one,
             PlayerTwo: player_two,
-            winner: Winners::None,
+            winner: Winner::None,
         };
         storage.player_turn = 1;
         let mut counter = 0;
@@ -52,8 +50,9 @@ impl TicTacToe for Contract {
         return game;
     }
 
-
-    #[storage(read, write)]fn make_move(position: u64) {
+    // This function first checks who's turn it is and then inserts to the storage map the player key + the position
+    #[storage(read, write)]
+    fn make_move(position: u64) {
         if storage.player_turn == 1 {
             insert_into_map(1, position);
         }
@@ -62,7 +61,9 @@ impl TicTacToe for Contract {
         }
     }
 
-    #[storage(read, write)]fn next_player() {
+    // This function first checks who's turn it is and then switches to the other one.
+    #[storage(read, write)]
+    fn next_player() {
         if storage.player_turn == 1 {
             storage.player_turn = 2;
         }
@@ -72,7 +73,8 @@ impl TicTacToe for Contract {
     }
 
     //Check each cell. If one of them is empty (contains 0), then the map isn't full yet.
-    #[storage(read)]fn map_is_full() -> bool {
+    #[storage(read)]
+    fn map_is_full() -> bool {
         let mut counter = 0;
         let mut break_early = false;
         let mut result = true;
@@ -83,23 +85,29 @@ impl TicTacToe for Contract {
                 result = false;
             }
             counter += 1;
-            if get_from_map(counter) ==0 {
+            if get_from_map(counter) == 0 {
                 break_early = true;
             }
         }
         return result;
     }
 
-    #[storage(write)]fn end_game(game: Game) -> Winners{
+    // save the game and return the winner
+    #[storage(write)]
+    fn end_game(game: Game) -> Winner {
         storage.game = game;
         return game.winner;
     }
 }
 
-#[storage(write)]fn insert_into_map(key: u64, value: u64) {
+//save the player moves in the storage
+#[storage(write)]
+fn insert_into_map(key: u64, value: u64) {
     storage.map.insert(key, value);
 }
 
-#[storage(read)]fn get_from_map(key: u64) -> u64{
+//get the player moves in the storage
+#[storage(read)]
+fn get_from_map(key: u64) -> u64 {
     return storage.map.get(key);
 }

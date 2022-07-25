@@ -143,7 +143,7 @@
           },
           {
             "name": "winner",
-            "type": "enum Winners",
+            "type": "enum Winner",
             "components": [
               {
                 "name": "Player",
@@ -311,7 +311,7 @@
           },
           {
             "name": "winner",
-            "type": "enum Winners",
+            "type": "enum Winner",
             "components": [
               {
                 "name": "Player",
@@ -365,7 +365,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "enum Winners",
+        "type": "enum Winner",
         "components": [
           {
             "name": "Player",
