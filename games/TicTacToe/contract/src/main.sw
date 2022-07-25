@@ -3,21 +3,8 @@ contract;
 use core::*;
 use std::{address::Address, chain::auth::msg_sender, hash::sha256, storage::{StorageMap, get, store}};
 
-use player_identity::{Players, core::ops::Eq};
+use data_structures::{Players, Winner, Game, core::ops::Eq};
 
-// The Winner state is set to None during the game until it's over. Then it's either a Draw or one of the Players
-enum Winner {
-    Player: Players,
-    None: (),
-    Draw: (),
-}
-
-// A game is defined by the Players and the winner.
-struct Game {
-    PlayerOne: Players,
-    PlayerTwo: Players,
-    winner: Winner,
-}
 storage {
     game: Game,
     player_turn: u64,

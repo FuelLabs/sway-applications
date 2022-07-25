@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "contract"
 
 [dependencies]
-player_identity = { path = "../player_identity" }
+data_structures = { path = "../data_structures" }
