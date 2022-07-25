@@ -1,12 +1,12 @@
 # Overview
 
 ## Predicates in Fuel
-Predicates are pure functions evaluating to either True or False. They are stateless, and can neither read nor write to any contract state. They can not emit logs.
+Predicates are pure functions evaluating to either `True` or `False`. They are stateless, and can neither read nor write to any contract state. They can not emit logs.
 
 In Fuel, coins can be sent to an address representing a particular predicate's bytecode (the bytecode root, calculated [here](https://github.com/FuelLabs/fuel-specs/blob/master/specs/protocol/identifiers.md#contract-id)).
 
 
-These coin UTXOs then become spendable not on the provision of a valid signature of the owner, but rather if the supplied predicate both has a root matches the owner of the input being spent, and [evaluates](https://github.com/FuelLabs/fuel-specs/blob/master/specs/vm/main.md#predicate-verification) to True
+These coin UTXOs then become spendable not on the provision of a valid signature of the owner, but rather if the supplied predicate both has a root matches the owner of the input being spent, and [evaluates](https://github.com/FuelLabs/fuel-specs/blob/master/specs/vm/main.md#predicate-verification) to `True`. If a predicate reverts, or tries to access impure VM opcodes, the evaluation is automatically `False`.
 
 Predicates may introspect the transaction spending their coins (inputs, outputs, script bytecode, etc.) and may take runtime arguments (the `predicateData`)which affect the evaluation of the predicate.
 
