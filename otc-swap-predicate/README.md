@@ -6,7 +6,7 @@ Predicates are pure functions evaluating to either `True` or `False`. They are s
 In Fuel, coins can be sent to an address uniquely representing a particular predicate's bytecode (the bytecode root, calculated [here](https://github.com/FuelLabs/fuel-specs/blob/master/specs/protocol/identifiers.md#contract-id)).
 
 
-These coin UTXOs then become spendable not on the provision of a valid signature of the owner, but rather if the supplied predicate both has a root that matches the owner of the input being spent, and [evaluates](https://github.com/FuelLabs/fuel-specs/blob/master/specs/vm/main.md#predicate-verification) to `True`. If a predicate reverts, or tries to access impure VM opcodes, the evaluation is automatically `False`.
+These coin UTXOs then become spendable not on the provision of a valid signature, but rather if the supplied predicate both has a root that matches their owner, and [evaluates](https://github.com/FuelLabs/fuel-specs/blob/master/specs/vm/main.md#predicate-verification) to `True`. If a predicate reverts, or tries to access impure VM opcodes, the evaluation is automatically `False`.
 
 Predicates may introspect the transaction spending their coins (inputs, outputs, script bytecode, etc.) and may take runtime arguments (the `predicateData`), either or both of which may affect the evaluation of the predicate.
 
