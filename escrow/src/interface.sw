@@ -80,7 +80,7 @@ abi Escrow {
     ///
     /// If a dispute has been initiated and the arbiter is taking too long then the seller can change
     /// the arbiter, the asset for payment and the fee amount
-    /// Seller can also set the same arbiter but with a lower fee
+    /// Seller can also set the same arbiter but with a different fee
     ///
     /// # Arguments
     ///
