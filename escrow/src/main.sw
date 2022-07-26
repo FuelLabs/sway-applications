@@ -9,7 +9,6 @@ dep events;
 dep interface;
 
 use data_structures::{Arbiter, Asset, Buyer, EscrowInfo, Seller, State};
-// use data_structures::*;
 use errors::{
     ArbiterInputError,
     AssetInputError,
