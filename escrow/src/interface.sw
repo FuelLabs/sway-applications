@@ -62,7 +62,8 @@ abi Escrow {
 
     /// Changes a flag in the escrow marking it as disputed which results in the escrow being locked
     ///
-    /// Once the escrow is locked the seller cannot take the payment after those conditions are met
+    /// Once the escrow is locked the seller cannot take the payment given that the conditions for
+    /// taking a payment have been otherwise met
     ///
     /// # Arguments
     ///

@@ -1,5 +1,7 @@
 contract;
 
+// TODO: commented-out code is there because the SDK does not support Vec yet so an array is used
+
 // Our library dependencies
 dep data_structures;
 dep errors;
@@ -7,6 +9,7 @@ dep events;
 dep interface;
 
 use data_structures::{Arbiter, Asset, Buyer, EscrowInfo, Seller, State};
+// use data_structures::*;
 use errors::{
     ArbiterInputError,
     AssetInputError,
@@ -114,18 +117,7 @@ impl Escrow for Contract {
             index += 1;
         }
 
-        let escrow = EscrowInfo {
-            arbiter, assets, buyer: Buyer {
-                address: buyer,
-                asset: Option::None::<ContractId>(),
-                deposited_amount: 0,
-            },
-            deadline, disputed: false,
-            seller: Seller {
-                address: msg_sender().unwrap(),
-            },
-            state: State::Pending,
-        };
+        let escrow = ~EscrowInfo::new(arbiter, assets, buyer, deadline, msg_sender().unwrap());
 
         storage.escrows.insert(storage.escrow_count, escrow);
         storage.escrow_count += 1;

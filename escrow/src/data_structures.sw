@@ -67,6 +67,24 @@ pub struct EscrowInfo {
     state: State,
 }
 
+impl EscrowInfo {
+    pub fn new(arbiter: Arbiter, assets: [Asset;
+    2], buyer: Identity, deadline: u64, seller: Identity) -> Self {
+        Self {
+            arbiter, assets, buyer: Buyer {
+                address: buyer,
+                asset: Option::None::<ContractId>(),
+                deposited_amount: 0,
+            },
+            deadline, disputed: false,
+            seller: Seller {
+                address: seller,
+            },
+            state: State::Pending,
+        }
+    }
+}
+
 pub struct Seller {
     /// Address identifying the seller
     address: Identity,

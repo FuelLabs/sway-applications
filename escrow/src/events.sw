@@ -48,7 +48,7 @@ pub struct ResolvedDisputeEvent {
     /// Unique escrow identifier
     identifier: u64,
 
-    /// The user that can interact with the escrow
+    /// The user that has been chosen by the arbiter to receive the disputed funds (buyer / seller)
     user: Identity,
 }
 
