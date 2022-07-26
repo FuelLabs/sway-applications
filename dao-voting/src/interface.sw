@@ -1,4 +1,4 @@
-library dao_voting_abi;
+library interface;
 
 dep data_structures;
 
