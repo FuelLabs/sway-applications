@@ -2,13 +2,12 @@ contract;
 
 use std::{
     address::Address,
-    assert::require,
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount, this_balance},
     contract_id::ContractId,
     identity::Identity,
     result::*,
-    revert::revert,
+    revert::{require, revert},
     token::transfer_to_output,
 };
 
@@ -53,12 +52,26 @@ struct User {
 }
 
 storage {
-    asset_amount: u64,
-    buyer: User,
-    seller: User,
-    asset: ContractId,
+    asset_amount: u64 = 0,
+    buyer: User = User {
+        address: Address {
+            value: 0x0000000000000000000000000000000000000000000000000000000000000000,
+        },
+        approved: false,
+        deposited: false,
+    },
+    seller: User = User {
+        address: Address {
+            value: 0x0000000000000000000000000000000000000000000000000000000000000000,
+        },
+        approved: false,
+        deposited: false,
+    },
+    asset: ContractId = ContractId {
+        value: 0x0000000000000000000000000000000000000000000000000000000000000000,
+    },
     // state: State,
-    state: u64,
+    state: u64 = 0,
 }
 
 impl Escrow for Contract {

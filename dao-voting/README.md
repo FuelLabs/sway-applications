@@ -1,5 +1,8 @@
 <p align="center">
-    <img src="./.docs/dao-voting-logo.png" height="120">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/dao-logo-dark-theme.png">
+        <img alt="multisig logo" width="400px" src=".docs/dao-logo-light-theme.png">
+    </picture>
 </p>
 
 ## Overview
