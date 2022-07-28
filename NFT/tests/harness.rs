@@ -598,7 +598,12 @@ mod meta_data {
             let minter = Identity::Address(owner1.wallet.address());
             mint(1, &owner1.nft, &minter).await;
 
-            assert_eq!(meta_data(&owner1.nft, 0).await, TokenMetaData {});
+            assert_eq!(
+                meta_data(&owner1.nft, 0).await,
+                TokenMetaData {
+                    name: "Example".to_string()
+                }
+            );
         }
     }
 
