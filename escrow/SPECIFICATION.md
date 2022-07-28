@@ -73,7 +73,7 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 1. Any user that creates an escrow is automatically considered the seller
 2. Creating an escrow requires depositing collateral as payment for a possible arbitration
-3. When creating an escrow the seller can choose any assets that they are willing to take as payment from the buyer
+3. When creating an escrow the seller provides a list of assets that they are willing to accept as payment from the buyer
 
 #### `propose_arbiter()`
 
