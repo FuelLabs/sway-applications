@@ -56,16 +56,54 @@ storage {
 }
 
 impl StakingRewards for Contract {
+    // Getter functions for "public" state
+
+    #[storage(read)]fn rewards_token() -> ContractId {
+        storage.rewards_token
+    }
+
+    #[storage(read)]fn staking_token() -> ContractId {
+        storage.staking_token
+    }
+
+    #[storage(read)]fn period_finish() -> u64 {
+        storage.period_finish
+    }
+
+    #[storage(read)]fn reward_rate() -> u64 {
+        storage.reward_rate
+    }
+
+    #[storage(read)]fn rewards_duration() -> u64 {
+        storage.rewards_duration
+    }
+
+    #[storage(read)]fn last_update_time() -> u64 {
+        storage.last_update_time
+    }
+
+    #[storage(read)]fn reward_per_token_stored() -> u64 {
+        storage.reward_per_token_stored
+    }
+
+    #[storage(read)]fn reward_per_token_paid(account: Identity) -> u64 {
+        storage.user_reward_per_token_paid.get(account)
+    }
+
+    #[storage(read)]fn rewards(account: Identity) -> u64 {
+        storage.rewards.get(account)
+    }
+
+    #[storage(read)]fn rewards_distribution() -> Identity {
+        storage.rewards_distribution
+    }
+
+    #[storage(read)]fn total_supply() -> u64 {
+        storage.total_supply
+    }
+
     #[storage(read)]fn balance_of(account: Identity) -> u64 {
         storage.balances.get(account)
-    }
-
-    #[storage(read)]fn earned(account: Identity, test_timestamp: u64) -> u64 {
-        _earned(account, test_timestamp)
-    }
-
-    #[storage(read)]fn get_reward_for_duration() -> u64 {
-        storage.reward_rate * storage.rewards_duration
     }
 
     #[storage(read)]fn last_time_reward_applicable(test_timestamp: u64) -> u64 {
@@ -76,25 +114,12 @@ impl StakingRewards for Contract {
         _reward_per_token(test_timestamp)
     }
 
-    #[storage(read)]fn rewards_distribution() -> Identity {
-        storage.rewards_distribution
+    #[storage(read)]fn earned(account: Identity, test_timestamp: u64) -> u64 {
+        _earned(account, test_timestamp)
     }
 
-    #[storage(read)]fn rewards_token() -> ContractId {
-        storage.rewards_token
-    }
-
-    #[storage(read)]fn total_supply() -> u64 {
-        storage.total_supply
-    }
-
-    #[storage(read, write)]fn exit(test_timestamp: u64) {
-        _withdraw(storage.balances.get(msg_sender().unwrap()), test_timestamp);
-        _get_reward(test_timestamp);
-    }
-
-    #[storage(read, write)]fn get_reward(test_timestamp: u64) {
-        _get_reward(test_timestamp);
+    #[storage(read)]fn get_reward_for_duration() -> u64 {
+        storage.reward_rate * storage.rewards_duration
     }
 
     #[storage(read, write)]fn stake(test_timestamp: u64) {
@@ -117,7 +142,18 @@ impl StakingRewards for Contract {
     #[storage(read, write)]fn withdraw(amount: u64, test_timestamp: u64) {
         _withdraw(amount, test_timestamp)
     }
+
+    #[storage(read, write)]fn get_reward(test_timestamp: u64) {
+        _get_reward(test_timestamp);
+    }
+
+    #[storage(read, write)]fn exit(test_timestamp: u64) {
+        _withdraw(storage.balances.get(msg_sender().unwrap()), test_timestamp);
+        _get_reward(test_timestamp);
+    }
 }
+
+// Non-abi (internal) functions
 
 #[storage(read)]fn _earned(account: Identity, test_timestamp: u64) -> u64 {
     storage.balances.get(account) * (_reward_per_token(test_timestamp) - storage.user_reward_per_token_paid.get(account)) / ONE + storage.rewards.get(account)

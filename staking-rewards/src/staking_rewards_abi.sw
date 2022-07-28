@@ -8,9 +8,17 @@ abi StakingRewards {
     #[storage(read)]fn earned(account: Identity, test_timestamp: u64) -> u64;
     #[storage(read)]fn get_reward_for_duration() -> u64;
     #[storage(read)]fn last_time_reward_applicable(test_timestamp: u64) -> u64;
+    #[storage(read)]fn last_update_time() -> u64;
+    #[storage(read)]fn period_finish() -> u64;
     #[storage(read)]fn reward_per_token(test_timestamp: u64) -> u64;
+    #[storage(read)]fn reward_per_token_stored() -> u64;
+    #[storage(read)]fn reward_per_token_paid(account: Identity) -> u64;
+    #[storage(read)]fn reward_rate() -> u64;
+    #[storage(read)]fn rewards(account: Identity) -> u64;
     #[storage(read)]fn rewards_distribution() -> Identity;
+    #[storage(read)]fn rewards_duration() -> u64;
     #[storage(read)]fn rewards_token() -> ContractId;
+    #[storage(read)]fn staking_token() -> ContractId;
     #[storage(read)]fn total_supply() -> u64;
 
     #[storage(read, write)]fn exit(test_timestamp: u64);
