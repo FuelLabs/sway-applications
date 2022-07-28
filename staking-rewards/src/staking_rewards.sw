@@ -28,11 +28,11 @@ use staking_rewards_events::*;
 const ONE: u64 = 1_000_000_000; // Can this be constant-evaluated from `PRECISION` ?
 
 storage {
-    rewards_token: ContractId = ContractId {
-        value: 0x0000000000000000000000000000000000000000000000000000000000000000,
-    },
     staking_token: ContractId = ContractId {
-        value: 0x0000000000000000000000000000000000000000000000000000000000000000,
+        value: 0x0101010101010101010101010101010101010101010101010101010101010101,
+    },
+    rewards_token: ContractId = ContractId {
+        value: 0x0202020202020202020202020202020202020202020202020202020202020202,
     },
     period_finish: u64 = 1000, // Should be start timestamp + rewards_duration
     reward_rate: u64 = 42,

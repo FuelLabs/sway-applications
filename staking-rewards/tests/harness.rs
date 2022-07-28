@@ -1,7 +1,9 @@
 mod utils;
 
 use fuels::prelude::*;
-use utils::{get_balance, setup, stakingrewards_mod, BASE_ASSET, ONE};
+use utils::{
+    get_balance, setup, stakingrewards_mod, BASE_ASSET, ONE, REWARDS_ASSET, STAKING_ASSET,
+};
 
 // For testing, staking and reward token will both be native asset
 // Timestamps of each action must be specified. Contract is deployed at t=0
@@ -13,7 +15,7 @@ async fn stake_tokens() {
     let (staking_contract, _id, wallet) = setup(initial_stake, initial_timestamp).await;
 
     // User balance has updated
-    let wallet_identity = stakingrewards_mod::Identity::Address(wallet.address());
+    let wallet_identity = stakingrewards_mod::Identity::Address(Address::from(wallet.address()));
     let user_balance = staking_contract
         .balance_of(wallet_identity)
         .call()
@@ -46,7 +48,7 @@ async fn calculate_earned_tokens() {
         .value;
     assert_eq!(reward_per_token, expected_reward_per_token);
 
-    let wallet_identity = stakingrewards_mod::Identity::Address(wallet.address());
+    let wallet_identity = stakingrewards_mod::Identity::Address(Address::from(wallet.address()));
     let expected_reward = expected_reward_per_token * initial_stake / ONE;
 
     let earned = staking_contract
@@ -64,7 +66,7 @@ async fn claim_reward() {
     let initial_timestamp = 0;
     let (staking_contract, _id, wallet) = setup(initial_stake, initial_timestamp).await;
 
-    let balance_before = get_balance(&wallet, BASE_ASSET).await;
+    let balance_before = get_balance(&wallet, REWARDS_ASSET).await;
     let timestamp = 123;
 
     let expected_reward_per_token: u64 =
@@ -78,7 +80,7 @@ async fn claim_reward() {
         .await
         .unwrap();
 
-    let balance_after = get_balance(&wallet, BASE_ASSET).await;
+    let balance_after = get_balance(&wallet, REWARDS_ASSET).await;
     assert_eq!(balance_after - balance_before, expected_reward);
 }
 

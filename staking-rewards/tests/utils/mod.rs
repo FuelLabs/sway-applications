@@ -1,4 +1,4 @@
-use fuels::{prelude::*, tx::ContractId};
+use fuels::prelude::*;
 
 // Load abi from json
 abigen!(StakingRewards, "out/debug/staking-rewards-abi.json");
@@ -6,6 +6,8 @@ abigen!(StakingRewards, "out/debug/staking-rewards-abi.json");
 pub const PRECISION: u32 = 9; // Should match precision in staking contract
 pub const ONE: u64 = 10_i32.pow(PRECISION) as u64;
 pub const BASE_ASSET: AssetId = AssetId::new([0u8; 32]);
+pub const STAKING_ASSET: AssetId = AssetId::new([1u8; 32]);
+pub const REWARDS_ASSET: AssetId = AssetId::new([2u8; 32]);
 
 pub async fn get_balance(wallet: &LocalWallet, asset: AssetId) -> u64 {
     let provider = wallet.get_provider().unwrap();
@@ -19,11 +21,38 @@ pub async fn get_balance(wallet: &LocalWallet, asset: AssetId) -> u64 {
 pub async fn setup(
     initial_stake: u64,
     initial_timestamp: u64,
-) -> (StakingRewards, ContractId, LocalWallet) {
-    // Launch a local network and deploy the contract
+) -> (StakingRewards, Bech32ContractId, LocalWallet) {
+    // Configure wallet with assets
 
-    let config = WalletsConfig::new_single(Some(1), Some(1_000_000_000 * ONE));
-    let wallet = &launch_custom_provider_and_get_wallets(config, None).await[0];
+    // Base asset
+    let base_asset_config = AssetConfig {
+        id: BASE_ASSET,
+        num_coins: 1,
+        coin_amount: 1_000_000_000 * ONE,
+    };
+    // Staking asset
+    let staking_asset_config = AssetConfig {
+        id: STAKING_ASSET,
+        num_coins: 1,
+        coin_amount: 1_000_000_000 * ONE,
+    };
+
+    // Rewards asset
+    let rewards_asset_config = AssetConfig {
+        id: REWARDS_ASSET,
+        num_coins: 1,
+        coin_amount: 1_000_000_000 * ONE,
+    };
+
+    let wallet_config = WalletsConfig::new_multiple_assets(
+        1,
+        vec![
+            base_asset_config,
+            staking_asset_config,
+            rewards_asset_config,
+        ],
+    );
+    let wallet = &launch_custom_provider_and_get_wallets(wallet_config, None).await[0];
 
     let id = Contract::deploy(
         "./out/debug/staking-rewards.bin",
@@ -41,17 +70,12 @@ pub async fn setup(
     // Seed the contract with some reward tokens
     let seed_amount = 100_000 * ONE;
     let _receipt = wallet
-        .transfer(
-            &Address::new(*id),
-            seed_amount,
-            BASE_ASSET,
-            TxParameters::default(),
-        )
+        .force_transfer_to_contract(&id, seed_amount, REWARDS_ASSET, TxParameters::default())
         .await
         .unwrap();
 
     // Stake some tokens from the wallet
-    let staking_call_params = CallParameters::new(Some(initial_stake), None, None);
+    let staking_call_params = CallParameters::new(Some(initial_stake), Some(STAKING_ASSET), None);
     let _receipts = staking_contract
         .stake(initial_timestamp)
         .call_params(staking_call_params)
