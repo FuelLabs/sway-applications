@@ -1,7 +1,6 @@
 contract;
 
 // TODO: commented-out code is there because the SDK does not support Vec yet so an array is used
-//       add a function to allow the seller to withdraw their collateral if the deadline is past and the buyer has never deposited - otherwise their collateral is stuck in the contract
 
 // Our library dependencies
 dep data_structures;
@@ -30,6 +29,7 @@ use events::{
     ResolvedDisputeEvent,
     ReturnedDepositEvent,
     TransferredToSellerEvent,
+    WithdrawnCollateralEvent,
 };
 
 use interface::Escrow;
@@ -341,6 +341,36 @@ impl Escrow for Contract {
         }
 
         log(TransferredToSellerEvent {
+            identifier
+        });
+    }
+
+    #[storage(read, write)]fn withdraw_collateral(identifier: u64) {
+        // The assertions ensure that only the seller can withdraw their initial deposit when
+        // creating the escrow and additional collateral for a proposed arbiter change
+
+        let mut escrow = storage.escrows.get(identifier);
+
+        require(escrow.state == State::Pending, StateError::StateNotPending);
+        require(escrow.deadline < height(), StateError::CannotWithdrawBeforeDeadline);
+        require(msg_sender().unwrap() == escrow.seller.address, UserError::Unauthorized);
+        require(escrow.buyer.asset.is_none(), StateError::CannotWithdrawAfterDesposit);
+
+        escrow.state = State::Completed;
+        storage.escrows.insert(identifier, escrow);
+
+        transfer(escrow.arbiter.fee_amount, escrow.arbiter.asset, escrow.seller.address);
+
+        // If there is a previous proposal then we must transfer those funds back to the seller
+        let proposal = storage.arbiter_proposal.get(identifier);
+        if proposal.is_some() && 0 < proposal.unwrap().fee_amount {
+            transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
+            // Not needed as long as the entire contract handles state correctly but leaving it in
+            // for conceptual closure at the slight expense of users
+            storage.arbiter_proposal.insert(identifier, Option::None);
+        }
+
+        log(WithdrawnCollateralEvent {
             identifier
         });
     }

@@ -12,6 +12,7 @@ Table of Content
     - [`propose_arbiter()`](#propose_arbiter)
     - [`return_deposit()`](#return_deposit)
     - [`take_payment()`](#take_payment)
+    - [`withdraw_collateral()`](#withdraw_collateral)
 
 # Overview
 
@@ -93,3 +94,6 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 1. The seller is able to finish the exchange by taking the deposit from the buyer if the buyer has not disputed and the deadline has been passed
    1. The buyer may not bother to complete the exchange since it requires an additional transaction which has a cost therefore the seller can assume that no dispute after the deadline means the buyer is satisfied
 
+#### `withdraw_collateral()`
+
+1. If the seller creates an escrow and the buyer never deposits then the seller has to be able to withdraw the arbiter collateral. Once the deadline is past and no deposit has been made then the seller can withdraw

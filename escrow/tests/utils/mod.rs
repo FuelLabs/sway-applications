@@ -135,6 +135,15 @@ pub mod abi_calls {
             .await
             .unwrap()
     }
+
+    pub async fn withdraw_collateral(contract: &Escrow, identifier: u64) -> CallResponse<()> {
+        contract
+            .withdraw_collateral(identifier)
+            .append_variable_outputs(2)
+            .call()
+            .await
+            .unwrap()
+    }
 }
 
 pub mod test_helpers {

@@ -158,4 +158,20 @@ abi Escrow {
     /// * When the buyer does not currently have a deposit in the escrow
     /// * When the caller is not the buyer
     #[storage(read, write)]fn transfer_to_seller(identifier: u64);
+
+    /// If a user has deposited but not transferred in time & they have not disputed then the seller
+    /// can take the payment themselves
+    //
+    /// # Arguments
+    ///
+    /// * `identifier` - Identifier used to find a specific escrow
+    ///
+    /// # Reverts
+    ///
+    /// * When the escrow is not in the State::Pending state
+    /// * When the caller attempts to withdraw before / during the deadline
+    /// * When the caller attempts to withdraw during a dispute
+    /// * When the caller is not the seller
+    /// * When the buyer deposited
+    #[storage(read, write)]fn withdraw_collateral(identifier: u64);
 }

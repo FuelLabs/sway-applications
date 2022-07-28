@@ -61,3 +61,8 @@ pub struct TransferredToSellerEvent {
     /// Unique escrow identifier
     identifier: u64,
 }
+
+pub struct WithdrawnCollateralEvent {
+    /// Unique escrow identifier
+    identifier: u64,
+}

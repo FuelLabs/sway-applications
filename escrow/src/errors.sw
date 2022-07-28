@@ -32,6 +32,8 @@ pub enum StateError {
     CannotTakePaymentBeforeDeadline: (),
     CannotTakePaymentDuringDispute: (),
     CannotTransferBeforeDesposit: (),
+    CannotWithdrawAfterDesposit: (),
+    CannotWithdrawBeforeDeadline: (),
     EscrowExpired: (),
     NotDisputed: (),
     StateNotPending: (),
