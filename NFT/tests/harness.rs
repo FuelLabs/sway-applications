@@ -1,3 +1,5 @@
+// TODO: Awaiting SDK support. Uncomment when https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
+
 mod utils;
 
 use crate::utils::{Identity, TokenMetaData};

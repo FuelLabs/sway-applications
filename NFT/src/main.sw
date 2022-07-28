@@ -111,7 +111,7 @@ impl NFT for Contract {
 
         storage.owners.insert(token_id, Option::None());
         storage.balances.insert(sender, storage.balances.get(sender) - 1);
-        storage.total_supply = storage.total_supply - 1;
+        storage.total_supply -= 1;
 
         log(BurnEvent {
             owner: sender, token_id
