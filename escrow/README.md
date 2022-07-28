@@ -1,5 +1,8 @@
 <p align="center">
-    <img src="./.docs/escrow-logo.png" height="120">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/escrow-logo-dark-theme.png">
+        <img alt="escrow logo" width="400px" src=".docs/escrow-logo-light-theme.png">
+    </picture>
 </p>
 
 ## Overview
