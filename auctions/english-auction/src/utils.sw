@@ -1,12 +1,12 @@
 library utils;
 
-dep contract_abi;
 dep data_structures;
 dep errors;
+dep interface;
 
-use contract_abi::NFT;
 use data_structures::{Asset, NFTAsset, TokenAsset};
 use errors::{AccessError, InputError};
+use interface::NFT;
 use std::{
     assert::require,
     chain::auth::{AuthError, msg_sender},

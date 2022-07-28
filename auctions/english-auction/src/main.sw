@@ -1,15 +1,15 @@
 contract;
 
-dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
+dep interface;
 dep utils;
 
-use contract_abi::{EnglishAuction, NFT};
 use data_structures::{Asset, Auction, State};
 use errors::{AccessError, InitError, InputError, UserError};
 use events::{CancelAuctionEvent, CreateAuctionEvent, BidEvent, WithdrawEvent};
+use interface::{EnglishAuction, NFT};
 use utils::{
     approved_for_nft_transfer,
     owns_nft,
