@@ -13,6 +13,7 @@ Table of Content
     - [`return_deposit()`](#return_deposit)
     - [`take_payment()`](#take_payment)
     - [`withdraw_collateral()`](#withdraw_collateral)
+- [Sequence diagram](#sequence-diagram)
 
 # Overview
 
@@ -97,3 +98,7 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 #### `withdraw_collateral()`
 
 1. If the seller creates an escrow and the buyer never deposits then the seller has to be able to withdraw the arbiter collateral. Once the deadline is past and no deposit has been made then the seller can withdraw
+
+## Sequence diagram
+
+![Escrow Sequence Diagram](.docs/escrow-sequence-diagram.png)
