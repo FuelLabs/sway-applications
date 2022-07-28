@@ -36,7 +36,7 @@ pub async fn setup(
     .await
     .unwrap();
 
-    let staking_contract = StakingRewards::new(id.to_string(), wallet.clone());
+    let staking_contract = StakingRewardsBuilder::new(id.to_string(), wallet.clone()).build();
 
     // Seed the contract with some reward tokens
     let seed_amount = 100_000 * ONE;

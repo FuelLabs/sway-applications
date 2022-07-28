@@ -6,7 +6,6 @@ dep staking_rewards_events;
 
 use std::{
     address::Address,
-    assert::require,
     chain::auth::msg_sender,
     constants::ZERO_B256,
     context::call_frames::msg_asset_id,
@@ -15,6 +14,7 @@ use std::{
     identity::Identity,
     logging::log,
     result::Result,
+    revert::require,
     storage::StorageMap,
     token::transfer,
 };
