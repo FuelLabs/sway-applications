@@ -7,10 +7,6 @@ pub enum AccessError {
     SenderNotOwnerOrApproved: (),
 }
 
-pub enum ApprovalError {
-    ApproverCannotBeOwner: (),
-}
-
 pub enum InitError {
     AdminIsNone: (),
     CannotReinitialize: (),
