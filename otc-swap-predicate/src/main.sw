@@ -2,7 +2,6 @@ predicate;
 
 use std::{
     address::Address,
-    constants::BASE_ASSET_ID,
     contract_id::ContractId,
     option::Option,
 tx:: {
@@ -20,7 +19,9 @@ fn main(output_index: u8) -> bool {
     // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `maker`
     let maker = ~Address::from(0x0303030303030303030303030303030303030303030303030303030303030303);
     let ask_amount = 42;
-    let ask_token = BASE_ASSET_ID;
+    let ask_token: ContractId = ContractId {
+        value: 0x0101010101010101010101010101010101010101010101010101010101010101,
+    };
 
     // Check if the transaction contains a single input coin from the maker, to cancel their own order
     // Note that the predicate is necessarily one of the inputs, so the other must be the coin input.
