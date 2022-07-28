@@ -34,7 +34,6 @@ use events::{
 
 use interface::Escrow;
 use std::{
-    assert::require,
     block::height,
     chain::auth::msg_sender,
     context::{call_frames::msg_asset_id, msg_amount},
@@ -43,6 +42,7 @@ use std::{
     logging::log,
     option::Option,
     result::Result,
+    revert::require,
     storage::StorageMap,
     token::transfer,
 };
