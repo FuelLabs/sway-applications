@@ -1,9 +1,7 @@
 mod utils;
 
 use fuels::prelude::*;
-use utils::{
-    get_balance, setup, stakingrewards_mod, BASE_ASSET, ONE, REWARDS_ASSET, STAKING_ASSET,
-};
+use utils::{get_balance, setup, stakingrewards_mod, ONE, REWARDS_ASSET, STAKING_ASSET};
 
 // For testing, staking and reward token will both be native asset
 // Timestamps of each action must be specified. Contract is deployed at t=0
@@ -84,7 +82,6 @@ async fn claim_reward() {
     assert_eq!(balance_after - balance_before, expected_reward);
 }
 
-/*
 #[tokio::test]
 async fn exit_with_reward() {
     let initial_stake = 10 * ONE;
@@ -93,15 +90,29 @@ async fn exit_with_reward() {
 
     let timestamp = 123;
 
-    // Exit withdraws stake and claims tokens. This panics with the contract not having enough tokens for the reward
-    // This is even though we seed the contract with 100_000 tokens in the setup. It's as though this force transfer
-    // is not taken into account
-    // I.e. rewards are being paid with staked tokens, not the contracts 'own' balance
+    let expected_reward_per_token: u64 =
+        ((timestamp - initial_timestamp) * 42 * ONE) / initial_stake;
+    let expected_reward = expected_reward_per_token * initial_stake / ONE;
+
+    let staking_balance_before = get_balance(&wallet, STAKING_ASSET).await;
+    let rewards_balance_before = get_balance(&wallet, REWARDS_ASSET).await;
+
     let _receipts = staking_contract
         .exit(timestamp)
         .append_variable_outputs(2)
         .call()
         .await
         .unwrap();
+
+    let staking_balance_after = get_balance(&wallet, STAKING_ASSET).await;
+    let rewards_balance_after = get_balance(&wallet, REWARDS_ASSET).await;
+
+    assert_eq!(
+        rewards_balance_after - rewards_balance_before,
+        expected_reward
+    );
+    assert_eq!(
+        staking_balance_after - staking_balance_before,
+        initial_stake
+    );
 }
-*/
