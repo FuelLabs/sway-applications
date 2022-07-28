@@ -82,7 +82,7 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 2. This can be done an unlimited number of times
    1. If this is done more than once in a row before the buyer accepts then the previous collateral will automatically be returned to the seller
 3. If the buyer accepts then the previous collateral will be returned to the seller
-4. If the buyer does not accept then upon completion of the escrow the funds will be returned to the seller
+4. If the buyer does not accept then upon completion of the escrow the unused collateral will be returned to the seller
 
 #### `return_deposit()`
 
