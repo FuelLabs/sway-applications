@@ -511,22 +511,10 @@ mod mint {
             //     owner_of(&owner1.nft, 3).await,
             //     Option::Some(minter.clone())
             // );
-            assert_eq!(
-                owner_of(&owner1.nft, 0).await,
-                minter.clone()
-            );
-            assert_eq!(
-                owner_of(&owner1.nft, 1).await,
-                minter.clone()
-            );
-            assert_eq!(
-                owner_of(&owner1.nft, 2).await,
-                minter.clone()
-            );
-            assert_eq!(
-                owner_of(&owner1.nft, 3).await,
-                minter.clone()
-            );
+            assert_eq!(owner_of(&owner1.nft, 0).await, minter.clone());
+            assert_eq!(owner_of(&owner1.nft, 1).await, minter.clone());
+            assert_eq!(owner_of(&owner1.nft, 2).await, minter.clone());
+            assert_eq!(owner_of(&owner1.nft, 3).await, minter.clone());
         }
 
         #[tokio::test]
@@ -905,10 +893,7 @@ mod transfer_from {
             //     owner_of(&owner1.nft, 0).await,
             //     Option::Some(operator.clone())
             // );
-            assert_eq!(
-                owner_of(&owner1.nft, 0).await,
-                operator.clone()
-            );
+            assert_eq!(owner_of(&owner1.nft, 0).await, operator.clone());
             assert_eq!(balance_of(&owner1.nft, &minter).await, 0);
             assert_eq!(balance_of(&owner2.nft, &operator).await, 1);
         }

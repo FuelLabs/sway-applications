@@ -20,8 +20,9 @@ pub mod test_helpers {
                 coins_per_wallet: 1,
                 coin_amount: 1000000,
             },
-            None
-        ).await;
+            None,
+        )
+        .await;
 
         // Get the wallets from that provider
         let wallet1 = wallets.pop().unwrap();
@@ -29,14 +30,15 @@ pub mod test_helpers {
         let wallet3 = wallets.pop().unwrap();
 
         let nft_id = Contract::deploy(
-                "./out/debug/NFT.bin", 
-                &wallet1, 
-                TxParameters::default(),
-                StorageConfiguration::with_storage_path(Some(
-                    "./out/debug/NFT-storage_slots.json".to_string(),
-                ))
-            ).await
-            .unwrap();
+            "./out/debug/NFT.bin",
+            &wallet1,
+            TxParameters::default(),
+            StorageConfiguration::with_storage_path(Some(
+                "./out/debug/NFT-storage_slots.json".to_string(),
+            )),
+        )
+        .await
+        .unwrap();
 
         let deploy_wallet = Metadata {
             nft: NftBuilder::new(nft_id.to_string(), wallet1.clone()).build(),
