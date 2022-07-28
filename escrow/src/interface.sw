@@ -159,9 +159,9 @@ abi Escrow {
     /// * When the caller is not the buyer
     #[storage(read, write)]fn transfer_to_seller(identifier: u64);
 
-    /// If a user has deposited but not transferred in time & they have not disputed then the seller
-    /// can take the payment themselves
-    //
+    /// If a buyer has not deposited and the deadline has been surpassed then the seller can withdraw
+    /// their collateral
+    ///
     /// # Arguments
     ///
     /// * `identifier` - Identifier used to find a specific escrow
