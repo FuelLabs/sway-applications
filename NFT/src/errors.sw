@@ -17,7 +17,9 @@ pub enum InitError {
 }
 
 pub enum InputError {
+    ApprovedDoesNotExist: (),
     NotEnoughTokensToMint: (),
+    OwnerDoesNotExist: (),
     TokenDoesNotExist: (),
     TokenSupplyCannotBeZero: (),
 }

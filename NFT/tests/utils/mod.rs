@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*, tx::ContractId};
+use fuels::{contract::contract::CallResponse, prelude::*};
 
 // Load abi from json
 abigen!(Nft, "out/debug/NFT-abi.json");
@@ -61,7 +61,7 @@ pub mod abi_calls {
 
     use super::*;
 
-    pub async fn approve(approved: &Option, contract: &Nft, token_id: u64) -> CallResponse<()> {
+    pub async fn approve(approved: &Identity, contract: &Nft, token_id: u64) -> CallResponse<()> {
         contract
             .approve(approved.clone(), token_id)
             .call()
@@ -69,7 +69,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn approved(contract: &Nft, token_id: u64) -> Option {
+    pub async fn approved(contract: &Nft, token_id: u64) -> Identity {
         contract.approved(token_id).call().await.unwrap().value
     }
 
@@ -89,7 +89,7 @@ pub mod abi_calls {
     pub async fn constructor(
         access_control: bool,
         contract: &Nft,
-        owner: &Option,
+        owner: &Identity,
         token_supply: u64,
     ) -> CallResponse<()> {
         contract
@@ -124,7 +124,7 @@ pub mod abi_calls {
         contract.meta_data(token_id).call().await.unwrap().value
     }
 
-    pub async fn owner_of(contract: &Nft, token_id: u64) -> Option {
+    pub async fn owner_of(contract: &Nft, token_id: u64) -> Identity {
         contract.owner_of(token_id).call().await.unwrap().value
     }
 
@@ -140,7 +140,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn set_admin(contract: &Nft, minter: &Option) -> CallResponse<()> {
+    pub async fn set_admin(contract: &Nft, minter: &Identity) -> CallResponse<()> {
         contract.set_admin(minter.clone()).call().await.unwrap()
     }
 

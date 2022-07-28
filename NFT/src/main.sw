@@ -8,8 +8,10 @@ use data_structures::TokenMetaData;
 use errors::{AccessError, ApprovalError, InitError, InputError};
 use interface::{AdminEvent, ApprovalEvent, BurnEvent, MintEvent, NFT, OperatorEvent, TransferEvent};
 use std::{
+    address::Address,
     assert::require,
     chain::auth::{AuthError, msg_sender},
+    constants::ZERO_B256,
     identity::Identity,
     logging::log,
     option::Option,
@@ -67,8 +69,11 @@ storage {
 }
 
 impl NFT for Contract {
-    #[storage(read, write)]fn approve(approved: Option<Identity>, token_id: u64) {
+    #[storage(read, write)]fn approve(approved: Identity, token_id: u64) {
         // Ensure this is a valid token
+        // TODO: Remove this and update function definition to include Option once 
+        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
+        let approved = Option::Some(approved);
         let token_owner = storage.owners.get(token_id);
         require(token_owner.is_some(), InputError::TokenDoesNotExist);
 
@@ -84,8 +89,13 @@ impl NFT for Contract {
         });
     }
 
-    #[storage(read)]fn approved(token_id: u64) -> Option<Identity> {
-        storage.approved.get(token_id)
+    #[storage(read)]fn approved(token_id: u64) -> Identity {
+        // TODO: This should be removed and update function definition to include Option once 
+        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
+        // storage.approved.get(token_id)
+        let approved = storage.approved.get(token_id);
+        require(approved.is_some() && approved.unwrap() != Identity::Address(~Address::from(ZERO_B256)), InputError::ApprovedDoesNotExist);
+        approved.unwrap()
     }
 
     #[storage(read)]fn balance_of(owner: Identity) -> u64 {
@@ -110,9 +120,12 @@ impl NFT for Contract {
         });
     }
 
-    #[storage(read, write)]fn constructor(access_control: bool, admin: Option<Identity>, max_supply: u64) {
+    #[storage(read, write)]fn constructor(access_control: bool, admin: Identity, max_supply: u64) {
         // This function can only be called once so if the token supply is already set it has
         // already been called
+        // TODO: Remove this and update function definition to include Option once 
+        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
+        let admin = Option::Some(admin);
         require(storage.max_supply == 0, InitError::CannotReinitialize);
         require(max_supply != 0, InputError::TokenSupplyCannotBeZero);
         require((access_control && admin.is_some()) || (!access_control && admin.is_none()), InitError::AdminIsNone);
@@ -164,12 +177,20 @@ impl NFT for Contract {
         storage.meta_data.get(token_id)
     }
 
-    #[storage(read)]fn owner_of(token_id: u64) -> Option<Identity> {
-        storage.owners.get(token_id)
+    #[storage(read)]fn owner_of(token_id: u64) -> Identity {
+        // TODO: This should be removed and update function definition to include Option once 
+        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
+        //storage.owners.get(token_id).unwrap()
+        let owner = storage.owners.get(token_id);
+        require(owner.is_some() && owner.unwrap() != Identity::Address(~Address::from(ZERO_B256)), InputError::OwnerDoesNotExist);
+        owner.unwrap()
     }
 
-    #[storage(read, write)]fn set_admin(admin: Option<Identity>) {
+    #[storage(read, write)]fn set_admin(admin: Identity) {
         // Ensure that the sender is the admin
+        // TODO: Remove this and update function definition to include Option once 
+        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
+        let admin = Option::Some(admin);
         let current_admin = storage.admin;
         require(current_admin.is_some() && msg_sender().unwrap() == current_admin.unwrap(), AccessError::SenderCannotSetAccessControl);
         storage.admin = admin;

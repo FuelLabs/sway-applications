@@ -56,7 +56,7 @@ abi NFT {
     ///
     /// * When `token_id` does not map to an existing token.
     /// * When the sender is not the token's owner.
-    #[storage(read, write)]fn approve(approved: Option<Identity>, token_id: u64);
+    #[storage(read, write)]fn approve(approved: Identity, token_id: u64);
 
     /// Returns the user which is approved to transfer the given token.
     ///
@@ -66,7 +66,7 @@ abi NFT {
     /// # Arguments
     ///
     /// * `token_id` - The unique identifier of the token which the approved user should be returned.
-    #[storage(read)] fn approved(token_id: u64) -> Option<Identity>;
+    #[storage(read)] fn approved(token_id: u64) -> Identity;
 
     /// Returns the balance of the `owner` user.
     ///
@@ -105,7 +105,7 @@ abi NFT {
     /// * When the constructor function has already been called.
     /// * When the `token_supply` is set to 0.
     /// * When `access_control` is set to true and no admin `Identity` was given.
-    #[storage(read, write)]fn constructor(access_control: bool, admin: Option<Identity>, token_supply: u64);
+    #[storage(read, write)]fn constructor(access_control: bool, admin: Identity, token_supply: u64);
 
     /// Returns whether the `operator` user is approved to transfer all tokens on the `owner`
     /// user's behalf.
@@ -150,7 +150,7 @@ abi NFT {
     /// # Arguments
     ///
     /// * `token_id` - The unique identifier of the token.
-    #[storage(read)] fn owner_of(token_id: u64) -> Option<Identity>;
+    #[storage(read)] fn owner_of(token_id: u64) -> Identity;
 
     /// Changes the contract's admin.
     ///
@@ -164,7 +164,7 @@ abi NFT {
     /// # Reverts
     ///
     /// * When the sender is not the `admin` in storage.
-    #[storage(read, write)]fn set_admin(admin: Option<Identity>);
+    #[storage(read, write)]fn set_admin(admin: Identity);
 
     /// Gives the `operator` user approval to transfer ALL tokens owned by the `owner` user.
     ///
