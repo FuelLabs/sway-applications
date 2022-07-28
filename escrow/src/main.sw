@@ -1,6 +1,7 @@
 contract;
 
 // TODO: commented-out code is there because the SDK does not support Vec yet so an array is used
+//       add a function to allow the seller to withdraw their collateral if the deadline is past and the buyer has never deposited - otherwise their collateral is stuck in the contract
 
 // Our library dependencies
 dep data_structures;
