@@ -48,7 +48,7 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 #### `deposit()`
 
-1. The buyer must deposit into the escrow one asset from the options provided by the seller
+1. The buyer must deposit into the escrow one asset from the list of assets provided by the seller
 2. The escrow accepts a 1 time deposit therefore the buyer cannot go back and deposit a different asset
 
 > **NOTE** Once a buyer deposits they are unable to get the asset out by themselves. Either the arbiter must resolve in their favour or the seller must return the deposit. This is a safety mechanism.
@@ -56,10 +56,10 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 #### `dispute()`
 
 1. The buyer is able to `dispute()` the escrow which prevents the seller from taking their deposit after the deadline
-2. Disputing means that there are 3 ways to move the deposit from the buyer out of the escrow
-   1. The buyer transfers to seller
-   2. The seller returns the deposit to the buyer
-   3. The arbiter may come in and resolve the dispute in favour of the buyer or seller
+2. A dispute leaves the following 3 ways of moving the deposit from the buyer out of the contract
+   1. The buyer transfers to seller (`transfer_to_seller()`)
+   2. The seller returns the deposit to the buyer (`return_deposit()`)
+   3. The arbiter may come in and resolve the dispute in favour of the buyer or seller (`resolve_dispute()`)
 
 #### `transfer_to_seller()`
 
