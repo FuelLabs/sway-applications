@@ -2,13 +2,12 @@ contract;
 
 use std::{
     address::Address,
-    assert::require,
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount, this_balance},
     contract_id::ContractId,
     identity::Identity,
     result::*,
-    revert::revert,
+    revert::{require, revert},
     token::transfer_to_output,
 };
 
