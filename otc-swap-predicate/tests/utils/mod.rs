@@ -68,13 +68,13 @@ pub async fn test_predicate_spend_with_parameters(
         std::fs::read("../otc-swap-predicate/out/debug/otc-swap-predicate.bin").unwrap();
     let predicate_root: [u8; 32] = (*Contract::root_from_code(&predicate_bytecode)).into();
     let predicate_root = Address::from(predicate_root);
-    let predicate_root_bech32 = Bech32Address::from(predicate_root);
+    let predicate_root = Bech32Address::from(predicate_root);
 
     // Transfer some coins to the predicate root
     let offered_amount = 1000;
     let _receipt = wallet
         .transfer(
-            &predicate_root_bech32,
+            &predicate_root,
             offered_amount,
             OFFERED_ASSET,
             TxParameters::default(),
@@ -82,18 +82,19 @@ pub async fn test_predicate_spend_with_parameters(
         .await
         .unwrap();
 
-    let initial_predicate_balance = get_balance(&provider, &predicate_root_bech32, OFFERED_ASSET).await;
     let initial_wallet_offered_token_balance = get_balance(&provider, wallet.address(), OFFERED_ASSET).await;
     let initial_wallet_asked_token_balance = get_balance(&provider, wallet.address(), asked_asset).await;
     let initial_receiver_balance = get_balance(&provider, &receiver_address, asked_asset).await;
 
     // The predicate root has received the coin
-    assert_eq!(initial_predicate_balance, offered_amount);
+    assert_eq!(get_balance(&provider, &predicate_root, OFFERED_ASSET).await, offered_amount);
         
-    // TO DO : Despite succcesful transfer (assert above), no coins are found ? 
-    
     // Get predicate coin to unlock
-    let predicate_coin = &provider.get_coins(&predicate_root_bech32).await.unwrap()[0];
+    // Despite succcesful transfer (assert above), no coins are found ? 
+    assert!(provider.get_asset_balance(&predicate_root, OFFERED_ASSET).await.unwrap() > 0);
+    assert!(provider.get_coins(&predicate_root).await.unwrap().len() > 0);
+
+    let predicate_coin = &provider.get_coins(&predicate_root).await.unwrap()[0];
     let predicate_coin_utxo_id = predicate_coin.utxo_id.clone().into();
 
     // Get other coin to spend
@@ -110,7 +111,7 @@ pub async fn test_predicate_spend_with_parameters(
     // Coin belonging to the predicate root
     let input_predicate = Input::CoinPredicate {
         utxo_id: predicate_coin_utxo_id,
-        owner: predicate_root,
+        owner: Address::from(&predicate_root),
         amount: offered_amount,
         asset_id: OFFERED_ASSET,
         maturity: 0,
@@ -168,7 +169,7 @@ pub async fn test_predicate_spend_with_parameters(
     let script = Script::new(tx);
     let _receipts = script.call(&client).await.unwrap();
 
-    let predicate_balance = get_balance(&provider, &predicate_root_bech32, OFFERED_ASSET).await;
+    let predicate_balance = get_balance(&provider, &predicate_root, OFFERED_ASSET).await;
     let wallet_asked_token_balance = get_balance(&provider, wallet.address(), asked_asset).await;
     let wallet_offered_token_balance = get_balance(&provider, wallet.address(), OFFERED_ASSET).await;
     let receiver_balance = get_balance(&provider, &receiver_address, asked_asset).await;
