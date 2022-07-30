@@ -13,6 +13,7 @@ pub enum InitError {
 }
 
 pub enum InputError {
+    AdminDoesNotExist: (),
     ApprovedDoesNotExist: (),
     NotEnoughTokensToMint: (),
     OwnerDoesNotExist: (),

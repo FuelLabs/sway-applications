@@ -63,6 +63,10 @@ pub mod abi_calls {
 
     use super::*;
 
+    pub async fn admin(contract: &Nft) -> Identity {
+        contract.admin().call().await.unwrap().value
+    }
+
     pub async fn approve(approved: &Identity, contract: &Nft, token_id: u64) -> CallResponse<()> {
         contract
             .approve(approved.clone(), token_id)

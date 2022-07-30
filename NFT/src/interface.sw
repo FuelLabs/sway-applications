@@ -43,6 +43,13 @@ pub struct MintEvent {
 }
 
 abi NFT {
+    /// Returns the current admin for the contract.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract does not have an admin.
+    #[storage(read)]fn admin() -> Identity;
+
     /// Gives approval to the `approved` user to transfer a specific token on another user's behalf.
     ///
     /// To revoke approval the approved user should be `None`.
@@ -69,7 +76,7 @@ abi NFT {
     ///
     /// # Reverts
     ///
-    /// * When there is no approved for the `token_id`
+    /// * When there is no approved for the `token_id`.
     #[storage(read)] fn approved(token_id: u64) -> Identity;
 
     /// Returns the balance of the `owner` user.
@@ -157,7 +164,7 @@ abi NFT {
     ///
     /// # Reverts
     ///
-    /// * When there is no owner for the `token_id`
+    /// * When there is no owner for the `token_id`.
     #[storage(read)] fn owner_of(token_id: u64) -> Identity;
 
     /// Changes the contract's admin.

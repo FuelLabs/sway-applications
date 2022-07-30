@@ -67,6 +67,14 @@ storage {
 }
 
 impl NFT for Contract {
+    #[storage(read)]fn admin() -> Identity {
+        // TODO: Remove this and update function definition to include Option once
+        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
+        let admin = storage.admin;
+        require(admin.is_some(), InputError::AdminDoesNotExist);
+        admin.unwrap()
+    }
+
     #[storage(read, write)]fn approve(approved: Identity, token_id: u64) {
         // Ensure this is a valid token
         // TODO: Remove this and update function definition to include Option once

@@ -7,11 +7,62 @@ use crate::utils::{Identity, TokenMetaData};
 use fuels::prelude::*;
 use utils::{
     abi_calls::{
-        approve, approved, balance_of, burn, constructor, is_approved_for_all, max_supply,
+        admin, approve, approved, balance_of, burn, constructor, is_approved_for_all, max_supply,
         meta_data, mint, owner_of, set_admin, set_approval_for_all, total_supply, transfer_from,
     },
     test_helpers::setup,
 };
+
+mod admin {
+
+    use super::*;
+
+    mod success {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn gets_admin() {
+            let (deploy_wallet, owner1, _owner2) = setup().await;
+
+            // let new_admin = Option::Some(Identity::Address(owner1.wallet.address()));
+            let new_admin = Identity::Address(owner1.wallet.address());
+            constructor(true, &deploy_wallet.contract, &new_admin, 1).await;
+
+            assert_eq!(admin(&owner1.contract).await, new_admin);
+        }
+
+        #[tokio::test]
+        async fn gets_admin_after_change() {
+            let (deploy_wallet, owner1, owner2) = setup().await;
+
+            // let new_admin = Option::Some(Identity::Address(owner1.wallet.address()));
+            let new_admin = Identity::Address(owner1.wallet.address());
+            constructor(true, &deploy_wallet.contract, &new_admin, 1).await;
+
+            assert_eq!(admin(&owner1.contract).await, new_admin);
+
+            // let new_admin = Option::Some(minter.clone());
+            let new_admin = Identity::Address(owner2.wallet.address());
+            set_admin(&owner1.contract, &new_admin).await;
+
+            assert_eq!(admin(&owner1.contract).await, new_admin);
+        }
+    }
+
+    mod reverts {
+
+        use super::*;
+
+        #[tokio::test]
+        #[should_panic(expected = "Revert(42)")]
+        async fn panics_when_admin_not_set() {
+            let (_deploy_wallet, owner1, _owner2) = setup().await;
+
+            admin(&owner1.contract).await;
+        }
+    }
+}
 
 mod approve {
 
@@ -482,7 +533,7 @@ mod is_approved_for_all {
             constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
             let owner = Identity::Address(owner1.wallet.address());
-            let operator = Identity::Address(owner2.wallet.address());\
+            let operator = Identity::Address(owner2.wallet.address());
 
             assert_eq!(is_approved_for_all(&owner1.contract, &operator, &owner).await, false);
 
