@@ -7,7 +7,7 @@ pub struct TokenMetaData {
 
 impl TokenMetaData {
     fn new() -> Self {
-        TokenMetaData {
+        Self {
             name: "Example",
         }
     }

@@ -66,6 +66,10 @@ abi NFT {
     /// # Arguments
     ///
     /// * `token_id` - The unique identifier of the token which the approved user should be returned.
+    ///
+    /// # Reverts
+    ///
+    /// * When there is no approved for the `token_id`
     #[storage(read)] fn approved(token_id: u64) -> Identity;
 
     /// Returns the balance of the `owner` user.
@@ -150,6 +154,10 @@ abi NFT {
     /// # Arguments
     ///
     /// * `token_id` - The unique identifier of the token.
+    ///
+    /// # Reverts
+    ///
+    /// * When there is no owner for the `token_id`
     #[storage(read)] fn owner_of(token_id: u64) -> Identity;
 
     /// Changes the contract's admin.

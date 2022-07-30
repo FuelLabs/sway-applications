@@ -8,7 +8,7 @@ use data_structures::TokenMetaData;
 use errors::{AccessError, InitError, InputError};
 use interface::{AdminEvent, ApprovalEvent, BurnEvent, MintEvent, NFT, OperatorEvent, TransferEvent};
 use std::{
-    chain::auth::{AuthError, msg_sender},
+    chain::auth::msg_sender,
     identity::Identity,
     logging::log,
     option::Option,
@@ -158,12 +158,12 @@ impl NFT for Contract {
             // Create the TokenMetaData for this new token
             storage.meta_data.insert(index, ~TokenMetaData::new());
             storage.owners.insert(index, Option::Some(to));
-            index = index + 1;
+            index += 1;
         }
 
         storage.balances.insert(to, storage.balances.get(to) + amount);
         storage.tokens_minted = total_mint;
-        storage.total_supply = storage.total_supply + amount;
+        storage.total_supply += amount;
 
         log(MintEvent {
             owner: to, token_id_start: tokens_minted, total_tokens: amount
