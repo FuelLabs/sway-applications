@@ -535,11 +535,17 @@ mod is_approved_for_all {
             let owner = Identity::Address(owner1.wallet.address());
             let operator = Identity::Address(owner2.wallet.address());
 
-            assert_eq!(is_approved_for_all(&owner1.contract, &operator, &owner).await, false);
+            assert_eq!(
+                is_approved_for_all(&owner1.contract, &operator, &owner).await,
+                false
+            );
 
             set_approval_for_all(true, &owner1.contract, &operator).await;
 
-            assert_eq!(is_approved_for_all(&owner1.contract, &operator, &owner).await, true);
+            assert_eq!(
+                is_approved_for_all(&owner1.contract, &operator, &owner).await,
+                true
+            );
         }
 
         #[tokio::test]
@@ -554,7 +560,10 @@ mod is_approved_for_all {
             let operator = Identity::Address(owner2.wallet.address());
             set_approval_for_all(true, &owner1.contract, &operator).await;
 
-            assert_eq!(is_approved_for_all(&owner1.contract, &owner, &operator).await, false);
+            assert_eq!(
+                is_approved_for_all(&owner1.contract, &owner, &operator).await,
+                false
+            );
         }
     }
 }
@@ -721,7 +730,12 @@ mod mint {
             constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
             let minter = Identity::Address(owner1.wallet.address());
-            mint(max_supply(&owner1.contract).await + 1, &owner1.contract, &minter).await;
+            mint(
+                max_supply(&owner1.contract).await + 1,
+                &owner1.contract,
+                &minter,
+            )
+            .await;
         }
 
         #[tokio::test]
@@ -963,11 +977,17 @@ mod set_approval_for_all {
             let owner = Identity::Address(owner1.wallet.address());
             let operator = Identity::Address(owner2.wallet.address());
 
-            assert_eq!(is_approved_for_all(&owner1.contract, &operator, &owner).await, false);
+            assert_eq!(
+                is_approved_for_all(&owner1.contract, &operator, &owner).await,
+                false
+            );
 
             set_approval_for_all(true, &owner1.contract, &operator).await;
 
-            assert_eq!(is_approved_for_all(&owner1.contract, &operator, &owner).await, true);
+            assert_eq!(
+                is_approved_for_all(&owner1.contract, &operator, &owner).await,
+                true
+            );
         }
 
         #[tokio::test]
@@ -981,15 +1001,24 @@ mod set_approval_for_all {
             let owner = Identity::Address(owner1.wallet.address());
             let operator = Identity::Address(owner2.wallet.address());
 
-            assert_eq!(is_approved_for_all(&owner1.contract, &operator, &owner).await, false);
+            assert_eq!(
+                is_approved_for_all(&owner1.contract, &operator, &owner).await,
+                false
+            );
 
             set_approval_for_all(true, &owner1.contract, &operator).await;
 
-            assert_eq!(is_approved_for_all(&owner1.contract, &operator, &owner).await, true);
+            assert_eq!(
+                is_approved_for_all(&owner1.contract, &operator, &owner).await,
+                true
+            );
 
             set_approval_for_all(false, &owner1.contract, &operator).await;
 
-            assert_eq!(is_approved_for_all(&owner1.contract, &operator, &owner).await, false);
+            assert_eq!(
+                is_approved_for_all(&owner1.contract, &operator, &owner).await,
+                false
+            );
         }
     }
 }
