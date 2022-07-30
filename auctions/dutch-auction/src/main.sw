@@ -1,6 +1,6 @@
 contract;
 
-dep abi;
+dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
@@ -19,7 +19,7 @@ use std::{
     storage::StorageMap,
 };
 
-use abi::DutchAuction;
+use contract_abi::DutchAuction;
 use data_structures::Auction;
 use errors::{SetupError, TimeError, UserError};
 use events::{CancelledAuctionEvent, ChangedAsset, CreatedAuctionEvent, WinningBidEvent};
@@ -28,18 +28,25 @@ use utils::{calculate_price, eq_identity, sender_indentity, transfer_to_identity
 storage {
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
     auctions: StorageMap<u64,
-    Auction>, /// Tracking how many auctions have been made till now
-    auction_count: u64,
+    Auction> = StorageMap {
+    },
+    /// Tracking how many auctions have been made till now
+    auction_count: u64 = 0,
     /// Auction ids of the active auctions by author
     active_auctions_of_author: StorageMap<Identity,
     [u64;
-    1]>, /// Auction ids of all auctions by author
+    1]> = StorageMap {
+    },
+    /// Auction ids of all auctions by author
     auctions_of_author: StorageMap<Identity,
     [u64;
-    1]>, /// The auctions which any given bidder has won
+    1]> = StorageMap {
+    },
+    /// The auctions which any given bidder has won
     auctions_won: StorageMap<Identity,
     [u64;
-    1]>, 
+    1]> = StorageMap {
+    },
 }
 
 impl DutchAuction for Contract {
@@ -49,7 +56,7 @@ impl DutchAuction for Contract {
     ///
     /// This function will panic when:
     ///     1. auction_id is 0 or higher than storage.auction_count
-    fn price(auction_id: u64) -> u64 {
+    #[storage(read)]fn price(auction_id: u64) -> u64 {
         validate_id(auction_id, storage.auction_count);
         calculate_price(storage.auctions.get(auction_id))
     }
@@ -64,7 +71,7 @@ impl DutchAuction for Contract {
     ///     3. current block height is lower than start_time, or higher than end_time
     ///     4. Incorrect asset is sent to the auction
     ///     5. The bid is less than the current price
-    fn bid(auction_id: u64) {
+    #[storage(read, write)]fn bid(auction_id: u64) {
         // In a Dutch auction the first bid wins
         validate_id(auction_id, storage.auction_count);
 
@@ -116,7 +123,7 @@ impl DutchAuction for Contract {
     ///     1. reserve_price is greater than opening_price
     ///     2. block height is greater than end_time or start_time
     ///     3. start_time is greater than end_time
-    fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Identity, asset: ContractId) {
+    #[storage(read, write)]fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Identity, asset: ContractId) {
         require(reserve_price <= opening_price, SetupError::EndPriceCannotBeLargerThanStartPrice);
         require(height() < end_time, SetupError::AuctionCannotEndInThePast);
         require(height() <= start_time, SetupError::AuctionCannotStartInThePast);
@@ -150,7 +157,7 @@ impl DutchAuction for Contract {
     ///     1. auction_id is 0 or greater than storage.auction_count
     ///     2. msg_sender is not the author of the auction
     ///     3. auction has already ended
-    fn cancel_auction(auction_id: u64) {
+    #[storage(read, write)]fn cancel_auction(auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
 
         let mut auction = storage.auctions.get(auction_id);
@@ -176,7 +183,7 @@ impl DutchAuction for Contract {
     ///
     /// This function will panic when:
     ///     1. auction_id is 0 or greater than storage.auction_count
-    fn auction(auction_id: u64) -> Auction {
+    #[storage(read)]fn auction(auction_id: u64) -> Auction {
         validate_id(auction_id, storage.auction_count);
         storage.auctions.get(auction_id)
     }
@@ -189,7 +196,7 @@ impl DutchAuction for Contract {
     ///     1. auction_id is 0 or greater than storage.auction_count
     ///     2. msg_sender is not the author of the auction
     ///     3. auction has already ended
-    fn change_asset(new_asset: ContractId, auction_id: u64) {
+    #[storage(read, write)]fn change_asset(new_asset: ContractId, auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
         let mut auction = storage.auctions.get(auction_id);
 
@@ -215,7 +222,7 @@ impl DutchAuction for Contract {
     ///     1. auction_id is 0 or greater than storage.auction_count
     ///     2. msg_sender is not the author of the auction
     ///     3. auction has already ended
-    fn change_beneficiary(new_beneficiary: Identity, auction_id: u64) {
+    #[storage(read, write)]fn change_beneficiary(new_beneficiary: Identity, auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
         let mut auction = storage.auctions.get(auction_id);
 
@@ -230,19 +237,19 @@ impl DutchAuction for Contract {
     }
 
     /// Returns the active auctions of the author
-    fn active_auctions_of_author(author: Identity) -> [u64;
+    #[storage(read)]fn active_auctions_of_author(author: Identity) -> [u64;
     1] {
         storage.active_auctions_of_author.get(author)
     }
 
     /// Returns all the auctions created by author
-    fn auctions_of_author(author: Identity) -> [u64;
+    #[storage(read)]fn auctions_of_author(author: Identity) -> [u64;
     1] {
         storage.auctions_of_author.get(author)
     }
 
     /// Returns what auctions some bidder has won
-    fn auctions_won(bidder: Identity) -> [u64;
+    #[storage(read)]fn auctions_won(bidder: Identity) -> [u64;
     1] {
         storage.auctions_won.get(bidder)
     }
