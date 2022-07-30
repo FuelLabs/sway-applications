@@ -4,7 +4,7 @@ use fuels::{contract::contract::CallResponse, prelude::*};
 abigen!(Nft, "out/debug/NFT-abi.json");
 
 pub struct Metadata {
-    pub nft: Nft,
+    pub contract: Nft,
     pub wallet: LocalWallet,
 }
 
@@ -41,17 +41,17 @@ pub mod test_helpers {
         .unwrap();
 
         let deploy_wallet = Metadata {
-            nft: NftBuilder::new(nft_id.to_string(), wallet1.clone()).build(),
+            contract: NftBuilder::new(nft_id.to_string(), wallet1.clone()).build(),
             wallet: wallet1.clone(),
         };
 
         let owner1 = Metadata {
-            nft: NftBuilder::new(nft_id.to_string(), wallet2.clone()).build(),
+            contract: NftBuilder::new(nft_id.to_string(), wallet2.clone()).build(),
             wallet: wallet2.clone(),
         };
 
         let owner2 = Metadata {
-            nft: NftBuilder::new(nft_id.to_string(), wallet3.clone()).build(),
+            contract: NftBuilder::new(nft_id.to_string(), wallet3.clone()).build(),
             wallet: wallet3.clone(),
         };
 
