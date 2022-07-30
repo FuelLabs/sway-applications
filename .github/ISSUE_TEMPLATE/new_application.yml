@@ -9,13 +9,13 @@ body:
       label: Application Description
       description: Describe the application, motivation behind it and write a mini-specification
       placeholder: |
-        # Description
+        #### Description
         The application ...
 
-        # Motivation
+        #### Motivation
         It allows ...
 
-        # Specification
+        #### Specification
         ...
     validations:
       required: true
