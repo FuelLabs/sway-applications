@@ -4,7 +4,7 @@ PROJECT=$1
 
 if [ $PROJECT = 'auctions/dutch-auction' ]; then
     forc build --path $PROJECT
-if [ $PROJECT = 'dao-voting' ]; then
+elif [ $PROJECT = 'dao-voting' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/gov_token
 elif [ $PROJECT = 'escrow' ]; then
