@@ -5,12 +5,12 @@ dep errors;
 
 use std::{
     address::Address,
-    revert::require,
     block::height,
     chain::auth::{AuthError, msg_sender},
     contract_id::ContractId,
     identity::Identity,
     result::*,
+    revert::require,
     token::{force_transfer_to_contract, transfer_to_output}
 };
 

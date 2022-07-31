@@ -8,13 +8,13 @@ dep utils;
 
 use std::{
     address::Address,
-    revert::require,
     block::height,
     context::{call_frames::msg_asset_id, msg_amount},
     contract_id::ContractId,
     identity::Identity,
     logging::log,
     option::Option,
+    revert::require,
     revert::revert,
     storage::StorageMap,
 };
