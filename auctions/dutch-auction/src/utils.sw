@@ -5,7 +5,7 @@ dep errors;
 
 use std::{
     address::Address,
-    assert::require,
+    revert::require,
     block::height,
     chain::auth::{AuthError, msg_sender},
     contract_id::ContractId,

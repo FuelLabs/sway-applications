@@ -8,7 +8,7 @@ dep utils;
 
 use std::{
     address::Address,
-    assert::require,
+    revert::require,
     block::height,
     context::{call_frames::msg_asset_id, msg_amount},
     contract_id::ContractId,
