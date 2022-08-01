@@ -1,9 +1,13 @@
-<h1>⚡️ Fuels UI - Escrow Application</h1>
+<picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/escrow-logo-dark-theme.png">
+        <img alt="escrow logo" width="400px" src=".docs/escrow-logo-light-theme.png">
+</picture>
+</p>
 
 <h2>📝&nbsp; Table of Contents</h2>
 
 - [🙋🏻&nbsp; Getting Started](#-getting-started)
-- [🖥️ Running The Prokect](#running-the-project)
+- [🖥️ Running The Project](#running-the-project)
 - [📜&nbsp; License](#-license)
 
 ---
@@ -11,6 +15,22 @@
 ## 🙋🏻&nbsp; Getting Started
 
 First, go through the setup process in [CONTRIBUTING.md](../../../CONTRIBUTING.md)
+
+## Project Structure
+
+TODO: need UI for this to be relevant
+
+<!--Only show most important files e.g. script to run, build etc.-->
+
+```
+escrow/
+├── contract/
+|    └── src/main.sw
+|    └── tests/harness.rs
+├── frontend/
+|    └── Directories & files
+└── README.md
+```
 
 ## 🖥️ Running The Project
 
@@ -47,6 +67,10 @@ Insde of `/contracts/escrow` folder test the contracts:
 ```bash
 forc test
 ```
+
+## Contributing
+
+Check [CONTRIBUTING.md](../CONTRIBUTING.md) for more info!
 
 ## 📜&nbsp; License
 
