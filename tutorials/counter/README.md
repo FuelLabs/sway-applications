@@ -23,7 +23,7 @@
   - [How to run the application](#usage)
   - [Application Development Tutorial](#walkthrough)
     - [Creating the smart contract](#1-creating-a-deployable-sway-program)
-    - Compiling the contract, generating TypeScript and deploying
+    - [Compiling the contract, generating TypeScript and deploying](#2-compiling-your-sway-contract)
       - [Compiling the contract](#2-compiling-your-sway-contract)
       - [Generating TypeScript](#3-generating-typescript-for-sway-contract)
       - [Deploying the contract](#4-deploying-your-sway-contract)
@@ -36,7 +36,7 @@
 In this tutorial, we will build a counter application, using storage on our Sway contract to keep track of a stored number that can be retrieved/ modified as part of our React app. This demonstrates a Sway Program called a Smart Contract, and will show you the basics of using Sway with the [TypeScript SDK](https://fuellabs.github.io/fuels-ts/).
 
 <p align="center">
-  ![Demo Screen Shot](./img/preview.png)
+  <img src="./img/preview.png" height="120">
 </p>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -102,9 +102,9 @@ We require 3 functions for our application.
 2. Decrementing the counter
 3. Getting the current value of the counter
 
-Take a look at the following [abi.sw](src/abi.sw) of the program:
+Take a look at the following [interface.sw](src/interface.sw) of the program:
 
-```rust
+````rust
 fn increment();
 fn decrement();
 fn get_counter() -> u64;
@@ -113,11 +113,11 @@ fn get_counter() -> u64;
 
 The Sway program source can be compiled into binary and generate an Application Binary Interface (ABI) JSON file that allows typed and strict interoperability between Fuel and development languages like Rust and TypeScript.
 
-While inside this project directory, use this command to take the contents of [main.sw](src/main.sw) and compile it.
+While inside the project directory of `/tutorials/counter`, use this command to take the contents of [main.sw](src/main.sw) and compile it.
 
 ```sh
 forc build
-```
+````
 
 #### 3. Generating TypeScript for Sway contract
 

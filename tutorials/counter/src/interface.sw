@@ -1,4 +1,4 @@
-library abi;
+library interface;
 
 abi Counter {
     fn increment();

@@ -50,6 +50,7 @@ sway-applications/
 
 ### Projects
 
+- [Counter](./tutorials/counter) is a tutorial browser application using React and the Fuel TypeScript SDK
 - [Decentralized Autonomous Organization (DAO)](./dao-voting) is an organization where users get to vote on governance proposals using governance tokens
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
 - [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal

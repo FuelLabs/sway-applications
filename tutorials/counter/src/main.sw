@@ -1,8 +1,8 @@
 contract;
 
-dep abi;
+dep interface;
 
-use abi::Counter;
+use interface::Counter;
 
 storage {
     counter: u64
