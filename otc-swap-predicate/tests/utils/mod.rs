@@ -69,9 +69,8 @@ pub async fn test_predicate_spend_with_parameters(
     )
     .await[0];
 
-    // Get provider and client
+    // Get provider
     let provider = wallet.get_provider().unwrap();
-    let client = &provider.client;
 
     let (predicate_bytecode, predicate_root) = predicate_bytecode_and_root_from_bin(
         "../otc-swap-predicate/out/debug/otc-swap-predicate.bin",
@@ -208,7 +207,7 @@ pub async fn test_predicate_spend_with_parameters(
     // Sign and execute the transaction
     wallet.sign_transaction(&mut tx).await.unwrap();
     let script = Script::new(tx);
-    let _receipts = script.call(&client).await.unwrap();
+    let _receipts = script.call(provider).await.unwrap();
 
     let predicate_balance = get_balance(&provider, &predicate_root, OFFERED_ASSET).await;
     let wallet_asked_token_balance = get_balance(&provider, wallet.address(), asked_asset).await;
