@@ -3,7 +3,7 @@ contract;
 use core::*;
 use std::{address::Address, chain::auth::msg_sender, hash::sha256, storage::{StorageMap, get, store}};
 
-use data_structures::{Players, Winner, Game, core::ops::Eq};
+use data_structures::{Game, Players, Winner, core::ops::Eq};
 
 storage {
     game: Game,
@@ -21,8 +21,7 @@ abi TicTacToe {
 }
 
 impl TicTacToe for Contract {
-    #[storage(write)]
-    fn new_game(player_one: Players, player_two: Players) -> Game {
+    #[storage(write)]fn new_game(player_one: Players, player_two: Players) -> Game {
         let mut game = Game {
             PlayerOne: player_one,
             PlayerTwo: player_two,
@@ -38,8 +37,7 @@ impl TicTacToe for Contract {
     }
 
     // This function first checks who's turn it is and then inserts to the storage map the player key + the position
-    #[storage(read, write)]
-    fn make_move(position: u64) {
+    #[storage(read, write)]fn make_move(position: u64) {
         if storage.player_turn == 1 {
             insert_into_map(1, position);
         }
@@ -49,8 +47,8 @@ impl TicTacToe for Contract {
     }
 
     // This function first checks who's turn it is and then switches to the other one.
-    #[storage(read, write)]
-    fn next_player() {
+    #[storage(read, write)]fn next_player() {
+        // accessing the player_turn state in the storage and switches it to the next one
         if storage.player_turn == 1 {
             storage.player_turn = 2;
         }
@@ -60,8 +58,11 @@ impl TicTacToe for Contract {
     }
 
     //Check each cell. If one of them is empty (contains 0), then the map isn't full yet.
-    #[storage(read)]
-    fn map_is_full() -> bool {
+    #[storage(read)]fn map_is_full() -> bool {
+        // Acessing the state of each cell. If it's different than 0 (empty cell),
+        // then it keeps counting the number of not-empty cells.
+        // If all 9 cells are either 1 or 2, it means the map is full and the function returns true.
+        // Else it's not full and the function returns false.
         let mut counter = 0;
         let mut break_early = false;
         let mut result = true;
@@ -80,21 +81,18 @@ impl TicTacToe for Contract {
     }
 
     // save the game and return the winner
-    #[storage(write)]
-    fn end_game(game: Game) -> Winner {
+    #[storage(write)]fn end_game(game: Game) -> Winner {
         storage.game = game;
         return game.winner;
     }
 }
 
 //save the player moves in the storage
-#[storage(write)]
-fn insert_into_map(key: u64, value: u64) {
+#[storage(write)]fn insert_into_map(key: u64, value: u64) {
     storage.map.insert(key, value);
 }
 
 //get the player moves in the storage
-#[storage(read)]
-fn get_from_map(key: u64) -> u64 {
+#[storage(read)]fn get_from_map(key: u64) -> u64 {
     return storage.map.get(key);
 }
