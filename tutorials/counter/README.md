@@ -105,10 +105,9 @@ We require 3 functions for our application.
 Take a look at the following [abi.sw](src/abi.sw) of the program:
 
 ```rust
-    fn increment();
-    fn decrement();
-    fn get_counter() -> u64;
-```
+fn increment();
+fn decrement();
+fn get_counter() -> u64;
 
 #### 2. Compiling your Sway contract
 
