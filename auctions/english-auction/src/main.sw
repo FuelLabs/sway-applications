@@ -8,18 +8,11 @@ dep utils;
 
 use data_structures::{Asset, Auction, State};
 use errors::{AccessError, InitError, InputError, UserError};
-use events::{CancelAuctionEvent, CreateAuctionEvent, BidEvent, WithdrawEvent};
+use events::{BidEvent, CancelAuctionEvent, CreateAuctionEvent, WithdrawEvent};
 use interface::{EnglishAuction, NFT};
-use utils::{
-    approved_for_nft_transfer,
-    owns_nft,
-    transfer_asset,
-    transfer_nft,
-    validate_asset,
-};
+use utils::{approved_for_nft_transfer, owns_nft, transfer_asset, transfer_nft, validate_asset};
 
 use std::{
-    revert::require,
     block::height,
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
@@ -28,6 +21,7 @@ use std::{
     logging::log,
     option::Option,
     result::Result,
+    revert::require,
     storage::StorageMap,
 };
 
@@ -35,28 +29,19 @@ storage {
     /// Stores the auction information based on auction ID
     /// Map(auction_id => auction)
     auctions: StorageMap<u64,
-    Option<Auction>> = StorageMap { }, // TODO: Move deposits into the Auction struct when StorageMaps are
+    Option<Auction>> = StorageMap {
+    }, // TODO: Move deposits into the Auction struct when StorageMaps are
     //       supported inside structs
     ///
     deposits: StorageMap<(Identity,
-    u64), Option<Asset>> = StorageMap { }, /// The total number of auctions that have been created
+    u64), Option<Asset>> = StorageMap {
+    }, /// The total number of auctions that have been created
     /// This should only be incremented
     total_auctions: u64 = 0,
 }
 
 impl EnglishAuction for Contract {
-    /// Returns the auction struct for the corresponding auction id.
-    /// If the auction does not exist `None` will be returned.
-    ///
-    /// # Arguments
-    ///
-    /// * `auction_id` - The `u64` id number of the auction.
-    ///
-    /// # Reverts
-    ///
-    /// * When the auction id does not map to an existing auction
-    #[storage(read)]
-    fn auction_info(auction_id: u64) -> Auction {
+    #[storage(read)]fn auction_info(auction_id: u64) -> Auction {
         // TODO: This should be removed and the function definition should be updated to return an
         // Option once https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
         let auction = storage.auctions.get(auction_id);
@@ -64,30 +49,7 @@ impl EnglishAuction for Contract {
         auction.unwrap()
     }
 
-    /// Places a bid on the auction specified. A correctly structured `Asset` struct must be
-    /// provided. A bid is only valid if it is greater than the last bid or greater than the
-    /// initial_price. If the reserve price is met, the auction will end.
-    ///
-    /// # Arguments
-    ///
-    /// * `auction_id` - The `u64` id number of the auction.
-    /// * `new_bid_asset` - An `Asset` enum that is either a `TokenAsset` struct or a `NFTAsset` struct.
-    ///
-    /// # Reverts
-    ///
-    /// * When the `auction_id` does not map to an existing auction.
-    /// * When the auction has closed.
-    /// * When the bidding time for the auction has closed.
-    /// * When the `new_bid_asset` `ContractId` provided does not match the auction's `bid_asset`
-    ///   `ContractId`.
-    /// * When the `new_bid_asset` amount provided does not match the transaction's `msg_amount`.
-    /// * When the auction contract does not have permission to transfer the NFT to it's ownership.
-    /// * When the bidder/sender is the auction's `seller`.
-    /// * When the total of previous plus this bid is greater than the reserve price.
-    /// * When the `new_bid_asset` amount provided is less than the initial price if there are no bids.
-    /// * When the total of previous plus this bid amounts are not greater than the current bid
-    ///   amount.
-    #[storage(read, write)]fn bid(auction_id: u64, new_bid_asset: Asset) {
+    #[storage(read, write)]fn bid(auction_id: u64, bid_asset: Asset) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -97,12 +59,12 @@ impl EnglishAuction for Contract {
         require(auction.state == State::Open, AccessError::AuctionIsNotOpen);
         require(height() <= auction.end_block, AccessError::AuctionIsNotOpen);
 
-        // Ensure the `new_bid_asset` struct has the correct contract_id, the transaction's amount
+        // Ensure the `bid_asset` struct has the correct contract_id, the transaction's amount
         // is correct, and if it's an NFT we can transfer it to this auction contract
-        validate_asset(auction.bid_asset, new_bid_asset);
+        validate_asset(auction.bid_asset, bid_asset);
 
         // The bidder cannot be the seller
-        let sender =  msg_sender().unwrap();
+        let sender = msg_sender().unwrap();
         require(sender != auction.seller, UserError::BidderIsSeller);
 
         // Combine the user's previous deposits and the current bid for the
@@ -110,10 +72,10 @@ impl EnglishAuction for Contract {
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let total_bid_asset = match sender_deposit {
             Option::Some(Asset) => {
-                new_bid_asset + sender_deposit.unwrap()
+                bid_asset + sender_deposit.unwrap()
             },
             Option::None(Asset) => {
-                new_bid_asset
+                bid_asset
             }
         };
 
@@ -158,17 +120,6 @@ impl EnglishAuction for Contract {
         });
     }
 
-    /// Cancels the specified auction. Once the auction has been canceled user will be able to
-    /// withdraw their original deposits.
-    ///
-    /// # Arguments
-    ///
-    /// * `auction_id` - The `u64` id number of the auction.
-    ///
-    /// # Reverts
-    ///
-    /// * When the `auction_id` does not map to an existing auction.
-    /// * When the `sender` is not the `seller` of the auction.
     #[storage(read, write)]fn cancel(auction_id: u64) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
@@ -189,33 +140,7 @@ impl EnglishAuction for Contract {
         });
     }
 
-    /// Starts an auction with a seller, selling asset, buying asset, prices, and length of the
-    /// auction. This function will return a `u64` for the created auction's ID number.
-    ///
-    /// # Arguments
-    ///
-    /// `seller` - The `Identity` of the seller for this auction. This `Identity` will have the
-    ///            ability to cancel and withdraw the originially provided assets.
-    /// `sell_asset` - The `Asset` struct that contains information about what is being auctioned
-    ///                off.
-    /// `bid_asset` - The `Asset` struct that contains the `contract_id` of the asset the seller is
-    ///               willing to accept in return for the `sell_asset`.
-    /// `initial_price` - The starting price at which the auction should start.
-    /// `reserve_price` - The price at which a buyer may purchase the `sell_asset` outright.
-    /// `time` - The duration of the auction in number of blocks.
-    ///
-    /// # Reverts
-    ///
-    /// * When the `initial_price` is higher than the `reserve_price` if a `reserve_price` is set.
-    /// * When the `time` or duration of the auction is set to zero.
-    /// * When the transaction's token amount tranfered is not the amount specified in the
-    ///   `sell_asset` struct.
-    /// * When the transaction's token `contract_id` is not the same as the `contract_id` specified
-    ///   in the `sell_asset` struct.
-    /// * When the `sender` is not the owner of the NFT's provided in the `sell_asset` struct.
-    /// * When the auction contract is not approved to transfer the NFT's provided in the
-    ///   `sell_asset` struct.
-    #[storage(read, write)]fn create(seller: Identity, sell_asset: Asset, bid_asset: Asset, initial_price: u64, reserve_price: u64, time: u64) -> u64 {
+    #[storage(read, write)]fn create(bid_asset: Asset, initial_price: u64, reserve_price: u64, seller: Identity, sell_asset: Asset, time: u64) -> u64 {
         // Either there is no reserve price or the reserve must be greater than the initial price
         require((reserve_price >= initial_price && reserve_price != 0) || reserve_price == 0, InitError::ReserveLessThanInitialPrice);
         // The auction must last for some time
@@ -273,18 +198,7 @@ impl EnglishAuction for Contract {
         storage.total_auctions - 1
     }
 
-    /// Returns the balance of the user's `bid_asset` deposits. If the user has not deposited any
-    /// assets for the provided `auction_id` then `None` will be returned.
-    ///
-    /// # Arguments
-    ///
-    /// * `identity` - The `Identity` of the user which has deposited assets
-    /// * `auction_id` - The `u64` id number of the auction.
-    ///
-    /// # Reverts
-    /// 
-    /// * When the idendity and auction id provided do not map to an existing auction
-    #[storage(read)]fn deposit(identity: Identity, auction_id: u64) -> Asset {
+    #[storage(read)]fn deposit(auction_id: u64, identity: Identity) -> Asset {
         // TODO: This should be removed and the function definition should be updated to return an
         // Option once https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
         let deposit = storage.deposits.get((identity, auction_id));
@@ -292,22 +206,6 @@ impl EnglishAuction for Contract {
         deposit.unwrap()
     }
 
-    /// Allows users to withdraw their assets if the auction has gone over time, the reserve has
-    /// been met, or been canceled. If there is a winning bidder, the winning bidder will withdraw
-    /// the `sell_asset`, the failed bidders will withdraw their original deposit, and the seller
-    /// will withdraw the winning bidder's deposit. If there is no winning bidder or the auction
-    /// was canceled, the seller and bidder will withdraw their original deposits.
-    ///
-    /// # Arguments
-    ///
-    /// * `auction_id` - The `u64` id number of the auction.
-    ///
-    /// # Reverts
-    ///
-    /// * When the `auction_id` provided does not map to an existing auction.
-    /// * When the duration of the auction has not ended.
-    /// * When the auction's `state` is still in the open bidding state.
-    /// * When the `sender` has already withdrawn their deposit.
     #[storage(read, write)]fn withdraw(auction_id: u64) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
@@ -353,7 +251,6 @@ impl EnglishAuction for Contract {
         });
     }
 
-    /// Returns the total auctions which have been started using this auction contract.
     #[storage(read)]fn total_auctions() -> u64 {
         storage.total_auctions
     }

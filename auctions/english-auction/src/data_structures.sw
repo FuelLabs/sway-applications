@@ -4,10 +4,10 @@ dep errors;
 
 use errors::AssetError;
 use std::{
-    revert::require,
     contract_id::ContractId,
     identity::Identity,
     option::Option,
+    revert::require,
     revert::revert,
     storage::StorageMap,
 };

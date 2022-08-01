@@ -8,12 +8,12 @@ use data_structures::{Asset, NFTAsset, TokenAsset};
 use errors::{AccessError, InputError};
 use interface::NFT;
 use std::{
-    revert::require,
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
     identity::Identity,
     option::Option,
     result::Result,
+    revert::require,
     token::transfer,
 };
 
