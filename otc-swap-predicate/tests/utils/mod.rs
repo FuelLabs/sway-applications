@@ -18,29 +18,19 @@ async fn get_balance(provider: &Provider, address: &Bech32Address, asset: AssetI
 
 // Create a wallet config with base, offered, and ask assets
 pub fn configure_wallets(asked_asset: AssetId) -> WalletsConfig {
-    // Base asset
-    let base_asset_config = AssetConfig {
-        id: BASE_ASSET,
-        num_coins: 1,
-        coin_amount: 1_000_000_000,
-    };
-    // Offered asset
-    let offered_asset_config = AssetConfig {
-        id: OFFERED_ASSET,
-        num_coins: 1,
-        coin_amount: 1_000_000_000,
-    };
-
-    // Asked asset
-    let asked_asset_config = AssetConfig {
-        id: asked_asset,
-        num_coins: 1,
-        coin_amount: 1_000_000_000,
-    };
+    let assets = [BASE_ASSET, OFFERED_ASSET, asked_asset];
 
     WalletsConfig::new_multiple_assets(
         1,
-        vec![base_asset_config, offered_asset_config, asked_asset_config],
+        assets
+            .map(|asset| AssetConfig {
+                id: asset,
+                num_coins: 1,
+                coin_amount: 1_000_000_000,
+            })
+            .iter()
+            .cloned()
+            .collect::<Vec<_>>(),
     )
 }
 
@@ -195,7 +185,7 @@ pub async fn test_predicate_spend_with_parameters(
         script_data: vec![],
         inputs: vec![input_gas, input_predicate, input_from_taker],
         outputs: vec![
-            output_to_receiver,
+            output_to_receiver, // Position in Vec must match with index provided in predicate data
             output_to_taker,
             output_base_change,
             output_asked_change,
