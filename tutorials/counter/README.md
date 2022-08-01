@@ -33,7 +33,7 @@
 
 ## About
 
-In this tutorial, we will build a counter application, using storage on our Sway contract to keep track of a stored number that can be retrieved/ modified as part of our React app. This demonstrates a Sway Program called Smart Contract, and will show you the basics of using Sway with the [TypeScript SDK](https://fuellabs.github.io/fuels-ts/).
+In this tutorial, we will build a counter application, using storage on our Sway contract to keep track of a stored number that can be retrieved/ modified as part of our React app. This demonstrates a Sway Program called a Smart Contract, and will show you the basics of using Sway with the [TypeScript SDK](https://fuellabs.github.io/fuels-ts/).
 
 <p align="center">
   ![Demo Screen Shot](./img/preview.png)
