@@ -19,7 +19,7 @@ use utils::{
 };
 
 use std::{
-    assert::require,
+    revert::require,
     block::height,
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::{contract_id, msg_asset_id}, msg_amount},

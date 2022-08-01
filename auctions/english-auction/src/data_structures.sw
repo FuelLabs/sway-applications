@@ -4,7 +4,7 @@ dep errors;
 
 use errors::AssetError;
 use std::{
-    assert::require,
+    revert::require,
     contract_id::ContractId,
     identity::Identity,
     option::Option,
