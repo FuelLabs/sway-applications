@@ -1,1 +1,3 @@
-// TODO
+#!/usr/bin/env node
+
+require('./bin.js');

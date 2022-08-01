@@ -1,4 +1,8 @@
 import { Command } from 'commander';
+import { buildContracts } from 'src/actions/buildContracts';
+import { buildTypes } from 'src/actions/buildTypes';
+import { deployContracts } from 'src/actions/deployContracts';
+import { runAll } from 'src/actions/runAll';
 import { loadConfig } from 'src/helpers/loader';
 import type { Config } from "src/types";
 import { Commands } from 'src/types';
@@ -36,7 +40,7 @@ program
 program
     .command(Commands.deploy)
     .description('Deploy Escrow contracts to the Fuel network')
-    .action(action(Commands.deploy, (config) => deployCnotract(config)));
+    .action(action(Commands.deploy, (config) => deployContracts(config)));
 
 program
     .command(Commands.run)
