@@ -21,6 +21,8 @@ pub enum InitError {
 }
 
 pub enum InputError {
+    AuctionDoesNotExist: (),
+    DepositDoesNotExist: (),
     InitialPriceNotMet: (),
     IncorrectAssetProvided: (),
     IncorrectAmountProvided: (),

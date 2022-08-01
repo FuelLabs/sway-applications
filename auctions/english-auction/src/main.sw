@@ -45,17 +45,24 @@ storage {
 }
 
 impl EnglishAuction for Contract {
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
     /// Returns the auction struct for the corresponding auction id.
     /// If the auction does not exist `None` will be returned.
     ///
     /// # Arguments
     ///
     /// * `auction_id` - The `u64` id number of the auction.
-    // #[storage(read)]
-    // fn auction_info(auction_id: u64) -> Option<Auction> {
-    //     storage.auctions.get(auction_id)
-    // }
+    ///
+    /// # Reverts
+    ///
+    /// * When the auction id does not map to an existing auction
+    #[storage(read)]
+    fn auction_info(auction_id: u64) -> Auction {
+        // TODO: This should be removed and the function definition should be updated to return an
+        // Option once https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
+        let auction = storage.auctions.get(auction_id);
+        require(auction.is_some(), InputError::AuctionDoesNotExist);
+        auction.unwrap()
+    }
 
     /// Places a bid on the auction specified. A correctly structured `Asset` struct must be
     /// provided. A bid is only valid if it is greater than the last bid or greater than the
@@ -266,7 +273,6 @@ impl EnglishAuction for Contract {
         storage.total_auctions - 1
     }
 
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
     /// Returns the balance of the user's `bid_asset` deposits. If the user has not deposited any
     /// assets for the provided `auction_id` then `None` will be returned.
     ///
@@ -274,10 +280,17 @@ impl EnglishAuction for Contract {
     ///
     /// * `identity` - The `Identity` of the user which has deposited assets
     /// * `auction_id` - The `u64` id number of the auction.
-    // #[storage(read)]
-    // fn deposit(identity: Identity, auction_id: u64) -> Option<Asset> {
-    //     storage.deposits.get((identity, auction_id))
-    // }
+    ///
+    /// # Reverts
+    /// 
+    /// * When the idendity and auction id provided do not map to an existing auction
+    #[storage(read)]fn deposit(identity: Identity, auction_id: u64) -> Asset {
+        // TODO: This should be removed and the function definition should be updated to return an
+        // Option once https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
+        let deposit = storage.deposits.get((identity, auction_id));
+        require(deposit.is_some(), InputError::DepositDoesNotExist);
+        deposit.unwrap()
+    }
 
     /// Allows users to withdraw their assets if the auction has gone over time, the reserve has
     /// been met, or been canceled. If there is a winning bidder, the winning bidder will withdraw
