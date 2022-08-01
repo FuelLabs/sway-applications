@@ -22,36 +22,22 @@ pub async fn setup(
     initial_stake: u64,
     initial_timestamp: u64,
 ) -> (StakingRewards, Bech32ContractId, LocalWallet) {
+    
     // Configure wallet with assets
-
-    // Base asset
-    let base_asset_config = AssetConfig {
-        id: BASE_ASSET,
-        num_coins: 1,
-        coin_amount: 1_000_000_000 * ONE,
-    };
-    // Staking asset
-    let staking_asset_config = AssetConfig {
-        id: STAKING_ASSET,
-        num_coins: 1,
-        coin_amount: 1_000_000_000 * ONE,
-    };
-
-    // Rewards asset
-    let rewards_asset_config = AssetConfig {
-        id: REWARDS_ASSET,
-        num_coins: 1,
-        coin_amount: 1_000_000_000 * ONE,
-    };
-
+    let assets = [BASE_ASSET, STAKING_ASSET, REWARDS_ASSET];
     let wallet_config = WalletsConfig::new_multiple_assets(
         1,
-        vec![
-            base_asset_config,
-            staking_asset_config,
-            rewards_asset_config,
-        ],
+        assets
+            .map(|asset| AssetConfig {
+                id: asset,
+                num_coins: 1,
+                coin_amount: 1_000_000_000 * ONE,
+            })
+            .iter()
+            .cloned()
+            .collect::<Vec<_>>(),
     );
+
     let wallet = &launch_custom_provider_and_get_wallets(wallet_config, None).await[0];
 
     let id = Contract::deploy(
