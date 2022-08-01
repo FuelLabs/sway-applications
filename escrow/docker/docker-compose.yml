@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  escrow-fuel-core:
+    container_name: "escrow-fuel-core-${ENVIRONMENT:-development}"
+    environment:
+      MIN_GAS_PRICE: ${GAS_PRICE}
+      MIN_BYTE_PRICE: ${BYTE_PRICE}
+    build: ./fuel-core
+    ports:
+      - "${FUEL_CORE_PORT:-4000}:4000"
+    volumes:
+      - escrow-fuel-core-db:/mnt/db
+    healthcheck:
+      test: curl --fail http://localhost:4000/health || exit 1
+      interval: 1s
+      timeout: 5s
+      retries: 10
+  # TODO uncomment when applications all have faucets or a devnet exists
+  # escrow-faucet:
+  #   container_name: "escrow-faucet-${ENVIRONMENT:-development}"
+  #   environment:
+  #     MIN_GAS_PRICE: ${GAS_PRICE}
+  #     MIN_BYTE_PRICE: ${BYTE_PRICE}
+  #     WALLET_SECRET_KEY: ${WALLET_SECRET}
+  #     DISPENSE_AMOUNT: ${DISPENSE_AMOUNT}
+  #     FUEL_NODE_URL: http://escrow-fuel-core-${ENVIRONMENT:-development}:4000/graphql
+  #   # Other configurations can be found at;
+  #   # https://github.com/FuelLabs/faucet#configuration
+  #   image: ghcr.io/fuellabs/faucet:v0.1.1
+  #   ports:
+  #     - "${FUEL_FAUCET_PORT:-4040}:3000"
+  #   links:
+  #     - escrow-fuel-core
+  #   depends_on:
+  #     escrow-fuel-core:
+  #       condition: service_healthy
+
+volumes:
+  escrow-fuel-core-db:
+    name: "fuel-core-db-${ENVIRONMENT:-development}"
