@@ -1,0 +1,99 @@
+{
+    "name": "escrow",
+    "version": "0.1.0",
+    "author": "Fuel Labs <contact@fuel.sh> (https://fuel.network/)",
+    "private": true,
+    "engines": {
+      "node": ">=16"
+    },
+    "homepage": "https://github.com/FuelLabs/sway-applications#readme",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/FuelLabs/sway-applications.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+      "url": "https://github.com/FuelLabs/sway-applications/issues"
+    },
+    "workspaces": [
+      "/contracts/*",
+      "/frontend/*",
+      "/scripts/*"
+    ],
+    "scripts": {
+      "build": "turbo run build",
+      "ci:test": "./scripts/ci-test.sh",
+      "ci:test:coverage": "./scripts/ci-test.sh --coverage",
+      "ci:test:e2e": "./scripts/ci-test.sh --e2e",
+      "create:test-env": "./scripts/create-test-env.sh 4001 4041 ./packages/app/.env.test",
+      "contracts": "pnpm exec escrow-scripts run",
+      "contracts:build": "pnpm exec escrow-scripts build",
+      "contracts:deploy": "pnpm exec escrow-scripts deploy",
+      "contracts:init": "pnpm run --filter escrow-app contracts:init",
+      "cy:open": "cypress open",
+      "cy:run": "cypress run --headless",
+      "dev": "turbo run dev --parallel",
+      "gh-preview": "pnpm run --filter swayswap-app gh-preview",
+      "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx",
+      "lint:fix": "pnpm lint:check --fix",
+      "lint": "run-s lint:check prettier:check",
+      "prettier:check": "prettier --check .",
+      "prettier:format": "prettier --write .",
+      "scripts:setup": "pnpm run --filter=swayswap-scripts build && pnpm install",
+      "services:clean": "make -C docker services-clean",
+      "services:setup": "run-s scripts:setup services:run contracts contracts:init-pool",
+      "services:run": "make -C docker services-run",
+      "services:reset": "run-s services:clean services:setup",
+      "services:clean-test": "make -C docker services-clean-test",
+      "services:setup-test": "NODE_ENV=test run-s scripts:setup create:test-env services:run-test contracts contracts:init",
+      "services:run-test": "make -C docker services-run-test",
+      "services:reset-test": "NODE_ENV=test run-s services:clean-test services:setup-test",
+      "deps:update": "./scripts/update-deps.sh",
+      "test": "pnpm run --filter=swayswap-app test",
+      "test:coverage": "pnpm run --filter=swayswap-app test --coverage",
+      "test:clear": "pnpm -r exec jest --clearCache",
+      "test:e2e": "run-p --race dev cy:run"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.18.2",
+      "@cypress/react": "^5.12.5",
+      "@jest/types": "^28.1.1",
+      "@swc/core": "^1.2.197",
+      "@swc/jest": "^0.2.21",
+      "@types/jest": "^28.1.1",
+      "@types/node": "^17.0.41",
+      "@types/react": "^18.0.12",
+      "@types/react-dom": "^18.0.5",
+      "cypress": "^10.0.3",
+      "dotenv": "^16.0.1",
+      "eslint": "^8.17.0",
+      "husky": "^8.0.1",
+      "identity-obj-proxy": "^3.0.0",
+      "jest": "^28.1.1",
+      "jest-environment-jsdom": "^28.1.1",
+      "jest-transform-stub": "^2.0.0",
+      "lint-staged": "^13.0.0",
+      "npm-run-all": "^4.1.5",
+      "prettier": "^2.6.2",
+      "escrow-scripts": "workspace:*",
+      "ts-jest": "^28.0.4",
+      "ts-node": "^10.8.1",
+      "tsup": "^6.1.0",
+      "turbo": "^1.2.16",
+      "typescript": "^4.7.3",
+      "updates": "^13.1.0"
+    },
+    "pnpm": {
+      "peerDependencyRules": {
+        "allowAny": [
+          "react",
+          "react-dom"
+        ],
+        "ignoreMissing": [
+          "react",
+          "react-dom"
+        ]
+      }
+    }
+  }
+  

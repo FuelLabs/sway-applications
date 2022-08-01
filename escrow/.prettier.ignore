@@ -1,0 +1,15 @@
+**/*.template
+dist
+.coverage_*
+coverage
+node_modules
+CHANGELOG.md
+.chglog/CHANGELOG.tpl.md
+storybook-static
+pnpm-lock.yaml
+yarn-lock.yaml
+.github
+packages/contracts
+.pnpm-store
+.env
+**/*.typegen.ts
