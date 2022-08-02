@@ -5,10 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "postinstall": "sh ./scripts/postinstall.sh",
     "preview": "vite preview",
-    "test": "jest",
-    "build-contracts": "sh ./scripts/build-contracts.sh",
-    "deploy-contracts": "sh ./scripts/deploy-contracts.sh"
+    "test": "jest"
   },
   "dependencies": {
     "@fontsource/inter": "^4.5.10",
