@@ -22,7 +22,6 @@ pub async fn setup(
     initial_stake: u64,
     initial_timestamp: u64,
 ) -> (StakingRewards, Bech32ContractId, LocalWallet) {
-    
     // Configure wallet with assets
     let assets = [BASE_ASSET, STAKING_ASSET, REWARDS_ASSET];
     let wallet_config = WalletsConfig::new_multiple_assets(
