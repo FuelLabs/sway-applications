@@ -6,8 +6,13 @@
 </p>
 
 # Sway TicTacToe
+
 ## Overview
+
+TODO: need UI for this to be relevant
+
 ### Rules of the game
+
 1. A 2 Players-game is played on a grid that's 3 cells by 3 cells.
 2. One is **X**, and the other is **O**. Players take turns putting their marks in empty cells.
 3. The first player to get 3 of his kind in a row (horizontally, vertically, or diagonally) is the winner.
@@ -18,8 +23,9 @@
 
 ## Running the project
 
+TODO: need UI for this to be relevant
 
 ## Contributing
-
+Check [CONTRIBUTING.md](../CONTRIBUTING.md) for more info!
 
 
