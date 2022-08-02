@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { Flex } from "@fuels-ui/react";
+import { Flex } from "@fuel-ui/react";
 import { CreateEscrow } from "../components/CreateEscrow";
 
 import { Layout } from "../components/Layout";

@@ -6,7 +6,7 @@ import type { PropsWithChildren } from "react";
 
 import { ASSETS, DECIMAL_PRECISION, FUEL_PROVIDER_URL, ESCROW_ID } from "../../../config";
 import { walletIndexAtom } from "../jotai";
-import { EscrowAbi, EscrowAbi__factory } from "../types/contracts";
+import { EscrowAbi, EscrowAbi__factory } from "../../../types/contracts";
 
 // Initial number of wallets to populate in app
 const NUM_WALLETS = 10;

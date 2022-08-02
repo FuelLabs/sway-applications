@@ -5,7 +5,7 @@ import {
   IconButton,
   Stack,
   useFuelTheme,
-} from "@fuels-ui/react";
+} from "@fuel-ui/react";
 
 import { useWallet } from "../context/AppContext";
 

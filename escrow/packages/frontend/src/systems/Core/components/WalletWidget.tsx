@@ -1,5 +1,5 @@
-import { css } from "@fuels-ui/css";
-import { Button } from "@fuels-ui/react";
+import { css } from "@fuel-ui/css";
+import { Button } from "@fuel-ui/react";
 import clipboard from "clipboard";
 import { toBigInt } from "fuels";
 import type { CoinQuantity } from "fuels";

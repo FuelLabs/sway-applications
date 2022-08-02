@@ -1,7 +1,5 @@
-import { css } from "@fuels-ui/css";
-import { Flex, Heading, Stack, Card } from "@fuels-ui/react";
-import { CardBody } from "@fuels-ui/react/src/components/Card/CardBody";
-import { CardHeader } from "@fuels-ui/react/src/components/Card/CardHeader";
+import { css } from "@fuel-ui/css";
+import { Heading, Stack, Card } from "@fuel-ui/react";
 import { formatUnits } from "ethers/lib/utils";
 
 import { useAssets } from "../hooks/useAssets";
@@ -20,10 +18,10 @@ export const ShowBalances = () => {
 
   return (
     <Card css={{ width: "250px", selfAlign: "flex-end", bg: "$gray7", marginTop: "10px", marginRight: "10px" }}>
-      <CardHeader>
+      <Card.Header>
         <Heading>Balances</Heading>
-      </CardHeader>
-      <CardBody>
+      </Card.Header>
+      <Card.Body>
         <Stack>
           {coins.map((coin) => (
             <div className={coinStyle()} key={coin.assetId}>
@@ -31,7 +29,7 @@ export const ShowBalances = () => {
             </div>
           ))}
         </Stack>
-      </CardBody>
+      </Card.Body>
     </Card>
   );
 };

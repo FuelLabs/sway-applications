@@ -1,9 +1,6 @@
-import { useState } from "react";
 import type { ChangeEvent } from "react";
 
-import { Input, Button } from "@fuels-ui/react"
-import { InputField } from "@fuels-ui/react/src/components/Input/InputField";
-import { InputElementRight } from "@fuels-ui/react/src/components/Input/InputElement";
+import { Input, Button } from "@fuel-ui/react"
 
 interface Props {
     assets: {
@@ -22,7 +19,7 @@ export const AssetInputContainer = (props: Props) => {
             {props.assets.map((asset, i) => (
                 <>
                     <Input css={{ alignSelf: "stretch" }}>
-                        <InputField
+                        <Input.Field
                             id={`assetId${i}`}
                             name={`assetId${i}`}
                             placeholder={`Asset ${i} Id`}
@@ -33,7 +30,7 @@ export const AssetInputContainer = (props: Props) => {
                         />
                     </Input>
                     <Input css={{ alignSelf: "stretch" }}>
-                        <InputField
+                        <Input.Field
                             id={`assetAmount${i}`}
                             name={`assetAmount${i}`}
                             placeholder={`Asset ${i} Amount`}
@@ -42,9 +39,9 @@ export const AssetInputContainer = (props: Props) => {
                             onChange={(e) => props.onAssetAmountChange(e, i)}
                             css={{ font: "$sans" }}
                         />
-                        <InputElementRight>
+                        <Input.ElementRight>
                             <Button color="tomato" leftIcon="DividerHorizontalIcon" onPress={() => props.onRemoveAsset(i)} />
-                        </InputElementRight>
+                        </Input.ElementRight>
                     </Input>
                 </>
             ))}

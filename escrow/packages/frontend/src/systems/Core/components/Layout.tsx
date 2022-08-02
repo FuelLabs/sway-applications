@@ -1,5 +1,5 @@
-import { cx, globalCss } from "@fuels-ui/css";
-import { Box, Spinner } from "@fuels-ui/react";
+import { cx, globalCss } from "@fuel-ui/css";
+import { Box, Spinner } from "@fuel-ui/react";
 import type { FC, ReactNode } from "react";
 import { Helmet } from "react-helmet";
 

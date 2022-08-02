@@ -1,12 +1,8 @@
 //import { ESCROW_PATH } from "@/config";
-import { BoxCentered, Button, Stack, Input, Card, Flex } from "@fuels-ui/react";
-import { InputElementRight } from "@fuels-ui/react/src/components/Input/InputElement";
-import { InputField } from "@fuels-ui/react/src/components/Input/InputField";
+import { Button, Stack, Input, Card, Flex } from "@fuel-ui/react";
 import { ChangeEvent, SyntheticEvent, useState } from "react";
 import { useWallet } from "../context/AppContext";
 import { useContract } from "../hooks/useContract";
-import { EscrowAbi__factory } from "../types/contracts";
-import { deployContractBinary } from "../utils/helpers";
 
 import { AddressInputContainer } from "./AddressInputContainer"
 import { AssetInputContainer } from "./AssetInputContainer";
