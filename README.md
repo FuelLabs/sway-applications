@@ -50,11 +50,11 @@ sway-applications/
 
 ### Projects
 
-- [Decentralized Autonomous Organization (DAO)](./dao-voting/) is an organization where users get to vote on governance proposals using governance tokens
-- [Escrow](./escrow/) is a third party that keeps an asset on behalf of multiple parties
-- [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal
-- [Multi-Signature Wallet](./multisig-wallet/) is a wallet that requires multiple signatures to execute a transaction
-- [TicTacToe](./games/TicTacToe/) is an on-chain TicTacToe game to play alone or with a friend
+- [Decentralized Autonomous Organization (DAO)](./dao-voting) is an organization where users get to vote on governance proposals using governance tokens
+- [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
+- [Fundraiser](./fundraiser) is a program allowing users to pledge towards a goal
+- [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
+- [TicTacToe](./games/TicTacToe) is an on-chain TicTacToe game to play alone or with a friend
 
 ## Running a project
 

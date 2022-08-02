@@ -15,7 +15,7 @@ storage {
 abi TicTacToe {
     #[storage(write)]fn new_game(player_one: Players, player_two: Players) -> Game;
     #[storage(read, write)]fn make_move(position: u64);
-    #[storage(read, write)]fn next_player();
+    // #[storage(read, write)]fn next_player();
     #[storage(write)]fn end_game(game: Game) -> Winner;
     #[storage(read)]fn map_is_full() -> bool;
 }
@@ -44,6 +44,7 @@ impl TicTacToe for Contract {
         if storage.player_turn == 2 {
             insert_into_map(2, position);
         }
+        next_player();
     }
 
     // This function first checks who's turn it is and then switches to the other one.
