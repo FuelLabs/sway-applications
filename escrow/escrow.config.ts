@@ -19,11 +19,11 @@ export default createConfig({
   contracts: [
     {
       name: 'VITE_CONTRACT_ID',
-      path: './packages/contracts',
+      path: './packages/contracts/escrow',
     },
     {
       name: 'VITE_TOKEN_ID',
-      path: './packages/contracts/tests/artifacts/asset',
+      path: './packages/contracts/escrow/tests/artifacts/asset',
     },
   ],
   onSuccess: (event) => {

@@ -38,6 +38,6 @@ export async function deployContractBinary(wallet: Wallet, binaryPath: string) {
   // Await contract to be fully deployed
   log('Waiting contract to be fully deployed');
   await response.wait();
-  log('contract successful deployed');
+  log('contract successful deployed to', contractId);
   return contractId;
 }

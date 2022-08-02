@@ -12,7 +12,6 @@ const program = new Command('escrow');
 function action(command: string, func: (config: Config) => Promise<unknown>) {
   return async () => {
     const config = await loadConfig(process.cwd());
-    console.log(config);
     try {
       const result: unknown = await func(config);
       // @ts-ignore
