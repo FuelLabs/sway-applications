@@ -51,4 +51,4 @@ A user should be able to create a game, and play either alone against himself or
 
 #### Context
 
-If a player managed to align 3 of a kind horizontaly, verticaly or diagonaly, then he is defined as the winner of the game. Else, is the game board is full but no one aligned 3 of a kind, then the game ends up in a draw.
+If a player managed to align 3 of a kind horizontaly, verticaly or diagonaly, then he is defined as the winner of the game. Else, if the game board is full but none of the players managed to align 3 of a kind (X or O), then the game ends up in a draw.
