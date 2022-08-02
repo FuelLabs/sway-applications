@@ -5,7 +5,7 @@ import './load.envs.ts';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-const WHITELIST = ['NODE_ENV', 'PUBLIC_URL'];
+const WHITELIST = ['NODE_ENV', 'PUBLIC_URL', 'GENESIS_SECRET'];
 const ENV_VARS = Object.entries(process.env).filter(([key]) =>
   WHITELIST.some((k) => k === key || key.match(/^VITE_/))
 );
