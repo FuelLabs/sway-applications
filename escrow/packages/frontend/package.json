@@ -7,7 +7,9 @@
     "build": "tsc && vite build",
     "postinstall": "sh ./scripts/postinstall.sh",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "xstate:typegen": "xstate typegen 'src/**/*.ts?(x)'",
+    "xstate:typegen:watch": "xstate typegen 'src/**/*.ts?(x)' --watch"
   },
   "dependencies": {
     "@fontsource/inter": "^4.5.10",
@@ -25,7 +27,8 @@
     "react-hot-toast": "^2.2.0",
     "react-icons": "^4.3.1",
     "react-query": "^3.39.1",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.3.0",
+    "xstate": "^4.32.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",

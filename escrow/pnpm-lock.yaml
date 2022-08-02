@@ -133,6 +133,7 @@ importers:
       typechain-target-fuels: 0.0.0-master-92cc35d4
       typescript: ^4.6.3
       vite: ^2.9.7
+      xstate: ^4.32.1
     dependencies:
       '@fontsource/inter': 4.5.11
       '@fontsource/raleway': 4.5.9
@@ -141,7 +142,7 @@ importers:
       clipboard: 2.0.11
       ethers: 5.6.9
       fuels: 0.0.0-master-92cc35d4
-      jotai: 1.7.7_react@18.2.0
+      jotai: 1.7.7_react@18.2.0+xstate@4.32.1
       path-browserify: 1.0.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -150,6 +151,7 @@ importers:
       react-icons: 4.4.0_react@18.2.0
       react-query: 3.39.2_biqbaboplfbrettd7655fr4n2y
       react-router-dom: 6.3.0_biqbaboplfbrettd7655fr4n2y
+      xstate: 4.32.1
     devDependencies:
       '@types/react': 18.0.15
       '@types/react-dom': 18.0.6
@@ -9288,7 +9290,7 @@ packages:
       - ts-node
     dev: true
 
-  /jotai/1.7.7_react@18.2.0:
+  /jotai/1.7.7_react@18.2.0+xstate@4.32.1:
     resolution: {integrity: sha512-UK1fzkR2vq62rUL7iHlMkjkKj49AEU9iOm2xwfgPAeMJ8GIzKrEiKQC81w+O4dlNCjmCIi9UVkV75dADqccVCw==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
@@ -9325,6 +9327,7 @@ packages:
         optional: true
     dependencies:
       react: 18.2.0
+      xstate: 4.32.1
     dev: false
 
   /joycon/3.1.1:
