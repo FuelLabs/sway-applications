@@ -1,5 +1,5 @@
 import { randomBytes } from "ethers/lib/utils";
-import { ScriptTransactionRequest, toBigInt, Wallet } from "fuels";
+import { Provider, ScriptTransactionRequest, TestUtils, toBigInt, Wallet } from "fuels";
 import { useAtom } from "jotai";
 import React, { useContext, useState, useMemo, useEffect } from "react";
 import type { PropsWithChildren } from "react";
@@ -38,7 +38,7 @@ export const seedWallet = async (
   assetAmount: bigint
 ) => {
   const transactionRequest = new ScriptTransactionRequest({
-    gasPrice: 0,
+    gasPrice: 3,
     gasLimit: 100_000_000,
     script: "0x24400000",
     scriptData: randomBytes(32),
@@ -48,7 +48,7 @@ export const seedWallet = async (
     id: "0x000000000000000000000000000000000000000000000000000000000000000000",
     assetId,
     amount: assetAmount,
-    owner: "0xf1e92c42b90934aa6372e30bc568a326f6e66a1a0288595e6e3fbd392a4f3e6e",
+    owner: "0x94ffcc53b892684acefaebc8a3d4a595e528a8cf664eeb3ef36f1020b0809d0d",
   });
   transactionRequest.addCoinOutput(wallet.address, assetAmount, assetId);
   const submit = await wallet.sendTransaction(transactionRequest);
@@ -97,14 +97,10 @@ export const AppContextProvider = ({
       const nextWallet = Wallet.generate({
         provider: FUEL_PROVIDER_URL,
       });
-      ASSETS.forEach((assetId) => {
+      TestUtils.seedWallet(nextWallet, ASSETS.map(assetId =>  {
         const randAssetAmount = Math.floor(Math.random() * 9) + 1;
-        seedWallet(
-          nextWallet,
-          assetId,
-          DECIMAL_PRECISION * toBigInt(randAssetAmount)
-        );
-      });
+        return { assetId, amount: DECIMAL_PRECISION * toBigInt(randAssetAmount) }
+      }));
       nextPrivateKeyList[i] = nextWallet.privateKey;
     }
     setPrivateKeyList(nextPrivateKeyList);

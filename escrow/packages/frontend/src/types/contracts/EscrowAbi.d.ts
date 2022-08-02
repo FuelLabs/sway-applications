@@ -7,6 +7,8 @@ import type {
   FunctionFragment,
   DecodedValue,
   Contract,
+  ContractCall,
+  ContractCallOptions,
   Overrides,
   BigNumberish,
   BytesLike,
@@ -17,18 +19,11 @@ import type {
 
 export type AddressInput = { value: string };
 
-export type Address = { value: string };
+export type AddressOutput = { value: string };
 
 export type ContractIdInput = { value: string };
 
-export type ContractId = { value: string };
-
-export type IdentityInput = {
-  Address: AddressInput;
-  ContractId: ContractIdInput;
-};
-
-export type Identity = { Address: Address; ContractId: ContractId };
+export type ContractIdOutput = { value: string };
 
 export type ArbiterInput = {
   address: IdentityInput;
@@ -36,90 +31,28 @@ export type ArbiterInput = {
   fee_amount: BigNumberish;
 };
 
-export type Arbiter = {
-  address: Identity;
-  asset: ContractId;
+export type ArbiterOutput = {
+  address: IdentityOutput;
+  asset: ContractIdOutput;
   fee_amount: bigint;
 };
 
 export type AssetInput = { amount: BigNumberish; id: ContractIdInput };
 
-export type Asset = { amount: bigint; id: ContractId };
+export type AssetOutput = { amount: bigint; id: ContractIdOutput };
+
+export type IdentityInput = Partial<{
+  Address: AddressInput;
+  ContractId: ContractIdInput;
+}>;
+
+export type IdentityOutput = Partial<{
+  Address: AddressOutput;
+  ContractId: ContractIdOutput;
+}>;
 
 interface EscrowAbiInterface extends Interface {
-  submit: {
-    accept_arbiter: FunctionFragment;
-    create_escrow: FunctionFragment;
-    deposit: FunctionFragment;
-    dispute: FunctionFragment;
-    propose_arbiter: FunctionFragment;
-    resolve_dispute: FunctionFragment;
-    return_deposit: FunctionFragment;
-    take_payment: FunctionFragment;
-    transfer_to_seller: FunctionFragment;
-    withdraw_collateral: FunctionFragment;
-  };
-  submitResult: {
-    accept_arbiter: FunctionFragment;
-    create_escrow: FunctionFragment;
-    deposit: FunctionFragment;
-    dispute: FunctionFragment;
-    propose_arbiter: FunctionFragment;
-    resolve_dispute: FunctionFragment;
-    return_deposit: FunctionFragment;
-    take_payment: FunctionFragment;
-    transfer_to_seller: FunctionFragment;
-    withdraw_collateral: FunctionFragment;
-  };
-  dryRun: {
-    accept_arbiter: FunctionFragment;
-    create_escrow: FunctionFragment;
-    deposit: FunctionFragment;
-    dispute: FunctionFragment;
-    propose_arbiter: FunctionFragment;
-    resolve_dispute: FunctionFragment;
-    return_deposit: FunctionFragment;
-    take_payment: FunctionFragment;
-    transfer_to_seller: FunctionFragment;
-    withdraw_collateral: FunctionFragment;
-  };
-  dryRunResult: {
-    accept_arbiter: FunctionFragment;
-    create_escrow: FunctionFragment;
-    deposit: FunctionFragment;
-    dispute: FunctionFragment;
-    propose_arbiter: FunctionFragment;
-    resolve_dispute: FunctionFragment;
-    return_deposit: FunctionFragment;
-    take_payment: FunctionFragment;
-    transfer_to_seller: FunctionFragment;
-    withdraw_collateral: FunctionFragment;
-  };
-  simulate: {
-    accept_arbiter: FunctionFragment;
-    create_escrow: FunctionFragment;
-    deposit: FunctionFragment;
-    dispute: FunctionFragment;
-    propose_arbiter: FunctionFragment;
-    resolve_dispute: FunctionFragment;
-    return_deposit: FunctionFragment;
-    take_payment: FunctionFragment;
-    transfer_to_seller: FunctionFragment;
-    withdraw_collateral: FunctionFragment;
-  };
-  simulateResult: {
-    accept_arbiter: FunctionFragment;
-    create_escrow: FunctionFragment;
-    deposit: FunctionFragment;
-    dispute: FunctionFragment;
-    propose_arbiter: FunctionFragment;
-    resolve_dispute: FunctionFragment;
-    return_deposit: FunctionFragment;
-    take_payment: FunctionFragment;
-    transfer_to_seller: FunctionFragment;
-    withdraw_collateral: FunctionFragment;
-  };
-  prepareCall: {
+  functions: {
     accept_arbiter: FunctionFragment;
     create_escrow: FunctionFragment;
     deposit: FunctionFragment;
@@ -138,7 +71,12 @@ interface EscrowAbiInterface extends Interface {
   ): Uint8Array;
   encodeFunctionData(
     functionFragment: "create_escrow",
-    values: [ArbiterInput, any, IdentityInput, BigNumberish]
+    values: [
+      ArbiterInput,
+      [AssetInput, AssetInput],
+      IdentityInput,
+      BigNumberish
+    ]
   ): Uint8Array;
   encodeFunctionData(
     functionFragment: "deposit",
@@ -217,6 +155,63 @@ interface EscrowAbiInterface extends Interface {
 
 export class EscrowAbi extends Contract {
   interface: EscrowAbiInterface;
+  prepareCall: {
+    accept_arbiter(
+      identifier: BigNumberish,
+      options?: ContractCallOptions
+    ): ContractCall;
+
+    create_escrow(
+      arbiter: ArbiterInput,
+      assets: [AssetInput, AssetInput],
+      buyer: IdentityInput,
+      deadline: BigNumberish,
+      options?: ContractCallOptions
+    ): ContractCall;
+
+    deposit(
+      identifier: BigNumberish,
+      options?: ContractCallOptions
+    ): ContractCall;
+
+    dispute(
+      identifier: BigNumberish,
+      options?: ContractCallOptions
+    ): ContractCall;
+
+    propose_arbiter(
+      arbiter: ArbiterInput,
+      identifier: BigNumberish,
+      options?: ContractCallOptions
+    ): ContractCall;
+
+    resolve_dispute(
+      identifier: BigNumberish,
+      payment_amount: BigNumberish,
+      user: IdentityInput,
+      options?: ContractCallOptions
+    ): ContractCall;
+
+    return_deposit(
+      identifier: BigNumberish,
+      options?: ContractCallOptions
+    ): ContractCall;
+
+    take_payment(
+      identifier: BigNumberish,
+      options?: ContractCallOptions
+    ): ContractCall;
+
+    transfer_to_seller(
+      identifier: BigNumberish,
+      options?: ContractCallOptions
+    ): ContractCall;
+
+    withdraw_collateral(
+      identifier: BigNumberish,
+      options?: ContractCallOptions
+    ): ContractCall;
+  };
   submit: {
     accept_arbiter(
       identifier: BigNumberish,
@@ -225,7 +220,7 @@ export class EscrowAbi extends Contract {
 
     create_escrow(
       arbiter: ArbiterInput,
-      assets: any,
+      assets: [AssetInput, AssetInput],
       buyer: IdentityInput,
       deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -282,7 +277,7 @@ export class EscrowAbi extends Contract {
 
     create_escrow(
       arbiter: ArbiterInput,
-      assets: any,
+      assets: [AssetInput, AssetInput],
       buyer: IdentityInput,
       deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -339,7 +334,7 @@ export class EscrowAbi extends Contract {
 
     create_escrow(
       arbiter: ArbiterInput,
-      assets: any,
+      assets: [AssetInput, AssetInput],
       buyer: IdentityInput,
       deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -396,7 +391,7 @@ export class EscrowAbi extends Contract {
 
     create_escrow(
       arbiter: ArbiterInput,
-      assets: any,
+      assets: [AssetInput, AssetInput],
       buyer: IdentityInput,
       deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -444,63 +439,6 @@ export class EscrowAbi extends Contract {
       identifier: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<CallResult>;
-  };
-  prepareCall: {
-    accept_arbiter(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ScriptTransactionRequest>;
-
-    create_escrow(
-      arbiter: ArbiterInput,
-      assets: any,
-      buyer: IdentityInput,
-      deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ScriptTransactionRequest>;
-
-    deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ScriptTransactionRequest>;
-
-    dispute(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ScriptTransactionRequest>;
-
-    propose_arbiter(
-      arbiter: ArbiterInput,
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ScriptTransactionRequest>;
-
-    resolve_dispute(
-      identifier: BigNumberish,
-      payment_amount: BigNumberish,
-      user: IdentityInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ScriptTransactionRequest>;
-
-    return_deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ScriptTransactionRequest>;
-
-    take_payment(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ScriptTransactionRequest>;
-
-    transfer_to_seller(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ScriptTransactionRequest>;
-
-    withdraw_collateral(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ScriptTransactionRequest>;
   };
   simulate: {
     accept_arbiter(
@@ -510,7 +448,7 @@ export class EscrowAbi extends Contract {
 
     create_escrow(
       arbiter: ArbiterInput,
-      assets: any,
+      assets: [AssetInput, AssetInput],
       buyer: IdentityInput,
       deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -567,7 +505,7 @@ export class EscrowAbi extends Contract {
 
     create_escrow(
       arbiter: ArbiterInput,
-      assets: any,
+      assets: [AssetInput, AssetInput],
       buyer: IdentityInput,
       deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -624,7 +562,7 @@ export class EscrowAbi extends Contract {
 
   create_escrow(
     arbiter: ArbiterInput,
-    assets: any,
+    assets: [AssetInput, AssetInput],
     buyer: IdentityInput,
     deadline: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }

@@ -21,8 +21,8 @@ export async function deployContractBinary(wallet: Wallet, binaryPath: string) {
   const stateRoot = ZeroBytes32;
   const contractId = ContractUtils.getContractId(bytecode, ZeroBytes32, stateRoot);
   const request = new CreateTransactionRequest({
-    gasPrice: GAS_PRICE || 0,
-    bytePrice: BYTE_PRICE || 0,
+    gasPrice: GAS_PRICE || 3,
+    bytePrice: BYTE_PRICE || 3,
     gasLimit: 1_000_000,
     bytecodeWitnessIndex: 0,
     witnesses: [bytecode],

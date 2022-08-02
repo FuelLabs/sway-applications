@@ -7,6 +7,8 @@ import type {
   FunctionFragment,
   DecodedValue,
   Contract,
+  ContractCall,
+  ContractCallOptions,
   Overrides,
   BigNumberish,
   BytesLike,
@@ -17,28 +19,10 @@ import type {
 
 export type AddressInput = { value: string };
 
-export type Address = { value: string };
+export type AddressOutput = { value: string };
 
 interface AssetAbiInterface extends Interface {
-  submit: {
-    mint_and_send_to_address: FunctionFragment;
-  };
-  submitResult: {
-    mint_and_send_to_address: FunctionFragment;
-  };
-  dryRun: {
-    mint_and_send_to_address: FunctionFragment;
-  };
-  dryRunResult: {
-    mint_and_send_to_address: FunctionFragment;
-  };
-  simulate: {
-    mint_and_send_to_address: FunctionFragment;
-  };
-  simulateResult: {
-    mint_and_send_to_address: FunctionFragment;
-  };
-  prepareCall: {
+  functions: {
     mint_and_send_to_address: FunctionFragment;
   };
 
@@ -55,6 +39,13 @@ interface AssetAbiInterface extends Interface {
 
 export class AssetAbi extends Contract {
   interface: AssetAbiInterface;
+  prepareCall: {
+    mint_and_send_to_address(
+      amount: BigNumberish,
+      recipient: AddressInput,
+      options?: ContractCallOptions
+    ): ContractCall;
+  };
   submit: {
     mint_and_send_to_address(
       amount: BigNumberish,
@@ -82,13 +73,6 @@ export class AssetAbi extends Contract {
       recipient: AddressInput,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<CallResult>;
-  };
-  prepareCall: {
-    mint_and_send_to_address(
-      amount: BigNumberish,
-      recipient: AddressInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ScriptTransactionRequest>;
   };
   simulate: {
     mint_and_send_to_address(
