@@ -2,10 +2,7 @@ import { appendFileSync } from "fs";
 import { TestUtils, Provider, toBigInt } from "fuels";
 
 import '../../load.envs';
-import { ASSETS, DECIMAL_PRECISION, FUEL_PROVIDER_URL } from "../../src/config";
-
-// Initial number of wallets to populate in app
-const NUM_WALLETS = 10;
+import { ASSETS, NUM_WALLETS, DECIMAL_PRECISION, FUEL_PROVIDER_URL } from "../../src/config";
 
 async function main() {
     const provider = new Provider(FUEL_PROVIDER_URL);

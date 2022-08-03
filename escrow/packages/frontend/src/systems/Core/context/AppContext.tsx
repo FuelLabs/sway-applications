@@ -1,15 +1,11 @@
-import { randomBytes } from "ethers/lib/utils";
-import { Provider, ScriptTransactionRequest, TestUtils, toBigInt, Wallet } from "fuels";
+import { Wallet } from "fuels";
 import { useAtom } from "jotai";
 import React, { useContext, useState, useMemo, useEffect } from "react";
 import type { PropsWithChildren } from "react";
 
-import { ASSETS, DECIMAL_PRECISION, FUEL_PROVIDER_URL, ESCROW_ID } from "../../../config";
+import {  NUM_WALLETS, FUEL_PROVIDER_URL, ESCROW_ID } from "../../../config";
 import { walletIndexAtom } from "../jotai";
 import { EscrowAbi, EscrowAbi__factory } from "../../../types/contracts";
-
-// Initial number of wallets to populate in app
-const NUM_WALLETS = 10;
 
 interface AppContextValue {
   wallets: Array<Wallet> | null;
