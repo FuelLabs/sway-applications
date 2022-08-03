@@ -1,17 +1,24 @@
 use fuels::{prelude::*, tx::ContractId};
-use fuels_abigen_macro::abigen;
 
 // Load abi from json
-abigen!(MyContract, "out/debug/tictactoe-abi.json");
+abigen!(MyContract, "out/debug/contract-abi.json");
 
 async fn get_contract_instance() -> (MyContract, ContractId) {
     // Launch a local network and deploy the contract
-    let wallet = launch_provider_and_get_single_wallet().await;
+    let mut wallets = launch_custom_provider_and_get_wallets(
+        WalletsConfig::new_single(Some(1), Some(1000000)),
+        None,
+    )
+    .await;
+    let wallet = wallets.pop().unwrap();
 
     let id = Contract::deploy(
-        "./out/debug/tictactoe.bin",
+        "./out/debug/contract.bin",
         &wallet,
         TxParameters::default(),
+        StorageConfiguration::with_storage_path(Some(
+            "./out/debug/contract-storage_slots.json".to_string(),
+        )),
     )
     .await
     .unwrap();

@@ -31,7 +31,6 @@ storage {
 abi TicTacToe {
     #[storage(write)]fn new_game(player_one: Address, player_two: Address) -> Game;
     #[storage(read, write)]fn make_move(game: Game, position: u64);
-    // #[storage(read, write)]fn next_player();
     #[storage(write)]fn end_game(game: Game) -> Option<Address>;
     #[storage(read)]fn map_is_full() -> bool;
 }
@@ -75,27 +74,28 @@ impl TicTacToe for Contract {
         require(storage.map.get((1, position)).is_none(), "Cell is not Empty");
         storage.map.insert((1, position), Option::Some(address));
     }
-}
-//Check each cell. If one of them is empty (contains 0), then the map isn't full yet.
-#[storage(read)]fn map_is_full() -> bool {
-    // Acessing the state of each cell. If it's different than 0 (empty cell),
-    // then it keeps counting the number of not-empty cells.
-    // If all 9 cells are either 1 or 2, it means the map is full and the function returns true.
-    // Else it's not full and the function returns false.
-    let mut counter = 0;
-    let mut result = true;
-    while counter < 9 {
-        counter += 1;
-        if storage.map.get((1, counter)).is_none() {
-            result = false;
-            break;
-        }
-    }
-    return result;
-}
 
-// save the game and return the winner
-#[storage(write)]fn end_game(game: Game) -> Option<Address> {
-    storage.game = game;
-    return game.winner;
+    //Check each cell. If one of them is empty (contains 0), then the map isn't full yet.
+    #[storage(read)]fn map_is_full() -> bool {
+        // Acessing the state of each cell. If it's different than 0 (empty cell),
+        // then it keeps counting the number of not-empty cells.
+        // If all 9 cells are either 1 or 2, it means the map is full and the function returns true.
+        // Else it's not full and the function returns false.
+        let mut counter = 0;
+        let mut result = true;
+        while counter < 9 {
+            counter += 1;
+            if storage.map.get((1, counter)).is_none() {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
+    // save the game and return the winner
+    #[storage(write)]fn end_game(game: Game) -> Option<Address> {
+        storage.game = game;
+        return game.winner;
+    }
 }
