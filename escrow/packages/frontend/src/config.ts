@@ -34,7 +34,7 @@ export const FUNI = {
 
 export const CoinsMetadata = [FETH, FDAI, FUSDC, FUNI];
 
-export const DECIMAL_PLACES = 15;
+export const DECIMAL_PLACES = 9;
 export const DECIMAL_PRECISION = toBigInt(1e9);
 
 export const ESCROW_ID = process.env.ESCROW_ID!;
