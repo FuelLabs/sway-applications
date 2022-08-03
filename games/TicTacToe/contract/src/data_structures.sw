@@ -7,4 +7,4 @@ pub struct Game {
     PlayerOne: Address,
     PlayerTwo: Address,
     winner: Option<Address>,
-}    
+}
