@@ -13,6 +13,8 @@ export const CreateEscrow = () => {
     const [arbiter, setArbiter] = useState("");
     const [arbiterAsset, setArbiterAsset] = useState("");
     const [arbiterFee, setArbiterFee] = useState<number>();
+    const [buyer, setBuyer] = useState("");
+    const [deadline, setDeadline] = useState<number>();
     const [assets, setAssets] = useState([{
         assetId: "",
         assetAmount: ""
@@ -31,6 +33,16 @@ export const CreateEscrow = () => {
     const handleArbiterFeeChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newFee = event.target.value;
         setArbiterFee(parseInt(newFee));
+    }
+
+    const handleBuyerAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const newBuyer = event.target.value;
+        setBuyer(newBuyer);
+    }
+
+    const handleDeadlineChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const newDeadline = event.target.value;
+        setDeadline(parseInt(newDeadline));
     }
 
     const handleAssetIdChange = (event: ChangeEvent<HTMLInputElement>, assetIdx: number) => {
@@ -76,6 +88,28 @@ export const CreateEscrow = () => {
                             asset={arbiterAsset}
                             feeAmount={arbiterFee}
                         />
+                        <Input css={{ alignSelf: "stretch" }} >
+                            <Input.Field
+                                id={`buyerAddress`}
+                                name={`buyerAddress`}
+                                placeholder={`Buyer Address`}
+                                value={buyer}
+                                type="text"
+                                onChange={(e) => handleBuyerAddressChange(e)}
+                                css={{ font: "$sans" }}
+                            />
+                        </Input>
+                        <Input css={{ alignSelf: "stretch" }} >
+                            <Input.Field
+                                id={`deadline`}
+                                name={`deadline`}
+                                placeholder={`Escrow Deadline (block number)`}
+                                value={deadline}
+                                type="number"
+                                onChange={(e) => handleDeadlineChange(e)}
+                                css={{ font: "$sans" }}
+                            />
+                        </Input>
                         <AssetInputContainer
                             onAddAsset={handleAddAsset}
                             onRemoveAsset={handleRemoveAsset}
