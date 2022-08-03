@@ -62,7 +62,7 @@ storage {
 
     /// The number of tokens currently in existence.
     /// This is incremented on mint and decremented on burn. This should not be used to assign
-    /// unqiue identifiers due to the decementation of the value on burning of tokens.
+    /// unqiue identifiers due to the decrementation of the value on burning of tokens.
     total_supply: u64 = 0,
 }
 

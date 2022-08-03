@@ -109,14 +109,14 @@ abi NFT {
     ///
     /// * `access_control` - Determines whether only the admin can call the mint function.
     /// * `admin` - The user which has the ability to mint if `access_control` is set to true and change the contract's admin.
-    /// * `token_supply` - The maximum supply of tokens that can ever be minted.
+    /// * `max_supply` - The maximum supply of tokens that can ever be minted.
     ///
     /// # Reverts
     ///
     /// * When the constructor function has already been called.
     /// * When the `token_supply` is set to 0.
     /// * When `access_control` is set to true and no admin `Identity` was given.
-    #[storage(read, write)]fn constructor(access_control: bool, admin: Identity, token_supply: u64);
+    #[storage(read, write)]fn constructor(access_control: bool, admin: Identity, max_supply: u64);
 
     /// Returns whether the `operator` user is approved to transfer all tokens on the `owner`
     /// user's behalf.
