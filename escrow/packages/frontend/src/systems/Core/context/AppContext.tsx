@@ -32,29 +32,6 @@ export const useWalletList = () => {
   return wallets;
 };
 
-export const seedWallet = async (
-  wallet: Wallet,
-  assetId: string,
-  assetAmount: bigint
-) => {
-  const transactionRequest = new ScriptTransactionRequest({
-    gasPrice: 3,
-    gasLimit: 100_000_000,
-    script: "0x24400000",
-    scriptData: randomBytes(32),
-  });
-  // @ts-ignore
-  transactionRequest.addCoin({
-    id: "0x000000000000000000000000000000000000000000000000000000000000000000",
-    assetId,
-    amount: assetAmount,
-    owner: "0x94ffcc53b892684acefaebc8a3d4a595e528a8cf664eeb3ef36f1020b0809d0d",
-  });
-  transactionRequest.addCoinOutput(wallet.address, assetAmount, assetId);
-  const submit = await wallet.sendTransaction(transactionRequest);
-  return submit.wait();
-};
-
 export const AppContextProvider = ({
   children,
 }: PropsWithChildren<unknown>) => {
@@ -82,6 +59,8 @@ export const AppContextProvider = ({
     return wallets[currentWalletIndex];
   }, [currentWalletIndex]);
 
+  // TODO remove this
+  // This is left over from when every escrow had its own contract
   const contract = useMemo(() => {
     if (!wallet) return null;
     return EscrowAbi__factory.connect(ESCROW_ID, wallet);
@@ -94,13 +73,8 @@ export const AppContextProvider = ({
     }
     const nextPrivateKeyList: Array<string> | null = Array(NUM_WALLETS);
     for (let i = 0; i < NUM_WALLETS; i += 1) {
-      const nextWallet = Wallet.generate({
-        provider: FUEL_PROVIDER_URL,
-      });
-      TestUtils.seedWallet(nextWallet, ASSETS.map(assetId =>  {
-        const randAssetAmount = Math.floor(Math.random() * 9) + 1;
-        return { assetId, amount: DECIMAL_PRECISION * toBigInt(randAssetAmount) }
-      }));
+      const nextPrivateKey = process.env[`VITE_WALLET${i}`]!;
+      const nextWallet = new Wallet(nextPrivateKey, FUEL_PROVIDER_URL)
       nextPrivateKeyList[i] = nextWallet.privateKey;
     }
     setPrivateKeyList(nextPrivateKeyList);

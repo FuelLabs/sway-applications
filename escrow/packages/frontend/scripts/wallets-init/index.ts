@@ -16,7 +16,7 @@ async function main() {
             return { assetId, amount: DECIMAL_PRECISION * toBigInt(randAssetAmount) }
         }));
         // Write the private keys to .env for later use by the frontend
-        appendFileSync('.env', `WALLET${i}=${nextWallet.privateKey}\n`);
+        appendFileSync('.env', `VITE_WALLET${i}=${nextWallet.privateKey}\n`);
     }
 }
 
