@@ -51,7 +51,8 @@
       "test": "pnpm run --filter=swayswap-app test",
       "test:coverage": "pnpm run --filter=swayswap-app test --coverage",
       "test:clear": "pnpm -r exec jest --clearCache",
-      "test:e2e": "run-p --race dev cy:run"
+      "test:e2e": "run-p --race dev cy:run",
+      "wallets:init": "pnpm run --filter escrow-frontend wallets:init"
     },
     "devDependencies": {
       "@babel/core": "^7.18.2",
