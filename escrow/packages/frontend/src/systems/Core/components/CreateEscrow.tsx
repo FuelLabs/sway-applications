@@ -4,32 +4,33 @@ import { ChangeEvent, SyntheticEvent, useState } from "react";
 import { useWallet } from "../context/AppContext";
 import { useContract } from "../hooks/useContract";
 
-import { AddressInputContainer } from "./AddressInputContainer"
+import { ArbiterInputContainer } from "./ArbiterInputContainer"
 import { AssetInputContainer } from "./AssetInputContainer";
 
 export const CreateEscrow = () => {
     const wallet = useWallet();
     const contract = useContract();
-    const [users, setUsers] = useState(["", ""]);
+    const [arbiter, setArbiter] = useState("");
+    const [arbiterAsset, setArbiterAsset] = useState("");
+    const [arbiterFee, setArbiterFee] = useState<number>();
     const [assets, setAssets] = useState([{
         assetId: "",
         assetAmount: ""
     }]);
 
-    const handleUsersChange = (event: ChangeEvent<HTMLInputElement>, userIdx: number) => {
-        const newUsers = [...users];
-        newUsers[userIdx] = event.target.value;
-        setUsers(newUsers);
+    const handleArbiterAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const newArbiter = event.target.value;
+        setArbiter(newArbiter);
     }
 
-    const handleAddUser = (event: any) => {
-        setUsers([...users, ""]);
+    const handleArbiterAssetChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const newAssetId = event.target.value;
+        setArbiterAsset(newAssetId);
     }
 
-    const handleRemoveUser = (userId: number) => {
-        setUsers(users.filter((user, i) => {
-            return i !== userId;
-        }));
+    const handleArbiterFeeChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const newFee = event.target.value;
+        setArbiterFee(parseInt(newFee));
     }
 
     const handleAssetIdChange = (event: ChangeEvent<HTMLInputElement>, assetIdx: number) => {
@@ -56,8 +57,9 @@ export const CreateEscrow = () => {
 
     const handleSubmit = async (event: SyntheticEvent) => {
         event.preventDefault();
-        contract?.submit.create_escrow(users, assets);
-        setUsers(["", ""]);
+        // TODO actually pass in values
+        //contract?.submit.create_escrow(arbiter, assets, "", 1);
+        setArbiter("");
         setAssets([{ assetAmount: "", assetId: ""}]);
     }
 
@@ -66,11 +68,13 @@ export const CreateEscrow = () => {
             <Card css={{ margin: "10px", bg: "$gray7", marginTop: "50px" }}>
                 <form onSubmit={handleSubmit}>
                     <Stack css={{ width: "475px", margin: "10px", alignItems: "center" }}>
-                        <AddressInputContainer
-                            onAddUser={handleAddUser}
-                            onRemoveUser={handleRemoveUser}
-                            onUserInfoChange={handleUsersChange}
-                            users={users}
+                        <ArbiterInputContainer
+                            onArbiterAddressChange={handleArbiterAddressChange}
+                            onAssetIdChange={handleArbiterAssetChange}
+                            onFeeChange={handleArbiterFeeChange}
+                            arbiterAddress={arbiter}
+                            asset={arbiterAsset}
+                            feeAmount={arbiterFee}
                         />
                         <AssetInputContainer
                             onAddAsset={handleAddAsset}
