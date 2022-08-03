@@ -39,7 +39,7 @@ jobs:
 
     strategy:
       matrix:
-        project: ['dao-voting', 'escrow', 'fundraiser', 'games/TicTacToe', 'multisig-wallet']
+        project: ['dao-voting', 'escrow', 'fundraiser', 'games/TicTacToe/contract', 'multisig-wallet']
 
     steps:
       - name: Checkout repository
