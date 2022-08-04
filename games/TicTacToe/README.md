@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="../../.docs/sway-apps-logo-dark-theme.png">
-        <img alt="SwayApps logo" width="400px" src="../../.docs/sway-apps-logo-light-theme.png">
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/sway-TicTacToe-logo-dark-theme.png">
+        <img alt="SwayApps logo" width="400px" src=".docs/sway-TicTacToe-logo-light-theme.png">
     </picture>
 </p>
 
