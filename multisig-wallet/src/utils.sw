@@ -10,4 +10,3 @@ pub fn create_hash(to: Identity, value: u64, data: [u64; 3], nonce: u64, self_id
         contract_identifier: self_id, destination: to, value, data, nonce
     })
 }
-

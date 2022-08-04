@@ -47,6 +47,10 @@ storage {
 }
 
 impl MultiSignatureWallet for Contract {
+    fn balance(asset_id: ContractId) -> u64 {
+        this_balance(asset_id)
+    }
+
     // #[storage(read, write)]fn constructor(users: Vec<User>, threshold: u64) {
     #[storage(read, write)]fn constructor(users: [User; 3], threshold: u64) {
         require(storage.nonce == 0, InitError::CannotReinitialize);
@@ -88,6 +92,14 @@ impl MultiSignatureWallet for Contract {
         });
     }
 
+    #[storage(read)]fn nonce() -> u64 {
+        storage.nonce
+    }
+
+    #[storage(read)]fn owner(user: Address) -> Owner {
+        storage.weighting.get(user)
+    }
+
     #[storage(read, write)]fn transfer(to: Identity, asset_id: ContractId, value: u64, data: [u64; 3], signatures: [B512; 3]) {
         require(storage.nonce != 0, InitError::NotInitialized);
         require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
@@ -105,21 +117,6 @@ impl MultiSignatureWallet for Contract {
             to, asset: asset_id, value, nonce: storage.nonce - 1
         });
     }
-
-    #[storage(read)]fn owner(user: Address) -> Owner {
-        storage.weighting.get(user)
-    }
-
-    
-    #[storage(read)]fn nonce() -> u64 {
-        storage.nonce
-    }
-
-    
-    fn balance(asset_id: ContractId) -> u64 {
-        this_balance(asset_id)
-    }
-
     
     fn transaction_hash(to: Identity, value: u64, data: [u64; 3], nonce: u64) -> b256 {
         create_hash(to, value, data, nonce, contract_id())
