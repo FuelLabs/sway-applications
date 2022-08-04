@@ -7,14 +7,9 @@ import type {
   FunctionFragment,
   DecodedValue,
   Contract,
-  ContractCall,
-  ContractCallOptions,
-  Overrides,
-  BigNumberish,
   BytesLike,
-  CallResult,
-  ScriptTransactionRequest,
-  TransactionResult,
+  BigNumberish,
+  InvokeFunction,
 } from "fuels";
 
 export type AddressInput = { value: string };
@@ -39,59 +34,10 @@ interface AssetAbiInterface extends Interface {
 
 export class AssetAbi extends Contract {
   interface: AssetAbiInterface;
-  prepareCall: {
-    mint_and_send_to_address(
-      amount: BigNumberish,
-      recipient: AddressInput,
-      options?: ContractCallOptions
-    ): ContractCall;
+  functions: {
+    mint_and_send_to_address: InvokeFunction<
+      [amount: BigNumberish, recipient: AddressInput],
+      boolean
+    >;
   };
-  submit: {
-    mint_and_send_to_address(
-      amount: BigNumberish,
-      recipient: AddressInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<boolean>;
-  };
-  submitResult: {
-    mint_and_send_to_address(
-      amount: BigNumberish,
-      recipient: AddressInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<TransactionResult<any>>;
-  };
-  dryRun: {
-    mint_and_send_to_address(
-      amount: BigNumberish,
-      recipient: AddressInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<boolean>;
-  };
-  dryRunResult: {
-    mint_and_send_to_address(
-      amount: BigNumberish,
-      recipient: AddressInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-  };
-  simulate: {
-    mint_and_send_to_address(
-      amount: BigNumberish,
-      recipient: AddressInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<boolean>;
-  };
-  simulateResult: {
-    mint_and_send_to_address(
-      amount: BigNumberish,
-      recipient: AddressInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-  };
-
-  mint_and_send_to_address(
-    amount: BigNumberish,
-    recipient: AddressInput,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<boolean>;
 }

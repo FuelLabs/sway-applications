@@ -7,15 +7,12 @@ import type {
   FunctionFragment,
   DecodedValue,
   Contract,
-  ContractCall,
-  ContractCallOptions,
-  Overrides,
-  BigNumberish,
   BytesLike,
-  CallResult,
-  ScriptTransactionRequest,
-  TransactionResult,
+  BigNumberish,
+  InvokeFunction,
 } from "fuels";
+
+import type { Enum } from "./common";
 
 export type AddressInput = { value: string };
 
@@ -41,12 +38,12 @@ export type AssetInput = { amount: BigNumberish; id: ContractIdInput };
 
 export type AssetOutput = { amount: bigint; id: ContractIdOutput };
 
-export type IdentityInput = Partial<{
+export type IdentityInput = Enum<{
   Address: AddressInput;
   ContractId: ContractIdInput;
 }>;
 
-export type IdentityOutput = Partial<{
+export type IdentityOutput = Enum<{
   Address: AddressOutput;
   ContractId: ContractIdOutput;
 }>;
@@ -155,459 +152,43 @@ interface EscrowAbiInterface extends Interface {
 
 export class EscrowAbi extends Contract {
   interface: EscrowAbiInterface;
-  prepareCall: {
-    accept_arbiter(
-      identifier: BigNumberish,
-      options?: ContractCallOptions
-    ): ContractCall;
+  functions: {
+    accept_arbiter: InvokeFunction<[identifier: BigNumberish], void>;
 
-    create_escrow(
-      arbiter: ArbiterInput,
-      assets: [AssetInput, AssetInput],
-      buyer: IdentityInput,
-      deadline: BigNumberish,
-      options?: ContractCallOptions
-    ): ContractCall;
+    create_escrow: InvokeFunction<
+      [
+        arbiter: ArbiterInput,
+        assets: [AssetInput, AssetInput],
+        buyer: IdentityInput,
+        deadline: BigNumberish
+      ],
+      void
+    >;
 
-    deposit(
-      identifier: BigNumberish,
-      options?: ContractCallOptions
-    ): ContractCall;
+    deposit: InvokeFunction<[identifier: BigNumberish], void>;
 
-    dispute(
-      identifier: BigNumberish,
-      options?: ContractCallOptions
-    ): ContractCall;
+    dispute: InvokeFunction<[identifier: BigNumberish], void>;
 
-    propose_arbiter(
-      arbiter: ArbiterInput,
-      identifier: BigNumberish,
-      options?: ContractCallOptions
-    ): ContractCall;
+    propose_arbiter: InvokeFunction<
+      [arbiter: ArbiterInput, identifier: BigNumberish],
+      void
+    >;
 
-    resolve_dispute(
-      identifier: BigNumberish,
-      payment_amount: BigNumberish,
-      user: IdentityInput,
-      options?: ContractCallOptions
-    ): ContractCall;
+    resolve_dispute: InvokeFunction<
+      [
+        identifier: BigNumberish,
+        payment_amount: BigNumberish,
+        user: IdentityInput
+      ],
+      void
+    >;
 
-    return_deposit(
-      identifier: BigNumberish,
-      options?: ContractCallOptions
-    ): ContractCall;
+    return_deposit: InvokeFunction<[identifier: BigNumberish], void>;
 
-    take_payment(
-      identifier: BigNumberish,
-      options?: ContractCallOptions
-    ): ContractCall;
+    take_payment: InvokeFunction<[identifier: BigNumberish], void>;
 
-    transfer_to_seller(
-      identifier: BigNumberish,
-      options?: ContractCallOptions
-    ): ContractCall;
+    transfer_to_seller: InvokeFunction<[identifier: BigNumberish], void>;
 
-    withdraw_collateral(
-      identifier: BigNumberish,
-      options?: ContractCallOptions
-    ): ContractCall;
+    withdraw_collateral: InvokeFunction<[identifier: BigNumberish], void>;
   };
-  submit: {
-    accept_arbiter(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    create_escrow(
-      arbiter: ArbiterInput,
-      assets: [AssetInput, AssetInput],
-      buyer: IdentityInput,
-      deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    dispute(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    propose_arbiter(
-      arbiter: ArbiterInput,
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    resolve_dispute(
-      identifier: BigNumberish,
-      payment_amount: BigNumberish,
-      user: IdentityInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    return_deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    take_payment(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    transfer_to_seller(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    withdraw_collateral(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-  };
-  submitResult: {
-    accept_arbiter(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<TransactionResult<any>>;
-
-    create_escrow(
-      arbiter: ArbiterInput,
-      assets: [AssetInput, AssetInput],
-      buyer: IdentityInput,
-      deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<TransactionResult<any>>;
-
-    deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<TransactionResult<any>>;
-
-    dispute(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<TransactionResult<any>>;
-
-    propose_arbiter(
-      arbiter: ArbiterInput,
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<TransactionResult<any>>;
-
-    resolve_dispute(
-      identifier: BigNumberish,
-      payment_amount: BigNumberish,
-      user: IdentityInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<TransactionResult<any>>;
-
-    return_deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<TransactionResult<any>>;
-
-    take_payment(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<TransactionResult<any>>;
-
-    transfer_to_seller(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<TransactionResult<any>>;
-
-    withdraw_collateral(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<TransactionResult<any>>;
-  };
-  dryRun: {
-    accept_arbiter(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    create_escrow(
-      arbiter: ArbiterInput,
-      assets: [AssetInput, AssetInput],
-      buyer: IdentityInput,
-      deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    dispute(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    propose_arbiter(
-      arbiter: ArbiterInput,
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    resolve_dispute(
-      identifier: BigNumberish,
-      payment_amount: BigNumberish,
-      user: IdentityInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    return_deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    take_payment(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    transfer_to_seller(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    withdraw_collateral(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-  };
-  dryRunResult: {
-    accept_arbiter(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    create_escrow(
-      arbiter: ArbiterInput,
-      assets: [AssetInput, AssetInput],
-      buyer: IdentityInput,
-      deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    dispute(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    propose_arbiter(
-      arbiter: ArbiterInput,
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    resolve_dispute(
-      identifier: BigNumberish,
-      payment_amount: BigNumberish,
-      user: IdentityInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    return_deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    take_payment(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    transfer_to_seller(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    withdraw_collateral(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-  };
-  simulate: {
-    accept_arbiter(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    create_escrow(
-      arbiter: ArbiterInput,
-      assets: [AssetInput, AssetInput],
-      buyer: IdentityInput,
-      deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    dispute(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    propose_arbiter(
-      arbiter: ArbiterInput,
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    resolve_dispute(
-      identifier: BigNumberish,
-      payment_amount: BigNumberish,
-      user: IdentityInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    return_deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    take_payment(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    transfer_to_seller(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-
-    withdraw_collateral(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<void>;
-  };
-  simulateResult: {
-    accept_arbiter(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    create_escrow(
-      arbiter: ArbiterInput,
-      assets: [AssetInput, AssetInput],
-      buyer: IdentityInput,
-      deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    dispute(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    propose_arbiter(
-      arbiter: ArbiterInput,
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    resolve_dispute(
-      identifier: BigNumberish,
-      payment_amount: BigNumberish,
-      user: IdentityInput,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    return_deposit(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    take_payment(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    transfer_to_seller(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-
-    withdraw_collateral(
-      identifier: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<CallResult>;
-  };
-
-  accept_arbiter(
-    identifier: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<void>;
-
-  create_escrow(
-    arbiter: ArbiterInput,
-    assets: [AssetInput, AssetInput],
-    buyer: IdentityInput,
-    deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<void>;
-
-  deposit(
-    identifier: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<void>;
-
-  dispute(
-    identifier: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<void>;
-
-  propose_arbiter(
-    arbiter: ArbiterInput,
-    identifier: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<void>;
-
-  resolve_dispute(
-    identifier: BigNumberish,
-    payment_amount: BigNumberish,
-    user: IdentityInput,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<void>;
-
-  return_deposit(
-    identifier: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<void>;
-
-  take_payment(
-    identifier: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<void>;
-
-  transfer_to_seller(
-    identifier: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<void>;
-
-  withdraw_collateral(
-    identifier: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<void>;
 }
