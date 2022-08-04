@@ -1,5 +1,7 @@
 //import { ESCROW_PATH } from "@/config";
+import { ArbiterInput, AssetInput, IdentityInput } from "@/types/contracts/EscrowAbi";
 import { Button, Stack, Input, Card, Flex } from "@fuel-ui/react";
+import { BigNumberish } from "fuels";
 import { ChangeEvent, SyntheticEvent, useState } from "react";
 import { useWallet } from "../context/AppContext";
 import { useContract } from "../hooks/useContract";
@@ -12,9 +14,9 @@ export const CreateEscrow = () => {
     const contract = useContract();
     const [arbiter, setArbiter] = useState("");
     const [arbiterAsset, setArbiterAsset] = useState("");
-    const [arbiterFee, setArbiterFee] = useState<number>();
+    const [arbiterFee, setArbiterFee] = useState<BigNumberish>();
     const [buyer, setBuyer] = useState("");
-    const [deadline, setDeadline] = useState<number>();
+    const [deadline, setDeadline] = useState<BigNumberish>();
     const [assets, setAssets] = useState([{
         assetId: "",
         assetAmount: ""
@@ -69,9 +71,27 @@ export const CreateEscrow = () => {
 
     const handleSubmit = async (event: SyntheticEvent) => {
         event.preventDefault();
-        // TODO actually pass in values
-        //contract?.submit.create_escrow(arbiter, assets, "", 1);
+        // TODO would it be better to store this rather than construct it like so?
+        let arbiterArg: ArbiterInput = {
+            address: { Address: { value: arbiter} },
+            asset: { value: arbiterAsset },
+            fee_amount: arbiterFee!,
+        };
+        // TODO make this more flexible when escrow takes an arbitrary amount of assets as input
+        let assetsArg: [AssetInput, AssetInput] = [
+            { amount: assets[0].assetAmount, id: { value: assets[0].assetId } },
+            { amount: assets[1].assetAmount, id: { value: assets[1].assetId } }
+        ];
+        // TODO how to pass buyer as either an Address OR a ContractId?
+        let buyerArg: IdentityInput = {
+            Address: { value: buyer }
+        };
+        contract?.submit.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!);
         setArbiter("");
+        setArbiterAsset("");
+        setArbiterFee(undefined);
+        setBuyer("");
+        setDeadline(undefined);
         setAssets([{ assetAmount: "", assetId: ""}]);
     }
 
