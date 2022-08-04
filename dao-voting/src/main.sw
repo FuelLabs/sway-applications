@@ -8,7 +8,6 @@ dep utils;
 
 use std::{
     address::Address,
-    assert::require,
     block::height,
     chain::auth::{AuthError, msg_sender},
     context::{call_frames::msg_asset_id, msg_amount, this_balance},
@@ -16,7 +15,7 @@ use std::{
     identity::Identity,
     logging::log,
     result::Result,
-    revert::revert,
+    revert::{require, revert},
     storage::StorageMap,
     token::transfer,
 };

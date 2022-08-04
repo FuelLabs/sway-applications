@@ -10,7 +10,6 @@ dep events;
 // Standard library code
 use std::{
     address::Address,
-    assert::require,
     b512::B512,
     constants::BASE_ASSET_ID,
     context::{call_frames::contract_id, this_balance},
@@ -19,9 +18,9 @@ use std::{
     hash::sha256,
     identity::Identity,
     logging::log,
-    option::*,
+    option::Option,
     result::Result,
-    revert::revert,
+    revert::{require, revert},
     storage::StorageMap,
     token::transfer,
     vec::Vec,
