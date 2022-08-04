@@ -1,6 +1,6 @@
 library data_structures;
 
-use std::{address::Address, contract_id::ContractId, identity::Identity, vec::Vec};
+use std::{address::Address, contract_id::ContractId, identity::Identity};
 
 pub struct Owner {
     /// Has a specific address been marked as an owner in the contract
@@ -17,7 +17,7 @@ pub struct Transaction {
     contract_identifier: ContractId,
 
     /// Payload sent to destination
-    data: Vec<u64>,
+    data: [u64; 3],
 
     /// The recipient (output / contract) regarding the Tx details
     destination: Identity,

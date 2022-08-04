@@ -1,9 +1,9 @@
 library events;
 
-use std::{contract_id::ContractId, identity::Identity, vec::Vec};
+use std::{contract_id::ContractId, identity::Identity};
 
 pub struct ExecutedEvent {
-    data: Vec<u64>,
+    data: [u64; 3],
     nonce: u64,
     to: Identity,
     value: u64,
