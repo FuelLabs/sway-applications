@@ -1,11 +1,11 @@
 //import { ESCROW_PATH } from "@/config";
 import { ArbiterInput, AssetInput, IdentityInput } from "@/types/contracts/EscrowAbi";
 import { Button, Stack, Input, Card, Flex } from "@fuel-ui/react";
-import { BigNumberish } from "fuels";
 import { ChangeEvent, SyntheticEvent, useState } from "react";
 import { useWallet } from "../context/AppContext";
 import { useContract } from "../hooks/useContract";
 
+import { ESCROW_ID } from "@/config";
 import { ArbiterInputContainer } from "./ArbiterInputContainer"
 import { AssetInputContainer } from "./AssetInputContainer";
 
@@ -14,9 +14,9 @@ export const CreateEscrow = () => {
     const contract = useContract();
     const [arbiter, setArbiter] = useState("");
     const [arbiterAsset, setArbiterAsset] = useState("");
-    const [arbiterFee, setArbiterFee] = useState<BigNumberish>();
+    const [arbiterFee, setArbiterFee] = useState<number>();
     const [buyer, setBuyer] = useState("");
-    const [deadline, setDeadline] = useState<BigNumberish>();
+    const [deadline, setDeadline] = useState<number>();
     const [assets, setAssets] = useState([{
         assetId: "",
         assetAmount: ""
@@ -86,7 +86,13 @@ export const CreateEscrow = () => {
         let buyerArg: IdentityInput = {
             Address: { value: buyer }
         };
-        contract?.submit.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!);
+        console.log("arbiter: ", arbiterArg);
+        console.log("assets: ", assetsArg);
+        console.log("buyer: ", buyerArg);
+        console.log("deadline: ", deadline);
+        console.log(contract);
+        const result = await contract?.functions.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!).call();
+        console.log(result);
         setArbiter("");
         setArbiterAsset("");
         setArbiterFee(undefined);

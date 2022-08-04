@@ -1,5 +1,4 @@
-import { Button, Input } from "@fuel-ui/react";
-import { BigNumberish } from "fuels";
+import { Input } from "@fuel-ui/react";
 import type { ChangeEvent } from "react";
 
 interface Props {
@@ -8,7 +7,7 @@ interface Props {
     onFeeChange: (event: ChangeEvent<HTMLInputElement>) => void;
     arbiterAddress: string;
     asset: string;
-    feeAmount: BigNumberish | undefined;
+    feeAmount: number | undefined;
 }
 
 export const ArbiterInputContainer = (props: Props) => {

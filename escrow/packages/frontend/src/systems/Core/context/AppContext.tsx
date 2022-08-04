@@ -55,8 +55,6 @@ export const AppContextProvider = ({
     return wallets[currentWalletIndex];
   }, [currentWalletIndex]);
 
-  // TODO remove this
-  // This is left over from when every escrow had its own contract
   const contract = useMemo(() => {
     if (!wallet) return null;
     return EscrowAbi__factory.connect(ESCROW_ID, wallet);
