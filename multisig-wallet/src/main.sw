@@ -51,10 +51,10 @@ impl MultiSignatureWallet for Contract {
         this_balance(asset_id)
     }
 
-    // #[storage(read, write)]fn constructor(users: Vec<User>, threshold: u64) {
-    #[storage(read, write)]fn constructor(users: [User; 3], threshold: u64) {
+    // #[storage(read, write)]fn constructor(threshold: u64, users: Vec<User>) {
+    #[storage(read, write)]fn constructor(threshold: u64, users: [User; 3]) {
         require(storage.nonce == 0, InitError::CannotReinitialize);
-        require(storage.threshold != 0, InitError::ThresholdCannotBeZero);
+        require(threshold != 0, InitError::ThresholdCannotBeZero);
 
         let mut user_index = 0;
         while user_index < 3 {
@@ -65,7 +65,7 @@ impl MultiSignatureWallet for Contract {
             require(user.weight != 0, InitError::WeightingCannotBeZero);
 
             storage.weighting.insert(user.identity, Owner {
-                exists: true, weight: user.weight
+                weight: user.weight
             });
             user_index += 1;
         }

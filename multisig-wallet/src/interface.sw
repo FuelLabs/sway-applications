@@ -27,7 +27,7 @@ abi MultiSignatureWallet {
     /// - When the user address is the 0th address (0x00000...)
     /// - When the threshold is set to 0
     /// - When an owner has an approval weight of 0
-    #[storage(read, write)]fn constructor(users: [User; 3], threshold: u64);
+    #[storage(read, write)]fn constructor(threshold: u64, users: [User; 3]);
 
     /// Executes a Tx formed from the `to, `value` and `data` parameters if the signatures meet the
     /// threshold requirement

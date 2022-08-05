@@ -26,9 +26,9 @@ pub mod abi_calls {
         contract.balance(asset_id).call().await.unwrap().value
     }
 
-    pub async fn constructor(contract: &Multisig, users: Vec<User>, threshold: u64) {
+    pub async fn constructor(contract: &Multisig, threshold: u64, users: Vec<User>) {
         contract
-            .constructor(users, threshold)
+            .constructor(threshold, users)
             .call()
             .await
             .unwrap();
@@ -64,12 +64,12 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn nonce(contract: &Multisig) -> CallResponse<u64> {
-        contract.nonce().call().await.unwrap()
+    pub async fn nonce(contract: &Multisig) -> u64 {
+        contract.nonce().call().await.unwrap().value
     }
 
-    pub async fn owner(contract: &Multisig, user: Address) -> CallResponse<Owner> {
-        contract.owner(user).call().await.unwrap()
+    pub async fn owner(contract: &Multisig, user: &LocalWallet) -> Owner {
+        contract.owner(user.address().into()).call().await.unwrap().value
     }
 
     pub async fn transaction_hash(

@@ -3,9 +3,6 @@ library data_structures;
 use std::{address::Address, contract_id::ContractId, identity::Identity};
 
 pub struct Owner {
-    /// Has a specific address been marked as an owner in the contract
-    exists: bool,
-
     /// Number of approvals the user provides when approving.
     /// The default is usually 1
     weight: u64,

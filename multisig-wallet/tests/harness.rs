@@ -10,7 +10,9 @@ use utils::{
     abi_calls::{
         balance, constructor, execute_transaction, nonce, owner, transfer, transaction_hash,
     },
+    Owner,
     test_helpers::{deposit, mint, setup},
+    User,
 };
 
 mod balance {
@@ -50,9 +52,25 @@ mod constructor {
         use super::*;
 
         #[tokio::test]
-        #[ignore]
         async fn initializes() {
             let (multisig, wallets, asset) = setup().await;
+            let users = vec![
+                User { identity: wallets.users[0].address().into(), weight: 1 },
+                User { identity: wallets.users[1].address().into(), weight: 1 },
+                User { identity: wallets.users[2].address().into(), weight: 2 },
+            ];
+
+            assert_eq!(0, nonce(&multisig.contract).await);
+            assert_eq!(Owner { weight: 0 }, owner(&multisig.contract, &wallets.users[0]).await);
+            assert_eq!(Owner { weight: 0 }, owner(&multisig.contract, &wallets.users[1]).await);
+            assert_eq!(Owner { weight: 0 }, owner(&multisig.contract, &wallets.users[2]).await);
+
+            constructor(&multisig.contract, 2, users.clone()).await;
+
+            assert_eq!(1, nonce(&multisig.contract).await);
+            assert_eq!(Owner { weight: users.get(0).unwrap().weight }, owner(&multisig.contract, &wallets.users[0]).await);
+            assert_eq!(Owner { weight: users.get(1).unwrap().weight }, owner(&multisig.contract, &wallets.users[1]).await);
+            assert_eq!(Owner { weight: users.get(2).unwrap().weight }, owner(&multisig.contract, &wallets.users[2]).await);
         }
     }
 
@@ -61,31 +79,43 @@ mod constructor {
         use super::*;
 
         #[tokio::test]
-        #[ignore]
         #[should_panic]
         async fn when_nonce_is_not_zero() {
             let (multisig, wallets, asset) = setup().await;
+            let users = vec![
+                User { identity: wallets.users[0].address().into(), weight: 1 },
+                User { identity: wallets.users[1].address().into(), weight: 1 },
+                User { identity: wallets.users[2].address().into(), weight: 2 },
+            ];
+
+            constructor(&multisig.contract, 2, users.clone()).await;
+            constructor(&multisig.contract, 2, users).await;
         }
 
         #[tokio::test]
-        #[ignore]
         #[should_panic]
         async fn when_threshold_is_zero() {
             let (multisig, wallets, asset) = setup().await;
+            let users = vec![
+                User { identity: wallets.users[0].address().into(), weight: 1 },
+                User { identity: wallets.users[1].address().into(), weight: 1 },
+                User { identity: wallets.users[2].address().into(), weight: 2 },
+            ];
+
+            constructor(&multisig.contract, 0, users.clone()).await;
         }
 
         #[tokio::test]
-        #[ignore]
-        #[should_panic]
-        async fn when_user_identity_is_zero() {
-            let (multisig, wallets, asset) = setup().await;
-        }
-
-        #[tokio::test]
-        #[ignore]
         #[should_panic]
         async fn when_user_weight_is_zero() {
             let (multisig, wallets, asset) = setup().await;
+            let users = vec![
+                User { identity: wallets.users[0].address().into(), weight: 0 },
+                User { identity: wallets.users[1].address().into(), weight: 1 },
+                User { identity: wallets.users[2].address().into(), weight: 2 },
+            ];
+
+            constructor(&multisig.contract, 2, users.clone()).await;
         }
     }
 }
