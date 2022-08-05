@@ -4,11 +4,13 @@
 
 mod utils;
 
+use fuels::signers::Signer;
+
 use utils::{
     abi_calls::{
         balance, constructor, execute_transaction, nonce, owner, transfer, transaction_hash,
     },
-    test_helpers::setup,
+    test_helpers::{deposit, mint, setup},
 };
 
 mod balance {
@@ -20,15 +22,21 @@ mod balance {
         use super::*;
 
         #[tokio::test]
-        #[ignore]
         async fn returns_zero_for_nonexistent_asset() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, _, asset) = setup().await;
+            assert_eq!(0, balance(asset.id, &multisig.contract).await);
         }
 
         #[tokio::test]
-        #[ignore]
         async fn returns_correct_balance() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
+
+            assert_eq!(0, balance(asset.id, &multisig.contract).await);
+
+            mint(100, &asset.contract, &wallets.users[0]).await;
+            deposit(100, asset.id, multisig.id, &wallets.users[0]).await;
+
+            assert_eq!(100, balance(asset.id, &multisig.contract).await);
         }
     }
 }
@@ -44,7 +52,7 @@ mod constructor {
         #[tokio::test]
         #[ignore]
         async fn initializes() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
     }
 
@@ -56,28 +64,28 @@ mod constructor {
         #[ignore]
         #[should_panic]
         async fn when_nonce_is_not_zero() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
         async fn when_threshold_is_zero() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
         async fn when_user_identity_is_zero() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
         async fn when_user_weight_is_zero() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
     }
 }
@@ -94,7 +102,7 @@ mod execute_transaction {
         #[ignore]
         async fn executes() {
             // TODO: add call to call function in order to execute data
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
     }
 
@@ -106,28 +114,28 @@ mod execute_transaction {
         #[ignore]
         #[should_panic]
         async fn when_nonce_is_zero() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
         async fn when_unrecoverable_public_key() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
         async fn when_incorrect_signer_ordering() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
         async fn when_insufficient_approval_count() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
     }
 }
@@ -143,13 +151,13 @@ mod nonce {
         #[tokio::test]
         #[ignore]
         async fn returns_zero() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         async fn returns_one() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
     }
 }
@@ -165,13 +173,13 @@ mod owner {
         #[tokio::test]
         #[ignore]
         async fn returns_info_for_existing_owner() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         async fn returns_info_for_non_owner() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
     }
 }
@@ -187,7 +195,7 @@ mod transfer {
         #[tokio::test]
         #[ignore]
         async fn transfers() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
     }
 
@@ -199,35 +207,35 @@ mod transfer {
         #[ignore]
         #[should_panic]
         async fn when_nonce_is_zero() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
         async fn when_transferring_more_than_contract_balance() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
         async fn when_unrecoverable_public_key() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
         async fn when_incorrect_signer_ordering() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
 
         #[tokio::test]
         #[ignore]
         #[should_panic]
         async fn when_insufficient_approval_count() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
     }
 }
@@ -243,7 +251,7 @@ mod transaction_hash {
         #[tokio::test]
         #[ignore]
         async fn returns_hash() {
-            let (multisig, wallet1, wallet2, wallet3) = setup().await;
+            let (multisig, wallets, asset) = setup().await;
         }
     }
 }
