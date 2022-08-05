@@ -211,15 +211,29 @@ mod owner {
         use super::*;
 
         #[tokio::test]
-        #[ignore]
         async fn returns_info_for_existing_owner() {
-            let (multisig, wallets, asset) = setup().await;
+            let (multisig, wallets, _) = setup().await;
+            let users = vec![
+                User { identity: wallets.users[0].address().into(), weight: 1 },
+                User { identity: wallets.users[1].address().into(), weight: 1 },
+                User { identity: wallets.users[2].address().into(), weight: 2 },
+            ];
+
+            assert_eq!(Owner { weight: 0 }, owner(&multisig.contract, &wallets.users[0]).await);
+            assert_eq!(Owner { weight: 0 }, owner(&multisig.contract, &wallets.users[1]).await);
+            assert_eq!(Owner { weight: 0 }, owner(&multisig.contract, &wallets.users[2]).await);
+
+            constructor(&multisig.contract, 2, users.clone()).await;
+
+            assert_eq!(Owner { weight: users.get(0).unwrap().weight }, owner(&multisig.contract, &wallets.users[0]).await);
+            assert_eq!(Owner { weight: users.get(1).unwrap().weight }, owner(&multisig.contract, &wallets.users[1]).await);
+            assert_eq!(Owner { weight: users.get(2).unwrap().weight }, owner(&multisig.contract, &wallets.users[2]).await);
         }
 
         #[tokio::test]
-        #[ignore]
         async fn returns_info_for_non_owner() {
-            let (multisig, wallets, asset) = setup().await;
+            let (multisig, wallets, _) = setup().await;
+            assert_eq!(Owner { weight: 0 }, owner(&multisig.contract, &wallets.users[0]).await);
         }
     }
 }
