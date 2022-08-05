@@ -53,7 +53,7 @@ mod constructor {
 
         #[tokio::test]
         async fn initializes() {
-            let (multisig, wallets, asset) = setup().await;
+            let (multisig, wallets, _) = setup().await;
             let users = vec![
                 User { identity: wallets.users[0].address().into(), weight: 1 },
                 User { identity: wallets.users[1].address().into(), weight: 1 },
@@ -179,15 +179,25 @@ mod nonce {
         use super::*;
 
         #[tokio::test]
-        #[ignore]
         async fn returns_zero() {
-            let (multisig, wallets, asset) = setup().await;
+            let (multisig, _, _) = setup().await;
+            assert_eq!(0, nonce(&multisig.contract).await);
         }
 
         #[tokio::test]
-        #[ignore]
         async fn returns_one() {
             let (multisig, wallets, asset) = setup().await;
+            let users = vec![
+                User { identity: wallets.users[0].address().into(), weight: 1 },
+                User { identity: wallets.users[1].address().into(), weight: 1 },
+                User { identity: wallets.users[2].address().into(), weight: 2 },
+            ];
+
+            assert_eq!(0, nonce(&multisig.contract).await);
+
+            constructor(&multisig.contract, 2, users.clone()).await;
+
+            assert_eq!(1, nonce(&multisig.contract).await);
         }
     }
 }
