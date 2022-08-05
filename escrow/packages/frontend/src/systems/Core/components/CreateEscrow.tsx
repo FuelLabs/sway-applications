@@ -8,6 +8,7 @@ import { useContract } from "../hooks/useContract";
 import { ESCROW_ID } from "@/config";
 import { ArbiterInputContainer } from "./ArbiterInputContainer"
 import { AssetInputContainer } from "./AssetInputContainer";
+import { CoinQuantityLike, NativeAssetId } from "fuels";
 
 export const CreateEscrow = () => {
     const wallet = useWallet();
@@ -86,12 +87,17 @@ export const CreateEscrow = () => {
         let buyerArg: IdentityInput = {
             Address: { value: buyer }
         };
-        console.log("arbiter: ", arbiterArg);
-        console.log("assets: ", assetsArg);
-        console.log("buyer: ", buyerArg);
-        console.log("deadline: ", deadline);
-        console.log(contract);
-        const result = await contract?.functions.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!).call();
+        const result = await contract?.functions.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!)
+            .callParams({
+                forward: [1, NativeAssetId]
+            })
+            .txParams({
+                gasPrice: BigInt(5),
+                bytePrice: BigInt(5),
+                variableOutputs: 1,
+                gasLimit: 100_000_000
+            })
+            .call();
         console.log(result);
         setArbiter("");
         setArbiterAsset("");

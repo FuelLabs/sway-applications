@@ -40,7 +40,7 @@
       "prettier:format": "prettier --write .",
       "scripts:setup": "pnpm run --filter=escrow-scripts build && pnpm install",
       "services:clean": "make -C docker services-clean",
-      "services:setup": "run-s scripts:setup services:run contracts",
+      "services:setup": "run-s scripts:setup services:run contracts wallets:init",
       "services:run": "make -C docker services-run",
       "services:reset": "run-s services:clean services:setup",
       "services:clean-test": "make -C docker services-clean-test",
