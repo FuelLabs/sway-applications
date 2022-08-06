@@ -300,10 +300,10 @@ mod transaction_hash {
     use super::*;
 
     mod success {
-        use std::slice;
+        use super::*;
+
         use fuels::core::abi_encoder::ABIEncoder;
         use fuels::core::Tokenizable;
-        use super::*;
 
         #[tokio::test]
         async fn returns_hash() {
