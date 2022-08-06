@@ -4,12 +4,13 @@
 
 mod utils;
 
-use fuels::signers::Signer;
-
+use fuels::{signers::Signer, tx::Address};
+use sha2::{Digest, Sha256};
 use utils::{
     abi_calls::{
         balance, constructor, execute_transaction, nonce, owner, transfer, transaction_hash,
     },
+    Identity,
     Owner,
     test_helpers::{deposit, mint, setup},
     User,
@@ -303,9 +304,30 @@ mod transaction_hash {
         use super::*;
 
         #[tokio::test]
-        #[ignore]
         async fn returns_hash() {
             let (multisig, wallets, asset) = setup().await;
+            let to = Identity::Address(wallets.users[0].address().into());
+
+            let a: Address = wallets.users[0].address().into();
+
+            let whole: Vec<u8> = (*a.iter().chain([0, 0, 0, 0, 0, 0, 0, 0].iter()).map(|v| *v).collect::<Vec<u8>>()).to_vec();
+            let whole: [u8; 40] = whole.try_into().unwrap();
+            // dbg!(whole);
+
+            let value: u64 = 100;
+            let data: Vec<u64> = vec![52, 45, 17];
+            let nonce: u64 = 42;
+            let contract_id: [u8; 32] = multisig.id.into();
+
+            // dbg!([data[0].to_be_bytes(), data[1].to_be_bytes(), data[2].to_be_bytes(), nonce.to_be_bytes(), value.to_be_bytes()].concat());
+
+            let expected: [u8; 32] = Sha256::digest(
+                [data[0].to_be_bytes(), data[1].to_be_bytes(), data[2].to_be_bytes(), nonce.to_be_bytes()].concat()
+            ).into();
+
+            let hashed_transaction = transaction_hash(&multisig.contract, data, nonce, to, value).await;
+
+            assert_eq!(expected, hashed_transaction);
         }
     }
 }

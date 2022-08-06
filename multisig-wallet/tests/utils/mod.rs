@@ -74,16 +74,17 @@ pub mod abi_calls {
 
     pub async fn transaction_hash(
         contract: &Multisig,
-        to: Identity,
-        value: u64,
         data: Vec<u64>,
         nonce: u64,
-    ) -> CallResponse<[u8; 32]> {
+        to: Identity,
+        value: u64,
+    ) -> [u8; 32] {
         contract
             .transaction_hash(to, value, data, nonce)
             .call()
             .await
             .unwrap()
+            .value
     }
     
 }
