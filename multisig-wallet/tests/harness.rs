@@ -300,7 +300,9 @@ mod transaction_hash {
     use super::*;
 
     mod success {
-
+        use std::slice;
+        use fuels::core::abi_encoder::ABIEncoder;
+        use fuels::core::Tokenizable;
         use super::*;
 
         #[tokio::test]
@@ -308,11 +310,7 @@ mod transaction_hash {
             let (multisig, wallets, asset) = setup().await;
             let to = Identity::Address(wallets.users[0].address().into());
 
-            let a: Address = wallets.users[0].address().into();
-
-            let whole: Vec<u8> = (*a.iter().chain([0, 0, 0, 0, 0, 0, 0, 0].iter()).map(|v| *v).collect::<Vec<u8>>()).to_vec();
-            let whole: [u8; 40] = whole.try_into().unwrap();
-            // dbg!(whole);
+            let to_abi_encoded = ABIEncoder::encode(&[to.clone().into_token()]).unwrap();
 
             let value: u64 = 100;
             let data: Vec<u64> = vec![52, 45, 17];
