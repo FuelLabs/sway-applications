@@ -45,7 +45,7 @@ pub fn predicate_bytecode_and_root_from_bin(path_to_bin: &str) -> (Vec<u8>, Bech
     (predicate_bytecode, predicate_root)
 }
 
-/// Main test function to be parameterized by test cases
+/// Tests that the predicate can be spent. Parameterized by test cases
 pub async fn test_predicate_spend_with_parameters(
     ask_amount: u64,
     asked_asset: AssetId,
@@ -232,6 +232,7 @@ pub async fn test_predicate_spend_with_parameters(
     );
 }
 
+// Tests that the predicate can be recovered by the owner
 pub async fn recover_predicate_as_owner(correct_owner: bool) {
     let provider_config = Config {
         utxo_validation: true,
