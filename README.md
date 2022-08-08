@@ -54,8 +54,8 @@ sway-applications/
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
 - [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
+- [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [OTC Swap Predicate](./otc-swap-predicate) is a predicate that can be used to propose and execute an atomic swap between two parties without requiring any on-chain state.
-
 
 ## Running a project
 

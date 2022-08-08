@@ -7,7 +7,6 @@ dep events;
 dep utils;
 
 use std::{
-    assert::require,
     block::height,
     chain::auth::{AuthError, msg_sender},
     constants::BASE_ASSET_ID,
@@ -16,7 +15,7 @@ use std::{
     identity::Identity,
     logging::log,
     result::Result,
-    revert::revert,
+    revert::{require, revert},
     storage::StorageMap,
     token::transfer,
 };

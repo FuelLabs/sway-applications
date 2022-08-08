@@ -13,6 +13,8 @@ elif [ $PROJECT = 'fundraiser' ]; then
     forc build --path $PROJECT/tests/artifacts/asset
 elif [ $PROJECT = 'multisig-wallet' ]; then
     forc build --path $PROJECT
+elif [ $PROJECT = 'NFT' ]; then
+    forc build --path $PROJECT
 elif [ $PROJECT = 'otc-swap-predicate' ]; then
     forc build --path $PROJECT
 fi
