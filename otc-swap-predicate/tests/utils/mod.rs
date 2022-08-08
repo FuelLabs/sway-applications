@@ -1,10 +1,10 @@
+use std::str::FromStr;
+
 use fuel_gql_client::fuel_vm::{consts::REG_ONE, prelude::Opcode};
 use fuels::contract::script::Script;
 use fuels::prelude::*;
 use fuels::test_helpers::WalletsConfig;
 use fuels::tx::{AssetId, Contract, Input, Output, Transaction};
-
-use std::str::FromStr;
 
 // The fee-paying base asset
 pub const BASE_ASSET: AssetId = AssetId::new([0u8; 32]);
