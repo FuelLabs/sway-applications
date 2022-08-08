@@ -13,6 +13,7 @@ const mergeCoinsWithMetadata = (coins: CoinQuantity[] = []) =>
       assetId: coin.assetId,
       symbol: coinMetadata?.symbol,
       amount: toBigInt(coin.amount || 0),
+      decimals: coinMetadata?.decimals,
     };
   });
 

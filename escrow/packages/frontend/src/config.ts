@@ -1,5 +1,4 @@
 import { NativeAssetId, toBigInt } from 'fuels';
-import path from 'path';
 
 export const FUEL_PROVIDER_URL = 'http://localhost:4000/graphql';
 
@@ -12,24 +11,28 @@ export const FETH = {
   name: 'FEther',
   symbol: 'FETH',
   assetId: NativeAssetId,
+  decimals: 9,
 };
 
 export const FDAI = {
   name: 'FDAI',
   symbol: 'FDAI',
   assetId: FDAI_ID,
+  decimals: 9,
 };
 
 export const FUSDC = {
   name: 'FUSDc',
   symbol: 'FUSDC',
   assetId: FUSDC_ID,
+  decimals: 9,
 };
 
 export const FUNI = {
   name: 'FUNI',
   symbol: 'FUNI',
   assetId: FUNI_ID,
+  decimals: 9,
 };
 
 export const CoinsMetadata = [FETH, FDAI, FUSDC, FUNI];

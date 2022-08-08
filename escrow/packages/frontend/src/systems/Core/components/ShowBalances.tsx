@@ -9,9 +9,9 @@ import { DECIMAL_PLACES } from "@/config";
 export const ShowBalances = () => {
   const coins = useAssets();
 
-  const formatValue = (amount: bigint | null | undefined) => {
+  const formatValue = (amount: bigint | null | undefined, decimals: number) => {
     if (amount != null) {
-      return formatUnits(amount, DECIMAL_PLACES);
+      return formatUnits(amount, decimals);
     }
     return "";
   };
@@ -25,7 +25,7 @@ export const ShowBalances = () => {
         <Stack>
           {coins.map((coin) => (
             <div className={coinStyle()} key={coin.assetId}>
-              {formatValue(coin.amount)} {coin.symbol}
+              {formatValue(coin.amount, coin.decimals!)} {coin.symbol}
             </div>
           ))}
         </Stack>

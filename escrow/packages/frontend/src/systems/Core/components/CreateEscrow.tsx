@@ -1,14 +1,14 @@
 //import { ESCROW_PATH } from "@/config";
+import { DECIMAL_PLACES, DECIMAL_PRECISION } from "@/config";
 import { ArbiterInput, AssetInput, IdentityInput } from "@/types/contracts/EscrowAbi";
+import { BigNumber } from "@ethersproject/bignumber";
 import { Button, Stack, Input, Card, Flex } from "@fuel-ui/react";
 import { ChangeEvent, SyntheticEvent, useState } from "react";
 import { useWallet } from "../context/AppContext";
 import { useContract } from "../hooks/useContract";
 
-import { ESCROW_ID } from "@/config";
 import { ArbiterInputContainer } from "./ArbiterInputContainer"
 import { AssetInputContainer } from "./AssetInputContainer";
-import { BytesLike, CoinQuantityLike, NativeAssetId } from "fuels";
 
 export const CreateEscrow = () => {
     const wallet = useWallet();
@@ -45,7 +45,6 @@ export const CreateEscrow = () => {
 
     const handleDeadlineChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newDeadline = event.target.value;
-        console.log("new deadline: ", newDeadline);
         setDeadline(parseInt(newDeadline));
     }
 
@@ -74,10 +73,22 @@ export const CreateEscrow = () => {
     const handleSubmit = async (event: SyntheticEvent) => {
         event.preventDefault();
         // TODO would it be better to store this rather than construct it like so?
+        // let arbiterArg: ArbiterInput = {
+        //     address: { Address: { value: arbiter} },
+        //     asset: { value: arbiterAsset },
+        //     fee_amount: arbiterFee! * DECIMAL_PLACES,
+        // };
+        // // TODO make this more flexible when escrow takes an arbitrary amount of assets as input
+        // let assetsArg: [AssetInput, AssetInput] = [
+        //     { amount: BigNumber.from(assets[0].assetAmount).mul(DECIMAL_PLACES).toString(), id: { value: assets[0].assetId } },
+        //     { amount: BigNumber.from(assets[1].assetAmount).mul(DECIMAL_PLACES).toString(), id: { value: assets[1].assetId } }
+        // ];
+        const actualFee = BigInt(arbiterFee!) * BigInt(DECIMAL_PRECISION);
+        console.log(actualFee);
         let arbiterArg: ArbiterInput = {
             address: { Address: { value: arbiter} },
             asset: { value: arbiterAsset },
-            fee_amount: arbiterFee!,
+            fee_amount: actualFee,
         };
         // TODO make this more flexible when escrow takes an arbitrary amount of assets as input
         let assetsArg: [AssetInput, AssetInput] = [
@@ -93,7 +104,7 @@ export const CreateEscrow = () => {
         const result = await contract!
             .multiCall([
                 contract!.functions.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!).callParams({
-                    forward: [arbiterFee!, arbiterAsset]
+                    forward: [actualFee, arbiterAsset]
                 }),
             ])
             .txParams({
