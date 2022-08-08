@@ -301,28 +301,29 @@ mod transaction_hash {
 
     mod success {
         use super::*;
-
         use fuels::core::abi_encoder::ABIEncoder;
         use fuels::core::Tokenizable;
 
         #[tokio::test]
         async fn returns_hash() {
             let (multisig, wallets, asset) = setup().await;
+
+            // Raw values
             let to = Identity::Address(wallets.users[0].address().into());
-
-            let to_abi_encoded = ABIEncoder::encode(&[to.clone().into_token()]).unwrap();
-
             let value: u64 = 100;
             let data: Vec<u64> = vec![52, 45, 17];
             let nonce: u64 = 42;
             let contract_id: [u8; 32] = multisig.id.into();
 
-            // dbg!([data[0].to_be_bytes(), data[1].to_be_bytes(), data[2].to_be_bytes(), nonce.to_be_bytes(), value.to_be_bytes()].concat());
+            // Lazy conversion, must be in the same order as the params in the definition of the Tx struct
+            let mut result: Vec<u8> = Vec::new();
+            result.extend(contract_id.to_vec());
+            result.extend([data[0].to_be_bytes(), data[1].to_be_bytes(), data[2].to_be_bytes()].concat().to_vec());
+            result.extend(ABIEncoder::encode(&[to.clone().into_token()]).unwrap().to_vec());
+            result.extend(nonce.to_be_bytes().to_vec());
+            result.extend(value.to_be_bytes().to_vec());
 
-            let expected: [u8; 32] = Sha256::digest(
-                [data[0].to_be_bytes(), data[1].to_be_bytes(), data[2].to_be_bytes(), nonce.to_be_bytes()].concat()
-            ).into();
-
+            let expected: [u8; 32] = Sha256::digest(result).into();
             let hashed_transaction = transaction_hash(&multisig.contract, data, nonce, to, value).await;
 
             assert_eq!(expected, hashed_transaction);
