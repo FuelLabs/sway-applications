@@ -176,12 +176,14 @@ impl StakingRewards for Contract {
 
 #[storage(read)]fn _reward_per_token(test_timestamp: u64) -> u64 {
     let reward_per_token = storage.reward_per_token_stored;
-    if (storage.total_supply == 0) {
-        return reward_per_token;
-    }
 
-    reward_per_token + ((_last_time_reward_applicable(test_timestamp) - storage.last_update_time) * storage.reward_rate * ONE / storage.total_supply)
+    match storage.total_supply {
+        0 => reward_per_token,
+        _ => reward_per_token + ((_last_time_reward_applicable(test_timestamp) - storage.last_update_time) * storage.reward_rate * ONE / storage.total_supply),
+    }
 }
+
+
 
 #[storage(read, write)]fn _get_reward(test_timestamp: u64) {
     let sender = msg_sender().unwrap();

@@ -3,8 +3,7 @@ mod utils;
 use fuels::prelude::*;
 use utils::{get_balance, setup, stakingrewards_mod, ONE, REWARDS_ASSET, STAKING_ASSET};
 
-// For testing, staking and reward token will both be native asset
-// Timestamps of each action must be specified. Contract is deployed at t=0
+// Until timestamp supported in Sway, timestamps of each action must be specified. Contract is deployed at t=0
 
 #[tokio::test]
 async fn stake_tokens() {
