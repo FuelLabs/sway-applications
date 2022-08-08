@@ -12,25 +12,25 @@ tx:: {
 /// Order / OTC swap Predicate
 /// # Arguments
 ///
-/// - `output_index` - The index of the Coin output which pays the order maker.
+/// - `output_index` - The index of the Coin output which pays the receiver.
 ///
 fn main(output_index: u8) -> bool {
     // Order conditions: This must be hardcoded here.
-    // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `maker`
-    let maker = ~Address::from(0x0303030303030303030303030303030303030303030303030303030303030303);
+    // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `receiver`
+    let receiver = ~Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db);
     let ask_amount = 42;
     let ask_token: ContractId = ContractId {
         value: 0x0101010101010101010101010101010101010101010101010101010101010101,
     };
 
-    // Check if the transaction contains a single input coin from the maker, to cancel their own order
+    // Check if the transaction contains a single input coin from the receiver, to cancel their own order
     // Note that the predicate is necessarily one of the inputs, so the other must be the coin input.
     if (tx_inputs_count() == 2) {
         let owner = match tx_input_owner(0) {
             Option::Some(owner) => owner, _ => tx_input_owner(1).unwrap(), 
         };
 
-        if (owner == maker) {
+        if (owner == receiver) {
             return true;
         };
     };
@@ -53,5 +53,5 @@ fn main(output_index: u8) -> bool {
     let asset_id = ~ContractId::from(b256_from_pointer_offset(output_pointer, 48));
 
     // Evaluate the predicate
-    (to == maker) && (amount == ask_amount) && (asset_id == ask_token)
+    (to == receiver) && (amount == ask_amount) && (asset_id == ask_token)
 }
