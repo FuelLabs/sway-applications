@@ -239,7 +239,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     };
 
     let wallets = &launch_custom_provider_and_get_wallets(
-        configure_wallets(AssetId::new([1u8; 32])),
+        configure_wallets(BASE_ASSET),
         Some(provider_config),
     )
     .await;
@@ -252,12 +252,11 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     // Get provider
     let provider = wallet.get_provider().unwrap();
 
+    let initial_wallet_balance = get_balance(&provider, wallet.address(), OFFERED_ASSET).await;
+
     let (predicate_bytecode, predicate_root) = predicate_bytecode_and_root_from_bin(
         "../otc-swap-predicate/out/debug/otc-swap-predicate.bin",
     );
-
-    let initial_wallet_offered_token_balance =
-        get_balance(&provider, wallet.address(), OFFERED_ASSET).await;
 
     // Transfer some coins to the predicate root
     let offered_amount = 1000;
@@ -307,14 +306,14 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         predicate_data: vec![0u8], // Predicate data is the index of the output that pays the receiver
     };
 
-    // Change output for unspent fees (base asset)
+    // Change outputs for unspent fees (base asset)
     let output_base_change = Output::Change {
         to: Address::from(wallet.address()),
         amount: 0,
         asset_id: BASE_ASSET,
     };
 
-    // Change output for unspent asked asset
+    // Use a change output to send the unlocked coins back to the wallet
     let output_offered_change = Output::Change {
         to: Address::from(wallet.address()),
         amount: 0,
@@ -340,15 +339,11 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     let script = Script::new(tx);
     let _receipts = script.call(provider).await.unwrap();
 
-    let predicate_balance = get_balance(&provider, &predicate_root, OFFERED_ASSET).await;
-    let wallet_offered_token_balance =
-        get_balance(&provider, wallet.address(), OFFERED_ASSET).await;
-
     // The predicate root's coin has been spent
+    let predicate_balance = get_balance(&provider, &predicate_root, OFFERED_ASSET).await;
     assert_eq!(predicate_balance, 0);
 
-    assert_eq!(
-        wallet_offered_token_balance,
-        initial_wallet_offered_token_balance
-    );
+    // Wallet balance is the same as before it sent the coins to the predicate
+    let wallet_balance = get_balance(&provider, wallet.address(), OFFERED_ASSET).await;
+    assert_eq!(wallet_balance, initial_wallet_balance);
 }
