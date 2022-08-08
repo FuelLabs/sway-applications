@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use fuel_gql_client::fuel_vm::{consts::REG_ONE, prelude::Opcode};
 use fuels::contract::script::Script;
 use fuels::prelude::*;
@@ -51,7 +49,7 @@ pub async fn test_predicate_spend_with_parameters(
     asked_asset: AssetId,
     receiver: &str,
 ) {
-    let receiver_address = Bech32Address::from_str(receiver).unwrap();
+    let receiver_address: Bech32Address = receiver.parse().unwrap();
 
     let provider_config = Config {
         utxo_validation: true,
