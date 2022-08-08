@@ -31,7 +31,18 @@ async fn incorrect_receiver_address() {
     utils::test_predicate_spend_with_parameters(
         ASK_AMOUNT,
         ASK_TOKEN,
-        "fuel1p8qt95dysmzrn2rmewntg6n6rg3l8ztueqafg5s6jmd9cgautrdslwdqdq", // Note incorrect end
+        "fuelthisaddressisnotthereceiver11111111111111111111111111111111",
     )
     .await;
+}
+
+#[tokio::test]
+async fn owner_recover_funds() {
+    utils::recover_predicate_as_owner(true).await;
+}
+
+#[tokio::test]
+#[should_panic]
+async fn incorrect_owner_recover_funds() {
+    utils::recover_predicate_as_owner(false).await;
 }

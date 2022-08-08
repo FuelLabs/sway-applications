@@ -71,9 +71,6 @@ pub async fn test_predicate_spend_with_parameters(
     // Get provider
     let provider = receiver_wallet.get_provider().unwrap();
 
-    println!("{}", Address::from(receiver_wallet.address()));
-    println!("{}", receiver_wallet.address());
-
     let (predicate_bytecode, predicate_root) = predicate_bytecode_and_root_from_bin(
         "../otc-swap-predicate/out/debug/otc-swap-predicate.bin",
     );
@@ -232,5 +229,127 @@ pub async fn test_predicate_spend_with_parameters(
     assert_eq!(
         taker_offered_token_balance,
         initial_taker_offered_token_balance + offered_amount
+    );
+}
+
+pub async fn recover_predicate_as_owner(correct_owner: bool) {
+    let provider_config = Config {
+        utxo_validation: true,
+        predicates: true,
+        ..Config::local_node()
+    };
+
+    let wallets = &launch_custom_provider_and_get_wallets(
+        configure_wallets(AssetId::new([1u8; 32])),
+        Some(provider_config),
+    )
+    .await;
+
+    let wallet = match correct_owner {
+        true => &wallets[0],
+        false => &wallets[1],
+    };
+
+    // Get provider
+    let provider = wallet.get_provider().unwrap();
+
+    let (predicate_bytecode, predicate_root) = predicate_bytecode_and_root_from_bin(
+        "../otc-swap-predicate/out/debug/otc-swap-predicate.bin",
+    );
+
+    let initial_wallet_offered_token_balance =
+        get_balance(&provider, wallet.address(), OFFERED_ASSET).await;
+
+    // Transfer some coins to the predicate root
+    let offered_amount = 1000;
+    let _receipt = wallet
+        .transfer(
+            &predicate_root,
+            offered_amount,
+            OFFERED_ASSET,
+            TxParameters::default(),
+        )
+        .await
+        .unwrap();
+
+    // Get predicate coin to unlock
+    let predicate_coin = &provider
+        .get_spendable_coins(&predicate_root, OFFERED_ASSET, 1)
+        .await
+        .unwrap()[0];
+    let predicate_coin_utxo_id = predicate_coin.utxo_id.clone().into();
+
+    // Get base asset coin for gas
+    let gas_coin = &provider
+        .get_spendable_coins(wallet.address(), BASE_ASSET, 1)
+        .await
+        .unwrap()[0];
+    let gas_coin_utxo_id = gas_coin.utxo_id.clone().into();
+    let gas_coin_amount: u64 = gas_coin.amount.clone().into();
+
+    // Base asset input for gas
+    let input_gas = Input::CoinSigned {
+        utxo_id: gas_coin_utxo_id,
+        owner: Address::from(wallet.address()),
+        amount: gas_coin_amount,
+        asset_id: BASE_ASSET,
+        witness_index: 0,
+        maturity: 0,
+    };
+
+    // Offered asset coin belonging to the predicate root
+    let input_predicate = Input::CoinPredicate {
+        utxo_id: predicate_coin_utxo_id,
+        owner: Address::from(&predicate_root),
+        amount: offered_amount,
+        asset_id: OFFERED_ASSET,
+        maturity: 0,
+        predicate: predicate_bytecode,
+        predicate_data: vec![0u8], // Predicate data is the index of the output that pays the receiver
+    };
+
+    // Change output for unspent fees (base asset)
+    let output_base_change = Output::Change {
+        to: Address::from(wallet.address()),
+        amount: 0,
+        asset_id: BASE_ASSET,
+    };
+
+    // Change output for unspent asked asset
+    let output_offered_change = Output::Change {
+        to: Address::from(wallet.address()),
+        amount: 0,
+        asset_id: OFFERED_ASSET,
+    };
+
+    let mut tx = Transaction::Script {
+        gas_price: 0,
+        gas_limit: 10_000_000,
+        maturity: 0,
+        byte_price: 0,
+        receipts_root: Default::default(),
+        script: Opcode::RET(REG_ONE).to_bytes().to_vec(),
+        script_data: vec![],
+        inputs: vec![input_gas, input_predicate],
+        outputs: vec![output_base_change, output_offered_change],
+        witnesses: vec![],
+        metadata: None,
+    };
+
+    // Sign and execute the transaction
+    wallet.sign_transaction(&mut tx).await.unwrap();
+    let script = Script::new(tx);
+    let _receipts = script.call(provider).await.unwrap();
+
+    let predicate_balance = get_balance(&provider, &predicate_root, OFFERED_ASSET).await;
+    let wallet_offered_token_balance =
+        get_balance(&provider, wallet.address(), OFFERED_ASSET).await;
+
+    // The predicate root's coin has been spent
+    assert_eq!(predicate_balance, 0);
+
+    assert_eq!(
+        wallet_offered_token_balance,
+        initial_wallet_offered_token_balance
     );
 }

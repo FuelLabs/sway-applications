@@ -17,11 +17,11 @@ tx:: {
 fn main(output_index: u8) -> bool {
     // Order conditions: This must be hardcoded here.
     // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `receiver`
-    let receiver = ~Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db);
     let ask_amount = 42;
     let ask_token: ContractId = ContractId {
         value: 0x0101010101010101010101010101010101010101010101010101010101010101,
     };
+    let receiver = ~Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db);
 
     // Check if the transaction contains a single input coin from the receiver, to cancel their own order
     // Note that the predicate is necessarily one of the inputs, so the other must be the coin input.
