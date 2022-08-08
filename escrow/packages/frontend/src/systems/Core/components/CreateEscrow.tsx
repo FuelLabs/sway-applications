@@ -8,7 +8,7 @@ import { useContract } from "../hooks/useContract";
 import { ESCROW_ID } from "@/config";
 import { ArbiterInputContainer } from "./ArbiterInputContainer"
 import { AssetInputContainer } from "./AssetInputContainer";
-import { CoinQuantityLike, NativeAssetId } from "fuels";
+import { BytesLike, CoinQuantityLike, NativeAssetId } from "fuels";
 
 export const CreateEscrow = () => {
     const wallet = useWallet();
@@ -45,6 +45,7 @@ export const CreateEscrow = () => {
 
     const handleDeadlineChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newDeadline = event.target.value;
+        console.log("new deadline: ", newDeadline);
         setDeadline(parseInt(newDeadline));
     }
 
@@ -87,17 +88,19 @@ export const CreateEscrow = () => {
         let buyerArg: IdentityInput = {
             Address: { value: buyer }
         };
-        const result = await contract?.functions.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!)
-            .callParams({
-                forward: [1, NativeAssetId]
-            })
+        // TODO change this from multiCall to single call once https://github.com/FuelLabs/fuels-ts/issues/445
+        // is fixed
+        const result = await contract!
+            .multiCall([
+                contract!.functions.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!).callParams({
+                    forward: [arbiterFee!, arbiterAsset]
+                }),
+            ])
             .txParams({
                 gasPrice: BigInt(5),
                 bytePrice: BigInt(5),
-                variableOutputs: 1,
                 gasLimit: 100_000_000
-            })
-            .call();
+            }).call();
         console.log(result);
         setArbiter("");
         setArbiterAsset("");
