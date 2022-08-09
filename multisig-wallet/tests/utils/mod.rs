@@ -27,11 +27,7 @@ pub mod abi_calls {
     }
 
     pub async fn constructor(contract: &Multisig, threshold: u64, users: Vec<User>) {
-        contract
-            .constructor(threshold, users)
-            .call()
-            .await
-            .unwrap();
+        contract.constructor(threshold, users).call().await.unwrap();
     }
 
     pub async fn execute_transaction(
@@ -49,12 +45,12 @@ pub mod abi_calls {
     }
 
     pub async fn transfer(
-        contract: &Multisig,
-        to: Identity,
         asset_id: ContractId,
-        value: u64,
+        contract: &Multisig,
         data: Vec<u64>,
         signatures: Vec<B512>,
+        to: Identity,
+        value: u64,
     ) -> CallResponse<()> {
         contract
             .transfer(to, asset_id, value, data, signatures)
@@ -69,7 +65,12 @@ pub mod abi_calls {
     }
 
     pub async fn owner(contract: &Multisig, user: &LocalWallet) -> Owner {
-        contract.owner(user.address().into()).call().await.unwrap().value
+        contract
+            .owner(user.address().into())
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn transaction_hash(
@@ -86,7 +87,6 @@ pub mod abi_calls {
             .unwrap()
             .value
     }
-    
 }
 
 pub mod test_helpers {
@@ -100,7 +100,12 @@ pub mod test_helpers {
         wallet: &LocalWallet,
     ) {
         wallet
-            .force_transfer_to_contract(&contract_id.into(), amount, AssetId::new(*asset_id), TxParameters::default())
+            .force_transfer_to_contract(
+                &contract_id.into(),
+                amount,
+                AssetId::new(*asset_id),
+                TxParameters::default(),
+            )
             .await
             .unwrap();
     }
@@ -159,9 +164,15 @@ pub mod test_helpers {
         let users = [wallet1, wallet2, wallet3];
 
         (
-            MultisigWrapper { contract: multisig, id: id.into() },
+            MultisigWrapper {
+                contract: multisig,
+                id: id.into(),
+            },
             Wallets { users },
-            AssetWrapper { contract: asset, id: asset_id.into() },
+            AssetWrapper {
+                contract: asset,
+                id: asset_id.into(),
+            },
         )
     }
 }
