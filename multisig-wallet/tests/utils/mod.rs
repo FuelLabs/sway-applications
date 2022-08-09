@@ -36,10 +36,10 @@ pub mod abi_calls {
 
     pub async fn execute_transaction(
         contract: &Multisig,
-        to: Identity,
-        value: u64,
         data: Vec<u64>,
         signatures: Vec<B512>,
+        to: Identity,
+        value: u64,
     ) -> CallResponse<()> {
         contract
             .execute_transaction(to, value, data, signatures)
