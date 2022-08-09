@@ -4,8 +4,6 @@ import { formatUnits } from "ethers/lib/utils";
 
 import { useAssets } from "../hooks/useAssets";
 
-import { DECIMAL_PLACES } from "@/config";
-
 export const ShowBalances = () => {
   const coins = useAssets();
 

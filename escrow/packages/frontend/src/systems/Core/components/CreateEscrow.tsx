@@ -1,16 +1,20 @@
 //import { ESCROW_PATH } from "@/config";
-import { DECIMAL_PLACES, DECIMAL_PRECISION } from "@/config";
+import { DECIMAL_PRECISION } from "@/config";
 import { ArbiterInput, AssetInput, IdentityInput } from "@/types/contracts/EscrowAbi";
-import { BigNumber } from "@ethersproject/bignumber";
 import { Button, Stack, Input, Card, Flex } from "@fuel-ui/react";
 import { ChangeEvent, SyntheticEvent, useState } from "react";
+import { useQueryClient } from "react-query";
+import { useAtomValue } from "jotai";
 import { useWallet } from "../context/AppContext";
 import { useContract } from "../hooks/useContract";
 
+import { walletIndexAtom } from "../jotai";
 import { ArbiterInputContainer } from "./ArbiterInputContainer"
 import { AssetInputContainer } from "./AssetInputContainer";
 
 export const CreateEscrow = () => {
+    const queryClient = useQueryClient();
+    const walletIdx = useAtomValue(walletIndexAtom);
     const wallet = useWallet();
     const contract = useContract();
     const [arbiter, setArbiter] = useState("");
@@ -72,17 +76,7 @@ export const CreateEscrow = () => {
 
     const handleSubmit = async (event: SyntheticEvent) => {
         event.preventDefault();
-        // TODO would it be better to store this rather than construct it like so?
-        // let arbiterArg: ArbiterInput = {
-        //     address: { Address: { value: arbiter} },
-        //     asset: { value: arbiterAsset },
-        //     fee_amount: arbiterFee! * DECIMAL_PLACES,
-        // };
-        // // TODO make this more flexible when escrow takes an arbitrary amount of assets as input
-        // let assetsArg: [AssetInput, AssetInput] = [
-        //     { amount: BigNumber.from(assets[0].assetAmount).mul(DECIMAL_PLACES).toString(), id: { value: assets[0].assetId } },
-        //     { amount: BigNumber.from(assets[1].assetAmount).mul(DECIMAL_PLACES).toString(), id: { value: assets[1].assetId } }
-        // ];
+        // TODO make this more flexible for assets of arbitrary decimal precision
         const actualFee = BigInt(arbiterFee!) * BigInt(DECIMAL_PRECISION);
         console.log(actualFee);
         let arbiterArg: ArbiterInput = {
@@ -91,6 +85,7 @@ export const CreateEscrow = () => {
             fee_amount: actualFee,
         };
         // TODO make this more flexible when escrow takes an arbitrary amount of assets as input
+        // TODO multiply asset amount by DECIMAL_PRECISION
         let assetsArg: [AssetInput, AssetInput] = [
             { amount: assets[0].assetAmount, id: { value: assets[0].assetId } },
             { amount: assets[1].assetAmount, id: { value: assets[1].assetId } }
@@ -115,10 +110,14 @@ export const CreateEscrow = () => {
         console.log(result);
         setArbiter("");
         setArbiterAsset("");
+        // TODO figure out how to clear properly
         setArbiterFee(undefined);
         setBuyer("");
+        // TODO figure out how to clear properly
         setDeadline(undefined);
         setAssets([{ assetAmount: "", assetId: ""}]);
+        // Trigger query to update show balances component
+        queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
     }
 
     return (
