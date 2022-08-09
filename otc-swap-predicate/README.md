@@ -12,14 +12,14 @@ Predicates may introspect the transaction spending their coins (inputs, outputs,
 
 ## Order / OTC swap Predicate
 
-This predicate serves as an "order" that anyone can fill. The order "maker" transfers a coin to the predicate root which can be unlocked by any transaction which has an output that satisfies the conditions of the order : the spending transaction must transfer `ask_amount` of `ask_token` to the `maker`. These constants are hard-coded in the predicate itself, so that the bytecode root commits to this specific set of conditions.
+This predicate serves as an "order" that anyone can fill. The order maker transfers a coin to the predicate root which can be unlocked by any transaction which has an output that satisfies the conditions of the order : the spending transaction must transfer `ask_amount` of `ask_token` to the `receiver`. These constants are hard-coded in the predicate itself, so that the bytecode root commits to this specific set of conditions.
 
 The order "taker" can then execute the order by spending the predicate. They are free to spend the predicate's coin in any way they wish, so long as the transaction has an output which satisfies the above conditions. They must provide an index to this output in the predicate data.
 
-The order maker can "cancel" the order by spending the predicate's coins in a transaction containing a single coin input they have signed.
+The order maker can "cancel" the order by spending the predicate's coins in a transaction containing a single coin input signed by the `receiver`. There are therefore two inputs: the signed coin and the predicate coin.
 
 Limitations:
-- An order can not be partially filled - the taker must pay the entire ask amount. (They do not have to take the full amount offered in the predicate, but not do do so would be beneficial only to the order maker)
+- An order can not be partially filled - the taker must pay the entire ask amount.
 - There is no on-chain matching engine, so an order placed "offside" would not be matched with an existing order with a better price (on the contrary, it would be vulnerable to arbitrage).
 
 As such, this mechanism is most useful for OTC trades and atomic swaps.

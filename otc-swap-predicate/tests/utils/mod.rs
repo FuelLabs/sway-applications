@@ -231,6 +231,7 @@ pub async fn test_predicate_spend_with_parameters(
 }
 
 // Tests that the predicate can be recovered by the owner
+// `correct_owner` is a boolean flag to set in order to test passing and failing conditions
 pub async fn recover_predicate_as_owner(correct_owner: bool) {
     let provider_config = Config {
         utxo_validation: true,
