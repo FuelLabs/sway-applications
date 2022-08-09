@@ -1,5 +1,6 @@
 import { Input } from "@fuel-ui/react";
 import type { ChangeEvent } from "react";
+import NumberFormat from "react-number-format"
 
 interface Props {
     onArbiterAddressChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -46,6 +47,12 @@ export const ArbiterInputContainer = (props: Props) => {
                     css={{ font: "$sans" }}
                 />
             </Input>
+            {/* <Input css={{ alignSelf: "stretch" }}>
+                <NumberFormat
+                    allowNegative={false}
+                    placeholder={"Amount to pay the Arbiter"}
+                />
+            </Input> */}
         </>
     );
 }

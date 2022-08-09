@@ -110,10 +110,10 @@ export const CreateEscrow = () => {
         console.log(result);
         setArbiter("");
         setArbiterAsset("");
-        // TODO figure out how to clear properly
+        // TODO use react number format
         setArbiterFee(undefined);
         setBuyer("");
-        // TODO figure out how to clear properly
+        // TODO user react number format
         setDeadline(undefined);
         setAssets([{ assetAmount: "", assetId: ""}]);
         // Trigger query to update show balances component
