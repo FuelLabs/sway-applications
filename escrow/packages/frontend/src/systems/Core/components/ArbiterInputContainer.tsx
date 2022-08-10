@@ -37,7 +37,8 @@ export const ArbiterInputContainer = (props: Props) => {
                 />
             </Input>
             <Input css={{ alignSelf: "stretch" }} >
-                <Input.Field
+                <Input.Number name="amount" placeholder="Amount to pay the Arbiter" inputMode="decimal" />
+                {/* <Input.Field
                     id={`arbiter`}
                     name={`arbiter`}
                     placeholder={`Amount to pay the Arbiter`}
@@ -45,7 +46,7 @@ export const ArbiterInputContainer = (props: Props) => {
                     type="text"
                     onChange={(e) => props.onFeeChange(e)}
                     css={{ font: "$sans" }}
-                />
+                /> */}
             </Input>
             {/* <Input css={{ alignSelf: "stretch" }}>
                 <NumberFormat
