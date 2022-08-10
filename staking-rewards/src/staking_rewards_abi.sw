@@ -25,4 +25,5 @@ abi StakingRewards {
     #[storage(read, write)]fn get_reward(test_timestamp: u64);
     #[storage(read, write)]fn stake(test_timestamp: u64);
     #[storage(read, write)]fn withdraw(amount: u64, test_timestamp: u64);
+    #[storage(read, write)]fn notify_reward_amount(reward: u64, test_timestamp: u64);
 }

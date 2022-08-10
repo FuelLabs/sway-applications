@@ -10,6 +10,7 @@ use std::{
     constants::ZERO_B256,
     context::call_frames::msg_asset_id,
     context::msg_amount,
+    context::this_balance,
     contract_id::ContractId,
     identity::Identity,
     logging::log,
@@ -151,6 +152,10 @@ impl StakingRewards for Contract {
         _withdraw(storage.balances.get(msg_sender().unwrap()), test_timestamp);
         _get_reward(test_timestamp);
     }
+
+    #[storage(read, write)]fn notify_reward_amount(reward: u64, test_timestamp: u64) {
+        _notify_reward_amount(reward, test_timestamp);
+    }
 }
 
 // Non-abi (internal) functions
@@ -219,4 +224,36 @@ impl StakingRewards for Contract {
     storage.last_update_time = _last_time_reward_applicable(test_timestamp);
     storage.rewards.insert(account, _earned(account, test_timestamp));
     storage.user_reward_per_token_paid.insert(account, storage.reward_per_token_stored);
+}
+
+
+
+// Restricted functions
+
+#[storage(read, write)]
+fn _notify_reward_amount(reward: u64, test_timestamp: u64) {
+    let sender = msg_sender().unwrap();
+    _update_reward(sender, test_timestamp);
+
+    require(sender == storage.rewards_distribution, "Caller is not RewardsDistribution contract");
+
+    if test_timestamp >= storage.period_finish {
+        storage.reward_rate = reward / storage.rewards_duration;
+    } else {
+        let remaining = storage.period_finish - test_timestamp;
+        let leftover = remaining * storage.reward_rate;
+        storage.reward_rate = (reward + leftover) / storage.rewards_duration;
+    }
+
+    // Ensure the provided reward amount is not more than the balance in the contract.
+    // This keeps the reward rate in the right range, preventing overflows due to
+    // very high values of rewardRate in the earned and rewardsPerToken functions;
+    // Reward + leftover must be less than 2^256 / 10^18 to avoid overflow.
+
+    let balance = this_balance(storage.rewards_token);
+    require(storage.reward_rate <= balance / storage.rewards_duration, "Provided reward too high");
+
+    storage.last_update_time = test_timestamp;
+    storage.period_finish = test_timestamp + storage.rewards_duration;
+    log(RewardAdded{ reward });
 }
