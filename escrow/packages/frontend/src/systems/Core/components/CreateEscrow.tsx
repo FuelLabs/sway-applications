@@ -78,7 +78,6 @@ export const CreateEscrow = () => {
         event.preventDefault();
         // TODO make this more flexible for assets of arbitrary decimal precision
         const actualFee = BigInt(arbiterFee!) * BigInt(DECIMAL_PRECISION);
-        console.log(actualFee);
         let arbiterArg: ArbiterInput = {
             address: { Address: { value: arbiter} },
             asset: { value: arbiterAsset },
@@ -96,6 +95,7 @@ export const CreateEscrow = () => {
         };
         // TODO change this from multiCall to single call once https://github.com/FuelLabs/fuels-ts/issues/445
         // is fixed
+        // TODO don't hardcode gas and byte prices
         const result = await contract!
             .multiCall([
                 contract!.functions.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!).callParams({

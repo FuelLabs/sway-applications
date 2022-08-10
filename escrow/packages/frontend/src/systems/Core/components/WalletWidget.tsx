@@ -7,6 +7,7 @@ import { useAtom, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { FaRegCopy } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 import { useWallet, useWalletList } from "../context/AppContext";
 import { showBalancesAtom, walletIndexAtom } from "../jotai";
@@ -74,6 +75,7 @@ export const WalletWidget = () => {
 
   const handleCopy = () => {
     clipboard.copy(wallet!.address);
+    toast("Address copied", { icon: "✨" });
   };
 
   const handleShowBalances = () => {

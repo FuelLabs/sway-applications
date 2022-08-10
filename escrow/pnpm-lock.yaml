@@ -177,7 +177,7 @@ importers:
       react-error-boundary: ^3.1.4
       react-google-recaptcha: ^2.1.0
       react-helmet: ^6.1.0
-      react-hot-toast: ^2.2.0
+      react-hot-toast: ^2.3.0
       react-icons: ^4.4.0
       react-number-format: ^4.9.3
       react-query: ^3.39.1
