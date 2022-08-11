@@ -48,12 +48,6 @@ export const ArbiterInputContainer = (props: Props) => {
                     css={{ font: "$sans" }}
                 /> */}
             </Input>
-            {/* <Input css={{ alignSelf: "stretch" }}>
-                <NumberFormat
-                    allowNegative={false}
-                    placeholder={"Amount to pay the Arbiter"}
-                />
-            </Input> */}
         </>
     );
 }

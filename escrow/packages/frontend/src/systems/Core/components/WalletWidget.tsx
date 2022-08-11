@@ -90,7 +90,7 @@ export const WalletWidget = () => {
       <Button aria-label="Copy your wallet address" onPress={handleCopy}>
         <FaRegCopy size="1em" />
       </Button>
-      <Button leftIcon="DotsHorizontalIcon" onPress={handleShowBalances} />
+      <Button leftIcon="DotsThree" onPress={handleShowBalances} />
     </>
   );
 };

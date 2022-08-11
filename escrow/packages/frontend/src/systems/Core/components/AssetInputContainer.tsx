@@ -40,12 +40,12 @@ export const AssetInputContainer = (props: Props) => {
                             css={{ font: "$sans" }}
                         />
                         <Input.ElementRight>
-                            <Button color="tomato" leftIcon="DividerHorizontalIcon" onPress={() => props.onRemoveAsset(i)} />
+                            <Button color="tomato" leftIcon="Minus" onPress={() => props.onRemoveAsset(i)} />
                         </Input.ElementRight>
                     </Input>
                 </>
             ))}
-            <Button leftIcon="PlusIcon" css={{ font: "$sans", width: "50%" }} onPress={props.onAddAsset}>Add Asset</Button>
+            <Button leftIcon="Plus" css={{ font: "$sans", width: "50%" }} onPress={props.onAddAsset}>Add Asset</Button>
         </>
     );
 }
