@@ -49,13 +49,13 @@ There are two commands required to run the tests
 
 1. Build the asset used for depositing into the multisig-wallet
    
-   ```
+   ```bash
    forc build --path tests/artifacts/asset/
    ```
 
 2. Run the tests
 
-   ```
+   ```bash
    forc test
    ```
 

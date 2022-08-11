@@ -7,12 +7,26 @@
 
 ## Overview
 
+A non-fungible token (NFT) is a unique token in so much that it has an identifier which distinguishes it from any other token. There is nothing inherently special or unique about it and it's commonly associated with artwork / collectibles despite its utility being greater than that.
 
-## Repository Structure
+### Current state of the application
 
+- The smart contract is under development since the SDK is not feature rich enough to support the required tests
+- The user interface does not exist and will not exist
+  - The NFT in and of itself cannot be an application because it's a component that fits into other applications, such as auctions, therefore until the auction contracts are done the NFT cannot be considered an application
+- The NFT is more of a library than an application therefore it will be moved into [Sway-Libs](https://github.com/FuelLabs/sway-libs) in the future
 
 ## Running the project
 
+### Tests
+
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/NFT/<you are here>`
+
+Run the tests
+
+```bash
+forc test
+```
 
 ## Contributing
 
