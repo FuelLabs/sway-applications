@@ -30,14 +30,13 @@ export const AssetInputContainer = (props: Props) => {
                         />
                     </Input>
                     <Input css={{ alignSelf: "stretch" }}>
-                        <Input.Field
+                        <Input.Number
                             id={`assetAmount${i}`}
                             name={`assetAmount${i}`}
                             placeholder={`Asset ${i} Amount`}
                             value={asset.assetAmount}
-                            type="text"
+                            inputMode="decimal"
                             onChange={(e) => props.onAssetAmountChange(e, i)}
-                            css={{ font: "$sans" }}
                         />
                         <Input.ElementRight>
                             <Button color="tomato" leftIcon="Minus" onPress={() => props.onRemoveAsset(i)} />

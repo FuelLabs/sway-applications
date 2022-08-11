@@ -8,7 +8,7 @@ interface Props {
     onFeeChange: (event: ChangeEvent<HTMLInputElement>) => void;
     arbiterAddress: string;
     asset: string;
-    feeAmount: number | undefined;
+    feeAmount: string | undefined;
 }
 
 export const ArbiterInputContainer = (props: Props) => {
@@ -37,16 +37,13 @@ export const ArbiterInputContainer = (props: Props) => {
                 />
             </Input>
             <Input css={{ alignSelf: "stretch" }} >
-                <Input.Number name="amount" placeholder="Amount to pay the Arbiter" inputMode="decimal" />
-                {/* <Input.Field
-                    id={`arbiter`}
-                    name={`arbiter`}
-                    placeholder={`Amount to pay the Arbiter`}
+                <Input.Number
+                    name="amount"
+                    placeholder="Amount to pay the Arbiter"
+                    inputMode="decimal"
                     value={props.feeAmount}
-                    type="text"
                     onChange={(e) => props.onFeeChange(e)}
-                    css={{ font: "$sans" }}
-                /> */}
+                />
             </Input>
         </>
     );

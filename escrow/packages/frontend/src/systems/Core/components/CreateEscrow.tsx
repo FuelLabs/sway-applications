@@ -19,9 +19,9 @@ export const CreateEscrow = () => {
     const contract = useContract();
     const [arbiter, setArbiter] = useState("");
     const [arbiterAsset, setArbiterAsset] = useState("");
-    const [arbiterFee, setArbiterFee] = useState<number>();
+    const [arbiterFee, setArbiterFee] = useState<string | undefined>();
     const [buyer, setBuyer] = useState("");
-    const [deadline, setDeadline] = useState<number>();
+    const [deadline, setDeadline] = useState<string | undefined>();
     const [assets, setAssets] = useState([{
         assetId: "",
         assetAmount: ""
@@ -39,7 +39,7 @@ export const CreateEscrow = () => {
 
     const handleArbiterFeeChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newFee = event.target.value;
-        setArbiterFee(parseInt(newFee));
+        setArbiterFee(newFee);
     }
 
     const handleBuyerAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +49,7 @@ export const CreateEscrow = () => {
 
     const handleDeadlineChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newDeadline = event.target.value;
-        setDeadline(parseInt(newDeadline));
+        setDeadline(newDeadline);
     }
 
     const handleAssetIdChange = (event: ChangeEvent<HTMLInputElement>, assetIdx: number) => {
@@ -110,11 +110,9 @@ export const CreateEscrow = () => {
         console.log(result);
         setArbiter("");
         setArbiterAsset("");
-        // TODO use react number format
-        setArbiterFee(undefined);
+        setArbiterFee("");
         setBuyer("");
-        // TODO user react number format
-        setDeadline(undefined);
+        setDeadline("");
         setAssets([{ assetAmount: "", assetId: ""}]);
         // Trigger query to update show balances component
         queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
@@ -145,7 +143,13 @@ export const CreateEscrow = () => {
                             />
                         </Input>
                         <Input css={{ alignSelf: "stretch" }} >
-                            <Input.Field
+                            <Input.Number
+                                placeholder="Escrow Deadline (block number)"
+                                inputMode="numeric"
+                                value={deadline}
+                                onChange={(e) => handleDeadlineChange(e)}
+                            />
+                            {/* <Input.Field
                                 id={`deadline`}
                                 name={`deadline`}
                                 placeholder={`Escrow Deadline (block number)`}
@@ -153,7 +157,7 @@ export const CreateEscrow = () => {
                                 type="number"
                                 onChange={(e) => handleDeadlineChange(e)}
                                 css={{ font: "$sans" }}
-                            />
+                            /> */}
                         </Input>
                         <AssetInputContainer
                             onAddAsset={handleAddAsset}
