@@ -7,7 +7,7 @@
 
 ## Overview
 
-A non-fungible token (NFT) is a unique token in so much that it has an identifier which distinguishes it from any other token. There is nothing inherently special or unique about it and it's commonly associated with artwork / collectibles despite its utility being greater than that.
+A non-fungible token (NFT) is a unique token that has an identifier which distinguishes itself from other tokens within the same token contract. At its core, there is nothing inherently special or unique with this implementation of an NFT besides the token ID. While it is commonly associated with artwork / collectibles, there are many greater utilities beyond that which have yet to be written for the Fuel Network.
 
 ### Current state of the application
 

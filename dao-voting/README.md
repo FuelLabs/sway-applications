@@ -13,7 +13,7 @@ More information can be found in the [specification](./SPECIFICATION.md).
 
 ### Current state of the application
 
-- The smart contract is mostly complete for the basic implementation. There are some issue that need to be worked out but a UI can be started
+- The smart contract is mostly complete for the basic implementation. There are some issues that need to be worked out but a UI can be started
 - The user interface does not currently exist
 - Spec needs to be added
 
