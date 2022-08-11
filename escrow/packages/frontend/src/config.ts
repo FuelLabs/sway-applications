@@ -43,3 +43,5 @@ export const DECIMAL_PRECISION = toBigInt(1e9);
 export const ESCROW_ID = process.env.VITE_CONTRACT_ID!;
 
 export const NUM_WALLETS = 10;
+
+export const FIXED_UNITS = 3;

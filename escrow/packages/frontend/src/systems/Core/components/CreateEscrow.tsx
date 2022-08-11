@@ -74,6 +74,7 @@ export const CreateEscrow = () => {
         }));
     }
 
+    // TODO add feedback message for txs
     const handleSubmit = async (event: SyntheticEvent) => {
         event.preventDefault();
         // TODO make this more flexible for assets of arbitrary decimal precision
@@ -149,15 +150,6 @@ export const CreateEscrow = () => {
                                 value={deadline}
                                 onChange={(e) => handleDeadlineChange(e)}
                             />
-                            {/* <Input.Field
-                                id={`deadline`}
-                                name={`deadline`}
-                                placeholder={`Escrow Deadline (block number)`}
-                                value={deadline}
-                                type="number"
-                                onChange={(e) => handleDeadlineChange(e)}
-                                css={{ font: "$sans" }}
-                            /> */}
                         </Input>
                         <AssetInputContainer
                             onAddAsset={handleAddAsset}
