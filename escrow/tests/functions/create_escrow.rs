@@ -3,6 +3,7 @@ use crate::utils::{
     test_helpers::{asset_amount, create_arbiter, create_asset, mint, setup},
 };
 use fuels::{signers::Signer, tx::ContractId};
+use std::collections::HashMap;
 
 mod success {
 
@@ -30,6 +31,9 @@ mod success {
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
+        let balances: HashMap<String, u64> = seller.wallet.clone().get_balances().await.unwrap();
+        dbg!(balances);
+        // This is a problem
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,

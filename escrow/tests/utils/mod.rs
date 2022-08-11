@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use fuels::{contract::contract::CallResponse, prelude::*};
 
 abigen!(Escrow, "out/debug/escrow-abi.json");
