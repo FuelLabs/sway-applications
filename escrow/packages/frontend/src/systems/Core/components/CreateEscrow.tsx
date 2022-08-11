@@ -2,6 +2,7 @@
 import { DECIMAL_PRECISION } from "@/config";
 import { ArbiterInput, AssetInput, IdentityInput } from "@/types/contracts/EscrowAbi";
 import { Button, Stack, Input, Card, Flex } from "@fuel-ui/react";
+import toast from "react-hot-toast";
 import { ChangeEvent, SyntheticEvent, useState } from "react";
 import { useQueryClient } from "react-query";
 import { useAtomValue } from "jotai";
@@ -86,7 +87,6 @@ export const CreateEscrow = () => {
             fee_amount: actualFee,
         };
         // TODO make this more flexible when escrow takes an arbitrary amount of assets as input
-        // TODO multiply asset amount by DECIMAL_PRECISION
         let assetsArg: [AssetInput, AssetInput] = [
             { amount: parseInputValueBigInt(assets[0].assetAmount), id: { value: assets[0].assetId } },
             { amount: parseInputValueBigInt(assets[1].assetAmount), id: { value: assets[1].assetId } }
@@ -98,7 +98,7 @@ export const CreateEscrow = () => {
         // TODO change this from multiCall to single call once https://github.com/FuelLabs/fuels-ts/issues/445
         // is fixed
         // TODO don't hardcode gas and byte prices
-        const result = await contract!
+        const result = contract!
             .multiCall([
                 contract!.functions.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!).callParams({
                     forward: [actualFee, arbiterAsset]
@@ -109,7 +109,12 @@ export const CreateEscrow = () => {
                 bytePrice: BigInt(5),
                 gasLimit: 100_000_000
             }).call();
-        console.log(result);
+        toast.promise(result, {
+            loading: 'Transaction loading...',
+            success: 'Escrow created successfully',
+            error: 'Transaction reverted!'
+        });
+        //console.log(result);
         setArbiter("");
         setArbiterAsset("");
         setArbiterFee("");
