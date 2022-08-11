@@ -11,6 +11,7 @@ import { useContract } from "../hooks/useContract";
 import { walletIndexAtom } from "../jotai";
 import { ArbiterInputContainer } from "./ArbiterInputContainer"
 import { AssetInputContainer } from "./AssetInputContainer";
+import { parseInputValueBigInt } from "../utils/math";
 
 export const CreateEscrow = () => {
     const queryClient = useQueryClient();
@@ -78,7 +79,7 @@ export const CreateEscrow = () => {
     const handleSubmit = async (event: SyntheticEvent) => {
         event.preventDefault();
         // TODO make this more flexible for assets of arbitrary decimal precision
-        const actualFee = BigInt(arbiterFee!) * BigInt(DECIMAL_PRECISION);
+        const actualFee = parseInputValueBigInt(arbiterFee!);
         let arbiterArg: ArbiterInput = {
             address: { Address: { value: arbiter} },
             asset: { value: arbiterAsset },
@@ -87,8 +88,8 @@ export const CreateEscrow = () => {
         // TODO make this more flexible when escrow takes an arbitrary amount of assets as input
         // TODO multiply asset amount by DECIMAL_PRECISION
         let assetsArg: [AssetInput, AssetInput] = [
-            { amount: assets[0].assetAmount, id: { value: assets[0].assetId } },
-            { amount: assets[1].assetAmount, id: { value: assets[1].assetId } }
+            { amount: parseInputValueBigInt(assets[0].assetAmount), id: { value: assets[0].assetId } },
+            { amount: parseInputValueBigInt(assets[1].assetAmount), id: { value: assets[1].assetId } }
         ];
         // TODO how to pass buyer as either an Address OR a ContractId?
         let buyerArg: IdentityInput = {
