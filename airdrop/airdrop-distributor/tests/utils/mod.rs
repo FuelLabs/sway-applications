@@ -94,3 +94,39 @@ pub mod test_helpers{
         (deployer, user1, user2, user3, user4, user5)
     }
 }
+
+pub mod airdrop_distributor_abi_calls {
+
+    use super::*;
+
+    pub async fn claim(
+        amount: u64, 
+        contract: &AirdropDistributor, 
+        proof: Vec<[u8; 32]>, 
+        to: Identity
+    ) -> CallResponse<()> {
+        contract.claim(amount, proof, to).call().await.unwrap()
+    }
+
+    pub async fn constructor(
+        claim_time: u64, 
+        contract: &AirdropDistributor, 
+        merkle_root: [u8; 32], 
+        token: ContractId
+    ) -> CallResponse<()> {
+        contract.constructor(claim_time, merkle_root, token).call().await.unwrap()
+    }
+}
+
+pub mod simple_token_abi_calls {
+
+    use super::*;
+
+    pub async fn constructor(
+        airdrop_contract: ContractId, 
+        contract: &SimpleToken,
+        token_supply: u64
+    ) -> CallResponse<()> {
+        contract.constructor(airdrop_contract, token_supply).call().await.unwrap()
+    }
+}
