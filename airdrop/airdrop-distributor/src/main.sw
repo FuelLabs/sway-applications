@@ -10,12 +10,12 @@ use errors::{AccessError, InitError, StateError, VerificationError};
 use interface::AirdropDistributor;
 use utils::{mint_to, verify_merkle_proof};
 use std::{
-    assert::require,
     block::height,
     contract_id::ContractId,
     hash::sha256,
     identity::Identity,
     logging::log,
+    revert::require,
     storage::StorageMap,
     vec::Vec,
 };
