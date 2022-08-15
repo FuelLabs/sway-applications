@@ -29,6 +29,10 @@ use staking_rewards_events::*;
 const ONE: u64 = 1_000_000_000; // Can this be constant-evaluated from `PRECISION` ?
 
 storage {
+    initialized: bool = false,
+    owner: Identity = Identity::Address(Address {
+        value: 0x0000000000000000000000000000000000000000000000000000000000000000,
+    }),
     staking_token: ContractId = ContractId {
         value: 0x0101010101010101010101010101010101010101010101010101010101010101,
     },
@@ -52,11 +56,18 @@ storage {
     },
     rewards_distribution: Identity = Identity::Address(Address {
         value: 0x0000000000000000000000000000000000000000000000000000000000000000,
-    },
-    ), 
+    }), 
+    
 }
 
 impl StakingRewards for Contract {
+    #[storage(read,write)]fn constructor(owner: Identity) {
+        require(!storage.initialized, "Contract already initialized");
+
+        storage.owner = owner;
+        storage.initialized = true;
+    }
+
     // Getter functions for "public" state
 
     #[storage(read)]fn rewards_token() -> ContractId {
@@ -108,22 +119,27 @@ impl StakingRewards for Contract {
     }
 
     #[storage(read)]fn last_time_reward_applicable(test_timestamp: u64) -> u64 {
+        require(storage.initialized, "Contract not initialized yet");
         _last_time_reward_applicable(test_timestamp)
     }
 
     #[storage(read)]fn reward_per_token(test_timestamp: u64) -> u64 {
+        require(storage.initialized, "Contract not initialized yet");
         _reward_per_token(test_timestamp)
     }
 
     #[storage(read)]fn earned(account: Identity, test_timestamp: u64) -> u64 {
+        require(storage.initialized, "Contract not initialized yet");
         _earned(account, test_timestamp)
     }
 
     #[storage(read)]fn get_reward_for_duration() -> u64 {
+        require(storage.initialized, "Contract not initialized yet");
         storage.reward_rate * storage.rewards_duration
     }
 
     #[storage(read, write)]fn stake(test_timestamp: u64) {
+        require(storage.initialized, "Contract not initialized yet");
         let amount = msg_amount();
         require(amount > 0, StakingRewardsError::StakeZero);
 
@@ -141,20 +157,30 @@ impl StakingRewards for Contract {
     }
 
     #[storage(read, write)]fn withdraw(amount: u64, test_timestamp: u64) {
+        require(storage.initialized, "Contract not initialized yet");
         _withdraw(amount, test_timestamp)
     }
 
     #[storage(read, write)]fn get_reward(test_timestamp: u64) {
+        require(storage.initialized, "Contract not initialized yet");
         _get_reward(test_timestamp);
     }
 
     #[storage(read, write)]fn exit(test_timestamp: u64) {
+        require(storage.initialized, "Contract not initialized yet");
         _withdraw(storage.balances.get(msg_sender().unwrap()), test_timestamp);
         _get_reward(test_timestamp);
     }
 
     #[storage(read, write)]fn notify_reward_amount(reward: u64, test_timestamp: u64) {
+        require(storage.initialized, "Contract not initialized yet");
         _notify_reward_amount(reward, test_timestamp);
+    }
+
+    #[storage(read, write)]
+    fn recover_tokens(token_address: ContractId, token_amount: u64) {
+        require(storage.initialized, "Contract not initialized yet");
+        _recover_tokens(token_address, token_amount);
     }
 }
 
@@ -256,4 +282,24 @@ fn _notify_reward_amount(reward: u64, test_timestamp: u64) {
     storage.last_update_time = test_timestamp;
     storage.period_finish = test_timestamp + storage.rewards_duration;
     log(RewardAdded{ reward });
+}
+
+// Added to support recovering LP Rewards from other systems such as BAL to be distributed to holders
+    // function recoverERC20(address tokenAddress, uint256 tokenAmount) external onlyOwner {
+    //     require(tokenAddress != address(stakingToken), "Cannot withdraw the staking token");
+    //     IERC20(tokenAddress).safeTransfer(owner, tokenAmount);
+    //     emit Recovered(tokenAddress, tokenAmount);
+    // }
+
+#[storage(read, write)]
+fn _recover_tokens(token_address: ContractId, token_amount: u64) {
+    require(msg_sender().unwrap() == storage.owner, "Sender not owner");
+
+    require(token_address != storage.staking_token, "Cannot withdraw the staking token");
+    transfer(token_amount, token_address, storage.owner);
+    
+    log(Recovered {
+        token: token_address,
+        amount: token_amount
+    });
 }

@@ -4,6 +4,7 @@ use std::contract_id::ContractId;
 use std::identity::Identity;
 
 abi StakingRewards {
+    #[storage(read, write)]fn constructor(owner: Identity);
     #[storage(read)]fn balance_of(account: Identity) -> u64;
     #[storage(read)]fn earned(account: Identity, test_timestamp: u64) -> u64;
     #[storage(read)]fn get_reward_for_duration() -> u64;
@@ -26,4 +27,5 @@ abi StakingRewards {
     #[storage(read, write)]fn stake(test_timestamp: u64);
     #[storage(read, write)]fn withdraw(amount: u64, test_timestamp: u64);
     #[storage(read, write)]fn notify_reward_amount(reward: u64, test_timestamp: u64);
+    #[storage(read, write)]fn recover_tokens(token_address: ContractId, token_amount: u64);
 }
