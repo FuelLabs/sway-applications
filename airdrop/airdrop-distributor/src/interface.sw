@@ -19,7 +19,7 @@ abi AirdropDistributor {
     /// * When the claiming period has ended.
     /// * When the `to` `Identity` has already claimed.
     /// * When the merkle proof verification failed.
-    #[storage(read, write)]fn claim(amount: u64, proof: Vec<b256>, to: Identity);
+    #[storage(read, write)]fn claim(amount: u64, proof: [b256; 2], to: Identity);
 
     /// Initialized the contract and starts the airdrop.
     ///

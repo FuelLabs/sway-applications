@@ -5,3 +5,4 @@ license = "Apache-2.0"
 name = "airdrop-distributor"
 
 [dependencies]
+sway_libs = { git = "https://github.com/FuelLabs/sway-libs", branch = "bitzoic-6" }

@@ -19,6 +19,7 @@ use std::{
     storage::StorageMap,
     vec::Vec,
 };
+use sway_libs::merkle_proof::verify_proof;
 
 storage {
     /// Stores true if a user has claimed their airdrop. Maps a tuple of a user and an amount to a
@@ -36,13 +37,13 @@ storage {
 }
 
 impl AirdropDistributor for Contract {
-    #[storage(read, write)]fn claim(amount: u64, proof: Vec<b256>, to: Identity) {
+    #[storage(read, write)]fn claim(amount: u64, proof: [b256; 2], to: Identity) {
         // The claiming period must be open and the `to` identity hasn't already claimed
         require(storage.end_block < height(), StateError::ClaimPeriodHasEnded);
         require(!storage.claimed.get((to, amount)), AccessError::UserAlreadyClaimed);
 
         // Verify the merkle proof against the user and amount
-        require(verify_merkle_proof(sha256((to, amount)), storage.merkleRoot, proof), VerificationError::MerkleProofFailed);
+        require(verify_proof(sha256((to, amount)), storage.merkleRoot, proof), VerificationError::MerkleProofFailed);
 
         // Mint tokens
         storage.claimed.insert((to, amount), true);
