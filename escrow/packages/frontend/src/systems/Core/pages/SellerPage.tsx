@@ -6,7 +6,7 @@ import { Layout } from "../components/Layout";
 import { ShowBalances } from "../components/ShowBalances";
 import { showBalancesAtom } from "../jotai";
 
-export default function EscrowPage() {
+export default function SellerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
 
   return (
