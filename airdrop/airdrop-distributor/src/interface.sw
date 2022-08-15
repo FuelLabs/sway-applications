@@ -1,6 +1,6 @@
 library interface;
 
-use std::{contract_id::ContractId, identity::Identity, vec::Vec};
+use std::{contract_id::ContractId, identity::Identity};
 
 abi AirdropDistributor {
     /// This function will let users claim their airdrop.
@@ -19,7 +19,8 @@ abi AirdropDistributor {
     /// * When the claiming period has ended.
     /// * When the `to` `Identity` has already claimed.
     /// * When the merkle proof verification failed.
-    #[storage(read, write)]fn claim(amount: u64, proof: [b256; 2], to: Identity);
+    #[storage(read, write)]fn claim(amount: u64, proof: [b256;
+    2], to: Identity);
 
     /// Initialized the contract and starts the airdrop.
     ///

@@ -8,7 +8,7 @@ dep utils;
 use events::{ClaimEvent, InitializeEvent};
 use errors::{AccessError, InitError, StateError, VerificationError};
 use interface::AirdropDistributor;
-use utils::{mint_to, verify_merkle_proof};
+use utils::mint_to;
 use std::{
     block::height,
     contract_id::ContractId,
@@ -17,8 +17,8 @@ use std::{
     logging::log,
     revert::require,
     storage::StorageMap,
-    vec::Vec,
 };
+
 use sway_libs::merkle_proof::verify_proof;
 
 storage {
@@ -37,7 +37,8 @@ storage {
 }
 
 impl AirdropDistributor for Contract {
-    #[storage(read, write)]fn claim(amount: u64, proof: [b256; 2], to: Identity) {
+    #[storage(read, write)]fn claim(amount: u64, proof: [b256;
+    2], to: Identity) {
         // The claiming period must be open and the `to` identity hasn't already claimed
         require(storage.end_block < height(), StateError::ClaimPeriodHasEnded);
         require(!storage.claimed.get((to, amount)), AccessError::UserAlreadyClaimed);
