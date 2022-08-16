@@ -38,6 +38,12 @@ abi AirdropDistributor {
     /// * The constructor has already been called.
     /// * The `claim_time` is set to zero.
     #[storage(read, write)]fn constructor(claim_time: u64, merkleRoot: b256, token: ContractId);
+
+    /// Returns the block at which the airdrop ends
+    #[storage(read)]fn end_block() -> u64;
+
+    /// Returns the merkle root of the airdrop used to verify proofs
+    #[storage(read)]fn merkle_root() -> b256;
 }
 
 abi SimpleToken {

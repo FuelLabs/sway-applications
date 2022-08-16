@@ -13,7 +13,7 @@ pub struct InitializeEvent {
     /// The block at which the minting period will end.
     end_block: u64,
     /// The computed merkle root that will be used to verify claims.
-    merkleRoot: b256,
+    merkle_root: b256,
     /// The token which is to be distributed and has an implemented `mint_to` function.
     token_contract: ContractId,
 }

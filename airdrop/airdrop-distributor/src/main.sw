@@ -31,7 +31,7 @@ storage {
     /// The block at which the claiming period will end.
     end_block: u64 = 0,
     /// The computer merkle root which is to be verified against.
-    merkleRoot: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
+    merkle_root: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
     /// The contract of the token which is to be distributed.
     token_contract: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
 }
@@ -44,7 +44,7 @@ impl AirdropDistributor for Contract {
         require(!storage.claimed.get((to, amount)), AccessError::UserAlreadyClaimed);
 
         // Verify the merkle proof against the user and amount
-        require(verify_proof(sha256((to, amount)), storage.merkleRoot, proof), VerificationError::MerkleProofFailed);
+        require(verify_proof(sha256((to, amount)), storage.merkle_root, proof), VerificationError::MerkleProofFailed);
 
         // Mint tokens
         storage.claimed.insert((to, amount), true);
@@ -55,18 +55,26 @@ impl AirdropDistributor for Contract {
         });
     }
 
-    #[storage(read, write)]fn constructor(claim_time: u64, merkleRoot: b256, token_contract: ContractId) {
+    #[storage(read, write)]fn constructor(claim_time: u64, merkle_root: b256, token_contract: ContractId) {
         // If `end_block` is set to a value other than 0, we know that the contructor has already
         // been called.
         require(storage.end_block == 0, InitError::AlreadyInitialized);
         require(claim_time != 0, InitError::ClaimTimeCannotBeZero);
 
         storage.end_block = height() + claim_time;
-        storage.merkleRoot = merkleRoot;
+        storage.merkle_root = merkle_root;
         storage.token_contract = token_contract;
 
         log(InitializeEvent {
-            end_block: claim_time, merkleRoot, token_contract
+            end_block: claim_time, merkle_root, token_contract
         });
+    }
+
+    #[storage(read)]fn end_block() -> u64 {
+        storage.end_block
+    }
+
+    #[storage(read)]fn merkle_root() -> b256 {
+        storage.merkle_root
     }
 }
