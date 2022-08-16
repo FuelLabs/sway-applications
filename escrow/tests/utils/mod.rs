@@ -188,7 +188,10 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        (asset_id.clone().into(), MyAssetBuilder::new(asset_id.to_string(), wallet.clone()).build())
+        (
+            asset_id.clone().into(),
+            MyAssetBuilder::new(asset_id.to_string(), wallet.clone()).build(),
+        )
     }
 
     pub async fn mint(contract: &MyAsset, address: Address, amount: u64) {

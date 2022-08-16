@@ -169,7 +169,8 @@ mod revert {
     #[should_panic]
     async fn when_arbiter_fee_is_zero() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(arbiter.wallet.address().into(), defaults.asset_id, 0).await;
+        let arbiter_obj =
+            create_arbiter(arbiter.wallet.address().into(), defaults.asset_id, 0).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
