@@ -5,6 +5,7 @@ import { CreateEscrow } from "../components/CreateEscrow";
 import { Layout } from "../components/Layout";
 import { ShowBalances } from "../components/ShowBalances";
 import { showBalancesAtom } from "../jotai";
+import { Deposit } from "../components/Deposit";
 
 export default function BuyerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
@@ -13,7 +14,7 @@ export default function BuyerPage() {
     <Layout>
       <Flex css={{ flexDirection: "row-reverse", justifyContent: "center" }}>
         {showBalances && <ShowBalances />}
-        HELLO BUYER
+        <Deposit />
       </Flex>
     </Layout>
   );
