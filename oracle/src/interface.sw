@@ -8,12 +8,12 @@ abi Oracle {
     /// # Arguments
     ///
     /// - `owner` - Identity of node that controls the oracle
-    #[storage(write)] fn constructor(owner: Identity);
+    #[storage(read, write)] fn constructor(owner: Identity);
 
     /// Set price
     ///
     /// - `new_price` - New price of tracked asset
-    #[storage(write)] fn set_price(new_price: u64);
+    #[storage(read, write)] fn set_price(new_price: u64);
 
     /// Get price
     #[storage(read)] fn price() -> u64;

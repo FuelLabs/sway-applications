@@ -10,6 +10,7 @@ use std::{
     constants::BASE_ASSET_ID,
     identity::Identity,
     logging::log,
+    result::Result,
     revert::require,
 };
 
@@ -28,14 +29,14 @@ storage {
 }
 
 impl Oracle for Contract {
-    #[storage(write)] fn constructor(owner: Identity) {
+    #[storage(read, write)] fn constructor(owner: Identity) {
         require(storage.state == State::NotInitialized, InitializationError::CannotReinitialize);
 
         storage.owner = owner;
         storage.state = State::Initialized;
     }
 
-    #[storage(write)] fn set_price(new_price: u64) {
+    #[storage(read, write)] fn set_price(new_price: u64) {
         let sender = msg_sender().unwrap();
         require(sender == storage.owner, AccessError::NotOwner);
 
