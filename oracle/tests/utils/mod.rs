@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*, tx::{ContractId}, signers::wallet::Wallet};
+use fuels::{contract::contract::CallResponse, prelude::*, signers::wallet::Wallet};
 
 abigen!(Oracle, "out/debug/oracle-abi.json");
 
@@ -14,11 +14,11 @@ pub mod abi_calls {
         contract.constructor(owner).call().await.unwrap()
     }
 
-    pub async fn set_price(contract: Oracle, new_price: u64) -> CallResponse<()> {
+    pub async fn set_price(contract: &Oracle, new_price: u64) -> CallResponse<()> {
         contract.set_price(new_price).call().await.unwrap()
     }
 
-    pub async fn price(contract: Oracle) -> u64 {
+    pub async fn price(contract: &Oracle) -> u64 {
         contract.price().call().await.unwrap().value
     }
 }
@@ -26,7 +26,7 @@ pub mod abi_calls {
 pub mod test_helpers {
     use super::*;
 
-    pub async fn setup() -> (Metadata) {
+    pub async fn setup() -> Metadata {
         let wallet = launch_provider_and_get_wallet().await;
 
         let oracle_id = Contract::deploy(
