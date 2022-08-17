@@ -32,8 +32,8 @@ storage {
     initialized: bool = false,
     owner: Identity = Identity::Address(Address {
         value: 0x0000000000000000000000000000000000000000000000000000000000000000,
-    }),
-    staking_token: ContractId = ContractId {
+    },
+    ), staking_token: ContractId = ContractId {
         value: 0x0101010101010101010101010101010101010101010101010101010101010101,
     },
     rewards_token: ContractId = ContractId {
@@ -56,12 +56,12 @@ storage {
     },
     rewards_distribution: Identity = Identity::Address(Address {
         value: 0x0000000000000000000000000000000000000000000000000000000000000000,
-    }), 
-    
+    },
+    ), 
 }
 
 impl StakingRewards for Contract {
-    #[storage(read,write)]fn constructor(owner: Identity) {
+    #[storage(read, write)]fn constructor(owner: Identity) {
         require(!storage.initialized, "Contract already initialized");
 
         storage.owner = owner;
@@ -177,10 +177,14 @@ impl StakingRewards for Contract {
         _notify_reward_amount(reward, test_timestamp);
     }
 
-    #[storage(read, write)]
-    fn recover_tokens(token_address: ContractId, token_amount: u64) {
+    #[storage(read, write)]fn recover_tokens(token_address: ContractId, token_amount: u64) {
         require(storage.initialized, "Contract not initialized yet");
         _recover_tokens(token_address, token_amount);
+    }
+
+    #[storage(read, write)]fn set_rewards_duration(rewards_duration: u64, test_timestamp: u64) {
+        require(storage.initialized, "Contract not initialized yet");
+        _set_rewards_duration(rewards_duration, test_timestamp);
     }
 }
 
@@ -209,12 +213,9 @@ impl StakingRewards for Contract {
     let reward_per_token = storage.reward_per_token_stored;
 
     match storage.total_supply {
-        0 => reward_per_token,
-        _ => reward_per_token + ((_last_time_reward_applicable(test_timestamp) - storage.last_update_time) * storage.reward_rate * ONE / storage.total_supply),
+        0 => reward_per_token, _ => reward_per_token + ((_last_time_reward_applicable(test_timestamp) - storage.last_update_time) * storage.reward_rate * ONE / storage.total_supply), 
     }
 }
-
-
 
 #[storage(read, write)]fn _get_reward(test_timestamp: u64) {
     let sender = msg_sender().unwrap();
@@ -252,12 +253,9 @@ impl StakingRewards for Contract {
     storage.user_reward_per_token_paid.insert(account, storage.reward_per_token_stored);
 }
 
-
-
 // Restricted functions
 
-#[storage(read, write)]
-fn _notify_reward_amount(reward: u64, test_timestamp: u64) {
+#[storage(read, write)]fn _notify_reward_amount(reward: u64, test_timestamp: u64) {
     let sender = msg_sender().unwrap();
     _update_reward(sender, test_timestamp);
 
@@ -281,25 +279,30 @@ fn _notify_reward_amount(reward: u64, test_timestamp: u64) {
 
     storage.last_update_time = test_timestamp;
     storage.period_finish = test_timestamp + storage.rewards_duration;
-    log(RewardAdded{ reward });
+    log(RewardAdded {
+        reward
+    });
 }
 
 // Added to support recovering LP Rewards from other systems such as BAL to be distributed to holders
-    // function recoverERC20(address tokenAddress, uint256 tokenAmount) external onlyOwner {
-    //     require(tokenAddress != address(stakingToken), "Cannot withdraw the staking token");
-    //     IERC20(tokenAddress).safeTransfer(owner, tokenAmount);
-    //     emit Recovered(tokenAddress, tokenAmount);
-    // }
 
-#[storage(read, write)]
-fn _recover_tokens(token_address: ContractId, token_amount: u64) {
+#[storage(read, write)]fn _recover_tokens(token_address: ContractId, token_amount: u64) {
     require(msg_sender().unwrap() == storage.owner, "Sender not owner");
 
     require(token_address != storage.staking_token, "Cannot withdraw the staking token");
     transfer(token_amount, token_address, storage.owner);
-    
+
     log(Recovered {
-        token: token_address,
-        amount: token_amount
+        token: token_address, amount: token_amount
+    });
+}
+
+#[storage(read, write)]fn _set_rewards_duration(rewards_duration: u64, test_timestamp: u64) {
+    require(msg_sender().unwrap() == storage.owner, "Sender not owner");
+
+    require(test_timestamp > storage.period_finish, "Previous rewards period must be complete before changing the duration for the new period");
+    storage.rewards_duration = rewards_duration;
+    log(RewardsDurationUpdated {
+        new_duration: rewards_duration
     });
 }

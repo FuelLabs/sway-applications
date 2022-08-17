@@ -28,4 +28,5 @@ abi StakingRewards {
     #[storage(read, write)]fn withdraw(amount: u64, test_timestamp: u64);
     #[storage(read, write)]fn notify_reward_amount(reward: u64, test_timestamp: u64);
     #[storage(read, write)]fn recover_tokens(token_address: ContractId, token_amount: u64);
+    #[storage(read, write)]fn set_rewards_duration(rewards_duration: u64, test_timestamp: u64);
 }
