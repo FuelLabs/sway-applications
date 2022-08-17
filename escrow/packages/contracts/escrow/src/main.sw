@@ -48,11 +48,18 @@ use std::{
 };
 
 storage {
+    /// Stores all of the escrow ids that the Identity is a part of as an arbiter
+    // TODO figure out how to handle when arbiters are changed
+    arbiter_escrows: StorageMap<Identity, [u64;1]> = StorageMap {},
+
     /// Used as a temporary variable for containing a change, proposed by the seller, to the arbiter
     /// Map(ID => Info)
     arbiter_proposal: StorageMap<u64,
     Option<Arbiter>> = StorageMap {
     },
+
+    /// Stores all of the escrow ids that the Identity is a part of as a buyer
+    buyer_escrows: StorageMap<Identity, [u64;1]> = StorageMap {},
 
     /// Information describing an escrow created via create_escrow()
     /// Map(ID => Info)
@@ -63,6 +70,9 @@ storage {
     /// Number of created escrows
     /// Used as an identifier for O(1) look-up in mappings
     escrow_count: u64 = 0,
+
+    /// Stores all of the escrow ids that the Identity is a part of as a seller
+    seller_escrows: StorageMap<Identity, [u64;1]> = StorageMap {},
 }
 
 impl Escrow for Contract {
@@ -95,6 +105,14 @@ impl Escrow for Contract {
         });
     }
 
+    #[storage(read)]fn arbiter_escrows(arbiter: Identity) -> [u64;1] {
+        storage.arbiter_escrows.get(arbiter)
+    }
+
+    #[storage(read)]fn buyer_escrows(buyer: Identity) -> [u64;1] {
+        storage.buyer_escrows.get(buyer)
+    }
+
     #[storage(read, write)]fn create_escrow(arbiter: Arbiter, assets: [Asset;
     2], buyer: Identity, deadline: u64) {
         // The assertions ensure that assets are specified with a none-zero amount, the arbiter is
@@ -119,6 +137,11 @@ impl Escrow for Contract {
 
         let escrow = ~EscrowInfo::new(arbiter, assets, buyer, deadline, msg_sender().unwrap());
 
+        // TODO once the sdk implements vecs this will become
+        // storage.arbiter_escrows.insert(arbiter.address, storage.arbiter_escrows.get(arbiter).push(storage.escrow_count));
+        storage.arbiter_escrows.insert(arbiter.address, [storage.escrow_count]);
+        storage.buyer_escrows.insert(buyer, [storage.escrow_count]);
+        storage.seller_escrows.insert(msg_sender().unwrap(), [storage.escrow_count]);
         storage.escrows.insert(storage.escrow_count, escrow);
         storage.escrow_count += 1;
 
@@ -282,6 +305,10 @@ impl Escrow for Contract {
         log(ReturnedDepositEvent {
             identifier
         });
+    }
+
+    #[storage(read)]fn seller_escrows(seller: Identity) -> [u64;1] {
+        storage.seller_escrows.get(seller)
     }
 
     #[storage(read, write)]fn take_payment(identifier: u64) {

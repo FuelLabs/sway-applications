@@ -19,6 +19,10 @@ abi Escrow {
     /// * When the arbiter has not been proposed by the seller
     #[storage(read, write)]fn accept_arbiter(identifier: u64);
 
+    #[storage(read)]fn arbiter_escrows(arbiter: Identity) -> [u64;1];
+
+    #[storage(read)]fn buyer_escrows(buyer: Identity) -> [u64;1];
+
     /// Creates an internal representation of an escrow instead of deploying a contract per escrow
     ///
     /// The escrow allows the buyer to deposit any asset from the specified assets
@@ -116,6 +120,8 @@ abi Escrow {
     /// * When the buyer does not currently have a deposit in the escrow
     /// * When the `payment_amount` is greater than the deposit by the seller
     #[storage(read, write)]fn resolve_dispute(identifier: u64, payment_amount: u64, user: Identity);
+
+    #[storage(read)]fn seller_escrows(seller: Identity) -> [u64;1];
 
     /// The seller transfers the funds from the escrow to the buyer
     ///
