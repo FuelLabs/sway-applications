@@ -24,8 +24,10 @@ export default function SellerPage() {
               Seller Escrows
             </Card.Header>
             <Card.Body>
-              {sellerEscrows?.map((escrow, i) => (
-
+              {sellerEscrows?.map((escrowId, i) => (
+                <>
+                  escrowId
+                </>
               ))}
             </Card.Body>
             <Card.Footer direction="row-reverse">
