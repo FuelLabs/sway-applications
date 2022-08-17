@@ -31,6 +31,114 @@ const _abi = [
     inputs: [
       {
         name: "arbiter",
+        type: "enum Identity",
+        components: [
+          {
+            name: "Address",
+            type: "struct Address",
+            components: [
+              {
+                name: "value",
+                type: "b256",
+                components: null,
+                typeArguments: null,
+              },
+            ],
+            typeArguments: null,
+          },
+          {
+            name: "ContractId",
+            type: "struct ContractId",
+            components: [
+              {
+                name: "value",
+                type: "b256",
+                components: null,
+                typeArguments: null,
+              },
+            ],
+            typeArguments: null,
+          },
+        ],
+        typeArguments: null,
+      },
+    ],
+    name: "arbiter_escrows",
+    outputs: [
+      {
+        name: "",
+        type: "[u64; 1]",
+        components: [
+          {
+            name: "__array_element",
+            type: "u64",
+            components: null,
+            typeArguments: null,
+          },
+        ],
+        typeArguments: null,
+      },
+    ],
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "buyer",
+        type: "enum Identity",
+        components: [
+          {
+            name: "Address",
+            type: "struct Address",
+            components: [
+              {
+                name: "value",
+                type: "b256",
+                components: null,
+                typeArguments: null,
+              },
+            ],
+            typeArguments: null,
+          },
+          {
+            name: "ContractId",
+            type: "struct ContractId",
+            components: [
+              {
+                name: "value",
+                type: "b256",
+                components: null,
+                typeArguments: null,
+              },
+            ],
+            typeArguments: null,
+          },
+        ],
+        typeArguments: null,
+      },
+    ],
+    name: "buyer_escrows",
+    outputs: [
+      {
+        name: "",
+        type: "[u64; 1]",
+        components: [
+          {
+            name: "__array_element",
+            type: "u64",
+            components: null,
+            typeArguments: null,
+          },
+        ],
+        typeArguments: null,
+      },
+    ],
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "arbiter",
         type: "struct Arbiter",
         components: [
           {
@@ -365,6 +473,60 @@ const _abi = [
         name: "",
         type: "()",
         components: [],
+        typeArguments: null,
+      },
+    ],
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "seller",
+        type: "enum Identity",
+        components: [
+          {
+            name: "Address",
+            type: "struct Address",
+            components: [
+              {
+                name: "value",
+                type: "b256",
+                components: null,
+                typeArguments: null,
+              },
+            ],
+            typeArguments: null,
+          },
+          {
+            name: "ContractId",
+            type: "struct ContractId",
+            components: [
+              {
+                name: "value",
+                type: "b256",
+                components: null,
+                typeArguments: null,
+              },
+            ],
+            typeArguments: null,
+          },
+        ],
+        typeArguments: null,
+      },
+    ],
+    name: "seller_escrows",
+    outputs: [
+      {
+        name: "",
+        type: "[u64; 1]",
+        components: [
+          {
+            name: "__array_element",
+            type: "u64",
+            components: null,
+            typeArguments: null,
+          },
+        ],
         typeArguments: null,
       },
     ],

@@ -51,12 +51,15 @@ export type IdentityOutput = Enum<{
 interface EscrowAbiInterface extends Interface {
   functions: {
     accept_arbiter: FunctionFragment;
+    arbiter_escrows: FunctionFragment;
+    buyer_escrows: FunctionFragment;
     create_escrow: FunctionFragment;
     deposit: FunctionFragment;
     dispute: FunctionFragment;
     propose_arbiter: FunctionFragment;
     resolve_dispute: FunctionFragment;
     return_deposit: FunctionFragment;
+    seller_escrows: FunctionFragment;
     take_payment: FunctionFragment;
     transfer_to_seller: FunctionFragment;
     withdraw_collateral: FunctionFragment;
@@ -65,6 +68,14 @@ interface EscrowAbiInterface extends Interface {
   encodeFunctionData(
     functionFragment: "accept_arbiter",
     values: [BigNumberish]
+  ): Uint8Array;
+  encodeFunctionData(
+    functionFragment: "arbiter_escrows",
+    values: [IdentityInput]
+  ): Uint8Array;
+  encodeFunctionData(
+    functionFragment: "buyer_escrows",
+    values: [IdentityInput]
   ): Uint8Array;
   encodeFunctionData(
     functionFragment: "create_escrow",
@@ -96,6 +107,10 @@ interface EscrowAbiInterface extends Interface {
     values: [BigNumberish]
   ): Uint8Array;
   encodeFunctionData(
+    functionFragment: "seller_escrows",
+    values: [IdentityInput]
+  ): Uint8Array;
+  encodeFunctionData(
     functionFragment: "take_payment",
     values: [BigNumberish]
   ): Uint8Array;
@@ -110,6 +125,14 @@ interface EscrowAbiInterface extends Interface {
 
   decodeFunctionData(
     functionFragment: "accept_arbiter",
+    data: BytesLike
+  ): DecodedValue;
+  decodeFunctionData(
+    functionFragment: "arbiter_escrows",
+    data: BytesLike
+  ): DecodedValue;
+  decodeFunctionData(
+    functionFragment: "buyer_escrows",
     data: BytesLike
   ): DecodedValue;
   decodeFunctionData(
@@ -137,6 +160,10 @@ interface EscrowAbiInterface extends Interface {
     data: BytesLike
   ): DecodedValue;
   decodeFunctionData(
+    functionFragment: "seller_escrows",
+    data: BytesLike
+  ): DecodedValue;
+  decodeFunctionData(
     functionFragment: "take_payment",
     data: BytesLike
   ): DecodedValue;
@@ -154,6 +181,10 @@ export class EscrowAbi extends Contract {
   interface: EscrowAbiInterface;
   functions: {
     accept_arbiter: InvokeFunction<[identifier: BigNumberish], void>;
+
+    arbiter_escrows: InvokeFunction<[arbiter: IdentityInput], [bigint]>;
+
+    buyer_escrows: InvokeFunction<[buyer: IdentityInput], [bigint]>;
 
     create_escrow: InvokeFunction<
       [
@@ -184,6 +215,8 @@ export class EscrowAbi extends Contract {
     >;
 
     return_deposit: InvokeFunction<[identifier: BigNumberish], void>;
+
+    seller_escrows: InvokeFunction<[seller: IdentityInput], [bigint]>;
 
     take_payment: InvokeFunction<[identifier: BigNumberish], void>;
 
