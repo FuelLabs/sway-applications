@@ -4,12 +4,12 @@ use fuels::prelude::*;
 use utils::{get_balance, setup, stakingrewards_mod, ONE, REWARDS_ASSET, STAKING_ASSET};
 
 // Until timestamp supported in Sway, timestamps of each action must be specified. Contract is deployed at t=0
+const INITIAL_STAKE: u64 = 10 * ONE;
+const INITIAL_TIMESTAMP: u64 = 0;
 
 #[tokio::test]
 async fn stake_tokens() {
-    let initial_stake = 10 * ONE;
-    let initial_timestamp = 0;
-    let (staking_contract, _id, wallet) = setup(initial_stake, initial_timestamp).await;
+    let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
 
     // User balance has updated
     let wallet_identity = stakingrewards_mod::Identity::Address(Address::from(wallet.address()));
@@ -19,24 +19,22 @@ async fn stake_tokens() {
         .await
         .unwrap()
         .value;
-    assert_eq!(user_balance, initial_stake);
+    assert_eq!(user_balance, INITIAL_STAKE);
 
     // Total_supply has updated
     let total_supply = staking_contract.total_supply().call().await.unwrap().value;
-    assert_eq!(total_supply, initial_stake);
+    assert_eq!(total_supply, INITIAL_STAKE);
 }
 
 #[tokio::test]
 async fn calculate_earned_tokens() {
-    let initial_stake = 10 * ONE;
-    let initial_timestamp = 0;
-    let (staking_contract, _id, wallet) = setup(initial_stake, initial_timestamp).await;
+    let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
 
     let timestamp = 123;
 
     // Total accrued per token is time_elapsed * rate / total_supply
     let expected_reward_per_token: u64 =
-        ((timestamp - initial_timestamp) * 42 * ONE) / initial_stake;
+        ((timestamp - INITIAL_TIMESTAMP) * 42 * ONE) / INITIAL_STAKE;
     let reward_per_token = staking_contract
         .reward_per_token(timestamp)
         .call()
@@ -46,7 +44,7 @@ async fn calculate_earned_tokens() {
     assert_eq!(reward_per_token, expected_reward_per_token);
 
     let wallet_identity = stakingrewards_mod::Identity::Address(Address::from(wallet.address()));
-    let expected_reward = expected_reward_per_token * initial_stake / ONE;
+    let expected_reward = expected_reward_per_token * INITIAL_STAKE / ONE;
 
     let earned = staking_contract
         .earned(wallet_identity, timestamp)
@@ -59,16 +57,14 @@ async fn calculate_earned_tokens() {
 
 #[tokio::test]
 async fn claim_reward() {
-    let initial_stake = 10 * ONE;
-    let initial_timestamp = 0;
-    let (staking_contract, _id, wallet) = setup(initial_stake, initial_timestamp).await;
+    let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
 
     let balance_before = get_balance(&wallet, REWARDS_ASSET).await;
     let timestamp = 123;
 
     let expected_reward_per_token: u64 =
-        ((timestamp - initial_timestamp) * 42 * ONE) / initial_stake;
-    let expected_reward = expected_reward_per_token * initial_stake / ONE;
+        ((timestamp - INITIAL_TIMESTAMP) * 42 * ONE) / INITIAL_STAKE;
+    let expected_reward = expected_reward_per_token * INITIAL_STAKE / ONE;
 
     let _receipts = staking_contract
         .get_reward(timestamp)
@@ -83,15 +79,13 @@ async fn claim_reward() {
 
 #[tokio::test]
 async fn exit_with_reward() {
-    let initial_stake = 10 * ONE;
-    let initial_timestamp = 0;
-    let (staking_contract, _id, wallet) = setup(initial_stake, initial_timestamp).await;
+    let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
 
     let timestamp = 123;
 
     let expected_reward_per_token: u64 =
-        ((timestamp - initial_timestamp) * 42 * ONE) / initial_stake;
-    let expected_reward = expected_reward_per_token * initial_stake / ONE;
+        ((timestamp - INITIAL_TIMESTAMP) * 42 * ONE) / INITIAL_STAKE;
+    let expected_reward = expected_reward_per_token * INITIAL_STAKE / ONE;
 
     let staking_balance_before = get_balance(&wallet, STAKING_ASSET).await;
     let rewards_balance_before = get_balance(&wallet, REWARDS_ASSET).await;
@@ -112,6 +106,6 @@ async fn exit_with_reward() {
     );
     assert_eq!(
         staking_balance_after - staking_balance_before,
-        initial_stake
+        INITIAL_STAKE
     );
 }
