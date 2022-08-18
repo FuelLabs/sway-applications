@@ -1,7 +1,10 @@
 mod utils;
 
 use fuels::prelude::*;
-use utils::{get_balance, setup, stakingrewards_mod, ONE, REWARDS_ASSET, STAKING_ASSET};
+use utils::{
+    get_balance, reward_per_token, setup, stakingrewards_mod::Identity, ONE, REWARDS_ASSET,
+    STAKING_ASSET, balance_of, total_supply, earned,
+};
 
 // Until timestamp supported in Sway, timestamps of each action must be specified. Contract is deployed at t=0
 const INITIAL_STAKE: u64 = 10 * ONE;
@@ -12,17 +15,12 @@ async fn stake_tokens() {
     let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
 
     // User balance has updated
-    let wallet_identity = stakingrewards_mod::Identity::Address(Address::from(wallet.address()));
-    let user_balance = staking_contract
-        .balance_of(wallet_identity)
-        .call()
-        .await
-        .unwrap()
-        .value;
+    let wallet_identity = Identity::Address(Address::from(wallet.address()));
+    let user_balance = balance_of(&staking_contract, wallet_identity).await;
     assert_eq!(user_balance, INITIAL_STAKE);
 
     // Total_supply has updated
-    let total_supply = staking_contract.total_supply().call().await.unwrap().value;
+    let total_supply = total_supply(&staking_contract).await;
     assert_eq!(total_supply, INITIAL_STAKE);
 }
 
@@ -35,23 +33,14 @@ async fn calculate_earned_tokens() {
     // Total accrued per token is time_elapsed * rate / total_supply
     let expected_reward_per_token: u64 =
         ((timestamp - INITIAL_TIMESTAMP) * 42 * ONE) / INITIAL_STAKE;
-    let reward_per_token = staking_contract
-        .reward_per_token(timestamp)
-        .call()
-        .await
-        .unwrap()
-        .value;
+    let reward_per_token = reward_per_token(&staking_contract, timestamp).await;
+
     assert_eq!(reward_per_token, expected_reward_per_token);
 
-    let wallet_identity = stakingrewards_mod::Identity::Address(Address::from(wallet.address()));
+    let wallet_identity = Identity::Address(Address::from(wallet.address()));
     let expected_reward = expected_reward_per_token * INITIAL_STAKE / ONE;
 
-    let earned = staking_contract
-        .earned(wallet_identity, timestamp)
-        .call()
-        .await
-        .unwrap()
-        .value;
+    let earned = earned(&staking_contract, wallet_identity, timestamp).await;
     assert_eq!(earned, expected_reward);
 }
 

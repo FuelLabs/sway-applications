@@ -9,6 +9,9 @@ pub const BASE_ASSET: AssetId = AssetId::new([0u8; 32]);
 pub const STAKING_ASSET: AssetId = AssetId::new([1u8; 32]);
 pub const REWARDS_ASSET: AssetId = AssetId::new([2u8; 32]);
 
+const INITIAL_STAKE: u64 = 10 * ONE;
+const INITIAL_TIMESTAMP: u64 = 0;
+
 pub async fn get_balance(wallet: &LocalWallet, asset: AssetId) -> u64 {
     let provider = wallet.get_provider().unwrap();
     let balance = provider
@@ -69,4 +72,25 @@ pub async fn setup(
         .unwrap();
 
     (staking_contract, id, wallet.clone())
+}
+
+pub async fn balance_of(instance: &StakingRewards, id: Identity) -> u64 {
+    instance.balance_of(id).call().await.unwrap().value
+}
+
+pub async fn earned(instance: &StakingRewards, wallet_identity: Identity, timestamp: u64) -> u64 {
+    instance.earned(wallet_identity, timestamp).call().await.unwrap().value
+}
+
+pub async fn total_supply(instance: &StakingRewards) -> u64 {
+    instance.total_supply().call().await.unwrap().value
+}
+
+pub async fn reward_per_token(instance: &StakingRewards, timestamp: u64) -> u64 {
+    instance
+        .reward_per_token(timestamp)
+        .call()
+        .await
+        .unwrap()
+        .value
 }
