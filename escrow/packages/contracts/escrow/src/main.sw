@@ -209,6 +209,10 @@ impl Escrow for Contract {
         });
     }
 
+    #[storage(read)]fn escrows() -> StorageMap<u64, EscrowInfo> {
+        storage.escrows
+    }
+
     #[storage(read, write)]fn propose_arbiter(arbiter: Arbiter, identifier: u64) {
         // The assertions ensure that only the seller can propose a new arbiter and the arbiter
         // cannot be the buyer / seller, the arbiter will be able to take a none-zero payment

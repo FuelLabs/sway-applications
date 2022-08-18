@@ -2,8 +2,8 @@ library interface;
 
 dep data_structures;
 
-use data_structures::{Arbiter, Asset};
-use std::identity::Identity;
+use data_structures::{Arbiter, Asset, EscrowInfo};
+use std::{identity::Identity, storage::StorageMap};
 
 abi Escrow {
     /// Buyer accepts proposal to change arbiter details
@@ -80,6 +80,8 @@ abi Escrow {
     /// * When the caller is not the buyer
     /// * When the caller does not currently have a deposit in the escrow
     #[storage(read, write)]fn dispute(identifier: u64);
+
+    #[storage(read)]fn escrows() -> StorageMap<u64, EscrowInfo>;
 
     /// Allows the seller to propose a new arbiter and/or change the arbiter fee
     ///
