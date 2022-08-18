@@ -5,36 +5,46 @@ import { CreateEscrow } from "../components/CreateEscrow";
 import { Layout } from "../components/Layout";
 import { ShowBalances } from "../components/ShowBalances";
 import { showBalancesAtom } from "../jotai";
-import { useWallet } from "../context/AppContext";
-import { useContract } from "../hooks/useContract";
 import { useSellerEscrows } from "../hooks/useSellerEscrows";
 
 export default function SellerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
-  const wallet = useWallet();
-  const contract = useContract();
-  const { data: sellerEscrows } = useSellerEscrows();
+  const sellerEscrows = useSellerEscrows();
+  console.log("seller escrows: ", sellerEscrows);
 
   return (
     <Layout>
       <Flex direction="column" justify="center">
         <Flex justify="center">
           <Card css={{ flex: "1", maxW: "900px", marginTop: "$5" }}>
-            <Card.Header>
-              Seller Escrows
-            </Card.Header>
-            <Card.Body>
-              {sellerEscrows?.map((escrowId, i) => (
-                <>
-                  escrowId
-                </>
-              ))}
-            </Card.Body>
-            <Card.Footer direction="row-reverse">
-                <Button leftIcon="DotsThree">
-                  Show all escrows
-                </Button>
-            </Card.Footer>
+            {(sellerEscrows && sellerEscrows!.length > 0)
+              ? <>
+                <Card.Header>
+                  Seller Escrows
+                </Card.Header>
+                <Card.Body>
+                  {sellerEscrows!.map((escrowId, i) => (
+                    <>
+                      {escrowId}
+                    </>
+                  ))}
+                </Card.Body>
+                <Card.Footer direction="row-reverse">
+                  <Button leftIcon="DotsThree">
+                    Show all escrows
+                  </Button>
+                </Card.Footer>
+              </>
+              : <>
+                <Card.Header>
+                  Seller Escrows
+                </Card.Header>
+                <Card.Body>
+                  Seller has no escrows
+                </Card.Body>
+              </>
+            }
+
           </Card>
         </Flex>
         <Flex css={{ flexDirection: "row", justifyContent: "center" }}>

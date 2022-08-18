@@ -38,6 +38,10 @@ export type AssetInput = { amount: BigNumberish; id: ContractIdInput };
 
 export type AssetOutput = { amount: bigint; id: ContractIdOutput };
 
+export type StorageMapInput = {};
+
+export type StorageMapOutput = {};
+
 export type IdentityInput = Enum<{
   Address: AddressInput;
   ContractId: ContractIdInput;
@@ -56,6 +60,7 @@ interface EscrowAbiInterface extends Interface {
     create_escrow: FunctionFragment;
     deposit: FunctionFragment;
     dispute: FunctionFragment;
+    escrows: FunctionFragment;
     propose_arbiter: FunctionFragment;
     resolve_dispute: FunctionFragment;
     return_deposit: FunctionFragment;
@@ -93,6 +98,10 @@ interface EscrowAbiInterface extends Interface {
   encodeFunctionData(
     functionFragment: "dispute",
     values: [BigNumberish]
+  ): Uint8Array;
+  encodeFunctionData(
+    functionFragment: "escrows",
+    values?: undefined
   ): Uint8Array;
   encodeFunctionData(
     functionFragment: "propose_arbiter",
@@ -148,6 +157,10 @@ interface EscrowAbiInterface extends Interface {
     data: BytesLike
   ): DecodedValue;
   decodeFunctionData(
+    functionFragment: "escrows",
+    data: BytesLike
+  ): DecodedValue;
+  decodeFunctionData(
     functionFragment: "propose_arbiter",
     data: BytesLike
   ): DecodedValue;
@@ -199,6 +212,8 @@ export class EscrowAbi extends Contract {
     deposit: InvokeFunction<[identifier: BigNumberish], void>;
 
     dispute: InvokeFunction<[identifier: BigNumberish], void>;
+
+    escrows: InvokeFunction<[], StorageMapOutput>;
 
     propose_arbiter: InvokeFunction<
       [arbiter: ArbiterInput, identifier: BigNumberish],

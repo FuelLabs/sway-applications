@@ -6,15 +6,15 @@ import type { PropsWithChildren } from "react";
 import {  NUM_WALLETS, FUEL_PROVIDER_URL, ESCROW_ID } from "../../../config";
 import { walletIndexAtom } from "../jotai";
 import { EscrowAbi, EscrowAbi__factory } from "../../../types/contracts";
+import type { Maybe } from "@/types"; 
 
 interface AppContextValue {
-  wallets: Array<Wallet> | null;
-  wallet: Wallet | null;
-  contract: EscrowAbi | null;
-  //contracts: Array<EscrowAbi> | null;
+  wallets: Maybe<Array<Wallet>>;
+  wallet: Maybe<Wallet>;
+  //contract: EscrowAbi | null;
 }
 
-export const AppContext = React.createContext<AppContextValue | null>(null);
+export const AppContext = React.createContext<Maybe<AppContextValue>>(null);
 
 export const useAppContext = () => useContext(AppContext);
 
@@ -55,10 +55,10 @@ export const AppContextProvider = ({
     return wallets[currentWalletIndex];
   }, [currentWalletIndex]);
 
-  const contract = useMemo(() => {
-    if (!wallet) return null;
-    return EscrowAbi__factory.connect(ESCROW_ID, wallet);
-  }, [wallet]);
+  // const contract = useMemo(() => {
+  //   if (!wallet) return null;
+  //   return EscrowAbi__factory.connect(ESCROW_ID, wallet);
+  // }, [wallet]);
 
   // TODO store wallets in local storage or somewhere more persistant
   useEffect(() => {
@@ -80,7 +80,7 @@ export const AppContextProvider = ({
       value={{
         wallets,
         wallet,
-        contract,
+        //contract,
       }}
     >
       {children}

@@ -321,6 +321,282 @@ const _abi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "escrows",
+    outputs: [
+      {
+        name: "",
+        type: "struct StorageMap",
+        components: [],
+        typeArguments: [
+          {
+            name: "K",
+            type: "u64",
+            components: null,
+            typeArguments: null,
+          },
+          {
+            name: "V",
+            type: "struct EscrowInfo",
+            components: [
+              {
+                name: "arbiter",
+                type: "struct Arbiter",
+                components: [
+                  {
+                    name: "address",
+                    type: "enum Identity",
+                    components: [
+                      {
+                        name: "Address",
+                        type: "struct Address",
+                        components: [
+                          {
+                            name: "value",
+                            type: "b256",
+                            components: null,
+                            typeArguments: null,
+                          },
+                        ],
+                        typeArguments: null,
+                      },
+                      {
+                        name: "ContractId",
+                        type: "struct ContractId",
+                        components: [
+                          {
+                            name: "value",
+                            type: "b256",
+                            components: null,
+                            typeArguments: null,
+                          },
+                        ],
+                        typeArguments: null,
+                      },
+                    ],
+                    typeArguments: null,
+                  },
+                  {
+                    name: "asset",
+                    type: "struct ContractId",
+                    components: [
+                      {
+                        name: "value",
+                        type: "b256",
+                        components: null,
+                        typeArguments: null,
+                      },
+                    ],
+                    typeArguments: null,
+                  },
+                  {
+                    name: "fee_amount",
+                    type: "u64",
+                    components: null,
+                    typeArguments: null,
+                  },
+                ],
+                typeArguments: null,
+              },
+              {
+                name: "assets",
+                type: "[struct Asset; 2]",
+                components: [
+                  {
+                    name: "__array_element",
+                    type: "struct Asset",
+                    components: [
+                      {
+                        name: "amount",
+                        type: "u64",
+                        components: null,
+                        typeArguments: null,
+                      },
+                      {
+                        name: "id",
+                        type: "struct ContractId",
+                        components: [
+                          {
+                            name: "value",
+                            type: "b256",
+                            components: null,
+                            typeArguments: null,
+                          },
+                        ],
+                        typeArguments: null,
+                      },
+                    ],
+                    typeArguments: null,
+                  },
+                ],
+                typeArguments: null,
+              },
+              {
+                name: "buyer",
+                type: "struct Buyer",
+                components: [
+                  {
+                    name: "address",
+                    type: "enum Identity",
+                    components: [
+                      {
+                        name: "Address",
+                        type: "struct Address",
+                        components: [
+                          {
+                            name: "value",
+                            type: "b256",
+                            components: null,
+                            typeArguments: null,
+                          },
+                        ],
+                        typeArguments: null,
+                      },
+                      {
+                        name: "ContractId",
+                        type: "struct ContractId",
+                        components: [
+                          {
+                            name: "value",
+                            type: "b256",
+                            components: null,
+                            typeArguments: null,
+                          },
+                        ],
+                        typeArguments: null,
+                      },
+                    ],
+                    typeArguments: null,
+                  },
+                  {
+                    name: "asset",
+                    type: "enum Option",
+                    components: [
+                      {
+                        name: "None",
+                        type: "()",
+                        components: [],
+                        typeArguments: null,
+                      },
+                      {
+                        name: "Some",
+                        type: "struct ContractId",
+                        components: [
+                          {
+                            name: "value",
+                            type: "b256",
+                            components: null,
+                            typeArguments: null,
+                          },
+                        ],
+                        typeArguments: null,
+                      },
+                    ],
+                    typeArguments: [
+                      {
+                        name: "T",
+                        type: "struct ContractId",
+                        components: [
+                          {
+                            name: "value",
+                            type: "b256",
+                            components: null,
+                            typeArguments: null,
+                          },
+                        ],
+                        typeArguments: null,
+                      },
+                    ],
+                  },
+                  {
+                    name: "deposited_amount",
+                    type: "u64",
+                    components: null,
+                    typeArguments: null,
+                  },
+                ],
+                typeArguments: null,
+              },
+              {
+                name: "deadline",
+                type: "u64",
+                components: null,
+                typeArguments: null,
+              },
+              {
+                name: "disputed",
+                type: "bool",
+                components: null,
+                typeArguments: null,
+              },
+              {
+                name: "seller",
+                type: "struct Seller",
+                components: [
+                  {
+                    name: "address",
+                    type: "enum Identity",
+                    components: [
+                      {
+                        name: "Address",
+                        type: "struct Address",
+                        components: [
+                          {
+                            name: "value",
+                            type: "b256",
+                            components: null,
+                            typeArguments: null,
+                          },
+                        ],
+                        typeArguments: null,
+                      },
+                      {
+                        name: "ContractId",
+                        type: "struct ContractId",
+                        components: [
+                          {
+                            name: "value",
+                            type: "b256",
+                            components: null,
+                            typeArguments: null,
+                          },
+                        ],
+                        typeArguments: null,
+                      },
+                    ],
+                    typeArguments: null,
+                  },
+                ],
+                typeArguments: null,
+              },
+              {
+                name: "state",
+                type: "enum State",
+                components: [
+                  {
+                    name: "Pending",
+                    type: "()",
+                    components: [],
+                    typeArguments: null,
+                  },
+                  {
+                    name: "Completed",
+                    type: "()",
+                    components: [],
+                    typeArguments: null,
+                  },
+                ],
+                typeArguments: null,
+              },
+            ],
+            typeArguments: null,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: "function",
     inputs: [
       {
         name: "arbiter",
