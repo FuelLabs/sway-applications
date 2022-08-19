@@ -141,7 +141,7 @@ pub async fn test_predicate_spend_with_parameters(
         asset_id: OFFERED_ASSET,
         maturity: 0,
         predicate: predicate_bytecode,
-        predicate_data: vec![0u8], // Predicate data is the index of the output that pays the receiver
+        predicate_data: vec![],
     };
 
     // Asked asset coin belonging to the wallet taking the order
@@ -304,7 +304,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         asset_id: OFFERED_ASSET,
         maturity: 0,
         predicate: predicate_bytecode,
-        predicate_data: vec![0u8], // Predicate data is the index of the output that pays the receiver
+        predicate_data: vec![],
     };
 
     // Change outputs for unspent fees (base asset)

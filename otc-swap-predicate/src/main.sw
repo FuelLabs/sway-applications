@@ -10,11 +10,7 @@ tx:: {
 };
 
 /// Order / OTC swap Predicate
-/// # Arguments
-///
-/// - `output_index` - The index of the Coin output which pays the receiver.
-///
-fn main(output_index: u8) -> bool {
+fn main() -> bool {
     // Order conditions: This must be hardcoded here.
     // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `receiver`
     let ask_amount = 42;
@@ -36,11 +32,12 @@ fn main(output_index: u8) -> bool {
     };
 
     // Otherwise, evaluate the terms of the order:
+    // The output which pays the receiver must be in the first position (index = 0)
 
-    let amount = tx_output_amount(output_index);
+    let amount = tx_output_amount(0);
 
-    // Get the token contract ID and receiver from the output at the given index
-    let output_pointer = tx_output_pointer(output_index);
+    // Get the token contract ID and receiver from the output
+    let output_pointer = tx_output_pointer(0);
 
     // `Output::Coin` is serialized as :
     //    `type`     (8 bytes)
