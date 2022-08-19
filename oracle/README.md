@@ -40,6 +40,12 @@ Run the tests with the following command.
 forc test
 ```
 
+## Specification
+
+The specification contains a non-technical overview of the contract.
+
+Check [SPECIFICATION.md](./SPECIFICATION.MD) for more info!
+
 ## Contributing
 
 Check [CONTRIBUTING.md](../CONTRIBUTING.md) for more info!
