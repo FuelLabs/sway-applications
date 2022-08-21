@@ -13,6 +13,15 @@ const INITIAL_TIMESTAMP: u64 = 0;
 const TIMESTAMP: u64 = 123;
 
 #[tokio::test]
+async fn constructed() {
+    let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
+    let wallet_identity = Identity::Address(Address::from(wallet.address()));
+
+    let owner_identity = staking_contract.owner().call().await.unwrap().value;
+    assert_eq!(wallet_identity, owner_identity);
+}
+
+#[tokio::test]
 async fn stake_tokens() {
     let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
 

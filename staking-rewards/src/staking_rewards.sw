@@ -70,6 +70,10 @@ impl StakingRewards for Contract {
 
     // Getter functions for "public" state
 
+    #[storage(read)]fn owner() -> Identity {
+        storage.owner
+    }
+
     #[storage(read)]fn rewards_token() -> ContractId {
         storage.rewards_token
     }
