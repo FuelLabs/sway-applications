@@ -14,7 +14,7 @@ const TIMESTAMP: u64 = 123;
 
 #[tokio::test]
 async fn constructed() {
-    let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
+    let (staking_contract, _id, wallet) = setup().await;
     let wallet_identity = Identity::Address(Address::from(wallet.address()));
 
     let owner_identity = staking_contract.owner().call().await.unwrap().value;
@@ -23,7 +23,7 @@ async fn constructed() {
 
 #[tokio::test]
 async fn stake_tokens() {
-    let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
+    let (staking_contract, _id, wallet) = setup().await;
 
     // User balance has updated
     let wallet_identity = Identity::Address(Address::from(wallet.address()));
@@ -37,7 +37,7 @@ async fn stake_tokens() {
 
 #[tokio::test]
 async fn calculate_earned_tokens() {
-    let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
+    let (staking_contract, _id, wallet) = setup().await;
 
     // Total accrued per token is time_elapsed * rate / total_supply
     let expected_reward_per_token: u64 =
@@ -55,7 +55,7 @@ async fn calculate_earned_tokens() {
 
 #[tokio::test]
 async fn claim_reward() {
-    let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
+    let (staking_contract, _id, wallet) = setup().await;
 
     let balance_before = get_balance(&wallet, REWARDS_ASSET).await;
 
@@ -71,7 +71,7 @@ async fn claim_reward() {
 
 #[tokio::test]
 async fn exit_with_reward() {
-    let (staking_contract, _id, wallet) = setup(INITIAL_STAKE, INITIAL_TIMESTAMP).await;
+    let (staking_contract, _id, wallet) = setup().await;
 
     let expected_reward_per_token: u64 =
         ((TIMESTAMP - INITIAL_TIMESTAMP) * 42 * ONE) / INITIAL_STAKE;

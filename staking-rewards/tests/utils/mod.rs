@@ -21,10 +21,7 @@ pub async fn get_balance(wallet: &LocalWallet, asset: AssetId) -> u64 {
     balance
 }
 
-pub async fn setup(
-    initial_stake: u64,
-    initial_timestamp: u64,
-) -> (StakingRewards, Bech32ContractId, LocalWallet) {
+pub async fn setup() -> (StakingRewards, Bech32ContractId, LocalWallet) {
     // Configure wallet with assets
     let assets = [BASE_ASSET, STAKING_ASSET, REWARDS_ASSET];
     let wallet_config = WalletsConfig::new_multiple_assets(
@@ -66,9 +63,9 @@ pub async fn setup(
         .unwrap();
 
     // Stake some tokens from the wallet
-    let staking_call_params = CallParameters::new(Some(initial_stake), Some(STAKING_ASSET), None);
+    let staking_call_params = CallParameters::new(Some(INITIAL_STAKE), Some(STAKING_ASSET), None);
     let _receipts = staking_contract
-        .stake(initial_timestamp)
+        .stake(INITIAL_TIMESTAMP)
         .call_params(staking_call_params)
         .call()
         .await
