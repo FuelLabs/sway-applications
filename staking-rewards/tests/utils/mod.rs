@@ -94,3 +94,21 @@ pub async fn reward_per_token(instance: &StakingRewards, timestamp: u64) -> u64 
         .unwrap()
         .value
 }
+
+pub async fn get_reward(instance: &StakingRewards, timestamp: u64) {
+    instance
+        .get_reward(timestamp)
+        .append_variable_outputs(1)
+        .call()
+        .await
+        .unwrap();
+}
+
+pub async fn exit(instance: &StakingRewards, timestamp: u64) {
+    instance
+        .exit(timestamp)
+        .append_variable_outputs(2)
+        .call()
+        .await
+        .unwrap();
+}
