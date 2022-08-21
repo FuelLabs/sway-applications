@@ -54,6 +54,9 @@ pub async fn setup(
     .unwrap();
 
     let staking_contract = StakingRewardsBuilder::new(id.to_string(), wallet.clone()).build();
+    let walletidentity = Identity::Address(Address::from(wallet.address()));
+
+    staking_contract.constructor(walletidentity).call().await.unwrap();
 
     // Seed the contract with some reward tokens
     let seed_amount = 100_000 * ONE;
