@@ -21,4 +21,12 @@ mod success {
         let price = price(&user.oracle).await;
         assert_eq!(price, set_price_amount);
     }
+
+    #[tokio::test]
+    async fn can_get_price_when_not_initialized() {
+        let user = setup().await;
+        let price = price(&user.oracle).await;
+        let default_price = 0;
+        assert_eq!(price, default_price);
+    }
 }
