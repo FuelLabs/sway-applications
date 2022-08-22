@@ -1,6 +1,5 @@
-use crate::utils::{abi_calls::constructor, test_helpers::setup, Identity};
-use fuels::signers::Signer;
-use fuels::tx::Address;
+use crate::utils::{abi_calls::{constructor, owner}, test_helpers::setup, Identity, Option};
+use fuels::{signers::Signer, tx::Address};
 
 mod success {
     use super::*;
@@ -13,6 +12,11 @@ mod success {
             Identity::Address(Address::from(user.wallet.address())),
         )
         .await;
+        let owner = owner(&user.oracle).await;
+        assert_eq!(
+            owner,
+            Option::Some(Identity::Address(Address::from(user.wallet.address())))
+        );
     }
 }
 

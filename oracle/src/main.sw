@@ -47,7 +47,7 @@ impl Oracle for Contract {
 
     #[storage(read, write)] fn set_price(price: u64) {
         require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
-        require(msg_sende().unwrap() == storage.owner.unwrap(), AccessError::NotOwner);
+        require(msg_sender().unwrap() == storage.owner.unwrap(), AccessError::NotOwner);
 
         storage.price = price;
 
