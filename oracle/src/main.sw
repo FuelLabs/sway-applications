@@ -48,6 +48,10 @@ impl Oracle for Contract {
         });
     }
 
+    #[storage(read)] fn owner() -> Identity {
+        storage.owner
+    }
+
     #[storage(read)] fn price() -> u64 {
         storage.price
     }

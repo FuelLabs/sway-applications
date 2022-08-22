@@ -21,6 +21,10 @@ pub mod abi_calls {
     pub async fn price(contract: &Oracle) -> u64 {
         contract.price().call().await.unwrap().value
     }
+
+    pub async fn owner(contract: &Oracle) -> Identity {
+        contract.owner().call().await.unwrap().value
+    }
 }
 
 pub mod test_helpers {

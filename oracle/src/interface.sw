@@ -13,8 +13,15 @@ abi Oracle {
     /// Set price
     ///
     /// - `new_price` - New price of tracked asset
+    ///
+    /// # Reverts
+    ///
+    /// * When the message sender is not the owner
     #[storage(read, write)] fn set_price(new_price: u64);
 
-    /// Get price
+    /// Return the owner (node) of the oracle
+    #[storage(read)] fn owner() -> Identity;
+
+    /// Return price of asset
     #[storage(read)] fn price() -> u64;
 }
