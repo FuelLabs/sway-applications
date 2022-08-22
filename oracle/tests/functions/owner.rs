@@ -22,4 +22,14 @@ mod success {
             Option::Some(Identity::Address(Address::from(user.wallet.address())))
         );
     }
+
+    #[tokio::test]
+    async fn can_get_owner_when_not_initialized() {
+        let user = setup().await;
+        let owner = owner(&user.oracle).await;
+        assert_eq!(
+            owner,
+            Option::None()
+        );
+    }
 }
