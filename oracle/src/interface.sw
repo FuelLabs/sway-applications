@@ -1,6 +1,6 @@
 library interface;
 
-use std::identity::Identity;
+use std::{identity::Identity, option::Option};
 
 abi Oracle {
     /// Initialize the oracle with the owner (node)
@@ -20,7 +20,7 @@ abi Oracle {
     #[storage(read, write)] fn set_price(new_price: u64);
 
     /// Return the owner (node) of the oracle
-    #[storage(read)] fn owner() -> Identity;
+    #[storage(read)] fn owner() -> Option<Identity>;
 
     /// Return price of asset
     #[storage(read)] fn price() -> u64;

@@ -22,7 +22,7 @@ pub mod abi_calls {
         contract.price().call().await.unwrap().value
     }
 
-    pub async fn owner(contract: &Oracle) -> Identity {
+    pub async fn owner(contract: &Oracle) -> Option {
         contract.owner().call().await.unwrap().value
     }
 }

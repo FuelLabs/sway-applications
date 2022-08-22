@@ -3,6 +3,7 @@ use crate::utils::{
     abi_calls::{constructor, owner},
     test_helpers::setup,
     Identity,
+    Option,
 };
 
 mod success {
@@ -13,6 +14,6 @@ mod success {
         let user = setup().await;
         constructor(&user.oracle, Identity::Address(Address::from(user.wallet.address()))).await;
         let owner = owner(&user.oracle).await;
-        assert_eq!(owner, Identity::Address(Address::from(user.wallet.address())));
+        assert_eq!(owner, Option::Some(Identity::Address(Address::from(user.wallet.address()))));
     }
 }
