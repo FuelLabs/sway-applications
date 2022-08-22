@@ -21,6 +21,9 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 1. The oracle's node is the only address allowed to set the price of the asset the oracle is tracking.
 
 ### Oracle Consumer
-`price`
+`owner()`
+1. Anyone can call this function to get the owner (node) of the oracle contract
+
+`price()`
 
 1. Anyone can call this function to get the asset price that the oracle is tracking

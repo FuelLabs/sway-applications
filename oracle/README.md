@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset=".docs/escrow-logo-dark-theme.png">
-        <img alt="escrow logo" width="400px" src=".docs/escrow-logo-light-theme.png">
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/oracle-logo-dark-theme.png">
+        <img alt="oracle logo" width="400px" src=".docs/oracle-logo-light-theme.png">
     </picture>
 </p>
 
@@ -23,6 +23,7 @@ oracle/
 ├── node/
 |    └── Directories & files
 └── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
