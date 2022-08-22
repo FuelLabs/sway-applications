@@ -1,9 +1,9 @@
-use fuels::{prelude::*, tx::Address};
 use crate::utils::{
     abi_calls::{constructor, price, set_price},
     test_helpers::setup,
     Identity,
 };
+use fuels::{prelude::*, tx::Address};
 
 mod success {
     use super::*;
@@ -11,7 +11,11 @@ mod success {
     #[tokio::test]
     async fn can_set_price() {
         let user = setup().await;
-        constructor(&user.oracle, Identity::Address(Address::from(user.wallet.address()))).await;
+        constructor(
+            &user.oracle,
+            Identity::Address(Address::from(user.wallet.address())),
+        )
+        .await;
         let set_price_amount = 1000;
         set_price(&user.oracle, set_price_amount).await;
         let price = price(&user.oracle).await;
@@ -26,9 +30,19 @@ mod revert {
     #[should_panic]
     async fn panics_when_not_owner() {
         let user = setup().await;
-        constructor(&user.oracle, Identity::Address(Address::from(user.wallet.address()))).await;
+        constructor(
+            &user.oracle,
+            Identity::Address(Address::from(user.wallet.address())),
+        )
+        .await;
         let not_owner = launch_provider_and_get_wallet().await;
-        user.oracle._with_wallet(not_owner).unwrap().set_price(1000).call().await.unwrap();
+        user.oracle
+            ._with_wallet(not_owner)
+            .unwrap()
+            .set_price(1000)
+            .call()
+            .await
+            .unwrap();
     }
 
     #[tokio::test]

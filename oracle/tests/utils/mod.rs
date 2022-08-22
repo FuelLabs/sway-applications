@@ -38,7 +38,9 @@ pub mod test_helpers {
             &wallet,
             TxParameters::default(),
             StorageConfiguration::default(),
-        ).await.unwrap();
+        )
+        .await
+        .unwrap();
 
         let user = Metadata {
             oracle: OracleBuilder::new(oracle_id.to_string(), wallet.clone()).build(),

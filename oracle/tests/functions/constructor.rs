@@ -1,10 +1,6 @@
-use fuels::tx::Address;
+use crate::utils::{abi_calls::constructor, test_helpers::setup, Identity};
 use fuels::signers::Signer;
-use crate::utils::{
-    abi_calls::constructor,
-    test_helpers::setup,
-    Identity,
-};
+use fuels::tx::Address;
 
 mod success {
     use super::*;
@@ -12,7 +8,11 @@ mod success {
     #[tokio::test]
     async fn construct() {
         let user = setup().await;
-        constructor(&user.oracle, Identity::Address(Address::from(user.wallet.address()))).await;
+        constructor(
+            &user.oracle,
+            Identity::Address(Address::from(user.wallet.address())),
+        )
+        .await;
     }
 }
 
@@ -23,7 +23,15 @@ mod revert {
     #[should_panic]
     async fn panics_when_reinitialized() {
         let user = setup().await;
-        constructor(&user.oracle, Identity::Address(Address::from(user.wallet.address()))).await;
-        constructor(&user.oracle, Identity::Address(Address::from(user.wallet.address()))).await;
+        constructor(
+            &user.oracle,
+            Identity::Address(Address::from(user.wallet.address())),
+        )
+        .await;
+        constructor(
+            &user.oracle,
+            Identity::Address(Address::from(user.wallet.address())),
+        )
+        .await;
     }
 }
