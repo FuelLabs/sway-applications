@@ -37,23 +37,22 @@ impl Oracle for Contract {
         storage.state = State::Initialized;
     }
 
-    #[storage(read, write)] fn set_price(new_price: u64) {
-        require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
-        let sender = msg_sender().unwrap();
-        require(sender == storage.owner.unwrap(), AccessError::NotOwner);
-
-        storage.price = new_price;
-
-        log(PriceUpdateEvent {
-            price: new_price
-        });
-    }
-
     #[storage(read)] fn owner() -> Option<Identity> {
         storage.owner
     }
 
     #[storage(read)] fn price() -> u64 {
         storage.price
+    }
+
+    #[storage(read, write)] fn set_price(price: u64) {
+        require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
+        require(msg_sende().unwrap() == storage.owner.unwrap(), AccessError::NotOwner);
+
+        storage.price = price;
+
+        log(PriceUpdateEvent {
+            price
+        });
     }
 }

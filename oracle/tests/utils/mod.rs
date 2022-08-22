@@ -14,16 +14,16 @@ pub mod abi_calls {
         contract.constructor(owner).call().await.unwrap()
     }
 
-    pub async fn set_price(contract: &Oracle, new_price: u64) -> CallResponse<()> {
-        contract.set_price(new_price).call().await.unwrap()
-    }
-
     pub async fn price(contract: &Oracle) -> u64 {
         contract.price().call().await.unwrap().value
     }
 
     pub async fn owner(contract: &Oracle) -> Option {
         contract.owner().call().await.unwrap().value
+    }
+
+    pub async fn set_price(contract: &Oracle, new_price: u64) -> CallResponse<()> {
+        contract.set_price(new_price).call().await.unwrap()
     }
 }
 

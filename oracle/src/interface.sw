@@ -10,18 +10,18 @@ abi Oracle {
     /// - `owner` - Identity of node that controls the oracle
     #[storage(read, write)] fn constructor(owner: Identity);
 
-    /// Set price
-    ///
-    /// - `new_price` - New price of tracked asset
-    ///
-    /// # Reverts
-    ///
-    /// * When the message sender is not the owner
-    #[storage(read, write)] fn set_price(new_price: u64);
-
     /// Return the owner (node) of the oracle
     #[storage(read)] fn owner() -> Option<Identity>;
 
     /// Return price of asset
     #[storage(read)] fn price() -> u64;
+
+    /// Set price
+    ///
+    /// - `price` - New price of tracked asset
+    ///
+    /// # Reverts
+    ///
+    /// * When the message sender is not the owner
+    #[storage(read, write)] fn set_price(price: u64);
 }
