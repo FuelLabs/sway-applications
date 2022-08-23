@@ -22,8 +22,8 @@ use errors::{AccessError, InitializationError};
 use events::PriceUpdateEvent;
 
 storage {
+    // Current price of tracked asset
     price: u64 = 0,
-    state: State = State::NotInitialized,
 }
 
 impl Oracle for Contract {
