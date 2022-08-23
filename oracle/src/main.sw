@@ -1,9 +1,9 @@
 contract;
 
-dep interface;
 dep data_structures;
 dep errors;
 dep events;
+dep interface;
 
 use std::{
     address::Address,
