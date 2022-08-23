@@ -3,13 +3,6 @@ library interface;
 use std::{identity::Identity, option::Option};
 
 abi Oracle {
-    /// Initialize the oracle with the owner (node)
-    ///
-    /// # Arguments
-    ///
-    /// - `owner` - Identity of node that controls the oracle
-    // #[storage(read, write)] fn constructor(owner: Identity);
-
     /// Return the owner (node) of the oracle
     fn owner() -> Identity;
 
