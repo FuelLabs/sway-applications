@@ -14,10 +14,10 @@ use std::{
     revert::require,
 };
 
-use interface::Oracle;
 use data_structures::State;
 use errors::AccessError;
 use events::PriceUpdateEvent;
+use interface::Oracle;
 
 storage {
     // Current price of tracked asset
