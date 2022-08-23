@@ -55,6 +55,7 @@ sway-applications/
 - [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
+- [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
 
 ## Running a project
 
