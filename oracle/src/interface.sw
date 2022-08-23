@@ -11,10 +11,10 @@ abi Oracle {
     // #[storage(read, write)] fn constructor(owner: Identity);
 
     /// Return the owner (node) of the oracle
-    #[storage(read)] fn owner() -> Identity;
+    fn owner() -> Identity;
 
     /// Return price of asset
-    #[storage(read)] fn price() -> u64;
+    #[storage(read)] fn price() -> Option<u64>;
 
     /// Set price
     ///
@@ -23,5 +23,5 @@ abi Oracle {
     /// # Reverts
     ///
     /// * When the message sender is not the owner
-    #[storage(read, write)] fn set_price(price: u64);
+    #[storage(read, write)] fn set_price(price: Option<u64>);
 }

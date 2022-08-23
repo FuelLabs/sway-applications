@@ -18,24 +18,24 @@ use std::{
 
 use interface::Oracle;
 use data_structures::State;
-use errors::{AccessError, InitializationError};
+use errors::AccessError;
 use events::PriceUpdateEvent;
 
 storage {
     // Current price of tracked asset
-    price: u64 = 0,
+    price: Option<u64> = Option::None,
 }
 
 impl Oracle for Contract {
-    #[storage(read)] fn owner() -> Identity {
+    fn owner() -> Identity {
         Identity::Address(~Address::from(owner))
     }
 
-    #[storage(read)] fn price() -> u64 {
+    #[storage(read)] fn price() -> Option<u64> {
         storage.price
     }
 
-    #[storage(read, write)] fn set_price(price: u64) {
+    #[storage(read, write)] fn set_price(price: Option<u64>) {
         require(msg_sender().unwrap() == Identity::Address(~Address::from(owner)), AccessError::NotOwner);
 
         storage.price = price;
