@@ -10,15 +10,15 @@ pub struct Metadata {
 pub mod abi_calls {
     use super::*;
 
-    pub async fn price(contract: &Oracle) -> Option<u64> {
-        contract.price().call().await.unwrap()
+    pub async fn price(contract: &Oracle) -> u64 {
+        contract.price().call().await.unwrap().value
     }
 
     pub async fn owner(contract: &Oracle) -> Identity {
         contract.owner().call().await.unwrap().value
     }
 
-    pub async fn set_price(contract: &Oracle, new_price: Option<u64>) -> CallResponse<()> {
+    pub async fn set_price(contract: &Oracle, new_price: u64) -> CallResponse<()> {
         contract.set_price(new_price).call().await.unwrap()
     }
 }

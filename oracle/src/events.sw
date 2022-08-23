@@ -4,5 +4,5 @@ use std::option::Option;
 
 pub struct PriceUpdateEvent {
     /// Updated price
-    price: Option<u64>,
+    price: u64,
 }

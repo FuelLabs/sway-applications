@@ -23,7 +23,8 @@ use events::PriceUpdateEvent;
 
 storage {
     // Current price of tracked asset
-    price: Option<u64> = Option::None,
+    // TODO use option when https://github.com/FuelLabs/fuels-rs/issues/415 is fixed
+    price: u64 = 0,
 }
 
 impl Oracle for Contract {
@@ -31,11 +32,11 @@ impl Oracle for Contract {
         Identity::Address(~Address::from(owner))
     }
 
-    #[storage(read)] fn price() -> Option<u64> {
+    #[storage(read)] fn price() -> u64 {
         storage.price
     }
 
-    #[storage(read, write)] fn set_price(price: Option<u64>) {
+    #[storage(read, write)] fn set_price(price: u64) {
         require(msg_sender().unwrap() == Identity::Address(~Address::from(owner)), AccessError::NotOwner);
 
         storage.price = price;
