@@ -8,10 +8,8 @@ dep events;
 use std::{
     address::Address,
     chain::auth::msg_sender,
-    constants::BASE_ASSET_ID,
     identity::Identity,
     logging::log,
-    option::Option,
     result::Result,
     revert::require,
 };
