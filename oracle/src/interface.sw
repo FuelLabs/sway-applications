@@ -8,10 +8,10 @@ abi Oracle {
     /// # Arguments
     ///
     /// - `owner` - Identity of node that controls the oracle
-    #[storage(read, write)] fn constructor(owner: Identity);
+    // #[storage(read, write)] fn constructor(owner: Identity);
 
     /// Return the owner (node) of the oracle
-    #[storage(read)] fn owner() -> Option<Identity>;
+    #[storage(read)] fn owner() -> Identity;
 
     /// Return price of asset
     #[storage(read)] fn price() -> u64;

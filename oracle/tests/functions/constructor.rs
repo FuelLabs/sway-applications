@@ -1,4 +1,4 @@
-use crate::utils::{abi_calls::{constructor, owner}, test_helpers::setup, Identity, Option};
+use crate::utils::{abi_calls::{constructor, owner}, test_helpers::setup, Identity};
 use fuels::{signers::Signer, tx::Address};
 
 mod success {
@@ -7,6 +7,7 @@ mod success {
     #[tokio::test]
     async fn construct() {
         let user = setup().await;
+        assert!(false);
         constructor(
             &user.oracle,
             Identity::Address(Address::from(user.wallet.address())),

@@ -10,15 +10,11 @@ pub struct Metadata {
 pub mod abi_calls {
     use super::*;
 
-    pub async fn constructor(contract: &Oracle, owner: Identity) -> CallResponse<()> {
-        contract.constructor(owner).call().await.unwrap()
-    }
-
     pub async fn price(contract: &Oracle) -> u64 {
         contract.price().call().await.unwrap().value
     }
 
-    pub async fn owner(contract: &Oracle) -> Option {
+    pub async fn owner(contract: &Oracle) -> Identity {
         contract.owner().call().await.unwrap().value
     }
 
@@ -30,12 +26,12 @@ pub mod abi_calls {
 pub mod test_helpers {
     use super::*;
 
-    pub async fn setup() -> Metadata {
-        let wallet = launch_provider_and_get_wallet().await;
+    pub async fn setup() -> (Metadata, Vec<Wallet>) {
+        let wallets = launch_custom_provider_and_get_wallets(WalletsConfig::default(), None).await;
 
         let oracle_id = Contract::deploy(
             "./out/debug/oracle.bin",
-            &wallet,
+            &wallets[0],
             TxParameters::default(),
             StorageConfiguration::default(),
         )
@@ -43,10 +39,10 @@ pub mod test_helpers {
         .unwrap();
 
         let user = Metadata {
-            oracle: OracleBuilder::new(oracle_id.to_string(), wallet.clone()).build(),
-            wallet,
+            oracle: OracleBuilder::new(oracle_id.to_string(), wallets[0].clone()).build(),
+            wallet: wallets[0].clone(),
         };
 
-        user
+        (user, wallets)
     }
 }
