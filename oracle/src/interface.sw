@@ -4,6 +4,8 @@ use std::identity::Identity;
 
 abi Oracle {
     /// Return the owner (node) of the oracle
+    ///
+    /// The owner is initialized to the first deterministically generated wallet using the SDK in Forc.toml
     fn owner() -> Identity;
 
     /// Return price of asset

@@ -20,6 +20,8 @@ oracle/
 ├── contract/
 |    └── src/main.sw
 |    └── tests/harness.rs
+├── frontend/
+|    └── Directories & files
 ├── node/
 |    └── Directories & files
 └── README.md
