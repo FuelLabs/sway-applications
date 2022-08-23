@@ -45,7 +45,7 @@ forc test
 
 The specification contains a non-technical overview of the contract.
 
-Check [SPECIFICATION.md](./SPECIFICATION.MD) for more info!
+Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
 
 ## Contributing
 
