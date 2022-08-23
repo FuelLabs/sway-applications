@@ -16,5 +16,5 @@ abi Oracle {
     /// # Reverts
     ///
     /// * When the message sender is not the owner
-    #[storage(read, write)] fn set_price(price: u64);
+    #[storage(write)] fn set_price(price: u64);
 }

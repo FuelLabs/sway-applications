@@ -34,7 +34,7 @@ impl Oracle for Contract {
         storage.price
     }
 
-    #[storage(read, write)] fn set_price(price: u64) {
+    #[storage(write)] fn set_price(price: u64) {
         require(msg_sender().unwrap() == Identity::Address(~Address::from(owner)), AccessError::NotOwner);
 
         storage.price = price;
