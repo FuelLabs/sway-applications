@@ -1,4 +1,9 @@
+use fuel_merkle::{
+    binary::in_memory::MerkleTree,
+    common::{Bytes32, ProofSet},
+};
 use fuels::{contract::contract::CallResponse, prelude::*};
+use sha2::{Digest, Sha256};
 
 // Load abi from json
 abigen!(AirdropDistributor, "out/debug/airdrop-distributor-abi.json");
@@ -14,9 +19,81 @@ pub struct Metadata {
     pub wallet: LocalWallet,
 }
 
+pub mod airdrop_distributor_abi_calls {
+
+    use super::*;
+
+    pub async fn claim(
+        amount: u64, 
+        contract: &AirdropDistributor, 
+        key: u64,
+        num_leaves: u64,
+        proof: Vec<[u8; 32]>, 
+        to: Identity
+    ) -> CallResponse<()> {
+        contract.claim(amount, key, num_leaves, proof, to).call().await.unwrap()
+    }
+
+    pub async fn constructor(
+        claim_time: u64, 
+        contract: &AirdropDistributor, 
+        merkle_root: [u8; 32], 
+        token: ContractId
+    ) -> CallResponse<()> {
+        contract.constructor(claim_time, merkle_root, token).call().await.unwrap()
+    }
+
+    pub async fn end_block(contract: &AirdropDistributor) -> u64 {
+        contract.end_block().call().await.unwrap().value
+    }
+
+    pub async fn merkle_root(contract: &AirdropDistributor) -> [u8; 32] {
+        contract.merkle_root().call().await.unwrap().value
+    }
+}
+
+pub mod simple_token_abi_calls {
+
+    use super::*;
+
+    pub async fn constructor(
+        airdrop_contract: ContractId, 
+        contract: &SimpleToken,
+        token_supply: u64
+    ) -> CallResponse<()> {
+        contract.constructor(airdrop_contract, token_supply).call().await.unwrap()
+    }
+}
+
 pub mod test_helpers{
 
     use super::*;
+
+    pub async fn build_tree(
+        leaves: Vec<&(u64, Bytes32)>,
+        key: u64,
+    ) -> (MerkleTree, Bytes32, Bytes32, ProofSet) {
+        let mut tree = MerkleTree::new();
+
+        for datum in leaves.iter() {
+            let mut bytes: Vec<u8> = Vec::new();
+            bytes.push(datum.0.try_into().unwrap());
+            bytes.extend_from_slice(&datum.1);
+
+            let mut hasher = Sha256::new();
+            hasher.update(bytes.as_slice());
+
+            let digest: [u8; 32] = hasher.finalize().try_into().unwrap();
+            tree.push(&digest);
+        }
+
+        let merkle_root = tree.root();
+        let mut proof = tree.prove(key).unwrap();
+        let merkle_leaf = proof.1[0];
+        proof.1.remove(0);
+
+        (tree, merkle_root, merkle_leaf, proof.1)
+    }
 
     pub async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
         let num_wallets = 4;
@@ -83,49 +160,5 @@ pub mod test_helpers{
         };
 
         (deployer, user1, user2, user3, asset)
-    }
-}
-
-pub mod airdrop_distributor_abi_calls {
-
-    use super::*;
-
-    pub async fn claim(
-        amount: u64, 
-        contract: &AirdropDistributor, 
-        proof: Vec<[u8; 32]>, 
-        to: Identity
-    ) -> CallResponse<()> {
-        contract.claim(amount, proof, to).call().await.unwrap()
-    }
-
-    pub async fn constructor(
-        claim_time: u64, 
-        contract: &AirdropDistributor, 
-        merkle_root: [u8; 32], 
-        token: ContractId
-    ) -> CallResponse<()> {
-        contract.constructor(claim_time, merkle_root, token).call().await.unwrap()
-    }
-
-    pub async fn end_block(contract: &AirdropDistributor) -> u64 {
-        contract.end_block().call().await.unwrap().value
-    }
-
-    pub async fn merkle_root(contract: &AirdropDistributor) -> [u8; 32] {
-        contract.merkle_root().call().await.unwrap().value
-    }
-}
-
-pub mod simple_token_abi_calls {
-
-    use super::*;
-
-    pub async fn constructor(
-        airdrop_contract: ContractId, 
-        contract: &SimpleToken,
-        token_supply: u64
-    ) -> CallResponse<()> {
-        contract.constructor(airdrop_contract, token_supply).call().await.unwrap()
     }
 }
