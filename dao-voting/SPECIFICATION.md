@@ -21,7 +21,7 @@ Table of Content
 
 This document provides an overview of the application.
 
-It outline the use cases, i.e. desirable functionality, in addition to requirements for the smart contract and the user interface.
+It outlines the use cases, i.e. desirable functionality, in addition to requirements for the smart contract and the user interface.
 
 # Use Cases
 
