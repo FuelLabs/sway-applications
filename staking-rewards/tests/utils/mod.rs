@@ -53,7 +53,11 @@ pub async fn setup() -> (StakingRewards, Bech32ContractId, LocalWallet) {
     let staking_contract = StakingRewardsBuilder::new(id.to_string(), wallet.clone()).build();
     let walletidentity = Identity::Address(Address::from(wallet.address()));
 
-    staking_contract.constructor(walletidentity).call().await.unwrap();
+    staking_contract
+        .constructor(walletidentity)
+        .call()
+        .await
+        .unwrap();
 
     // Seed the contract with some reward tokens
     let seed_amount = 100_000 * ONE;
@@ -79,7 +83,12 @@ pub async fn balance_of(instance: &StakingRewards, id: Identity) -> u64 {
 }
 
 pub async fn earned(instance: &StakingRewards, wallet_identity: Identity, timestamp: u64) -> u64 {
-    instance.earned(wallet_identity, timestamp).call().await.unwrap().value
+    instance
+        .earned(wallet_identity, timestamp)
+        .call()
+        .await
+        .unwrap()
+        .value
 }
 
 pub async fn total_supply(instance: &StakingRewards) -> u64 {

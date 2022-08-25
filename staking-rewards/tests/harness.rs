@@ -2,8 +2,8 @@ mod utils;
 
 use fuels::prelude::*;
 use utils::{
-    get_balance, reward_per_token, setup, stakingrewards_mod::Identity, ONE, REWARDS_ASSET,
-    STAKING_ASSET, balance_of, total_supply, earned, get_reward, exit,
+    balance_of, earned, exit, get_balance, get_reward, reward_per_token, setup,
+    stakingrewards_mod::Identity, total_supply, ONE, REWARDS_ASSET, STAKING_ASSET,
 };
 
 // Until timestamp supported in Sway, timestamps of each action must be specified. Contract is deployed at t=0
