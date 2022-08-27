@@ -144,16 +144,15 @@ impl StakingRewards for Contract {
         let amount = msg_amount();
         require(amount > 0, StakingRewardsError::StakeZero);
 
-        let asset_id = msg_asset_id();
-        require(asset_id == storage.staking_token, StakingRewardsError::StakeIncorrectToken);
+        require(msg_asset_id(); == storage.staking_token, StakingRewardsError::StakeIncorrectToken);
 
-        let sender = msg_sender().unwrap();
-        _update_reward(sender, test_timestamp);
+        let user = msg_sender().unwrap();
+        _update_reward(user, test_timestamp);
 
         storage.total_supply += amount;
-        storage.balances.insert(sender, storage.balances.get(sender) + amount);
+        storage.balances.insert(user, storage.balances.get(user) + amount);
         log(Staked {
-            user: sender, amount: amount
+            user, amount
         });
     }
 
