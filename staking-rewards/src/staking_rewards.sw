@@ -286,14 +286,14 @@ impl StakingRewards for Contract {
 
 // Added to support recovering LP Rewards from other systems such as BAL to be distributed to holders
 
-#[storage(read, write)]fn _recover_tokens(token_address: ContractId, token_amount: u64) {
+#[storage(read, write)]fn _recover_tokens(asset_id: ContractId, amount: u64) {
     require(msg_sender().unwrap() == storage.owner, "Sender not owner");
 
-    require(token_address != storage.staking_token, "Cannot withdraw the staking token");
-    transfer(token_amount, token_address, storage.owner);
+    require(asset_id != storage.staking_token, "Cannot withdraw the staking token");
+    transfer(amount, asset_id, storage.owner);
 
     log(Recovered {
-        token: token_address, amount: token_amount
+        token: asset_id, amount
     });
 }
 
