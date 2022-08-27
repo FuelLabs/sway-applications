@@ -8,11 +8,7 @@ use std::{
     address::Address,
     chain::auth::msg_sender,
     constants::ZERO_B256,
-    context::{
-        call_frames::msg_asset_id,
-        msg_amount,
-        this_balance,
-    },
+    context::{call_frames::msg_asset_id, msg_amount, this_balance},
     contract_id::ContractId,
     identity::Identity,
     logging::log,
@@ -31,35 +27,34 @@ use staking_rewards_events::*;
 const ONE: u64 = 1_000_000_000; // Can this be constant-evaluated from `PRECISION` ?
 
 storage {
+    balances: StorageMap<Identity,
+    u64> = StorageMap {
+    },
     initialized: bool = false,
+    last_update_time: u64 = 0,
     owner: Identity = Identity::Address(Address {
         value: 0x0000000000000000000000000000000000000000000000000000000000000000,
     },
-    ), staking_token: ContractId = ContractId {
-        value: 0x0101010101010101010101010101010101010101010101010101010101010101,
-    },
-    rewards_token: ContractId = ContractId {
-        value: 0x0202020202020202020202020202020202020202020202020202020202020202,
-    },
-    period_finish: u64 = 1000, // Should be start timestamp + rewards_duration
-    reward_rate: u64 = 42,
-    rewards_duration: u64 = 1000,
-    last_update_time: u64 = 0,
-    reward_per_token_stored: u64 = 0,
-    user_reward_per_token_paid: StorageMap<Identity,
-    u64> = StorageMap {
-    },
+    ), period_finish: u64 = 1000, // Should be start timestamp + rewards_duration
     rewards: StorageMap<Identity,
-    u64> = StorageMap {
-    },
-    total_supply: u64 = 0,
-    balances: StorageMap<Identity,
     u64> = StorageMap {
     },
     rewards_distribution: Identity = Identity::Address(Address {
         value: 0x0000000000000000000000000000000000000000000000000000000000000000,
     },
-    ), 
+    ), rewards_duration: u64 = 1000,
+    rewards_token: ContractId = ContractId {
+        value: 0x0202020202020202020202020202020202020202020202020202020202020202,
+    },
+    reward_rate: u64 = 42,
+    reward_per_token_stored: u64 = 0,
+    staking_token: ContractId = ContractId {
+        value: 0x0101010101010101010101010101010101010101010101010101010101010101,
+    },
+    total_supply: u64 = 0,
+    user_reward_per_token_paid: StorageMap<Identity,
+    u64> = StorageMap {
+    },
 }
 
 impl StakingRewards for Contract {
