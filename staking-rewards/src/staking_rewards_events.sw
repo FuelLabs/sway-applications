@@ -3,30 +3,30 @@ library staking_rewards_events;
 use std::contract_id::ContractId;
 use std::identity::Identity;
 
-pub struct RewardAdded {
+pub struct RewardAddedEvent {
     reward: u64,
 }
 
-pub struct Staked {
+pub struct StakedEvent {
     user: Identity,
     amount: u64,
 }
 
-pub struct Withdrawn {
+pub struct WithdrawnEvent {
     user: Identity,
     amount: u64,
 }
 
-pub struct RewardPaid {
+pub struct RewardPaidEvent {
     user: Identity,
     reward: u64,
 }
 
-pub struct RewardsDurationUpdated {
+pub struct RewardsDurationUpdatedEvent {
     new_duration: u64,
 }
 
-pub struct Recovered {
+pub struct RecoveredEvent {
     token: ContractId,
     amount: u64,
 }

@@ -151,7 +151,7 @@ impl StakingRewards for Contract {
 
         storage.total_supply += amount;
         storage.balances.insert(user, storage.balances.get(user) + amount);
-        log(Staked {
+        log(StakedEvent {
             user, amount
         });
     }
@@ -226,7 +226,7 @@ impl StakingRewards for Contract {
     if (reward > 0) {
         storage.rewards.insert(sender, 0);
         transfer(reward, storage.rewards_token, sender);
-        log(RewardPaid {
+        log(RewardPaidEvent {
             user: sender, reward: reward
         });
     }
@@ -241,7 +241,7 @@ impl StakingRewards for Contract {
     storage.total_supply -= amount;
     storage.balances.insert(sender, storage.balances.get(sender) - amount);
     transfer(amount, storage.staking_token, sender);
-    log(Withdrawn {
+    log(WithdrawnEvent {
         user: sender, amount: amount
     });
 }
@@ -279,7 +279,7 @@ impl StakingRewards for Contract {
 
     storage.last_update_time = test_timestamp;
     storage.period_finish = test_timestamp + storage.rewards_duration;
-    log(RewardAdded {
+    log(RewardAddedEvent {
         reward
     });
 }
@@ -292,7 +292,7 @@ impl StakingRewards for Contract {
     require(asset_id != storage.staking_token, "Cannot withdraw the staking token");
     transfer(amount, asset_id, storage.owner);
 
-    log(Recovered {
+    log(RecoveredEvent {
         token: asset_id, amount
     });
 }
@@ -302,7 +302,7 @@ impl StakingRewards for Contract {
 
     require(test_timestamp > storage.period_finish, "Previous rewards period must be complete before changing the duration for the new period");
     storage.rewards_duration = rewards_duration;
-    log(RewardsDurationUpdated {
+    log(RewardsDurationUpdatedEvent {
         new_duration: rewards_duration
     });
 }
