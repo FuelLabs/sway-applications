@@ -144,7 +144,7 @@ impl StakingRewards for Contract {
         let amount = msg_amount();
         require(amount > 0, StakingRewardsError::StakeZero);
 
-        require(msg_asset_id(); == storage.staking_token, StakingRewardsError::StakeIncorrectToken);
+        require(msg_asset_id() == storage.staking_token, StakingRewardsError::StakeIncorrectToken);
 
         let user = msg_sender().unwrap();
         _update_reward(user, test_timestamp);
