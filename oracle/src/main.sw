@@ -27,7 +27,7 @@ storage {
 
 impl Oracle for Contract {
     fn owner() -> Identity {
-        Identity::Address(~Address::from(owner))
+        owner
     }
 
     #[storage(read)] fn price() -> u64 {
@@ -35,7 +35,7 @@ impl Oracle for Contract {
     }
 
     #[storage(write)] fn set_price(price: u64) {
-        require(msg_sender().unwrap() == Identity::Address(~Address::from(owner)), AccessError::NotOwner);
+        require(msg_sender().unwrap() == owner, AccessError::NotOwner);
 
         storage.price = price;
 
