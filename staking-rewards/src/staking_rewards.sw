@@ -174,17 +174,58 @@ impl StakingRewards for Contract {
 
     #[storage(read, write)]fn notify_reward_amount(reward: u64, test_timestamp: u64) {
         require(storage.initialized, "Contract not initialized yet");
-        _notify_reward_amount(reward, test_timestamp);
+        let sender = msg_sender().unwrap();
+        _update_reward(sender, test_timestamp);
+
+        require(sender == storage.rewards_distribution, "Caller is not RewardsDistribution contract");
+
+        if test_timestamp >= storage.period_finish {
+            storage.reward_rate = reward / storage.rewards_duration;
+        } else {
+            let remaining = storage.period_finish - test_timestamp;
+            let leftover = remaining * storage.reward_rate;
+            storage.reward_rate = (reward + leftover) / storage.rewards_duration;
+        }
+
+        // Ensure the provided reward amount is not more than the balance in the contract.
+        // This keeps the reward rate in the right range, preventing overflows due to
+        // very high values of rewardRate in the earned and rewardsPerToken functions;
+        // Reward + leftover must be less than 2^256 / 10^18 to avoid overflow.
+
+        let balance = this_balance(storage.rewards_token);
+        require(storage.reward_rate <= balance / storage.rewards_duration, "Provided reward too high");
+
+        storage.last_update_time = test_timestamp;
+        storage.period_finish = test_timestamp + storage.rewards_duration;
+        log(RewardAddedEvent {
+            reward
+        });
     }
 
-    #[storage(read, write)]fn recover_tokens(token_address: ContractId, token_amount: u64) {
+    // Added to support recovering LP Rewards from other systems such as BAL to be distributed to holders
+    #[storage(read, write)]fn recover_tokens(asset_id: ContractId, amount: u64) {
         require(storage.initialized, "Contract not initialized yet");
-        _recover_tokens(token_address, token_amount);
+
+        require(msg_sender().unwrap() == storage.owner, "Sender not owner");
+
+        require(asset_id != storage.staking_token, "Cannot withdraw the staking token");
+        transfer(amount, asset_id, storage.owner);
+
+        log(RecoveredEvent {
+            token: asset_id, amount,
+        });
     }
 
     #[storage(read, write)]fn set_rewards_duration(rewards_duration: u64, test_timestamp: u64) {
         require(storage.initialized, "Contract not initialized yet");
-        _set_rewards_duration(rewards_duration, test_timestamp);
+
+        require(msg_sender().unwrap() == storage.owner, "Sender not owner");
+
+        require(test_timestamp > storage.period_finish, "Previous rewards period must be complete before changing the duration for the new period");
+        storage.rewards_duration = rewards_duration;
+        log(RewardsDurationUpdatedEvent {
+            new_duration: rewards_duration
+        });
     }
 }
 
@@ -253,56 +294,3 @@ impl StakingRewards for Contract {
     storage.user_reward_per_token_paid.insert(account, storage.reward_per_token_stored);
 }
 
-// Restricted functions
-
-#[storage(read, write)]fn _notify_reward_amount(reward: u64, test_timestamp: u64) {
-    let sender = msg_sender().unwrap();
-    _update_reward(sender, test_timestamp);
-
-    require(sender == storage.rewards_distribution, "Caller is not RewardsDistribution contract");
-
-    if test_timestamp >= storage.period_finish {
-        storage.reward_rate = reward / storage.rewards_duration;
-    } else {
-        let remaining = storage.period_finish - test_timestamp;
-        let leftover = remaining * storage.reward_rate;
-        storage.reward_rate = (reward + leftover) / storage.rewards_duration;
-    }
-
-    // Ensure the provided reward amount is not more than the balance in the contract.
-    // This keeps the reward rate in the right range, preventing overflows due to
-    // very high values of rewardRate in the earned and rewardsPerToken functions;
-    // Reward + leftover must be less than 2^256 / 10^18 to avoid overflow.
-
-    let balance = this_balance(storage.rewards_token);
-    require(storage.reward_rate <= balance / storage.rewards_duration, "Provided reward too high");
-
-    storage.last_update_time = test_timestamp;
-    storage.period_finish = test_timestamp + storage.rewards_duration;
-    log(RewardAddedEvent {
-        reward
-    });
-}
-
-// Added to support recovering LP Rewards from other systems such as BAL to be distributed to holders
-
-#[storage(read, write)]fn _recover_tokens(asset_id: ContractId, amount: u64) {
-    require(msg_sender().unwrap() == storage.owner, "Sender not owner");
-
-    require(asset_id != storage.staking_token, "Cannot withdraw the staking token");
-    transfer(amount, asset_id, storage.owner);
-
-    log(RecoveredEvent {
-        token: asset_id, amount
-    });
-}
-
-#[storage(read, write)]fn _set_rewards_duration(rewards_duration: u64, test_timestamp: u64) {
-    require(msg_sender().unwrap() == storage.owner, "Sender not owner");
-
-    require(test_timestamp > storage.period_finish, "Previous rewards period must be complete before changing the duration for the new period");
-    storage.rewards_duration = rewards_duration;
-    log(RewardsDurationUpdatedEvent {
-        new_duration: rewards_duration
-    });
-}
