@@ -212,7 +212,7 @@ impl StakingRewards for Contract {
         transfer(amount, asset_id, storage.owner);
 
         log(RecoveredEvent {
-            token: asset_id, amount,
+            token: asset_id, amount, 
         });
     }
 
@@ -293,4 +293,3 @@ impl StakingRewards for Contract {
     storage.rewards.insert(account, _earned(account, test_timestamp));
     storage.user_reward_per_token_paid.insert(account, storage.reward_per_token_stored);
 }
-
