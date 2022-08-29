@@ -9,7 +9,7 @@ import { useSellerEscrows } from "../hooks/useSellerEscrows";
 
 export default function SellerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
-  const sellerEscrows = useSellerEscrows();
+  const { result: sellerEscrows, loading } = useSellerEscrows();
   console.log("seller escrows: ", sellerEscrows);
 
   return (
@@ -17,7 +17,7 @@ export default function SellerPage() {
       <Flex direction="column" justify="center">
         <Flex justify="center">
           <Card css={{ flex: "1", maxW: "900px", marginTop: "$5" }}>
-            {(sellerEscrows && sellerEscrows!.length > 0)
+            {(sellerEscrows && sellerEscrows.length > 0)
               ? <>
                 <Card.Header>
                   Seller Escrows

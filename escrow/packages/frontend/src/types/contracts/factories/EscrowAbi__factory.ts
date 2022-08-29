@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { Provider, Wallet } from "fuels";
+import type { Provider, Wallet, AbstractAddress } from "fuels";
 import { Interface, Contract } from "fuels";
 import type { EscrowAbi, EscrowAbiInterface } from "../EscrowAbi";
 const _abi = [
@@ -874,7 +874,10 @@ export class EscrowAbi__factory {
   static createInterface(): EscrowAbiInterface {
     return new Interface(_abi) as EscrowAbiInterface;
   }
-  static connect(id: string, walletOrProvider: Wallet | Provider): EscrowAbi {
+  static connect(
+    id: string | AbstractAddress,
+    walletOrProvider: Wallet | Provider
+  ): EscrowAbi {
     return new Contract(id, _abi, walletOrProvider) as EscrowAbi;
   }
 }
