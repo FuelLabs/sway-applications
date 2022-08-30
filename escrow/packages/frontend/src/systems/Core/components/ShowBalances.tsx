@@ -1,18 +1,11 @@
 import { css } from "@fuel-ui/css";
 import { Heading, Stack, Card } from "@fuel-ui/react";
-import { formatUnits } from "ethers/lib/utils";
 
 import { useAssets } from "../hooks/useAssets";
+import { formatValue } from "../utils/helpers";
 
 export const ShowBalances = () => {
   const coins = useAssets();
-
-  const formatValue = (amount: bigint | null | undefined, decimals: number) => {
-    if (amount != null) {
-      return formatUnits(amount, decimals);
-    }
-    return "";
-  };
 
   return (
     <Card css={{ width: "250px", selfAlign: "flex-end", bg: "$gray7", marginTop: "10px", marginRight: "10px" }}>

@@ -123,6 +123,9 @@ export const CreateEscrow = () => {
         setAssets([{ assetAmount: "", assetId: ""}]);
         // Trigger query to update show balances component
         queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
+        // Trigger query to update seller escrows
+        queryClient.fetchQuery(['SellerPage-sellerEscrowIds', contract]);
+        queryClient.fetchQuery(["SellerEscrows", contract]);
     }
 
     return (
