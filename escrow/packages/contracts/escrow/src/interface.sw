@@ -81,7 +81,7 @@ abi Escrow {
     /// * When the caller does not currently have a deposit in the escrow
     #[storage(read, write)]fn dispute(identifier: u64);
 
-    #[storage(read)]fn escrows() -> StorageMap<u64, EscrowInfo>;
+    #[storage(read)]fn escrows(identifier: u64) -> EscrowInfo;
 
     /// Allows the seller to propose a new arbiter and/or change the arbiter fee
     ///

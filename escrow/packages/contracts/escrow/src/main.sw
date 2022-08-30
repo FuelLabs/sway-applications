@@ -209,8 +209,8 @@ impl Escrow for Contract {
         });
     }
 
-    #[storage(read)]fn escrows() -> StorageMap<u64, EscrowInfo> {
-        storage.escrows
+    #[storage(read)]fn escrows(identifier: u64) -> EscrowInfo {
+        storage.escrows.get(identifier)
     }
 
     #[storage(read, write)]fn propose_arbiter(arbiter: Arbiter, identifier: u64) {

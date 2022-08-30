@@ -38,9 +38,41 @@ export type AssetInput = { amount: BigNumberish; id: ContractIdInput };
 
 export type AssetOutput = { amount: bigint; id: ContractIdOutput };
 
-export type StorageMapInput = {};
+export type BuyerInput = {
+  address: IdentityInput;
+  asset: OptionInput;
+  deposited_amount: BigNumberish;
+};
 
-export type StorageMapOutput = {};
+export type BuyerOutput = {
+  address: IdentityOutput;
+  asset: OptionOutput;
+  deposited_amount: bigint;
+};
+
+export type SellerInput = { address: IdentityInput };
+
+export type SellerOutput = { address: IdentityOutput };
+
+export type EscrowInfoInput = {
+  arbiter: ArbiterInput;
+  assets: [AssetInput, AssetInput];
+  buyer: BuyerInput;
+  deadline: BigNumberish;
+  disputed: boolean;
+  seller: SellerInput;
+  state: StateInput;
+};
+
+export type EscrowInfoOutput = {
+  arbiter: ArbiterOutput;
+  assets: [AssetOutput, AssetOutput];
+  buyer: BuyerOutput;
+  deadline: bigint;
+  disputed: boolean;
+  seller: SellerOutput;
+  state: StateOutput;
+};
 
 export type IdentityInput = Enum<{
   Address: AddressInput;
@@ -51,6 +83,14 @@ export type IdentityOutput = Enum<{
   Address: AddressOutput;
   ContractId: ContractIdOutput;
 }>;
+
+export type OptionInput = Enum<{ None: []; Some: ContractIdInput }>;
+
+export type OptionOutput = Enum<{ None: []; Some: ContractIdOutput }>;
+
+export type StateInput = Enum<{ Pending: []; Completed: [] }>;
+
+export type StateOutput = Enum<{ Pending: []; Completed: [] }>;
 
 interface EscrowAbiInterface extends Interface {
   functions: {
@@ -101,7 +141,7 @@ interface EscrowAbiInterface extends Interface {
   ): Uint8Array;
   encodeFunctionData(
     functionFragment: "escrows",
-    values?: undefined
+    values: [BigNumberish]
   ): Uint8Array;
   encodeFunctionData(
     functionFragment: "propose_arbiter",
@@ -213,7 +253,7 @@ export class EscrowAbi extends Contract {
 
     dispute: InvokeFunction<[identifier: BigNumberish], void>;
 
-    escrows: InvokeFunction<[], StorageMapOutput>;
+    escrows: InvokeFunction<[identifier: BigNumberish], EscrowInfoOutput>;
 
     propose_arbiter: InvokeFunction<
       [arbiter: ArbiterInput, identifier: BigNumberish],
