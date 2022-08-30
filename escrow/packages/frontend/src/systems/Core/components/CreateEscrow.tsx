@@ -76,11 +76,11 @@ export const CreateEscrow = () => {
         }));
     }
 
-    // TODO add feedback message for txs
     const handleSubmit = async (event: SyntheticEvent) => {
         event.preventDefault();
         // TODO make this more flexible for assets of arbitrary decimal precision
         const actualFee = parseInputValueBigInt(arbiterFee!);
+        // TODO figure out how to get this to work with contract id too
         let arbiterArg: ArbiterInput = {
             address: { Address: { value: arbiter} },
             asset: { value: arbiterAsset },
