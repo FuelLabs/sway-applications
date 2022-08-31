@@ -111,6 +111,7 @@ Take a look at the following [interface.sw](src/interface.sw) of the program:
 fn increment();
 fn decrement();
 fn get_counter() -> u64;
+```
 
 #### 2. Compiling your Sway contract
 
