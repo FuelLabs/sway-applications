@@ -58,6 +58,10 @@ storage {
 }
 
 impl StakingRewards for Contract {
+    #[storage(read)]fn balance_of(account: Identity) -> u64 {
+        storage.balances.get(account)
+    }
+
     #[storage(read, write)]fn constructor(owner: Identity) {
         require(!storage.initialized, "Contract already initialized");
 
@@ -65,100 +69,15 @@ impl StakingRewards for Contract {
         storage.initialized = true;
     }
 
-    // Getter functions for "public" state
-
-    #[storage(read)]fn owner() -> Identity {
-        storage.owner
-    }
-
-    #[storage(read)]fn rewards_token() -> ContractId {
-        storage.rewards_token
-    }
-
-    #[storage(read)]fn staking_token() -> ContractId {
-        storage.staking_token
-    }
-
-    #[storage(read)]fn period_finish() -> u64 {
-        storage.period_finish
-    }
-
-    #[storage(read)]fn reward_rate() -> u64 {
-        storage.reward_rate
-    }
-
-    #[storage(read)]fn rewards_duration() -> u64 {
-        storage.rewards_duration
-    }
-
-    #[storage(read)]fn last_update_time() -> u64 {
-        storage.last_update_time
-    }
-
-    #[storage(read)]fn reward_per_token_stored() -> u64 {
-        storage.reward_per_token_stored
-    }
-
-    #[storage(read)]fn reward_per_token_paid(account: Identity) -> u64 {
-        storage.user_reward_per_token_paid.get(account)
-    }
-
-    #[storage(read)]fn rewards(account: Identity) -> u64 {
-        storage.rewards.get(account)
-    }
-
-    #[storage(read)]fn rewards_distribution() -> Identity {
-        storage.rewards_distribution
-    }
-
-    #[storage(read)]fn total_supply() -> u64 {
-        storage.total_supply
-    }
-
-    #[storage(read)]fn balance_of(account: Identity) -> u64 {
-        storage.balances.get(account)
-    }
-
-    #[storage(read)]fn last_time_reward_applicable(test_timestamp: u64) -> u64 {
-        require(storage.initialized, "Contract not initialized yet");
-        _last_time_reward_applicable(test_timestamp)
-    }
-
-    #[storage(read)]fn reward_per_token(test_timestamp: u64) -> u64 {
-        require(storage.initialized, "Contract not initialized yet");
-        _reward_per_token(test_timestamp)
-    }
-
     #[storage(read)]fn earned(account: Identity, test_timestamp: u64) -> u64 {
         require(storage.initialized, "Contract not initialized yet");
         _earned(account, test_timestamp)
     }
 
-    #[storage(read)]fn get_reward_for_duration() -> u64 {
+    #[storage(read, write)]fn exit(test_timestamp: u64) {
         require(storage.initialized, "Contract not initialized yet");
-        storage.reward_rate * storage.rewards_duration
-    }
-
-    #[storage(read, write)]fn stake(test_timestamp: u64) {
-        require(storage.initialized, "Contract not initialized yet");
-        let amount = msg_amount();
-        require(amount > 0, StakingRewardsError::StakeZero);
-
-        require(msg_asset_id() == storage.staking_token, StakingRewardsError::StakeIncorrectToken);
-
-        let user = msg_sender().unwrap();
-        _update_reward(user, test_timestamp);
-
-        storage.total_supply += amount;
-        storage.balances.insert(user, storage.balances.get(user) + amount);
-        log(StakedEvent {
-            user, amount
-        });
-    }
-
-    #[storage(read, write)]fn withdraw(amount: u64, test_timestamp: u64) {
-        require(storage.initialized, "Contract not initialized yet");
-        _withdraw(amount, test_timestamp)
+        _withdraw(storage.balances.get(msg_sender().unwrap()), test_timestamp);
+        _get_reward(test_timestamp);
     }
 
     #[storage(read, write)]fn get_reward(test_timestamp: u64) {
@@ -166,10 +85,18 @@ impl StakingRewards for Contract {
         _get_reward(test_timestamp);
     }
 
-    #[storage(read, write)]fn exit(test_timestamp: u64) {
+    #[storage(read)]fn get_reward_for_duration() -> u64 {
         require(storage.initialized, "Contract not initialized yet");
-        _withdraw(storage.balances.get(msg_sender().unwrap()), test_timestamp);
-        _get_reward(test_timestamp);
+        storage.reward_rate * storage.rewards_duration
+    }
+
+    #[storage(read)]fn last_time_reward_applicable(test_timestamp: u64) -> u64 {
+        require(storage.initialized, "Contract not initialized yet");
+        _last_time_reward_applicable(test_timestamp)
+    }
+
+    #[storage(read)]fn last_update_time() -> u64 {
+        storage.last_update_time
     }
 
     #[storage(read, write)]fn notify_reward_amount(reward: u64, test_timestamp: u64) {
@@ -202,6 +129,14 @@ impl StakingRewards for Contract {
         });
     }
 
+    #[storage(read)]fn owner() -> Identity {
+        storage.owner
+    }
+
+    #[storage(read)]fn period_finish() -> u64 {
+        storage.period_finish
+    }
+
     // Added to support recovering LP Rewards from other systems such as BAL to be distributed to holders
     #[storage(read, write)]fn recover_tokens(asset_id: ContractId, amount: u64) {
         require(storage.initialized, "Contract not initialized yet");
@@ -216,6 +151,40 @@ impl StakingRewards for Contract {
         });
     }
 
+    #[storage(read)]fn reward_per_token(test_timestamp: u64) -> u64 {
+        require(storage.initialized, "Contract not initialized yet");
+        _reward_per_token(test_timestamp)
+    }
+
+    #[storage(read)]fn reward_per_token_stored() -> u64 {
+        storage.reward_per_token_stored
+    }
+
+    #[storage(read)]fn reward_per_token_paid(account: Identity) -> u64 {
+        storage.user_reward_per_token_paid.get(account)
+    }
+
+    #[storage(read)]fn reward_rate() -> u64 {
+        storage.reward_rate
+    }
+
+    #[storage(read)]fn rewards(account: Identity) -> u64 {
+        storage.rewards.get(account)
+    }
+
+
+    #[storage(read)]fn rewards_distribution() -> Identity {
+        storage.rewards_distribution
+    }
+
+    #[storage(read)]fn rewards_duration() -> u64 {
+        storage.rewards_duration
+    }
+
+    #[storage(read)]fn rewards_token() -> ContractId {
+        storage.rewards_token
+    }
+
     #[storage(read, write)]fn set_rewards_duration(rewards_duration: u64, test_timestamp: u64) {
         require(storage.initialized, "Contract not initialized yet");
 
@@ -226,6 +195,36 @@ impl StakingRewards for Contract {
         log(RewardsDurationUpdatedEvent {
             new_duration: rewards_duration
         });
+    }
+
+    #[storage(read, write)]fn stake(test_timestamp: u64) {
+        require(storage.initialized, "Contract not initialized yet");
+        let amount = msg_amount();
+        require(amount > 0, StakingRewardsError::StakeZero);
+
+        require(msg_asset_id() == storage.staking_token, StakingRewardsError::StakeIncorrectToken);
+
+        let user = msg_sender().unwrap();
+        _update_reward(user, test_timestamp);
+
+        storage.total_supply += amount;
+        storage.balances.insert(user, storage.balances.get(user) + amount);
+        log(StakedEvent {
+            user, amount
+        });
+    }
+
+    #[storage(read)]fn staking_token() -> ContractId {
+        storage.staking_token
+    }
+
+    #[storage(read)]fn total_supply() -> u64 {
+        storage.total_supply
+    }
+
+    #[storage(read, write)]fn withdraw(amount: u64, test_timestamp: u64) {
+        require(storage.initialized, "Contract not initialized yet");
+        _withdraw(amount, test_timestamp)
     }
 }
 
