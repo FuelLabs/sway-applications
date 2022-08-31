@@ -22,46 +22,262 @@ The information in this section is split into subsections in order to conceptual
 
 ### Airdrop
 
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
+
 ### Auctions
 
-#### Blind Auction
+#### Contracts
 
-#### Dutch Auction
+##### Blind Auction
 
-#### English Auction
+##### Dutch Auction
+
+##### English Auction
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
 
 ### Decentralized Autonomous Organization (DAO)
 
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
+
 ### Escrow
+
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
 
 ### Flashloan
 
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
+
 ### Fractionalized Non-Fungible Token (NFT)
+
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
 
 ### Fundraiser
 
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
+
 ### Liquidity Module
+
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
 
 ### Multi-signature Wallet
 
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
+
 ### Name Registry
+
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
 
 ### Non-fungible Token (NFT)
 
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
+
 ### Oracle
+
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
 
 ### Over the counter (OTC) Swap Predicate
 
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
+
 ### Staking
 
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
+
 ### Token Vault
+
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
 
 ## Games
 
 ### Tic Tac Toe
 
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
+
 ## Tutorials
 
 ### Counter
 
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
+
 ### Todo
+
+#### Contracts
+
+#### User Interface
+
+#### Tests
+
+##### Rust
+
+##### Typescript
+
+#### Documentation
