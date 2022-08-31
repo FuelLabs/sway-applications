@@ -79,11 +79,7 @@ Run React application in dev mode, make sure to configure a new [`.env`](./.env.
 npm run dev
 ```
 
-View in local browser
-
-```sh
-open http://localhost:3000
-```
+View in local browser by opening http://localhost:3000
 
 ### Walkthrough
 
