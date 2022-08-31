@@ -172,7 +172,6 @@ impl StakingRewards for Contract {
         storage.rewards.get(account)
     }
 
-
     #[storage(read)]fn rewards_distribution() -> Identity {
         storage.rewards_distribution
     }

@@ -14,7 +14,7 @@ pub struct StakedEvent {
     amount: u64,
 }
 
-/// Event when someone withdraws their staked tokens 
+/// Event when someone withdraws their staked tokens
 pub struct WithdrawnEvent {
     user: Identity,
     amount: u64,
