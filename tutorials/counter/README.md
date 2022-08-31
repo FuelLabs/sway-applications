@@ -1,9 +1,12 @@
 <div id="top"></div>
 
 <div align="center">
-  <a href="https://github.com/FuelLabs/sway-applications">
-    <img src="./img/logo.png" height="120">
-  </a>
+  <p align="center">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".img/sway-counter-logo-dark-theme.png">
+        <img alt="Sway Counter logo" width="400px" src=".img/sway-counter-logo-light-theme.png">
+    </picture>
+  </p>
 
   <h3 align="center">Sway Counter</h3>
 
