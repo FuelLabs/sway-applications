@@ -107,7 +107,7 @@ We require 3 functions for our application.
 
 Take a look at the following [interface.sw](src/interface.sw) of the program:
 
-````rust
+```rust
 fn increment();
 fn decrement();
 fn get_counter() -> u64;
@@ -121,7 +121,7 @@ While inside the project directory of `/tutorials/counter`, use this command to 
 
 ```sh
 forc build
-````
+```
 
 #### 3. Generating TypeScript for Sway contract
 
