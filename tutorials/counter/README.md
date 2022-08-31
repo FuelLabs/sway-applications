@@ -69,18 +69,6 @@ Install NPM packages
 npm i
 ```
 
-### Usage
-
-To quickly run this demo application, follow these steps, or see detailed tutorial below
-
-Run React application in dev mode, make sure to configure a new [`.env`](./.env.example) file.
-
-```sh
-npm run dev
-```
-
-View in local browser by opening http://localhost:3000
-
 ### Walkthrough
 
 This application tutorial consists of five main milestones on your journey to writing your first Sway + React app:
@@ -207,7 +195,15 @@ const App = () => {
 };
 ```
 
-To run the demo React application, see [usage](#usage).
+### 6. Run your Sway + React project
+
+Run React application in dev mode, make sure to configure a new [`.env`](./.env.example) file.
+
+```sh
+npm run dev
+```
+
+View in local browser by opening http://localhost:3000
 
 ##### What's going on behind the scenes?
 
