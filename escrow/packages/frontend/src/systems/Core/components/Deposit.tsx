@@ -7,7 +7,11 @@ import { useContract } from "../hooks/useContract";
 import { queryClient } from "@/queryClient";
 import { AssetInput } from "./AssetInput";
 
-export function Deposit() {
+interface Props {
+    escrowId: bigint,
+}
+
+export function Deposit(props: Props) {
     const [assetAmount, setAssetAmount] = useState("");
     const [assetId, setAssetId] = useState("");
     const contract = useContract();
@@ -24,9 +28,18 @@ export function Deposit() {
     }
 
     const handleDeposit = (event: any) => {
-        event.preventDefault();
         const actualDeposit = parseInputValueBigInt(assetAmount);
-        const result = contract!.functions.deposit(actualDeposit).call()
+        const result = contract!
+            .multiCall([
+                contract!.functions.deposit(props.escrowId).callParams({
+                    forward: [actualDeposit, assetId]
+                }),
+            ])
+            .txParams({
+                gasPrice: BigInt(5),
+                bytePrice: BigInt(5),
+                gasLimit: 100_000_000
+            }).call();
         toast.promise(result, {
             loading: 'Transaction loading...',
             success: 'Desposited successfully',
@@ -38,15 +51,13 @@ export function Deposit() {
     }
 
     return (
-        <Flex css={{ flex: "1", justifyContent: "center" }}>
-            <Card css={{ margin: "10px", bg: "$gray7", marginTop: "50px", width: "450px" }}>
-                <AssetInput
-                    asset={{ assetId, assetAmount }}
-                    onAssetAmountChange={handleAssetAmountChange}
-                    onAssetIdChange={handleAssetIdChange}
-                />
-                <Button onPress={(e) => handleDeposit(e)} css={{ margin: "10px" }}>Deposit Asset</Button>
-            </Card>
-        </Flex>
+        <>
+            <AssetInput
+                asset={{ assetId, assetAmount }}
+                onAssetAmountChange={handleAssetAmountChange}
+                onAssetIdChange={handleAssetIdChange}
+            />
+            <Button onPress={(e) => handleDeposit(e)} css={{ margin: "10px" }}>Deposit Asset</Button>
+        </>
     );
 }

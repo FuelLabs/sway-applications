@@ -118,6 +118,7 @@ export default function SellerPage() {
                   <div>{`Buyer: ${!!sellerEscrows[0].buyer.address.Address ? sellerEscrows[0].buyer.address.Address?.value : sellerEscrows[0].buyer.address.ContractId?.value}`}</div>
                   <div>{`Buyer Desposit Asset: ${!!sellerEscrows[0].buyer.asset.None ? "None" : sellerEscrows[0].buyer.asset.Some?.value}`}</div>
                   <div>{`Buyer Deposit Amount: ${formatValue(sellerEscrows[0].buyer.deposited_amount, DECIMAL_PLACES)}`}</div>
+                  <div>{`Seller: ${!!sellerEscrows[0].seller.address.Address ? sellerEscrows[0].seller.address.Address?.value : sellerEscrows[0].seller.address.ContractId?.value}`}</div>
                   <div>{`Deadline: ${sellerEscrows[0].deadline.toString()}`}</div>
                   <div>{`Disputed: ${sellerEscrows[0].disputed}`}</div>
                   <div>{`State: ${!!sellerEscrows[0].state.Pending ? "Pending" : "Completed"}`}</div>

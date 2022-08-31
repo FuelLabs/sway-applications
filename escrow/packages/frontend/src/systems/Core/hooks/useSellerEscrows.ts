@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useWallet } from '../context/AppContext';
 
@@ -11,9 +10,6 @@ export function useSellerEscrows() {
     ['SellerPage-sellerEscrowIds', contract],
     async () => {
       return contract && (await contract!.functions.seller_escrows({ Address: { value: wallet?.address!.toHexString()! } }).call()).value
-    },
-    {
-      onSuccess: (data) => console.log("one data: ", data),
     }
   );
   //console.log("seller escrow ids: ", sellerEscrowIds);
