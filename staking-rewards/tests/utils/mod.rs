@@ -78,8 +78,8 @@ pub async fn setup() -> (StakingRewards, Bech32ContractId, LocalWallet) {
     (staking_contract, id, wallet.clone())
 }
 
-pub async fn balance_of(instance: &StakingRewards, id: Identity) -> u64 {
-    instance.balance_of(id).call().await.unwrap().value
+pub async fn balance_of(instance: &StakingRewards, id: &Identity) -> u64 {
+    instance.balance_of(id.to_owned()).call().await.unwrap().value
 }
 
 pub async fn earned(instance: &StakingRewards, wallet_identity: Identity, timestamp: u64) -> u64 {
@@ -120,4 +120,17 @@ pub async fn exit(instance: &StakingRewards, timestamp: u64) {
         .call()
         .await
         .unwrap();
+}
+
+pub async fn stake(instance: &StakingRewards, timestamp: u64, amount: u64) {
+    instance.
+    stake(timestamp)
+    .call_params(CallParameters {
+        amount,
+        asset_id: STAKING_ASSET,
+        gas_forwarded: 1000000
+    })
+    .call()
+    .await
+    .unwrap();
 }

@@ -2,7 +2,7 @@ mod utils;
 
 use fuels::prelude::*;
 use utils::{
-    balance_of, earned, exit, get_balance, get_reward, reward_per_token, setup,
+    balance_of, earned, exit, get_balance, get_reward, reward_per_token, setup, stake,
     stakingrewards_mod::Identity, total_supply, ONE, REWARDS_ASSET, STAKING_ASSET,
 };
 
@@ -27,12 +27,27 @@ async fn stake_tokens() {
 
     // User balance has updated
     let wallet_identity = Identity::Address(Address::from(wallet.address()));
-    let user_balance = balance_of(&staking_contract, wallet_identity).await;
+    let user_balance = balance_of(&staking_contract, &wallet_identity).await;
     assert_eq!(user_balance, INITIAL_STAKE);
 
     // Total_supply has updated
     let total_supply = total_supply(&staking_contract).await;
     assert_eq!(total_supply, INITIAL_STAKE);
+}
+
+#[tokio::test]
+async fn can_get_balance_of() {
+    let (staking_contract, _id, wallet) = setup().await;
+
+    // User balance has updated
+    let wallet_identity = Identity::Address(Address::from(wallet.address()));
+    let user_balance = balance_of(&staking_contract, &wallet_identity).await;
+    assert_eq!(user_balance, INITIAL_STAKE);
+
+    // User balance updates again
+    stake(&staking_contract, TIMESTAMP, 50000).await;
+    let user_balance = balance_of(&staking_contract, &wallet_identity).await;
+    assert_eq!(user_balance, INITIAL_STAKE + 50000);
 }
 
 #[tokio::test]
