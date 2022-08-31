@@ -3,8 +3,8 @@
 <div align="center">
   <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset=".img/sway-counter-logo-dark-theme.png">
-        <img alt="Sway Counter logo" width="400px" src=".img/sway-counter-logo-light-theme.png">
+        <source media="(prefers-color-scheme: dark)" srcset="./img/sway-counter-logo-dark-theme.png">
+        <img alt="Sway Counter logo" width="400px" src="./img/sway-counter-logo-light-theme.png">
     </picture>
   </p>
 
