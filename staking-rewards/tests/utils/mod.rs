@@ -161,3 +161,21 @@ pub async fn get_reward_for_duration(instance: &StakingRewards) -> u64 {
     .unwrap()
     .value
 }
+
+pub async fn period_finish(instance: &StakingRewards) -> u64 {
+    instance
+    .period_finish()
+    .call()
+    .await
+    .unwrap()
+    .value
+}
+
+pub async fn last_time_reward_applicable(instance: &StakingRewards, timestamp: u64) -> u64 {
+    instance
+    .last_time_reward_applicable(timestamp)
+    .call()
+    .await
+    .unwrap()
+    .value
+}
