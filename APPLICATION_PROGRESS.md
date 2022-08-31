@@ -83,56 +83,56 @@ Table of Content
         - [Typescript ✅](#typescript--8)
       - [Documentation ❌](#documentation--8)
     - [Oracle](#oracle)
+      - [Contracts ✅](#contracts--9)
+      - [User Interface ❌](#user-interface--9)
+      - [Tests](#tests-11)
+        - [Rust ✅](#rust--9)
+        - [Typescript ❌](#typescript--9)
+      - [Documentation ✅](#documentation--9)
+    - [Over the counter (OTC) Swap Predicate](#over-the-counter-otc-swap-predicate)
       - [Contracts](#contracts-2)
       - [User Interface](#user-interface-2)
-      - [Tests](#tests-11)
+      - [Tests](#tests-12)
         - [Rust](#rust-2)
         - [Typescript](#typescript-2)
       - [Documentation](#documentation-2)
-    - [Over the counter (OTC) Swap Predicate](#over-the-counter-otc-swap-predicate)
+    - [Staking](#staking)
       - [Contracts](#contracts-3)
       - [User Interface](#user-interface-3)
-      - [Tests](#tests-12)
+      - [Tests](#tests-13)
         - [Rust](#rust-3)
         - [Typescript](#typescript-3)
       - [Documentation](#documentation-3)
-    - [Staking](#staking)
+    - [Token Vault](#token-vault)
       - [Contracts](#contracts-4)
       - [User Interface](#user-interface-4)
-      - [Tests](#tests-13)
+      - [Tests](#tests-14)
         - [Rust](#rust-4)
         - [Typescript](#typescript-4)
       - [Documentation](#documentation-4)
-    - [Token Vault](#token-vault)
-      - [Contracts](#contracts-5)
-      - [User Interface](#user-interface-5)
-      - [Tests](#tests-14)
-        - [Rust](#rust-5)
-        - [Typescript](#typescript-5)
-      - [Documentation](#documentation-5)
   - [Games](#games)
     - [Tic Tac Toe](#tic-tac-toe)
-      - [Contracts](#contracts-6)
-      - [User Interface](#user-interface-6)
+      - [Contracts ❌](#contracts--10)
+      - [User Interface ❌](#user-interface--10)
       - [Tests](#tests-15)
-        - [Rust](#rust-6)
-        - [Typescript](#typescript-6)
-      - [Documentation](#documentation-6)
+        - [Rust ❌](#rust--10)
+        - [Typescript ❌](#typescript--10)
+      - [Documentation ❌](#documentation--10)
   - [Tutorials](#tutorials)
     - [Counter](#counter)
-      - [Contracts](#contracts-7)
-      - [User Interface](#user-interface-7)
+      - [Contracts ❌](#contracts--11)
+      - [User Interface ❌](#user-interface--11)
       - [Tests](#tests-16)
-        - [Rust](#rust-7)
-        - [Typescript](#typescript-7)
-      - [Documentation](#documentation-7)
+        - [Rust ❌](#rust--11)
+        - [Typescript ❌](#typescript--11)
+      - [Documentation ❌](#documentation--11)
     - [Todo](#todo)
-      - [Contracts](#contracts-8)
-      - [User Interface](#user-interface-8)
+      - [Contracts ❌](#contracts--12)
+      - [User Interface ❌](#user-interface--12)
       - [Tests](#tests-17)
-        - [Rust](#rust-8)
-        - [Typescript](#typescript-8)
-      - [Documentation](#documentation-8)
+        - [Rust ❌](#rust--12)
+        - [Typescript ❌](#typescript--12)
+      - [Documentation ❌](#documentation--12)
 
 # Overview
 
@@ -457,7 +457,7 @@ The information in this section is split into subsections in order to conceptual
 
 #### User Interface ✅
 
-- Will not exist as an NFT in and of itself has no use for a UI. Other apps will integrate it and build their own
+- Will not exist as an NFT in and of itself since it has no use for a UI. Other apps will integrate it and build their own
 
 #### Tests
 
@@ -484,17 +484,28 @@ The information in this section is split into subsections in order to conceptual
 
 ### Oracle
 
-#### Contracts
+#### Contracts ✅
 
-#### User Interface
+- Ready to go into master after repo is bumped to latest releases which solve some bugs in other projects
+- Need option but SDK may not support it in the latest release so using `u64` for price instead
+
+#### User Interface ❌
+
+- Not under development
 
 #### Tests
 
-##### Rust
+##### Rust ✅
 
-##### Typescript
+- Ready to go into master after repo is bumped to latest releases which solve some bugs in other projects
 
-#### Documentation
+##### Typescript ❌
+
+- Not under development
+
+#### Documentation ✅
+
+- Ready to go into master after repo is bumped to latest releases which solve some bugs in other projects
 
 ---
 
@@ -548,46 +559,79 @@ The information in this section is split into subsections in order to conceptual
 
 ### Tic Tac Toe
 
-#### Contracts
+#### Contracts ❌
 
-#### User Interface
+- Draft PR needs to be updated to a newer release
+- Lots of work to be done
+
+#### User Interface ❌
+
+- Not under development
 
 #### Tests
 
-##### Rust
+##### Rust ❌
 
-##### Typescript
+- Do not exist
 
-#### Documentation
+##### Typescript ❌
+
+- Not under development
+
+#### Documentation ❌
+
+- Draft PR, Readme and Spec need to be reworked
 
 ## Tutorials
 
 ### Counter
 
-#### Contracts
+#### Contracts ❌
 
-#### User Interface
+- Draft PR needs to be updated to a newer release
+
+#### User Interface ❌
+
+- Draft PR needs to be updated to a newer release
 
 #### Tests
 
-##### Rust
+##### Rust ❌
 
-##### Typescript
+- Do not exist
 
-#### Documentation
+##### Typescript ❌
+
+- Do not exist
+
+#### Documentation ❌
+
+- Readme exists
+- Spec does not exist
 
 ---
 
 ### Todo
 
-#### Contracts
+#### Contracts ❌
 
-#### User Interface
+- Draft PR needs to be updated to a newer release
+
+#### User Interface ❌
+
+- Draft PR needs to be updated to a newer release
 
 #### Tests
 
-##### Rust
+##### Rust ❌
 
-##### Typescript
+- Do not exist
 
-#### Documentation
+##### Typescript ❌
+
+- Do not exist
+
+#### Documentation ❌
+
+- Readme exists
+- Spec does not exist
