@@ -123,8 +123,8 @@ pub async fn exit(instance: &StakingRewards, timestamp: u64) {
 }
 
 pub async fn stake(instance: &StakingRewards, timestamp: u64, amount: u64) {
-    instance.
-    stake(timestamp)
+    instance
+    .stake(timestamp)
     .call_params(CallParameters {
         amount,
         asset_id: STAKING_ASSET,
@@ -133,4 +133,31 @@ pub async fn stake(instance: &StakingRewards, timestamp: u64, amount: u64) {
     .call()
     .await
     .unwrap();
+}
+
+pub async fn reward_rate(instance: &StakingRewards) -> u64 {
+    instance
+    .reward_rate()
+    .call()
+    .await
+    .unwrap()
+    .value
+}
+
+pub async fn reward_duration(instance: &StakingRewards) -> u64 {
+    instance
+    .rewards_duration()
+    .call()
+    .await
+    .unwrap()
+    .value
+}
+
+pub async fn get_reward_for_duration(instance: &StakingRewards) -> u64 {
+    instance
+    .get_reward_for_duration()
+    .call()
+    .await
+    .unwrap()
+    .value
 }

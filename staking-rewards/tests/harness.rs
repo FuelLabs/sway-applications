@@ -2,8 +2,8 @@ mod utils;
 
 use fuels::prelude::*;
 use utils::{
-    balance_of, earned, exit, get_balance, get_reward, reward_per_token, setup, stake,
-    stakingrewards_mod::Identity, total_supply, ONE, REWARDS_ASSET, STAKING_ASSET,
+    balance_of, earned, exit, get_balance, get_reward, reward_per_token, setup, stake, get_reward_for_duration,
+    stakingrewards_mod::Identity, total_supply, ONE, REWARDS_ASSET, STAKING_ASSET, reward_rate, reward_duration,
 };
 
 // Until timestamp supported in Sway, timestamps of each action must be specified. Contract is deployed at t=0
@@ -108,4 +108,17 @@ async fn exit_with_reward() {
         staking_balance_after - staking_balance_before,
         INITIAL_STAKE
     );
+}
+
+#[tokio::test]
+async fn can_get_reward_for_duration() {
+    let (staking_contract, _id, _wallet) = setup().await;
+
+    let reward_rate = reward_rate(&staking_contract).await;
+    let reward_duration = reward_duration(&staking_contract).await;
+
+    let expected_reward = reward_rate * reward_duration;
+    let actual_reward = get_reward_for_duration(&staking_contract).await;
+
+    assert_eq!(expected_reward, actual_reward);
 }
