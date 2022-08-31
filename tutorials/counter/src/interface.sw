@@ -1,7 +1,7 @@
 library interface;
 
 abi Counter {
-    fn increment();
-    fn decrement();
-    fn get_counter() -> u64;
+    #[storage(read,write)]fn increment();
+    #[storage(read,write)]fn decrement();
+    #[storage(read)]fn get_counter() -> u64;
 }

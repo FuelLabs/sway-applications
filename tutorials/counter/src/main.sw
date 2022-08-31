@@ -5,21 +5,21 @@ dep interface;
 use interface::Counter;
 
 storage {
-    counter: u64
+    counter: u64 = 0
 }
 
 impl Counter for Contract {
-    fn increment() {
+    #[storage(read,write)]fn increment() {
         storage.counter = storage.counter + 10;
     }
 
-    fn decrement() {
+    #[storage(read,write)]fn decrement() {
         if storage.counter != 0 {
             storage.counter = storage.counter - 10;
         }
     }
 
-    fn get_counter() -> u64 {
+    #[storage(read)]fn get_counter() -> u64 {
         storage.counter
     }
 }
