@@ -20,119 +20,119 @@ Table of Content
         - [Typescript](#typescript-1)
       - [Documentation](#documentation-1)
     - [Decentralized Autonomous Organization (DAO)](#decentralized-autonomous-organization-dao)
+      - [Contracts ❌](#contracts-)
+      - [User Interface ❌](#user-interface-)
+      - [Tests](#tests-2)
+        - [Rust ❌](#rust-)
+        - [Typescript ❌](#typescript-)
+      - [Documentation ✅](#documentation-)
+    - [Escrow](#escrow)
+      - [Contracts ✅](#contracts--1)
+      - [User Interface ❌](#user-interface--1)
+      - [Tests](#tests-3)
+        - [Rust ✅](#rust--1)
+        - [Typescript ❌](#typescript--1)
+      - [Documentation ✅](#documentation--1)
+    - [Flashloan](#flashloan)
       - [Contracts](#contracts-2)
       - [User Interface](#user-interface-2)
-      - [Tests](#tests-2)
+      - [Tests](#tests-4)
         - [Rust](#rust-2)
         - [Typescript](#typescript-2)
       - [Documentation](#documentation-2)
-    - [Escrow](#escrow)
+    - [Fractionalized Non-Fungible Token (NFT)](#fractionalized-non-fungible-token-nft)
       - [Contracts](#contracts-3)
       - [User Interface](#user-interface-3)
-      - [Tests](#tests-3)
+      - [Tests](#tests-5)
         - [Rust](#rust-3)
         - [Typescript](#typescript-3)
       - [Documentation](#documentation-3)
-    - [Flashloan](#flashloan)
+    - [Fundraiser](#fundraiser)
+      - [Contracts ❌](#contracts--2)
+      - [User Interface ❌](#user-interface--2)
+      - [Tests](#tests-6)
+        - [Rust ❌](#rust--2)
+        - [Typescript ❌](#typescript--2)
+      - [Documentation ❌](#documentation--2)
+    - [Liquidity Module](#liquidity-module)
       - [Contracts](#contracts-4)
       - [User Interface](#user-interface-4)
-      - [Tests](#tests-4)
+      - [Tests](#tests-7)
         - [Rust](#rust-4)
         - [Typescript](#typescript-4)
       - [Documentation](#documentation-4)
-    - [Fractionalized Non-Fungible Token (NFT)](#fractionalized-non-fungible-token-nft)
+    - [Multi-signature Wallet](#multi-signature-wallet)
+      - [Contracts ❌](#contracts--3)
+      - [User Interface ❌](#user-interface--3)
+      - [Tests](#tests-8)
+        - [Rust ❌](#rust--3)
+        - [Typescript ❌](#typescript--3)
+      - [Documentation ❌](#documentation--3)
+    - [Name Registry](#name-registry)
       - [Contracts](#contracts-5)
       - [User Interface](#user-interface-5)
-      - [Tests](#tests-5)
+      - [Tests](#tests-9)
         - [Rust](#rust-5)
         - [Typescript](#typescript-5)
       - [Documentation](#documentation-5)
-    - [Fundraiser](#fundraiser)
+    - [Non-fungible Token (NFT)](#non-fungible-token-nft)
+      - [Contracts ❌](#contracts--4)
+      - [User Interface ✅](#user-interface--4)
+      - [Tests](#tests-10)
+        - [Rust ❌](#rust--4)
+        - [Typescript ✅](#typescript--4)
+      - [Documentation ❌](#documentation--4)
+    - [Oracle](#oracle)
       - [Contracts](#contracts-6)
       - [User Interface](#user-interface-6)
-      - [Tests](#tests-6)
+      - [Tests](#tests-11)
         - [Rust](#rust-6)
         - [Typescript](#typescript-6)
       - [Documentation](#documentation-6)
-    - [Liquidity Module](#liquidity-module)
+    - [Over the counter (OTC) Swap Predicate](#over-the-counter-otc-swap-predicate)
       - [Contracts](#contracts-7)
       - [User Interface](#user-interface-7)
-      - [Tests](#tests-7)
+      - [Tests](#tests-12)
         - [Rust](#rust-7)
         - [Typescript](#typescript-7)
       - [Documentation](#documentation-7)
-    - [Multi-signature Wallet](#multi-signature-wallet)
+    - [Staking](#staking)
       - [Contracts](#contracts-8)
       - [User Interface](#user-interface-8)
-      - [Tests](#tests-8)
+      - [Tests](#tests-13)
         - [Rust](#rust-8)
         - [Typescript](#typescript-8)
       - [Documentation](#documentation-8)
-    - [Name Registry](#name-registry)
+    - [Token Vault](#token-vault)
       - [Contracts](#contracts-9)
       - [User Interface](#user-interface-9)
-      - [Tests](#tests-9)
+      - [Tests](#tests-14)
         - [Rust](#rust-9)
         - [Typescript](#typescript-9)
       - [Documentation](#documentation-9)
-    - [Non-fungible Token (NFT)](#non-fungible-token-nft)
+  - [Games](#games)
+    - [Tic Tac Toe](#tic-tac-toe)
       - [Contracts](#contracts-10)
       - [User Interface](#user-interface-10)
-      - [Tests](#tests-10)
+      - [Tests](#tests-15)
         - [Rust](#rust-10)
         - [Typescript](#typescript-10)
       - [Documentation](#documentation-10)
-    - [Oracle](#oracle)
+  - [Tutorials](#tutorials)
+    - [Counter](#counter)
       - [Contracts](#contracts-11)
       - [User Interface](#user-interface-11)
-      - [Tests](#tests-11)
+      - [Tests](#tests-16)
         - [Rust](#rust-11)
         - [Typescript](#typescript-11)
       - [Documentation](#documentation-11)
-    - [Over the counter (OTC) Swap Predicate](#over-the-counter-otc-swap-predicate)
+    - [Todo](#todo)
       - [Contracts](#contracts-12)
       - [User Interface](#user-interface-12)
-      - [Tests](#tests-12)
+      - [Tests](#tests-17)
         - [Rust](#rust-12)
         - [Typescript](#typescript-12)
       - [Documentation](#documentation-12)
-    - [Staking](#staking)
-      - [Contracts](#contracts-13)
-      - [User Interface](#user-interface-13)
-      - [Tests](#tests-13)
-        - [Rust](#rust-13)
-        - [Typescript](#typescript-13)
-      - [Documentation](#documentation-13)
-    - [Token Vault](#token-vault)
-      - [Contracts](#contracts-14)
-      - [User Interface](#user-interface-14)
-      - [Tests](#tests-14)
-        - [Rust](#rust-14)
-        - [Typescript](#typescript-14)
-      - [Documentation](#documentation-14)
-  - [Games](#games)
-    - [Tic Tac Toe](#tic-tac-toe)
-      - [Contracts](#contracts-15)
-      - [User Interface](#user-interface-15)
-      - [Tests](#tests-15)
-        - [Rust](#rust-15)
-        - [Typescript](#typescript-15)
-      - [Documentation](#documentation-15)
-  - [Tutorials](#tutorials)
-    - [Counter](#counter)
-      - [Contracts](#contracts-16)
-      - [User Interface](#user-interface-16)
-      - [Tests](#tests-16)
-        - [Rust](#rust-16)
-        - [Typescript](#typescript-16)
-      - [Documentation](#documentation-16)
-    - [Todo](#todo)
-      - [Contracts](#contracts-17)
-      - [User Interface](#user-interface-17)
-      - [Tests](#tests-17)
-        - [Rust](#rust-17)
-        - [Typescript](#typescript-17)
-      - [Documentation](#documentation-17)
 
 # Overview
 
@@ -141,6 +141,11 @@ The content in this document is meant to outline the current state of each proje
 That being said this document is not meant to perfectly track each issue and instead it's meant to be more of a guidance or a vision of where the projects are heading in order to allow a broad overview of each project and enable easier onboarding for contributors. 
 
 For any specific issues we suggest taking a look into the issues and pull requests and using the associated labels to filter by a specific project.
+
+The sections contain one of two icons which are used to indicate the state of completion
+
+- ✅ for "No further work seems to be needed"
+- ❌ for "Not considered to be complete"
 
 # Applications
 
@@ -155,6 +160,8 @@ The information in this section is split into subsections in order to conceptual
 
 ## Decentralized Apps
 
+---
+
 ### Airdrop
 
 #### Contracts
@@ -168,6 +175,8 @@ The information in this section is split into subsections in order to conceptual
 ##### Typescript
 
 #### Documentation
+
+---
 
 ### Auctions
 
@@ -189,33 +198,74 @@ The information in this section is split into subsections in order to conceptual
 
 #### Documentation
 
+---
+
 ### Decentralized Autonomous Organization (DAO)
 
-#### Contracts
+#### Contracts ❌
 
-#### User Interface
+- Replace constructor with manifest instantiation?
+- Need to possibly handle overflowing upon calculating votes inside `execute`
+- Outdated way to call an arbitrary contract, WIP in Sway repo
+- Can instantiate with approval of 1 - exploitable
+- Extend to use multiple consensus mechansims instead of a simple yes:no ratio
+- Not alphabetically ordered
+
+#### User Interface ❌
+
+- Not under development
 
 #### Tests
 
-##### Rust
+##### Rust ❌
 
-##### Typescript
+- Outdated release of version 0.16
+  - PR for bumping is dependent upon SDK fixing issues
+- Requires SDK block manipulation to complete tests
 
-#### Documentation
+##### Typescript ❌
+
+- Do not exist
+
+#### Documentation ✅
+
+- Readme ❌
+  - Need to remove "current state of app" since this document covers that content
+  - Once UI is added it needs to be documented
+- Specification ✅
+
+---
 
 ### Escrow
 
-#### Contracts
+#### Contracts ✅
 
-#### User Interface
+- Feature complete for UI integration
+- Needs some getters so that contracts can interact
+
+#### User Interface ❌
+
+- Currently under development
 
 #### Tests
 
-##### Rust
+##### Rust ✅
 
-##### Typescript
+- Complete but on outdated release of version 0.16
+  - PR for bumping is dependent upon SDK fixing issues
 
-#### Documentation
+##### Typescript ❌
+
+- Do not exist
+
+#### Documentation ✅
+
+- Readme ❌
+  - Need to remove "current state of app" since this document covers that content
+  - Once UI is added it needs to be documented
+- Specification ✅
+
+---
 
 ### Flashloan
 
@@ -231,6 +281,8 @@ The information in this section is split into subsections in order to conceptual
 
 #### Documentation
 
+---
+
 ### Fractionalized Non-Fungible Token (NFT)
 
 #### Contracts
@@ -245,19 +297,46 @@ The information in this section is split into subsections in order to conceptual
 
 #### Documentation
 
+---
+
 ### Fundraiser
 
-#### Contracts
+#### Contracts ❌
 
-#### User Interface
+- Rename `contract_abi` to `interface`
+- Move documentation onto the interface rather than have it on the implementation
+- Campaigns do not have any descriptions / titles / context
+  - Should probably use a vec
+  - Cannot search for campaigns aside from by a number from 0...X where X is known
+- No easy way to retrieve campaigns by user
+  - Must iterate from 0...X where X is known by another function call
+- Not alphabetically ordered
+
+#### User Interface ❌
+
+- Not under development
 
 #### Tests
 
-##### Rust
+##### Rust ❌
 
-##### Typescript
+- Incomplete, needed block manipulation from SDK to finish a couple tests
+- On outdated release of version 0.15
+  - PR for bumping is dependent upon SDK fixing issues
 
-#### Documentation
+##### Typescript ❌
+
+- Do not exist
+
+#### Documentation ❌
+
+- Readme ❌
+  - Need to remove "current state of app" since this document covers that content
+  - Once UI is added it needs to be documented
+- Specification ❌
+  - Need to simplify to make it look like the Escrow / DAO spec
+
+---
 
 ### Liquidity Module
 
@@ -273,19 +352,47 @@ The information in this section is split into subsections in order to conceptual
 
 #### Documentation
 
+---
+
 ### Multi-signature Wallet
 
-#### Contracts
+#### Contracts ❌
 
-#### User Interface
+- Rename `contract_abi` to `interface`
+- Move documentation onto the interface rather than have it on the implementation
+- Document events
+- Not alphabetically ordered
+- Move `create_hash` into `utils`
+- Move `count_approvals` to `utils` when libraries support storage access
+  - The keyword `break` is implemented, uncomment and use in fn
+- Needs to use vec instead of arrays but cannot test in SDK
+- Only basic functionality is implemented
+  - Cannot make arbitrary calls yet, work is being done in Sway which hopefully resolves this
+
+#### User Interface ❌
+
+- Not under development
 
 #### Tests
 
-##### Rust
+##### Rust ❌
 
-##### Typescript
+- Needs vec support to test, partial tests written for basic functionality in draft PR
+- Also outdated version
 
-#### Documentation
+##### Typescript ❌
+
+- Does not exist
+
+#### Documentation ❌
+
+- Readme ❌
+  - Need to remove "current state of app" since this document covers that content
+  - Once UI is added it needs to be documented
+- Specification ❌
+  - Does not exist
+
+---
 
 ### Name Registry
 
@@ -301,19 +408,40 @@ The information in this section is split into subsections in order to conceptual
 
 #### Documentation
 
+---
+
 ### Non-fungible Token (NFT)
 
-#### Contracts
+#### Contracts ❌
 
-#### User Interface
+- Needs vec and option but then cannot test
+
+#### User Interface ✅
+
+- Will not exist as an NFT in and of itself has no use for a UI. Other apps will integrate it and build their own
 
 #### Tests
 
-##### Rust
+##### Rust ❌
 
-##### Typescript
+- Outdated release of version 0.18
+  - PR for bumping is dependent upon SDK fixing issues
+- Needs to support vec and option to complete testing
 
-#### Documentation
+##### Typescript ✅
+
+- Will not exist
+
+#### Documentation ❌
+
+- Readme ❌
+  - Need to remove "current state of app" since this document covers that content
+  - Doesn't really belong in apps repo and should be moved to libs repo at some point
+    - Although it will be used in other apps
+- Specification ❌
+  - Does not exist
+
+---
 
 ### Oracle
 
@@ -329,6 +457,8 @@ The information in this section is split into subsections in order to conceptual
 
 #### Documentation
 
+---
+
 ### Over the counter (OTC) Swap Predicate
 
 #### Contracts
@@ -343,6 +473,8 @@ The information in this section is split into subsections in order to conceptual
 
 #### Documentation
 
+---
+
 ### Staking
 
 #### Contracts
@@ -356,6 +488,8 @@ The information in this section is split into subsections in order to conceptual
 ##### Typescript
 
 #### Documentation
+
+---
 
 ### Token Vault
 
@@ -373,6 +507,8 @@ The information in this section is split into subsections in order to conceptual
 
 ## Games
 
+---
+
 ### Tic Tac Toe
 
 #### Contracts
@@ -389,6 +525,8 @@ The information in this section is split into subsections in order to conceptual
 
 ## Tutorials
 
+---
+
 ### Counter
 
 #### Contracts
@@ -402,6 +540,8 @@ The information in this section is split into subsections in order to conceptual
 ##### Typescript
 
 #### Documentation
+
+---
 
 ### Todo
 
