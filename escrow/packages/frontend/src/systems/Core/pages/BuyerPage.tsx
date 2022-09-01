@@ -23,22 +23,22 @@ export default function BuyerPage() {
 
   }
 
-  const handleTransferToSeller = async (escrowId: bigint) => {
-    const result = await contract!.functions.transfer_to_seller(escrowId)
+  // TODO this is currently broken
+  const handleTransferToSeller = (escrowId: bigint) => {
+    const result = contract!.functions.transfer_to_seller(escrowId)
       .txParams({
         gasPrice: BigInt(5),
         bytePrice: BigInt(5),
-        gasLimit: 100_000_000
+        gasLimit: 100_000_000,
+        variableOutputs: 3,
       })
       .call();
     console.log("result: ", result);
-    // toast.promise(result, {
-    //   loading: 'Transaction loading...',
-    //   success: 'Transferred to Seller successfully',
-    //   error: 'Transaction reverted!'
-    // });
-    // Trigger query to update show balances component
-    //queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
+    toast.promise(result, {
+      loading: 'Transaction loading...',
+      success: 'Transferred to Seller successfully',
+      error: 'Transaction reverted!'
+    });
   }
 
   const handleDispute = (escrowId: bigint) => {
