@@ -84,7 +84,16 @@ export default function SellerPage() {
   }
 
   const handleReturnDeposit = (escrowId: bigint) => {
-
+    const result = contract!.functions.return_deposit(escrowId)
+      .txParams({
+        variableOutputs: 3,
+      }).simulate();
+    console.log("result", result);
+    toast.promise(result, {
+      loading: "Transaction loading...",
+      success: "Deposit returned to buyer",
+      error: "Transaction reverted!",
+    });
   }
 
   const handleTakePayment = (escrowId: bigint) => {
@@ -98,6 +107,10 @@ export default function SellerPage() {
   return (
     <Layout>
       <Flex direction="column" justify="center">
+      <Flex css={{ flexDirection: "row", justifyContent: "center" }}>
+          <CreateEscrow />
+          {showBalances && <ShowBalances />}
+        </Flex>
         <Flex justify="center">
           <Card css={{ flex: "1", maxW: "900px", marginTop: "$5" }}>
             {(!!sellerEscrows && sellerEscrows.length > 0)
@@ -167,10 +180,6 @@ export default function SellerPage() {
             }
 
           </Card>
-        </Flex>
-        <Flex css={{ flexDirection: "row", justifyContent: "center" }}>
-          <CreateEscrow />
-          {showBalances && <ShowBalances />}
         </Flex>
       </Flex>
     </Layout>

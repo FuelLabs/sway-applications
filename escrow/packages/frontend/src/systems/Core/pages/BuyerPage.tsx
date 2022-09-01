@@ -23,7 +23,6 @@ export default function BuyerPage() {
 
   }
 
-  // TODO this is currently broken
   const handleTransferToSeller = (escrowId: bigint) => {
     const result = contract!.functions.transfer_to_seller(escrowId)
       .txParams({
