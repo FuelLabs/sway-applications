@@ -10,12 +10,13 @@ abigen!(AirdropDistributor, "out/debug/airdrop-distributor-abi.json");
 abigen!(SimpleToken, "../simple-token/out/debug/simple-token-abi.json");
 
 pub struct Asset {
-    pub token: SimpleToken,
     pub asset_id: ContractId,
+    pub token: SimpleToken,
 }
 
 pub struct Metadata {
     pub airdrop_distributor: AirdropDistributor,
+    pub contract_id: ContractId,
     pub wallet: LocalWallet,
 }
 
@@ -34,7 +35,7 @@ pub mod airdrop_distributor_abi_calls {
         contract.claim(amount, key, num_leaves, proof, to).call().await.unwrap()
     }
 
-    pub async fn constructor(
+    pub async fn airdrop_constructor(
         claim_time: u64, 
         contract: &AirdropDistributor, 
         merkle_root: [u8; 32], 
@@ -56,7 +57,7 @@ pub mod simple_token_abi_calls {
 
     use super::*;
 
-    pub async fn constructor(
+    pub async fn token_constructor(
         airdrop_contract: ContractId, 
         contract: &SimpleToken,
         token_supply: u64
@@ -136,27 +137,31 @@ pub mod test_helpers{
 
         let deployer = Metadata {
             airdrop_distributor: AirdropDistributorBuilder::new(airdrop_distributor_id.to_string(), wallet1.clone()).build(),
+            contract_id: ContractId::new(*airdrop_distributor_id.hash()),
             wallet: wallet1.clone()
         };
 
         let user1 = Metadata {
             airdrop_distributor: AirdropDistributorBuilder::new(airdrop_distributor_id.to_string(), wallet2.clone()).build(),
+            contract_id: ContractId::new(*airdrop_distributor_id.hash()),
             wallet: wallet2.clone()
         };
 
         let user2 = Metadata {
             airdrop_distributor: AirdropDistributorBuilder::new(airdrop_distributor_id.to_string(), wallet3.clone()).build(),
+            contract_id: ContractId::new(*airdrop_distributor_id.hash()),
             wallet: wallet3.clone()
         };
 
         let user3 = Metadata {
             airdrop_distributor: AirdropDistributorBuilder::new(airdrop_distributor_id.to_string(), wallet4.clone()).build(),
+            contract_id: ContractId::new(*airdrop_distributor_id.hash()),
             wallet: wallet4.clone()
         };
 
         let asset = Asset {
-            token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet1.clone()).build(),
             asset_id: ContractId::new(*simple_token_id.hash()),
+            token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet1.clone()).build(),
         };
 
         (deployer, user1, user2, user3, asset)
