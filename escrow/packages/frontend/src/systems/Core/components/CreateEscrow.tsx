@@ -77,8 +77,7 @@ export const CreateEscrow = () => {
         }));
     }
 
-    const handleSubmit = async (event: SyntheticEvent) => {
-        event.preventDefault();
+    const handleSubmit = async (event: any) => {
         // TODO make this more flexible for assets of arbitrary decimal precision
         const actualFee = parseInputValueBigInt(arbiterFee!);
         // TODO figure out how to get this to work with contract id too
@@ -113,7 +112,7 @@ export const CreateEscrow = () => {
         toast.promise(result, {
             loading: 'Transaction loading...',
             success: 'Escrow created successfully',
-            error: 'Transaction reverted!'
+            error: 'Transaction reverted!',
         });
         //console.log(result);
         setArbiter("");
@@ -123,10 +122,17 @@ export const CreateEscrow = () => {
         setDeadline("");
         setAssets([{ assetAmount: "", assetId: "" }]);
         // Trigger query to update show balances component
-        queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
+        const data = await queryClient.fetchQuery(
+            ['EscrowPage-balances', walletIdx],
+            async () => wallet?.getBalances(),
+            {
+                
+            }
+        );
+        console.log("data...", data);
         // Trigger query to update seller escrows
-        queryClient.fetchQuery(['SellerPage-sellerEscrowIds', contract]);
-        queryClient.fetchQuery(["SellerEscrows", contract]);
+        // queryClient.fetchQuery(['SellerPage-sellerEscrowIds', contract]);
+        // queryClient.fetchQuery(["SellerEscrows", contract]);
     }
 
     const handleShowCreateEscrow = () => {
@@ -136,49 +142,47 @@ export const CreateEscrow = () => {
     return (
         <Flex css={{ flex: "1", justifyContent: "center" }}>
             <Flex direction="column">
-                <Button leftIcon={ showCreateEscrow ? "Minus" : "Plus"} css={{ margin: "10px", width: "475px" }} onPress={() => handleShowCreateEscrow()}>
+                <Button leftIcon={showCreateEscrow ? "Minus" : "Plus"} css={{ margin: "10px", width: "475px" }} onPress={() => handleShowCreateEscrow()}>
                     Create Escrow
                 </Button>
                 {showCreateEscrow && <Card css={{ margin: "10px", bg: "$gray7" }}>
-                    <form onSubmit={handleSubmit}>
-                        <Stack css={{ width: "475px", margin: "10px", alignItems: "center" }}>
-                            <ArbiterInputContainer
-                                onArbiterAddressChange={handleArbiterAddressChange}
-                                onAssetIdChange={handleArbiterAssetChange}
-                                onFeeChange={handleArbiterFeeChange}
-                                arbiterAddress={arbiter}
-                                asset={arbiterAsset}
-                                feeAmount={arbiterFee}
+                    <Stack css={{ width: "475px", margin: "10px", alignItems: "center" }}>
+                        <ArbiterInputContainer
+                            onArbiterAddressChange={handleArbiterAddressChange}
+                            onAssetIdChange={handleArbiterAssetChange}
+                            onFeeChange={handleArbiterFeeChange}
+                            arbiterAddress={arbiter}
+                            asset={arbiterAsset}
+                            feeAmount={arbiterFee}
+                        />
+                        <Input css={{ alignSelf: "stretch" }} >
+                            <Input.Field
+                                id={`buyerAddress`}
+                                name={`buyerAddress`}
+                                placeholder={`Buyer Address`}
+                                value={buyer}
+                                type="text"
+                                onChange={(e) => handleBuyerAddressChange(e)}
+                                css={{ font: "$sans" }}
                             />
-                            <Input css={{ alignSelf: "stretch" }} >
-                                <Input.Field
-                                    id={`buyerAddress`}
-                                    name={`buyerAddress`}
-                                    placeholder={`Buyer Address`}
-                                    value={buyer}
-                                    type="text"
-                                    onChange={(e) => handleBuyerAddressChange(e)}
-                                    css={{ font: "$sans" }}
-                                />
-                            </Input>
-                            <Input css={{ alignSelf: "stretch" }} >
-                                <Input.Number
-                                    placeholder="Escrow Deadline (block number)"
-                                    inputMode="numeric"
-                                    value={deadline}
-                                    onChange={(e) => handleDeadlineChange(e)}
-                                />
-                            </Input>
-                            <AssetInputContainer
-                                onAddAsset={handleAddAsset}
-                                onRemoveAsset={handleRemoveAsset}
-                                onAssetAmountChange={handleAssetAmountChange}
-                                onAssetIdChange={handleAssetIdChange}
-                                assets={assets}
+                        </Input>
+                        <Input css={{ alignSelf: "stretch" }} >
+                            <Input.Number
+                                placeholder="Escrow Deadline (block number)"
+                                inputMode="numeric"
+                                value={deadline}
+                                onChange={(e) => handleDeadlineChange(e)}
                             />
-                            <Button type="submit" leftIcon="PlusIcon" css={{ font: "$sans", alignSelf: "stretch" }}>Create Escrow</Button>
-                        </Stack>
-                    </form>
+                        </Input>
+                        <AssetInputContainer
+                            onAddAsset={handleAddAsset}
+                            onRemoveAsset={handleRemoveAsset}
+                            onAssetAmountChange={handleAssetAmountChange}
+                            onAssetIdChange={handleAssetIdChange}
+                            assets={assets}
+                        />
+                        <Button onPress={(e) => handleSubmit(e)} leftIcon="PlusIcon" css={{ font: "$sans", alignSelf: "stretch" }}>Create Escrow</Button>
+                    </Stack>
                 </Card>
                 }
             </Flex>

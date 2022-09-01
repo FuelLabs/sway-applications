@@ -45,3 +45,6 @@ export const ESCROW_ID = process.env.VITE_CONTRACT_ID!;
 export const NUM_WALLETS = 10;
 
 export const FIXED_UNITS = 3;
+
+/** Base block explorer url */
+export const BLOCK_EXPLORER_URL = 'https://fuellabs.github.io/block-explorer-v2';
