@@ -6,4 +6,4 @@ name = "airdrop-distributor"
 
 [dependencies]
 # TODO: Point to a release when https://github.com/FuelLabs/sway-libs/issues/16 is closed
-sway_libs = { git = "https://github.com/FuelLabs/sway-libs", branch = "bitzoic-6" }
+sway_libs = { git = "https://github.com/FuelLabs/sway-libs", branch = "master" }

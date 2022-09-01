@@ -10,6 +10,7 @@ use errors::{AccessError, InitError, StateError, VerificationError};
 use interface::AirdropDistributor;
 use utils::mint_to;
 use std::{
+    address::Address,
     block::height,
     contract_id::ContractId,
     hash::sha256,
@@ -39,16 +40,24 @@ impl AirdropDistributor for Contract {
     #[storage(read, write)]fn claim(amount: u64, key: u64, num_leaves: u64, proof: [b256;
     2], to: Identity) {
         // The claiming period must be open and the `to` identity hasn't already claimed
-        require(storage.end_block < height(), StateError::ClaimPeriodHasEnded);
+        require(storage.end_block > height(), StateError::ClaimPeriodHasEnded);
         require(!storage.claimed.get((to, amount)), AccessError::UserAlreadyClaimed);
 
         // Verify the merkle proof against the user and amount
-        let leaf = leaf_digest(sha256((to, amount)));
+        let leaf_hash = match to {
+            Identity::Address(to) => {
+                sha256((to.into(), amount))
+            },
+            Identity::ContractId(to) => {
+                sha256((to.into(), amount))
+            }
+        };
+        let leaf = leaf_digest(leaf_hash);
         require(verify_proof(key, leaf, storage.merkle_root, num_leaves, proof), VerificationError::MerkleProofFailed);
 
         // Mint tokens
         storage.claimed.insert((to, amount), true);
-        mint_to(amount, to, storage.token_contract);
+        // mint_to(amount, to, storage.token_contract);
 
         log(ClaimEvent {
             to, amount, 
