@@ -15,19 +15,19 @@ mod success {
 
         mint(
             &defaults.asset,
-            seller.wallet.address(),
+            seller.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
 
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
+            arbiter.wallet.address().into(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -39,7 +39,7 @@ mod success {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             &seller.contract,
             6,
         )
@@ -69,19 +69,19 @@ mod success {
 
         mint(
             &defaults.asset,
-            seller.wallet.address(),
+            seller.wallet.address().into(),
             defaults.asset_amount * 2,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
 
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
+            arbiter.wallet.address().into(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -93,9 +93,9 @@ mod success {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             &seller.contract,
-            6,
+            7,
         )
         .await;
         deposit(
@@ -138,7 +138,7 @@ mod revert {
     async fn when_escrow_is_not_pending() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
+            arbiter.wallet.address().into(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -147,13 +147,13 @@ mod revert {
 
         mint(
             &defaults.asset,
-            seller.wallet.address(),
+            seller.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
@@ -163,7 +163,7 @@ mod revert {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             &seller.contract,
             defaults.deadline,
         )
@@ -184,7 +184,7 @@ mod revert {
     async fn when_deadline_is_not_in_the_past() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
+            arbiter.wallet.address().into(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -193,13 +193,13 @@ mod revert {
 
         mint(
             &defaults.asset,
-            seller.wallet.address(),
+            seller.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
@@ -209,7 +209,7 @@ mod revert {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             &seller.contract,
             defaults.deadline,
         )
@@ -231,7 +231,7 @@ mod revert {
         // Test passes when deadline requirement is met. Ignored till SDK manipulation to prevent failure
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
+            arbiter.wallet.address().into(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -240,13 +240,13 @@ mod revert {
 
         mint(
             &defaults.asset,
-            seller.wallet.address(),
+            seller.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
@@ -256,7 +256,7 @@ mod revert {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             &seller.contract,
             defaults.deadline,
         )
@@ -279,7 +279,7 @@ mod revert {
         // Test passes when deadline requirement is met. Ignored till SDK manipulation to prevent failure
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
+            arbiter.wallet.address().into(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -288,13 +288,13 @@ mod revert {
 
         mint(
             &defaults.asset,
-            seller.wallet.address(),
+            seller.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
@@ -304,7 +304,7 @@ mod revert {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             &seller.contract,
             defaults.deadline,
         )
@@ -326,7 +326,7 @@ mod revert {
         // Test passes when deadline requirement is met. Ignored till SDK manipulation to prevent failure
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
+            arbiter.wallet.address().into(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -335,13 +335,13 @@ mod revert {
 
         mint(
             &defaults.asset,
-            seller.wallet.address(),
+            seller.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             defaults.asset_amount,
         )
         .await;
@@ -351,7 +351,7 @@ mod revert {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
+            buyer.wallet.address().into(),
             &seller.contract,
             defaults.deadline,
         )

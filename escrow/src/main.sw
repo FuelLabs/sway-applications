@@ -77,9 +77,7 @@ impl Escrow for Contract {
 
         let arbiter = storage.arbiter_proposal.get(identifier);
 
-        // TODO: incomplete compiler defaults the Option<Arbiter> to not be None therefore fee check
-        // https://github.com/FuelLabs/sway/issues/2326
-        require(arbiter.is_some() && 0 < arbiter.unwrap().fee_amount, StateError::ArbiterHasNotBeenProposed);
+        require(arbiter.is_some(), StateError::ArbiterHasNotBeenProposed);
 
         // Upon acceptance we must transfer back the previous fee the seller deposited
         transfer(escrow.arbiter.fee_amount, escrow.arbiter.asset, escrow.seller.address);
@@ -175,7 +173,7 @@ impl Escrow for Contract {
         require(escrow.state == State::Pending, StateError::StateNotPending);
         require(!escrow.disputed, StateError::AlreadyDisputed);
         require(msg_sender().unwrap() == escrow.buyer.address, UserError::Unauthorized);
-        require(escrow.buyer.asset.is_some() && 0 < escrow.buyer.deposited_amount, StateError::CannotDisputeBeforeDesposit);
+        require(escrow.buyer.asset.is_some(), StateError::CannotDisputeBeforeDesposit);
 
         // Lock the escrow
         escrow.disputed = true;
@@ -205,7 +203,7 @@ impl Escrow for Contract {
 
         // If there is a previous proposal then we must transfer those funds back to the seller
         let proposal = storage.arbiter_proposal.get(identifier);
-        if proposal.is_some() && 0 < proposal.unwrap().fee_amount {
+        if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
         }
 
@@ -242,7 +240,7 @@ impl Escrow for Contract {
 
         // If there is a previous proposal then we must transfer those funds back to the seller
         let proposal = storage.arbiter_proposal.get(identifier);
-        if proposal.is_some() && 0 < proposal.unwrap().fee_amount {
+        if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
@@ -262,7 +260,7 @@ impl Escrow for Contract {
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
         require(msg_sender().unwrap() == escrow.seller.address, UserError::Unauthorized);
-        require(escrow.buyer.asset.is_some() && 0 < escrow.buyer.deposited_amount, StateError::CannotTransferBeforeDesposit);
+        require(escrow.buyer.asset.is_some(), StateError::CannotTransferBeforeDesposit);
 
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
@@ -272,7 +270,7 @@ impl Escrow for Contract {
 
         // If there is a previous proposal then we must transfer those funds back to the seller
         let proposal = storage.arbiter_proposal.get(identifier);
-        if proposal.is_some() && 0 < proposal.unwrap().fee_amount {
+        if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
@@ -294,7 +292,7 @@ impl Escrow for Contract {
         require(escrow.deadline < height(), StateError::CannotTakePaymentBeforeDeadline);
         require(!escrow.disputed, StateError::CannotTakePaymentDuringDispute);
         require(msg_sender().unwrap() == escrow.seller.address, UserError::Unauthorized);
-        require(escrow.buyer.asset.is_some() && 0 < escrow.buyer.deposited_amount, StateError::CannotTransferBeforeDesposit);
+        require(escrow.buyer.asset.is_some(), StateError::CannotTransferBeforeDesposit);
 
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
@@ -304,7 +302,7 @@ impl Escrow for Contract {
 
         // If there is a previous proposal then we must transfer those funds back to the seller
         let proposal = storage.arbiter_proposal.get(identifier);
-        if proposal.is_some() && 0 < proposal.unwrap().fee_amount {
+        if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
@@ -333,7 +331,7 @@ impl Escrow for Contract {
 
         // If there is a previous proposal then we must transfer those funds back to the seller
         let proposal = storage.arbiter_proposal.get(identifier);
-        if proposal.is_some() && 0 < proposal.unwrap().fee_amount {
+        if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
@@ -363,7 +361,7 @@ impl Escrow for Contract {
 
         // If there is a previous proposal then we must transfer those funds back to the seller
         let proposal = storage.arbiter_proposal.get(identifier);
-        if proposal.is_some() && 0 < proposal.unwrap().fee_amount {
+        if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
