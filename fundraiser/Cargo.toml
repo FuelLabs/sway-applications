@@ -6,8 +6,7 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-fuels = "0.15"
-fuels-abigen-macro = "0.15"
+fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]
