@@ -22,12 +22,12 @@ abi SimpleToken {
     ///
     /// # Arguments
     ///
-    /// * `airdrop_contract` - The airdrop distributor contract which will be permissioned to mint tokens.
+    /// * `minter` - The Address or Contract which will be permissioned to mint tokens.
     /// * `token_supply` - The total number of tokens that may ever be minted.
     ///
     /// # Reverts
     ///
     /// * When the constructor has already been called.
     /// * When the provided `token_supply` is zero.
-    #[storage(read, write)]fn constructor(airdrop_contract: ContractId, token_supply: u64);
+    #[storage(read, write)]fn constructor(minter: Identity, token_supply: u64);
 }
