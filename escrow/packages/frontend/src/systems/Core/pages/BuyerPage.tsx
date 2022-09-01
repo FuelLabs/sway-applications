@@ -19,6 +19,10 @@ export default function BuyerPage() {
   const walletIdx = useAtomValue(walletIndexAtom);
   const queryClient = useQueryClient();
 
+  const handleAcceptArbiter = (escrowId: bigint) => {
+
+  }
+
   const handleTransferToSeller = async (escrowId: bigint) => {
     const result = await contract!.functions.transfer_to_seller(escrowId)
       .txParams({
@@ -35,6 +39,15 @@ export default function BuyerPage() {
     // });
     // Trigger query to update show balances component
     //queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
+  }
+
+  const handleDispute = (escrowId: bigint) => {
+    const result = contract!.functions.dispute(escrowId).call();
+    toast.promise(result, {
+      loading: 'Transaction loading...',
+      success: 'Dispute Started',
+      error: 'Transaction reverted',
+    });
   }
 
   return (
@@ -72,13 +85,13 @@ export default function BuyerPage() {
               }
 
               <Card.Footer justify="space-evenly">
-                <Button>
+                <Button onPress={() => handleAcceptArbiter(BigInt(0)) }>
                   Accept Arbiter
                 </Button>
                 <Button onPress={() => handleTransferToSeller(BigInt(0))}>
                   Transfer To Seller
                 </Button>
-                <Button>
+                <Button onPress={() => handleDispute(BigInt(0))}>
                   Dispute
                 </Button>
               </Card.Footer>
