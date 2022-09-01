@@ -2,7 +2,7 @@
 
 use fuels::{contract::contract::CallResponse, prelude::*};
 
-abigen!(Escrow, "out/debug/escrow-abi.json");
+abigen!(Escrow, "out/debug/escrow-flat-abi.json");
 abigen!(MyAsset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
 pub struct Defaults {
@@ -14,7 +14,7 @@ pub struct Defaults {
 
 pub struct User {
     pub contract: Escrow,
-    pub wallet: LocalWallet,
+    pub wallet: WalletUnlocked,
 }
 
 pub mod abi_calls {
@@ -39,7 +39,7 @@ pub mod abi_calls {
         contract: &Escrow,
         deadline: u64,
     ) -> CallResponse<()> {
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params =
             CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(100_000));
 
@@ -58,7 +58,7 @@ pub mod abi_calls {
         contract: &Escrow,
         identifier: u64,
     ) -> CallResponse<()> {
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params =
             CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(100_000));
 
@@ -80,7 +80,7 @@ pub mod abi_calls {
         contract: &Escrow,
         identifier: u64,
     ) -> CallResponse<()> {
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params = CallParameters::new(
             Some(arbiter.fee_amount),
             Some(AssetId::from(*arbiter.asset)),
@@ -152,7 +152,7 @@ pub mod test_helpers {
 
     use super::*;
 
-    pub async fn asset_amount(asset: &ContractId, wallet: &LocalWallet) -> u64 {
+    pub async fn asset_amount(asset: &ContractId, wallet: &WalletUnlocked) -> u64 {
         wallet
             .clone()
             .get_asset_balance(&AssetId::from(**asset))
@@ -174,7 +174,7 @@ pub mod test_helpers {
 
     pub async fn create_asset_with_salt(
         salt: [u8; 32],
-        wallet: LocalWallet,
+        wallet: WalletUnlocked,
     ) -> (ContractId, MyAsset) {
         let asset_id = Contract::deploy_with_parameters(
             "./tests/artifacts/asset/out/debug/asset.bin",
