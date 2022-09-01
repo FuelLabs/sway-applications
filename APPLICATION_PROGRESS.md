@@ -11,128 +11,128 @@ Table of Content
       - [Documentation ❌](#documentation-)
     - [Auctions](#auctions)
       - [Contracts](#contracts)
-        - [Blind Auction](#blind-auction)
-        - [Dutch Auction](#dutch-auction)
-        - [English Auction](#english-auction)
-      - [User Interface](#user-interface)
-      - [Tests](#tests-1)
-        - [Rust](#rust)
-        - [Typescript](#typescript)
-      - [Documentation](#documentation)
-    - [Decentralized Autonomous Organization (DAO)](#decentralized-autonomous-organization-dao)
-      - [Contracts ❌](#contracts--1)
+        - [Blind Auction ❌](#blind-auction-)
+        - [Dutch Auction ❌](#dutch-auction-)
+        - [English Auction ❌](#english-auction-)
       - [User Interface ❌](#user-interface--1)
-      - [Tests](#tests-2)
+      - [Tests](#tests-1)
         - [Rust ❌](#rust--1)
         - [Typescript ❌](#typescript--1)
-      - [Documentation ✅](#documentation--1)
-    - [Escrow](#escrow)
-      - [Contracts ✅](#contracts--2)
+      - [Documentation ❌](#documentation--1)
+    - [Decentralized Autonomous Organization (DAO)](#decentralized-autonomous-organization-dao)
+      - [Contracts ❌](#contracts--1)
       - [User Interface ❌](#user-interface--2)
-      - [Tests](#tests-3)
-        - [Rust ✅](#rust--2)
+      - [Tests](#tests-2)
+        - [Rust ❌](#rust--2)
         - [Typescript ❌](#typescript--2)
       - [Documentation ✅](#documentation--2)
+    - [Escrow](#escrow)
+      - [Contracts ✅](#contracts--2)
+      - [User Interface ❌](#user-interface--3)
+      - [Tests](#tests-3)
+        - [Rust ✅](#rust--3)
+        - [Typescript ❌](#typescript--3)
+      - [Documentation ✅](#documentation--3)
     - [Flashloan](#flashloan)
       - [Contracts ❌](#contracts--3)
-      - [User Interface ❌](#user-interface--3)
-      - [Tests](#tests-4)
-        - [Rust ❌](#rust--3)
-        - [Typescript ❌](#typescript--3)
-      - [Documentation ❌](#documentation--3)
-    - [Fractionalized Non-Fungible Token (NFT)](#fractionalized-non-fungible-token-nft)
-      - [Contracts ❌](#contracts--4)
       - [User Interface ❌](#user-interface--4)
-      - [Tests](#tests-5)
+      - [Tests](#tests-4)
         - [Rust ❌](#rust--4)
         - [Typescript ❌](#typescript--4)
       - [Documentation ❌](#documentation--4)
-    - [Fundraiser](#fundraiser)
-      - [Contracts ❌](#contracts--5)
+    - [Fractionalized Non-Fungible Token (NFT)](#fractionalized-non-fungible-token-nft)
+      - [Contracts ❌](#contracts--4)
       - [User Interface ❌](#user-interface--5)
-      - [Tests](#tests-6)
+      - [Tests](#tests-5)
         - [Rust ❌](#rust--5)
         - [Typescript ❌](#typescript--5)
       - [Documentation ❌](#documentation--5)
-    - [Liquidity Module](#liquidity-module)
-      - [Contracts ❌](#contracts--6)
+    - [Fundraiser](#fundraiser)
+      - [Contracts ❌](#contracts--5)
       - [User Interface ❌](#user-interface--6)
-      - [Tests](#tests-7)
+      - [Tests](#tests-6)
         - [Rust ❌](#rust--6)
         - [Typescript ❌](#typescript--6)
       - [Documentation ❌](#documentation--6)
-    - [Multi-signature Wallet](#multi-signature-wallet)
-      - [Contracts ❌](#contracts--7)
+    - [Liquidity Module](#liquidity-module)
+      - [Contracts ❌](#contracts--6)
       - [User Interface ❌](#user-interface--7)
-      - [Tests](#tests-8)
+      - [Tests](#tests-7)
         - [Rust ❌](#rust--7)
         - [Typescript ❌](#typescript--7)
       - [Documentation ❌](#documentation--7)
-    - [Name Registry](#name-registry)
-      - [Contracts ❌](#contracts--8)
+    - [Multi-signature Wallet](#multi-signature-wallet)
+      - [Contracts ❌](#contracts--7)
       - [User Interface ❌](#user-interface--8)
-      - [Tests](#tests-9)
+      - [Tests](#tests-8)
         - [Rust ❌](#rust--8)
         - [Typescript ❌](#typescript--8)
       - [Documentation ❌](#documentation--8)
+    - [Name Registry](#name-registry)
+      - [Contracts ❌](#contracts--8)
+      - [User Interface ❌](#user-interface--9)
+      - [Tests](#tests-9)
+        - [Rust ❌](#rust--9)
+        - [Typescript ❌](#typescript--9)
+      - [Documentation ❌](#documentation--9)
     - [Non-fungible Token (NFT)](#non-fungible-token-nft)
       - [Contracts ❌](#contracts--9)
-      - [User Interface ✅](#user-interface--9)
+      - [User Interface ✅](#user-interface--10)
       - [Tests](#tests-10)
-        - [Rust ❌](#rust--9)
-        - [Typescript ✅](#typescript--9)
-      - [Documentation ❌](#documentation--9)
+        - [Rust ❌](#rust--10)
+        - [Typescript ✅](#typescript--10)
+      - [Documentation ❌](#documentation--10)
     - [Oracle](#oracle)
       - [Contracts ✅](#contracts--10)
-      - [User Interface ❌](#user-interface--10)
+      - [User Interface ❌](#user-interface--11)
       - [Tests](#tests-11)
-        - [Rust ✅](#rust--10)
-        - [Typescript ❌](#typescript--10)
-      - [Documentation ✅](#documentation--10)
+        - [Rust ✅](#rust--11)
+        - [Typescript ❌](#typescript--11)
+      - [Documentation ✅](#documentation--11)
     - [Over the counter (OTC) Swap Predicate](#over-the-counter-otc-swap-predicate)
       - [Contracts](#contracts-1)
-      - [User Interface](#user-interface-1)
+      - [User Interface](#user-interface)
       - [Tests](#tests-12)
+        - [Rust](#rust)
+        - [Typescript](#typescript)
+      - [Documentation](#documentation)
+    - [Staking](#staking)
+      - [Contracts](#contracts-2)
+      - [User Interface](#user-interface-1)
+      - [Tests](#tests-13)
         - [Rust](#rust-1)
         - [Typescript](#typescript-1)
       - [Documentation](#documentation-1)
-    - [Staking](#staking)
-      - [Contracts](#contracts-2)
+    - [Token Vault](#token-vault)
+      - [Contracts](#contracts-3)
       - [User Interface](#user-interface-2)
-      - [Tests](#tests-13)
+      - [Tests](#tests-14)
         - [Rust](#rust-2)
         - [Typescript](#typescript-2)
       - [Documentation](#documentation-2)
-    - [Token Vault](#token-vault)
-      - [Contracts](#contracts-3)
-      - [User Interface](#user-interface-3)
-      - [Tests](#tests-14)
-        - [Rust](#rust-3)
-        - [Typescript](#typescript-3)
-      - [Documentation](#documentation-3)
   - [Games](#games)
     - [Tic Tac Toe](#tic-tac-toe)
       - [Contracts ❌](#contracts--11)
-      - [User Interface ❌](#user-interface--11)
-      - [Tests](#tests-15)
-        - [Rust ❌](#rust--11)
-        - [Typescript ❌](#typescript--11)
-      - [Documentation ❌](#documentation--11)
-  - [Tutorials](#tutorials)
-    - [Counter](#counter)
-      - [Contracts ❌](#contracts--12)
       - [User Interface ❌](#user-interface--12)
-      - [Tests](#tests-16)
+      - [Tests](#tests-15)
         - [Rust ❌](#rust--12)
         - [Typescript ❌](#typescript--12)
       - [Documentation ❌](#documentation--12)
-    - [Todo](#todo)
-      - [Contracts ❌](#contracts--13)
+  - [Tutorials](#tutorials)
+    - [Counter](#counter)
+      - [Contracts ❌](#contracts--12)
       - [User Interface ❌](#user-interface--13)
-      - [Tests](#tests-17)
+      - [Tests](#tests-16)
         - [Rust ❌](#rust--13)
         - [Typescript ❌](#typescript--13)
       - [Documentation ❌](#documentation--13)
+    - [Todo](#todo)
+      - [Contracts ❌](#contracts--13)
+      - [User Interface ❌](#user-interface--14)
+      - [Tests](#tests-17)
+        - [Rust ❌](#rust--14)
+        - [Typescript ❌](#typescript--14)
+      - [Documentation ❌](#documentation--14)
 
 # Overview
 
@@ -162,7 +162,7 @@ The information in this section is split into subsections in order to conceptual
 
 ### Airdrop
 
-- Currently an initial draft PR is under development
+- Currently an initial draft PR is under development for the smart contracts
 
 #### Contracts ❌
 
@@ -192,23 +192,43 @@ The information in this section is split into subsections in order to conceptual
 
 ### Auctions
 
+- Currently initial draft PRs exist (smart contracts) for the dutch and english auctions
+
 #### Contracts
 
-##### Blind Auction
+##### Blind Auction ❌
 
-##### Dutch Auction
+- Not under development at this time
 
-##### English Auction
+##### Dutch Auction ❌
 
-#### User Interface
+- Requires vec support in SDK
+- Lots of work to be done for quality in PR
+
+##### English Auction ❌
+
+- Requires vec support in SDK
+- Lots of work to be done for quality in PR
+
+#### User Interface ❌
+
+- Not under development at this time
 
 #### Tests
 
-##### Rust
+##### Rust ❌
 
-##### Typescript
+- Blocked by vec for testing
+- No tests written for Dutch, some tests written for English
+- Need to bump SDK version once the repo catches up
 
-#### Documentation
+##### Typescript ❌
+
+- Not under development at this time
+
+#### Documentation ❌
+
+- Outdated in PRs, requires updates to readme and a spec should be created
 
 ---
 
