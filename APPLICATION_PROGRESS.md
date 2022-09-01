@@ -90,49 +90,49 @@ Table of Content
         - [Typescript ❌](#typescript--11)
       - [Documentation ✅](#documentation--11)
     - [Over the counter (OTC) Swap Predicate](#over-the-counter-otc-swap-predicate)
-      - [Contracts](#contracts-1)
-      - [User Interface](#user-interface)
-      - [Tests](#tests-12)
-        - [Rust](#rust)
-        - [Typescript](#typescript)
-      - [Documentation](#documentation)
-    - [Staking](#staking)
-      - [Contracts](#contracts-2)
-      - [User Interface](#user-interface-1)
-      - [Tests](#tests-13)
-        - [Rust](#rust-1)
-        - [Typescript](#typescript-1)
-      - [Documentation](#documentation-1)
-    - [Token Vault](#token-vault)
-      - [Contracts](#contracts-3)
-      - [User Interface](#user-interface-2)
-      - [Tests](#tests-14)
-        - [Rust](#rust-2)
-        - [Typescript](#typescript-2)
-      - [Documentation](#documentation-2)
-  - [Games](#games)
-    - [Tic Tac Toe](#tic-tac-toe)
-      - [Contracts ❌](#contracts--11)
+      - [Contracts ✅](#contracts--11)
       - [User Interface ❌](#user-interface--12)
-      - [Tests](#tests-15)
-        - [Rust ❌](#rust--12)
+      - [Tests](#tests-12)
+        - [Rust ✅](#rust--12)
         - [Typescript ❌](#typescript--12)
       - [Documentation ❌](#documentation--12)
-  - [Tutorials](#tutorials)
-    - [Counter](#counter)
+    - [Staking](#staking)
       - [Contracts ❌](#contracts--12)
       - [User Interface ❌](#user-interface--13)
-      - [Tests](#tests-16)
+      - [Tests](#tests-13)
         - [Rust ❌](#rust--13)
         - [Typescript ❌](#typescript--13)
       - [Documentation ❌](#documentation--13)
-    - [Todo](#todo)
+    - [Token Vault](#token-vault)
       - [Contracts ❌](#contracts--13)
       - [User Interface ❌](#user-interface--14)
-      - [Tests](#tests-17)
+      - [Tests](#tests-14)
         - [Rust ❌](#rust--14)
         - [Typescript ❌](#typescript--14)
       - [Documentation ❌](#documentation--14)
+  - [Games](#games)
+    - [Tic Tac Toe](#tic-tac-toe)
+      - [Contracts ❌](#contracts--14)
+      - [User Interface ❌](#user-interface--15)
+      - [Tests](#tests-15)
+        - [Rust ❌](#rust--15)
+        - [Typescript ❌](#typescript--15)
+      - [Documentation ❌](#documentation--15)
+  - [Tutorials](#tutorials)
+    - [Counter](#counter)
+      - [Contracts ❌](#contracts--15)
+      - [User Interface ❌](#user-interface--16)
+      - [Tests](#tests-16)
+        - [Rust ❌](#rust--16)
+        - [Typescript ❌](#typescript--16)
+      - [Documentation ❌](#documentation--16)
+    - [Todo](#todo)
+      - [Contracts ❌](#contracts--16)
+      - [User Interface ❌](#user-interface--17)
+      - [Tests](#tests-17)
+        - [Rust ❌](#rust--17)
+        - [Typescript ❌](#typescript--17)
+      - [Documentation ❌](#documentation--17)
 
 # Overview
 
@@ -245,19 +245,18 @@ The information in this section is split into subsections in order to conceptual
 
 #### User Interface ❌
 
-- Not under development
+- Not under development at this time
 
 #### Tests
 
 ##### Rust ❌
 
-- Outdated release of version 0.16
-  - PR for bumping is dependent upon SDK fixing issues
-- Requires SDK block manipulation to complete tests
+- Need to bump SDK version once the repo catches up
+- SDK has block manipulation so tests can continue to be written
 
 ##### Typescript ❌
 
-- Do not exist
+- Not under development at this time
 
 #### Documentation ✅
 
@@ -283,12 +282,11 @@ The information in this section is split into subsections in order to conceptual
 
 ##### Rust ✅
 
-- Complete but on outdated release of version 0.16
-  - PR for bumping is dependent upon SDK fixing issues
+- Need to bump SDK version once the repo catches up
 
 ##### Typescript ❌
 
-- Do not exist
+- Currently under development
 
 #### Documentation ✅
 
@@ -303,25 +301,25 @@ The information in this section is split into subsections in order to conceptual
 
 #### Contracts ❌
 
-- Not under development
+- Not under development at this time
 
 #### User Interface ❌
 
-- Not under development
+- Not under development at this time
 
 #### Tests
 
 ##### Rust ❌
 
-- Not under development
+- Not under development at this time
 
 ##### Typescript ❌
 
-- Not under development
+- Not under development at this time
 
 #### Documentation ❌
 
-- Not under development
+- Not under development at this time
 
 ---
 
@@ -329,25 +327,25 @@ The information in this section is split into subsections in order to conceptual
 
 #### Contracts ❌
 
-- Not under development
+- Not under development at this time
 
 #### User Interface ❌
 
-- Not under development
+- Not under development at this time
 
 #### Tests
 
 ##### Rust ❌
 
-- Not under development
+- Not under development at this time
 
 ##### Typescript ❌
 
-- Not under development
+- Not under development at this time
 
 #### Documentation ❌
 
-- Not under development
+- Not under development at this time
 
 ---
 
@@ -358,7 +356,7 @@ The information in this section is split into subsections in order to conceptual
 - Rename `contract_abi` to `interface`
 - Move documentation onto the interface rather than have it on the implementation
 - Campaigns do not have any descriptions / titles / context
-  - Should probably use a vec
+  - Should probably use a vec to store data that a human can use to distinguish between campaigns
   - Cannot search for campaigns aside from by a number from 0...X where X is known
 - No easy way to retrieve campaigns by user
   - Must iterate from 0...X where X is known by another function call
@@ -366,19 +364,18 @@ The information in this section is split into subsections in order to conceptual
 
 #### User Interface ❌
 
-- Not under development
+- Not under development at this time
 
 #### Tests
 
 ##### Rust ❌
 
-- Incomplete, needed block manipulation from SDK to finish a couple tests
-- On outdated release of version 0.15
-  - PR for bumping is dependent upon SDK fixing issues
+- SDK has block manipulation so tests can continue to be written
+- Need to bump SDK version once the repo catches up
 
 ##### Typescript ❌
 
-- Do not exist
+- Not under development at this time
 
 #### Documentation ❌
 
@@ -394,25 +391,25 @@ The information in this section is split into subsections in order to conceptual
 
 #### Contracts ❌
 
-- Not under development
+- Not under development at this time
 
 #### User Interface ❌
 
-- Not under development
+- Not under development at this time
 
 #### Tests
 
 ##### Rust ❌
 
-- Not under development
+- Not under development at this time
 
 ##### Typescript ❌
 
-- Not under development
+- Not under development at this time
 
 #### Documentation ❌
 
-- Not under development
+- Not under development at this time
 - Issue is not documented
 
 ---
@@ -429,23 +426,23 @@ The information in this section is split into subsections in order to conceptual
 - Move `count_approvals` to `utils` when libraries support storage access
   - The keyword `break` is implemented, uncomment and use in fn
 - Needs to use vec instead of arrays but cannot test in SDK
-- Only basic functionality is implemented
+- Only basic functionality is implemented (lots more to do as listed in issues)
   - Cannot make arbitrary calls yet, work is being done in Sway which hopefully resolves this
 
 #### User Interface ❌
 
-- Not under development
+- Not under development at this time
 
 #### Tests
 
 ##### Rust ❌
 
 - Needs vec support to test, partial tests written for basic functionality in draft PR
-- Also outdated version
+- Need to bump SDK version once the repo catches up
 
 ##### Typescript ❌
 
-- Does not exist
+- Not under development at this time
 
 #### Documentation ❌
 
@@ -461,44 +458,45 @@ The information in this section is split into subsections in order to conceptual
 
 #### Contracts ❌
 
-- Not under development
+- Not under development at this time
 
 #### User Interface ❌
 
-- Not under development
+- Not under development at this time
 
 #### Tests
 
 ##### Rust ❌
 
-- Not under development
+- Not under development at this time
 
 ##### Typescript ❌
 
-- Not under development
+- Not under development at this time
 
 #### Documentation ❌
 
-- Not under development
+- Not under development at this time
 
 ---
 
 ### Non-fungible Token (NFT)
 
+- Will move from Apps repo to Libs repo soon
+
 #### Contracts ❌
 
-- Needs vec and option but then cannot test
+- Needs vec and option but theu are not supported in the SDK so cannot test
 
 #### User Interface ✅
 
-- Will not exist as an NFT in and of itself since it has no use for a UI. Other apps will integrate it and build their own
+- Will not exist for an NFT and instead other applications which integrate the NFT will have their own UI's
 
 #### Tests
 
 ##### Rust ❌
 
-- Outdated release of version 0.18
-  - PR for bumping is dependent upon SDK fixing issues
+- Need to bump SDK version once the repo catches up
 - Needs to support vec and option to complete testing
 
 ##### Typescript ✅
@@ -525,7 +523,7 @@ The information in this section is split into subsections in order to conceptual
 
 #### User Interface ❌
 
-- Not under development
+- Not under development at this time
 
 #### Tests
 
@@ -535,7 +533,7 @@ The information in this section is split into subsections in order to conceptual
 
 ##### Typescript ❌
 
-- Not under development
+- Not under development at this time
 
 #### Documentation ✅
 
@@ -545,49 +543,83 @@ The information in this section is split into subsections in order to conceptual
 
 ### Over the counter (OTC) Swap Predicate
 
-#### Contracts
+#### Contracts ✅
 
-#### User Interface
+- Predicate seems to be complete in draft PR
+
+#### User Interface ❌
+
+- Not under development at this time
 
 #### Tests
 
-##### Rust
+##### Rust ✅
 
-##### Typescript
+- Tests seem to be complete in draft PR
 
-#### Documentation
+##### Typescript ❌
+
+- Not under development at this time
+
+#### Documentation ❌
+
+- Readme ✅
+- Spec does not exist ❌
 
 ---
 
 ### Staking
 
-#### Contracts
+#### Contracts ❌
 
-#### User Interface
+- Draft PR under development
+- Lots of work to be done for quality
+
+#### User Interface ❌
+
+- Not under development at this time
 
 #### Tests
 
-##### Rust
+##### Rust ❌
 
-##### Typescript
+- Need to bump SDK version once the repo catches up
+- Lots of work needs to be done
 
-#### Documentation
+##### Typescript ❌
+
+- Not under development at this time
+
+#### Documentation ❌
+
+- Not under development at this time
 
 ---
 
 ### Token Vault
 
-#### Contracts
+#### Contracts ❌
 
-#### User Interface
+- Has been started in a branch a long time ago, not marked as a draft PR
+- Basic outline for contract without implementations
+
+#### User Interface ❌
+
+- Not under development at this time
 
 #### Tests
 
-##### Rust
+##### Rust ❌
 
-##### Typescript
+- Not under development at this time
 
-#### Documentation
+##### Typescript ❌
+
+- Not under development at this time
+
+#### Documentation ❌
+
+- Not under development at this time
 
 ## Games
 
@@ -600,17 +632,17 @@ The information in this section is split into subsections in order to conceptual
 
 #### User Interface ❌
 
-- Not under development
+- Not under development at this time
 
 #### Tests
 
 ##### Rust ❌
 
-- Do not exist
+- Not under development at this time
 
 ##### Typescript ❌
 
-- Not under development
+- Not under development at this time
 
 #### Documentation ❌
 
@@ -632,16 +664,16 @@ The information in this section is split into subsections in order to conceptual
 
 ##### Rust ❌
 
-- Do not exist
+- Not under development at this time
 
 ##### Typescript ❌
 
-- Do not exist
+- Not under development at this time
 
 #### Documentation ❌
 
-- Readme exists
-- Spec does not exist
+- Readme ✅
+- Spec does not exist ❌
 
 ---
 
@@ -659,13 +691,13 @@ The information in this section is split into subsections in order to conceptual
 
 ##### Rust ❌
 
-- Do not exist
+- Not under development at this time
 
 ##### Typescript ❌
 
-- Do not exist
+- Not under development at this time
 
 #### Documentation ❌
 
-- Readme exists
-- Spec does not exist
+- Readme ✅
+- Spec does not exist ❌
