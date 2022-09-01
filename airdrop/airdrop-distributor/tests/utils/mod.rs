@@ -66,7 +66,7 @@ pub mod simple_token_abi_calls {
     }
 }
 
-pub mod test_helpers{
+pub mod test_helpers {
 
     use super::*;
 
