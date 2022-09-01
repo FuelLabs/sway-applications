@@ -79,7 +79,12 @@ pub async fn setup() -> (StakingRewards, Bech32ContractId, LocalWallet) {
 }
 
 pub async fn balance_of(instance: &StakingRewards, id: &Identity) -> u64 {
-    instance.balance_of(id.to_owned()).call().await.unwrap().value
+    instance
+        .balance_of(id.to_owned())
+        .call()
+        .await
+        .unwrap()
+        .value
 }
 
 pub async fn earned(instance: &StakingRewards, wallet_identity: Identity, timestamp: u64) -> u64 {
@@ -124,58 +129,43 @@ pub async fn exit(instance: &StakingRewards, timestamp: u64) {
 
 pub async fn stake(instance: &StakingRewards, timestamp: u64, amount: u64) {
     instance
-    .stake(timestamp)
-    .call_params(CallParameters {
-        amount,
-        asset_id: STAKING_ASSET,
-        gas_forwarded: 1000000
-    })
-    .call()
-    .await
-    .unwrap();
+        .stake(timestamp)
+        .call_params(CallParameters {
+            amount,
+            asset_id: STAKING_ASSET,
+            gas_forwarded: 1000000,
+        })
+        .call()
+        .await
+        .unwrap();
 }
 
 pub async fn reward_rate(instance: &StakingRewards) -> u64 {
-    instance
-    .reward_rate()
-    .call()
-    .await
-    .unwrap()
-    .value
+    instance.reward_rate().call().await.unwrap().value
 }
 
 pub async fn reward_duration(instance: &StakingRewards) -> u64 {
-    instance
-    .rewards_duration()
-    .call()
-    .await
-    .unwrap()
-    .value
+    instance.rewards_duration().call().await.unwrap().value
 }
 
 pub async fn get_reward_for_duration(instance: &StakingRewards) -> u64 {
     instance
-    .get_reward_for_duration()
-    .call()
-    .await
-    .unwrap()
-    .value
+        .get_reward_for_duration()
+        .call()
+        .await
+        .unwrap()
+        .value
 }
 
 pub async fn period_finish(instance: &StakingRewards) -> u64 {
-    instance
-    .period_finish()
-    .call()
-    .await
-    .unwrap()
-    .value
+    instance.period_finish().call().await.unwrap().value
 }
 
 pub async fn last_time_reward_applicable(instance: &StakingRewards, timestamp: u64) -> u64 {
     instance
-    .last_time_reward_applicable(timestamp)
-    .call()
-    .await
-    .unwrap()
-    .value
+        .last_time_reward_applicable(timestamp)
+        .call()
+        .await
+        .unwrap()
+        .value
 }
