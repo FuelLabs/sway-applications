@@ -1,9 +1,11 @@
 import { useAtomValue } from "jotai";
 import { Flex, Card, Button } from "@fuel-ui/react";
+import toast from 'react-hot-toast';
+import { useQueryClient } from "react-query";
 
 import { Layout } from "../components/Layout";
 import { ShowBalances } from "../components/ShowBalances";
-import { showBalancesAtom } from "../jotai";
+import { showBalancesAtom, walletIndexAtom } from "../jotai";
 import { Deposit } from "../components/Deposit";
 import { useBuyerEscrows } from "../hooks/useBuyerEscrows";
 import { useContract } from "../hooks/useContract";
@@ -14,6 +16,26 @@ export default function BuyerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
   const buyerEscrows = useBuyerEscrows();
   const contract = useContract();
+  const walletIdx = useAtomValue(walletIndexAtom);
+  const queryClient = useQueryClient();
+
+  const handleTransferToSeller = async (escrowId: bigint) => {
+    const result = await contract!.functions.transfer_to_seller(escrowId)
+      .txParams({
+        gasPrice: BigInt(5),
+        bytePrice: BigInt(5),
+        gasLimit: 100_000_000
+      })
+      .call();
+    console.log("result: ", result);
+    // toast.promise(result, {
+    //   loading: 'Transaction loading...',
+    //   success: 'Transferred to Seller successfully',
+    //   error: 'Transaction reverted!'
+    // });
+    // Trigger query to update show balances component
+    //queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
+  }
 
   return (
     <Layout>
@@ -43,15 +65,17 @@ export default function BuyerPage() {
                 <div>{`State: ${!!buyerEscrows[0].state.Pending ? "Pending" : "Completed"}`}</div>
               </Card.Body>
 
-              <Card.Footer>
-                <Deposit escrowId={BigInt(0)} />
-              </Card.Footer>
+              {buyerEscrows[0].buyer.asset.None &&
+                <Card.Footer>
+                  <Deposit escrowId={BigInt(0)} />
+                </Card.Footer>
+              }
 
               <Card.Footer justify="space-evenly">
                 <Button>
                   Accept Arbiter
                 </Button>
-                <Button>
+                <Button onPress={() => handleTransferToSeller(BigInt(0))}>
                   Transfer To Seller
                 </Button>
                 <Button>
