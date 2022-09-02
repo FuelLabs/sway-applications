@@ -12,13 +12,13 @@ mod success {
     #[tokio::test]
     async fn claims() {
         let (author, user, asset, _, defaults) = setup().await;
-        let beneficiary = Identity::Address(author.wallet.address());
-        let deadline = 6;
+        let beneficiary = Identity::Address(author.wallet.address().into());
+        let deadline = 7;
 
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         create_campaign(
@@ -119,7 +119,7 @@ mod revert {
     //     let (author, user, asset, _, defaults) = setup().await;
     //     let deadline = 5;
 
-    //     mint(&asset.contract, defaults.target_amount, user.wallet.address()).await;
+    //     mint(&asset.contract, defaults.target_amount, user.wallet.address().into()).await;
     //     create_campaign(
     //         &author.contract,
     //         &defaults.asset_id,
@@ -164,7 +164,7 @@ mod revert {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         create_campaign(
@@ -191,7 +191,7 @@ mod revert {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         create_campaign(

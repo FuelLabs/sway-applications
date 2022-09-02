@@ -22,7 +22,11 @@ mod success {
         assert_eq!(0, total_campaigns(&author.contract).await);
         assert_eq!(
             0,
-            user_campaign_count(&author.contract, Identity::Address(author.wallet.address())).await
+            user_campaign_count(
+                &author.contract,
+                Identity::Address(author.wallet.address().into())
+            )
+            .await
         );
 
         create_campaign(
@@ -41,21 +45,28 @@ mod success {
         assert_eq!(1, total_campaigns(&author.contract).await);
         assert_eq!(
             1,
-            user_campaign_count(&author.contract, Identity::Address(author.wallet.address())).await
+            user_campaign_count(
+                &author.contract,
+                Identity::Address(author.wallet.address().into())
+            )
+            .await
         );
         assert_eq!(
             1,
             campaign(
                 &author.contract,
                 1,
-                Identity::Address(author.wallet.address())
+                Identity::Address(author.wallet.address().into())
             )
             .await
             .value
             .id
         );
         assert_eq!(info.asset, defaults.asset_id);
-        assert_eq!(info.author, Identity::Address(author.wallet.address()));
+        assert_eq!(
+            info.author,
+            Identity::Address(author.wallet.address().into())
+        );
         assert_eq!(info.beneficiary, defaults.beneficiary);
         assert_eq!(info.cancelled, false);
         assert_eq!(info.claimed, false);
@@ -74,7 +85,11 @@ mod success {
         assert_eq!(0, total_campaigns(&author.contract).await);
         assert_eq!(
             0,
-            user_campaign_count(&author.contract, Identity::Address(author.wallet.address())).await
+            user_campaign_count(
+                &author.contract,
+                Identity::Address(author.wallet.address().into())
+            )
+            .await
         );
 
         create_campaign(
@@ -106,7 +121,11 @@ mod success {
         assert_eq!(2, total_campaigns(&author.contract).await);
         assert_eq!(
             2,
-            user_campaign_count(&author.contract, Identity::Address(author.wallet.address())).await
+            user_campaign_count(
+                &author.contract,
+                Identity::Address(author.wallet.address().into())
+            )
+            .await
         );
         assert_eq!(
             defaults.target_amount,
@@ -133,7 +152,11 @@ mod success {
         assert_eq!(0, total_campaigns(&author.contract).await);
         assert_eq!(
             0,
-            user_campaign_count(&author.contract, Identity::Address(author.wallet.address())).await
+            user_campaign_count(
+                &author.contract,
+                Identity::Address(author.wallet.address().into())
+            )
+            .await
         );
 
         create_campaign(
@@ -165,7 +188,11 @@ mod success {
         assert_eq!(2, total_campaigns(&author.contract).await);
         assert_eq!(
             2,
-            user_campaign_count(&author.contract, Identity::Address(author.wallet.address())).await
+            user_campaign_count(
+                &author.contract,
+                Identity::Address(author.wallet.address().into())
+            )
+            .await
         );
         assert_eq!(
             defaults.target_amount,

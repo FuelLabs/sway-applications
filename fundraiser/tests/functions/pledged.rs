@@ -12,12 +12,12 @@ mod success {
     #[tokio::test]
     async fn returns_info() {
         let (author, user, asset, _, defaults) = setup().await;
-        let deadline = 6;
+        let deadline = 7;
 
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         create_campaign(
@@ -30,9 +30,13 @@ mod success {
         .await;
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
-        let info = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
-            .await
-            .value;
+        let info = pledged(
+            &user.contract,
+            1,
+            Identity::Address(user.wallet.address().into()),
+        )
+        .await
+        .value;
         assert_eq!(1, info.id);
         assert_eq!(defaults.target_amount, info.amount);
     }
@@ -48,7 +52,12 @@ mod revert {
         let (_, user, _, _, _) = setup().await;
 
         // Reverts
-        pledged(&user.contract, 0, Identity::Address(user.wallet.address())).await;
+        pledged(
+            &user.contract,
+            0,
+            Identity::Address(user.wallet.address().into()),
+        )
+        .await;
     }
 
     #[tokio::test]
@@ -57,6 +66,11 @@ mod revert {
         let (_, user, _, _, _) = setup().await;
 
         // Reverts
-        pledged(&user.contract, 1, Identity::Address(user.wallet.address())).await;
+        pledged(
+            &user.contract,
+            1,
+            Identity::Address(user.wallet.address().into()),
+        )
+        .await;
     }
 }

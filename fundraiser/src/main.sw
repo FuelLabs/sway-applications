@@ -12,9 +12,8 @@ use errors::{CampaignError, CreationError, UserError};
 use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
 use std::{
     block::height,
-    chain::auth::{AuthError, msg_sender},
-    constants::BASE_ASSET_ID,
-    context::{call_frames::msg_asset_id, msg_amount, this_balance},
+    chain::auth::msg_sender,
+    context::{call_frames::msg_asset_id, msg_amount},
     contract_id::ContractId,
     identity::Identity,
     logging::log,
@@ -23,6 +22,7 @@ use std::{
     storage::StorageMap,
     token::transfer,
 };
+
 use utils::validate_id;
 
 storage {
@@ -69,7 +69,6 @@ storage {
 }
 
 impl Fundraiser for Contract {
-
     #[storage(read)]fn asset_count() -> u64 {
         storage.asset_count
     }
@@ -368,5 +367,4 @@ impl Fundraiser for Contract {
     #[storage(read)]fn user_campaign_count(user: Identity) -> u64 {
         storage.user_campaign_count.get(user)
     }
-
 }

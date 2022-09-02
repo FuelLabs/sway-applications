@@ -1,4 +1,4 @@
-library contract_abi;
+library interface;
 
 dep data_structures;
 
@@ -158,5 +158,4 @@ abi Fundraiser {
 
     /// Returns the number of campaigns that the user has created
     #[storage(read)]fn user_campaign_count(user: Identity) -> u64;
-    
 }

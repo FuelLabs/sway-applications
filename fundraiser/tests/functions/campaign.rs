@@ -28,7 +28,7 @@ mod success {
             campaign(
                 &author.contract,
                 1,
-                Identity::Address(author.wallet.address())
+                Identity::Address(author.wallet.address().into())
             )
             .await
             .value
@@ -50,7 +50,7 @@ mod revert {
         campaign(
             &author.contract,
             0,
-            Identity::Address(author.wallet.address()),
+            Identity::Address(author.wallet.address().into()),
         )
         .await;
     }
@@ -64,7 +64,7 @@ mod revert {
         campaign(
             &author.contract,
             1,
-            Identity::Address(author.wallet.address()),
+            Identity::Address(author.wallet.address().into()),
         )
         .await;
     }

@@ -15,7 +15,11 @@ mod success {
 
         assert_eq!(
             0,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(
+                &user.contract,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
         );
     }
 
@@ -26,7 +30,7 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         create_campaign(
@@ -41,7 +45,11 @@ mod success {
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         assert_eq!(
             1,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(
+                &user.contract,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
         );
     }
 }

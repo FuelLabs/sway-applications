@@ -23,7 +23,7 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         create_campaign(
@@ -41,7 +41,11 @@ mod success {
         );
         assert_eq!(
             0,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(
+                &user.contract,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
         );
         assert_eq!(
             defaults.target_amount,
@@ -71,12 +75,20 @@ mod success {
         );
         assert_eq!(
             1,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(
+                &user.contract,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
         );
 
-        let info = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
-            .await
-            .value;
+        let info = pledged(
+            &user.contract,
+            1,
+            Identity::Address(user.wallet.address().into()),
+        )
+        .await
+        .value;
 
         assert_eq!(1, info.id);
         assert_eq!(defaults.target_amount, info.amount);
@@ -93,7 +105,7 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount * 2,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         create_campaign(
@@ -111,7 +123,11 @@ mod success {
         );
         assert_eq!(
             0,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(
+                &user.contract,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
         );
 
         assert_eq!(
@@ -142,12 +158,20 @@ mod success {
         );
         assert_eq!(
             1,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(
+                &user.contract,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
         );
 
-        let info = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
-            .await
-            .value;
+        let info = pledged(
+            &user.contract,
+            1,
+            Identity::Address(user.wallet.address().into()),
+        )
+        .await
+        .value;
 
         assert_eq!(1, info.id);
         assert_eq!(defaults.target_amount, info.amount);
@@ -172,12 +196,20 @@ mod success {
         );
         assert_eq!(
             1,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(
+                &user.contract,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
         );
 
-        let info = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
-            .await
-            .value;
+        let info = pledged(
+            &user.contract,
+            1,
+            Identity::Address(user.wallet.address().into()),
+        )
+        .await
+        .value;
 
         assert_eq!(1, info.id);
         assert_eq!(defaults.target_amount * 2, info.amount);
@@ -199,13 +231,13 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         mint(
             &asset2.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
 
@@ -237,7 +269,11 @@ mod success {
         );
         assert_eq!(
             0,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(
+                &user.contract,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
         );
 
         assert_eq!(
@@ -292,35 +328,55 @@ mod success {
         );
         assert_eq!(
             2,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(
+                &user.contract,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
         );
         assert_eq!(
             1,
-            pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
-                .await
-                .value
-                .id
+            pledged(
+                &user.contract,
+                1,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
+            .value
+            .id
         );
         assert_eq!(
             2,
-            pledged(&user.contract, 2, Identity::Address(user.wallet.address()))
-                .await
-                .value
-                .id
+            pledged(
+                &user.contract,
+                2,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
+            .value
+            .id
         );
         assert_eq!(
             defaults.target_amount,
-            pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
-                .await
-                .value
-                .amount
+            pledged(
+                &user.contract,
+                1,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
+            .value
+            .amount
         );
         assert_eq!(
             defaults.target_amount,
-            pledged(&user.contract, 2, Identity::Address(user.wallet.address()))
-                .await
-                .value
-                .amount
+            pledged(
+                &user.contract,
+                2,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await
+            .value
+            .amount
         );
     }
 }
@@ -337,7 +393,7 @@ mod revert {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         create_campaign(
@@ -361,7 +417,7 @@ mod revert {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         create_campaign(
@@ -383,7 +439,7 @@ mod revert {
     //     let (author, user, asset, _, defaults) = setup().await;
     //     let deadline = 5;
 
-    //     mint(&asset.contract, defaults.target_amount, user.wallet.address()).await;
+    //     mint(&asset.contract, defaults.target_amount, user.wallet.address().into()).await;
     //     create_campaign(
     //         &author.contract,
     //         &defaults.asset_id,
@@ -408,7 +464,7 @@ mod revert {
         mint(
             &asset2.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
 
@@ -433,7 +489,7 @@ mod revert {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
 
@@ -459,7 +515,7 @@ mod revert {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         create_campaign(

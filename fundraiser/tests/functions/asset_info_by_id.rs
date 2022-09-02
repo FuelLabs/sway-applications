@@ -28,7 +28,7 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
         create_campaign(
