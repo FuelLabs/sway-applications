@@ -16,8 +16,8 @@ mod success {
         assert_eq!(total_supply(&owner1.contract).await, 0);
         assert_eq!(max_supply(&owner1.contract).await, 0);
 
-        // let admin = Option::Some(Identity::Address(owner1.wallet.address()));
-        let admin = Identity::Address(owner1.wallet.address());
+        // let admin = Option::Some(Identity::Address(owner1.wallet.address().into()));
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
         assert_eq!(total_supply(&owner1.contract).await, 0);
@@ -50,7 +50,7 @@ mod reverts {
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
     }
@@ -61,7 +61,7 @@ mod reverts {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 0).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 0).await;
     }
 

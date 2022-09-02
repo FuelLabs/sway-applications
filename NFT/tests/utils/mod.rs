@@ -1,62 +1,10 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
 
-// Load abi from json
-abigen!(Nft, "out/debug/NFT-abi.json");
+abigen!(Nft, "out/debug/NFT-flat-abi.json");
 
 pub struct Metadata {
     pub contract: Nft,
-    pub wallet: LocalWallet,
-}
-
-pub mod test_helpers {
-
-    use super::*;
-
-    pub async fn setup() -> (Metadata, Metadata, Metadata) {
-        // Setup 3 test wallets
-        let mut wallets = launch_custom_provider_and_get_wallets(
-            WalletsConfig {
-                num_wallets: 3,
-                coins_per_wallet: 1,
-                coin_amount: 1000000,
-            },
-            None,
-        )
-        .await;
-
-        // Get the wallets from that provider
-        let wallet1 = wallets.pop().unwrap();
-        let wallet2 = wallets.pop().unwrap();
-        let wallet3 = wallets.pop().unwrap();
-
-        let nft_id = Contract::deploy(
-            "./out/debug/NFT.bin",
-            &wallet1,
-            TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./out/debug/NFT-storage_slots.json".to_string(),
-            )),
-        )
-        .await
-        .unwrap();
-
-        let deploy_wallet = Metadata {
-            contract: NftBuilder::new(nft_id.to_string(), wallet1.clone()).build(),
-            wallet: wallet1.clone(),
-        };
-
-        let owner1 = Metadata {
-            contract: NftBuilder::new(nft_id.to_string(), wallet2.clone()).build(),
-            wallet: wallet2.clone(),
-        };
-
-        let owner2 = Metadata {
-            contract: NftBuilder::new(nft_id.to_string(), wallet3.clone()).build(),
-            wallet: wallet3.clone(),
-        };
-
-        (deploy_wallet, owner1, owner2)
-    }
+    pub wallet: WalletUnlocked,
 }
 
 pub mod abi_calls {
@@ -165,5 +113,59 @@ pub mod abi_calls {
             .call()
             .await
             .unwrap()
+    }
+}
+
+pub mod test_helpers {
+
+    use super::*;
+
+    pub async fn setup() -> (Metadata, Metadata, Metadata) {
+        let num_wallets = 3;
+        let coins_per_wallet = 1;
+        let amount_per_coin = 1_000_000;
+
+        let mut wallets = launch_custom_provider_and_get_wallets(
+            WalletsConfig::new(
+                Some(num_wallets),
+                Some(coins_per_wallet),
+                Some(amount_per_coin),
+            ),
+            None,
+        )
+        .await;
+
+        // Get the wallets from that provider
+        let wallet1 = wallets.pop().unwrap();
+        let wallet2 = wallets.pop().unwrap();
+        let wallet3 = wallets.pop().unwrap();
+
+        let nft_id = Contract::deploy(
+            "./out/debug/NFT.bin",
+            &wallet1,
+            TxParameters::default(),
+            StorageConfiguration::with_storage_path(Some(
+                "./out/debug/NFT-storage_slots.json".to_string(),
+            )),
+        )
+        .await
+        .unwrap();
+
+        let deploy_wallet = Metadata {
+            contract: NftBuilder::new(nft_id.to_string(), wallet1.clone()).build(),
+            wallet: wallet1.clone(),
+        };
+
+        let owner1 = Metadata {
+            contract: NftBuilder::new(nft_id.to_string(), wallet2.clone()).build(),
+            wallet: wallet2.clone(),
+        };
+
+        let owner2 = Metadata {
+            contract: NftBuilder::new(nft_id.to_string(), wallet3.clone()).build(),
+            wallet: wallet3.clone(),
+        };
+
+        (deploy_wallet, owner1, owner2)
     }
 }
