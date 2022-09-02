@@ -1,7 +1,7 @@
 use fuels::prelude::*;
 
 // Load abi from json
-abigen!(StakingRewards, "out/debug/staking-rewards-abi.json");
+abigen!(StakingRewards, "out/debug/staking-rewards-flat-abi.json");
 
 pub const PRECISION: u32 = 9; // Should match precision in staking contract
 pub const ONE: u64 = 10_i32.pow(PRECISION) as u64;
@@ -56,13 +56,6 @@ pub async fn setup() -> (StakingRewards, Bech32ContractId, WalletUnlocked, Walle
     .unwrap();
 
     let staking_contract = StakingRewardsBuilder::new(id.to_string(), wallet.clone()).build();
-    let walletidentity = Identity::Address(Address::from(wallet.address()));
-
-    staking_contract
-        .constructor(walletidentity.clone(), walletidentity)
-        .call()
-        .await
-        .unwrap();
 
     // Seed the contract with some reward tokens
     let seed_amount = 100_000 * ONE;
