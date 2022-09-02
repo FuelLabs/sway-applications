@@ -11,12 +11,11 @@ mod success {
 
     #[tokio::test]
     async fn initalizes() {
-        let deployer = setup().await;
+        let (deployer, _) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
         constructor(identity.clone(), &deployer.simple_token, 100).await;
     }
-
 }
 
 mod revert {
@@ -26,7 +25,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_initalized_twice() {
-        let deployer = setup().await;
+        let (deployer, _) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
         constructor(identity.clone(), &deployer.simple_token, 100).await;
@@ -36,10 +35,9 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_token_supply_zero() {
-        let deployer = setup().await;
+        let (deployer, _) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
         constructor(identity.clone(), &deployer.simple_token, 0).await;
     }
-
 }

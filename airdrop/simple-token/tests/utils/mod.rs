@@ -39,12 +39,26 @@ pub mod test_helpers {
 
     use super::*;
 
-    pub async fn setup() -> Metadata {
-        let wallet = launch_provider_and_get_wallet().await;
+    pub async fn setup() -> (Metadata, Metadata) {
+        let num_wallets = 2;
+        let coins_per_wallet = 1;
+        let coin_amount = 1000000;
+        let mut wallets = launch_custom_provider_and_get_wallets(
+            WalletsConfig::new(
+                Some(num_wallets),
+                Some(coins_per_wallet),
+                Some(coin_amount),
+            ),
+            None,
+        )
+        .await;
+
+        let wallet1 = wallets.pop().unwrap();
+        let wallet2 = wallets.pop().unwrap();
 
         let simple_token_id = Contract::deploy(
             "./out/debug/simpletoken.bin",
-            &wallet,
+            &wallet1,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
                 "./out/debug/simpletoken-storage_slots.json".to_string(),
@@ -55,10 +69,16 @@ pub mod test_helpers {
 
         let deployer = Metadata {
             asset_id: ContractId::new(*simple_token_id.hash()),
-            simple_token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet.clone()).build(),
-            wallet: wallet.clone()
+            simple_token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet1.clone()).build(),
+            wallet: wallet1.clone()
         };
 
-        deployer
+        let user = Metadata {
+            asset_id: ContractId::new(*simple_token_id.hash()),
+            simple_token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet2.clone()).build(),
+            wallet: wallet2.clone()
+        };
+
+        (deployer, user)
     }
 }
