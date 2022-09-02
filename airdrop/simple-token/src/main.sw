@@ -7,12 +7,13 @@ use errors::{AccessError, InitError, InputError};
 use interface::SimpleToken;
 use std::{
     chain::auth::{AuthError, msg_sender},
+    context::call_frames::contract_id,
     contract_id::ContractId,
     identity::Identity,
     option::Option,
     result::Result,
     revert::{require, revert},
-    token::mint_to,
+    token::{mint, mint_to, transfer_to_output, mint_to_address, mint_to_contract},
 };
 
 storage {
