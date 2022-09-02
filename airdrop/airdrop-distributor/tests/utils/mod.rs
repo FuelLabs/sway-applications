@@ -78,8 +78,8 @@ pub mod test_helpers {
     use super::*;
 
     pub async fn build_tree(
-        leaves: Vec<&(u64, Bytes32)>,
         key: u64,
+        leaves: Vec<&(u64, Bytes32)>,
     ) -> (MerkleTree, Bytes32, Bytes32, ProofSet) {
         let mut tree = MerkleTree::new();
 
