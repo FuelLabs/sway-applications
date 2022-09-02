@@ -8,6 +8,8 @@ pub const ONE: u64 = 10_i32.pow(PRECISION) as u64;
 pub const BASE_ASSET: AssetId = AssetId::new([0u8; 32]);
 pub const STAKING_ASSET: AssetId = AssetId::new([1u8; 32]);
 pub const REWARDS_ASSET: AssetId = AssetId::new([2u8; 32]);
+pub const RANDOM_ASSET: AssetId = AssetId::new([3u8; 32]);
+
 
 const INITIAL_STAKE: u64 = 10 * ONE;
 const INITIAL_TIMESTAMP: u64 = 0;
@@ -23,7 +25,7 @@ pub async fn get_balance(wallet: &LocalWallet, asset: AssetId) -> u64 {
 
 pub async fn setup() -> (StakingRewards, Bech32ContractId, LocalWallet, LocalWallet) {
     // Configure wallet with assets
-    let assets = [BASE_ASSET, STAKING_ASSET, REWARDS_ASSET];
+    let assets = [BASE_ASSET, STAKING_ASSET, REWARDS_ASSET, RANDOM_ASSET];
     let wallet_config = WalletsConfig::new_multiple_assets(
         2,
         assets
@@ -202,6 +204,7 @@ pub async fn owner(instance: &StakingRewards) -> Identity {
 pub async fn recover_tokens(instance: &StakingRewards, asset_id: ContractId, amount: u64) {
     instance
         .recover_tokens(asset_id, amount)
+        .append_variable_outputs(1)
         .call()
         .await
         .unwrap();

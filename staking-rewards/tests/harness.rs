@@ -2,9 +2,9 @@ mod utils;
 
 use fuels::prelude::*;
 use utils::{
-    balance_of, earned, exit, get_balance, get_reward, get_reward_for_duration, notify_reward_amount, owner,
+    balance_of, earned, exit, get_balance, get_reward, get_reward_for_duration, notify_reward_amount, owner, recover_tokens,
     last_time_reward_applicable, period_finish, reward_duration, reward_per_token, reward_rate, last_update_time,
-    setup, stake, stakingrewards_mod::Identity, total_supply, ONE, REWARDS_ASSET, STAKING_ASSET,
+    setup, stake, stakingrewards_mod::Identity, total_supply, ONE, REWARDS_ASSET, STAKING_ASSET, RANDOM_ASSET,
 };
 
 // Until timestamp supported in Sway, timestamps of each action must be specified. Contract is deployed at t=0
@@ -165,4 +165,32 @@ async fn can_get_owner() {
     let expectedowner = Identity::Address(Address::from(wallet.address()));
 
     assert_eq!(actualowner, expectedowner);
+}
+
+#[tokio::test]
+async fn can_get_period_finish() {
+    let (staking_contract, _id, _wallet, _wallet2) = setup().await;
+
+    let period_finish = period_finish(&staking_contract).await;
+
+    assert_eq!(period_finish, 1000);
+}
+
+#[tokio::test]
+async fn can_recover_tokens() {
+    let (staking_contract, id, wallet, wallet2) = setup().await;
+
+    let _receipt = wallet2
+        .force_transfer_to_contract(&id, 50000, RANDOM_ASSET, TxParameters::default())
+        .await
+        .unwrap();
+    
+
+    let owner_balance_before = get_balance(&wallet, RANDOM_ASSET).await;
+
+    recover_tokens(&staking_contract, ContractId::new([3u8; 32]), 50000).await;
+
+    let owner_balance_after = get_balance(&wallet, RANDOM_ASSET).await;
+
+    assert_eq!(owner_balance_before + 50000, owner_balance_after);
 }
