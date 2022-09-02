@@ -12,7 +12,7 @@ import type {
   InvokeFunction,
 } from "fuels";
 
-import type { Enum } from "./common";
+import type { Enum, Option } from "./common";
 
 export type AddressInput = { value: string };
 
@@ -84,9 +84,9 @@ export type IdentityOutput = Enum<{
   ContractId: ContractIdOutput;
 }>;
 
-export type OptionInput = Enum<{ None: []; Some: ContractIdInput }>;
+export type OptionInput = Option<[]>;
 
-export type OptionOutput = Enum<{ None: []; Some: ContractIdOutput }>;
+export type OptionOutput = Option<[]>;
 
 export type StateInput = Enum<{ Pending: []; Completed: [] }>;
 

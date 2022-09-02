@@ -13,6 +13,7 @@ import { walletIndexAtom } from "../jotai";
 import { ArbiterInputContainer } from "./ArbiterInputContainer"
 import { AssetInputContainer } from "./AssetInputContainer";
 import { parseInputValueBigInt } from "../utils/math";
+import { useCreateEscrow } from "../hooks/useCreateEscrow";
 
 export const CreateEscrow = () => {
     const queryClient = useQueryClient();
@@ -21,14 +22,22 @@ export const CreateEscrow = () => {
     const contract = useContract();
     const [arbiter, setArbiter] = useState("");
     const [arbiterAsset, setArbiterAsset] = useState("");
-    const [arbiterFee, setArbiterFee] = useState<string | undefined>();
+    const [arbiterFee, setArbiterFee] = useState("");
     const [buyer, setBuyer] = useState("");
-    const [deadline, setDeadline] = useState<string | undefined>();
+    const [deadline, setDeadline] = useState("");
     const [assets, setAssets] = useState([{
         assetId: "",
         assetAmount: ""
     }]);
     const [showCreateEscrow, setShowCreateEscrow] = useState(false);
+    const createEscrowMutation = useCreateEscrow({
+        arbiterFee,
+        arbiterAddress: arbiter,
+        arbiterAsset,
+        buyerAddress: buyer,
+        deadline,
+        assets,
+    });
 
     const handleArbiterAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newArbiter = event.target.value;
@@ -126,7 +135,7 @@ export const CreateEscrow = () => {
             ['EscrowPage-balances', walletIdx],
             async () => wallet?.getBalances(),
             {
-                
+
             }
         );
         console.log("data...", data);
@@ -138,6 +147,8 @@ export const CreateEscrow = () => {
     const handleShowCreateEscrow = () => {
         setShowCreateEscrow(!showCreateEscrow);
     }
+
+    const shouldDisableCreateButton = createEscrowMutation.isLoading;
 
     return (
         <Flex css={{ flex: "1", justifyContent: "center" }}>
@@ -181,7 +192,15 @@ export const CreateEscrow = () => {
                             onAssetIdChange={handleAssetIdChange}
                             assets={assets}
                         />
-                        <Button onPress={(e) => handleSubmit(e)} leftIcon="PlusIcon" css={{ font: "$sans", alignSelf: "stretch" }}>Create Escrow</Button>
+                        <Button
+                            isDisabled={shouldDisableCreateButton}
+                            isLoading={createEscrowMutation.isLoading}
+                            onPress={() => { createEscrowMutation.mutate(); }}
+                            leftIcon="PlusIcon"
+                            css={{ font: "$sans", alignSelf: "stretch" }}
+                        >
+                            Create Escrow
+                        </Button>
                     </Stack>
                 </Card>
                 }

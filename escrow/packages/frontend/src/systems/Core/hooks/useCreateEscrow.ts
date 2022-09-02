@@ -52,17 +52,20 @@ export function useCreateEscrow({
             let buyerArg: IdentityInput = {
                 Address: { value: buyerAddress }
             };
-            const result = await contract!
-                .multiCall([
-                    contract!.functions.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!).callParams({
-                        forward: [actualFee, arbiterAsset]
-                    }),
-                ])
+            const scope = await contract!.functions
+                .create_escrow(arbiterArg, assetsArg, buyerArg, deadline)
+                .callParams({
+                    forward: [actualFee, arbiterAsset]
+                })
                 .txParams({
                     gasPrice: BigInt(5),
                     bytePrice: BigInt(5),
-                    gasLimit: 100_000_000
-                }).call();
+                    gasLimit: 100_000_000,
+                })
+                .fundWithRequiredCoins();
+            console.log("tx req", scope.transactionRequest);
+            const response = await contract!.wallet!.sendTransaction(scope.transactionRequest);
+            const result = await response.waitForResult();
 
             return result;
         },
@@ -73,7 +76,7 @@ export function useCreateEscrow({
     );
 
     function handleSuccess() {
-        
+        // TODO clear inputs from this hook
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,4 +93,6 @@ export function useCreateEscrow({
             toast.error(`Error when trying to create an escrow`);
         }
     }
+
+    return mutation;
 }
