@@ -25,6 +25,7 @@ storage {
     price: u64 = 0,
 }
 
+// TODO treat owner as an identity once https://github.com/FuelLabs/sway/issues/2647 is fixed
 impl Oracle for Contract {
     fn owner() -> Identity {
         Identity::Address(~Address::from(owner))
