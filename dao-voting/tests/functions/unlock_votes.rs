@@ -34,7 +34,11 @@ mod success {
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             asset_amount / 2
         );
         assert_eq!(
@@ -53,7 +57,11 @@ mod success {
         unlock_votes(&user.dao_voting, 0).await;
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             asset_amount
         );
         assert_eq!(
@@ -96,7 +104,11 @@ mod success {
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
         vote(&user.dao_voting, true, 1, asset_amount / 2).await;
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             0
         );
         assert_eq!(
@@ -126,7 +138,11 @@ mod success {
 
         unlock_votes(&user.dao_voting, 0).await;
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             asset_amount / 2
         );
         assert_eq!(
@@ -143,7 +159,11 @@ mod success {
         );
         unlock_votes(&user.dao_voting, 1).await;
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             asset_amount
         );
         assert_eq!(
@@ -184,7 +204,11 @@ mod success {
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             asset_amount / 2
         );
         assert_eq!(
@@ -203,7 +227,11 @@ mod success {
         unlock_votes(&user.dao_voting, 0).await;
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             asset_amount
         );
         assert_eq!(
@@ -223,7 +251,11 @@ mod success {
         vote(&user.dao_voting, true, 1, asset_amount / 2).await;
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             asset_amount / 2
         );
         assert_eq!(
@@ -242,7 +274,11 @@ mod success {
         unlock_votes(&user.dao_voting, 1).await;
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             asset_amount
         );
         assert_eq!(

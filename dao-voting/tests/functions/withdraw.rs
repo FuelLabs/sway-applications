@@ -31,14 +31,22 @@ mod success {
         assert_eq!(balance(&user.dao_voting).await, asset_amount);
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             asset_amount
         );
 
         withdraw(&user.dao_voting, asset_amount).await;
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             0
         );
 

@@ -26,12 +26,20 @@ mod success {
             Some(100_000),
         );
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             0
         );
         deposit(&user.dao_voting, call_params).await;
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
+            user_balance(
+                &user.dao_voting,
+                Identity::Address(user.wallet.address().into())
+            )
+            .await,
             asset_amount
         );
     }

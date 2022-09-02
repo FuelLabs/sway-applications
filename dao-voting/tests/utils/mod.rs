@@ -109,7 +109,7 @@ pub mod abi_calls {
 }
 
 pub mod test_helpers {
-    
+
     use super::*;
 
     pub async fn mint(contract: &GovToken, amount: u64, address: Address) -> bool {
@@ -175,19 +175,21 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let gov_token = GovTokenBuilder::new(gov_token_id.to_string(), deployer_wallet.clone()).build();
+        let gov_token =
+            GovTokenBuilder::new(gov_token_id.to_string(), deployer_wallet.clone()).build();
 
         let deployer = Metadata {
-            dao_voting: DaoVotingBuilder::new(dao_voting_id.to_string(), deployer_wallet.clone()).build(),
-            gov_token: Some(GovTokenBuilder::new(
-                gov_token_id.to_string(),
-                deployer_wallet.clone(),
-            ).build()),
+            dao_voting: DaoVotingBuilder::new(dao_voting_id.to_string(), deployer_wallet.clone())
+                .build(),
+            gov_token: Some(
+                GovTokenBuilder::new(gov_token_id.to_string(), deployer_wallet.clone()).build(),
+            ),
             wallet: deployer_wallet,
         };
 
         let user = Metadata {
-            dao_voting: DaoVotingBuilder::new(dao_voting_id.to_string(), user_wallet.clone()).build(),
+            dao_voting: DaoVotingBuilder::new(dao_voting_id.to_string(), user_wallet.clone())
+                .build(),
             gov_token: None,
             wallet: user_wallet,
         };
@@ -196,5 +198,4 @@ pub mod test_helpers {
 
         (gov_token, gov_token_id.into(), deployer, user, asset_amount)
     }
-    
 }
