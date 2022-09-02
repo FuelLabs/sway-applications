@@ -3,10 +3,9 @@ use crate::utils::{
         asset_info_by_count, campaign_info, cancel_campaign, create_campaign, pledge, pledge_count,
         pledged,
     },
-    test_helpers::{mint, setup},
-    Identity,
+    test_helpers::{identity, mint, setup},
 };
-use fuels::{signers::Signer, tx::AssetId};
+use fuels::tx::AssetId;
 
 mod success {
 
@@ -23,7 +22,7 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(
@@ -43,7 +42,7 @@ mod success {
             0,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -77,7 +76,7 @@ mod success {
             1,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -85,7 +84,7 @@ mod success {
         let info = pledged(
             &user.contract,
             1,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await
         .value;
@@ -105,7 +104,7 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount * 2,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(
@@ -125,7 +124,7 @@ mod success {
             0,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -160,7 +159,7 @@ mod success {
             1,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -168,7 +167,7 @@ mod success {
         let info = pledged(
             &user.contract,
             1,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await
         .value;
@@ -198,7 +197,7 @@ mod success {
             1,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -206,7 +205,7 @@ mod success {
         let info = pledged(
             &user.contract,
             1,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await
         .value;
@@ -231,13 +230,13 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         mint(
             &asset2.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -271,7 +270,7 @@ mod success {
             0,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -330,7 +329,7 @@ mod success {
             2,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -339,7 +338,7 @@ mod success {
             pledged(
                 &user.contract,
                 1,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
             .value
@@ -350,7 +349,7 @@ mod success {
             pledged(
                 &user.contract,
                 2,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
             .value
@@ -361,7 +360,7 @@ mod success {
             pledged(
                 &user.contract,
                 1,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
             .value
@@ -372,7 +371,7 @@ mod success {
             pledged(
                 &user.contract,
                 2,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
             .value
@@ -393,7 +392,7 @@ mod revert {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(
@@ -417,7 +416,7 @@ mod revert {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(
@@ -433,28 +432,28 @@ mod revert {
         pledge(&user.contract, 2, &asset, defaults.target_amount).await;
     }
 
-    // #[tokio::test]
-    // #[should_panic(expected = "Revert(42)")]
-    // async fn when_pledging_after_deadline() {
-    //     let (author, user, asset, _, defaults) = setup().await;
-    //     let deadline = 5;
+    #[tokio::test]
+    #[ignore]
+    async fn when_pledging_after_deadline() {
+        let (author, user, asset, _, defaults) = setup().await;
+        let deadline = 5;
 
-    //     mint(&asset.contract, defaults.target_amount, user.wallet.address().into()).await;
-    //     create_campaign(
-    //         &author.contract,
-    //         &defaults.asset_id,
-    //         &defaults.beneficiary,
-    //         deadline,
-    //         defaults.target_amount,
-    //     )
-    //     .await;
-    //     pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+        mint(&asset.contract, defaults.target_amount, user.wallet.address()).await;
+        create_campaign(
+            &author.contract,
+            &defaults.asset_id,
+            &defaults.beneficiary,
+            deadline,
+            defaults.target_amount,
+        )
+        .await;
+        pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
-    //     // TODO: shift block height to be after deadline
+        // TODO: shift block height to be after deadline
 
-    //     // Reverts
-    //     pledge(&user.contract, 1, &asset, 0).await;
-    // }
+        // Reverts
+        pledge(&user.contract, 1, &asset, 0).await;
+    }
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
@@ -464,7 +463,7 @@ mod revert {
         mint(
             &asset2.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -489,7 +488,7 @@ mod revert {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -515,7 +514,7 @@ mod revert {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(

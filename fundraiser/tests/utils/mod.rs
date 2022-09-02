@@ -135,9 +135,13 @@ pub mod test_helpers {
 
     use super::*;
 
-    pub async fn mint(contract: &Asset, amount: u64, address: Address) -> bool {
+    pub async fn identity(address: &Bech32Address) -> Identity {
+        Identity::Address(address.into())
+    }
+
+    pub async fn mint(contract: &Asset, amount: u64, address: &Bech32Address) -> bool {
         contract
-            .mint_and_send_to_address(amount, address)
+            .mint_and_send_to_address(amount, address.into())
             .append_variable_outputs(1)
             .call()
             .await

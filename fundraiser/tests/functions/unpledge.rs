@@ -3,10 +3,9 @@ use crate::utils::{
         asset_info_by_count, campaign_info, claim_pledges, create_campaign, pledge, pledge_count,
         pledged, unpledge,
     },
-    test_helpers::{mint, setup},
-    Identity,
+    test_helpers::{identity, mint, setup},
 };
-use fuels::{signers::Signer, tx::AssetId};
+use fuels::tx::AssetId;
 
 mod success {
 
@@ -23,7 +22,7 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(
@@ -88,7 +87,7 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(
@@ -108,7 +107,7 @@ mod success {
             0,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -127,7 +126,7 @@ mod success {
             1,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -135,7 +134,7 @@ mod success {
         let info = pledged(
             &user.contract,
             1,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await
         .value;
@@ -172,14 +171,14 @@ mod success {
             1,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
         let info = pledged(
             &user.contract,
             1,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await
         .value;
@@ -198,13 +197,13 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         mint(
             &asset2.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(
@@ -236,7 +235,7 @@ mod success {
             0,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -263,7 +262,7 @@ mod success {
             2,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -271,14 +270,14 @@ mod success {
         let info1 = pledged(
             &user.contract,
             1,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await
         .value;
         let info2 = pledged(
             &user.contract,
             2,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await
         .value;
@@ -339,7 +338,7 @@ mod success {
             2,
             pledge_count(
                 &user.contract,
-                Identity::Address(user.wallet.address().into())
+                identity(user.wallet.address()).await
             )
             .await
         );
@@ -347,14 +346,14 @@ mod success {
         let info1 = pledged(
             &user.contract,
             1,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await
         .value;
         let info2 = pledged(
             &user.contract,
             2,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await
         .value;
@@ -376,7 +375,7 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(
@@ -515,7 +514,7 @@ mod revert {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(

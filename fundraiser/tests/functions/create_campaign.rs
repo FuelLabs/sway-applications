@@ -3,10 +3,8 @@ use crate::utils::{
         asset_info_by_count, campaign, campaign_info, create_campaign, total_campaigns,
         user_campaign_count,
     },
-    test_helpers::setup,
-    Identity,
+    test_helpers::{identity, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -24,7 +22,7 @@ mod success {
             0,
             user_campaign_count(
                 &author.contract,
-                Identity::Address(author.wallet.address().into())
+                identity(author.wallet.address()).await
             )
             .await
         );
@@ -47,7 +45,7 @@ mod success {
             1,
             user_campaign_count(
                 &author.contract,
-                Identity::Address(author.wallet.address().into())
+                identity(author.wallet.address()).await
             )
             .await
         );
@@ -56,7 +54,7 @@ mod success {
             campaign(
                 &author.contract,
                 1,
-                Identity::Address(author.wallet.address().into())
+                identity(author.wallet.address()).await
             )
             .await
             .value
@@ -65,7 +63,7 @@ mod success {
         assert_eq!(info.asset, defaults.asset_id);
         assert_eq!(
             info.author,
-            Identity::Address(author.wallet.address().into())
+            identity(author.wallet.address()).await
         );
         assert_eq!(info.beneficiary, defaults.beneficiary);
         assert_eq!(info.cancelled, false);
@@ -87,7 +85,7 @@ mod success {
             0,
             user_campaign_count(
                 &author.contract,
-                Identity::Address(author.wallet.address().into())
+                identity(author.wallet.address()).await
             )
             .await
         );
@@ -123,7 +121,7 @@ mod success {
             2,
             user_campaign_count(
                 &author.contract,
-                Identity::Address(author.wallet.address().into())
+                identity(author.wallet.address()).await
             )
             .await
         );
@@ -154,7 +152,7 @@ mod success {
             0,
             user_campaign_count(
                 &author.contract,
-                Identity::Address(author.wallet.address().into())
+                identity(author.wallet.address()).await
             )
             .await
         );
@@ -190,7 +188,7 @@ mod success {
             2,
             user_campaign_count(
                 &author.contract,
-                Identity::Address(author.wallet.address().into())
+                identity(author.wallet.address()).await
             )
             .await
         );

@@ -1,9 +1,7 @@
 use crate::utils::{
     abi_calls::{create_campaign, user_campaign_count},
-    test_helpers::setup,
-    Identity,
+    test_helpers::{identity, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -17,7 +15,7 @@ mod success {
             0,
             user_campaign_count(
                 &author.contract,
-                Identity::Address(author.wallet.address().into())
+                identity(author.wallet.address()).await
             )
             .await
         );
@@ -31,7 +29,7 @@ mod success {
             0,
             user_campaign_count(
                 &author.contract,
-                Identity::Address(author.wallet.address().into())
+                identity(author.wallet.address()).await
             )
             .await
         );
@@ -47,7 +45,7 @@ mod success {
             1,
             user_campaign_count(
                 &author.contract,
-                Identity::Address(author.wallet.address().into())
+                identity(author.wallet.address()).await
             )
             .await
         );

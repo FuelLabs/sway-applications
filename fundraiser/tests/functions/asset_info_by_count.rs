@@ -2,7 +2,6 @@ use crate::utils::{
     abi_calls::{asset_info_by_count, create_campaign, pledge},
     test_helpers::{mint, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -28,7 +27,7 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(

@@ -1,9 +1,7 @@
 use crate::utils::{
     abi_calls::{campaign, create_campaign},
-    test_helpers::setup,
-    Identity,
+    test_helpers::{identity, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -28,7 +26,7 @@ mod success {
             campaign(
                 &author.contract,
                 1,
-                Identity::Address(author.wallet.address().into())
+                identity(author.wallet.address()).await
             )
             .await
             .value
@@ -50,7 +48,7 @@ mod revert {
         campaign(
             &author.contract,
             0,
-            Identity::Address(author.wallet.address().into()),
+            identity(author.wallet.address()).await
         )
         .await;
     }
@@ -64,7 +62,7 @@ mod revert {
         campaign(
             &author.contract,
             1,
-            Identity::Address(author.wallet.address().into()),
+            identity(author.wallet.address()).await
         )
         .await;
     }

@@ -1,9 +1,7 @@
 use crate::utils::{
     abi_calls::{create_campaign, pledge, pledged},
-    test_helpers::{mint, setup},
-    Identity,
+    test_helpers::{identity, mint, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -17,7 +15,7 @@ mod success {
         mint(
             &asset.contract,
             defaults.target_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
         create_campaign(
@@ -33,7 +31,7 @@ mod success {
         let info = pledged(
             &user.contract,
             1,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await
         .value;
@@ -55,7 +53,7 @@ mod revert {
         pledged(
             &user.contract,
             0,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await;
     }
@@ -69,7 +67,7 @@ mod revert {
         pledged(
             &user.contract,
             1,
-            Identity::Address(user.wallet.address().into()),
+            identity(user.wallet.address()).await
         )
         .await;
     }
