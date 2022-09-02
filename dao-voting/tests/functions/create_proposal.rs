@@ -19,12 +19,12 @@ mod success {
         assert_eq!(
             proposal(&user.dao_voting, 0).await,
             ProposalInfo {
-                author: Identity::Address(user.wallet.address()),
+                author: Identity::Address(user.wallet.address().into()),
                 yes_votes: 0,
                 no_votes: 0,
                 acceptance_percentage: 10,
                 proposal_transaction,
-                deadline: 13,
+                deadline: 14,
                 executed: false,
             }
         );
@@ -40,12 +40,12 @@ mod success {
         assert_eq!(
             proposal(&user.dao_voting, 0).await,
             ProposalInfo {
-                author: Identity::Address(user.wallet.address()),
+                author: Identity::Address(user.wallet.address().into()),
                 yes_votes: 0,
                 no_votes: 0,
                 acceptance_percentage: 10,
                 proposal_transaction: proposal_transaction.clone(),
-                deadline: 13,
+                deadline: 14,
                 executed: false,
             }
         );
@@ -54,12 +54,12 @@ mod success {
         assert_eq!(
             proposal(&user.dao_voting, 1).await,
             ProposalInfo {
-                author: Identity::Address(user.wallet.address()),
+                author: Identity::Address(user.wallet.address().into()),
                 yes_votes: 0,
                 no_votes: 0,
                 acceptance_percentage: 20,
                 proposal_transaction: proposal_transaction.clone(),
-                deadline: 25,
+                deadline: 26,
                 executed: false,
             }
         );

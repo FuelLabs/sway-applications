@@ -15,7 +15,7 @@ mod success {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
 
@@ -31,14 +31,14 @@ mod success {
         assert_eq!(balance(&user.dao_voting).await, asset_amount);
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
             asset_amount
         );
 
         withdraw(&user.dao_voting, asset_amount).await;
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
             0
         );
 
@@ -57,7 +57,7 @@ mod revert {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
 
@@ -80,7 +80,7 @@ mod revert {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
 

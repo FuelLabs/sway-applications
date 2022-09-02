@@ -16,7 +16,7 @@ mod success {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
 
@@ -26,12 +26,12 @@ mod success {
             Some(100_000),
         );
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
             0
         );
         deposit(&user.dao_voting, call_params).await;
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+            user_balance(&user.dao_voting, Identity::Address(user.wallet.address().into())).await,
             asset_amount
         );
     }

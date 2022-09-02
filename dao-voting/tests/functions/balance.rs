@@ -15,7 +15,7 @@ mod success {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
 

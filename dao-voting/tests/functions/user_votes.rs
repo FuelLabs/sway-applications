@@ -16,7 +16,7 @@ mod sucess {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address(),
+            user.wallet.address().into(),
         )
         .await;
 
@@ -31,7 +31,7 @@ mod sucess {
         assert_eq!(
             user_votes(
                 &user.dao_voting,
-                Identity::Address(user.wallet.address()),
+                Identity::Address(user.wallet.address().into()),
                 0
             )
             .await,
@@ -44,7 +44,7 @@ mod sucess {
         assert_eq!(
             user_votes(
                 &user.dao_voting,
-                Identity::Address(user.wallet.address()),
+                Identity::Address(user.wallet.address().into()),
                 0
             )
             .await,
@@ -65,7 +65,7 @@ mod revert {
         let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
         user_votes(
             &user.dao_voting,
-            Identity::Address(user.wallet.address()),
+            Identity::Address(user.wallet.address().into()),
             0,
         )
         .await;
