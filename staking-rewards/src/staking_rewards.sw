@@ -62,10 +62,11 @@ impl StakingRewards for Contract {
         storage.balances.get(account)
     }
 
-    #[storage(read, write)]fn constructor(owner: Identity) {
+    #[storage(read, write)]fn constructor(owner: Identity, rewards_distribution: Identity) {
         require(!storage.initialized, "Contract already initialized");
 
         storage.owner = owner;
+        storage.rewards_distribution = rewards_distribution;
         storage.initialized = true;
     }
 

@@ -2,8 +2,8 @@ mod utils;
 
 use fuels::prelude::*;
 use utils::{
-    balance_of, earned, exit, get_balance, get_reward, get_reward_for_duration,
-    last_time_reward_applicable, period_finish, reward_duration, reward_per_token, reward_rate,
+    balance_of, earned, exit, get_balance, get_reward, get_reward_for_duration, notify_reward_amount, owner,
+    last_time_reward_applicable, period_finish, reward_duration, reward_per_token, reward_rate, last_update_time,
     setup, stake, stakingrewards_mod::Identity, total_supply, ONE, REWARDS_ASSET, STAKING_ASSET,
 };
 
@@ -15,7 +15,7 @@ const TIMESTAMP: u64 = 123;
 
 #[tokio::test]
 async fn constructed() {
-    let (staking_contract, _id, wallet) = setup().await;
+    let (staking_contract, _id, wallet, _wallet2) = setup().await;
     let wallet_identity = Identity::Address(Address::from(wallet.address()));
 
     let owner_identity = staking_contract.owner().call().await.unwrap().value;
@@ -24,7 +24,7 @@ async fn constructed() {
 
 #[tokio::test]
 async fn stake_tokens() {
-    let (staking_contract, _id, wallet) = setup().await;
+    let (staking_contract, _id, wallet, _wallet2) = setup().await;
 
     // User balance has updated
     let wallet_identity = Identity::Address(Address::from(wallet.address()));
@@ -38,7 +38,7 @@ async fn stake_tokens() {
 
 #[tokio::test]
 async fn can_get_balance_of() {
-    let (staking_contract, _id, wallet) = setup().await;
+    let (staking_contract, _id, wallet, _wallet2) = setup().await;
 
     // User balance has updated
     let wallet_identity = Identity::Address(Address::from(wallet.address()));
@@ -53,7 +53,7 @@ async fn can_get_balance_of() {
 
 #[tokio::test]
 async fn calculate_earned_tokens() {
-    let (staking_contract, _id, wallet) = setup().await;
+    let (staking_contract, _id, wallet, _wallet2) = setup().await;
 
     // Total accrued per token is time_elapsed * rate / total_supply
     let expected_reward_per_token: u64 =
@@ -71,7 +71,7 @@ async fn calculate_earned_tokens() {
 
 #[tokio::test]
 async fn claim_reward() {
-    let (staking_contract, _id, wallet) = setup().await;
+    let (staking_contract, _id, wallet, _wallet2) = setup().await;
 
     let balance_before = get_balance(&wallet, REWARDS_ASSET).await;
 
@@ -87,7 +87,7 @@ async fn claim_reward() {
 
 #[tokio::test]
 async fn exit_with_reward() {
-    let (staking_contract, _id, wallet) = setup().await;
+    let (staking_contract, _id, wallet, _wallet2) = setup().await;
 
     let expected_reward_per_token: u64 =
         ((TIMESTAMP - INITIAL_TIMESTAMP) * 42 * ONE) / INITIAL_STAKE;
@@ -113,7 +113,7 @@ async fn exit_with_reward() {
 
 #[tokio::test]
 async fn can_get_reward_for_duration() {
-    let (staking_contract, _id, _wallet) = setup().await;
+    let (staking_contract, _id, _wallet, _wallet2) = setup().await;
 
     let reward_rate = reward_rate(&staking_contract).await;
     let reward_duration = reward_duration(&staking_contract).await;
@@ -126,11 +126,43 @@ async fn can_get_reward_for_duration() {
 
 #[tokio::test]
 async fn can_get_last_time_reward_applicable() {
-    let (staking_contract, _id, _wallet) = setup().await;
+    let (staking_contract, _id, _wallet, _wallet2) = setup().await;
 
     let period_finish = period_finish(&staking_contract).await;
     let expected = std::cmp::min(TIMESTAMP, period_finish);
     let actual = last_time_reward_applicable(&staking_contract, TIMESTAMP).await;
 
     assert_eq!(actual, expected);
+}
+
+#[tokio::test]
+async fn can_get_last_updated() {
+    let (staking_contract, _id, _wallet, _wallet2) = setup().await;
+
+    notify_reward_amount(&staking_contract, 5000, TIMESTAMP).await;
+    let last_updated = last_update_time(&staking_contract).await;
+
+    assert_eq!(last_updated, TIMESTAMP);
+}
+
+#[tokio::test]
+async fn can_notify_reward_amount() {
+    let (staking_contract, _id, _wallet, _wallet2) = setup().await;
+
+    let rewardbefore = get_reward_for_duration(&staking_contract).await;
+    notify_reward_amount(&staking_contract, 5000, TIMESTAMP).await;
+    let rewardafter = get_reward_for_duration(&staking_contract).await;
+
+    assert_eq!(rewardbefore, 42000);
+    assert_eq!(rewardafter, 41000);
+}
+
+#[tokio::test]
+async fn can_get_owner() {
+    let (staking_contract, _id, wallet, _wallet2) = setup().await;
+
+    let actualowner = owner(&staking_contract).await;
+    let expectedowner = Identity::Address(Address::from(wallet.address()));
+
+    assert_eq!(actualowner, expectedowner);
 }

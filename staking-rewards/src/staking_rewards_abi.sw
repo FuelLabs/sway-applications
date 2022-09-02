@@ -4,7 +4,7 @@ use std::{contract_id::ContractId, identity::Identity};
 
 abi StakingRewards {
     #[storage(read)]fn balance_of(account: Identity) -> u64;
-    #[storage(read, write)]fn constructor(owner: Identity);
+    #[storage(read, write)]fn constructor(owner: Identity, rewards_distribution: Identity);
     #[storage(read)]fn earned(account: Identity, test_timestamp: u64) -> u64;
     #[storage(read, write)]fn exit(test_timestamp: u64);
     #[storage(read, write)]fn get_reward(test_timestamp: u64);

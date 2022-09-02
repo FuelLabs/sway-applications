@@ -21,11 +21,11 @@ pub async fn get_balance(wallet: &LocalWallet, asset: AssetId) -> u64 {
     balance
 }
 
-pub async fn setup() -> (StakingRewards, Bech32ContractId, LocalWallet) {
+pub async fn setup() -> (StakingRewards, Bech32ContractId, LocalWallet, LocalWallet) {
     // Configure wallet with assets
     let assets = [BASE_ASSET, STAKING_ASSET, REWARDS_ASSET];
     let wallet_config = WalletsConfig::new_multiple_assets(
-        1,
+        2,
         assets
             .map(|asset| AssetConfig {
                 id: asset,
@@ -37,7 +37,10 @@ pub async fn setup() -> (StakingRewards, Bech32ContractId, LocalWallet) {
             .collect::<Vec<_>>(),
     );
 
-    let wallet = &launch_custom_provider_and_get_wallets(wallet_config, None).await[0];
+    let wallets = &launch_custom_provider_and_get_wallets(wallet_config, None).await;
+    let wallet = &wallets[0];
+    let wallet2 = &wallets[1];
+
 
     let id = Contract::deploy(
         "./out/debug/staking-rewards.bin",
@@ -54,7 +57,7 @@ pub async fn setup() -> (StakingRewards, Bech32ContractId, LocalWallet) {
     let walletidentity = Identity::Address(Address::from(wallet.address()));
 
     staking_contract
-        .constructor(walletidentity)
+        .constructor(walletidentity.clone(), walletidentity)
         .call()
         .await
         .unwrap();
@@ -75,7 +78,7 @@ pub async fn setup() -> (StakingRewards, Bech32ContractId, LocalWallet) {
         .await
         .unwrap();
 
-    (staking_contract, id, wallet.clone())
+    (staking_contract, id, wallet.clone(), wallet2.clone())
 }
 
 pub async fn balance_of(instance: &StakingRewards, id: &Identity) -> u64 {
