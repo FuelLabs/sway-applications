@@ -14,7 +14,7 @@ pub const RANDOM_ASSET: AssetId = AssetId::new([3u8; 32]);
 const INITIAL_STAKE: u64 = 10 * ONE;
 const INITIAL_TIMESTAMP: u64 = 0;
 
-pub async fn get_balance(wallet: &LocalWallet, asset: AssetId) -> u64 {
+pub async fn get_balance(wallet: &Wallet, asset: AssetId) -> u64 {
     let provider = wallet.get_provider().unwrap();
     let balance = provider
         .get_asset_balance(&wallet.address(), asset)
@@ -23,7 +23,7 @@ pub async fn get_balance(wallet: &LocalWallet, asset: AssetId) -> u64 {
     balance
 }
 
-pub async fn setup() -> (StakingRewards, Bech32ContractId, LocalWallet, LocalWallet) {
+pub async fn setup() -> (StakingRewards, Bech32ContractId, WalletUnlocked, WalletUnlocked) {
     // Configure wallet with assets
     let assets = [BASE_ASSET, STAKING_ASSET, REWARDS_ASSET, RANDOM_ASSET];
     let wallet_config = WalletsConfig::new_multiple_assets(
