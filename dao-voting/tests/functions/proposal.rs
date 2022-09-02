@@ -3,7 +3,6 @@ use crate::utils::{
     test_helpers::{proposal_transaction, setup},
     Identity, ProposalInfo,
 };
-use fuels::signers::Signer;
 
 mod success {
     use super::*;

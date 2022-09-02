@@ -13,6 +13,7 @@ pub struct Metadata {
 }
 
 pub mod abi_calls {
+
     use super::*;
 
     pub async fn constructor(contract: &DaoVoting, token: ContractId) -> CallResponse<()> {
@@ -77,18 +78,18 @@ pub mod abi_calls {
         contract.balance().call().await.unwrap().value
     }
 
-    pub async fn user_balance(contract: &DaoVoting, user_identity: Identity) -> u64 {
+    pub async fn user_balance(contract: &DaoVoting, user_identity: &Bech32Address) -> u64 {
         contract
-            .user_balance(user_identity)
+            .user_balance(Identity::Address(user_identity.into()))
             .call()
             .await
             .unwrap()
             .value
     }
 
-    pub async fn user_votes(contract: &DaoVoting, user_identity: Identity, id: u64) -> Votes {
+    pub async fn user_votes(contract: &DaoVoting, user_identity: &Bech32Address, id: u64) -> Votes {
         contract
-            .user_votes(id, user_identity)
+            .user_votes(id, Identity::Address(user_identity.into()))
             .call()
             .await
             .unwrap()
@@ -112,9 +113,9 @@ pub mod test_helpers {
 
     use super::*;
 
-    pub async fn mint(contract: &GovToken, amount: u64, address: Address) -> bool {
+    pub async fn mint(contract: &GovToken, amount: u64, address: &Bech32Address) -> bool {
         contract
-            .mint_and_send_to_address(amount, address)
+            .mint_and_send_to_address(amount, address.into())
             .append_variable_outputs(1)
             .call()
             .await

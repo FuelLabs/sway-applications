@@ -1,11 +1,10 @@
 use crate::utils::{
     abi_calls::{balance, constructor, deposit, user_balance},
     test_helpers::{mint, setup},
-    GovTokenBuilder, Identity,
+    GovTokenBuilder,
 };
 use fuels::{
     prelude::{CallParameters, Contract, StorageConfiguration, TxParameters},
-    signers::Signer,
     tx::{AssetId, ContractId, Salt},
 };
 
@@ -19,7 +18,7 @@ mod success {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -28,11 +27,7 @@ mod success {
         assert_eq!(balance(&user.dao_voting).await, 0);
 
         assert_eq!(
-            user_balance(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address().into())
-            )
-            .await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             0
         );
 
@@ -49,11 +44,7 @@ mod success {
         assert_eq!(balance(&user.dao_voting).await, asset_amount);
 
         assert_eq!(
-            user_balance(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address().into())
-            )
-            .await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             asset_amount
         );
     }
@@ -70,7 +61,7 @@ mod revert {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -103,7 +94,7 @@ mod revert {
             GovTokenBuilder::new(another_asset_id.to_string(), deployer.wallet.clone()).build();
         let id: ContractId = another_asset_id.into();
 
-        mint(&another_asset, asset_amount, user.wallet.address().into()).await;
+        mint(&another_asset, asset_amount, user.wallet.address()).await;
 
         constructor(&deployer.dao_voting, gov_token_id).await;
 
@@ -120,7 +111,7 @@ mod revert {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 

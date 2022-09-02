@@ -2,7 +2,7 @@ use crate::utils::{
     abi_calls::{constructor, create_proposal, deposit, execute, vote},
     test_helpers::{mint, proposal_transaction, setup},
 };
-use fuels::{prelude::CallParameters, signers::Signer, tx::AssetId};
+use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
@@ -16,7 +16,7 @@ mod success {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -57,7 +57,7 @@ mod revert {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -85,7 +85,7 @@ mod revert {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -112,7 +112,7 @@ mod revert {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 

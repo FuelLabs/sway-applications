@@ -3,7 +3,7 @@ use crate::utils::{
     test_helpers::{mint, proposal_transaction, setup},
     Identity, ProposalInfo, Votes,
 };
-use fuels::{prelude::CallParameters, signers::Signer, tx::AssetId};
+use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
@@ -16,7 +16,7 @@ mod success {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -47,21 +47,12 @@ mod success {
         );
 
         assert_eq!(
-            user_balance(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address().into())
-            )
-            .await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             6
         );
 
         assert_eq!(
-            user_votes(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address().into()),
-                0
-            )
-            .await,
+            user_votes(&user.dao_voting, user.wallet.address(), 0).await,
             Votes {
                 no_votes: 2,
                 yes_votes: 2,
@@ -77,7 +68,7 @@ mod success {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -95,21 +86,12 @@ mod success {
         vote(&user.dao_voting, false, 0, asset_amount / 4).await;
 
         assert_eq!(
-            user_balance(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address().into())
-            )
-            .await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             6
         );
 
         assert_eq!(
-            user_votes(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address().into()),
-                0
-            )
-            .await,
+            user_votes(&user.dao_voting, user.wallet.address(), 0).await,
             Votes {
                 no_votes: 2,
                 yes_votes: 2,
@@ -121,21 +103,12 @@ mod success {
         vote(&user.dao_voting, true, 1, asset_amount / 4).await;
 
         assert_eq!(
-            user_balance(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address().into())
-            )
-            .await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             4
         );
 
         assert_eq!(
-            user_votes(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address().into()),
-                1
-            )
-            .await,
+            user_votes(&user.dao_voting, user.wallet.address(), 1).await,
             Votes {
                 yes_votes: 2,
                 no_votes: 0,
@@ -174,7 +147,7 @@ mod revert {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 

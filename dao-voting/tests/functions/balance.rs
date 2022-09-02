@@ -2,7 +2,7 @@ use crate::utils::{
     abi_calls::{balance, constructor, deposit},
     test_helpers::{mint, setup},
 };
-use fuels::{prelude::CallParameters, signers::Signer, tx::AssetId};
+use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
@@ -15,7 +15,7 @@ mod success {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 

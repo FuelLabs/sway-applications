@@ -1,9 +1,8 @@
 use crate::utils::{
     abi_calls::{balance, constructor, deposit, user_balance, withdraw},
     test_helpers::{mint, setup},
-    Identity,
 };
-use fuels::{prelude::CallParameters, signers::Signer, tx::AssetId};
+use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
@@ -15,7 +14,7 @@ mod success {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -31,22 +30,14 @@ mod success {
         assert_eq!(balance(&user.dao_voting).await, asset_amount);
 
         assert_eq!(
-            user_balance(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address().into())
-            )
-            .await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             asset_amount
         );
 
         withdraw(&user.dao_voting, asset_amount).await;
 
         assert_eq!(
-            user_balance(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address().into())
-            )
-            .await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             0
         );
 
@@ -65,7 +56,7 @@ mod revert {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
@@ -88,7 +79,7 @@ mod revert {
         mint(
             &deployer.gov_token.as_ref().unwrap(),
             asset_amount,
-            user.wallet.address().into(),
+            user.wallet.address(),
         )
         .await;
 
