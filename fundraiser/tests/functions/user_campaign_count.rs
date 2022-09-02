@@ -13,11 +13,7 @@ mod success {
 
         assert_eq!(
             0,
-            user_campaign_count(
-                &author.contract,
-                identity(author.wallet.address()).await
-            )
-            .await
+            user_campaign_count(&author.contract, identity(author.wallet.address()).await).await
         );
     }
 
@@ -27,11 +23,7 @@ mod success {
 
         assert_eq!(
             0,
-            user_campaign_count(
-                &author.contract,
-                identity(author.wallet.address()).await
-            )
-            .await
+            user_campaign_count(&author.contract, identity(author.wallet.address()).await).await
         );
         create_campaign(
             &author.contract,
@@ -43,11 +35,7 @@ mod success {
         .await;
         assert_eq!(
             1,
-            user_campaign_count(
-                &author.contract,
-                identity(author.wallet.address()).await
-            )
-            .await
+            user_campaign_count(&author.contract, identity(author.wallet.address()).await).await
         );
     }
 }

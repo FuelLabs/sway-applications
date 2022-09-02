@@ -105,11 +105,7 @@ mod success {
         );
         assert_eq!(
             0,
-            pledge_count(
-                &user.contract,
-                identity(user.wallet.address()).await
-            )
-            .await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
@@ -124,20 +120,12 @@ mod success {
         );
         assert_eq!(
             1,
-            pledge_count(
-                &user.contract,
-                identity(user.wallet.address()).await
-            )
-            .await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
-        let info = pledged(
-            &user.contract,
-            1,
-            identity(user.wallet.address()).await
-        )
-        .await
-        .value;
+        let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
+            .await
+            .value;
         assert_eq!(1, info.id);
         assert_eq!(defaults.target_amount, info.amount);
 
@@ -169,19 +157,11 @@ mod success {
         );
         assert_eq!(
             1,
-            pledge_count(
-                &user.contract,
-                identity(user.wallet.address()).await
-            )
-            .await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
-        let info = pledged(
-            &user.contract,
-            1,
-            identity(user.wallet.address()).await
-        )
-        .await
-        .value;
+        let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
+            .await
+            .value;
         assert_eq!(1, info.id);
         assert_eq!(1, info.amount);
     }
@@ -233,11 +213,7 @@ mod success {
         );
         assert_eq!(
             0,
-            pledge_count(
-                &user.contract,
-                identity(user.wallet.address()).await
-            )
-            .await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
@@ -260,27 +236,15 @@ mod success {
         );
         assert_eq!(
             2,
-            pledge_count(
-                &user.contract,
-                identity(user.wallet.address()).await
-            )
-            .await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
-        let info1 = pledged(
-            &user.contract,
-            1,
-            identity(user.wallet.address()).await
-        )
-        .await
-        .value;
-        let info2 = pledged(
-            &user.contract,
-            2,
-            identity(user.wallet.address()).await
-        )
-        .await
-        .value;
+        let info1 = pledged(&user.contract, 1, identity(user.wallet.address()).await)
+            .await
+            .value;
+        let info2 = pledged(&user.contract, 2, identity(user.wallet.address()).await)
+            .await
+            .value;
 
         assert_eq!(1, info1.id);
         assert_eq!(2, info2.id);
@@ -336,27 +300,15 @@ mod success {
         );
         assert_eq!(
             2,
-            pledge_count(
-                &user.contract,
-                identity(user.wallet.address()).await
-            )
-            .await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
-        let info1 = pledged(
-            &user.contract,
-            1,
-            identity(user.wallet.address()).await
-        )
-        .await
-        .value;
-        let info2 = pledged(
-            &user.contract,
-            2,
-            identity(user.wallet.address()).await
-        )
-        .await
-        .value;
+        let info1 = pledged(&user.contract, 1, identity(user.wallet.address()).await)
+            .await
+            .value;
+        let info2 = pledged(&user.contract, 2, identity(user.wallet.address()).await)
+            .await
+            .value;
 
         assert_eq!(1, info1.id);
         assert_eq!(2, info2.id);

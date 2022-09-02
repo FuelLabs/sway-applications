@@ -28,13 +28,9 @@ mod success {
         .await;
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
-        let info = pledged(
-            &user.contract,
-            1,
-            identity(user.wallet.address()).await
-        )
-        .await
-        .value;
+        let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
+            .await
+            .value;
         assert_eq!(1, info.id);
         assert_eq!(defaults.target_amount, info.amount);
     }
@@ -50,12 +46,7 @@ mod revert {
         let (_, user, _, _, _) = setup().await;
 
         // Reverts
-        pledged(
-            &user.contract,
-            0,
-            identity(user.wallet.address()).await
-        )
-        .await;
+        pledged(&user.contract, 0, identity(user.wallet.address()).await).await;
     }
 
     #[tokio::test]
@@ -64,11 +55,6 @@ mod revert {
         let (_, user, _, _, _) = setup().await;
 
         // Reverts
-        pledged(
-            &user.contract,
-            1,
-            identity(user.wallet.address()).await
-        )
-        .await;
+        pledged(&user.contract, 1, identity(user.wallet.address()).await).await;
     }
 }

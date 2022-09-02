@@ -23,14 +23,10 @@ mod success {
 
         assert_eq!(
             1,
-            campaign(
-                &author.contract,
-                1,
-                identity(author.wallet.address()).await
-            )
-            .await
-            .value
-            .id
+            campaign(&author.contract, 1, identity(author.wallet.address()).await)
+                .await
+                .value
+                .id
         );
     }
 }
@@ -45,12 +41,7 @@ mod revert {
         let (author, _, _, _, _) = setup().await;
 
         // Reverts
-        campaign(
-            &author.contract,
-            0,
-            identity(author.wallet.address()).await
-        )
-        .await;
+        campaign(&author.contract, 0, identity(author.wallet.address()).await).await;
     }
 
     #[tokio::test]
@@ -59,11 +50,6 @@ mod revert {
         let (author, _, _, _, _) = setup().await;
 
         // Reverts
-        campaign(
-            &author.contract,
-            1,
-            identity(author.wallet.address()).await
-        )
-        .await;
+        campaign(&author.contract, 1, identity(author.wallet.address()).await).await;
     }
 }

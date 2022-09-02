@@ -119,7 +119,12 @@ mod revert {
         let (author, user, asset, _, defaults) = setup().await;
         let deadline = 5;
 
-        mint(&asset.contract, defaults.target_amount, user.wallet.address()).await;
+        mint(
+            &asset.contract,
+            defaults.target_amount,
+            user.wallet.address(),
+        )
+        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
