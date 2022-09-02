@@ -12,13 +12,25 @@ mod success {
         let (deploy_wallet, _, _, _, asset) = setup().await;
 
         assert_eq!(end_block(&deploy_wallet.airdrop_distributor).await, 0);
-        assert_eq!(merkle_root(&deploy_wallet.airdrop_distributor).await, [0u8; 32]);
+        assert_eq!(
+            merkle_root(&deploy_wallet.airdrop_distributor).await,
+            [0u8; 32]
+        );
 
-        airdrop_constructor(10, &deploy_wallet.airdrop_distributor, [1u8; 32], asset.asset_id).await;
+        airdrop_constructor(
+            10,
+            &deploy_wallet.airdrop_distributor,
+            [1u8; 32],
+            asset.asset_id,
+        )
+        .await;
 
         // TODO: Get block height and add 10
         assert_eq!(end_block(&deploy_wallet.airdrop_distributor).await, 14);
-        assert_eq!(merkle_root(&deploy_wallet.airdrop_distributor).await, [1u8; 32])
+        assert_eq!(
+            merkle_root(&deploy_wallet.airdrop_distributor).await,
+            [1u8; 32]
+        )
         // TODO: Get contract ID that was deployed
     }
 }
@@ -32,11 +44,26 @@ mod revert {
     async fn panics_when_already_initalized() {
         let (deploy_wallet, _, _, _, asset) = setup().await;
 
-        airdrop_constructor(10, &deploy_wallet.airdrop_distributor, [1u8; 32], asset.asset_id).await;
+        airdrop_constructor(
+            10,
+            &deploy_wallet.airdrop_distributor,
+            [1u8; 32],
+            asset.asset_id,
+        )
+        .await;
 
-        assert_eq!(merkle_root(&deploy_wallet.airdrop_distributor).await, [1u8; 32]);
+        assert_eq!(
+            merkle_root(&deploy_wallet.airdrop_distributor).await,
+            [1u8; 32]
+        );
 
-        airdrop_constructor(10, &deploy_wallet.airdrop_distributor, [1u8; 32], asset.asset_id).await;
+        airdrop_constructor(
+            10,
+            &deploy_wallet.airdrop_distributor,
+            [1u8; 32],
+            asset.asset_id,
+        )
+        .await;
     }
 
     #[tokio::test]
@@ -44,6 +71,12 @@ mod revert {
     async fn panics_when_claim_time_zero() {
         let (deploy_wallet, _, _, _, asset) = setup().await;
 
-        airdrop_constructor(0, &deploy_wallet.airdrop_distributor, [1u8; 32], asset.asset_id).await;
+        airdrop_constructor(
+            0,
+            &deploy_wallet.airdrop_distributor,
+            [1u8; 32],
+            asset.asset_id,
+        )
+        .await;
     }
 }

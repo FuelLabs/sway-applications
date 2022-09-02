@@ -3,11 +3,7 @@ library utils;
 dep interface;
 
 use interface::SimpleToken;
-use std::{
-    constants::ZERO_B256,
-    contract_id::ContractId,
-    identity::Identity,
-};
+use std::{constants::ZERO_B256, contract_id::ContractId, identity::Identity};
 
 /// Calls the `mint_to` function in another contract.
 ///
