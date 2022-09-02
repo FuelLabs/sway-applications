@@ -2,7 +2,6 @@ use crate::utils::{
     abi_calls::{create_escrow, deposit, propose_arbiter, transfer_to_seller},
     test_helpers::{asset_amount, create_arbiter, create_asset, mint, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -12,7 +11,7 @@ mod success {
     async fn transfers_to_seller() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address().into(),
+            arbiter.wallet.address(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -21,13 +20,13 @@ mod success {
 
         mint(
             &defaults.asset,
-            seller.wallet.address().into(),
+            seller.wallet.address(),
             defaults.asset_amount,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             defaults.asset_amount,
         )
         .await;
@@ -37,7 +36,7 @@ mod success {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
         )
@@ -66,7 +65,7 @@ mod success {
     async fn transfers_to_seller_after_proposing_arbiter() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address().into(),
+            arbiter.wallet.address(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -75,13 +74,13 @@ mod success {
 
         mint(
             &defaults.asset,
-            seller.wallet.address().into(),
+            seller.wallet.address(),
             defaults.asset_amount * 2,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             defaults.asset_amount,
         )
         .await;
@@ -91,7 +90,7 @@ mod success {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
         )
@@ -121,7 +120,7 @@ mod success {
     async fn transfers_to_seller_in_two_escrows() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address().into(),
+            arbiter.wallet.address(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -130,13 +129,13 @@ mod success {
 
         mint(
             &defaults.asset,
-            seller.wallet.address().into(),
+            seller.wallet.address(),
             defaults.asset_amount * 2,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             defaults.asset_amount * 2,
         )
         .await;
@@ -146,7 +145,7 @@ mod success {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
         )
@@ -156,7 +155,7 @@ mod success {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
         )
@@ -207,7 +206,7 @@ mod revert {
     async fn when_escrow_is_not_pending() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address().into(),
+            arbiter.wallet.address(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -216,13 +215,13 @@ mod revert {
 
         mint(
             &defaults.asset,
-            seller.wallet.address().into(),
+            seller.wallet.address(),
             defaults.asset_amount,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             defaults.asset_amount,
         )
         .await;
@@ -232,7 +231,7 @@ mod revert {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
         )
@@ -253,7 +252,7 @@ mod revert {
     async fn when_buyer_has_not_deposited() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address().into(),
+            arbiter.wallet.address(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -262,13 +261,13 @@ mod revert {
 
         mint(
             &defaults.asset,
-            seller.wallet.address().into(),
+            seller.wallet.address(),
             defaults.asset_amount,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             defaults.asset_amount,
         )
         .await;
@@ -278,7 +277,7 @@ mod revert {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
         )
@@ -291,7 +290,7 @@ mod revert {
     async fn when_caller_is_not_buyer() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
-            arbiter.wallet.address().into(),
+            arbiter.wallet.address(),
             defaults.asset_id,
             defaults.asset_amount,
         )
@@ -300,13 +299,13 @@ mod revert {
 
         mint(
             &defaults.asset,
-            seller.wallet.address().into(),
+            seller.wallet.address(),
             defaults.asset_amount,
         )
         .await;
         mint(
             &defaults.asset,
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             defaults.asset_amount,
         )
         .await;
@@ -316,7 +315,7 @@ mod revert {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address().into(),
+            buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
         )

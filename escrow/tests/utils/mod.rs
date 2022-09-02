@@ -36,7 +36,7 @@ pub mod abi_calls {
         arbiter: &Arbiter,
         asset: &ContractId,
         assets: Vec<Asset>,
-        buyer: Address,
+        buyer: &Bech32Address,
         contract: &Escrow,
         deadline: u64,
     ) -> CallResponse<()> {
@@ -45,7 +45,12 @@ pub mod abi_calls {
             CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(100_000));
 
         contract
-            .create_escrow(arbiter.clone(), assets, Identity::Address(buyer), deadline)
+            .create_escrow(
+                arbiter.clone(),
+                assets,
+                Identity::Address(buyer.into()),
+                deadline,
+            )
             .tx_params(tx_params)
             .call_params(call_params)
             .call()
@@ -102,10 +107,10 @@ pub mod abi_calls {
         contract: &Escrow,
         identifier: u64,
         payment_amount: u64,
-        user: Identity,
+        user: &Bech32Address,
     ) -> CallResponse<()> {
         contract
-            .resolve_dispute(identifier, payment_amount, user)
+            .resolve_dispute(identifier, payment_amount, Identity::Address(user.into()))
             .append_variable_outputs(4)
             .call()
             .await
@@ -161,9 +166,13 @@ pub mod test_helpers {
             .unwrap()
     }
 
-    pub async fn create_arbiter(address: Address, asset: ContractId, fee_amount: u64) -> Arbiter {
+    pub async fn create_arbiter(
+        address: &Bech32Address,
+        asset: ContractId,
+        fee_amount: u64,
+    ) -> Arbiter {
         Arbiter {
-            address: Identity::Address(address),
+            address: Identity::Address(address.into()),
             asset,
             fee_amount,
         }
@@ -195,9 +204,9 @@ pub mod test_helpers {
         )
     }
 
-    pub async fn mint(contract: &MyAsset, address: Address, amount: u64) {
+    pub async fn mint(contract: &MyAsset, address: &Bech32Address, amount: u64) {
         contract
-            .mint_and_send_to_address(amount, address)
+            .mint_and_send_to_address(amount, address.into())
             .append_variable_outputs(1)
             .call()
             .await
