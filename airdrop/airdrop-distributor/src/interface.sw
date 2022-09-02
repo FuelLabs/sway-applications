@@ -47,5 +47,5 @@ abi AirdropDistributor {
 }
 
 abi SimpleToken {
-    fn mint_to(amount: u64, to: Identity);
+    #[storage(read, write)]fn mint_to(amount: u64, to: Identity);
 }

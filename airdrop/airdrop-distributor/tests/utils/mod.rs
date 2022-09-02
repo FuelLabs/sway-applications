@@ -7,7 +7,7 @@ use sha2::{Digest, Sha256};
 
 // Load abi from json
 abigen!(AirdropDistributor, "out/debug/airdrop-distributor-abi.json");
-abigen!(SimpleToken, "../simple-token/out/debug/simple-token-abi.json");
+abigen!(SimpleToken, "../simple-token/out/debug/simpletoken-abi.json");
 
 pub struct Asset {
     pub asset_id: ContractId,
@@ -30,9 +30,16 @@ pub mod airdrop_distributor_abi_calls {
         key: u64,
         num_leaves: u64,
         proof: Vec<[u8; 32]>, 
-        to: Identity
+        to: Identity,
+        token_id: ContractId
     ) -> CallResponse<()> {
-        contract.claim(amount, key, num_leaves, proof, to).call().await.unwrap()
+        contract
+            .claim(amount, key, num_leaves, proof, to)
+            .append_variable_outputs(1)
+            .set_contracts(&[token_id.into()])
+            .call()
+            .await
+            .unwrap()
     }
 
     pub async fn airdrop_constructor(
@@ -58,11 +65,11 @@ pub mod simple_token_abi_calls {
     use super::*;
 
     pub async fn token_constructor(
-        airdrop_contract: ContractId, 
+        minter: simpletoken_mod::Identity, 
         contract: &SimpleToken,
         token_supply: u64
     ) -> CallResponse<()> {
-        contract.constructor(airdrop_contract, token_supply).call().await.unwrap()
+        contract.constructor(minter, token_supply).call().await.unwrap()
     }
 }
 
@@ -127,10 +134,12 @@ pub mod test_helpers {
         .unwrap();
 
         let simple_token_id = Contract::deploy(
-            "../simple-token/out/debug/simple-token.bin",
+            "../simple-token/out/debug/simpletoken.bin",
             &wallet1,
             TxParameters::default(),
-            StorageConfiguration::default(),
+            StorageConfiguration::with_storage_path(Some(
+                "../simple-token/out/debug/simpletoken-storage_slots.json".to_string(),
+            )),
         )
         .await
         .unwrap();

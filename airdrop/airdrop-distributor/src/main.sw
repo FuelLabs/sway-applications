@@ -57,7 +57,7 @@ impl AirdropDistributor for Contract {
 
         // Mint tokens
         storage.claimed.insert((to, amount), true);
-        // mint_to(amount, to, storage.token_contract);
+        mint_to(amount, to, storage.token_contract);
 
         log(ClaimEvent {
             to, amount, 

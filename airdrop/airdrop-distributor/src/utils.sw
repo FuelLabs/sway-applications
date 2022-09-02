@@ -4,6 +4,7 @@ dep interface;
 
 use interface::SimpleToken;
 use std::{
+    constants::ZERO_B256,
     contract_id::ContractId,
     identity::Identity,
 };

@@ -1,7 +1,8 @@
 use crate::utils::{
     airdrop_distributor_abi_calls::{airdrop_constructor, claim},
-    airdropdistributor_mod::Identity,
+    airdropdistributor_mod::Identity as AirdropIdentity,
     simple_token_abi_calls::token_constructor,
+    simpletoken_mod::Identity as TokenIdentity,
     test_helpers::{build_tree, setup},
 };
 use fuel_merkle::common::Bytes32;
@@ -20,18 +21,19 @@ mod success {
         let airdrop_leaves = [&(1, *wallet1.wallet.address().hash()), &(2, *wallet2.wallet.address().hash()), &(3, *wallet3.wallet.address().hash())];
         let key = 0;
         let num_leaves = 3;
-        let identity = Identity::Address(wallet1.wallet.address().into());
+        let identity = AirdropIdentity::Address(wallet1.wallet.address().into());
+        let minter = TokenIdentity::ContractId(deploy_wallet.contract_id);
         let (_tree, root, _leaf, proof) = build_tree(airdrop_leaves.to_vec(), key).await;
 
         airdrop_constructor(10, &deploy_wallet.airdrop_distributor, root, asset.asset_id).await;
-        token_constructor(deploy_wallet.contract_id, &asset.token, 10).await;
+        token_constructor(minter, &asset.token, 10).await;
 
         assert_eq!(
             wallet1.wallet.get_asset_balance(&AssetId::new(*asset.asset_id)).await.unwrap(),
             0
         );
 
-        claim(1, &deploy_wallet.airdrop_distributor, key, num_leaves, proof, identity).await;
+        claim(1, &deploy_wallet.airdrop_distributor, key, num_leaves, proof, identity, asset.asset_id).await;
 
         assert_eq!(
             wallet1.wallet.get_asset_balance(&AssetId::new(*asset.asset_id)).await.unwrap(),
@@ -46,7 +48,6 @@ mod success {
         let airdrop_leaves: [([u8; 32], u64); 3]= [(*wallet1.wallet.address().hash(), 1), (*wallet2.wallet.address().hash(), 2), (*wallet3.wallet.address().hash(), 3)];
         let key = 0;
         let num_leaves = 3;
-        let identity = Identity::Address(wallet1.wallet.address().into());
 
         //            ABC
         //           /   \
@@ -103,20 +104,22 @@ mod success {
         node_abc.update(&leaf_c_hash);
         let node_abc_hash: Bytes32 = node_abc.finalize().try_into().unwrap();
 
+        let identity = AirdropIdentity::Address(wallet1.wallet.address().into());
+        let minter = TokenIdentity::ContractId(deploy_wallet.contract_id);
         airdrop_constructor(15, &deploy_wallet.airdrop_distributor, node_abc_hash, asset.asset_id).await;
-        token_constructor(deploy_wallet.contract_id, &asset.token, 10).await;
+        token_constructor(minter, &asset.token, 10).await;
 
         assert_eq!(
             wallet1.wallet.get_asset_balance(&AssetId::new(*asset.asset_id)).await.unwrap(),
             0
         );
 
-        claim(1, &deploy_wallet.airdrop_distributor, key, num_leaves, [leaf_b_hash, leaf_c_hash].to_vec(), identity).await;
+        claim(1, &deploy_wallet.airdrop_distributor, key, num_leaves, [leaf_b_hash, leaf_c_hash].to_vec(), identity, asset.asset_id).await;
 
-        // assert_eq!(
-        //     wallet1.wallet.get_asset_balance(&AssetId::new(*asset.asset_id)).await.unwrap(),
-        //     1
-        // );
+        assert_eq!(
+            wallet1.wallet.get_asset_balance(&AssetId::new(*asset.asset_id)).await.unwrap(),
+            1
+        );
     }
 }
 
