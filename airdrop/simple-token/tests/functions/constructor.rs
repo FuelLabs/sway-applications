@@ -1,8 +1,4 @@
-use crate::utils::{
-    abi_calls::constructor,
-    test_helpers::setup,
-    Identity
-};
+use crate::utils::{abi_calls::constructor, test_helpers::setup, Identity};
 use fuels::signers::Signer;
 
 mod success {

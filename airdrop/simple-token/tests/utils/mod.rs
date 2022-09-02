@@ -13,18 +13,18 @@ pub mod abi_calls {
     use super::*;
 
     pub async fn constructor(
-        minter: Identity, 
+        minter: Identity,
         contract: &SimpleToken,
-        token_supply: u64
+        token_supply: u64,
     ) -> CallResponse<()> {
-        contract.constructor(minter, token_supply).call().await.unwrap()
+        contract
+            .constructor(minter, token_supply)
+            .call()
+            .await
+            .unwrap()
     }
 
-    pub async fn mint_to(
-        amount: u64, 
-        contract: &SimpleToken,
-        to: Identity
-    ) -> CallResponse<()> {
+    pub async fn mint_to(amount: u64, contract: &SimpleToken, to: Identity) -> CallResponse<()> {
         contract
             .mint_to(amount, to)
             .append_variable_outputs(1)
@@ -32,7 +32,6 @@ pub mod abi_calls {
             .await
             .unwrap()
     }
-
 }
 
 pub mod test_helpers {
@@ -44,11 +43,7 @@ pub mod test_helpers {
         let coins_per_wallet = 1;
         let coin_amount = 1000000;
         let mut wallets = launch_custom_provider_and_get_wallets(
-            WalletsConfig::new(
-                Some(num_wallets),
-                Some(coins_per_wallet),
-                Some(coin_amount),
-            ),
+            WalletsConfig::new(Some(num_wallets), Some(coins_per_wallet), Some(coin_amount)),
             None,
         )
         .await;
@@ -69,14 +64,16 @@ pub mod test_helpers {
 
         let deployer = Metadata {
             asset_id: ContractId::new(*simple_token_id.hash()),
-            simple_token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet1.clone()).build(),
-            wallet: wallet1.clone()
+            simple_token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet1.clone())
+                .build(),
+            wallet: wallet1.clone(),
         };
 
         let user = Metadata {
             asset_id: ContractId::new(*simple_token_id.hash()),
-            simple_token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet2.clone()).build(),
-            wallet: wallet2.clone()
+            simple_token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet2.clone())
+                .build(),
+            wallet: wallet2.clone(),
         };
 
         (deployer, user)
