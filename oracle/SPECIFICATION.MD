@@ -30,3 +30,7 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 `price()`
 
 1. Anyone can call this function to get the asset price that the oracle is tracking
+
+## Sequence Diagram
+
+![Oracle Sequence Diagram](.docs/oracle_diagram.png)
