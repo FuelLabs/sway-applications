@@ -4,8 +4,8 @@ use fuels::{
     tx::{AssetId, ContractId, Salt},
 };
 
-abigen!(Fundraiser, "out/debug/fundraiser-flat-abi.json");
-abigen!(Asset, "tests/artifacts/asset/out/debug/asset-flat-abi.json");
+abigen!(Fundraiser, "out/debug/fundraiser-abi.json");
+abigen!(Asset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
 pub struct DefaultParameters {
     pub asset_id: ContractId,

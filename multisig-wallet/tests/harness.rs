@@ -1,6 +1,6 @@
 use fuels::prelude::*;
 
-abigen!(Multisig, "out/debug/multisig-wallet-flat-abi.json");
+abigen!(Multisig, "out/debug/multisig-wallet-abi.json");
 
 async fn setup() -> (Multisig, WalletUnlocked, WalletUnlocked, WalletUnlocked) {
     let num_wallets = 3;

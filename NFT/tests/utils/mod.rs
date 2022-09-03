@@ -1,6 +1,6 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
 
-abigen!(Nft, "out/debug/NFT-flat-abi.json");
+abigen!(Nft, "out/debug/NFT-abi.json");
 
 pub struct Metadata {
     pub contract: Nft,

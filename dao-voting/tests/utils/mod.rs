@@ -1,9 +1,9 @@
 use fuels::{contract::contract::CallResponse, prelude::*, tx::ContractId};
 
-abigen!(DaoVoting, "out/debug/dao-voting-flat-abi.json");
+abigen!(DaoVoting, "out/debug/dao-voting-abi.json");
 abigen!(
     GovToken,
-    "tests/artifacts/gov_token/out/debug/gov_token-flat-abi.json"
+    "tests/artifacts/gov_token/out/debug/gov_token-abi.json"
 );
 
 pub struct Metadata {
