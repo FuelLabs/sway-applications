@@ -113,13 +113,18 @@ The information in this section is split into subsections in order to conceptual
 <h3>Contracts ✅</h3>
 
 - Feature complete for UI integration
+  - Needs vec support in SDK so that array can be changed to vec
 - Needs some getters so that contracts can interact
 
 <h3>User Interface</h3>
 
 <h3>Tests</h3>
 
-- <h3>Rust ✅</h3>
+- <h3>Rust ❌</h3>
+
+  - SDK has block manipulation so tests can continue to be written
+  - Requires vec from SDK
+
 - <h3>Typescript</h3>
 
 <h3>Documentation ✅</h3>
