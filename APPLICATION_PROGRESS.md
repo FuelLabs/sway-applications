@@ -2,137 +2,8 @@ Table of Content
 - [Overview](#overview)
 - [Applications](#applications)
   - [Decentralized Apps](#decentralized-apps)
-    - [Airdrop](#airdrop)
-      - [Contracts ❌](#contracts-)
-      - [User Interface ❌](#user-interface-)
-      - [Tests](#tests)
-        - [Rust ❌](#rust-)
-        - [Typescript ❌](#typescript-)
-      - [Documentation ❌](#documentation-)
-    - [Auctions](#auctions)
-      - [Contracts](#contracts)
-        - [Blind Auction ❌](#blind-auction-)
-        - [Dutch Auction ❌](#dutch-auction-)
-        - [English Auction ❌](#english-auction-)
-      - [User Interface ❌](#user-interface--1)
-      - [Tests](#tests-1)
-        - [Rust ❌](#rust--1)
-        - [Typescript ❌](#typescript--1)
-      - [Documentation ❌](#documentation--1)
-    - [Decentralized Autonomous Organization (DAO)](#decentralized-autonomous-organization-dao)
-      - [Contracts ❌](#contracts--1)
-      - [User Interface ❌](#user-interface--2)
-      - [Tests](#tests-2)
-        - [Rust ❌](#rust--2)
-        - [Typescript ❌](#typescript--2)
-      - [Documentation ✅](#documentation--2)
-    - [Escrow](#escrow)
-      - [Contracts ✅](#contracts--2)
-      - [User Interface ❌](#user-interface--3)
-      - [Tests](#tests-3)
-        - [Rust ✅](#rust--3)
-        - [Typescript ❌](#typescript--3)
-      - [Documentation ✅](#documentation--3)
-    - [Flashloan](#flashloan)
-      - [Contracts ❌](#contracts--3)
-      - [User Interface ❌](#user-interface--4)
-      - [Tests](#tests-4)
-        - [Rust ❌](#rust--4)
-        - [Typescript ❌](#typescript--4)
-      - [Documentation ❌](#documentation--4)
-    - [Fractionalized Non-Fungible Token (NFT)](#fractionalized-non-fungible-token-nft)
-      - [Contracts ❌](#contracts--4)
-      - [User Interface ❌](#user-interface--5)
-      - [Tests](#tests-5)
-        - [Rust ❌](#rust--5)
-        - [Typescript ❌](#typescript--5)
-      - [Documentation ❌](#documentation--5)
-    - [Fundraiser](#fundraiser)
-      - [Contracts ❌](#contracts--5)
-      - [User Interface ❌](#user-interface--6)
-      - [Tests](#tests-6)
-        - [Rust ❌](#rust--6)
-        - [Typescript ❌](#typescript--6)
-      - [Documentation ❌](#documentation--6)
-    - [Liquidity Module](#liquidity-module)
-      - [Contracts ❌](#contracts--6)
-      - [User Interface ❌](#user-interface--7)
-      - [Tests](#tests-7)
-        - [Rust ❌](#rust--7)
-        - [Typescript ❌](#typescript--7)
-      - [Documentation ❌](#documentation--7)
-    - [Multi-signature Wallet](#multi-signature-wallet)
-      - [Contracts ❌](#contracts--7)
-      - [User Interface ❌](#user-interface--8)
-      - [Tests](#tests-8)
-        - [Rust ❌](#rust--8)
-        - [Typescript ❌](#typescript--8)
-      - [Documentation ❌](#documentation--8)
-    - [Name Registry](#name-registry)
-      - [Contracts ❌](#contracts--8)
-      - [User Interface ❌](#user-interface--9)
-      - [Tests](#tests-9)
-        - [Rust ❌](#rust--9)
-        - [Typescript ❌](#typescript--9)
-      - [Documentation ❌](#documentation--9)
-    - [Non-fungible Token (NFT)](#non-fungible-token-nft)
-      - [Contracts ❌](#contracts--9)
-      - [User Interface ✅](#user-interface--10)
-      - [Tests](#tests-10)
-        - [Rust ❌](#rust--10)
-        - [Typescript ✅](#typescript--10)
-      - [Documentation ❌](#documentation--10)
-    - [Oracle](#oracle)
-      - [Contracts ✅](#contracts--10)
-      - [User Interface ❌](#user-interface--11)
-      - [Tests](#tests-11)
-        - [Rust ✅](#rust--11)
-        - [Typescript ❌](#typescript--11)
-      - [Documentation ✅](#documentation--11)
-    - [Over the counter (OTC) Swap Predicate](#over-the-counter-otc-swap-predicate)
-      - [Contracts ✅](#contracts--11)
-      - [User Interface ❌](#user-interface--12)
-      - [Tests](#tests-12)
-        - [Rust ✅](#rust--12)
-        - [Typescript ❌](#typescript--12)
-      - [Documentation ❌](#documentation--12)
-    - [Staking](#staking)
-      - [Contracts ❌](#contracts--12)
-      - [User Interface ❌](#user-interface--13)
-      - [Tests](#tests-13)
-        - [Rust ❌](#rust--13)
-        - [Typescript ❌](#typescript--13)
-      - [Documentation ❌](#documentation--13)
-    - [Token Vault](#token-vault)
-      - [Contracts ❌](#contracts--13)
-      - [User Interface ❌](#user-interface--14)
-      - [Tests](#tests-14)
-        - [Rust ❌](#rust--14)
-        - [Typescript ❌](#typescript--14)
-      - [Documentation ❌](#documentation--14)
   - [Games](#games)
-    - [Tic Tac Toe](#tic-tac-toe)
-      - [Contracts ❌](#contracts--14)
-      - [User Interface ❌](#user-interface--15)
-      - [Tests](#tests-15)
-        - [Rust ❌](#rust--15)
-        - [Typescript ❌](#typescript--15)
-      - [Documentation ❌](#documentation--15)
   - [Tutorials](#tutorials)
-    - [Counter](#counter)
-      - [Contracts ❌](#contracts--15)
-      - [User Interface ❌](#user-interface--16)
-      - [Tests](#tests-16)
-        - [Rust ❌](#rust--16)
-        - [Typescript ❌](#typescript--16)
-      - [Documentation ❌](#documentation--16)
-    - [Todo](#todo)
-      - [Contracts ❌](#contracts--16)
-      - [User Interface ❌](#user-interface--17)
-      - [Tests](#tests-17)
-        - [Rust ❌](#rust--17)
-        - [Typescript ❌](#typescript--17)
-      - [Documentation ❌](#documentation--17)
 
 # Overview
 
@@ -158,83 +29,85 @@ The information in this section is split into subsections in order to conceptual
 - [Tutorials](#tutorials)
   - The projects in the tutorials are a step down from [decentralized apps](#decentralized-apps) in so far as they are meant to take a new developer through the experience of building on Fuel. It's a place for step-by-step instructions that guide a developer from the creation of their contract to interacting with it via a user interface.
 
+<br>
+
 ## Decentralized Apps
 
-### Airdrop
+<details>
+<summary>Airdrop</summary>
 
 - Currently an initial draft PR is under development for the smart contracts
 
-#### Contracts ❌
+Contracts ❌
 
 - Sway libs has recently added a merkle library which the airdrop requires
 
-#### User Interface ❌
+User Interface ❌
 
 - Not under development at this time
 
-#### Tests
+Tests
 
-##### Rust ❌
+- Rust ❌
+  - Tests are partially written
+  - Need to bump SDK version once the repo catches up
+  - SDK has block manipulation so tests can continue to be written
 
-- Tests are partially written
-- Need to bump SDK version once the repo catches up
-- SDK has block manipulation so tests can continue to be written
+- Typescript ❌
+  - Not under development at this time
 
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
+Documentation ❌
 
 - Not under development at this time
+
+</details>
 
 ---
 
-### Auctions
+<details>
+<summary>Auctions</summary>
 
 - Currently initial draft PRs exist (smart contracts) for the dutch and english auctions
 
-#### Contracts
+Contracts
 
-##### Blind Auction ❌
+- Blind Auction ❌
+  - Not under development at this time
 
-- Not under development at this time
+- Dutch Auction ❌
+  - Requires vec support in SDK
+  - Lots of work to be done for quality in PR
 
-##### Dutch Auction ❌
+- English Auction ❌
+  - Requires vec support in SDK
+  - Lots of work to be done for quality in PR
 
-- Requires vec support in SDK
-- Lots of work to be done for quality in PR
-
-##### English Auction ❌
-
-- Requires vec support in SDK
-- Lots of work to be done for quality in PR
-
-#### User Interface ❌
+User Interface ❌
 
 - Not under development at this time
 
-#### Tests
+Tests
 
-##### Rust ❌
+- Rust ❌
+  - Blocked by vec for testing
+  - No tests written for Dutch, some tests written for English
+  - Need to bump SDK version once the repo catches up
 
-- Blocked by vec for testing
-- No tests written for Dutch, some tests written for English
-- Need to bump SDK version once the repo catches up
+- Typescript ❌
+  - Not under development at this time
 
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
+Documentation ❌
 
 - Outdated in PRs, requires updates to readme and a spec should be created
 
+</details>
+
 ---
 
-### Decentralized Autonomous Organization (DAO)
+<details>
+<summary>Decentralized Autonomous Organization (DAO)</summary>
 
-#### Contracts ❌
+Contracts ❌
 
 - Replace constructor with manifest instantiation?
 - Need to possibly handle overflowing upon calculating votes inside `execute`
@@ -243,115 +116,119 @@ The information in this section is split into subsections in order to conceptual
 - Extend to use multiple consensus mechansims instead of a simple yes:no ratio
 - Not alphabetically ordered
 
-#### User Interface ❌
+User Interface ❌
 
 - Not under development at this time
 
-#### Tests
+Tests
 
-##### Rust ❌
+- Rust ❌
+  - Need to bump SDK version once the repo catches up
+  - SDK has block manipulation so tests can continue to be written
 
-- Need to bump SDK version once the repo catches up
-- SDK has block manipulation so tests can continue to be written
+- Typescript ❌
+  - Not under development at this time
 
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ✅
+Documentation ✅
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
   - Once UI is added it needs to be documented
 - Specification ✅
 
+</details>
+
 ---
 
-### Escrow
+<details>
+<summary>Escrow</summary>
 
-#### Contracts ✅
+Contracts ✅
 
 - Feature complete for UI integration
 - Needs some getters so that contracts can interact
 
-#### User Interface ❌
+User Interface ❌
 
 - Currently under development
 
-#### Tests
+Tests
 
-##### Rust ✅
+- Rust ✅
+  - Need to bump SDK version once the repo catches up
 
-- Need to bump SDK version once the repo catches up
+- Typescript ❌
+  - Currently under development
 
-##### Typescript ❌
-
-- Currently under development
-
-#### Documentation ✅
+Documentation ✅
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
   - Once UI is added it needs to be documented
 - Specification ✅
 
----
-
-### Flashloan
-
-#### Contracts ❌
-
-- Not under development at this time
-
-#### User Interface ❌
-
-- Not under development at this time
-
-#### Tests
-
-##### Rust ❌
-
-- Not under development at this time
-
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
-
-- Not under development at this time
+</details>
 
 ---
 
-### Fractionalized Non-Fungible Token (NFT)
+<details>
+<summary>Flashloan</summary>
 
-#### Contracts ❌
-
-- Not under development at this time
-
-#### User Interface ❌
+Contracts ❌
 
 - Not under development at this time
 
-#### Tests
-
-##### Rust ❌
+User Interface ❌
 
 - Not under development at this time
 
-##### Typescript ❌
+Tests
+
+- Rust ❌
+  - Not under development at this time
+
+- Typescript ❌
+  - Not under development at this time
+
+Documentation ❌
 
 - Not under development at this time
 
-#### Documentation ❌
-
-- Not under development at this time
+</details>
 
 ---
 
-### Fundraiser
+<details>
+<summary>Fractionalized Non-Fungible Token (NFT)</summary>
 
-#### Contracts ❌
+Contracts ❌
+
+- Not under development at this time
+
+User Interface ❌
+
+- Not under development at this time
+
+Tests
+
+- Rust ❌
+  - Not under development at this time
+
+- Typescript ❌
+  - Not under development at this time
+
+Documentation ❌
+
+- Not under development at this time
+
+</details>
+
+---
+
+<details>
+<summary>Fundraiser</summary>
+
+Contracts ❌
 
 - Rename `contract_abi` to `interface`
 - Move documentation onto the interface rather than have it on the implementation
@@ -362,22 +239,20 @@ The information in this section is split into subsections in order to conceptual
   - Must iterate from 0...X where X is known by another function call
 - Not alphabetically ordered
 
-#### User Interface ❌
+User Interface ❌
 
 - Not under development at this time
 
-#### Tests
+Tests
 
-##### Rust ❌
+- Rust ❌
+  - SDK has block manipulation so tests can continue to be written
+  - Need to bump SDK version once the repo catches up
 
-- SDK has block manipulation so tests can continue to be written
-- Need to bump SDK version once the repo catches up
+- Typescript ❌
+  - Not under development at this time
 
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
+Documentation ❌
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -385,38 +260,42 @@ The information in this section is split into subsections in order to conceptual
 - Specification ❌
   - Need to simplify to make it look like the Escrow / DAO spec
 
+</details>
+
 ---
 
-### Liquidity Module
+<details>
+<summary>Liquidity Module</summary>
 
-#### Contracts ❌
-
-- Not under development at this time
-
-#### User Interface ❌
+Contracts ❌
 
 - Not under development at this time
 
-#### Tests
-
-##### Rust ❌
+User Interface ❌
 
 - Not under development at this time
 
-##### Typescript ❌
+Tests
 
-- Not under development at this time
+- Rust ❌
+  - Not under development at this time
 
-#### Documentation ❌
+- Typescript ❌
+  - Not under development at this time
+
+Documentation ❌
 
 - Not under development at this time
 - Issue is not documented
 
+</details>
+
 ---
 
-### Multi-signature Wallet
+<details>
+<summary>Multi-signature Wallet</summary>
 
-#### Contracts ❌
+Contracts ❌
 
 - Rename `contract_abi` to `interface`
 - Move documentation onto the interface rather than have it on the implementation
@@ -429,22 +308,20 @@ The information in this section is split into subsections in order to conceptual
 - Only basic functionality is implemented (lots more to do as listed in issues)
   - Cannot make arbitrary calls yet, work is being done in Sway which hopefully resolves this
 
-#### User Interface ❌
+User Interface ❌
 
 - Not under development at this time
 
-#### Tests
+Tests
 
-##### Rust ❌
+- Rust ❌
+  - Needs vec support to test, partial tests written for basic functionality in draft PR
+  - Need to bump SDK version once the repo catches up
 
-- Needs vec support to test, partial tests written for basic functionality in draft PR
-- Need to bump SDK version once the repo catches up
+- Typescript ❌
+  - Not under development at this time
 
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
+Documentation ❌
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -452,58 +329,60 @@ The information in this section is split into subsections in order to conceptual
 - Specification ❌
   - Does not exist
 
----
-
-### Name Registry
-
-#### Contracts ❌
-
-- Not under development at this time
-
-#### User Interface ❌
-
-- Not under development at this time
-
-#### Tests
-
-##### Rust ❌
-
-- Not under development at this time
-
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
-
-- Not under development at this time
+</details>
 
 ---
 
-### Non-fungible Token (NFT)
+<details>
+<summary>Name Registry</summary>
+
+Contracts ❌
+
+- Not under development at this time
+
+User Interface ❌
+
+- Not under development at this time
+
+Tests
+
+- Rust ❌
+  - Not under development at this time
+
+- Typescript ❌
+  - Not under development at this time
+
+Documentation ❌
+
+- Not under development at this time
+
+</details>
+
+---
+
+<details>
+<summary>Non-fungible Token (NFT)</summary>
 
 - Will move from Apps repo to Libs repo soon
 
-#### Contracts ❌
+Contracts ❌
 
 - Needs vec and option but theu are not supported in the SDK so cannot test
 
-#### User Interface ✅
+User Interface ✅
 
 - Will not exist for an NFT and instead other applications which integrate the NFT will have their own UI's
 
-#### Tests
+Tests
 
-##### Rust ❌
+- Rust ❌
+  - Need to bump SDK version once the repo catches up
+  - Needs to support vec and option to complete testing
 
-- Need to bump SDK version once the repo catches up
-- Needs to support vec and option to complete testing
+- Typescript ✅
+  - Will not exist
 
-##### Typescript ✅
-
-- Will not exist
-
-#### Documentation ❌
+Documentation ❌
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -512,192 +391,211 @@ The information in this section is split into subsections in order to conceptual
 - Specification ❌
   - Does not exist
 
+</details>
+
 ---
 
-### Oracle
+<details>
+<summary>Oracle</summary>
 
-#### Contracts ✅
+Contracts ✅
 
 - Ready to go into master after repo is bumped to latest releases which solve some bugs in other projects
 - Need option but SDK may not support it in the latest release so using `u64` for price instead
 
-#### User Interface ❌
+User Interface ❌
 
 - Not under development at this time
 
-#### Tests
+Tests
 
-##### Rust ✅
+- Rust ✅
+  - Ready to go into master after repo is bumped to latest releases which solve some bugs in other projects
 
-- Ready to go into master after repo is bumped to latest releases which solve some bugs in other projects
+- Typescript ❌
+  - Not under development at this time
 
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ✅
+Documentation ✅
 
 - Ready to go into master after repo is bumped to latest releases which solve some bugs in other projects
+
+</details>
 
 ---
 
-### Over the counter (OTC) Swap Predicate
+<details>
+<summary>Over the counter (OTC) Swap Predicate</summary>
 
-#### Contracts ✅
+Contracts ✅
 
 - Predicate seems to be complete in draft PR
 
-#### User Interface ❌
+User Interface ❌
 
 - Not under development at this time
 
-#### Tests
+Tests
 
-##### Rust ✅
+- Rust ✅
+  - Tests seem to be complete in draft PR
 
-- Tests seem to be complete in draft PR
+- Typescript ❌
+  - Not under development at this time
 
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
+Documentation ❌
 
 - Readme ✅
 - Spec does not exist ❌
 
+</details>
+
 ---
 
-### Staking
+<details>
+<summary>Staking</summary>
 
-#### Contracts ❌
+Contracts ❌
 
 - Draft PR under development
 - Lots of work to be done for quality
 
-#### User Interface ❌
+User Interface ❌
 
 - Not under development at this time
 
-#### Tests
+Tests
 
-##### Rust ❌
+- Rust ❌
+  - Need to bump SDK version once the repo catches up
+  - Lots of work needs to be done
 
-- Need to bump SDK version once the repo catches up
-- Lots of work needs to be done
+- Typescript ❌
+  - Not under development at this time
 
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
+Documentation ❌
 
 - Not under development at this time
+
+</details>
 
 ---
 
-### Token Vault
+<details>
+<summary>Token Vault</summary>
 
-#### Contracts ❌
+Contracts ❌
 
 - Has been started in a branch a long time ago, not marked as a draft PR
 - Basic outline for contract without implementations
 
-#### User Interface ❌
+User Interface ❌
 
 - Not under development at this time
 
-#### Tests
+Tests
 
-##### Rust ❌
+- Rust ❌
+  - Not under development at this time
 
-- Not under development at this time
+- Typescript ❌
+  - Not under development at this time
 
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
+Documentation ❌
 
 - Not under development at this time
+
+</details>
+
+---
+
+<br>
 
 ## Games
 
-### Tic Tac Toe
+<details>
+<summary>Tic Tac Toe</summary>
 
-#### Contracts ❌
+Contracts ❌
 
 - Draft PR needs to be updated to a newer release
 - Lots of work to be done
 
-#### User Interface ❌
+User Interface ❌
 
 - Not under development at this time
 
-#### Tests
+Tests
 
-##### Rust ❌
+- Rust ❌
+  - Not under development at this time
 
-- Not under development at this time
+- Typescript ❌
+  - Not under development at this time
 
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
+Documentation ❌
 
 - Draft PR, Readme and Spec need to be reworked
 
-## Tutorials
-
-### Counter
-
-#### Contracts ❌
-
-- Draft PR needs to be updated to a newer release
-
-#### User Interface ❌
-
-- Draft PR needs to be updated to a newer release
-
-#### Tests
-
-##### Rust ❌
-
-- Not under development at this time
-
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
-
-- Readme ✅
-- Spec does not exist ❌
+</details>
 
 ---
 
-### Todo
+<br>
 
-#### Contracts ❌
+## Tutorials
+
+<details>
+<summary>Counter</summary>
+
+Contracts ❌
 
 - Draft PR needs to be updated to a newer release
 
-#### User Interface ❌
+User Interface ❌
 
 - Draft PR needs to be updated to a newer release
 
-#### Tests
+Tests
 
-##### Rust ❌
+- Rust ❌
+  - Not under development at this time
 
-- Not under development at this time
+- Typescript ❌
+  - Not under development at this time
 
-##### Typescript ❌
-
-- Not under development at this time
-
-#### Documentation ❌
+Documentation ❌
 
 - Readme ✅
 - Spec does not exist ❌
+
+</details>
+
+---
+
+<details>
+<summary>Todo</summary>
+
+Contracts ❌
+
+- Draft PR needs to be updated to a newer release
+
+User Interface ❌
+
+- Draft PR needs to be updated to a newer release
+
+Tests
+
+- Rust ❌
+  - Not under development at this time
+
+- Typescript ❌
+  - Not under development at this time
+
+Documentation ❌
+
+- Readme ✅
+- Spec does not exist ❌
+
+</details>
+
+---
