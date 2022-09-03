@@ -221,7 +221,6 @@ fn count_approvals(transaction_hash: b256, signatures: [B512; 25]) -> u64 {
         previous_signer = signer;
         approval_count = approval_count + storage.weighting.get(~Address::from(signer));
 
-
         // Once break is implemented uncomment below. https://github.com/FuelLabs/sway/pull/1646
         // if storage.threshold <= approval_count {
         //     break;

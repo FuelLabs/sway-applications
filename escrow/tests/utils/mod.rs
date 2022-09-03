@@ -1,10 +1,7 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
 
 abigen!(Escrow, "out/debug/escrow-abi.json");
-abigen!(
-    MyAsset,
-    "tests/artifacts/asset/out/debug/asset-abi.json"
-);
+abigen!(MyAsset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
 pub struct Defaults {
     pub asset: MyAsset,
