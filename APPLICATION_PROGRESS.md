@@ -84,21 +84,17 @@ The information in this section is split into subsections in order to conceptual
 - Can instantiate with approval of 1 - exploitable
 - Extend to use multiple consensus mechansims instead of a simple yes:no ratio
 - Not alphabetically ordered
+- Formatting
 
-<h3>User Interface ❌</h3>
-
-- Not under development at this time
+<h3>User Interface</h3>
 
 <h3>Tests</h3>
 
 - <h3>Rust ❌</h3>
 
-  - Need to bump SDK version once the repo catches up
   - SDK has block manipulation so tests can continue to be written
 
-- <h3>Typescript ❌</h3>
-
-  - Not under development at this time
+- <h3>Typescript</h3>
 
 <h3>Documentation ✅</h3>
 
@@ -119,19 +115,12 @@ The information in this section is split into subsections in order to conceptual
 - Feature complete for UI integration
 - Needs some getters so that contracts can interact
 
-<h3>User Interface ❌</h3>
-
-- Currently under development
+<h3>User Interface</h3>
 
 <h3>Tests</h3>
 
 - <h3>Rust ✅</h3>
-
-  - Need to bump SDK version once the repo catches up
-
-- <h3>Typescript ❌</h3>
-
-  - Currently under development
+- <h3>Typescript</h3>
 
 <h3>Documentation ✅</h3>
 
@@ -185,29 +174,21 @@ The information in this section is split into subsections in order to conceptual
 
 <h3>Contracts ❌</h3>
 
-- Rename `contract_abi` to `interface`
-- Move documentation onto the interface rather than have it on the implementation
 - Campaigns do not have any descriptions / titles / context
   - Should probably use a vec to store data that a human can use to distinguish between campaigns
   - Cannot search for campaigns aside from by a number from 0...X where X is known
 - No easy way to retrieve campaigns by user
   - Must iterate from 0...X where X is known by another function call
-- Not alphabetically ordered
 
-<h3>User Interface ❌</h3>
-
-- Not under development at this time
+<h3>User Interface</h3>
 
 <h3>Tests</h3>
 
 - <h3>Rust ❌</h3>
 
   - SDK has block manipulation so tests can continue to be written
-  - Need to bump SDK version once the repo catches up
 
-- <h3>Typescript ❌</h3>
-
-  - Not under development at this time
+- <h3>Typescript</h3>
 
 <h3>Documentation ❌</h3>
 
@@ -257,20 +238,15 @@ The information in this section is split into subsections in order to conceptual
 - Only basic functionality is implemented (lots more to do as listed in issues)
   - Cannot make arbitrary calls yet, work is being done in Sway which hopefully resolves this
 
-<h3>User Interface ❌</h3>
-
-- Not under development at this time
+<h3>User Interface</h3>
 
 <h3>Tests</h3>
 
 - <h3>Rust ❌</h3>
 
   - Needs vec support to test, partial tests written for basic functionality in draft PR
-  - Need to bump SDK version once the repo catches up
 
-- <h3>Typescript ❌</h3>
-
-  - Not under development at this time
+- <h3>Typescript</h3>
 
 <h3>Documentation ❌</h3>
 
@@ -305,11 +281,11 @@ The information in this section is split into subsections in order to conceptual
 <details>
 <summary>Non-fungible Token (NFT)</summary>
 
-- Will move from Apps repo to Libs repo soon
+Will move from Apps repo to Libs repo soon
 
 <h3>Contracts ❌</h3>
 
-- Needs vec and option but theu are not supported in the SDK so cannot test
+- Needs vec and option but they are not supported in the SDK so cannot test
 
 <h3>User Interface ✅</h3>
 
@@ -319,7 +295,6 @@ The information in this section is split into subsections in order to conceptual
 
 - <h3>Rust ❌</h3>
 
-  - Need to bump SDK version once the repo catches up
   - Needs to support vec and option to complete testing
 
 - <h3>Typescript ✅</h3>
