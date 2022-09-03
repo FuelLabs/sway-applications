@@ -1,6 +1,10 @@
 library data_structures;
 
-use std::{block::height, contract_id::ContractId, identity::Identity};
+use std::{
+    block::height,
+    contract_id::ContractId,
+    identity::Identity,
+};
 use core::ops::Eq;
 
 struct CallData {
@@ -45,12 +49,20 @@ pub struct ProposalInfo {
 }
 
 impl ProposalInfo {
-    fn new(acceptance_percentage: u64, author: Identity, duration: u64, proposal_transaction: Proposal) -> Self {
+    fn new(
+        acceptance_percentage: u64,
+        author: Identity,
+        duration: u64,
+        proposal_transaction: Proposal,
+    ) -> Self {
         ProposalInfo {
-            acceptance_percentage, author, deadline: height() + duration,
+            acceptance_percentage,
+            author,
+            deadline: height() + duration,
             executed: false,
             no_votes: 0,
-            proposal_transaction, yes_votes: 0,
+            proposal_transaction,
+            yes_votes: 0,
         }
     }
 }
@@ -62,8 +74,10 @@ pub enum State {
 
 impl Eq for State {
     fn eq(self, other: Self) -> bool {
-        match(self, other) {
-            (State::Initialized, State::Initialized) => true, (State::NotInitialized, State::NotInitialized) => true, _ => false, 
+        match (self, other) {
+            (State::Initialized, State::Initialized) => true,
+            (State::NotInitialized, State::NotInitialized) => true,
+            _ => false,
         }
     }
 }
@@ -71,7 +85,6 @@ impl Eq for State {
 pub struct Votes {
     /// Stores the number of no votes for a proposal
     no_votes: u64,
-
     /// Stores the number of yes votes for a proposal
     yes_votes: u64,
 }
