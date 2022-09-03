@@ -76,7 +76,7 @@ The information in this section is split into subsections in order to conceptual
 <details>
 <summary>Decentralized Autonomous Organization (DAO)</summary>
 
-<h3>Contracts</h3> ❌
+<h3>Contracts ❌</h3>
 
 - Replace constructor with manifest instantiation?
 - Need to possibly handle overflowing upon calculating votes inside `execute`
@@ -85,20 +85,20 @@ The information in this section is split into subsections in order to conceptual
 - Extend to use multiple consensus mechansims instead of a simple yes:no ratio
 - Not alphabetically ordered
 
-<h3>User Interface</h3> ❌
+<h3>User Interface ❌</h3>
 
 - Not under development at this time
 
 <h3>Tests</h3>
 
-- <h3>Rust</h3> ❌
+- <h3>Rust ❌</h3>
   - Need to bump SDK version once the repo catches up
   - SDK has block manipulation so tests can continue to be written
 
-- <h3>Typescript</h3> ❌
+- <h3>Typescript ❌</h3>
   - Not under development at this time
 
-<h3>Documentation</h3> ✅
+<h3>Documentation ✅</h3>
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -112,24 +112,24 @@ The information in this section is split into subsections in order to conceptual
 <details>
 <summary>Escrow</summary>
 
-<h3>Contracts</h3> ✅
+<h3>Contracts ✅</h3>
 
 - Feature complete for UI integration
 - Needs some getters so that contracts can interact
 
-<h3>User Interface</h3> ❌
+<h3>User Interface ❌</h3>
 
 - Currently under development
 
 <h3>Tests</h3>
 
-- <h3>Rust</h3> ✅
+- <h3>Rust ✅</h3>
   - Need to bump SDK version once the repo catches up
 
-- <h3>Typescript</h3> ❌
+- <h3>Typescript ❌</h3>
   - Currently under development
 
-<h3>Documentation</h3> ✅
+<h3>Documentation ✅</h3>
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -179,7 +179,7 @@ The information in this section is split into subsections in order to conceptual
 <details>
 <summary>Fundraiser</summary>
 
-<h3>Contracts</h3> ❌
+<h3>Contracts ❌</h3>
 
 - Rename `contract_abi` to `interface`
 - Move documentation onto the interface rather than have it on the implementation
@@ -190,20 +190,20 @@ The information in this section is split into subsections in order to conceptual
   - Must iterate from 0...X where X is known by another function call
 - Not alphabetically ordered
 
-<h3>User Interface</h3> ❌
+<h3>User Interface ❌</h3>
 
 - Not under development at this time
 
 <h3>Tests</h3>
 
-- <h3>Rust</h3> ❌
+- <h3>Rust ❌</h3>
   - SDK has block manipulation so tests can continue to be written
   - Need to bump SDK version once the repo catches up
 
-- <h3>Typescript</h3> ❌
+- <h3>Typescript ❌</h3>
   - Not under development at this time
 
-<h3>Documentation</h3> ❌
+<h3>Documentation ❌</h3>
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -238,7 +238,7 @@ The information in this section is split into subsections in order to conceptual
 <details>
 <summary>Multi-signature Wallet</summary>
 
-<h3>Contracts</h3> ❌
+<h3>Contracts ❌</h3>
 
 - Rename `contract_abi` to `interface`
 - Move documentation onto the interface rather than have it on the implementation
@@ -251,20 +251,20 @@ The information in this section is split into subsections in order to conceptual
 - Only basic functionality is implemented (lots more to do as listed in issues)
   - Cannot make arbitrary calls yet, work is being done in Sway which hopefully resolves this
 
-<h3>User Interface</h3> ❌
+<h3>User Interface ❌</h3>
 
 - Not under development at this time
 
 <h3>Tests</h3>
 
-- <h3>Rust</h3> ❌
+- <h3>Rust ❌</h3>
   - Needs vec support to test, partial tests written for basic functionality in draft PR
   - Need to bump SDK version once the repo catches up
 
-- <h3>Typescript</h3> ❌
+- <h3>Typescript ❌</h3>
   - Not under development at this time
 
-<h3>Documentation</h3> ❌
+<h3>Documentation ❌</h3>
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -299,24 +299,24 @@ The information in this section is split into subsections in order to conceptual
 
 - Will move from Apps repo to Libs repo soon
 
-<h3>Contracts</h3> ❌
+<h3>Contracts ❌</h3>
 
 - Needs vec and option but theu are not supported in the SDK so cannot test
 
-<h3>User Interface</h3> ✅
+<h3>User Interface ✅</h3>
 
 - Will not exist for an NFT and instead other applications which integrate the NFT will have their own UI's
 
 <h3>Tests</h3>
 
-- <h3>Rust</h3> ❌
+- <h3>Rust ❌</h3>
   - Need to bump SDK version once the repo catches up
   - Needs to support vec and option to complete testing
 
-- <h3>Typescript</h3> ✅
+- <h3>Typescript ✅</h3>
   - Will not exist
 
-<h3>Documentation</h3> ❌
+<h3>Documentation ❌</h3>
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
