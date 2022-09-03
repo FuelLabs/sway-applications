@@ -92,10 +92,12 @@ The information in this section is split into subsections in order to conceptual
 <h3>Tests</h3>
 
 - <h3>Rust ❌</h3>
+
   - Need to bump SDK version once the repo catches up
   - SDK has block manipulation so tests can continue to be written
 
 - <h3>Typescript ❌</h3>
+
   - Not under development at this time
 
 <h3>Documentation ✅</h3>
@@ -124,9 +126,11 @@ The information in this section is split into subsections in order to conceptual
 <h3>Tests</h3>
 
 - <h3>Rust ✅</h3>
+
   - Need to bump SDK version once the repo catches up
 
 - <h3>Typescript ❌</h3>
+
   - Currently under development
 
 <h3>Documentation ✅</h3>
@@ -197,10 +201,12 @@ The information in this section is split into subsections in order to conceptual
 <h3>Tests</h3>
 
 - <h3>Rust ❌</h3>
+
   - SDK has block manipulation so tests can continue to be written
   - Need to bump SDK version once the repo catches up
 
 - <h3>Typescript ❌</h3>
+
   - Not under development at this time
 
 <h3>Documentation ❌</h3>
@@ -258,10 +264,12 @@ The information in this section is split into subsections in order to conceptual
 <h3>Tests</h3>
 
 - <h3>Rust ❌</h3>
+
   - Needs vec support to test, partial tests written for basic functionality in draft PR
   - Need to bump SDK version once the repo catches up
 
 - <h3>Typescript ❌</h3>
+
   - Not under development at this time
 
 <h3>Documentation ❌</h3>
@@ -310,10 +318,12 @@ The information in this section is split into subsections in order to conceptual
 <h3>Tests</h3>
 
 - <h3>Rust ❌</h3>
+
   - Need to bump SDK version once the repo catches up
   - Needs to support vec and option to complete testing
 
 - <h3>Typescript ✅</h3>
+
   - Will not exist
 
 <h3>Documentation ❌</h3>
