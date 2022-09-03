@@ -9,7 +9,7 @@ Table of Content
 
 The content in this document is meant to outline the current state of each project within the repository and future work. The reason is that it's easier for a user to glance at a neatly structured document than to browse through the current issues in order to piece together an overview of the applications.
 
-That being said this document is not meant to perfectly track each issue and instead it's meant to be more of a guidance or a vision of where the projects are heading in order to allow a broad overview of each project and enable easier onboarding for contributors. 
+That being said this document is not meant to perfectly track each issue and instead it's meant to be more of a guidance or a vision of where the projects are heading in order to allow a broad overview of each project and enable easier onboarding for contributors. For this reason the only projects that have content in their sections will be the ones that are currently in `master`. The remaining empty projects are placeholders used to indicate that work is planned and possibly in a draft pull request at this time.
 
 For any specific issues we suggest taking a look into the issues and pull requests and using the associated labels to filter by a specific project.
 
@@ -36,29 +36,16 @@ The information in this section is split into subsections in order to conceptual
 <details>
 <summary>Airdrop</summary>
 
-- Currently an initial draft PR is under development for the smart contracts
+<h3>Contracts</h3>
 
-Contracts ❌
+<h3>User Interface</h3>
 
-- Sway libs has recently added a merkle library which the airdrop requires
+<h3>Tests</h3>
 
-User Interface ❌
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-- Not under development at this time
-
-Tests
-
-- Rust ❌
-  - Tests are partially written
-  - Need to bump SDK version once the repo catches up
-  - SDK has block manipulation so tests can continue to be written
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Not under development at this time
+<h3>Documentation</h3>
 
 </details>
 
@@ -67,38 +54,20 @@ Documentation ❌
 <details>
 <summary>Auctions</summary>
 
-- Currently initial draft PRs exist (smart contracts) for the dutch and english auctions
+<h3>Contracts</h3>
 
-Contracts
+- Blind Auction
+- Dutch Auction
+- English Auction
 
-- Blind Auction ❌
-  - Not under development at this time
+<h3>User Interface</h3>
 
-- Dutch Auction ❌
-  - Requires vec support in SDK
-  - Lots of work to be done for quality in PR
+<h3>Tests</h3>
 
-- English Auction ❌
-  - Requires vec support in SDK
-  - Lots of work to be done for quality in PR
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-User Interface ❌
-
-- Not under development at this time
-
-Tests
-
-- Rust ❌
-  - Blocked by vec for testing
-  - No tests written for Dutch, some tests written for English
-  - Need to bump SDK version once the repo catches up
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Outdated in PRs, requires updates to readme and a spec should be created
+<h3>Documentation</h3>
 
 </details>
 
@@ -107,7 +76,7 @@ Documentation ❌
 <details>
 <summary>Decentralized Autonomous Organization (DAO)</summary>
 
-Contracts ❌
+<h3>Contracts</h3> ❌
 
 - Replace constructor with manifest instantiation?
 - Need to possibly handle overflowing upon calculating votes inside `execute`
@@ -116,20 +85,20 @@ Contracts ❌
 - Extend to use multiple consensus mechansims instead of a simple yes:no ratio
 - Not alphabetically ordered
 
-User Interface ❌
+<h3>User Interface</h3> ❌
 
 - Not under development at this time
 
-Tests
+<h3>Tests</h3>
 
-- Rust ❌
+- <h3>Rust</h3> ❌
   - Need to bump SDK version once the repo catches up
   - SDK has block manipulation so tests can continue to be written
 
-- Typescript ❌
+- <h3>Typescript</h3> ❌
   - Not under development at this time
 
-Documentation ✅
+<h3>Documentation</h3> ✅
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -143,24 +112,24 @@ Documentation ✅
 <details>
 <summary>Escrow</summary>
 
-Contracts ✅
+<h3>Contracts</h3> ✅
 
 - Feature complete for UI integration
 - Needs some getters so that contracts can interact
 
-User Interface ❌
+<h3>User Interface</h3> ❌
 
 - Currently under development
 
-Tests
+<h3>Tests</h3>
 
-- Rust ✅
+- <h3>Rust</h3> ✅
   - Need to bump SDK version once the repo catches up
 
-- Typescript ❌
+- <h3>Typescript</h3> ❌
   - Currently under development
 
-Documentation ✅
+<h3>Documentation</h3> ✅
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -174,25 +143,16 @@ Documentation ✅
 <details>
 <summary>Flashloan</summary>
 
-Contracts ❌
+<h3>Contracts</h3>
 
-- Not under development at this time
+<h3>User Interface</h3>
 
-User Interface ❌
+<h3>Tests</h3>
 
-- Not under development at this time
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-Tests
-
-- Rust ❌
-  - Not under development at this time
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Not under development at this time
+<h3>Documentation</h3>
 
 </details>
 
@@ -201,25 +161,16 @@ Documentation ❌
 <details>
 <summary>Fractionalized Non-Fungible Token (NFT)</summary>
 
-Contracts ❌
+<h3>Contracts</h3>
 
-- Not under development at this time
+<h3>User Interface</h3>
 
-User Interface ❌
+<h3>Tests</h3>
 
-- Not under development at this time
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-Tests
-
-- Rust ❌
-  - Not under development at this time
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Not under development at this time
+<h3>Documentation</h3>
 
 </details>
 
@@ -228,7 +179,7 @@ Documentation ❌
 <details>
 <summary>Fundraiser</summary>
 
-Contracts ❌
+<h3>Contracts</h3> ❌
 
 - Rename `contract_abi` to `interface`
 - Move documentation onto the interface rather than have it on the implementation
@@ -239,20 +190,20 @@ Contracts ❌
   - Must iterate from 0...X where X is known by another function call
 - Not alphabetically ordered
 
-User Interface ❌
+<h3>User Interface</h3> ❌
 
 - Not under development at this time
 
-Tests
+<h3>Tests</h3>
 
-- Rust ❌
+- <h3>Rust</h3> ❌
   - SDK has block manipulation so tests can continue to be written
   - Need to bump SDK version once the repo catches up
 
-- Typescript ❌
+- <h3>Typescript</h3> ❌
   - Not under development at this time
 
-Documentation ❌
+<h3>Documentation</h3> ❌
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -267,25 +218,17 @@ Documentation ❌
 <details>
 <summary>Liquidity Module</summary>
 
-Contracts ❌
+<h3>Contracts</h3>
 
-- Not under development at this time
+<h3>User Interface</h3>
 
-User Interface ❌
+<h3>Tests</h3>
 
-- Not under development at this time
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-Tests
+<h3>Documentation</h3>
 
-- Rust ❌
-  - Not under development at this time
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Not under development at this time
 - Issue is not documented
 
 </details>
@@ -295,7 +238,7 @@ Documentation ❌
 <details>
 <summary>Multi-signature Wallet</summary>
 
-Contracts ❌
+<h3>Contracts</h3> ❌
 
 - Rename `contract_abi` to `interface`
 - Move documentation onto the interface rather than have it on the implementation
@@ -308,20 +251,20 @@ Contracts ❌
 - Only basic functionality is implemented (lots more to do as listed in issues)
   - Cannot make arbitrary calls yet, work is being done in Sway which hopefully resolves this
 
-User Interface ❌
+<h3>User Interface</h3> ❌
 
 - Not under development at this time
 
-Tests
+<h3>Tests</h3>
 
-- Rust ❌
+- <h3>Rust</h3> ❌
   - Needs vec support to test, partial tests written for basic functionality in draft PR
   - Need to bump SDK version once the repo catches up
 
-- Typescript ❌
+- <h3>Typescript</h3> ❌
   - Not under development at this time
 
-Documentation ❌
+<h3>Documentation</h3> ❌
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -336,25 +279,16 @@ Documentation ❌
 <details>
 <summary>Name Registry</summary>
 
-Contracts ❌
+<h3>Contracts</h3>
 
-- Not under development at this time
+<h3>User Interface</h3>
 
-User Interface ❌
+<h3>Tests</h3>
 
-- Not under development at this time
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-Tests
-
-- Rust ❌
-  - Not under development at this time
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Not under development at this time
+<h3>Documentation</h3>
 
 </details>
 
@@ -365,24 +299,24 @@ Documentation ❌
 
 - Will move from Apps repo to Libs repo soon
 
-Contracts ❌
+<h3>Contracts</h3> ❌
 
 - Needs vec and option but theu are not supported in the SDK so cannot test
 
-User Interface ✅
+<h3>User Interface</h3> ✅
 
 - Will not exist for an NFT and instead other applications which integrate the NFT will have their own UI's
 
-Tests
+<h3>Tests</h3>
 
-- Rust ❌
+- <h3>Rust</h3> ❌
   - Need to bump SDK version once the repo catches up
   - Needs to support vec and option to complete testing
 
-- Typescript ✅
+- <h3>Typescript</h3> ✅
   - Will not exist
 
-Documentation ❌
+<h3>Documentation</h3> ❌
 
 - Readme ❌
   - Need to remove "current state of app" since this document covers that content
@@ -398,26 +332,16 @@ Documentation ❌
 <details>
 <summary>Oracle</summary>
 
-Contracts ✅
+<h3>Contracts</h3>
 
-- Ready to go into master after repo is bumped to latest releases which solve some bugs in other projects
-- Need option but SDK may not support it in the latest release so using `u64` for price instead
+<h3>User Interface</h3>
 
-User Interface ❌
+<h3>Tests</h3>
 
-- Not under development at this time
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-Tests
-
-- Rust ✅
-  - Ready to go into master after repo is bumped to latest releases which solve some bugs in other projects
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ✅
-
-- Ready to go into master after repo is bumped to latest releases which solve some bugs in other projects
+<h3>Documentation</h3>
 
 </details>
 
@@ -426,26 +350,16 @@ Documentation ✅
 <details>
 <summary>Over the counter (OTC) Swap Predicate</summary>
 
-Contracts ✅
+<h3>Contracts</h3>
 
-- Predicate seems to be complete in draft PR
+<h3>User Interface</h3>
 
-User Interface ❌
+<h3>Tests</h3>
 
-- Not under development at this time
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-Tests
-
-- Rust ✅
-  - Tests seem to be complete in draft PR
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Readme ✅
-- Spec does not exist ❌
+<h3>Documentation</h3>
 
 </details>
 
@@ -454,27 +368,16 @@ Documentation ❌
 <details>
 <summary>Staking</summary>
 
-Contracts ❌
+<h3>Contracts</h3>
 
-- Draft PR under development
-- Lots of work to be done for quality
+<h3>User Interface</h3>
 
-User Interface ❌
+<h3>Tests</h3>
 
-- Not under development at this time
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-Tests
-
-- Rust ❌
-  - Need to bump SDK version once the repo catches up
-  - Lots of work needs to be done
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Not under development at this time
+<h3>Documentation</h3>
 
 </details>
 
@@ -483,26 +386,16 @@ Documentation ❌
 <details>
 <summary>Token Vault</summary>
 
-Contracts ❌
+<h3>Contracts</h3>
 
-- Has been started in a branch a long time ago, not marked as a draft PR
-- Basic outline for contract without implementations
+<h3>User Interface</h3>
 
-User Interface ❌
+<h3>Tests</h3>
 
-- Not under development at this time
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-Tests
-
-- Rust ❌
-  - Not under development at this time
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Not under development at this time
+<h3>Documentation</h3>
 
 </details>
 
@@ -515,26 +408,16 @@ Documentation ❌
 <details>
 <summary>Tic Tac Toe</summary>
 
-Contracts ❌
+<h3>Contracts</h3>
 
-- Draft PR needs to be updated to a newer release
-- Lots of work to be done
+<h3>User Interface</h3>
 
-User Interface ❌
+<h3>Tests</h3>
 
-- Not under development at this time
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-Tests
-
-- Rust ❌
-  - Not under development at this time
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Draft PR, Readme and Spec need to be reworked
+<h3>Documentation</h3>
 
 </details>
 
@@ -547,26 +430,16 @@ Documentation ❌
 <details>
 <summary>Counter</summary>
 
-Contracts ❌
+<h3>Contracts</h3>
 
-- Draft PR needs to be updated to a newer release
+<h3>User Interface</h3>
 
-User Interface ❌
+<h3>Tests</h3>
 
-- Draft PR needs to be updated to a newer release
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-Tests
-
-- Rust ❌
-  - Not under development at this time
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Readme ✅
-- Spec does not exist ❌
+<h3>Documentation</h3>
 
 </details>
 
@@ -575,26 +448,16 @@ Documentation ❌
 <details>
 <summary>Todo</summary>
 
-Contracts ❌
+<h3>Contracts</h3>
 
-- Draft PR needs to be updated to a newer release
+<h3>User Interface</h3>
 
-User Interface ❌
+<h3>Tests</h3>
 
-- Draft PR needs to be updated to a newer release
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
 
-Tests
-
-- Rust ❌
-  - Not under development at this time
-
-- Typescript ❌
-  - Not under development at this time
-
-Documentation ❌
-
-- Readme ✅
-- Spec does not exist ❌
+<h3>Documentation</h3>
 
 </details>
 
