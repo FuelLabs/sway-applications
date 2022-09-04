@@ -16,7 +16,7 @@ async function main(): Promise<string> {
   const bytecode = fs.readFileSync(path.join(__dirname, '../out/debug/counter-contract.bin'));
   const factory = new ContractFactory(bytecode, Factory.abi, wallet);
   const contract = await factory.deployContract();
-  return contract.id.toB256();
+  return contract.id.toAddress();
 }
 
 main().then((contractId) =>
