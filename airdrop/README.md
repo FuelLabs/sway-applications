@@ -11,7 +11,7 @@ An airdrop is an application where a set number of users are able to claim a spe
 
 In order to verifiably prove that a user has a claim to an airdrop and avoiding the expensive transaction of storing every address on chain, a Merkle Proof is used. By storing the Merkle root, a single `b256` hash, the airdrop-distributor application can cryptographically prove a user's validity to their claim.
 
-This application implements the [Binary Merkle Proof Verification Library](https://github.com/FuelLabs/sway-libs/tree/master/sway_libs/src/merkle_proof).
+> **Note** This application implements the [Binary Merkle Proof Verification Library](https://github.com/FuelLabs/sway-libs/tree/master/sway_libs/src/merkle_proof).
 
 More information can be found in the [specification](./SPECIFICATION.md).
 

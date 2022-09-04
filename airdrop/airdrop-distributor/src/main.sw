@@ -16,7 +16,6 @@ use errors::{
     VerificationError,
 };
 use interface::AirdropDistributor;
-use utils::mint_to;
 use std::{
     address::Address,
     block::height,
@@ -31,6 +30,7 @@ use sway_libs::binary_merkle_proof::{
     leaf_digest,
     verify_proof,
 };
+use utils::mint_to;
 
 storage {
     /// Stores true if a user has claimed their airdrop. Maps a tuple of a user and an amount to a

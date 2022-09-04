@@ -11,6 +11,8 @@ abi AirdropDistributor {
     /// # Arguments
     /// 
     /// * `amount` - The quantity of tokens the allotted to the user to claim.
+    /// * 'key' - The index of the leaf which will be proven on the Merkle Tree.
+    /// * `num_leaves` - The number of leaves in the Merkle Tree.
     /// * `proof` - The Merkle proof to verify the user is authorized to claim.
     /// * `to` - The user which has been allotted tokens.
     /// 
