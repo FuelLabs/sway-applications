@@ -5,7 +5,7 @@ abigen!(SimpleToken, "out/debug/simpletoken-abi.json");
 pub struct Metadata {
     pub asset_id: ContractId,
     pub simple_token: SimpleToken,
-    pub wallet: LocalWallet,
+    pub wallet: WalletUnlocked,
 }
 
 pub mod abi_calls {

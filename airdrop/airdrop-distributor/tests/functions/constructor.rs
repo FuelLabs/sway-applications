@@ -26,7 +26,7 @@ mod success {
         .await;
 
         // TODO: Get block height and add 10
-        assert_eq!(end_block(&deploy_wallet.airdrop_distributor).await, 14);
+        assert_eq!(end_block(&deploy_wallet.airdrop_distributor).await, 15);
         assert_eq!(
             merkle_root(&deploy_wallet.airdrop_distributor).await,
             [1u8; 32]

@@ -3,10 +3,17 @@ contract;
 dep errors;
 dep interface;
 
-use errors::{AccessError, InitError, InputError};
+use errors::{
+    AccessError,
+    InitError,
+    InputError,
+};
 use interface::SimpleToken;
 use std::{
-    chain::auth::{AuthError, msg_sender},
+    chain::auth::{
+        AuthError,
+        msg_sender,
+    },
     contract_id::ContractId,
     identity::Identity,
     result::Result,
@@ -24,7 +31,8 @@ storage {
 }
 
 impl SimpleToken for Contract {
-    #[storage(read, write)]fn constructor(minter: Identity, token_supply: u64) {
+    #[storage(read, write)]
+    fn constructor(minter: Identity, token_supply: u64) {
         // If the token supply is anything other than 0, we know that the constructor has already
         // been called.
         require(storage.token_supply == 0, InitError::AlreadyInitialized);
@@ -34,7 +42,8 @@ impl SimpleToken for Contract {
         storage.token_supply = token_supply;
     }
 
-    #[storage(read, write)]fn mint_to(amount: u64, to: Identity) {
+    #[storage(read, write)]
+    fn mint_to(amount: u64, to: Identity) {
         // Ensure that the sender is the minter.
         let sender = msg_sender().unwrap();
         require(sender == storage.minter, AccessError::SenderNotPermittedToMint);

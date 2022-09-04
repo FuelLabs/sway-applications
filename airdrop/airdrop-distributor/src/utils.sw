@@ -6,9 +6,9 @@ use interface::SimpleToken;
 use std::{contract_id::ContractId, identity::Identity};
 
 /// Calls the `mint_to` function in another contract.
-///
+/// 
 /// # Arguments
-///
+/// 
 /// `amount` - The quantity of tokens to be minted.
 /// `to` - The user which the tokens should be given to.
 /// `token` - The external token contract which has an implemented `mint_to` function.

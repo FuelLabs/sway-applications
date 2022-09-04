@@ -1,6 +1,9 @@
 library events;
 
-use std::{contract_id::ContractId, identity::Identity};
+use std::{
+    contract_id::ContractId,
+    identity::Identity,
+};
 
 pub struct ClaimEvent {
     /// The quantity of tokens which is to be minted to the user.

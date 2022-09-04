@@ -5,8 +5,16 @@ dep errors;
 dep interface;
 dep utils;
 
-use events::{ClaimEvent, InitializeEvent};
-use errors::{AccessError, InitError, StateError, VerificationError};
+use events::{
+    ClaimEvent,
+    InitializeEvent,
+};
+use errors::{
+    AccessError,
+    InitError,
+    StateError,
+    VerificationError,
+};
 use interface::AirdropDistributor;
 use utils::mint_to;
 use std::{
@@ -19,15 +27,16 @@ use std::{
     revert::require,
     storage::StorageMap,
 };
-use sway_libs::binary_merkle_proof::{leaf_digest, verify_proof};
+use sway_libs::binary_merkle_proof::{
+    leaf_digest,
+    verify_proof,
+};
 
 storage {
     /// Stores true if a user has claimed their airdrop. Maps a tuple of a user and an amount to a
     /// boolean.
     /// Maps ((user, amount) => claim)
-    claimed: StorageMap<(Identity,
-    u64), bool> = StorageMap {
-    },
+    claimed: StorageMap<(Identity, u64), bool> = StorageMap {},
     /// The block at which the claiming period will end.
     end_block: u64 = 0,
     /// The computer merkle root which is to be verified against.
@@ -37,34 +46,58 @@ storage {
 }
 
 impl AirdropDistributor for Contract {
-    #[storage(read, write)]fn claim(amount: u64, key: u64, num_leaves: u64, proof: [b256;
-    2], to: Identity) {
+    #[storage(read, write)]
+    fn claim(
+        amount: u64,
+        key: u64,
+        num_leaves: u64,
+        proof: [b256; 2],
+        to: Identity,
+    ) {
         // The claiming period must be open and the `to` identity hasn't already claimed
         require(storage.end_block > height(), StateError::ClaimPeriodHasEnded);
-        require(!storage.claimed.get((to, amount)), AccessError::UserAlreadyClaimed);
+        require(!storage.claimed.get((
+            to,
+            amount,
+        )), AccessError::UserAlreadyClaimed);
 
         // Verify the merkle proof against the user and amount
         let leaf_hash = match to {
             Identity::Address(to) => {
-                sha256((to.into(), amount))
+                sha256((
+                    to.into(),
+                    amount,
+                ))
             },
             Identity::ContractId(to) => {
-                sha256((to.into(), amount))
+                sha256((
+                    to.into(),
+                    amount,
+                ))
             }
         };
         let leaf = leaf_digest(leaf_hash);
         require(verify_proof(key, leaf, storage.merkle_root, num_leaves, proof), VerificationError::MerkleProofFailed);
 
         // Mint tokens
-        storage.claimed.insert((to, amount), true);
+        storage.claimed.insert((
+            to,
+            amount,
+        ), true);
         mint_to(amount, to, storage.token_contract);
 
         log(ClaimEvent {
-            to, amount, 
+            to,
+            amount,
         });
     }
 
-    #[storage(read, write)]fn constructor(claim_time: u64, merkle_root: b256, token_contract: ContractId) {
+    #[storage(read, write)]
+    fn constructor(
+        claim_time: u64,
+        merkle_root: b256,
+        token_contract: ContractId,
+    ) {
         // If `end_block` is set to a value other than 0, we know that the contructor has already
         // been called.
         require(storage.end_block == 0, InitError::AlreadyInitialized);
@@ -75,15 +108,19 @@ impl AirdropDistributor for Contract {
         storage.token_contract = token_contract;
 
         log(InitializeEvent {
-            end_block: claim_time, merkle_root, token_contract
+            end_block: claim_time,
+            merkle_root,
+            token_contract,
         });
     }
 
-    #[storage(read)]fn end_block() -> u64 {
+    #[storage(read)]
+    fn end_block() -> u64 {
         storage.end_block
     }
 
-    #[storage(read)]fn merkle_root() -> b256 {
+    #[storage(read)]
+    fn merkle_root() -> b256 {
         storage.merkle_root
     }
 }

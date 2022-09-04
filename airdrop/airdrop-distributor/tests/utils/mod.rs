@@ -5,7 +5,6 @@ use fuel_merkle::{
 use fuels::{contract::contract::CallResponse, prelude::*};
 use sha2::{Digest, Sha256};
 
-// Load abi from json
 abigen!(AirdropDistributor, "out/debug/airdrop-distributor-abi.json");
 abigen!(
     SimpleToken,
@@ -20,7 +19,7 @@ pub struct Asset {
 pub struct Metadata {
     pub airdrop_distributor: AirdropDistributor,
     pub contract_id: ContractId,
-    pub wallet: LocalWallet,
+    pub wallet: WalletUnlocked,
 }
 
 pub mod airdrop_distributor_abi_calls {
