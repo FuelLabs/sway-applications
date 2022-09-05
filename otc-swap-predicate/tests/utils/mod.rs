@@ -143,7 +143,7 @@ pub async fn test_predicate_spend_with_parameters(
         asset_id: OFFERED_ASSET,
         maturity: 0,
         predicate: predicate_bytecode,
-        predicate_data: vec![],
+        predicate_data: vec![1u8],
     };
 
     // Asked asset coin belonging to the wallet taking the order

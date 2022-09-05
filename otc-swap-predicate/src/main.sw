@@ -9,26 +9,16 @@ use std::{
     },
     option::Option,
     outputs::{
+        Output,
         output_amount,
         output_pointer,
+        output_type,
     },
+    revert::revert,
 };
 
-/// Read 256 bits from memory at a given offset from a given pointer
-pub fn b256_from_pointer_offset(pointer: u64, offset: u64) -> b256 {
-    asm(buffer, ptr: pointer, off: offset) {
-        // Need to skip over `off` bytes
-        add ptr ptr off;
-        // Save old stack pointer
-        move buffer sp;
-        // Extend stack by 32 bytes
-        cfei i32;
-        // Copy 32 bytes
-        mcpi buffer ptr i32;
-        // `buffer` now points to the 32 bytes
-        buffer: b256
-    }
-}
+const GTF_OUTPUT_COIN_TO = 0x202;
+const GTF_OUTPUT_COIN_ASSET_ID = 0x204;
 
 /// Order / OTC swap Predicate
 fn main() -> bool {
@@ -54,20 +44,21 @@ fn main() -> bool {
     };
 
     // Otherwise, evaluate the terms of the order:
-    // The output which pays the receiver must be in the first position (index = 0)
-    let amount = output_amount(0);
+    // The output which pays the receiver must be in the first position (output_index = 0)
+    let output_index = 0;
 
-    // Get the token contract ID and receiver from the output
-    let output_ptr = output_pointer(0);
+    // TO DO : Replace the following with std-lib functions when available
+    // Revert if output is not an Output::Coin
+    match output_type(output_index) {
+        Output::Coin => (),
+        _ => revert(0),
+    };
 
-    // `Output::Coin` is serialized as :
-    //    `type`     (8 bytes)
-    //    `to`       (32 bytes)
-    //    `amount`   (8 bytes)
-    //    `asset_id` (32 bytes)
-    // Offsets from the output pointer to each property are set accordingly:
-    let to = ~Address::from(b256_from_pointer_offset(output_ptr, 8));
-    let asset_id = ~ContractId::from(b256_from_pointer_offset(output_ptr, 48));
+    // Since output is known to be a Coin, the following are always valid
+    let to = ~Address::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_TO));
+    let asset_id = ~ContractId::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_ASSET_ID));
+
+    let amount = output_amount(output_index);
 
     // Evaluate the predicate
     (to == receiver) && (amount == ask_amount) && (asset_id == ask_token)
