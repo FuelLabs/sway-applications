@@ -3,11 +3,16 @@ predicate;
 use std::{
     address::Address,
     contract_id::ContractId,
+    inputs::{
+        input_count,
+        input_owner,
+    },
     option::Option,
-    inputs::{input_count, input_owner},
-    outputs::{output_amount, output_pointer},
+    outputs::{
+        output_amount,
+        output_pointer,
+    },
 };
-
 
 /// Read 256 bits from memory at a given offset from a given pointer
 pub fn b256_from_pointer_offset(pointer: u64, offset: u64) -> b256 {
@@ -25,7 +30,6 @@ pub fn b256_from_pointer_offset(pointer: u64, offset: u64) -> b256 {
     }
 }
 
-
 /// Order / OTC swap Predicate
 fn main() -> bool {
     // Order conditions: This must be hardcoded here.
@@ -40,7 +44,8 @@ fn main() -> bool {
     // Note that the predicate is necessarily one of the inputs, so the other must be the coin input.
     if (input_count() == 2u8) {
         let owner = match input_owner(0) {
-            Option::Some(owner) => owner, _ => input_owner(1).unwrap(), 
+            Option::Some(owner) => owner,
+            _ => input_owner(1).unwrap(),
         };
 
         if (owner == receiver) {
@@ -50,7 +55,6 @@ fn main() -> bool {
 
     // Otherwise, evaluate the terms of the order:
     // The output which pays the receiver must be in the first position (index = 0)
-
     let amount = output_amount(0);
 
     // Get the token contract ID and receiver from the output
@@ -62,7 +66,6 @@ fn main() -> bool {
     //    `amount`   (8 bytes)
     //    `asset_id` (32 bytes)
     // Offsets from the output pointer to each property are set accordingly:
-
     let to = ~Address::from(b256_from_pointer_offset(output_ptr, 8));
     let asset_id = ~ContractId::from(b256_from_pointer_offset(output_ptr, 48));
 
