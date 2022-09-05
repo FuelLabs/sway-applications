@@ -31,10 +31,12 @@ storage {
     u64> = StorageMap {
     },
     last_update_time: u64 = 0,
+    owner: Identity = Identity::Address(Address { value : owner }),
     period_finish: u64 = 1000, // Should be start timestamp + rewards_duration
     rewards: StorageMap<Identity,
     u64> = StorageMap {
     },
+    rewards_distribution: Identity = Identity::Address(Address { value : rewards_distribution }),
     rewards_duration: u64 = 1000,
     rewards_token: ContractId = ContractId {
         value: 0x0202020202020202020202020202020202020202020202020202020202020202,
@@ -110,7 +112,7 @@ impl StakingRewards for Contract {
     }
 
     #[storage(read)]fn owner() -> Identity {
-        project.owner
+        storage.owner
     }
 
     #[storage(read)]fn period_finish() -> u64 {
@@ -120,10 +122,10 @@ impl StakingRewards for Contract {
     // Added to support recovering LP Rewards from other systems such as BAL to be distributed to holders
     #[storage(read, write)]fn recover_tokens(asset_id: ContractId, amount: u64) {
 
-        require(msg_sender().unwrap() == project.owner, "Sender not owner");
+        require(msg_sender().unwrap() == storage.owner, "Sender not owner");
 
         require(asset_id != storage.staking_token, "Cannot withdraw the staking token");
-        transfer(amount, asset_id, project.owner);
+        transfer(amount, asset_id, storage.owner);
 
         log(RecoveredEvent {
             token: asset_id, amount, 
@@ -164,7 +166,7 @@ impl StakingRewards for Contract {
 
     #[storage(read, write)]fn set_rewards_duration(rewards_duration: u64, test_timestamp: u64) {
 
-        require(msg_sender().unwrap() == project.owner, "Sender not owner");
+        require(msg_sender().unwrap() == storage.owner, "Sender not owner");
 
         require(test_timestamp > storage.period_finish, "Previous rewards period must be complete before changing the duration for the new period");
         storage.rewards_duration = rewards_duration;
