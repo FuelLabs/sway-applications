@@ -4,7 +4,7 @@ use fuels::prelude::*;
 use utils::{
     balance_of, earned, exit, get_balance, get_reward, get_reward_for_duration,
     last_time_reward_applicable, last_update_time, notify_reward_amount, owner, period_finish,
-    recover_tokens, reward_duration, reward_per_token, reward_rate, setup, stake,
+    recover_tokens, reward_duration, reward_per_token, reward_rate, setup, stake, reward_per_token_stored,
     stakingrewards_mod::Identity, total_supply, ONE, RANDOM_ASSET, REWARDS_ASSET, STAKING_ASSET,
 };
 
@@ -194,3 +194,19 @@ async fn can_recover_tokens() {
 
     assert_eq!(owner_balance_before + 50000, owner_balance_after);
 }
+
+#[tokio::test]
+async fn can_get_reward_per_token_stored() {
+    let (staking_contract, _id, _wallet, _wallet2) = setup().await;
+
+    let reward = reward_per_token_stored(&staking_contract).await;
+
+    assert_eq!(reward, 0);
+
+    notify_reward_amount(&staking_contract, 5000, TIMESTAMP).await;
+
+    let reward = reward_per_token_stored(&staking_contract).await;
+
+    assert_eq!(reward, 516);
+}
+
