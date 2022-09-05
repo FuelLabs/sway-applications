@@ -172,13 +172,17 @@ pub mod test_helpers {
         (node_abc_hash, leaf_b_hash, leaf_c_hash)
     }
 
-    pub async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
+    pub async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset, u64) {
         let num_wallets = 4;
         let coins_per_wallet = 1;
         let coin_amount = 1000000;
+        let config = Config {
+            manual_blocks_enabled: true, // Necessary so the `produce_blocks` API can be used locally
+            ..Config::local_node()
+        };
         let mut wallets = launch_custom_provider_and_get_wallets(
             WalletsConfig::new(Some(num_wallets), Some(coins_per_wallet), Some(coin_amount)),
-            None,
+            Some(config),
         )
         .await;
 
@@ -254,6 +258,8 @@ pub mod test_helpers {
             token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet1.clone()).build(),
         };
 
-        (deployer, user1, user2, user3, asset)
+        let claim_time = 15;
+
+        (deployer, user1, user2, user3, asset, claim_time)
     }
 }

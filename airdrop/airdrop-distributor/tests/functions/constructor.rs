@@ -9,7 +9,8 @@ mod success {
 
     #[tokio::test]
     async fn initalizes() {
-        let (deploy_wallet, _, _, _, asset) = setup().await;
+        let (deploy_wallet, _, _, _, asset, claim_time) = setup().await;
+        let provider = deploy_wallet.wallet.get_provider().unwrap();
 
         assert_eq!(end_block(&deploy_wallet.airdrop_distributor).await, 0);
         assert_eq!(
@@ -18,20 +19,21 @@ mod success {
         );
 
         airdrop_constructor(
-            10,
+            claim_time,
             &deploy_wallet.airdrop_distributor,
             [1u8; 32],
             asset.asset_id,
         )
         .await;
 
-        // TODO: Get block height and add 10
-        assert_eq!(end_block(&deploy_wallet.airdrop_distributor).await, 15);
+        assert_eq!(
+            end_block(&deploy_wallet.airdrop_distributor).await,
+            provider.latest_block_height().await.unwrap() + claim_time - 1
+        );
         assert_eq!(
             merkle_root(&deploy_wallet.airdrop_distributor).await,
             [1u8; 32]
         )
-        // TODO: Get contract ID that was deployed
     }
 }
 
@@ -42,20 +44,15 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_already_initalized() {
-        let (deploy_wallet, _, _, _, asset) = setup().await;
+        let (deploy_wallet, _, _, _, asset, claim_time) = setup().await;
 
         airdrop_constructor(
-            10,
+            claim_time,
             &deploy_wallet.airdrop_distributor,
             [1u8; 32],
             asset.asset_id,
         )
         .await;
-
-        assert_eq!(
-            merkle_root(&deploy_wallet.airdrop_distributor).await,
-            [1u8; 32]
-        );
 
         airdrop_constructor(
             10,
@@ -69,7 +66,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_claim_time_zero() {
-        let (deploy_wallet, _, _, _, asset) = setup().await;
+        let (deploy_wallet, _, _, _, asset, _) = setup().await;
 
         airdrop_constructor(
             0,

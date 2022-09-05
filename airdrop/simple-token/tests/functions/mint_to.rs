@@ -3,7 +3,7 @@ use crate::utils::{
     test_helpers::setup,
     Identity,
 };
-use fuels::{signers::Signer, tx::AssetId};
+use fuels::tx::AssetId;
 
 mod success {
 
@@ -11,10 +11,10 @@ mod success {
 
     #[tokio::test]
     async fn mints_to_one_wallet() {
-        let (deployer, _) = setup().await;
+        let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_token, 100).await;
+        constructor(identity.clone(), &deployer.simple_token, total_supply).await;
 
         assert_eq!(
             deployer
@@ -39,10 +39,12 @@ mod success {
 
     #[tokio::test]
     async fn mints_to_multiple_wallets() {
-        let (deployer, wallet2) = setup().await;
+        let (deployer, wallet2, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_token, 100).await;
+        let wallet2_identity = Identity::Address(wallet2.wallet.address().into());
+
+        constructor(identity.clone(), &deployer.simple_token, total_supply).await;
 
         assert_eq!(
             deployer
@@ -62,7 +64,6 @@ mod success {
             10
         );
 
-        let identity2 = Identity::Address(wallet2.wallet.address().into());
         assert_eq!(
             wallet2
                 .wallet
@@ -71,7 +72,7 @@ mod success {
                 .unwrap(),
             0
         );
-        mint_to(15, &deployer.simple_token, identity2.clone()).await;
+        mint_to(15, &deployer.simple_token, wallet2_identity.clone()).await;
         assert_eq!(
             wallet2
                 .wallet
@@ -84,10 +85,10 @@ mod success {
 
     #[tokio::test]
     async fn mints_all_tokens() {
-        let (deployer, _) = setup().await;
+        let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_token, 100).await;
+        constructor(identity.clone(), &deployer.simple_token, total_supply).await;
 
         assert_eq!(
             deployer
@@ -98,7 +99,7 @@ mod success {
             0
         );
 
-        mint_to(100, &deployer.simple_token, identity.clone()).await;
+        mint_to(total_supply, &deployer.simple_token, identity.clone()).await;
 
         assert_eq!(
             deployer
@@ -106,7 +107,7 @@ mod success {
                 .get_asset_balance(&AssetId::new(*deployer.asset_id))
                 .await
                 .unwrap(),
-            100
+            total_supply
         );
     }
 }
@@ -118,12 +119,18 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_sender_not_minter() {
-        let (deployer, false_minter) = setup().await;
+        let (deployer, false_minter, total_supply) = setup().await;
 
         let minter_identity = Identity::Address(deployer.wallet.address().into());
-        constructor(minter_identity.clone(), &deployer.simple_token, 100).await;
-
         let false_minter_identity = Identity::Address(false_minter.wallet.address().into());
+
+        constructor(
+            minter_identity.clone(),
+            &deployer.simple_token,
+            total_supply,
+        )
+        .await;
+
         mint_to(
             10,
             &false_minter.simple_token,
@@ -135,11 +142,11 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_mint_more_than_supply() {
-        let (deployer, _) = setup().await;
+        let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_token, 100).await;
+        constructor(identity.clone(), &deployer.simple_token, total_supply).await;
 
-        mint_to(101, &deployer.simple_token, identity.clone()).await;
+        mint_to(total_supply + 1, &deployer.simple_token, identity.clone()).await;
     }
 }

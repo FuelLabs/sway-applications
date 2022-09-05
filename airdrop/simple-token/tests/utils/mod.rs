@@ -38,7 +38,7 @@ pub mod test_helpers {
 
     use super::*;
 
-    pub async fn setup() -> (Metadata, Metadata) {
+    pub async fn setup() -> (Metadata, Metadata, u64) {
         let num_wallets = 2;
         let coins_per_wallet = 1;
         let coin_amount = 1000000;
@@ -76,6 +76,8 @@ pub mod test_helpers {
             wallet: wallet2.clone(),
         };
 
-        (deployer, user)
+        let total_supply = 100;
+
+        (deployer, user, total_supply)
     }
 }
