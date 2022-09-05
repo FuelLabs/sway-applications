@@ -3,7 +3,7 @@ mod utils;
 use fuels::prelude::*;
 use utils::{
     balance_of, earned, exit, get_balance, get_reward, get_reward_for_duration,
-    last_time_reward_applicable, last_update_time, notify_reward_amount, owner, period_finish,
+    last_time_reward_applicable, last_update_time, notify_reward_amount, owner, period_finish, reward_per_token_paid,
     recover_tokens, reward_duration, reward_per_token, reward_rate, setup, stake, reward_per_token_stored,
     stakingrewards_mod::Identity, total_supply, ONE, RANDOM_ASSET, REWARDS_ASSET, STAKING_ASSET,
 };
@@ -210,3 +210,18 @@ async fn can_get_reward_per_token_stored() {
     assert_eq!(reward, 516);
 }
 
+#[tokio::test]
+async fn can_get_reward_per_token_paid() {
+    let (staking_contract, _id, wallet, _wallet2) = setup().await;
+    let wallet_identity = Identity::Address(Address::from(wallet.address()));
+
+    let reward = reward_per_token_paid(&staking_contract, wallet_identity.clone()).await;
+
+    assert_eq!(reward, 0);
+
+    notify_reward_amount(&staking_contract, 5000, TIMESTAMP).await;
+
+    let reward = reward_per_token_paid(&staking_contract, wallet_identity.clone()).await;
+
+    assert_eq!(reward, 516);
+}
