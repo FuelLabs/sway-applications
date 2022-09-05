@@ -54,18 +54,20 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 A user should be able to create an airdrop which consists of 
 
-1. A token which will be distributed
-2. A Merkle root constructed from a Merkle Tree where each leaf is the resulting `sha-256` hash of a `(user address, amount)` tuple
-3. A length of time in which a claim is valid
+1. A token for distribution
+2. A Merkle root constructed from a Merkle Tree where each leaf is the resulting `sha-256` hash of a `(b256, u64)` tuple
+    1. `b256` is the value of the Identity which has a claim to some tokens
+    2. `u64` is the amount of tokens
+3. A duration for when a user can claim the airdrop
 
 ### Claim Airdrop
 
 A user should be able to claim their airdrop
 
-1. Before the claim period is over
-2. If they has not yet claimed
-3. If the amount they are claiming is verifiable
-4. The proof provided is valid
+1. During, and not after, the claim period
+2. If it has not been claimed
+3. If the amount is verified to be the airdropped amount
+4. The provided proof is valid
 
 ## Information that is presented to users
 
@@ -228,6 +230,5 @@ A specified number of tokens shall be minted to an address.
         - `type:` Identity
         - `description:` The user which will receive the newly minted tokens
 - The function shall ensure that the user calling the function is permissioned to mint new tokens
-- Anyone can call the function
 
 ## User Interface

@@ -17,8 +17,7 @@ More information can be found in the [specification](./SPECIFICATION.md).
 
 ### Current state of the application
 
-- The smart contracts are deemed to be feature complete for now but changes will be made as updates to the Sway Language are released
-- The user interface does not currently exist
+Information on the current state of the application can be found in the [Application Progress](../APPLICATION_PROGRESS.md) file.
 
 ## Project Structure
 
@@ -72,7 +71,7 @@ As the simple-token project has been compiled with the previous command, there i
 
 ## Specification
 
-The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the fundraiser.
+The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the airdrop.
 
 Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
 
