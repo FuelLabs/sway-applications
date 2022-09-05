@@ -5,7 +5,7 @@ use std::{contract_id::ContractId, identity::Identity};
 abi SimpleToken {
     /// An example function that is to be called by the airdrop distributor contract.
     /// 
-    /// This mint function is permission such that only the airdrop contract may mint tokens.
+    /// The mint function is authorized to be called only by the airdrop contract.
     /// 
     /// # Arguments
     /// 

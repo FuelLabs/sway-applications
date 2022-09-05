@@ -45,11 +45,8 @@ impl SimpleToken for Contract {
     #[storage(read, write)]
     fn mint_to(amount: u64, to: Identity) {
         // Ensure that the sender is the minter.
-        let sender = msg_sender().unwrap();
-        require(sender == storage.minter, AccessError::SenderNotPermittedToMint);
-
-        let tokens_minted = storage.tokens_minted;
-        require(amount + tokens_minted <= storage.token_supply, InputError::GreaterThanMaximumSupply);
+        require(msg_sender().unwrap() == storage.minter, AccessError::SenderNotPermittedToMint);
+        require(amount + storage.tokens_minted <= storage.token_supply, InputError::GreaterThanMaximumSupply);
 
         mint_to(amount, to);
     }
