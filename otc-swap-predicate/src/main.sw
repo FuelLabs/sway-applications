@@ -22,13 +22,14 @@ const GTF_OUTPUT_COIN_ASSET_ID = 0x204;
 
 /// Order / OTC swap Predicate
 fn main() -> bool {
-    // Order conditions: This must be hardcoded here.
+    // Order conditions: These are set in Forc.toml
     // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `receiver`
-    let ask_amount = 42;
+    // Conversion to ContractId and Address types will be unnecessary once
+    // https://github.com/FuelLabs/sway/issues/2647 is fixed
     let ask_token: ContractId = ContractId {
-        value: 0x0101010101010101010101010101010101010101010101010101010101010101,
+        value: ask_token_config,
     };
-    let receiver = ~Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db);
+    let receiver = ~Address::from(receiver_config);
 
     // Check if the transaction contains a single input coin from the receiver, to cancel their own order
     // Note that the predicate is necessarily one of the inputs, so the other must be the coin input.

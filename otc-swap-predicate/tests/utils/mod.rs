@@ -143,7 +143,7 @@ pub async fn test_predicate_spend_with_parameters(
         asset_id: OFFERED_ASSET,
         maturity: 0,
         predicate: predicate_bytecode,
-        predicate_data: vec![1u8],
+        predicate_data: vec![],
     };
 
     // Asked asset coin belonging to the wallet taking the order
@@ -194,7 +194,7 @@ pub async fn test_predicate_spend_with_parameters(
         script_data: vec![],
         inputs: vec![input_gas, input_predicate, input_from_taker],
         outputs: vec![
-            output_to_receiver, // Position in Vec must match with index provided in predicate data
+            output_to_receiver,
             output_to_taker,
             output_base_change,
             output_asked_change,
