@@ -2,9 +2,10 @@ mod utils;
 
 use fuels::prelude::*;
 use utils::{
-    balance_of, earned, exit, get_balance, get_reward, get_reward_for_duration, notify_reward_amount, owner, recover_tokens,
-    last_time_reward_applicable, period_finish, reward_duration, reward_per_token, reward_rate, last_update_time,
-    setup, stake, stakingrewards_mod::Identity, total_supply, ONE, REWARDS_ASSET, STAKING_ASSET, RANDOM_ASSET,
+    balance_of, earned, exit, get_balance, get_reward, get_reward_for_duration,
+    last_time_reward_applicable, last_update_time, notify_reward_amount, owner, period_finish,
+    recover_tokens, reward_duration, reward_per_token, reward_rate, setup, stake,
+    stakingrewards_mod::Identity, total_supply, ONE, RANDOM_ASSET, REWARDS_ASSET, STAKING_ASSET,
 };
 
 // Until timestamp supported in Sway, timestamps of each action must be specified. Contract is deployed at t=0
@@ -184,7 +185,6 @@ async fn can_recover_tokens() {
         .force_transfer_to_contract(&id, 50000, RANDOM_ASSET, TxParameters::default())
         .await
         .unwrap();
-    
 
     let owner_balance_before = get_balance(&wallet, RANDOM_ASSET).await;
 

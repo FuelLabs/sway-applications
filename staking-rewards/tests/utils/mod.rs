@@ -10,7 +10,6 @@ pub const STAKING_ASSET: AssetId = AssetId::new([1u8; 32]);
 pub const REWARDS_ASSET: AssetId = AssetId::new([2u8; 32]);
 pub const RANDOM_ASSET: AssetId = AssetId::new([3u8; 32]);
 
-
 const INITIAL_STAKE: u64 = 10 * ONE;
 const INITIAL_TIMESTAMP: u64 = 0;
 
@@ -23,7 +22,12 @@ pub async fn get_balance(wallet: &Wallet, asset: AssetId) -> u64 {
     balance
 }
 
-pub async fn setup() -> (StakingRewards, Bech32ContractId, WalletUnlocked, WalletUnlocked) {
+pub async fn setup() -> (
+    StakingRewards,
+    Bech32ContractId,
+    WalletUnlocked,
+    WalletUnlocked,
+) {
     // Configure wallet with assets
     let assets = [BASE_ASSET, STAKING_ASSET, REWARDS_ASSET, RANDOM_ASSET];
     let wallet_config = WalletsConfig::new_multiple_assets(
@@ -42,7 +46,6 @@ pub async fn setup() -> (StakingRewards, Bech32ContractId, WalletUnlocked, Walle
     let wallets = &launch_custom_provider_and_get_wallets(wallet_config, None).await;
     let wallet = &wallets[0];
     let wallet2 = &wallets[1];
-
 
     let id = Contract::deploy(
         "./out/debug/staking-rewards.bin",
@@ -169,12 +172,7 @@ pub async fn last_time_reward_applicable(instance: &StakingRewards, timestamp: u
 }
 
 pub async fn last_update_time(instance: &StakingRewards) -> u64 {
-    instance
-        .last_update_time()
-        .call()
-        .await
-        .unwrap()
-        .value
+    instance.last_update_time().call().await.unwrap().value
 }
 
 pub async fn notify_reward_amount(instance: &StakingRewards, reward: u64, timestamp: u64) {
@@ -186,12 +184,7 @@ pub async fn notify_reward_amount(instance: &StakingRewards, reward: u64, timest
 }
 
 pub async fn owner(instance: &StakingRewards) -> Identity {
-    instance
-        .owner()
-        .call()
-        .await
-        .unwrap()
-        .value
+    instance.owner().call().await.unwrap().value
 }
 
 pub async fn recover_tokens(instance: &StakingRewards, asset_id: ContractId, amount: u64) {
@@ -222,42 +215,26 @@ pub async fn reward_per_token_paid(instance: &StakingRewards, account: Identity)
 }
 
 pub async fn rewards(instance: &StakingRewards, account: Identity) -> u64 {
-    instance
-        .rewards(account)
-        .call()
-        .await
-        .unwrap()
-        .value
+    instance.rewards(account).call().await.unwrap().value
 }
 
 pub async fn rewards_distribution(instance: &StakingRewards) -> Identity {
-    instance
-        .rewards_distribution()
-        .call()
-        .await
-        .unwrap()
-        .value
+    instance.rewards_distribution().call().await.unwrap().value
 }
 
 pub async fn rewards_duration(instance: &StakingRewards) -> u64 {
-    instance
-        .rewards_duration()
-        .call()
-        .await
-        .unwrap()
-        .value
+    instance.rewards_duration().call().await.unwrap().value
 }
 
 pub async fn rewards_token(instance: &StakingRewards) -> ContractId {
-    instance
-        .rewards_token()
-        .call()
-        .await
-        .unwrap()
-        .value
+    instance.rewards_token().call().await.unwrap().value
 }
 
-pub async fn set_rewards_duration(instance: &StakingRewards, rewards_duration: u64, test_timestamp: u64) {
+pub async fn set_rewards_duration(
+    instance: &StakingRewards,
+    rewards_duration: u64,
+    test_timestamp: u64,
+) {
     instance
         .set_rewards_duration(rewards_duration, test_timestamp)
         .call()
@@ -267,12 +244,7 @@ pub async fn set_rewards_duration(instance: &StakingRewards, rewards_duration: u
 }
 
 pub async fn staking_token(instance: &StakingRewards) -> ContractId {
-    instance
-        .staking_token()
-        .call()
-        .await
-        .unwrap()
-        .value
+    instance.staking_token().call().await.unwrap().value
 }
 
 pub async fn withdraw(instance: &StakingRewards, amount: u64, test_timestamp: u64) {
