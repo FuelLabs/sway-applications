@@ -2,7 +2,7 @@ use fuel_gql_client::fuel_vm::{consts::REG_ONE, prelude::Opcode};
 use fuels::contract::script::Script;
 use fuels::prelude::*;
 use fuels::test_helpers::WalletsConfig;
-use fuels::tx::{AssetId, Contract, Input, Output, Transaction};
+use fuels::tx::{AssetId, Contract, Input, Output, Transaction, TxPointer};
 
 // The fee-paying base asset
 pub const BASE_ASSET: AssetId = AssetId::new([0u8; 32]);
@@ -126,6 +126,7 @@ pub async fn test_predicate_spend_with_parameters(
     // Base asset input for gas
     let input_gas = Input::CoinSigned {
         utxo_id: gas_coin_utxo_id,
+        tx_pointer: TxPointer::default(),
         owner: Address::from(taker_wallet.address()),
         amount: gas_coin_amount,
         asset_id: BASE_ASSET,
@@ -136,6 +137,7 @@ pub async fn test_predicate_spend_with_parameters(
     // Offered asset coin belonging to the predicate root
     let input_predicate = Input::CoinPredicate {
         utxo_id: predicate_coin_utxo_id,
+        tx_pointer: TxPointer::default(),
         owner: Address::from(&predicate_root),
         amount: offered_amount,
         asset_id: OFFERED_ASSET,
@@ -147,6 +149,7 @@ pub async fn test_predicate_spend_with_parameters(
     // Asked asset coin belonging to the wallet taking the order
     let input_from_taker = Input::CoinSigned {
         utxo_id: swap_coin_utxo_id,
+        tx_pointer: TxPointer::default(),
         owner: Address::from(taker_wallet.address()),
         amount: swap_coin_amount,
         asset_id: asked_asset,
@@ -186,7 +189,6 @@ pub async fn test_predicate_spend_with_parameters(
         gas_price: 0,
         gas_limit: 10_000_000,
         maturity: 0,
-        byte_price: 0,
         receipts_root: Default::default(),
         script: Opcode::RET(REG_ONE).to_bytes().to_vec(),
         script_data: vec![],
@@ -289,6 +291,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     // Base asset input for gas
     let input_gas = Input::CoinSigned {
         utxo_id: gas_coin_utxo_id,
+        tx_pointer: TxPointer::default(),
         owner: Address::from(wallet.address()),
         amount: gas_coin_amount,
         asset_id: BASE_ASSET,
@@ -299,6 +302,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     // Offered asset coin belonging to the predicate root
     let input_predicate = Input::CoinPredicate {
         utxo_id: predicate_coin_utxo_id,
+        tx_pointer: TxPointer::default(),
         owner: Address::from(&predicate_root),
         amount: offered_amount,
         asset_id: OFFERED_ASSET,
@@ -325,7 +329,6 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         gas_price: 0,
         gas_limit: 10_000_000,
         maturity: 0,
-        byte_price: 0,
         receipts_root: Default::default(),
         script: Opcode::RET(REG_ONE).to_bytes().to_vec(),
         script_data: vec![],

@@ -4,10 +4,27 @@ use std::{
     address::Address,
     contract_id::ContractId,
     option::Option,
-tx:: {
-    b256_from_pointer_offset, tx_input_owner, tx_inputs_count, tx_output_amount, tx_output_pointer
-}
+    inputs::{input_count, input_owner},
+    outputs::{output_amount, output_pointer},
 };
+
+
+/// Read 256 bits from memory at a given offset from a given pointer
+pub fn b256_from_pointer_offset(pointer: u64, offset: u64) -> b256 {
+    asm(buffer, ptr: pointer, off: offset) {
+        // Need to skip over `off` bytes
+        add ptr ptr off;
+        // Save old stack pointer
+        move buffer sp;
+        // Extend stack by 32 bytes
+        cfei i32;
+        // Copy 32 bytes
+        mcpi buffer ptr i32;
+        // `buffer` now points to the 32 bytes
+        buffer: b256
+    }
+}
+
 
 /// Order / OTC swap Predicate
 fn main() -> bool {
@@ -21,9 +38,9 @@ fn main() -> bool {
 
     // Check if the transaction contains a single input coin from the receiver, to cancel their own order
     // Note that the predicate is necessarily one of the inputs, so the other must be the coin input.
-    if (tx_inputs_count() == 2) {
-        let owner = match tx_input_owner(0) {
-            Option::Some(owner) => owner, _ => tx_input_owner(1).unwrap(), 
+    if (input_count() == 2u8) {
+        let owner = match input_owner(0) {
+            Option::Some(owner) => owner, _ => input_owner(1).unwrap(), 
         };
 
         if (owner == receiver) {
@@ -34,10 +51,10 @@ fn main() -> bool {
     // Otherwise, evaluate the terms of the order:
     // The output which pays the receiver must be in the first position (index = 0)
 
-    let amount = tx_output_amount(0);
+    let amount = output_amount(0);
 
     // Get the token contract ID and receiver from the output
-    let output_pointer = tx_output_pointer(0);
+    let output_ptr = output_pointer(0);
 
     // `Output::Coin` is serialized as :
     //    `type`     (8 bytes)
@@ -46,8 +63,8 @@ fn main() -> bool {
     //    `asset_id` (32 bytes)
     // Offsets from the output pointer to each property are set accordingly:
 
-    let to = ~Address::from(b256_from_pointer_offset(output_pointer, 8));
-    let asset_id = ~ContractId::from(b256_from_pointer_offset(output_pointer, 48));
+    let to = ~Address::from(b256_from_pointer_offset(output_ptr, 8));
+    let asset_id = ~ContractId::from(b256_from_pointer_offset(output_ptr, 48));
 
     // Evaluate the predicate
     (to == receiver) && (amount == ask_amount) && (asset_id == ask_token)
