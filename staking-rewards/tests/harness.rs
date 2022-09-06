@@ -5,8 +5,9 @@ use utils::{
     balance_of, earned, exit, get_balance, get_reward, get_reward_for_duration,
     last_time_reward_applicable, last_update_time, notify_reward_amount, owner, period_finish,
     recover_tokens, reward_duration, reward_per_token, reward_per_token_paid,
-    reward_per_token_stored, reward_rate, setup, stake, stakingrewards_mod::Identity, total_supply,
-    ONE, RANDOM_ASSET, REWARDS_ASSET, STAKING_ASSET,
+    reward_per_token_stored, reward_rate, rewards, rewards_distribution, rewards_duration,
+    rewards_token, set_rewards_duration, setup, stake, staking_token, stakingrewards_mod::Identity,
+    total_supply, withdraw, ONE, RANDOM_ASSET, REWARDS_ASSET, STAKING_ASSET,
 };
 
 // Until timestamp supported in Sway, timestamps of each action must be specified. Contract is deployed at t=0
@@ -225,4 +226,30 @@ async fn can_get_reward_per_token_paid() {
     let reward = reward_per_token_paid(&staking_contract, wallet_identity.clone()).await;
 
     assert_eq!(reward, 516);
+}
+
+#[tokio::test]
+async fn can_get_reward() {
+    let (staking_contract, _id, wallet, _wallet2) = setup().await;
+    let wallet_identity = Identity::Address(Address::from(wallet.address()));
+
+    let reward = rewards(&staking_contract, wallet_identity.clone()).await;
+
+    assert_eq!(reward, 0);
+
+    notify_reward_amount(&staking_contract, 5000, TIMESTAMP).await;
+
+    let reward = rewards(&staking_contract, wallet_identity.clone()).await;
+
+    assert_eq!(reward, 5160);
+}
+
+#[tokio::test]
+async fn can_get_rewards_distribution() {
+    let (staking_contract, _id, wallet, _wallet2) = setup().await;
+    let wallet_identity = Identity::Address(Address::from(wallet.address()));
+
+    let rewards_distribution = rewards_distribution(&staking_contract).await;
+
+    assert_eq!(wallet_identity, rewards_distribution);
 }
