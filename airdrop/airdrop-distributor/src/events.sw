@@ -12,7 +12,7 @@ pub struct ClaimEvent {
     to: Identity,
 }
 
-pub struct InitializeEvent {
+pub struct CreateAirdropEvent {
     /// The block at which the minting period will end.
     end_block: u64,
     /// The computed merkle root that will be used to verify claims.

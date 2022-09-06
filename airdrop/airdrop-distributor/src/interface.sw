@@ -1,5 +1,8 @@
 library interface;
 
+dep data_structures;
+
+use data_structures::ClaimData;
 use std::{contract_id::ContractId, identity::Identity};
 
 abi AirdropDistributor {
@@ -29,6 +32,14 @@ abi AirdropDistributor {
         proof: [b256; 2],
         to: Identity,
     );
+
+    /// Returns the claim data stored on the given identity
+    ///
+    /// # Arguments
+    ///
+    /// * `identity` - The user which the data on their claim should be returned
+    #[storage(read)]
+    fn claim_data(identity: Identity) -> ClaimData;
 
     /// Initialized the contract and starts the airdrop.
     /// 
