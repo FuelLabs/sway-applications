@@ -106,7 +106,9 @@ export function useCreateEscrow({
         setAssets([{ assetAmount: "", assetId: "" }]);
         setBuyerAddress("");
         setDeadline("");
+        // Trigger query to update blanaces etc
         queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
+        queryClient.fetchQuery(["SellerEscrows"]);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
