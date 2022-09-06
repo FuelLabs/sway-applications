@@ -92,64 +92,6 @@ export const CreateEscrow = () => {
         }));
     }
 
-    const handleSubmit = async (event: any) => {
-        // TODO make this more flexible for assets of arbitrary decimal precision
-        const actualFee = parseInputValueBigInt(arbiterFee!);
-        // TODO figure out how to get this to work with contract id too
-        let arbiterArg: ArbiterInput = {
-            address: { Address: { value: arbiter } },
-            asset: { value: arbiterAsset },
-            fee_amount: actualFee,
-        };
-        // TODO make this more flexible when escrow takes an arbitrary amount of assets as input
-        let assetsArg: [AssetInput, AssetInput] = [
-            { amount: parseInputValueBigInt(assets[0].assetAmount), id: { value: assets[0].assetId } },
-            { amount: parseInputValueBigInt(assets[1].assetAmount), id: { value: assets[1].assetId } }
-        ];
-        // TODO how to pass buyer as either an Address OR a ContractId?
-        let buyerArg: IdentityInput = {
-            Address: { value: buyer }
-        };
-        // TODO change this from multiCall to single call once https://github.com/FuelLabs/fuels-ts/issues/445
-        // is fixed
-        // TODO don't hardcode gas and byte prices
-        const result = contract!
-            .multiCall([
-                contract!.functions.create_escrow(arbiterArg, assetsArg, buyerArg, deadline!).callParams({
-                    forward: [actualFee, arbiterAsset]
-                }),
-            ])
-            .txParams({
-                gasPrice: BigInt(5),
-                bytePrice: BigInt(5),
-                gasLimit: 100_000_000
-            }).call();
-        toast.promise(result, {
-            loading: 'Transaction loading...',
-            success: 'Escrow created successfully',
-            error: 'Transaction reverted!',
-        });
-        //console.log(result);
-        setArbiter("");
-        setArbiterAsset("");
-        setArbiterFee("");
-        setBuyer("");
-        setDeadline("");
-        setAssets([{ assetAmount: "", assetId: "" }]);
-        // Trigger query to update show balances component
-        const data = await queryClient.fetchQuery(
-            ['EscrowPage-balances', walletIdx],
-            async () => wallet?.getBalances(),
-            {
-
-            }
-        );
-        console.log("data...", data);
-        // Trigger query to update seller escrows
-        // queryClient.fetchQuery(['SellerPage-sellerEscrowIds', contract]);
-        // queryClient.fetchQuery(["SellerEscrows", contract]);
-    }
-
     const handleShowCreateEscrow = () => {
         setShowCreateEscrow(!showCreateEscrow);
     }

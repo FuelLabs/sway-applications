@@ -6,6 +6,7 @@ import { parseInputValueBigInt } from "../utils/math";
 import { useContract } from "../hooks/useContract";
 import { queryClient } from "@/queryClient";
 import { AssetInput } from "./AssetInput";
+import { useDeposit } from "../hooks/useDeposit";
 
 interface Props {
     escrowId: bigint,
@@ -16,6 +17,11 @@ export function Deposit(props: Props) {
     const [assetId, setAssetId] = useState("");
     const contract = useContract();
     const walletIdx = useAtomValue(walletIndexAtom);
+    const depositMutation = useDeposit({
+        depositAmount: assetAmount,
+        depositAsset: assetId,
+        escrowId: BigInt(props.escrowId)
+    });
 
     const handleAssetAmountChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newAssetAmount = event.target.value;
@@ -57,7 +63,14 @@ export function Deposit(props: Props) {
                 onAssetAmountChange={handleAssetAmountChange}
                 onAssetIdChange={handleAssetIdChange}
             />
-            <Button onPress={(e) => handleDeposit(e)} css={{ margin: "10px" }}>Deposit Asset</Button>
+            <Button
+                isDisabled={depositMutation.isLoading}
+                isLoading={depositMutation.isLoading}
+                onPress={() => depositMutation.mutate()}
+                css={{ margin: "10px" }}
+            >
+                Deposit Asset
+            </Button>
         </>
     );
 }

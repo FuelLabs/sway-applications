@@ -9,7 +9,7 @@ export function useBuyerEscrows() {
     console.log("contract: ", contract);
     console.log("addr: ", wallet?.address.toHexString())
     const { data: buyerEscrowIds } = useQuery(
-        ['BuyerPage-buyerEscrowIds', contract],
+        ['BuyerPage-buyerEscrowIds'],
         async () => {
             return contract && (await contract!.functions.buyer_escrows({ Address: { value: wallet?.address!.toHexString()! } }).call()).value
         },
@@ -20,7 +20,7 @@ export function useBuyerEscrows() {
     );
     console.log("buyer escrow ids: ", buyerEscrowIds);
     const { data: buyerEscrows } = useQuery(
-        ["BuyerEscrows", contract],
+        ["BuyerEscrows"],
         async () => {
             const escrowPromises = buyerEscrowIds!.map(async escrowId => {
                 return (await contract!.functions.escrows(escrowId).call()).value

@@ -99,13 +99,14 @@ export function useCreateEscrow({
     );
 
     function handleSuccess() {
-        // clear inputs from this hook
+        // Clear inputs from this hook
         setArbiterFee("");
         setArbiterAddress("");
         setArbiterAsset("");
         setAssets([{ assetAmount: "", assetId: "" }]);
         setBuyerAddress("");
         setDeadline("");
+
         // Trigger query to update blanaces etc
         queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
         queryClient.fetchQuery(["SellerEscrows"]);
