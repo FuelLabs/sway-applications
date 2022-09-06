@@ -48,7 +48,7 @@ There are two commands required to run the tests
 1. Build the asset used for depositing into the dao-voting
    
    ```bash
-   forc build --path tests/artifacts/asset/
+   forc build --path tests/artifacts/gov_token 
    ```
 
 2. Run the tests
