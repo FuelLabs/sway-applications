@@ -20,7 +20,9 @@ mod success {
         )
         .await;
 
-
-        assert_eq!(end_block(&deploy_wallet.airdrop_distributor).await, provider.latest_block_height().await.unwrap() + claim_time - 1);
+        assert_eq!(
+            end_block(&deploy_wallet.airdrop_distributor).await,
+            provider.latest_block_height().await.unwrap() + claim_time - 1
+        );
     }
 }

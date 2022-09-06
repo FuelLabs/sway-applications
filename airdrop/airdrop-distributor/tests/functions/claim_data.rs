@@ -36,11 +36,15 @@ mod success {
         token_constructor(minter, &asset.token, 10).await;
 
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .claimed,
             false
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.amount,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .amount,
             0
         );
 
@@ -56,11 +60,15 @@ mod success {
         .await;
 
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .claimed,
             true
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.amount,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .amount,
             1
         );
     }
@@ -90,11 +98,15 @@ mod success {
         token_constructor(minter, &asset.token, 10).await;
 
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .claimed,
             false
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.amount,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .amount,
             0
         );
 
@@ -110,11 +122,15 @@ mod success {
         .await;
 
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .claimed,
             true
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.amount,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .amount,
             1
         );
     }

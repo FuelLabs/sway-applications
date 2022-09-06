@@ -45,7 +45,9 @@ mod success {
             0
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .claimed,
             false
         );
 
@@ -69,7 +71,9 @@ mod success {
             1
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .claimed,
             true
         );
     }
@@ -107,7 +111,9 @@ mod success {
             0
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .claimed,
             false
         );
 
@@ -131,7 +137,9 @@ mod success {
             1
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+                .await
+                .claimed,
             true
         );
     }
