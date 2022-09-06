@@ -44,6 +44,18 @@ pub mod airdrop_distributor_abi_calls {
             .unwrap()
     }
 
+    pub async fn claim_data(
+        contract: & AirdropDistributor,
+        identity: Identity,
+    ) -> ClaimData {
+        contract
+        .claim_data(identity)
+        .call()
+        .await
+        .unwrap()
+        .value
+    }
+
     pub async fn airdrop_constructor(
         claim_time: u64,
         contract: &AirdropDistributor,

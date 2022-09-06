@@ -1,5 +1,5 @@
 use crate::utils::{
-    airdrop_distributor_abi_calls::{airdrop_constructor, claim},
+    airdrop_distributor_abi_calls::{airdrop_constructor, claim, claim_data},
     airdropdistributor_mod::Identity as AirdropIdentity,
     simple_token_abi_calls::token_constructor,
     simpletoken_mod::Identity as TokenIdentity,
@@ -44,6 +44,10 @@ mod success {
                 .unwrap(),
             0
         );
+        assert_eq!(
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            false
+        );
 
         claim(
             1,
@@ -63,6 +67,10 @@ mod success {
                 .await
                 .unwrap(),
             1
+        );
+        assert_eq!(
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            true
         );
     }
 
@@ -98,6 +106,10 @@ mod success {
                 .unwrap(),
             0
         );
+        assert_eq!(
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            false
+        );
 
         claim(
             1,
@@ -117,6 +129,10 @@ mod success {
                 .await
                 .unwrap(),
             1
+        );
+        assert_eq!(
+            claim_data(&deploy_wallet.airdrop_distributor, identity.clone()).await.claimed,
+            true
         );
     }
 }
