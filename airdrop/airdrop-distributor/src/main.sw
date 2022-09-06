@@ -101,7 +101,6 @@ impl AirdropDistributor for Contract {
         // If `end_block` is set to a value other than 0, we know that the contructor has already
         // been called.
         require(storage.end_block == 0, InitError::AlreadyInitialized);
-        require(claim_time != 0, InitError::ClaimTimeCannotBeZero);
 
         storage.end_block = height() + claim_time;
         storage.merkle_root = merkle_root;

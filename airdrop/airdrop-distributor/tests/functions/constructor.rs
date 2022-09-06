@@ -62,18 +62,4 @@ mod revert {
         )
         .await;
     }
-
-    #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_claim_time_zero() {
-        let (deploy_wallet, _, _, _, asset, _) = setup().await;
-
-        airdrop_constructor(
-            0,
-            &deploy_wallet.airdrop_distributor,
-            [1u8; 32],
-            asset.asset_id,
-        )
-        .await;
-    }
 }

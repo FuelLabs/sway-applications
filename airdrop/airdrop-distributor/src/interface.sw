@@ -44,7 +44,6 @@ abi AirdropDistributor {
     /// # Reverts
     /// 
     /// * The constructor has already been called.
-    /// * The `claim_time` is set to zero.
     #[storage(read, write)]
     fn constructor(claim_time: u64, merkleRoot: b256, token: ContractId);
 
