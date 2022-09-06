@@ -37,6 +37,12 @@ export const CreateEscrow = () => {
         buyerAddress: buyer,
         deadline,
         assets,
+        setArbiterFee,
+        setArbiterAddress: setArbiter,
+        setArbiterAsset,
+        setBuyerAddress: setBuyer,
+        setDeadline,
+        setAssets,
     });
 
     const handleArbiterAddressChange = (event: ChangeEvent<HTMLInputElement>) => {

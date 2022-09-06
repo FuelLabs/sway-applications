@@ -5,7 +5,11 @@ import { useContract } from "./useContract";
 import { parseInputValueBigInt } from "../utils/math";
 import { ArbiterInput, AssetInput, IdentityInput } from "@/types/contracts/EscrowAbi";
 import { txFeedback } from "../utils/feedback";
+import React from "react";
+import { Maybe } from "@/types";
 
+// TODO it may be a good idea to refactor this to resemble
+// UseAddLiquidityProps from SwaySwap
 interface UseCreateEscrowProps {
     arbiterFee: string;
     arbiterAddress: string;
@@ -16,6 +20,15 @@ interface UseCreateEscrowProps {
     }[];
     buyerAddress: string;
     deadline: string;
+    setArbiterFee: React.Dispatch<React.SetStateAction<string>>;
+    setArbiterAddress: React.Dispatch<React.SetStateAction<string>>;
+    setArbiterAsset: React.Dispatch<React.SetStateAction<string>>;
+    setAssets: React.Dispatch<React.SetStateAction<{
+        assetId: string;
+        assetAmount: string;
+    }[]>>;
+    setBuyerAddress: React.Dispatch<React.SetStateAction<string>>;
+    setDeadline: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function useCreateEscrow({
@@ -25,6 +38,12 @@ export function useCreateEscrow({
     assets,
     buyerAddress,
     deadline,
+    setArbiterFee,
+    setArbiterAddress,
+    setArbiterAsset,
+    setAssets,
+    setBuyerAddress,
+    setDeadline,
 }: UseCreateEscrowProps) {
     const contract = useContract();
     const successMsg = "New escrow created.";
@@ -76,7 +95,13 @@ export function useCreateEscrow({
     );
 
     function handleSuccess() {
-        // TODO clear inputs from this hook
+        // clear inputs from this hook
+        setArbiterFee("");
+        setArbiterAddress("");
+        setArbiterAsset("");
+        setAssets([{ assetAmount: "", assetId: "" }]);
+        setBuyerAddress("");
+        setDeadline("");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
