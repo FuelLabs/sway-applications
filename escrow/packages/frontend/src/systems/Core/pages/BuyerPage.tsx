@@ -69,7 +69,7 @@ export default function BuyerPage() {
                   </>
                 })}
                 <div>{`Buyer: ${!!buyerEscrows[0].buyer.address.Address ? buyerEscrows[0].buyer.address.Address?.value : buyerEscrows[0].buyer.address.ContractId?.value}`}</div>
-                <div>{`Buyer Desposit Asset: ${!!buyerEscrows[0].buyer.asset.None ? "None" : buyerEscrows[0].buyer.asset.Some?.value}`}</div>
+                <div>{`Buyer Desposit Asset: ${!buyerEscrows[0].buyer.asset ? "None" : buyerEscrows[0].buyer.asset.some}`}</div>
                 <div>{`Buyer Deposit Amount: ${formatValue(buyerEscrows[0].buyer.deposited_amount, DECIMAL_PLACES)}`}</div>
                 <div>{`Seller: ${!!buyerEscrows[0].seller.address.Address ? buyerEscrows[0].seller.address.Address?.value : buyerEscrows[0].seller.address.ContractId?.value}`}</div>
                 <div>{`Deadline: ${buyerEscrows[0].deadline.toString()}`}</div>
@@ -77,7 +77,7 @@ export default function BuyerPage() {
                 <div>{`State: ${!!buyerEscrows[0].state.Pending ? "Pending" : "Completed"}`}</div>
               </Card.Body>
 
-              {buyerEscrows[0].buyer.asset.None &&
+              {buyerEscrows[0].buyer.asset &&
                 <Card.Footer>
                   <Deposit escrowId={BigInt(0)} />
                 </Card.Footer>
