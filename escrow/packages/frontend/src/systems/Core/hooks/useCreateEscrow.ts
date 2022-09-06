@@ -1,12 +1,13 @@
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import toast from 'react-hot-toast';
+import { useAtomValue } from "jotai";
 
 import { useContract } from "./useContract";
 import { parseInputValueBigInt } from "../utils/math";
 import { ArbiterInput, AssetInput, IdentityInput } from "@/types/contracts/EscrowAbi";
 import { txFeedback } from "../utils/feedback";
 import React from "react";
-import { Maybe } from "@/types";
+import { walletIndexAtom } from "../jotai";
 
 // TODO it may be a good idea to refactor this to resemble
 // UseAddLiquidityProps from SwaySwap
@@ -31,6 +32,7 @@ interface UseCreateEscrowProps {
     setDeadline: React.Dispatch<React.SetStateAction<string>>;
 }
 
+// TODO add better error handling for empty fields
 export function useCreateEscrow({
     arbiterFee,
     arbiterAddress,
@@ -45,6 +47,8 @@ export function useCreateEscrow({
     setBuyerAddress,
     setDeadline,
 }: UseCreateEscrowProps) {
+    const queryClient = useQueryClient();
+    const walletIdx = useAtomValue(walletIndexAtom);
     const contract = useContract();
     const successMsg = "New escrow created.";
 
@@ -102,6 +106,7 @@ export function useCreateEscrow({
         setAssets([{ assetAmount: "", assetId: "" }]);
         setBuyerAddress("");
         setDeadline("");
+        queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
