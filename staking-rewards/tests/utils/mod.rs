@@ -250,6 +250,7 @@ pub async fn staking_token(instance: &StakingRewards) -> ContractId {
 pub async fn withdraw(instance: &StakingRewards, amount: u64, test_timestamp: u64) {
     instance
         .withdraw(amount, test_timestamp)
+        .append_variable_outputs(1)
         .call()
         .await
         .unwrap();

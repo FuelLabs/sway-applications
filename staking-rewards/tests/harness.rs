@@ -253,3 +253,58 @@ async fn can_get_rewards_distribution() {
 
     assert_eq!(wallet_identity, rewards_distribution);
 }
+
+#[tokio::test]
+async fn can_get_rewards_duration() {
+    let (staking_contract, _id, _wallet, _wallet2) = setup().await;
+
+    let rewards_dur = rewards_duration(&staking_contract).await;
+
+    assert_eq!(1000, rewards_dur);
+}
+
+#[tokio::test]
+async fn can_get_rewards_token() {
+    let (staking_contract, _id, _wallet, _wallet2) = setup().await;
+
+    let token = rewards_token(&staking_contract).await;
+
+    assert_eq!(ContractId::new([2_u8; 32]), token);
+}
+
+#[tokio::test]
+async fn can_set_rewards_duration() {
+    let (staking_contract, _id, _wallet, _wallet2) = setup().await;
+
+    let old_rewards_dur = rewards_duration(&staking_contract).await;
+
+    assert_eq!(old_rewards_dur, 1000);
+
+    set_rewards_duration(&staking_contract, 2000, 1001).await;
+
+    let new_rewards_dur = rewards_duration(&staking_contract).await;
+
+    assert_eq!(2000, new_rewards_dur);
+}
+
+#[tokio::test]
+async fn can_get_staking_token() {
+    let (staking_contract, _id, _wallet, _wallet2) = setup().await;
+
+    let token = staking_token(&staking_contract).await;
+
+    assert_eq!(ContractId::new([1_u8; 32]), token);
+}
+
+#[tokio::test]
+async fn can_withdraw() {
+    let (staking_contract, _id, wallet, _wallet2) = setup().await;
+
+    let staking_balance_before = get_balance(&wallet, STAKING_ASSET).await;
+
+    withdraw(&staking_contract, 500, TIMESTAMP).await;
+
+    let staking_balance_after = get_balance(&wallet, STAKING_ASSET).await;
+
+    assert_eq!(staking_balance_before + 500, staking_balance_after);
+}
