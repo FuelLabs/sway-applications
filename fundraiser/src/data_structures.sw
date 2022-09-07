@@ -1,7 +1,7 @@
 library data_structures;
 
 use std::{
-    contract_id::ContractId, 
+    contract_id::ContractId,
     identity::Identity,
 };
 
