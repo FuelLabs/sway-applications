@@ -1,27 +1,18 @@
-import { useAtomValue } from "jotai";
-import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
-import { walletIndexAtom } from "../jotai";
+import toast from "react-hot-toast";
 import { txFeedback } from "../utils/feedback";
-import { parseInputValueBigInt } from "../utils/math";
-
 import { useContract } from "./useContract";
 
-interface UseDepositProps {
-    depositAmount: string;
-    depositAsset: string;
+interface UseDisputeProps {
     escrowId: bigint;
 }
 
-export function useDeposit({
-    depositAmount,
-    depositAsset,
-    escrowId,
-}: UseDepositProps) {
+export function useDispute({
+    escrowId
+}: UseDisputeProps) {
     const queryClient = useQueryClient();
-    const walletIdx = useAtomValue(walletIndexAtom);
     const contract = useContract();
-    const successMsg = "Deposit successful.";
+    const successMsg = "Dispute successful.";
 
     const mutation = useMutation(
         async () => {
@@ -29,13 +20,8 @@ export function useDeposit({
                 throw new Error("Contract not found");
             }
 
-            const actualDeposit = parseInputValueBigInt(depositAmount)
-
-            const scope = await contract!.functions
-                .deposit(escrowId)
-                .callParams({
-                    forward: [actualDeposit, depositAsset]
-                })
+            const scope = await contract.functions
+                .dispute(escrowId)
                 .txParams({
                     gasPrice: BigInt(5),
                     bytePrice: BigInt(5),
@@ -43,7 +29,7 @@ export function useDeposit({
                 })
                 .fundWithRequiredCoins();
 
-            const response = await contract!.wallet?.sendTransaction(scope.transactionRequest);
+            const response = await contract.wallet?.sendTransaction(scope.transactionRequest);
             const result = await response?.waitForResult();
 
             return result;
@@ -55,8 +41,6 @@ export function useDeposit({
     );
 
     function handleSuccess() {
-        // Trigger queries to update components
-        queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
         queryClient.fetchQuery(["BuyerEscrows"]);
         queryClient.fetchQuery(["SellerEscrows"]);
     }
@@ -68,6 +52,8 @@ export function useDeposit({
         if (errors?.length) {
             if (errors[0].message === 'enough coins could not be found') {
                 toast.error('Not enough balance in your wallet to deposit');
+            } else {
+                toast.error(errors[0].message);
             }
         } else {
             toast.error('Error when trying to deposit');

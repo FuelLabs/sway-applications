@@ -1,27 +1,21 @@
 import { useAtomValue } from "jotai";
-import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
+import toast from "react-hot-toast";
 import { walletIndexAtom } from "../jotai";
 import { txFeedback } from "../utils/feedback";
-import { parseInputValueBigInt } from "../utils/math";
-
 import { useContract } from "./useContract";
 
-interface UseDepositProps {
-    depositAmount: string;
-    depositAsset: string;
+interface UseReturnDepositProps {
     escrowId: bigint;
 }
 
-export function useDeposit({
-    depositAmount,
-    depositAsset,
-    escrowId,
-}: UseDepositProps) {
+export function useReturnDeposit({
+    escrowId
+}: UseReturnDepositProps) {
     const queryClient = useQueryClient();
     const walletIdx = useAtomValue(walletIndexAtom);
     const contract = useContract();
-    const successMsg = "Deposit successful.";
+    const successMsg = "Deposit returned to buyer.";
 
     const mutation = useMutation(
         async () => {
@@ -29,21 +23,16 @@ export function useDeposit({
                 throw new Error("Contract not found");
             }
 
-            const actualDeposit = parseInputValueBigInt(depositAmount)
-
-            const scope = await contract!.functions
-                .deposit(escrowId)
-                .callParams({
-                    forward: [actualDeposit, depositAsset]
-                })
+            const scope = await contract.functions
+                .return_deposit(escrowId)
                 .txParams({
                     gasPrice: BigInt(5),
                     bytePrice: BigInt(5),
-                    gasLimit: 100_000_000,
+                    variableOutputs: 3,
                 })
                 .fundWithRequiredCoins();
 
-            const response = await contract!.wallet?.sendTransaction(scope.transactionRequest);
+            const response = await contract.wallet?.sendTransaction(scope.transactionRequest);
             const result = await response?.waitForResult();
 
             return result;
@@ -52,7 +41,7 @@ export function useDeposit({
             onSuccess: txFeedback(successMsg, handleSuccess),
             onError: handleError,
         }
-    );
+    )
 
     function handleSuccess() {
         // Trigger queries to update components
@@ -68,6 +57,8 @@ export function useDeposit({
         if (errors?.length) {
             if (errors[0].message === 'enough coins could not be found') {
                 toast.error('Not enough balance in your wallet to deposit');
+            } else {
+                toast.error(errors[0].message);
             }
         } else {
             toast.error('Error when trying to deposit');

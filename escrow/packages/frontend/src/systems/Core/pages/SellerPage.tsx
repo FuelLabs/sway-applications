@@ -16,6 +16,7 @@ import { useContract } from "../hooks/useContract";
 import { ArbiterInputContainer } from "../components/ArbiterInputContainer";
 import { parseInputValueBigInt } from "../utils/math";
 import { ArbiterInput } from "@/types/contracts/EscrowAbi";
+import { useReturnDeposit } from "../hooks/useReturnDeposit";
 
 export default function SellerPage() {
   const queryClient = useQueryClient();
@@ -23,6 +24,7 @@ export default function SellerPage() {
   const walletIdx = useAtomValue(walletIndexAtom);
   const sellerEscrows = useSellerEscrows();
   const contract = useContract();
+  const returnDepositMutation = useReturnDeposit({ escrowId: BigInt(0) });
 
   // TODO DRY for repeated code in CreateEscrow.tsx
   const [arbiter, setArbiter] = useState("");
@@ -83,19 +85,6 @@ export default function SellerPage() {
     queryClient.fetchQuery(["SellerEscrows", contract]);
   }
 
-  const handleReturnDeposit = (escrowId: bigint) => {
-    const result = contract!.functions.return_deposit(escrowId)
-      .txParams({
-        variableOutputs: 3,
-      }).simulate();
-    console.log("result", result);
-    toast.promise(result, {
-      loading: "Transaction loading...",
-      success: "Deposit returned to buyer",
-      error: "Transaction reverted!",
-    });
-  }
-
   const handleTakePayment = (escrowId: bigint) => {
 
   }
@@ -152,7 +141,7 @@ export default function SellerPage() {
                 </Card.Footer>
 
                 <Card.Footer justify="space-evenly">
-                  <Button onPress={() => handleReturnDeposit(BigInt(0))}>
+                  <Button onPress={() => returnDepositMutation.mutate()}>
                     Return Deposit
                   </Button>
                   <Button onPress={() => handleTakePayment(BigInt(0))}>

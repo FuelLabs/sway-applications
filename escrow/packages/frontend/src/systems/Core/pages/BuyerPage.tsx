@@ -12,24 +12,17 @@ import { useContract } from "../hooks/useContract";
 import { formatValue } from "../utils/helpers";
 import { DECIMAL_PLACES } from "@/config";
 import { useTransferToSeller } from "../hooks/useTransferToSeller";
+import { useDispute } from "../hooks/useDispute";
 
 export default function BuyerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
   const buyerEscrows = useBuyerEscrows();
   const contract = useContract();
   const transferToSellerMutation = useTransferToSeller({ escrowId: BigInt(0) });
+  const disputeMutation = useDispute({ escrowId: BigInt(0) });
 
   const handleAcceptArbiter = (escrowId: bigint) => {
 
-  }
-
-  const handleDispute = (escrowId: bigint) => {
-    const result = contract!.functions.dispute(escrowId).call();
-    toast.promise(result, {
-      loading: 'Transaction loading...',
-      success: 'Dispute Started',
-      error: 'Transaction reverted',
-    });
   }
 
   return (
@@ -74,7 +67,7 @@ export default function BuyerPage() {
                 <Button onPress={() => transferToSellerMutation.mutate()}>
                   Transfer To Seller
                 </Button>
-                <Button onPress={() => handleDispute(BigInt(0))}>
+                <Button onPress={() => disputeMutation.mutate()}>
                   Dispute
                 </Button>
               </Card.Footer>
