@@ -1,6 +1,9 @@
 library data_structures;
 
-use std::{contract_id::ContractId, identity::Identity};
+use std::{
+    contract_id::ContractId, 
+    identity::Identity
+};
 
 /// Used to track the total amount pledged to an asset
 pub struct AssetInfo {
