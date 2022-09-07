@@ -32,12 +32,7 @@ use std::{
 
 use interface::DaoVoting;
 use data_structures::{Proposal, ProposalInfo, State, Votes};
-use errors::{
-    CreationError,
-    InitializationError,
-    ProposalError,
-    UserError,
-};
+use errors::{CreationError, InitializationError, ProposalError, UserError};
 use events::{
     CreatePropEvent,
     DepositEvent,

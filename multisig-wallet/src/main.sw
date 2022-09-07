@@ -39,18 +39,9 @@ use core::num::*;
 
 // Our library imports
 use contract_abi::MultiSignatureWallet;
-use data_structures::{
-    Transaction,
-    User,
-};
-use errors::{
-    ExecutionError,
-    InitError,
-};
-use events::{
-    ExecutedEvent,
-    TransferEvent,
-};
+use data_structures::{Transaction, User};
+use errors::{ExecutionError, InitError};
+use events::{ExecutedEvent, TransferEvent};
 
 storage {
     /// Used to add entropy into hashing of Tx to decrease the probability of collisions / double

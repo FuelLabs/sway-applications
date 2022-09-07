@@ -1,9 +1,6 @@
 library events;
 
-use std::{
-    contract_id::ContractId,
-    identity::Identity,
-};
+use std::{contract_id::ContractId, identity::Identity};
 
 pub struct ExecutedEvent {
     data: b256, // TODO: change to vector when implemented

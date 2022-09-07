@@ -3,12 +3,7 @@ library interface;
 dep data_structures;
 
 use std::{contract_id::ContractId, identity::Identity};
-use data_structures::{
-    AssetInfo,
-    Campaign,
-    CampaignInfo,
-    Pledge,
-};
+use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
 
 abi Fundraiser {
     /// Returns the number of unique assets that have added across all campaigns

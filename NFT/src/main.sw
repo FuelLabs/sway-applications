@@ -5,20 +5,8 @@ dep errors;
 dep interface;
 
 use data_structures::TokenMetaData;
-use errors::{
-    AccessError,
-    InitError,
-    InputError,
-};
-use interface::{
-    AdminEvent,
-    ApprovalEvent,
-    BurnEvent,
-    MintEvent,
-    NFT,
-    OperatorEvent,
-    TransferEvent,
-};
+use errors::{AccessError, InitError, InputError};
+use interface::{AdminEvent, ApprovalEvent, BurnEvent, MintEvent, NFT, OperatorEvent, TransferEvent};
 use std::{
     chain::auth::msg_sender,
     identity::Identity,

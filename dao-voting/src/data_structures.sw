@@ -1,10 +1,6 @@
 library data_structures;
 
-use std::{
-    block::height,
-    contract_id::ContractId,
-    identity::Identity,
-};
+use std::{block::height, contract_id::ContractId, identity::Identity};
 use core::ops::Eq;
 
 struct CallData {
