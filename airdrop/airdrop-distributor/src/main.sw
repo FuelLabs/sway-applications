@@ -35,13 +35,12 @@ use sway_libs::binary_merkle_proof::{
 use utils::mint_to;
 
 storage {
-    /// Stores true if a user has claimed their airdrop. Maps a tuple of a user and an amount to a
-    /// boolean.
+    /// Stores the ClaimData struct of users that have interacted with the Airdrop Distrubutor contract.
     /// Maps (user => claim)
     claims: StorageMap<Identity, ClaimData> = StorageMap {},
     /// The block at which the claiming period will end.
     end_block: u64 = 0,
-    /// The computer merkle root which is to be verified against.
+    /// The computed merkle root which is to be verified against.
     merkle_root: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
     /// The contract of the token which is to be distributed.
     token_contract: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
