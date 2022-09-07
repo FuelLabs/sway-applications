@@ -110,6 +110,8 @@ export function useCreateEscrow({
         // Trigger query to update blanaces etc
         queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
         queryClient.fetchQuery(["SellerEscrows"]);
+        queryClient.fetchQuery(["BuyerEscrows"]);
+        queryClient.fetchQuery(["ArbiterEscrows"]);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

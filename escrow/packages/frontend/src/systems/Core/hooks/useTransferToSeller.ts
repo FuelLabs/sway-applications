@@ -44,8 +44,9 @@ export function useTransferToSeller({ escrowId }: UseTransferToSellerProps) {
 
     function handleSuccess() {
         // Trigger queries to update components
-        queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
+        queryClient.fetchQuery(["SellerEscrows"]);
         queryClient.fetchQuery(["BuyerEscrows"]);
+        queryClient.fetchQuery(["ArbiterEscrows"]);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -41,8 +41,9 @@ export function useDispute({
     );
 
     function handleSuccess() {
-        queryClient.fetchQuery(["BuyerEscrows"]);
         queryClient.fetchQuery(["SellerEscrows"]);
+        queryClient.fetchQuery(["BuyerEscrows"]);
+        queryClient.fetchQuery(["ArbiterEscrows"]);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
