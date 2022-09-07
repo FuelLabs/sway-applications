@@ -17,7 +17,7 @@ More information can be found in the [specification](./SPECIFICATION.md) and [in
 
 ### Current state of the application
 
-Information on the current state of the application can be found in the [Application Progress](../APPLICATION_PROGRESS.md) file.
+Information on the current state of the application can be found in the [Application Progress](../APPLICATION_PROGRESS.md#decentralized-apps) file.
 
 ## Project Structure
 
