@@ -2,7 +2,7 @@ library data_structures;
 
 use std::{
     contract_id::ContractId, 
-    identity::Identity
+    identity::Identity,
 };
 
 /// Used to track the total amount pledged to an asset
