@@ -33,29 +33,6 @@ export function Deposit(props: Props) {
         setAssetId(newAssetId);
     }
 
-    const handleDeposit = (event: any) => {
-        const actualDeposit = parseInputValueBigInt(assetAmount);
-        const result = contract!
-            .multiCall([
-                contract!.functions.deposit(props.escrowId).callParams({
-                    forward: [actualDeposit, assetId]
-                }),
-            ])
-            .txParams({
-                gasPrice: BigInt(5),
-                bytePrice: BigInt(5),
-                gasLimit: 100_000_000
-            }).call();
-        toast.promise(result, {
-            loading: 'Transaction loading...',
-            success: 'Desposited successfully',
-            error: 'Transaction reverted!'
-        });
-        setAssetAmount("");
-        setAssetId("");
-        queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
-    }
-
     return (
         <>
             <AssetInput

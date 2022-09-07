@@ -23,23 +23,6 @@ export default function BuyerPage() {
 
   }
 
-  const handleTransferToSeller = (escrowId: bigint) => {
-    const result = contract!.functions.transfer_to_seller(escrowId)
-      .txParams({
-        gasPrice: BigInt(5),
-        bytePrice: BigInt(5),
-        gasLimit: 100_000_000,
-        variableOutputs: 3,
-      })
-      .call();
-    console.log("result: ", result);
-    toast.promise(result, {
-      loading: 'Transaction loading...',
-      success: 'Transferred to Seller successfully',
-      error: 'Transaction reverted!'
-    });
-  }
-
   const handleDispute = (escrowId: bigint) => {
     const result = contract!.functions.dispute(escrowId).call();
     toast.promise(result, {
