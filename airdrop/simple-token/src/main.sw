@@ -3,11 +3,7 @@ contract;
 dep errors;
 dep interface;
 
-use errors::{
-    AccessError,
-    InitError,
-    InputError,
-};
+use errors::{AccessError, InitError, InputError};
 use interface::SimpleToken;
 use std::{
     chain::auth::{

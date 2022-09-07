@@ -6,16 +6,8 @@ dep data_structures;
 dep interface;
 dep utils;
 
-use events::{
-    ClaimEvent,
-    CreateAirdropEvent,
-};
-use errors::{
-    AccessError,
-    InitError,
-    StateError,
-    VerificationError,
-};
+use events::{ClaimEvent, CreateAirdropEvent};
+use errors::{AccessError, InitError, StateError, VerificationError};
 use data_structures::ClaimData;
 use interface::AirdropDistributor;
 use std::{
@@ -28,10 +20,7 @@ use std::{
     revert::require,
     storage::StorageMap,
 };
-use sway_libs::binary_merkle_proof::{
-    leaf_digest,
-    verify_proof,
-};
+use sway_libs::binary_merkle_proof::{leaf_digest, verify_proof};
 use utils::mint_to;
 
 storage {
