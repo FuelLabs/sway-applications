@@ -49,21 +49,7 @@ impl AirdropDistributor for Contract {
         require(!storage.claims.get(to).claimed, AccessError::UserAlreadyClaimed);
 
         // Verify the merkle proof against the user and amount
-        let leaf_hash = match to {
-            Identity::Address(to) => {
-                sha256((
-                    to.into(),
-                    amount,
-                ))
-            },
-            Identity::ContractId(to) => {
-                sha256((
-                    to.into(),
-                    amount,
-                ))
-            }
-        };
-        let leaf = leaf_digest(leaf_hash);
+        let leaf = leaf_digest(sha256((to, amount)));
         require(verify_proof(key, leaf, storage.merkle_root, num_leaves, proof), VerificationError::MerkleProofFailed);
 
         // Mint tokens

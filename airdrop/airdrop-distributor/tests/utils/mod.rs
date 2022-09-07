@@ -93,17 +93,25 @@ pub mod test_helpers {
 
     pub async fn build_tree(
         key: u64,
-        leaves: Vec<&(u64, Bytes32)>,
+        leaves: Vec<&(airdropdistributor_mod::Identity, u64)>,
     ) -> (MerkleTree, Bytes32, Bytes32, ProofSet) {
         let mut tree = MerkleTree::new();
 
         for datum in leaves.iter() {
-            let mut bytes: Vec<u8> = Vec::new();
-            bytes.push(datum.0.try_into().unwrap());
-            bytes.extend_from_slice(&datum.1);
-
             let mut hasher = Sha256::new();
-            hasher.update(bytes.as_slice());
+            let identity = datum.0.clone();
+
+            match identity {
+                airdropdistributor_mod::Identity::Address(identity) => {
+                    hasher.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
+                    hasher.update(&*identity);
+                }
+                airdropdistributor_mod::Identity::ContractId(identity) => {
+                    hasher.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
+                    hasher.update(&*identity);
+                }
+            }
+            hasher.update(&datum.1.to_be_bytes());
 
             let digest: [u8; 32] = hasher.finalize().try_into().unwrap();
             tree.push(&digest);
@@ -117,7 +125,9 @@ pub mod test_helpers {
         (tree, merkle_root, merkle_leaf, proof.1)
     }
 
-    pub async fn build_tree_manual(leaves: [([u8; 32], u64); 3]) -> (Bytes32, Bytes32, Bytes32) {
+    pub async fn build_tree_manual(
+        leaves: [(airdropdistributor_mod::Identity, u64); 3],
+    ) -> (Bytes32, Bytes32, Bytes32) {
         //            ABC
         //           /   \
         //          AB    C
@@ -127,7 +137,17 @@ pub mod test_helpers {
         // Leaf A hash
         let leaf_u64: u64 = 0;
         let mut leaf_a = Sha256::new();
-        leaf_a.update(&leaves[0].0);
+        let identity_a = leaves[0].0.clone();
+        match identity_a {
+            airdropdistributor_mod::Identity::Address(identity) => {
+                leaf_a.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
+                leaf_a.update(&*identity);
+            }
+            airdropdistributor_mod::Identity::ContractId(identity) => {
+                leaf_a.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
+                leaf_a.update(&*identity);
+            }
+        }
         leaf_a.update(&leaves[0].1.to_be_bytes());
         let leaf_a: Bytes32 = leaf_a.finalize().try_into().unwrap();
 
@@ -138,7 +158,17 @@ pub mod test_helpers {
 
         // Leaf B hash
         let mut leaf_b = Sha256::new();
-        leaf_b.update(&leaves[1].0);
+        let identity_b = leaves[1].0.clone();
+        match identity_b {
+            airdropdistributor_mod::Identity::Address(identity) => {
+                leaf_b.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
+                leaf_b.update(&*identity);
+            }
+            airdropdistributor_mod::Identity::ContractId(identity) => {
+                leaf_b.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
+                leaf_b.update(&*identity);
+            }
+        }
         leaf_b.update(&leaves[1].1.to_be_bytes());
         let leaf_b: Bytes32 = leaf_b.finalize().try_into().unwrap();
 
@@ -149,7 +179,17 @@ pub mod test_helpers {
 
         // leaf C hash
         let mut leaf_c = Sha256::new();
-        leaf_c.update(&leaves[2].0);
+        let identity_c = leaves[2].0.clone();
+        match identity_c {
+            airdropdistributor_mod::Identity::Address(identity) => {
+                leaf_c.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
+                leaf_c.update(&*identity);
+            }
+            airdropdistributor_mod::Identity::ContractId(identity) => {
+                leaf_c.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
+                leaf_c.update(&*identity);
+            }
+        }
         leaf_c.update(&leaves[2].1.to_be_bytes());
         let leaf_c: Bytes32 = leaf_c.finalize().try_into().unwrap();
 

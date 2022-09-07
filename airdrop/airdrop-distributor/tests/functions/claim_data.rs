@@ -15,15 +15,17 @@ mod success {
     async fn returns_claim_data() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset, claim_time) = setup().await;
 
-        let airdrop_leaves = [
-            &(1, *wallet1.wallet.address().hash()),
-            &(2, *wallet2.wallet.address().hash()),
-            &(3, *wallet3.wallet.address().hash()),
-        ];
+        let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
+        let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
+        let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
+        let minter = TokenIdentity::ContractId(deploy_wallet.contract_id);
         let key = 0;
         let num_leaves = 3;
-        let identity = AirdropIdentity::Address(wallet1.wallet.address().into());
-        let minter = TokenIdentity::ContractId(deploy_wallet.contract_id);
+        let airdrop_leaves = [
+            &(identity_a.clone(), 1),
+            &(identity_b.clone(), 2),
+            &(identity_c.clone(), 3),
+        ];
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.to_vec()).await;
 
         airdrop_constructor(
@@ -36,13 +38,13 @@ mod success {
         token_constructor(minter, &asset.token, 10).await;
 
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+            claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
                 .await
                 .claimed,
             false
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+            claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
                 .await
                 .amount,
             0
@@ -54,19 +56,19 @@ mod success {
             key,
             num_leaves,
             proof.clone(),
-            identity.clone(),
+            identity_a.clone(),
             asset.asset_id,
         )
         .await;
 
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+            claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
                 .await
                 .claimed,
             true
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+            claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
                 .await
                 .amount,
             1
@@ -77,17 +79,19 @@ mod success {
     async fn claims_manual_tree() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset, claim_time) = setup().await;
 
-        let airdrop_leaves: [([u8; 32], u64); 3] = [
-            (*wallet1.wallet.address().hash(), 1),
-            (*wallet2.wallet.address().hash(), 2),
-            (*wallet3.wallet.address().hash(), 3),
-        ];
+        let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
+        let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
+        let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
+        let minter = TokenIdentity::ContractId(deploy_wallet.contract_id);
         let key = 0;
         let num_leaves = 3;
+        let airdrop_leaves: [(AirdropIdentity, u64); 3] = [
+            (identity_a.clone(), 1),
+            (identity_b.clone(), 2),
+            (identity_c.clone(), 3),
+        ];
         let (root, proof1, proof2) = build_tree_manual(airdrop_leaves).await;
 
-        let identity = AirdropIdentity::Address(wallet1.wallet.address().into());
-        let minter = TokenIdentity::ContractId(deploy_wallet.contract_id);
         airdrop_constructor(
             claim_time,
             &deploy_wallet.airdrop_distributor,
@@ -98,13 +102,13 @@ mod success {
         token_constructor(minter, &asset.token, 10).await;
 
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+            claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
                 .await
                 .claimed,
             false
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+            claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
                 .await
                 .amount,
             0
@@ -116,19 +120,19 @@ mod success {
             key,
             num_leaves,
             [proof1, proof2].to_vec(),
-            identity.clone(),
+            identity_a.clone(),
             asset.asset_id,
         )
         .await;
 
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+            claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
                 .await
                 .claimed,
             true
         );
         assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity.clone())
+            claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
                 .await
                 .amount,
             1

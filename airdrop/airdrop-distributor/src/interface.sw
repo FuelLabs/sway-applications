@@ -9,7 +9,7 @@ abi AirdropDistributor {
     /// This function will let users claim their airdrop.
     /// 
     /// A Merkle proof will need to be provided to claim the airdrop. This is then verified against
-    /// the merkle root and a hash of the (`b256`, `u64`) tuple as the leaf.
+    /// the merkle root and a hash of the (`Identity`, `u64`) tuple as the leaf.
     /// This function uses the Binary Merkle Proof library in Sway-Libs and inherits it's specs.
     /// 
     /// # Arguments
