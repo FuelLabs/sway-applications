@@ -11,11 +11,13 @@ import { useBuyerEscrows } from "../hooks/useBuyerEscrows";
 import { useContract } from "../hooks/useContract";
 import { formatValue } from "../utils/helpers";
 import { DECIMAL_PLACES } from "@/config";
+import { useTransferToSeller } from "../hooks/useTransferToSeller";
 
 export default function BuyerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
   const buyerEscrows = useBuyerEscrows();
   const contract = useContract();
+  const transferToSellerMutation = useTransferToSeller({ escrowId: BigInt(0) });
 
   const handleAcceptArbiter = (escrowId: bigint) => {
 
@@ -83,10 +85,10 @@ export default function BuyerPage() {
               }
 
               <Card.Footer justify="space-evenly">
-                <Button onPress={() => handleAcceptArbiter(BigInt(0)) }>
+                <Button onPress={() => handleAcceptArbiter(BigInt(0))}>
                   Accept Arbiter
                 </Button>
-                <Button onPress={() => handleTransferToSeller(BigInt(0))}>
+                <Button onPress={() => transferToSellerMutation.mutate()}>
                   Transfer To Seller
                 </Button>
                 <Button onPress={() => handleDispute(BigInt(0))}>
