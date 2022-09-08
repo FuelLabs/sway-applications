@@ -2,7 +2,6 @@ use crate::utils::{
     abi_calls::{create_escrow, deposit, propose_arbiter, return_deposit, withdraw_collateral},
     test_helpers::{asset_amount, create_arbiter, create_asset, mint, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -76,7 +75,7 @@ mod success {
             vec![asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
-            4,
+            5,
         )
         .await;
 
