@@ -18,10 +18,8 @@ pub struct ClaimedEvent {
 pub struct CreatedCampaignEvent {
     /// The user who has created the campaign
     author: Identity,
-
     /// Information about the entire campaign
     campaign_info: CampaignInfo,
-
     /// The unique identifier for the campaign
     id: u64,
 }
@@ -29,10 +27,8 @@ pub struct CreatedCampaignEvent {
 pub struct PledgedEvent {
     /// The amount pledged
     amount: u64,
-
     /// The unique identifier for the campaign
     id: u64,
-
     /// The user who has pledged
     user: Identity,
 }
@@ -40,10 +36,8 @@ pub struct PledgedEvent {
 pub struct UnpledgedEvent {
     /// The amount unpledged
     amount: u64,
-
     /// The unique identifier for the campaign
     id: u64,
-
     /// The user who has unpledged
     user: Identity,
 }

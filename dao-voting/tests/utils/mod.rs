@@ -1,6 +1,5 @@
 use fuels::{contract::contract::CallResponse, prelude::*, tx::ContractId};
 
-// Load abi from json
 abigen!(DaoVoting, "out/debug/dao-voting-abi.json");
 abigen!(
     GovToken,
@@ -10,10 +9,11 @@ abigen!(
 pub struct Metadata {
     pub dao_voting: DaoVoting,
     pub gov_token: Option<GovToken>,
-    pub wallet: LocalWallet,
+    pub wallet: WalletUnlocked,
 }
 
 pub mod abi_calls {
+
     use super::*;
 
     pub async fn constructor(contract: &DaoVoting, token: ContractId) -> CallResponse<()> {
@@ -34,7 +34,7 @@ pub mod abi_calls {
     }
 
     pub async fn deposit(contract: &DaoVoting, call_params: CallParameters) -> CallResponse<()> {
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let tx_params = TxParameters::new(None, Some(1_000_000), None);
         contract
             .deposit()
             .tx_params(tx_params)
@@ -78,18 +78,18 @@ pub mod abi_calls {
         contract.balance().call().await.unwrap().value
     }
 
-    pub async fn user_balance(contract: &DaoVoting, user_identity: Identity) -> u64 {
+    pub async fn user_balance(contract: &DaoVoting, user_identity: &Bech32Address) -> u64 {
         contract
-            .user_balance(user_identity)
+            .user_balance(Identity::Address(user_identity.into()))
             .call()
             .await
             .unwrap()
             .value
     }
 
-    pub async fn user_votes(contract: &DaoVoting, user_identity: Identity, id: u64) -> Votes {
+    pub async fn user_votes(contract: &DaoVoting, user_identity: &Bech32Address, id: u64) -> Votes {
         contract
-            .user_votes(id, user_identity)
+            .user_votes(id, Identity::Address(user_identity.into()))
             .call()
             .await
             .unwrap()
@@ -110,63 +110,12 @@ pub mod abi_calls {
 }
 
 pub mod test_helpers {
+
     use super::*;
 
-    pub async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {
-        let num_wallets = 2;
-        let coins_per_wallet = 1;
-        let amount_per_coin = 1_000_000;
-        let config = WalletsConfig::new(
-            Some(num_wallets),
-            Some(coins_per_wallet),
-            Some(amount_per_coin),
-        );
-
-        let mut wallets = launch_provider_and_get_wallets(config).await;
-        let deployer_wallet = wallets.pop().unwrap();
-        let user_wallet = wallets.pop().unwrap();
-
-        let dao_voting_id = Contract::deploy(
-            "./out/debug/dao-voting.bin",
-            &deployer_wallet,
-            TxParameters::default(),
-        )
-        .await
-        .unwrap();
-
-        let gov_token_id = Contract::deploy(
-            "./tests/artifacts/gov_token/out/debug/gov_token.bin",
-            &deployer_wallet,
-            TxParameters::default(),
-        )
-        .await
-        .unwrap();
-
-        let gov_token = GovToken::new(gov_token_id.to_string(), deployer_wallet.clone());
-
-        let deployer = Metadata {
-            dao_voting: DaoVoting::new(dao_voting_id.to_string(), deployer_wallet.clone()),
-            gov_token: Some(GovToken::new(
-                gov_token_id.to_string(),
-                deployer_wallet.clone(),
-            )),
-            wallet: deployer_wallet,
-        };
-
-        let user = Metadata {
-            dao_voting: DaoVoting::new(dao_voting_id.to_string(), user_wallet.clone()),
-            gov_token: None,
-            wallet: user_wallet,
-        };
-
-        let asset_amount: u64 = 10;
-
-        (gov_token, gov_token_id, deployer, user, asset_amount)
-    }
-
-    pub async fn mint(contract: &GovToken, amount: u64, address: Address) -> bool {
+    pub async fn mint(contract: &GovToken, amount: u64, address: &Bech32Address) -> bool {
         contract
-            .mint_and_send_to_address(amount, address)
+            .mint_and_send_to_address(amount, address.into())
             .append_variable_outputs(1)
             .call()
             .await
@@ -189,5 +138,65 @@ pub mod test_helpers {
         };
 
         proposal
+    }
+
+    pub async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {
+        let num_wallets = 2;
+        let coins_per_wallet = 1;
+        let amount_per_coin = 1_000_000;
+        let config = WalletsConfig::new(
+            Some(num_wallets),
+            Some(coins_per_wallet),
+            Some(amount_per_coin),
+        );
+
+        let mut wallets = launch_custom_provider_and_get_wallets(config, None).await;
+        let deployer_wallet = wallets.pop().unwrap();
+        let user_wallet = wallets.pop().unwrap();
+
+        let dao_voting_id = Contract::deploy(
+            "./out/debug/dao-voting.bin",
+            &deployer_wallet,
+            TxParameters::default(),
+            StorageConfiguration::with_storage_path(Some(
+                "./out/debug/dao-voting-storage_slots.json".to_string(),
+            )),
+        )
+        .await
+        .unwrap();
+
+        let gov_token_id = Contract::deploy(
+            "./tests/artifacts/gov_token/out/debug/gov_token.bin",
+            &deployer_wallet,
+            TxParameters::default(),
+            StorageConfiguration::with_storage_path(Some(
+                "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json".to_string(),
+            )),
+        )
+        .await
+        .unwrap();
+
+        let gov_token =
+            GovTokenBuilder::new(gov_token_id.to_string(), deployer_wallet.clone()).build();
+
+        let deployer = Metadata {
+            dao_voting: DaoVotingBuilder::new(dao_voting_id.to_string(), deployer_wallet.clone())
+                .build(),
+            gov_token: Some(
+                GovTokenBuilder::new(gov_token_id.to_string(), deployer_wallet.clone()).build(),
+            ),
+            wallet: deployer_wallet,
+        };
+
+        let user = Metadata {
+            dao_voting: DaoVotingBuilder::new(dao_voting_id.to_string(), user_wallet.clone())
+                .build(),
+            gov_token: None,
+            wallet: user_wallet,
+        };
+
+        let asset_amount: u64 = 10;
+
+        (gov_token, gov_token_id.into(), deployer, user, asset_amount)
     }
 }

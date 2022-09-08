@@ -1,9 +1,8 @@
 use crate::utils::{
     abi_calls::{constructor, deposit, user_balance},
     test_helpers::{mint, setup},
-    Identity,
 };
-use fuels::{prelude::CallParameters, signers::Signer, tx::AssetId};
+use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
@@ -26,12 +25,12 @@ mod success {
             Some(100_000),
         );
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             0
         );
         deposit(&user.dao_voting, call_params).await;
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             asset_amount
         );
     }

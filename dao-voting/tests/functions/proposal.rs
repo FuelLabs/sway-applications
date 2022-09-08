@@ -3,7 +3,6 @@ use crate::utils::{
     test_helpers::{proposal_transaction, setup},
     Identity, ProposalInfo,
 };
-use fuels::signers::Signer;
 
 mod success {
     use super::*;
@@ -19,12 +18,12 @@ mod success {
         assert_eq!(
             proposal(&user.dao_voting, 0).await,
             ProposalInfo {
-                author: Identity::Address(user.wallet.address()),
+                author: Identity::Address(user.wallet.address().into()),
                 yes_votes: 0,
                 no_votes: 0,
                 acceptance_percentage: 10,
                 proposal_transaction,
-                deadline: 13,
+                deadline: 14,
                 executed: false,
             }
         );
