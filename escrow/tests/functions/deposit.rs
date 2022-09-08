@@ -4,7 +4,7 @@ use crate::utils::{
         asset_amount, create_arbiter, create_asset, create_asset_with_salt, mint, setup,
     },
 };
-use fuels::{signers::Signer, tx::ContractId};
+use fuels::tx::ContractId;
 
 mod success {
 

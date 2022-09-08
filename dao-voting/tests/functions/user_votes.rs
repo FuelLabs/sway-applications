@@ -1,9 +1,9 @@
 use crate::utils::{
     abi_calls::{constructor, create_proposal, deposit, user_votes, vote},
     test_helpers::{mint, proposal_transaction, setup},
-    Identity, Votes,
+    Votes,
 };
-use fuels::{prelude::CallParameters, signers::Signer, tx::AssetId};
+use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod sucess {
     use super::*;
@@ -29,12 +29,7 @@ mod sucess {
         let proposal_transaction = proposal_transaction(gov_token_id);
         create_proposal(&user.dao_voting, 10, 10, proposal_transaction).await;
         assert_eq!(
-            user_votes(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address()),
-                0
-            )
-            .await,
+            user_votes(&user.dao_voting, user.wallet.address(), 0).await,
             Votes {
                 yes_votes: 0,
                 no_votes: 0
@@ -42,12 +37,7 @@ mod sucess {
         );
         vote(&user.dao_voting, true, 0, asset_amount).await;
         assert_eq!(
-            user_votes(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address()),
-                0
-            )
-            .await,
+            user_votes(&user.dao_voting, user.wallet.address(), 0).await,
             Votes {
                 yes_votes: asset_amount,
                 no_votes: 0
@@ -63,11 +53,6 @@ mod revert {
     #[should_panic]
     pub async fn panics_on_invalid_proposal_id() {
         let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
-        user_votes(
-            &user.dao_voting,
-            Identity::Address(user.wallet.address()),
-            0,
-        )
-        .await;
+        user_votes(&user.dao_voting, user.wallet.address(), 0).await;
     }
 }

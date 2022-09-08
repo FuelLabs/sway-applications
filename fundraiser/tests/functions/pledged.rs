@@ -1,9 +1,7 @@
 use crate::utils::{
     abi_calls::{create_campaign, pledge, pledged},
-    test_helpers::{mint, setup},
-    Identity,
+    test_helpers::{identity, mint, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -12,7 +10,7 @@ mod success {
     #[tokio::test]
     async fn returns_info() {
         let (author, user, asset, _, defaults) = setup().await;
-        let deadline = 6;
+        let deadline = 7;
 
         mint(
             &asset.contract,
@@ -30,7 +28,7 @@ mod success {
         .await;
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
-        let info = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
+        let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
             .value;
         assert_eq!(1, info.id);
@@ -48,7 +46,7 @@ mod revert {
         let (_, user, _, _, _) = setup().await;
 
         // Reverts
-        pledged(&user.contract, 0, Identity::Address(user.wallet.address())).await;
+        pledged(&user.contract, 0, identity(user.wallet.address()).await).await;
     }
 
     #[tokio::test]
@@ -57,6 +55,6 @@ mod revert {
         let (_, user, _, _, _) = setup().await;
 
         // Reverts
-        pledged(&user.contract, 1, Identity::Address(user.wallet.address())).await;
+        pledged(&user.contract, 1, identity(user.wallet.address()).await).await;
     }
 }
