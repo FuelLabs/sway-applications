@@ -1,4 +1,4 @@
-Table of Content
+Table of Contents
 - [Introduction](#introduction)
 - [Issues](#issues)
   - [Searching for issues](#searching-for-issues)
