@@ -360,7 +360,7 @@ Will move from Apps repo to Libs repo soon
 - <h3>Rust ✅</h3>
 - <h3>Typescript</h3>
 
-<h3>Documentation ❌</h3>
+<h3>Documentation ✅</h3>
 
 - Readme ✅
 - Specification ✅
