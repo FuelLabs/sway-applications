@@ -13,10 +13,10 @@ mod success {
         let provider = deploy_wallet.wallet.get_provider().unwrap();
 
         airdrop_constructor(
+            asset.asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             [2u8; 32],
-            asset.asset_id,
         )
         .await;
 

@@ -12,8 +12,8 @@ abigen!(
 );
 
 pub struct Asset {
-    pub asset_id: ContractId,
     pub asset: SimpleAsset,
+    pub asset_id: ContractId,
 }
 
 pub struct Metadata {
@@ -28,12 +28,12 @@ pub mod airdrop_distributor_abi_calls {
 
     pub async fn claim(
         amount: u64,
+        asset_id: ContractId,
         contract: &AirdropDistributor,
         key: u64,
         num_leaves: u64,
         proof: Vec<[u8; 32]>,
         to: Identity,
-        asset_id: ContractId,
     ) -> CallResponse<()> {
         contract
             .claim(amount, key, num_leaves, proof, to)
@@ -49,13 +49,13 @@ pub mod airdrop_distributor_abi_calls {
     }
 
     pub async fn airdrop_constructor(
+        asset: ContractId,
         claim_time: u64,
         contract: &AirdropDistributor,
         merkle_root: [u8; 32],
-        asset: ContractId,
     ) -> CallResponse<()> {
         contract
-            .constructor(claim_time, merkle_root, asset)
+            .constructor(asset, claim_time, merkle_root)
             .call()
             .await
             .unwrap()
@@ -75,12 +75,12 @@ pub mod simple_asset_abi_calls {
     use super::*;
 
     pub async fn asset_constructor(
-        minter: simpleasset_mod::Identity,
-        contract: &SimpleAsset,
         asset_supply: u64,
+        contract: &SimpleAsset,
+        minter: simpleasset_mod::Identity,
     ) -> CallResponse<()> {
         contract
-            .constructor(minter, asset_supply)
+            .constructor(asset_supply, minter)
             .call()
             .await
             .unwrap()
@@ -298,8 +298,8 @@ pub mod test_helpers {
         };
 
         let asset = Asset {
-            asset_id: ContractId::new(*simple_asset_id.hash()),
             asset: SimpleAssetBuilder::new(simple_asset_id.to_string(), wallet1.clone()).build(),
+            asset_id: ContractId::new(*simple_asset_id.hash()),
         };
 
         let claim_time = 15;

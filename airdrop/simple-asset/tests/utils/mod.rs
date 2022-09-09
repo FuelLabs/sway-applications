@@ -13,12 +13,12 @@ pub mod abi_calls {
     use super::*;
 
     pub async fn constructor(
-        minter: Identity,
-        contract: &SimpleAsset,
         asset_supply: u64,
+        contract: &SimpleAsset,
+        minter: Identity,
     ) -> CallResponse<()> {
         contract
-            .constructor(minter, asset_supply)
+            .constructor(asset_supply, minter)
             .call()
             .await
             .unwrap()

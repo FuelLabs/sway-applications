@@ -49,15 +49,15 @@ abi AirdropDistributor {
     /// 
     /// # Arguments
     /// 
+    /// * `asset` - The contract which is to be distributed.
     /// * `claim_time` - The number fo blocks the claiming period should last.
     /// * `merkleRoot` - The root of the merkle proof used to verify claiming.
-    /// * `asset` - The contract which is to be distributed.
     /// 
     /// # Reverts
     /// 
     /// * The constructor has already been called.
     #[storage(read, write)]
-    fn constructor(claim_time: u64, merkleRoot: b256, asset: ContractId);
+    fn constructor(asset: ContractId, claim_time: u64, merkleRoot: b256);
 
     /// Returns the block at which the airdrop ends
     #[storage(read)]

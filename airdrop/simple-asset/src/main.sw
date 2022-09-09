@@ -29,7 +29,7 @@ storage {
 
 impl SimpleAsset for Contract {
     #[storage(read, write)]
-    fn constructor(minter: Identity, asset_supply: u64) {
+    fn constructor(asset_supply: u64, minter: Identity) {
         // If the asset supply is anything other than 0, we know that the constructor has already
         // been called.
         require(storage.asset_supply == 0, InitError::AlreadyInitialized);

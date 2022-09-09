@@ -9,7 +9,7 @@ mod success {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_asset, total_supply).await;
+        constructor(total_supply, &deployer.simple_asset, identity.clone()).await;
     }
 }
 
@@ -23,8 +23,8 @@ mod revert {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_asset, total_supply).await;
-        constructor(identity.clone(), &deployer.simple_asset, total_supply).await;
+        constructor(total_supply, &deployer.simple_asset, identity.clone()).await;
+        constructor(total_supply, &deployer.simple_asset, identity.clone()).await;
     }
 
     #[tokio::test]
@@ -33,6 +33,6 @@ mod revert {
         let (deployer, _, _) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_asset, 0).await;
+        constructor(0, &deployer.simple_asset, identity.clone()).await;
     }
 }

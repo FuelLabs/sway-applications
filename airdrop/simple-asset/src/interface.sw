@@ -3,6 +3,20 @@ library interface;
 use std::{contract_id::ContractId, identity::Identity};
 
 abi SimpleAsset {
+    /// An example constructor which implements an airdrop distributor contract.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `asset_supply` - The total qualntity of the asset that may ever be minted.
+    /// * `minter` - The Address or Contract which will be permissioned to mint the asset.
+    /// 
+    /// # Reverts
+    /// 
+    /// * When the constructor has already been called.
+    /// * When the provided `asset_supply` is zero.
+    #[storage(read, write)]
+    fn constructor(asset_supply: u64, minter: Identity);
+
     /// An example function that is to be called by the airdrop distributor contract.
     /// 
     /// The mint function is authorized to be called only by the airdrop contract.
@@ -18,18 +32,4 @@ abi SimpleAsset {
     /// * When the amount of the asset to be minted is greater than the total supply.
     #[storage(read, write)]
     fn mint_to(amount: u64, to: Identity);
-
-    /// An example constructor which implements an airdrop distributor contract.
-    /// 
-    /// # Arguments
-    /// 
-    /// * `minter` - The Address or Contract which will be permissioned to mint the asset.
-    /// * `asset_supply` - The total qualntity of the asset that may ever be minted.
-    /// 
-    /// # Reverts
-    /// 
-    /// * When the constructor has already been called.
-    /// * When the provided `asset_supply` is zero.
-    #[storage(read, write)]
-    fn constructor(minter: Identity, asset_supply: u64);
 }

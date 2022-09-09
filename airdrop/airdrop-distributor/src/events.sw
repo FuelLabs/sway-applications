@@ -10,10 +10,10 @@ pub struct ClaimEvent {
 }
 
 pub struct CreateAirdropEvent {
+    /// The asset which is to be distributed and has an implemented `mint_to` function.
+    asset: ContractId,
     /// The block at which the minting period will end.
     end_block: u64,
     /// The computed merkle root that will be used to verify claims.
     merkle_root: b256,
-    /// The asset which is to be distributed and has an implemented `mint_to` function.
-    asset: ContractId,
 }

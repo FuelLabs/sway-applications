@@ -21,6 +21,7 @@ mod success {
         let minter = AssetIdentity::ContractId(deploy_wallet.contract_id);
         let key = 0;
         let num_leaves = 3;
+        let asset_supply = 10;
         let airdrop_leaves = [
             &(identity_a.clone(), 1),
             &(identity_b.clone(), 2),
@@ -29,13 +30,13 @@ mod success {
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.to_vec()).await;
 
         airdrop_constructor(
+            asset.asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
-            asset.asset_id,
         )
         .await;
-        asset_constructor(minter, &asset.asset, 10).await;
+        asset_constructor(asset_supply, &asset.asset, minter).await;
 
         assert_eq!(
             claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
@@ -52,12 +53,12 @@ mod success {
 
         claim(
             1,
+            asset.asset_id,
             &deploy_wallet.airdrop_distributor,
             key,
             num_leaves,
             proof.clone(),
             identity_a.clone(),
-            asset.asset_id,
         )
         .await;
 
@@ -85,6 +86,7 @@ mod success {
         let minter = AssetIdentity::ContractId(deploy_wallet.contract_id);
         let key = 0;
         let num_leaves = 3;
+        let asset_supply = 10;
         let airdrop_leaves: [(AirdropIdentity, u64); 3] = [
             (identity_a.clone(), 1),
             (identity_b.clone(), 2),
@@ -93,13 +95,13 @@ mod success {
         let (root, proof1, proof2) = build_tree_manual(airdrop_leaves).await;
 
         airdrop_constructor(
+            asset.asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
-            asset.asset_id,
         )
         .await;
-        asset_constructor(minter, &asset.asset, 10).await;
+        asset_constructor(asset_supply, &asset.asset, minter).await;
 
         assert_eq!(
             claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
@@ -116,12 +118,12 @@ mod success {
 
         claim(
             1,
+            asset.asset_id,
             &deploy_wallet.airdrop_distributor,
             key,
             num_leaves,
             [proof1, proof2].to_vec(),
             identity_a.clone(),
-            asset.asset_id,
         )
         .await;
 

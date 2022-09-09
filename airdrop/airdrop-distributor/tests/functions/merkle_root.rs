@@ -12,10 +12,10 @@ mod success {
         let (deploy_wallet, _, _, _, asset, claim_time) = setup().await;
 
         airdrop_constructor(
+            asset.asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             [2u8; 32],
-            asset.asset_id,
         )
         .await;
 

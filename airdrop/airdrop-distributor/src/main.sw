@@ -25,6 +25,8 @@ use sway_libs::binary_merkle_proof::{leaf_digest, verify_proof};
 use utils::mint_to;
 
 storage {
+    /// The contract of the asset which is to be distributed.
+    asset: Option<ContractId> = Option::None(),
     /// Stores the ClaimData struct of users that have interacted with the Airdrop Distrubutor contract.
     /// Maps (user => claim)
     claims: StorageMap<Identity, ClaimData> = StorageMap {},
@@ -32,8 +34,6 @@ storage {
     end_block: u64 = 0,
     /// The computed merkle root which is to be verified against.
     merkle_root: Option<b256> = Option::None(),
-    /// The contract of the asset which is to be distributed.
-    asset: Option<ContractId> = Option::None(),
 }
 
 impl AirdropDistributor for Contract {
@@ -55,7 +55,7 @@ impl AirdropDistributor for Contract {
 
         // Mint asset
         storage.claims.insert(to, ~ClaimData::new(amount, true));
-        mint_to(amount, to, storage.asset.unwrap());
+        mint_to(amount, storage.asset.unwrap(), to);
 
         log(ClaimEvent {
             to,
@@ -69,7 +69,7 @@ impl AirdropDistributor for Contract {
     }
 
     #[storage(read, write)]
-    fn constructor(claim_time: u64, merkle_root: b256, asset: ContractId, ) {
+    fn constructor(asset: ContractId, claim_time: u64, merkle_root: b256) {
         // If `end_block` is set to a value other than 0, we know that the contructor has already
         // been called.
         require(storage.end_block == 0, InitError::AlreadyInitialized);
@@ -79,9 +79,9 @@ impl AirdropDistributor for Contract {
         storage.asset = Option::Some(asset);
 
         log(CreateAirdropEvent {
+            asset,
             end_block: claim_time,
             merkle_root,
-            asset,
         });
     }
 
