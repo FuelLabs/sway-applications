@@ -5,12 +5,12 @@ import { css } from "@fuel-ui/css";
 import { Layout } from "../components/Layout";
 import { ShowBalances } from "../components/ShowBalances";
 import { showBalancesAtom } from "../jotai";
-import { Card, Button, Input } from "@fuel-ui/react";
+import { Card, Button, Input, Dropdown } from "@fuel-ui/react";
 import { useArbiterEscrows } from "../hooks/useArbiterEscrows";
 import { EscrowInfo } from "../components/EscrowInfo";
 import { useResolveDispute } from "../hooks/useResolveDispute";
 import { useState, ChangeEvent } from "react";
-import { Dropdown } from "../components/Dropdown";
+//import { Dropdown } from "../components/Dropdown";
 
 export default function BuyerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
@@ -54,9 +54,18 @@ export default function BuyerPage() {
                       onChange={(e) => handleAssetAmountChange(e)}
                     />
                   </Input>
-                  <Dropdown className={dropDownStyle()}>
-                    Seller
-                    Buyer
+                  <Dropdown>
+                    <Dropdown.Trigger>
+                      <Button>User to favor</Button>
+                    </Dropdown.Trigger>
+                    <Dropdown.Menu autoFocus aria-label="Actions">
+                      <Dropdown.MenuItem key="seller" textValue="Seller">
+                        Seller
+                      </Dropdown.MenuItem>
+                      <Dropdown.MenuItem key="buyer" textValue="Buyer">
+                        Buyer
+                      </Dropdown.MenuItem>
+                    </Dropdown.Menu>
                   </Dropdown>
                   <Button onPress={() => resolveDisputeMutation.mutate()}>
                     Resolve Dispute
