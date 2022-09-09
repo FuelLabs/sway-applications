@@ -189,13 +189,40 @@ The information in this section is split into subsections in order to conceptual
 
 <h3>Contracts ❌</h3>
 
-- Campaigns do not have any descriptions / titles / context
-  - Should probably use a vec to store data that a human can use to distinguish between campaigns
-  - Cannot search for campaigns aside from by a number from 0...X where X is known
+- Discovery of campaigns
+  - Cannot search for campaign aside from by a number from 0...X where X is known
+  - Campaigns do not have any descriptions / titles / context
+    - Should probably use a vec to store data that a human can use to distinguish between campaigns
 - No easy way to retrieve campaigns by user
   - Must iterate from 0...X where X is known by another function call
 
-<h3>User Interface</h3>
+<h3>User Interface ❌</h3>
+
+<h4>Author</h4>
+
+An author should be able to see a history of the campaigns that they have created
+
+- This should be categorized into currently active and completed campaigns
+- An active campaign is one that has not reached its deadline nor has been cancelled by the author
+- The author should see 
+  - When the campaign ends / time until the deadline
+  - Which campaigns have been cancelled / claimed
+  - The state of the campaign i.e. whether the campaign has succeeded in reaching its goal
+    - Pending state is when the deadline has not been reached
+    - Successful state is when the deadline is reached and the goal has been reached
+    - Failed state is when the deadline is reached and the goal has not been reached
+    - Cancelled state is when the author has cancelled the campaign
+  - The amount pledged by all users and how much is needed to reach the goal
+  - Who the beneficiary is
+  - Which asset the campaign accepts
+
+<h4>User</h4>
+
+A user should be able to see the campaigns that they have pledged towards
+
+- This includes the amount that they have pledged
+- The campaigns should be categorized into active and completed campaigns
+- Only the user should be able to see how much they have pledged
 
 <h3>Tests</h3>
 
@@ -205,13 +232,11 @@ The information in this section is split into subsections in order to conceptual
 
 - <h3>Typescript</h3>
 
-<h3>Documentation ❌</h3>
+<h3>Documentation ✅</h3>
 
-- Readme ❌
-  - Need to remove "current state of app" since this document covers that content
+- Readme ✅
   - Once UI is added it needs to be documented
-- Specification ❌
-  - Need to simplify to make it look like the Escrow / DAO spec
+- Specification ✅
 
 </details>
 

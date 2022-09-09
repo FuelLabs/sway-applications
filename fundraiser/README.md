@@ -11,11 +11,6 @@ A fundraiser, or crowdfund, is an application where any number of users are able
 
 In this case the pledged asset is a native asset on the Fuel network. More information can be found in the [specification](./SPECIFICATION.md).
 
-### Current state of the application
-
-- The smart contract is deemed to be feature complete for now but improvements can be made such as a title to identify a campaign
-- The user interface does not currently exist
-
 ## Project Structure
 
 The project consists of a smart contract and a user interface which the user can interact with.
