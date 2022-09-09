@@ -8,6 +8,9 @@ mod success {
 
     use super::*;
 
+    // NOTE: This test is ignored as it uses the Fuel-Merkle crate. There is currently an 
+    // incompatability with the Fuel-Merkle crate and the Sway-Libs Merkle Proof library.
+    // The issue can be tracked here: https://github.com/FuelLabs/sway/issues/2594
     #[ignore]
     #[tokio::test]
     async fn returns_claim_data() {
