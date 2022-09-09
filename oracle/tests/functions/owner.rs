@@ -1,5 +1,5 @@
 use crate::utils::{abi_calls::owner, test_helpers::setup, Identity};
-use fuels::{prelude::*, tx::Address};
+use fuels::tx::Address;
 
 mod success {
     use super::*;
