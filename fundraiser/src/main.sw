@@ -106,7 +106,7 @@ impl Fundraiser for Contract {
         // The campaign can only be cancelled before it has reached its deadline (ended)
         require(height() < campaign_info.deadline, CampaignError::CampaignEnded);
 
-        // User cannot a campaign that has already been cancelled
+        // User cannot cancel a campaign that has already been cancelled
         // Given the logic below this is unnecessary aside from ignoring event spam
         require(!campaign_info.cancelled, CampaignError::CampaignHasBeenCancelled);
 
