@@ -13,10 +13,6 @@ mod success {
         let provider = deploy_wallet.wallet.get_provider().unwrap();
 
         assert_eq!(end_block(&deploy_wallet.airdrop_distributor).await, 0);
-        assert_eq!(
-            merkle_root(&deploy_wallet.airdrop_distributor).await,
-            [0u8; 32]
-        );
 
         airdrop_constructor(
             claim_time,

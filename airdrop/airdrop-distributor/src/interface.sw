@@ -64,6 +64,10 @@ abi AirdropDistributor {
     fn end_block() -> u64;
 
     /// Returns the merkle root of the airdrop used to verify proofs
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not yet been initalized
     #[storage(read)]
     fn merkle_root() -> b256;
 }

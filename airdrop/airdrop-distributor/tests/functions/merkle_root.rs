@@ -25,3 +25,16 @@ mod success {
         )
     }
 }
+
+mod revert {
+
+    use super::*;
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn panics_when_not_initalized() {
+        let (deploy_wallet, _, _, _, _, _) = setup().await;
+
+        merkle_root(&deploy_wallet.airdrop_distributor).await;
+    }
+}

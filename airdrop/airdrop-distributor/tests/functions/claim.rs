@@ -386,4 +386,33 @@ mod revert {
         )
         .await;
     }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn panics_when_not_initalized() {
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset, _) = setup().await;
+
+        let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
+        let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
+        let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
+        let key = 0;
+        let num_leaves = 3;
+        let airdrop_leaves = [
+            &(identity_a.clone(), 1),
+            &(identity_b.clone(), 2),
+            &(identity_c.clone(), 3),
+        ];
+        let (_tree, _root, _leaf, proof) = build_tree(key, airdrop_leaves.to_vec()).await;
+
+        claim(
+            1,
+            &deploy_wallet.airdrop_distributor,
+            key,
+            num_leaves,
+            proof.clone(),
+            identity_a.clone(),
+            asset.asset_id,
+        )
+        .await;
+    }
 }

@@ -12,6 +12,7 @@ use std::{
     },
     contract_id::ContractId,
     identity::Identity,
+    option::Option,
     result::Result,
     revert::require,
     token::mint_to,
@@ -19,7 +20,7 @@ use std::{
 
 storage {
     /// The Address or Contract that has permission to mint.
-    minter: Identity = Identity::ContractId(~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000)),
+    minter: Option<Identity> = Option::None(),
     /// The maximum quantity of the asset ever to be minted.
     asset_supply: u64 = 0,
     /// The current quantity of the asset minted.
@@ -34,14 +35,14 @@ impl SimpleAsset for Contract {
         require(storage.asset_supply == 0, InitError::AlreadyInitialized);
         require(asset_supply != 0, InitError::AssetSupplyCannotBeZero);
 
-        storage.minter = minter;
+        storage.minter = Option::Some(minter);
         storage.asset_supply = asset_supply;
     }
 
     #[storage(read, write)]
     fn mint_to(amount: u64, to: Identity) {
         // Ensure that the sender is the minter.
-        require(msg_sender().unwrap() == storage.minter, AccessError::SenderNotPermittedToMint);
+        require(storage.minter.is_some() && msg_sender().unwrap() == storage.minter.unwrap(), AccessError::SenderNotPermittedToMint);
         require(amount + storage.asset_minted <= storage.asset_supply, InputError::GreaterThanMaximumSupply);
 
         mint_to(amount, to);

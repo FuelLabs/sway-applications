@@ -149,4 +149,14 @@ mod revert {
 
         mint_to(total_supply + 1, &deployer.simple_asset, identity.clone()).await;
     }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn panics_when_not_initalized() {
+        let (deployer, _, _) = setup().await;
+
+        let identity = Identity::Address(deployer.wallet.address().into());
+
+        mint_to(10, &deployer.simple_asset, identity.clone()).await;
+    }
 }

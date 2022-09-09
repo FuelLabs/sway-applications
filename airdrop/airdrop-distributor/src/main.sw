@@ -17,6 +17,7 @@ use std::{
     hash::sha256,
     identity::Identity,
     logging::log,
+    option::Option,
     revert::require,
     storage::StorageMap,
 };
@@ -30,9 +31,9 @@ storage {
     /// The block at which the claiming period will end.
     end_block: u64 = 0,
     /// The computed merkle root which is to be verified against.
-    merkle_root: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
+    merkle_root: Option<b256> = Option::None(),
     /// The contract of the asset which is to be distributed.
-    asset: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
+    asset: Option<ContractId> = Option::None(),
 }
 
 impl AirdropDistributor for Contract {
@@ -50,11 +51,11 @@ impl AirdropDistributor for Contract {
 
         // Verify the merkle proof against the user and amount
         let leaf = leaf_digest(sha256((to, amount)));
-        require(verify_proof(key, leaf, storage.merkle_root, num_leaves, proof), VerificationError::MerkleProofFailed);
+        require(verify_proof(key, leaf, storage.merkle_root.unwrap(), num_leaves, proof), VerificationError::MerkleProofFailed);
 
         // Mint asset
         storage.claims.insert(to, ~ClaimData::new(amount, true));
-        mint_to(amount, to, storage.asset);
+        mint_to(amount, to, storage.asset.unwrap());
 
         log(ClaimEvent {
             to,
@@ -74,8 +75,8 @@ impl AirdropDistributor for Contract {
         require(storage.end_block == 0, InitError::AlreadyInitialized);
 
         storage.end_block = height() + claim_time;
-        storage.merkle_root = merkle_root;
-        storage.asset = asset;
+        storage.merkle_root = Option::Some(merkle_root);
+        storage.asset = Option::Some(asset);
 
         log(CreateAirdropEvent {
             end_block: claim_time,
@@ -91,6 +92,7 @@ impl AirdropDistributor for Contract {
 
     #[storage(read)]
     fn merkle_root() -> b256 {
-        storage.merkle_root
+        require(storage.merkle_root.is_some(), InitError::NotInitalized);
+        storage.merkle_root.unwrap()
     }
 }
