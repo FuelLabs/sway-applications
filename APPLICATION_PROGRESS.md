@@ -347,16 +347,23 @@ Will move from Apps repo to Libs repo soon
 <details>
 <summary>Oracle</summary>
 
-<h3>Contracts</h3>
+<h3>Contracts ❌</h3>
+
+- Needs a sway fix for using non-primitive types as configuration time constants to represent the owner variable appropriately.
 
 <h3>User Interface</h3>
 
+<h3>Oracle Node</h3>
+
 <h3>Tests</h3>
 
-- <h3>Rust</h3>
+- <h3>Rust ✅</h3>
 - <h3>Typescript</h3>
 
-<h3>Documentation</h3>
+<h3>Documentation ✅</h3>
+
+- Readme ✅
+- Specification ✅
 
 </details>
 
