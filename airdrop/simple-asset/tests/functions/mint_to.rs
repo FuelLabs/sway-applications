@@ -25,7 +25,7 @@ mod success {
             0
         );
 
-        mint_to(10, &deployer.simple_asset, identity.clone()).await;
+        mint_to(total_supply, &deployer.simple_asset, identity.clone()).await;
 
         assert_eq!(
             deployer
@@ -33,7 +33,7 @@ mod success {
                 .get_asset_balance(&AssetId::new(*deployer.asset_id))
                 .await
                 .unwrap(),
-            10
+            total_supply
         );
     }
 
@@ -54,14 +54,14 @@ mod success {
                 .unwrap(),
             0
         );
-        mint_to(10, &deployer.simple_asset, identity.clone()).await;
+        mint_to(total_supply - 1, &deployer.simple_asset, identity.clone()).await;
         assert_eq!(
             deployer
                 .wallet
                 .get_asset_balance(&AssetId::new(*deployer.asset_id))
                 .await
                 .unwrap(),
-            10
+            total_supply - 1
         );
 
         assert_eq!(
@@ -72,14 +72,14 @@ mod success {
                 .unwrap(),
             0
         );
-        mint_to(15, &deployer.simple_asset, wallet2_identity.clone()).await;
+        mint_to(1, &deployer.simple_asset, wallet2_identity.clone()).await;
         assert_eq!(
             wallet2
                 .wallet
                 .get_asset_balance(&AssetId::new(*wallet2.asset_id))
                 .await
                 .unwrap(),
-            15
+            1
         );
     }
 
@@ -132,7 +132,7 @@ mod revert {
         .await;
 
         mint_to(
-            10,
+            total_supply,
             &false_minter.simple_asset,
             false_minter_identity.clone(),
         )
@@ -153,10 +153,10 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_not_initalized() {
-        let (deployer, _, _) = setup().await;
+        let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
 
-        mint_to(10, &deployer.simple_asset, identity.clone()).await;
+        mint_to(total_supply, &deployer.simple_asset, identity.clone()).await;
     }
 }

@@ -93,7 +93,7 @@ pub mod test_helpers {
 
     pub async fn build_tree(
         key: u64,
-        leaves: Vec<&(airdropdistributor_mod::Identity, u64)>,
+        leaves: Vec<(airdropdistributor_mod::Identity, u64)>,
     ) -> (MerkleTree, Bytes32, Bytes32, ProofSet) {
         let mut tree = MerkleTree::new();
 
@@ -216,7 +216,39 @@ pub mod test_helpers {
         (node_abc_hash, leaf_b_hash, leaf_c_hash)
     }
 
-    pub async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset, u64) {
+    pub async fn defaults(
+        deploy_wallet: &Metadata, 
+        wallet1: &Metadata, 
+        wallet2: &Metadata, 
+        wallet3: &Metadata
+    ) -> (
+        airdropdistributor_mod::Identity,
+        airdropdistributor_mod::Identity,
+        airdropdistributor_mod::Identity,
+        simpleasset_mod::Identity,
+        u64,
+        u64,
+        u64,
+        [(airdropdistributor_mod::Identity, u64); 3],
+        u64) {
+        let identity_a = airdropdistributor_mod::Identity::Address(wallet1.wallet.address().into());
+        let identity_b = airdropdistributor_mod::Identity::Address(wallet2.wallet.address().into());
+        let identity_c = airdropdistributor_mod::Identity::Address(wallet3.wallet.address().into());
+        let minter = simpleasset_mod::Identity::ContractId(deploy_wallet.contract_id);
+        let key = 0;
+        let num_leaves = 3;
+        let asset_supply = 10;
+        let airdrop_leaves = [
+            (identity_a.clone(), 1),
+            (identity_b.clone(), 2),
+            (identity_c.clone(), 3),
+        ];
+        let claim_time = 15;
+
+        (identity_a, identity_b, identity_c, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time)
+    }
+
+    pub async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
         let num_wallets = 4;
         let coins_per_wallet = 1;
         let coin_amount = 1000000;
@@ -302,8 +334,6 @@ pub mod test_helpers {
             asset_id: ContractId::new(*simple_asset_id.hash()),
         };
 
-        let claim_time = 15;
-
-        (deployer, user1, user2, user3, asset, claim_time)
+        (deployer, user1, user2, user3, asset)
     }
 }

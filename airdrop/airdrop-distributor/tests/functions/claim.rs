@@ -1,9 +1,7 @@
 use crate::utils::{
     airdrop_distributor_abi_calls::{airdrop_constructor, claim, claim_data},
-    airdropdistributor_mod::Identity as AirdropIdentity,
     simple_asset_abi_calls::asset_constructor,
-    simpleasset_mod::Identity as AssetIdentity,
-    test_helpers::{build_tree, build_tree_manual, setup},
+    test_helpers::{build_tree, build_tree_manual, defaults, setup},
 };
 use fuels::tx::AssetId;
 
@@ -14,20 +12,9 @@ mod success {
     #[ignore]
     #[tokio::test]
     async fn claims() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset, claim_time) = setup().await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
+        let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
-        let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
-        let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
-        let minter = AssetIdentity::ContractId(deploy_wallet.contract_id);
-        let key = 0;
-        let num_leaves = 3;
-        let asset_supply = 10;
-        let airdrop_leaves = [
-            &(identity_a.clone(), 1),
-            &(identity_b.clone(), 2),
-            &(identity_c.clone(), 3),
-        ];
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.to_vec()).await;
 
         airdrop_constructor(
@@ -55,7 +42,7 @@ mod success {
         );
 
         claim(
-            1,
+            airdrop_leaves[0].1,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
             key,
@@ -71,7 +58,7 @@ mod success {
                 .get_asset_balance(&AssetId::new(*asset.asset_id))
                 .await
                 .unwrap(),
-            1
+            airdrop_leaves[0].1
         );
         assert_eq!(
             claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
@@ -83,21 +70,10 @@ mod success {
 
     #[tokio::test]
     async fn claims_manual_tree() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset, claim_time) = setup().await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
+        let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
-        let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
-        let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
-        let minter = AssetIdentity::ContractId(deploy_wallet.contract_id);
-        let key = 0;
-        let num_leaves = 3;
-        let asset_supply = 10;
-        let airdrop_leaves: [(AirdropIdentity, u64); 3] = [
-            (identity_a.clone(), 1),
-            (identity_b.clone(), 2),
-            (identity_c.clone(), 3),
-        ];
-        let (root, proof1, proof2) = build_tree_manual(airdrop_leaves).await;
+        let (root, proof1, proof2) = build_tree_manual(airdrop_leaves.clone()).await;
 
         airdrop_constructor(
             asset.asset_id,
@@ -124,7 +100,7 @@ mod success {
         );
 
         claim(
-            1,
+            airdrop_leaves[0].1,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
             key,
@@ -140,7 +116,7 @@ mod success {
                 .get_asset_balance(&AssetId::new(*asset.asset_id))
                 .await
                 .unwrap(),
-            1
+            airdrop_leaves[0].1
         );
         assert_eq!(
             claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
@@ -158,20 +134,9 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_after_claim_period() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset, _) = setup().await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
+        let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, _) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
-        let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
-        let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
-        let minter = AssetIdentity::ContractId(deploy_wallet.contract_id);
-        let key = 0;
-        let num_leaves = 3;
-        let asset_supply = 10;
-        let airdrop_leaves = [
-            &(identity_a.clone(), 1),
-            &(identity_b.clone(), 2),
-            &(identity_c.clone(), 3),
-        ];
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.to_vec()).await;
 
         airdrop_constructor(asset.asset_id, 1, &deploy_wallet.airdrop_distributor, root).await;
@@ -193,20 +158,9 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_claim_twice() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset, claim_time) = setup().await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
+        let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
-        let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
-        let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
-        let minter = AssetIdentity::ContractId(deploy_wallet.contract_id);
-        let key = 0;
-        let num_leaves = 3;
-        let asset_supply = 10;
-        let airdrop_leaves = [
-            &(identity_a.clone(), 1),
-            &(identity_b.clone(), 2),
-            &(identity_c.clone(), 3),
-        ];
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.to_vec()).await;
 
         airdrop_constructor(
@@ -219,7 +173,7 @@ mod revert {
         asset_constructor(asset_supply, &asset.asset, minter).await;
 
         claim(
-            1,
+            airdrop_leaves[0].1,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
             key,
@@ -229,7 +183,7 @@ mod revert {
         )
         .await;
         claim(
-            1,
+            airdrop_leaves[0].1,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
             key,
@@ -245,21 +199,10 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_claim_twice_manual_tree() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset, claim_time) = setup().await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
+        let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
-        let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
-        let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
-        let minter = AssetIdentity::ContractId(deploy_wallet.contract_id);
-        let key = 0;
-        let num_leaves = 3;
-        let asset_supply = 10;
-        let airdrop_leaves: [(AirdropIdentity, u64); 3] = [
-            (identity_a.clone(), 1),
-            (identity_b.clone(), 2),
-            (identity_c.clone(), 3),
-        ];
-        let (root, proof1, proof2) = build_tree_manual(airdrop_leaves).await;
+        let (root, proof1, proof2) = build_tree_manual(airdrop_leaves.clone()).await;
 
         airdrop_constructor(
             asset.asset_id,
@@ -280,7 +223,7 @@ mod revert {
         );
 
         claim(
-            1,
+            airdrop_leaves[0].1,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
             key,
@@ -296,7 +239,7 @@ mod revert {
                 .get_asset_balance(&AssetId::new(*asset.asset_id))
                 .await
                 .unwrap(),
-            1
+            airdrop_leaves[0].1
         );
 
         claim(
@@ -315,20 +258,9 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_failed_merkle_verification() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset, claim_time) = setup().await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
+        let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
-        let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
-        let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
-        let minter = AssetIdentity::ContractId(deploy_wallet.contract_id);
-        let key = 0;
-        let num_leaves = 3;
-        let asset_supply = 10;
-        let airdrop_leaves = [
-            &(identity_a.clone(), 1),
-            &(identity_b.clone(), 2),
-            &(identity_c.clone(), 3),
-        ];
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.to_vec()).await;
 
         airdrop_constructor(
@@ -340,8 +272,9 @@ mod revert {
         .await;
         asset_constructor(asset_supply, &asset.asset, minter).await;
 
+        let false_claim_quantity = 2;
         claim(
-            2,
+            false_claim_quantity,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
             key,
@@ -357,21 +290,10 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_failed_merkle_verification_manual_tree() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset, claim_time) = setup().await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
+        let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
-        let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
-        let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
-        let minter = AssetIdentity::ContractId(deploy_wallet.contract_id);
-        let key = 0;
-        let num_leaves = 3;
-        let asset_supply = 10;
-        let airdrop_leaves: [(AirdropIdentity, u64); 3] = [
-            (identity_a.clone(), 1),
-            (identity_b.clone(), 2),
-            (identity_c.clone(), 3),
-        ];
-        let (root, proof1, proof2) = build_tree_manual(airdrop_leaves).await;
+        let (root, proof1, proof2) = build_tree_manual(airdrop_leaves.clone()).await;
 
         airdrop_constructor(
             asset.asset_id,
@@ -382,8 +304,9 @@ mod revert {
         .await;
         asset_constructor(asset_supply, &asset.asset, minter).await;
 
+        let false_claim_quantity = 2;
         claim(
-            2,
+            false_claim_quantity,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
             key,
@@ -397,22 +320,13 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn panics_when_not_initalized() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset, _) = setup().await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
+        let (identity_a, _, _, _minter, key, num_leaves, _, airdrop_leaves, _) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
-        let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
-        let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
-        let key = 0;
-        let num_leaves = 3;
-        let airdrop_leaves = [
-            &(identity_a.clone(), 1),
-            &(identity_b.clone(), 2),
-            &(identity_c.clone(), 3),
-        ];
         let (_tree, _root, _leaf, proof) = build_tree(key, airdrop_leaves.to_vec()).await;
 
         claim(
-            1,
+            airdrop_leaves[0].1,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
             key,
