@@ -11,7 +11,7 @@ Table of Contents
         -[`merkle_root()`](#merkle_root)
     - [Simple Token Core Functionality](#simple-token-core-functionality)
         -[`constructor()`](#constructor-1)
-- [State Diagram](#state-diagram)
+- [Sequence Diagram](#sequence-diagram)
 
 # Overview
 
@@ -70,6 +70,6 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
     1. Requires a token supply be given
     2. Requires a user that will be authorized to mint
 
-## State Diagram
+## Sequence Diagram
 
-![Airdrop State Diagram](.docs/UML-Airdrop.png)
+![Airdrop Sequence Diagram](.docs/UML-Airdrop.png)
