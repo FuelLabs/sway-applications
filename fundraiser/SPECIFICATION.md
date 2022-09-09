@@ -17,10 +17,6 @@ Table of Content
     - [`pledge_count()`](#pledge_count)
     - [`total_campaigns()`](#total_campaigns)
     - [`user_campaign_count()`](#user_campaign_count)
-    - [Author](#author)
-    - [User](#user)
-    - [Discovery of Campaigns](#discovery-of-campaigns)
-    - [Misc](#misc)
   - [Sequence diagram](#sequence-diagram)
 
 # Overview
@@ -139,50 +135,6 @@ Returns the total number of campaigns that a user has pledged to
 
 1. If a user pledges to 2 different campaigns then the `user_pledge_count()` will be 2
 2. If the user performs step 1. and then completely unpledges then `user_pledge_count()` will be 2
-
-### Author
-
-An author should be able to see a history of the campaigns that they have created
-
-1. This should be categorized into currently active and completed campaigns
-2. An active campaign is one that has not reached its deadline nor has been cancelled by the author
-3. The author should see 
-   1. When the campaign ends / time until the deadline
-   2. Which campaigns have been cancelled / claimed
-   3. The state of the campaign i.e. whether the campaign has succeeded in reaching its goal
-      1. Pending state is when the deadline has not been reached
-      2. Successful state is when the deadline is reached and the goal has been reached
-      3. Failed state is when the deadline is reached and the goal has not been reached
-      4. Cancelled state is when the author has cancelled the campaign
-   4. The amount pledged by all users and how much is needed to reach the goal
-   5. Who the beneficiary is
-   6. Which asset the campaign accepts
-
-### User
-
-A user should be able to see the campaigns that they have pledged towards
-
-1. This includes the amount that they have pledged
-2. The campaigns should be categorized into active and completed campaigns
-3. Only the user should be able to see how much they have pledged
-
-### Discovery of Campaigns
-
-Authors of campaigns and users should be able to share / find campaigns
-
-1. Campaigns should be searchable via the address of the author
-   1. `Some category / identifier too ?`
-
-> **NOTE** \
-> TODO: how is this information presented to users, is there some main page of all campaigns?
-
-### Misc
-
-1. Track each asset across all campaigns to see how popular each asset is
-2. Show total number of campaigns created
-
-> **NOTE** \
-> TODO: figure out where to put this info and what else to add
 
 ## Sequence diagram
 
