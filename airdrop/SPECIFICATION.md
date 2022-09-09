@@ -19,7 +19,7 @@ This document provides an overview of the application.
 
 It outlines the use cases, i.e. desirable functionality, in addition to requirements for the smart contract and the user interface.
 
-This application inherits specification from the [Binary Merkle Proof Verification Library specification](https://github.com/FuelLabs/sway-libs/blob/master/sway_libs/src/merkle_proof/SPECIFICATION.md).
+This application inherits the specification from the [Binary Merkle Proof Verification Library specification](https://github.com/FuelLabs/sway-libs/blob/master/sway_libs/src/merkle_proof/SPECIFICATION.md).
 
 # Use Cases
 
@@ -36,14 +36,14 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 #### `constructor()`
 
 1. Allows the airdrop to begin and requires
-    1. A duration for the airdrop 
-    2. A token to airdrop other users
+    1. A duration for when a user can claim the airdrop
+    2. An asset that a user can claim
     3. A pre-computed Merkle root
 
 #### `claim()`
 
-1. Allows a user to claim the tokens they have been allotted if,
-    1. They have a valid Merkle Proof
+1. Allows a user to claim the asset they have been allotted if
+    1. They have provided a valid Merkle Proof
     2. The deadline has not passed
 
 ### Airdrop State Checks
@@ -51,8 +51,8 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 #### `claim_data()`
 
 1. Returns information of the user's interaction with the airdrop contract
-    1. Contains whether the user has claimed 
-    2. Contains the number of tokens the user claimed
+    1. If the user has claimed the airdrop
+    2. Contains the amount of asset that a user has claimed
 
 #### `end_block()`
 
@@ -66,8 +66,8 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 #### `constructor()`
 
-1. Allows minting of the token to begin
-    1. Requires a token supply be given
+1. Allows thw owner to begin minting the asset
+    1. Requires an asset supply be given
     2. Requires a user that will be authorized to mint
 
 ## Sequence Diagram
