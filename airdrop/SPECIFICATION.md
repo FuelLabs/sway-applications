@@ -72,4 +72,4 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 ## Sequence Diagram
 
-![Airdrop Sequence Diagram](.docs/UML-Airdrop.png)
+![Airdrop Sequence Diagram](.docs/airdrop-sequence-diagram.png)
