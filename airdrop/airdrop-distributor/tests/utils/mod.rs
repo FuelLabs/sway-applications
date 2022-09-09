@@ -217,10 +217,10 @@ pub mod test_helpers {
     }
 
     pub async fn defaults(
-        deploy_wallet: &Metadata, 
-        wallet1: &Metadata, 
-        wallet2: &Metadata, 
-        wallet3: &Metadata
+        deploy_wallet: &Metadata,
+        wallet1: &Metadata,
+        wallet2: &Metadata,
+        wallet3: &Metadata,
     ) -> (
         airdropdistributor_mod::Identity,
         airdropdistributor_mod::Identity,
@@ -230,7 +230,8 @@ pub mod test_helpers {
         u64,
         u64,
         [(airdropdistributor_mod::Identity, u64); 3],
-        u64) {
+        u64,
+    ) {
         let identity_a = airdropdistributor_mod::Identity::Address(wallet1.wallet.address().into());
         let identity_b = airdropdistributor_mod::Identity::Address(wallet2.wallet.address().into());
         let identity_c = airdropdistributor_mod::Identity::Address(wallet3.wallet.address().into());
@@ -245,7 +246,17 @@ pub mod test_helpers {
         ];
         let claim_time = 15;
 
-        (identity_a, identity_b, identity_c, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time)
+        (
+            identity_a,
+            identity_b,
+            identity_c,
+            minter,
+            key,
+            num_leaves,
+            asset_supply,
+            airdrop_leaves,
+            claim_time,
+        )
     }
 
     pub async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
