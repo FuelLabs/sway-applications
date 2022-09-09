@@ -3,10 +3,9 @@ use crate::utils::{
         asset_info_by_count, campaign_info, claim_pledges, create_campaign, pledge, pledge_count,
         pledged, unpledge,
     },
-    test_helpers::{mint, setup},
-    Identity,
+    test_helpers::{identity, mint, setup},
 };
-use fuels::{signers::Signer, tx::AssetId};
+use fuels::tx::AssetId;
 
 mod success {
 
@@ -106,7 +105,7 @@ mod success {
         );
         assert_eq!(
             0,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
@@ -121,10 +120,10 @@ mod success {
         );
         assert_eq!(
             1,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
-        let info = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
+        let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
             .value;
         assert_eq!(1, info.id);
@@ -158,9 +157,9 @@ mod success {
         );
         assert_eq!(
             1,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
-        let info = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
+        let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
             .value;
         assert_eq!(1, info.id);
@@ -214,7 +213,7 @@ mod success {
         );
         assert_eq!(
             0,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
@@ -237,13 +236,13 @@ mod success {
         );
         assert_eq!(
             2,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
-        let info1 = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
+        let info1 = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
             .value;
-        let info2 = pledged(&user.contract, 2, Identity::Address(user.wallet.address()))
+        let info2 = pledged(&user.contract, 2, identity(user.wallet.address()).await)
             .await
             .value;
 
@@ -301,13 +300,13 @@ mod success {
         );
         assert_eq!(
             2,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
-        let info1 = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
+        let info1 = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
             .value;
-        let info2 = pledged(&user.contract, 2, Identity::Address(user.wallet.address()))
+        let info2 = pledged(&user.contract, 2, identity(user.wallet.address()).await)
             .await
             .value;
 

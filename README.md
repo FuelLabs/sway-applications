@@ -57,6 +57,8 @@ sway-applications/
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [OTC Swap Predicate](./otc-swap-predicate) is a predicate that can be used to propose and execute an atomic swap between two parties without requiring any on-chain state.
 
+To see an overview of the progress, and plans, for applications take a look at [APPLICATION_PROGRESS.md](./APPLICATION_PROGRESS.md).
+
 ## Running a project
 
 If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/latest/introduction/installation.html) steps required to use our tools.

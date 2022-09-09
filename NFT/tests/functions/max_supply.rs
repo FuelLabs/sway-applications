@@ -16,7 +16,7 @@ mod success {
         assert_eq!(max_supply(&owner1.contract).await, 0);
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 10).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 10).await;
 
         assert_eq!(max_supply(&owner1.contract).await, 10);

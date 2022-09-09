@@ -51,7 +51,7 @@ Table of Content
 
 This document provides an overview of the application.
 
-It outline the use cases, i.e. desirable functionality, in addition to requirements for the smart contract and the user interface.
+It outlines the use cases, i.e. desirable functionality, in addition to requirements for the smart contract and the user interface.
 
 # Use Cases
 
@@ -214,7 +214,7 @@ In order to have a campaign move towards its target amount (goal) users need to 
       - Must be a valid ID (_the identifier uniquely identifies an existing campaign_)
 - Anyone should be able to pledge any amount of the specified asset in the campaign
 - A user can only pledge if the campaign is in the Funding phase and not past the deadline
-- The asset being pledgd to the campaign has to be the one the campaign accepts
+- The asset being pledged to the campaign has to be the one the campaign accepts
 - Track how much each user has pledged so that they can unpledge
 - Log the campaign id and amount pledged
 
