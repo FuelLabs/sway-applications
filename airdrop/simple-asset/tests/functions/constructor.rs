@@ -9,7 +9,7 @@ mod success {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_token, total_supply).await;
+        constructor(identity.clone(), &deployer.simple_asset, total_supply).await;
     }
 }
 
@@ -23,16 +23,16 @@ mod revert {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_token, total_supply).await;
-        constructor(identity.clone(), &deployer.simple_token, total_supply).await;
+        constructor(identity.clone(), &deployer.simple_asset, total_supply).await;
+        constructor(identity.clone(), &deployer.simple_asset, total_supply).await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_token_supply_zero() {
+    async fn panics_when_asset_supply_zero() {
         let (deployer, _, _) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_token, 0).await;
+        constructor(identity.clone(), &deployer.simple_asset, 0).await;
     }
 }

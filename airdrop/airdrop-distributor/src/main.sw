@@ -31,8 +31,8 @@ storage {
     end_block: u64 = 0,
     /// The computed merkle root which is to be verified against.
     merkle_root: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
-    /// The contract of the token which is to be distributed.
-    token_contract: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
+    /// The contract of the asset which is to be distributed.
+    asset: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
 }
 
 impl AirdropDistributor for Contract {
@@ -52,9 +52,9 @@ impl AirdropDistributor for Contract {
         let leaf = leaf_digest(sha256((to, amount)));
         require(verify_proof(key, leaf, storage.merkle_root, num_leaves, proof), VerificationError::MerkleProofFailed);
 
-        // Mint tokens
+        // Mint asset
         storage.claims.insert(to, ~ClaimData::new(amount, true));
-        mint_to(amount, to, storage.token_contract);
+        mint_to(amount, to, storage.asset);
 
         log(ClaimEvent {
             to,
@@ -68,23 +68,19 @@ impl AirdropDistributor for Contract {
     }
 
     #[storage(read, write)]
-    fn constructor(
-        claim_time: u64,
-        merkle_root: b256,
-        token_contract: ContractId,
-    ) {
+    fn constructor(claim_time: u64, merkle_root: b256, asset: ContractId, ) {
         // If `end_block` is set to a value other than 0, we know that the contructor has already
         // been called.
         require(storage.end_block == 0, InitError::AlreadyInitialized);
 
         storage.end_block = height() + claim_time;
         storage.merkle_root = merkle_root;
-        storage.token_contract = token_contract;
+        storage.asset = asset;
 
         log(CreateAirdropEvent {
             end_block: claim_time,
             merkle_root,
-            token_contract,
+            asset,
         });
     }
 

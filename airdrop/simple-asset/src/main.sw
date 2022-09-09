@@ -4,7 +4,7 @@ dep errors;
 dep interface;
 
 use errors::{AccessError, InitError, InputError};
-use interface::SimpleToken;
+use interface::SimpleAsset;
 use std::{
     chain::auth::{
         AuthError,
@@ -20,29 +20,29 @@ use std::{
 storage {
     /// The Address or Contract that has permission to mint.
     minter: Identity = Identity::ContractId(~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000)),
-    /// The maximum number of tokens ever to be minted.
-    token_supply: u64 = 0,
-    /// The current number of tokens minted.
-    tokens_minted: u64 = 0,
+    /// The maximum quantity of the asset ever to be minted.
+    asset_supply: u64 = 0,
+    /// The current quantity of the asset minted.
+    asset_minted: u64 = 0,
 }
 
-impl SimpleToken for Contract {
+impl SimpleAsset for Contract {
     #[storage(read, write)]
-    fn constructor(minter: Identity, token_supply: u64) {
-        // If the token supply is anything other than 0, we know that the constructor has already
+    fn constructor(minter: Identity, asset_supply: u64) {
+        // If the asset supply is anything other than 0, we know that the constructor has already
         // been called.
-        require(storage.token_supply == 0, InitError::AlreadyInitialized);
-        require(token_supply != 0, InitError::TokenSupplyCannotBeZero);
+        require(storage.asset_supply == 0, InitError::AlreadyInitialized);
+        require(asset_supply != 0, InitError::AssetSupplyCannotBeZero);
 
         storage.minter = minter;
-        storage.token_supply = token_supply;
+        storage.asset_supply = asset_supply;
     }
 
     #[storage(read, write)]
     fn mint_to(amount: u64, to: Identity) {
         // Ensure that the sender is the minter.
         require(msg_sender().unwrap() == storage.minter, AccessError::SenderNotPermittedToMint);
-        require(amount + storage.tokens_minted <= storage.token_supply, InputError::GreaterThanMaximumSupply);
+        require(amount + storage.asset_minted <= storage.asset_supply, InputError::GreaterThanMaximumSupply);
 
         mint_to(amount, to);
     }

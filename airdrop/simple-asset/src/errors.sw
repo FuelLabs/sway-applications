@@ -6,7 +6,7 @@ pub enum AccessError {
 
 pub enum InitError {
     AlreadyInitialized: (),
-    TokenSupplyCannotBeZero: (),
+    AssetSupplyCannotBeZero: (),
 }
 
 pub enum InputError {

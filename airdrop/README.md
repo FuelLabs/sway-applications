@@ -30,7 +30,7 @@ airdrop/
 ├── airdrop-distributor/
 |    └── src/main.sw
 |    └── tests/harness.rs
-├── simple-token/
+├── simple-asset/
 |    └── src/main.sw
 |    └── tests/harness.rs
 ├── frontend/
@@ -47,11 +47,11 @@ TODO: UI does not currently exist
 
 ### Tests
 
-In order to run the tests you will need to build both the simple-token and airdrop-distributor projects. The airdrop-distributor is dependent on the simple-token project, as a result simple-token MUST be compiled first.
+In order to run the tests you will need to build both the simple-asset and airdrop-distributor projects. The airdrop-distributor is dependent on the simple-asset project, as a result simple-asset MUST be compiled first.
 
-First, make sure that you are in the root of the simple-token project i.e. `/path/to/airdrop/simple-token/<you are here>`.
+First, make sure that you are in the root of the simple-asset project i.e. `/path/to/airdrop/simple-asset/<you are here>`.
 
-There is one command required to run the tests for simple-token. This will both build and test the simple-token project.
+There is one command required to run the tests for simple-asset. This will both build and test the simple-asset project.
 
 1. Run the tests
 
@@ -61,7 +61,7 @@ There is one command required to run the tests for simple-token. This will both 
 
 Second, make sure that you are in the root of the airdrop-distributor project i.e. `/path/to/airdrop/airdrop-distributor/<you are here>`
 
-As the simple-token project has been compiled with the previous command, there is one command required to run the tests for airdrop-distributor. This will both build and test the airdrop-distributor project.
+As the simple-asset project has been compiled with the previous command, there is one command required to run the tests for airdrop-distributor. This will both build and test the airdrop-distributor project.
 
 1. Run the tests
 

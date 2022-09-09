@@ -1,10 +1,10 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
 
-abigen!(SimpleToken, "out/debug/simpletoken-abi.json");
+abigen!(SimpleAsset, "out/debug/simpleasset-abi.json");
 
 pub struct Metadata {
     pub asset_id: ContractId,
-    pub simple_token: SimpleToken,
+    pub simple_asset: SimpleAsset,
     pub wallet: WalletUnlocked,
 }
 
@@ -14,17 +14,17 @@ pub mod abi_calls {
 
     pub async fn constructor(
         minter: Identity,
-        contract: &SimpleToken,
-        token_supply: u64,
+        contract: &SimpleAsset,
+        asset_supply: u64,
     ) -> CallResponse<()> {
         contract
-            .constructor(minter, token_supply)
+            .constructor(minter, asset_supply)
             .call()
             .await
             .unwrap()
     }
 
-    pub async fn mint_to(amount: u64, contract: &SimpleToken, to: Identity) -> CallResponse<()> {
+    pub async fn mint_to(amount: u64, contract: &SimpleAsset, to: Identity) -> CallResponse<()> {
         contract
             .mint_to(amount, to)
             .append_variable_outputs(1)
@@ -51,27 +51,27 @@ pub mod test_helpers {
         let wallet1 = wallets.pop().unwrap();
         let wallet2 = wallets.pop().unwrap();
 
-        let simple_token_id = Contract::deploy(
-            "./out/debug/simpletoken.bin",
+        let simple_asset_id = Contract::deploy(
+            "./out/debug/simpleasset.bin",
             &wallet1,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                "./out/debug/simpletoken-storage_slots.json".to_string(),
+                "./out/debug/simpleasset-storage_slots.json".to_string(),
             )),
         )
         .await
         .unwrap();
 
         let deployer = Metadata {
-            asset_id: ContractId::new(*simple_token_id.hash()),
-            simple_token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet1.clone())
+            asset_id: ContractId::new(*simple_asset_id.hash()),
+            simple_asset: SimpleAssetBuilder::new(simple_asset_id.to_string(), wallet1.clone())
                 .build(),
             wallet: wallet1.clone(),
         };
 
         let user = Metadata {
-            asset_id: ContractId::new(*simple_token_id.hash()),
-            simple_token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet2.clone())
+            asset_id: ContractId::new(*simple_asset_id.hash()),
+            simple_asset: SimpleAssetBuilder::new(simple_asset_id.to_string(), wallet2.clone())
                 .build(),
             wallet: wallet2.clone(),
         };

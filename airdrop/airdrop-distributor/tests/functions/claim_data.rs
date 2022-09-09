@@ -1,8 +1,8 @@
 use crate::utils::{
     airdrop_distributor_abi_calls::{airdrop_constructor, claim, claim_data},
     airdropdistributor_mod::Identity as AirdropIdentity,
-    simple_token_abi_calls::token_constructor,
-    simpletoken_mod::Identity as TokenIdentity,
+    simple_asset_abi_calls::asset_constructor,
+    simpleasset_mod::Identity as AssetIdentity,
     test_helpers::{build_tree, build_tree_manual, setup},
 };
 
@@ -18,7 +18,7 @@ mod success {
         let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
         let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
         let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
-        let minter = TokenIdentity::ContractId(deploy_wallet.contract_id);
+        let minter = AssetIdentity::ContractId(deploy_wallet.contract_id);
         let key = 0;
         let num_leaves = 3;
         let airdrop_leaves = [
@@ -35,7 +35,7 @@ mod success {
             asset.asset_id,
         )
         .await;
-        token_constructor(minter, &asset.token, 10).await;
+        asset_constructor(minter, &asset.asset, 10).await;
 
         assert_eq!(
             claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
@@ -82,7 +82,7 @@ mod success {
         let identity_a = AirdropIdentity::Address(wallet1.wallet.address().into());
         let identity_b = AirdropIdentity::Address(wallet2.wallet.address().into());
         let identity_c = AirdropIdentity::Address(wallet3.wallet.address().into());
-        let minter = TokenIdentity::ContractId(deploy_wallet.contract_id);
+        let minter = AssetIdentity::ContractId(deploy_wallet.contract_id);
         let key = 0;
         let num_leaves = 3;
         let airdrop_leaves: [(AirdropIdentity, u64); 3] = [
@@ -99,7 +99,7 @@ mod success {
             asset.asset_id,
         )
         .await;
-        token_constructor(minter, &asset.token, 10).await;
+        asset_constructor(minter, &asset.asset, 10).await;
 
         assert_eq!(
             claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())

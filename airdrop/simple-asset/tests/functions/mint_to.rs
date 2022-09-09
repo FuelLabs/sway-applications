@@ -14,7 +14,7 @@ mod success {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_token, total_supply).await;
+        constructor(identity.clone(), &deployer.simple_asset, total_supply).await;
 
         assert_eq!(
             deployer
@@ -25,7 +25,7 @@ mod success {
             0
         );
 
-        mint_to(10, &deployer.simple_token, identity.clone()).await;
+        mint_to(10, &deployer.simple_asset, identity.clone()).await;
 
         assert_eq!(
             deployer
@@ -44,7 +44,7 @@ mod success {
         let identity = Identity::Address(deployer.wallet.address().into());
         let wallet2_identity = Identity::Address(wallet2.wallet.address().into());
 
-        constructor(identity.clone(), &deployer.simple_token, total_supply).await;
+        constructor(identity.clone(), &deployer.simple_asset, total_supply).await;
 
         assert_eq!(
             deployer
@@ -54,7 +54,7 @@ mod success {
                 .unwrap(),
             0
         );
-        mint_to(10, &deployer.simple_token, identity.clone()).await;
+        mint_to(10, &deployer.simple_asset, identity.clone()).await;
         assert_eq!(
             deployer
                 .wallet
@@ -72,7 +72,7 @@ mod success {
                 .unwrap(),
             0
         );
-        mint_to(15, &deployer.simple_token, wallet2_identity.clone()).await;
+        mint_to(15, &deployer.simple_asset, wallet2_identity.clone()).await;
         assert_eq!(
             wallet2
                 .wallet
@@ -84,11 +84,11 @@ mod success {
     }
 
     #[tokio::test]
-    async fn mints_all_tokens() {
+    async fn mints_all_assets() {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_token, total_supply).await;
+        constructor(identity.clone(), &deployer.simple_asset, total_supply).await;
 
         assert_eq!(
             deployer
@@ -99,7 +99,7 @@ mod success {
             0
         );
 
-        mint_to(total_supply, &deployer.simple_token, identity.clone()).await;
+        mint_to(total_supply, &deployer.simple_asset, identity.clone()).await;
 
         assert_eq!(
             deployer
@@ -126,14 +126,14 @@ mod revert {
 
         constructor(
             minter_identity.clone(),
-            &deployer.simple_token,
+            &deployer.simple_asset,
             total_supply,
         )
         .await;
 
         mint_to(
             10,
-            &false_minter.simple_token,
+            &false_minter.simple_asset,
             false_minter_identity.clone(),
         )
         .await;
@@ -145,8 +145,8 @@ mod revert {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
-        constructor(identity.clone(), &deployer.simple_token, total_supply).await;
+        constructor(identity.clone(), &deployer.simple_asset, total_supply).await;
 
-        mint_to(total_supply + 1, &deployer.simple_token, identity.clone()).await;
+        mint_to(total_supply + 1, &deployer.simple_asset, identity.clone()).await;
     }
 }

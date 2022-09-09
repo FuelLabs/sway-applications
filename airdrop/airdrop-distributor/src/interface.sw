@@ -14,11 +14,11 @@ abi AirdropDistributor {
     /// 
     /// # Arguments
     /// 
-    /// * `amount` - The quantity of tokens the allotted to the user to claim.
+    /// * `amount` - The quantity of an asset the allotted to the user to claim.
     /// * 'key' - The index of the leaf which will be proven on the Merkle Tree.
     /// * `num_leaves` - The number of leaves in the Merkle Tree.
     /// * `proof` - The Merkle proof to verify the user is authorized to claim.
-    /// * `to` - The user which has been allotted tokens.
+    /// * `to` - The user which has been allotted a quantity of the asset.
     /// 
     /// # Reverts
     /// 
@@ -44,20 +44,20 @@ abi AirdropDistributor {
 
     /// Initialized the contract and starts the airdrop.
     /// 
-    /// Note: The `token` contract will need to have a `mint_to` function implemented which this
+    /// Note: The `asset` contract will need to have a `mint_to` function implemented which this
     /// airdrop contract may call.
     /// 
     /// # Arguments
     /// 
     /// * `claim_time` - The number fo blocks the claiming period should last.
     /// * `merkleRoot` - The root of the merkle proof used to verify claiming.
-    /// * `token` - The contract which is to be distributed.
+    /// * `asset` - The contract which is to be distributed.
     /// 
     /// # Reverts
     /// 
     /// * The constructor has already been called.
     #[storage(read, write)]
-    fn constructor(claim_time: u64, merkleRoot: b256, token: ContractId);
+    fn constructor(claim_time: u64, merkleRoot: b256, asset: ContractId);
 
     /// Returns the block at which the airdrop ends
     #[storage(read)]
@@ -68,7 +68,7 @@ abi AirdropDistributor {
     fn merkle_root() -> b256;
 }
 
-abi SimpleToken {
+abi SimpleAsset {
     #[storage(read, write)]
     fn mint_to(amount: u64, to: Identity);
 }

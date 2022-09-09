@@ -9,7 +9,7 @@ Table of Contents
         -[`claim_data()`](#claim_data)
         -[`end_block()`](#end_block)
         -[`merkle_root()`](#merkle_root)
-    - [Simple Token Core Functionality](#simple-token-core-functionality)
+    - [Simple Asset Core Functionality](#simple-asset-core-functionality)
         -[`constructor()`](#constructor-1)
 - [Sequence Diagram](#sequence-diagram)
 
@@ -62,7 +62,7 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 1. Returns the stored merkle root used for claim validation
 
-### Simple Token Core Functionality
+### Simple Asset Core Functionality
 
 #### `constructor()`
 

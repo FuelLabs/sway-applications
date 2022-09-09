@@ -7,13 +7,13 @@ use sha2::{Digest, Sha256};
 
 abigen!(AirdropDistributor, "out/debug/airdrop-distributor-abi.json");
 abigen!(
-    SimpleToken,
-    "../simple-token/out/debug/simpletoken-abi.json"
+    SimpleAsset,
+    "../simple-asset/out/debug/simpleasset-abi.json"
 );
 
 pub struct Asset {
     pub asset_id: ContractId,
-    pub token: SimpleToken,
+    pub asset: SimpleAsset,
 }
 
 pub struct Metadata {
@@ -33,12 +33,12 @@ pub mod airdrop_distributor_abi_calls {
         num_leaves: u64,
         proof: Vec<[u8; 32]>,
         to: Identity,
-        token_id: ContractId,
+        asset_id: ContractId,
     ) -> CallResponse<()> {
         contract
             .claim(amount, key, num_leaves, proof, to)
             .append_variable_outputs(1)
-            .set_contracts(&[token_id.into()])
+            .set_contracts(&[asset_id.into()])
             .call()
             .await
             .unwrap()
@@ -52,10 +52,10 @@ pub mod airdrop_distributor_abi_calls {
         claim_time: u64,
         contract: &AirdropDistributor,
         merkle_root: [u8; 32],
-        token: ContractId,
+        asset: ContractId,
     ) -> CallResponse<()> {
         contract
-            .constructor(claim_time, merkle_root, token)
+            .constructor(claim_time, merkle_root, asset)
             .call()
             .await
             .unwrap()
@@ -70,17 +70,17 @@ pub mod airdrop_distributor_abi_calls {
     }
 }
 
-pub mod simple_token_abi_calls {
+pub mod simple_asset_abi_calls {
 
     use super::*;
 
-    pub async fn token_constructor(
-        minter: simpletoken_mod::Identity,
-        contract: &SimpleToken,
-        token_supply: u64,
+    pub async fn asset_constructor(
+        minter: simpleasset_mod::Identity,
+        contract: &SimpleAsset,
+        asset_supply: u64,
     ) -> CallResponse<()> {
         contract
-            .constructor(minter, token_supply)
+            .constructor(minter, asset_supply)
             .call()
             .await
             .unwrap()
@@ -246,12 +246,12 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let simple_token_id = Contract::deploy(
-            "../simple-token/out/debug/simpletoken.bin",
+        let simple_asset_id = Contract::deploy(
+            "../simple-asset/out/debug/simpleasset.bin",
             &wallet1,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                "../simple-token/out/debug/simpletoken-storage_slots.json".to_string(),
+                "../simple-asset/out/debug/simpleasset-storage_slots.json".to_string(),
             )),
         )
         .await
@@ -298,8 +298,8 @@ pub mod test_helpers {
         };
 
         let asset = Asset {
-            asset_id: ContractId::new(*simple_token_id.hash()),
-            token: SimpleTokenBuilder::new(simple_token_id.to_string(), wallet1.clone()).build(),
+            asset_id: ContractId::new(*simple_asset_id.hash()),
+            asset: SimpleAssetBuilder::new(simple_asset_id.to_string(), wallet1.clone()).build(),
         };
 
         let claim_time = 15;
