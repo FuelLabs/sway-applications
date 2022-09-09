@@ -31,17 +31,17 @@ impl Oracle for Contract {
         Identity::Address(~Address::from(owner))
     }
 
-    #[storage(read)] fn price() -> u64 {
+    #[storage(read)]
+    fn price() -> u64 {
         storage.price
     }
 
-    #[storage(write)] fn set_price(price: u64) {
+    #[storage(write)]
+    fn set_price(price: u64) {
         require(msg_sender().unwrap() == Identity::Address(~Address::from(owner)), AccessError::NotOwner);
 
         storage.price = price;
 
-        log(PriceUpdateEvent {
-            price
-        });
+        log(PriceUpdateEvent { price });
     }
 }

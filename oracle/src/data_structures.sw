@@ -9,8 +9,10 @@ pub enum State {
 
 impl Eq for State {
     fn eq(self, other: Self) -> bool {
-        match(self, other) {
-            (State::Initialized, State::Initialized) => true, (State::NotInitialized, State::NotInitialized) => true, _ => false, 
+        match (self, other) {
+            (State::Initialized, State::Initialized) => true,
+            (State::NotInitialized, State::NotInitialized) => true,
+            _ => false,
         }
     }
 }
