@@ -351,30 +351,19 @@ Will move from Apps repo to Libs repo soon
 
 - Needs a sway fix for using non-primitive types as configuration time constants to represent the owner variable appropriately.
 
-<h3>User Interface ❌</h3>
+<h3>User Interface</h3>
 
-- Not implemented
-
-<h3>Oracle Node ❌</h3>
-
-- Not implemented
+<h3>Oracle Node</h3>
 
 <h3>Tests</h3>
 
 - <h3>Rust ✅</h3>
-- <h3>Typescript ❌</h3>
-  
-  - Not implemented
+- <h3>Typescript</h3>
 
 <h3>Documentation ❌</h3>
 
-- Readme ❌
-  
-  - needs to include information about unimplemented features such as the User Interface and Oracle Node.
-
-- Specification ❌
-  
-  - needs to include information about the Oracle Node
+- Readme ✅
+- Specification ✅
 
 </details>
 
