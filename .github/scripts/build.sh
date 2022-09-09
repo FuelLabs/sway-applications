@@ -20,4 +20,6 @@ elif [ $PROJECT = 'multisig-wallet' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'NFT' ]; then
     forc build --path $PROJECT
+elif [ $PROJECT = 'oracle']; then
+    forc build --path $PROJECT
 fi
