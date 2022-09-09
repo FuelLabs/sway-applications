@@ -6,7 +6,6 @@ use crate::utils::{
 };
 use fuels::{
     prelude::{CallParameters, TxParameters},
-    signers::Signer,
     tx::AssetId,
 };
 
@@ -476,7 +475,7 @@ mod revert {
         )
         .await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params = CallParameters::new(
             Some(arbiter_obj.fee_amount - 1),
             Some(AssetId::from(*arbiter_obj.asset)),
@@ -544,7 +543,7 @@ mod revert {
             defaults.asset_amount,
         )
         .await;
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params = CallParameters::new(
             Some(arbiter_obj_unequal.fee_amount),
             Some(AssetId::from(*id)),

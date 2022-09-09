@@ -2,7 +2,6 @@ use crate::utils::{
     abi_calls::{create_escrow, deposit, dispute, transfer_to_seller},
     test_helpers::{create_arbiter, create_asset, mint, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 
