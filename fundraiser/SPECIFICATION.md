@@ -1,4 +1,4 @@
-Table of Content
+Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
   - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
