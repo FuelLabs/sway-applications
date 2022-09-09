@@ -17,6 +17,7 @@ use std::{
     revert::revert,
 };
 
+// TO DO : Remove once __gtf getters implemented in std-lib
 const GTF_OUTPUT_COIN_TO = 0x202;
 const GTF_OUTPUT_COIN_ASSET_ID = 0x204;
 
@@ -24,7 +25,7 @@ const GTF_OUTPUT_COIN_ASSET_ID = 0x204;
 fn main() -> bool {
     // Order conditions: These are set in Forc.toml
     // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `receiver`
-    // Conversion to ContractId and Address types will be unnecessary once
+    // TO DO : Conversion to ContractId and Address types will be unnecessary once
     // https://github.com/FuelLabs/sway/issues/2647 is fixed
     let ask_token: ContractId = ContractId {
         value: ask_token_config,
@@ -45,6 +46,7 @@ fn main() -> bool {
     };
 
     // Otherwise, evaluate the terms of the order:
+    // TO DO : Have the order taker provide the index of the output via predicateData
     // The output which pays the receiver must be in the first position (output_index = 0)
     let output_index = 0;
 
