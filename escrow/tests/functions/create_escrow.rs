@@ -2,7 +2,7 @@ use crate::utils::{
     abi_calls::create_escrow,
     test_helpers::{asset_amount, create_arbiter, create_asset, mint, setup},
 };
-use fuels::{signers::Signer, tx::ContractId};
+use fuels::tx::ContractId;
 
 mod success {
 

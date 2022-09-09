@@ -2,7 +2,7 @@ use crate::utils::{
     abi_calls::{constructor, create_proposal, deposit, execute, vote},
     test_helpers::{mint, proposal_transaction, setup},
 };
-use fuels::{prelude::CallParameters, signers::Signer, tx::AssetId};
+use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;

@@ -1,9 +1,7 @@
 use crate::utils::{
     abi_calls::{create_escrow, deposit, dispute, propose_arbiter, resolve_dispute},
     test_helpers::{asset_amount, create_arbiter, create_asset, mint, setup},
-    Identity,
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -60,7 +58,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
 
@@ -125,7 +123,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount - 1,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
 
@@ -190,7 +188,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(seller.wallet.address()),
+            seller.wallet.address(),
         )
         .await;
 
@@ -255,7 +253,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount - 1,
-            Identity::Address(seller.wallet.address()),
+            seller.wallet.address(),
         )
         .await;
 
@@ -321,7 +319,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
 
@@ -408,7 +406,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
 
@@ -427,7 +425,7 @@ mod success {
             &arbiter.contract,
             1,
             arbiter_obj.fee_amount,
-            Identity::Address(seller.wallet.address()),
+            seller.wallet.address(),
         )
         .await;
 
@@ -499,14 +497,14 @@ mod revert {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
         resolve_dispute(
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
     }
@@ -557,7 +555,7 @@ mod revert {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
     }
@@ -609,7 +607,7 @@ mod revert {
             &buyer.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
     }
@@ -661,7 +659,7 @@ mod revert {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(arbiter.wallet.address()),
+            arbiter.wallet.address(),
         )
         .await;
     }
@@ -722,7 +720,7 @@ mod revert {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount + 1,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
     }
