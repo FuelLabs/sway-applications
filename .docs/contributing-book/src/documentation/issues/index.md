@@ -9,8 +9,8 @@ The issue should describe the work that needs to be done and the contributing do
 The following sections provide a quickstart guide for navigating the issues in the Sway Applications repository.
 
 - [Searching for Issues](./search.md)
-  - Filtering by label
-  - Checking if anyone is working on the issue
-  - Reading the information in the ticket
+  - [Filtering by label](./search.md#filter-by-label)
+  - [Checking if anyone is working on the issue](./search.md#checking-if-anyone-is-working-on-the-issue)
+  - [Reading the information in the ticket](./search.md#reading-the-information-in-the-ticket)
 - [Creating an Issue](./create-issue.md)
   - Using issue templates
