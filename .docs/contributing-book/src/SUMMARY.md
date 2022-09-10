@@ -2,7 +2,10 @@
 
 - [Welcome](./documentation/welcome.md)
 - [GitHub Issues](./documentation/issues/index.md)
-  - [Searching for Issues](./documentation/issues/search.md)
+  - [Searching for Issues](./documentation/issues/search/index.md)
+    - [Filtering by label](./documentation/issues/search/filtering.md)
+    - [Checking for available issues](./documentation/issues/search/assignment.md)
+    - [Issue summary](./documentation/issues/search/summary.md)
   - [Creating an Issue](./documentation/issues/create-issue.md)
 - [Code Quality](./documentation/code-quality/index.md)
   - [Project Structure](./documentation/code-quality/project-structure.md)
