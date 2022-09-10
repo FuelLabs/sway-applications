@@ -1,0 +1,6 @@
+[book]
+authors = ["Fuel Labs <contact@fuel.sh>"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Contributing to Sway Applications"

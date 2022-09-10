@@ -1,0 +1,18 @@
+# Summary
+
+- [Welcome](./welcome.md)
+- [GitHub Issues](./issues/index.md)
+  - [Searching for Issues](./issues/search.md)
+  - [Creating an Issue](./issues/create-issue.md)
+- [Code Quality](./code-quality/index.md)
+  - [Project Structure](./code-quality/project-structure.md)
+  - [Code Structure](./code-quality/code-structure.md)
+  - [Documentation](./code-quality/documentation/index.md)
+    - [Code](./code-quality/documentation/code.md)
+    - [Specification](./code-quality/documentation/specification/index.md)
+      - [Non-technical](./code-quality/documentation/specification/non-technical.md)
+      - [Technical](./code-quality/documentation/specification/technical.md)
+  - [Testing](./code-quality/testing.md)
+- [Pull Requests](./pull-requests/index.md)
+  - [Committing your work](./pull-requests/commit.md)
+  - [Creating a pull request](./pull-requests/creating-pr.md)
