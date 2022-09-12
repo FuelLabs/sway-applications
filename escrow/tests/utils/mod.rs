@@ -201,7 +201,7 @@ pub mod test_helpers {
         )
     }
 
-    pub async fn mint(contract: &MyAsset, address: &Bech32Address, amount: u64) {
+    pub async fn mint(address: &Bech32Address, amount: u64, contract: &MyAsset) {
         contract
             .mint_and_send_to_address(amount, address.into())
             .append_variable_outputs(1)
