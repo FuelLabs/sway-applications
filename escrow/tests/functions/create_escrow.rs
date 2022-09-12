@@ -20,9 +20,9 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         assert_eq!(
@@ -55,9 +55,9 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
         assert_eq!(
@@ -110,9 +110,9 @@ mod revert {
         .await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -143,9 +143,9 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -169,9 +169,9 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -200,9 +200,9 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -231,9 +231,9 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -262,9 +262,9 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -293,9 +293,9 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -324,9 +324,9 @@ mod revert {
         let asset = create_asset(0, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 

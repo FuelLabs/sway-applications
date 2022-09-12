@@ -62,7 +62,7 @@ To see an overview of the progress, and plans, for applications take a look at [
 
 ## Running a project
 
-If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/latest/introduction/installation.html) steps required to use our tools.
+If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/) steps required to use our tools.
 
 Any instructions related to running a specific project should be found within the README.md of that project.
 
