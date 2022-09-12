@@ -66,7 +66,7 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 #### `constructor()`
 
-1. Allows thw owner to begin minting the asset and requires
+1. Allows the owner to begin minting the asset and requires
     1. An asset supply be given
     2. A user that will be authorized to mint
 
