@@ -118,7 +118,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_sender_not_minter() {
+    async fn when_sender_not_minter() {
         let (deployer, false_minter, total_supply) = setup().await;
 
         let minter_identity = Identity::Address(deployer.wallet.address().into());
@@ -141,7 +141,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_mint_more_than_supply() {
+    async fn when_mint_more_than_supply() {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
@@ -152,7 +152,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_not_initalized() {
+    async fn when_not_initalized() {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());

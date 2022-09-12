@@ -19,7 +19,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_initalized_twice() {
+    async fn when_initalized_twice() {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
@@ -29,7 +29,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_asset_supply_zero() {
+    async fn when_asset_supply_zero() {
         let (deployer, _, _) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());

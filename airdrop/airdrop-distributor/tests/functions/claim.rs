@@ -138,7 +138,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_after_claim_period() {
+    async fn after_claim_period() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
         let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
@@ -166,7 +166,7 @@ mod revert {
     #[ignore]
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_claim_twice() {
+    async fn when_claim_twice() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
         let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
@@ -208,7 +208,7 @@ mod revert {
     // https://github.com/FuelLabs/sway/issues/2594 is resolved
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_claim_twice_manual_tree() {
+    async fn when_claim_twice_manual_tree() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
         let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
@@ -271,7 +271,7 @@ mod revert {
     #[ignore]
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_failed_merkle_verification() {
+    async fn when_failed_merkle_verification() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
         let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
@@ -304,7 +304,7 @@ mod revert {
     // https://github.com/FuelLabs/sway/issues/2594 is resolved
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_failed_merkle_verification_manual_tree() {
+    async fn when_failed_merkle_verification_manual_tree() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
         let (identity_a, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
@@ -335,7 +335,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_not_initalized() {
+    async fn when_not_initalized() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
         let (identity_a, _, _, _minter, key, num_leaves, _, airdrop_leaves, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
