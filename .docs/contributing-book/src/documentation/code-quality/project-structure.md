@@ -24,7 +24,10 @@ For example, here is an example structure that we follow for `Sway` files in the
   - Contains structs definitions which are used inside `log()` statements
 
     ```rust 
-    log(Deposit { user, amount });
+    pub struct DepositEvent { 
+        amount: u64,
+        user: Identity,
+    }
     ```
 
 - `interface.sw`
