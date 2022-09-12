@@ -25,7 +25,6 @@ storage {
     asset_supply: u64 = 0,
     /// The Address or Contract that has permission to mint.
     minter: Option<Identity> = Option::None(),
-
 }
 
 impl SimpleAsset for Contract {
