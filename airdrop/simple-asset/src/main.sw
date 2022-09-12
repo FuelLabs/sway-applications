@@ -19,12 +19,13 @@ use std::{
 };
 
 storage {
-    /// The Address or Contract that has permission to mint.
-    minter: Option<Identity> = Option::None(),
-    /// The maximum quantity of the asset ever to be minted.
-    asset_supply: u64 = 0,
     /// The current quantity of the asset minted.
     asset_minted: u64 = 0,
+    /// The maximum quantity of the asset ever to be minted.
+    asset_supply: u64 = 0,
+    /// The Address or Contract that has permission to mint.
+    minter: Option<Identity> = Option::None(),
+
 }
 
 impl SimpleAsset for Contract {
