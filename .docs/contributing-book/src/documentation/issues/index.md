@@ -13,4 +13,3 @@ The following sections provide a quickstart guide for navigating the issues in t
   - [Checking for available issues](./search/assignment.md)
   - [Issue summary](./search/summary.md)
 - [Creating an Issue](./create-issue.md)
-  - Using issue templates
