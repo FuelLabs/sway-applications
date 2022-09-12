@@ -26,8 +26,8 @@ mod success {
         .await;
 
         assert_eq!(
+            provider.latest_block_height().await.unwrap() + claim_time,
             end_block(&deploy_wallet.airdrop_distributor).await,
-            provider.latest_block_height().await.unwrap() + claim_time - 1
         );
         assert_eq!(merkle_root(&deploy_wallet.airdrop_distributor).await, root)
     }
