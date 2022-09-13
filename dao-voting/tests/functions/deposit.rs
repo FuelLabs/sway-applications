@@ -54,8 +54,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_when_not_initialized() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn when_not_initialized() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
         mint(
@@ -74,16 +74,16 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_with_incorrect_asset() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn with_incorrect_asset() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
         let another_asset_id = Contract::deploy_with_parameters(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            "./tests/artifacts/gov_token/out/debug/gov_token.bin",
             &deployer.wallet,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/asset/out/debug/gov_token-storage_slots.json".to_string(),
+                "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json".to_string(),
             )),
             Salt::from([1u8; 32]),
         )
@@ -104,8 +104,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_zero_deposit() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_zero_deposit() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
         mint(

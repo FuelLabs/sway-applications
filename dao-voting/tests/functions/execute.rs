@@ -41,16 +41,16 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_invalid_proposal_id() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_invalid_proposal_id() {
         let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
         execute(&user.dao_voting, 0).await;
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     #[ignore]
-    async fn panics_on_already_executed_proposal() {
+    async fn on_already_executed_proposal() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
@@ -77,8 +77,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
-    pub async fn panics_on_active_proposal() {
+    #[should_panic(expected = "Revert(42)")]
+    pub async fn on_active_proposal() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
@@ -104,8 +104,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
-    pub async fn panics_on_not_enough_yes_votes() {
+    #[should_panic(expected = "Revert(42)")]
+    pub async fn on_not_enough_yes_votes() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 

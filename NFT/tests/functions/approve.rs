@@ -66,7 +66,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_token_owner_does_not_exist() {
+    async fn when_token_owner_does_not_exist() {
         let (_deploy_wallet, owner1, owner2) = setup().await;
 
         // let approved_identity = Option::Some(Identity::Address(owner2.wallet.address().into()));
@@ -76,7 +76,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_token_does_not_map_to_existing_token() {
+    async fn when_token_does_not_map_to_existing_token() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
@@ -90,7 +90,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_sender_is_not_owner() {
+    async fn when_sender_is_not_owner() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;'

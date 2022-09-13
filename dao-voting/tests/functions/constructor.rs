@@ -21,8 +21,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_when_reinitialized() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn when_reinitialized() {
         let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
         constructor(&deployer.dao_voting, gov_token_id).await;
