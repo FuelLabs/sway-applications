@@ -10,49 +10,8 @@ To be explicit
 
 Example
 
-```rust
-contract;
-
-dep data_structures;
-dep interface;
-dep utils;
-
-use data_structures::{Game, Player, Winner};
-use interface::{ConnectFour, DrawEvent, MoveEvent, WinnerEvent};
-use std::identity::Identity;
-use utils::validate_move;
-
-storage {
-   /// The total number of created games
-   games_played: u64 = 0,
-
-   /// The number of times player 2 has won against player 1
-   player_two_wins: u64 = 0,
-
-   /// The number of times player 1 has won against player 2
-   player_one_wins: u64 = 0,
-   
-   // ...
-}
-
-impl ConnectFour for Contract {
-
-   fn create_game(player_two: Player, player_one: Player) -> Game {
-      // Perform a check on each player address to see if they are blacklisted
-
-      // owl
-   }
-
-   fn move(column: u64, game: Game) -> Game {
-      // Perform a check to see if the game has ended
-      // Perform a check to see if the position is valid
-      
-      // owl
-   }
-
-   // rest of owl
-
-}
+```
+{{#include ../../code/connect-four/src/main.sw}}
 ```
 
 The only other aspect to remember is to use the formatter before commiting your work.
