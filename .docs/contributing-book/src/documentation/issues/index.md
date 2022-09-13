@@ -5,11 +5,3 @@ GitHub provides a ticketing system called [issues](https://docs.github.com/en/is
 When looking to contribute to a project one of the first places to look is their [issues](https://github.com/FuelLabs/sway-applications/issues) section while following the guidance that the authors of the project have provided in their contributing document.
 
 The issue should describe the work that needs to be done and the contributing document should outline the expectations that must be met in order for the work to eventually make its way into the repository.
-
-The following sections provide a quickstart guide for navigating the issues in the Sway Applications repository.
-
-- [Searching for Issues](./search/index.md)
-  - [Filtering by label](./search/filtering.md)
-  - [Checking for available issues](./search/assignment.md)
-  - [Issue summary](./search/summary.md)
-- [Creating an Issue](./create-issue.md)
