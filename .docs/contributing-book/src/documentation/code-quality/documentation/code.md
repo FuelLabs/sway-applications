@@ -17,41 +17,7 @@ When writing documentation make sure that your arguments are in alphabetical ord
 Example
 
 ```rust
-library interface;
-
-dep data_structures;
-
-use data_structures::{Game, Player};
-
-abi ConnectFour {
-   /// Creates a new game
-   ///
-   /// Creating a game allows players to sequentially take turns placing their marker in an empty
-   /// spot until a player reaches four in a row or the board is filled and a draw is declared
-   ///
-   /// # Arguments
-   ///
-   /// - `player_two` - The second player to make a move
-   /// - `player_one` - The first player to make a move
-   ///
-   /// # Reverts
-   ///
-   /// - When a player has been blacklisted for cheating
-   fn create_game(player_two: Player, player_one: Player) -> Game;
-
-   /// Places a marker from the next player in the game in the specified column
-   ///
-   /// # Arguments
-   ///
-   /// - `column` - The column to place a marker in, range 0 <= column < 8
-   /// - `game` - The game to make a move in
-   ///
-   /// # Reverts
-   ///
-   /// - When a game has ended in a player winning or a draw
-   /// - When a marker is placed into a `column` that is full
-   fn move(column: u64, game: Game) -> Game;
-}
+{{#include ../../../code/connect-four/src/interface.sw::36}}
 ```
 
 In addition to documenting your functions make sure to document your data structures, events, errors etc. if needed. It is your job to explain to the reader what your code is an what it does so do not make the reader guess. It might be obvious to you but not to the reader.
@@ -61,23 +27,7 @@ That being said, there is good documentation and bad documentation.
 Example
 
 ```rust
-// This is bad. It's just repeating what I can already read from the field names
-pub struct Item {
-   /// Identifier
-   id: u64,
-
-   /// Quantity
-   quantity: u64,
-}
-
-// This is better. It tells me the context of what the fields are
-pub struct Item {
-   /// Unique identifier used to retrieve the item from a vector of items held in storage
-   id: u64,
-
-   /// The number of remaining items left in production
-   quantity: u64,
-}
+{{#include ../../../code/bad_documentation/src/lib.sw:3:19}}
 ```
 
 Documenting your code does not stop at writing documentation. It is also important to name your variables, functions and data structures appropriately. This is a difficult task and it can be argued to be a skill and an art. If your name is too verbose, then it will be difficult to read (because of how much screenspace it takes up) and annoying to use. On the other hand, an abbreviated name requires insider knowledge to be able to infer what the variable is (you could document it extensively however that still means the reader must remember what the documentation says).

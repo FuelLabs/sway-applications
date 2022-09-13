@@ -10,7 +10,7 @@ To be explicit
 
 Example
 
-```
+```rust
 {{#include ../../code/connect-four/src/main.sw}}
 ```
 
