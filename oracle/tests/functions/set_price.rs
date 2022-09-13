@@ -20,8 +20,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_when_not_owner() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn when_not_owner() {
         let (user, wallets) = setup().await;
         user.oracle
             ._with_wallet(wallets[1].clone())

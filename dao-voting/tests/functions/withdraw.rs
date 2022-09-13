@@ -49,8 +49,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_withdraw_zero() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_withdraw_zero() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
         mint(
@@ -72,8 +72,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_not_enough_assets() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_not_enough_assets() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
         mint(

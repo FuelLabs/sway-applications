@@ -44,7 +44,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_admin_not_set() {
+    async fn when_admin_not_set() {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
         admin(&owner1.contract).await;

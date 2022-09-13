@@ -378,6 +378,7 @@ mod revert {
 
     #[tokio::test]
     #[ignore]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_pledging_after_deadline() {
         let (author, user, asset, _, defaults) = setup().await;
         let deadline = 5;
