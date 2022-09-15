@@ -19,7 +19,6 @@ env:
   FORC_VERSION: 0.24.1
   CORE_VERSION: 0.10.1
   PATH_TO_SCRIPTS: .github/scripts
-  BOOK_SOURCE_CODE: .docs/contributing-book/src/code
 
 jobs:
   lint-toml-files:
@@ -98,7 +97,10 @@ jobs:
 
     strategy:
       matrix:
-        project: [:{{ env.BOOK_SOURCE_CODE }}/bad_documentation, :{{ env.BOOK_SOURCE_CODE }}/connect-four]
+        project: [
+          ".docs/contributing-book/src/code/bad_documentation", 
+          ".docs/contributing-book/src/code/connect-four"
+        ]
 
     steps:
       - name: Checkout repository
