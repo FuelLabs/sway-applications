@@ -31,8 +31,7 @@ impl ConnectFour for Contract {
       // Perform a check to see if the position is valid
         validate_move(column, game);
 
-      
-      // owl
+            // owl
         game
     }
 
