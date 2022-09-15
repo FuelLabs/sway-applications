@@ -6,16 +6,13 @@ pub struct Game {
 }
 
 impl Game {
-
     fn new(player_one: Player, player_two: Player) -> Self {
         Self {
-            player_one, 
-            player_two
+            player_one,
+            player_two,
         }
     }
-
 }
 
 pub struct Player {}
 pub struct Winner {}
-
