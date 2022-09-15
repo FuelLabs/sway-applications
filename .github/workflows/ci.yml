@@ -98,7 +98,7 @@ jobs:
 
     strategy:
       matrix:
-        project: ["${{ env.BOOK_SOURCE_CODE }}/bad_documentation", "${{ env.BOOK_SOURCE_CODE }}/connect-four"]
+        project: [${{ env.BOOK_SOURCE_CODE }}"/bad_documentation", ${{ env.BOOK_SOURCE_CODE }}"/connect-four"]
 
     steps:
       - name: Checkout repository
