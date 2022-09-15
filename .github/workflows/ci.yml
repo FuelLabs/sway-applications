@@ -139,4 +139,4 @@ jobs:
         run: forc fmt --path ${{ matrix.project }} --check
 
       - name: Build Sway
-        run: forc build --path ${{ matrix.project }} --check
+        run: forc build --path ${{ matrix.project }}
