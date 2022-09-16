@@ -7,9 +7,13 @@ if [ $PROJECT = 'airdrop/airdrop-distributor' ]; then
     forc build --path $PROJECT/../simple-asset/
 elif [ $PROJECT = 'airdrop/simple-asset' ]; then
     forc build --path $PROJECT
-elif [ $PROJECT = 'dao-voting' ]; then
+elif [ $PROJECT = 'dao-voting/dao' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/gov_token
+elif [ $PROJECT = 'dao-voting/governance_abi' ]; then
+    forc build --path $PROJECT
+elif [ $PROJECT = 'dao-voting/governance_contract' ]; then
+    forc build --path $PROJECT
 elif [ $PROJECT = 'escrow' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/asset
