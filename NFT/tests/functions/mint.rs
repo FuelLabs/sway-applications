@@ -14,10 +14,10 @@ mod success {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
         assert_eq!(total_supply(&owner1.contract).await, 0);
         assert_eq!(max_supply(&owner1.contract).await, 1);
         assert_eq!(balance_of(&owner1.contract, &minter).await, 0);
@@ -36,7 +36,7 @@ mod success {
     async fn mints_with_access() {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
-        let minter = Identity::Address(owner1.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
         // let admin = Option::Some(minter.clone());
         let admin = minter.clone();
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
@@ -60,10 +60,10 @@ mod success {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 4).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 4).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
         assert_eq!(max_supply(&owner1.contract).await, 4);
         assert_eq!(total_supply(&owner1.contract).await, 0);
         assert_eq!(balance_of(&owner1.contract, &minter).await, 0);
@@ -101,10 +101,10 @@ mod success {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
         assert_eq!(balance_of(&owner1.contract, &minter).await, 0);
         assert_eq!(max_supply(&owner1.contract).await, 1);
         assert_eq!(total_supply(&owner1.contract).await, 0);
@@ -123,23 +123,23 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_no_token_supply_set() {
+    async fn when_no_token_supply_set() {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
-        let minter = Identity::Address(owner1.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
         mint(1, &owner1.contract, &minter).await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_minting_more_tokens_than_supply() {
+    async fn when_minting_more_tokens_than_supply() {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
         mint(
             max_supply(&owner1.contract).await + 1,
             &owner1.contract,
@@ -150,12 +150,12 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_minter_does_not_have_access() {
+    async fn when_minter_does_not_have_access() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
-        let minter = Identity::Address(owner2.wallet.address());
-        // let admin = Option::Some(Identity::Address(owner1.wallet.address()));
-        let admin = Identity::Address(owner1.wallet.address());
+        let minter = Identity::Address(owner2.wallet.address().into());
+        // let admin = Option::Some(Identity::Address(owner1.wallet.address().into()));
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
         mint(1, &owner2.contract, &minter).await;

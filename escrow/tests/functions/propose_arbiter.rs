@@ -6,7 +6,6 @@ use crate::utils::{
 };
 use fuels::{
     prelude::{CallParameters, TxParameters},
-    signers::Signer,
     tx::AssetId,
 };
 
@@ -26,9 +25,9 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
 
@@ -63,9 +62,9 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 3,
+            &defaults.asset,
         )
         .await;
 
@@ -110,9 +109,9 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 4,
+            &defaults.asset,
         )
         .await;
 
@@ -164,9 +163,9 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 6,
+            &defaults.asset,
         )
         .await;
 
@@ -227,7 +226,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_escrow_is_not_pending() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -239,15 +238,15 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -273,7 +272,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_caller_is_not_seller() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -285,15 +284,15 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
-            defaults.asset_amount,
+            defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
 
@@ -318,7 +317,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_arbiter_address_is_set_to_buyer() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -336,15 +335,15 @@ mod revert {
         .await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -369,7 +368,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_arbiter_address_is_set_to_seller() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -387,15 +386,15 @@ mod revert {
         .await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -420,7 +419,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_arbiter_fee_is_zero() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -433,15 +432,15 @@ mod revert {
         let arbiter_obj_zero = create_arbiter(arbiter.wallet.address(), defaults.asset_id, 0).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -466,7 +465,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_deposit_for_arbiter_fee_is_unequal() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -476,7 +475,7 @@ mod revert {
         )
         .await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params = CallParameters::new(
             Some(arbiter_obj.fee_amount - 1),
             Some(AssetId::from(*arbiter_obj.asset)),
@@ -484,15 +483,15 @@ mod revert {
         );
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -526,7 +525,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_asset_used_for_arbiter_fee_is_unequal() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -544,7 +543,7 @@ mod revert {
             defaults.asset_amount,
         )
         .await;
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params = CallParameters::new(
             Some(arbiter_obj_unequal.fee_amount),
             Some(AssetId::from(*id)),
@@ -552,21 +551,21 @@ mod revert {
         );
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &salted_asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &salted_asset,
         )
         .await;
 

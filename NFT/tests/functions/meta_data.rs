@@ -14,10 +14,10 @@ mod success {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 10).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 10).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
         mint(1, &owner1.contract, &minter).await;
 
         assert_eq!(
@@ -33,10 +33,10 @@ mod success {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 10).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 10).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
         mint(3, &owner1.contract, &minter).await;
 
         assert_eq!(
@@ -68,7 +68,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_token_does_not_exist() {
+    async fn when_token_does_not_exist() {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
         meta_data(&owner1.contract, 1).await;

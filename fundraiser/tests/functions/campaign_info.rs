@@ -1,9 +1,7 @@
 use crate::utils::{
     abi_calls::{campaign_info, create_campaign},
-    test_helpers::setup,
-    Identity,
+    test_helpers::{identity, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -25,7 +23,7 @@ mod success {
         let info = campaign_info(&author.contract, 1).await.value;
 
         assert_eq!(info.asset, defaults.asset_id);
-        assert_eq!(info.author, Identity::Address(author.wallet.address()));
+        assert_eq!(info.author, identity(author.wallet.address()).await);
         assert_eq!(info.beneficiary, defaults.beneficiary);
         assert_eq!(info.cancelled, false);
         assert_eq!(info.claimed, false);

@@ -3,7 +3,7 @@ use crate::utils::{
     test_helpers::{mint, proposal_transaction, setup},
     Identity, ProposalInfo, Votes,
 };
-use fuels::{prelude::CallParameters, signers::Signer, tx::AssetId};
+use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
@@ -36,28 +36,23 @@ mod success {
         assert_eq!(
             proposal(&user.dao_voting, 0).await,
             ProposalInfo {
-                author: Identity::Address(user.wallet.address()),
+                author: Identity::Address(user.wallet.address().into()),
                 yes_votes: asset_amount / 4,
                 no_votes: asset_amount / 4,
                 acceptance_percentage: 10,
                 proposal_transaction,
-                deadline: 15,
+                deadline: 16,
                 executed: false,
             }
         );
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             6
         );
 
         assert_eq!(
-            user_votes(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address()),
-                0
-            )
-            .await,
+            user_votes(&user.dao_voting, user.wallet.address(), 0).await,
             Votes {
                 no_votes: 2,
                 yes_votes: 2,
@@ -91,17 +86,12 @@ mod success {
         vote(&user.dao_voting, false, 0, asset_amount / 4).await;
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             6
         );
 
         assert_eq!(
-            user_votes(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address()),
-                0
-            )
-            .await,
+            user_votes(&user.dao_voting, user.wallet.address(), 0).await,
             Votes {
                 no_votes: 2,
                 yes_votes: 2,
@@ -113,17 +103,12 @@ mod success {
         vote(&user.dao_voting, true, 1, asset_amount / 4).await;
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             4
         );
 
         assert_eq!(
-            user_votes(
-                &user.dao_voting,
-                Identity::Address(user.wallet.address()),
-                1
-            )
-            .await,
+            user_votes(&user.dao_voting, user.wallet.address(), 1).await,
             Votes {
                 yes_votes: 2,
                 no_votes: 0,
@@ -136,15 +121,15 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_invalid_proposal_id() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_invalid_proposal_id() {
         let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
         vote(&user.dao_voting, true, 0, 10).await;
     }
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_zero_vote_amount() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_zero_vote_amount() {
         let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
@@ -154,8 +139,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_expired_proposal() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_expired_proposal() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
@@ -179,8 +164,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_vote_amount_greater_than_balance() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_vote_amount_greater_than_balance() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 

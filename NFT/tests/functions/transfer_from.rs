@@ -16,11 +16,11 @@ mod success {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
-        let to = Identity::Address(owner2.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
+        let to = Identity::Address(owner2.wallet.address().into());
 
         mint(1, &owner1.contract, &minter).await;
 
@@ -42,11 +42,11 @@ mod success {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
-        let to = Identity::Address(owner2.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
+        let to = Identity::Address(owner2.wallet.address().into());
         // let approved_identity = Option::Some(to.clone());
         let approved_identity = to.clone();
 
@@ -71,11 +71,11 @@ mod success {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
-        let operator = Identity::Address(owner2.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
+        let operator = Identity::Address(owner2.wallet.address().into());
 
         mint(1, &owner1.contract, &minter).await;
 
@@ -102,11 +102,11 @@ mod success {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 4).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
-        let to = Identity::Address(owner2.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
+        let to = Identity::Address(owner2.wallet.address().into());
 
         mint(4, &owner1.contract, &minter).await;
 
@@ -151,27 +151,27 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_token_does_not_exist() {
+    async fn when_token_does_not_exist() {
         let (_deploy_wallet, owner1, owner2) = setup().await;
 
-        let from = Identity::Address(owner1.wallet.address());
-        let to = Identity::Address(owner2.wallet.address());
+        let from = Identity::Address(owner1.wallet.address().into());
+        let to = Identity::Address(owner2.wallet.address().into());
         transfer_from(&owner1.contract, &from, &to, 0).await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_sender_is_not_owner_or_approved() {
+    async fn when_sender_is_not_owner_or_approved() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
         mint(1, &owner1.contract, &minter).await;
 
-        let to = Identity::Address(owner2.wallet.address());
+        let to = Identity::Address(owner2.wallet.address().into());
         transfer_from(&owner2.contract, &minter, &to, 0).await;
     }
 }

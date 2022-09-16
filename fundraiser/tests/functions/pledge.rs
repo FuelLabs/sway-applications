@@ -3,10 +3,9 @@ use crate::utils::{
         asset_info_by_count, campaign_info, cancel_campaign, create_campaign, pledge, pledge_count,
         pledged,
     },
-    test_helpers::{mint, setup},
-    Identity,
+    test_helpers::{identity, mint, setup},
 };
-use fuels::{signers::Signer, tx::AssetId};
+use fuels::tx::AssetId;
 
 mod success {
 
@@ -41,7 +40,7 @@ mod success {
         );
         assert_eq!(
             0,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
         assert_eq!(
             defaults.target_amount,
@@ -71,10 +70,10 @@ mod success {
         );
         assert_eq!(
             1,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
-        let info = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
+        let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
             .value;
 
@@ -111,7 +110,7 @@ mod success {
         );
         assert_eq!(
             0,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
         assert_eq!(
@@ -142,10 +141,10 @@ mod success {
         );
         assert_eq!(
             1,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
-        let info = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
+        let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
             .value;
 
@@ -172,10 +171,10 @@ mod success {
         );
         assert_eq!(
             1,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
-        let info = pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
+        let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
             .value;
 
@@ -237,7 +236,7 @@ mod success {
         );
         assert_eq!(
             0,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
 
         assert_eq!(
@@ -292,32 +291,32 @@ mod success {
         );
         assert_eq!(
             2,
-            pledge_count(&user.contract, Identity::Address(user.wallet.address())).await
+            pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
         assert_eq!(
             1,
-            pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
+            pledged(&user.contract, 1, identity(user.wallet.address()).await)
                 .await
                 .value
                 .id
         );
         assert_eq!(
             2,
-            pledged(&user.contract, 2, Identity::Address(user.wallet.address()))
+            pledged(&user.contract, 2, identity(user.wallet.address()).await)
                 .await
                 .value
                 .id
         );
         assert_eq!(
             defaults.target_amount,
-            pledged(&user.contract, 1, Identity::Address(user.wallet.address()))
+            pledged(&user.contract, 1, identity(user.wallet.address()).await)
                 .await
                 .value
                 .amount
         );
         assert_eq!(
             defaults.target_amount,
-            pledged(&user.contract, 2, Identity::Address(user.wallet.address()))
+            pledged(&user.contract, 2, identity(user.wallet.address()).await)
                 .await
                 .value
                 .amount
@@ -377,28 +376,34 @@ mod revert {
         pledge(&user.contract, 2, &asset, defaults.target_amount).await;
     }
 
-    // #[tokio::test]
-    // #[should_panic(expected = "Revert(42)")]
-    // async fn when_pledging_after_deadline() {
-    //     let (author, user, asset, _, defaults) = setup().await;
-    //     let deadline = 5;
+    #[tokio::test]
+    #[ignore]
+    #[should_panic(expected = "Revert(42)")]
+    async fn when_pledging_after_deadline() {
+        let (author, user, asset, _, defaults) = setup().await;
+        let deadline = 5;
 
-    //     mint(&asset.contract, defaults.target_amount, user.wallet.address()).await;
-    //     create_campaign(
-    //         &author.contract,
-    //         &defaults.asset_id,
-    //         &defaults.beneficiary,
-    //         deadline,
-    //         defaults.target_amount,
-    //     )
-    //     .await;
-    //     pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+        mint(
+            &asset.contract,
+            defaults.target_amount,
+            user.wallet.address(),
+        )
+        .await;
+        create_campaign(
+            &author.contract,
+            &defaults.asset_id,
+            &defaults.beneficiary,
+            deadline,
+            defaults.target_amount,
+        )
+        .await;
+        pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
-    //     // TODO: shift block height to be after deadline
+        // TODO: shift block height to be after deadline
 
-    //     // Reverts
-    //     pledge(&user.contract, 1, &asset, 0).await;
-    // }
+        // Reverts
+        pledge(&user.contract, 1, &asset, 0).await;
+    }
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
