@@ -68,7 +68,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_token_does_not_exist() {
+    async fn when_token_does_not_exist() {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
         meta_data(&owner1.contract, 1).await;

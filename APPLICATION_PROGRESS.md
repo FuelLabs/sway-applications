@@ -36,16 +36,26 @@ The information in this section is split into subsections in order to conceptual
 <details>
 <summary>Airdrop</summary>
 
-<h3>Contracts</h3>
+<h3>Contracts ✅</h3>
+
+- Feature complete for UI integration
+  - Needs vec support in SDK so that array can be changed to vec
 
 <h3>User Interface</h3>
 
 <h3>Tests</h3>
 
-- <h3>Rust</h3>
+- <h3>Rust ❌</h3>
+
+  - Tests currently integrate manual hashing due to compatiability with [Fuel-Merkle](https://github.com/FuelLabs/fuel-merkle).
+
 - <h3>Typescript</h3>
 
-<h3>Documentation</h3>
+<h3>Documentation ✅</h3>
+
+- Readme ✅
+  - Once UI is added it needs to be documented
+- Specification ✅
 
 </details>
 

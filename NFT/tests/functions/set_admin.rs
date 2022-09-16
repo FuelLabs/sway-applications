@@ -36,7 +36,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_admin_not_set() {
+    async fn when_admin_not_set() {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
         // let admin = Option::Some(Identity::Address(owner1.wallet.address().into()));
@@ -46,7 +46,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_not_admin_identity() {
+    async fn when_not_admin_identity() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         // let admin = Option::Some(Identity::Address(owner1.wallet.address().into()));
