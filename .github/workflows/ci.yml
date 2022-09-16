@@ -13,7 +13,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CARGO_TERM_COLOR: always
   REGISTRY: ghcr.io
   RUST_VERSION: 1.63.0
   FORC_VERSION: 0.24.1
