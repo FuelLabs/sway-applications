@@ -8,7 +8,7 @@ mod success {
 
     #[tokio::test]
     async fn constructs() {
-        let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
+        let (_gov_token, gov_token_id, deployer, _user, _asset_amount, _) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
         assert_eq!(
             governance_token_id(&deployer.dao_voting).await,
@@ -23,7 +23,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_reinitialized() {
-        let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
+        let (_gov_token, gov_token_id, deployer, _user, _asset_amount, _) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
         constructor(&deployer.dao_voting, gov_token_id).await;
     }

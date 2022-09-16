@@ -10,7 +10,7 @@ mod sucess {
 
     #[tokio::test]
     pub async fn user_can_check_user_votes() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (_gov_token, gov_token_id, deployer, user, asset_amount, governor_id) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         mint(
@@ -26,8 +26,8 @@ mod sucess {
             Some(100_000),
         );
         deposit(&user.dao_voting, call_params).await;
-        let proposal_transaction = proposal_transaction(gov_token_id);
-        create_proposal(&user.dao_voting, 10, 10, proposal_transaction).await;
+        let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
+        create_proposal(&user.dao_voting, 10, 10, governor_id, proposal_transaction).await;
         assert_eq!(
             user_votes(&user.dao_voting, user.wallet.address(), 0).await,
             Votes {
@@ -52,7 +52,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     pub async fn on_invalid_proposal_id() {
-        let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
+        let (_gov_token, _gov_token_id, _deployer, user, _asset_amount, _) = setup().await;
         user_votes(&user.dao_voting, user.wallet.address(), 0).await;
     }
 }

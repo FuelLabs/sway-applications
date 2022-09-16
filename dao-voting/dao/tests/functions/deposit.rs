@@ -13,7 +13,7 @@ mod success {
 
     #[tokio::test]
     async fn user_can_deposit() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (_gov_token, gov_token_id, deployer, user, asset_amount, _) = setup().await;
 
         mint(
             &deployer.gov_token.as_ref().unwrap(),
@@ -56,7 +56,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_not_initialized() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (_gov_token, gov_token_id, deployer, user, asset_amount, _) = setup().await;
 
         mint(
             &deployer.gov_token.as_ref().unwrap(),
@@ -76,7 +76,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn with_incorrect_asset() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (_gov_token, gov_token_id, deployer, user, asset_amount, _) = setup().await;
 
         let another_asset_id = Contract::deploy_with_parameters(
             "./tests/artifacts/gov_token/out/debug/gov_token.bin",
@@ -106,7 +106,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn on_zero_deposit() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (_gov_token, gov_token_id, deployer, user, asset_amount, _) = setup().await;
 
         mint(
             &deployer.gov_token.as_ref().unwrap(),

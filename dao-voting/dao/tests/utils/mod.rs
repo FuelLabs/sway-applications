@@ -24,10 +24,11 @@ pub mod abi_calls {
         contract: &DaoVoting,
         acceptance_percentage: u64,
         deadline: u64,
+        id: ContractId,
         proposal: Proposal,
     ) -> CallResponse<()> {
         contract
-            .create_proposal(acceptance_percentage, deadline, proposal)
+            .create_proposal(acceptance_percentage, deadline, id, proposal)
             .call()
             .await
             .unwrap()
@@ -123,24 +124,29 @@ pub mod test_helpers {
             .value
     }
 
-    pub fn proposal_transaction(asset_id: ContractId) -> Proposal {
-        let call_data = CallData {
-            id: asset_id,
-            function_selector: 0,
-            arguments: 0,
-        };
+    pub fn proposal_transaction(asset_id: ContractId, var1: u64, var2: bool) -> Proposal {
+        // let call_data = CallData {
+        //     id: asset_id,
+        //     function_selector: 0,
+        //     arguments: 0,
+        // };
+
+        // let proposal = Proposal {
+        //     call_data: call_data,
+        //     amount: 0,
+        //     asset: asset_id,
+        //     gas: 20000,
+        // };
 
         let proposal = Proposal {
-            call_data: call_data,
-            amount: 0,
-            asset: asset_id,
-            gas: 20000,
+            var_1: var1,
+            var_2: var2,
         };
 
         proposal
     }
 
-    pub async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {
+    pub async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64, ContractId) {
         let num_wallets = 2;
         let coins_per_wallet = 1;
         let amount_per_coin = 1_000_000;
@@ -179,6 +185,17 @@ pub mod test_helpers {
         let gov_token =
             GovTokenBuilder::new(gov_token_id.to_string(), deployer_wallet.clone()).build();
 
+        let governor_id = Contract::deploy(
+            "../governor_contract/out/debug/governor_contract.bin",
+            &deployer_wallet,
+            TxParameters::default(),
+            StorageConfiguration::with_storage_path(Some(
+                "../governor_contract/out/debug/governor_contract-storage_slots.json".to_string(),
+            )),
+        )
+        .await
+        .unwrap();
+
         let deployer = Metadata {
             dao_voting: DaoVotingBuilder::new(dao_voting_id.to_string(), deployer_wallet.clone())
                 .build(),
@@ -197,6 +214,6 @@ pub mod test_helpers {
 
         let asset_amount: u64 = 10;
 
-        (gov_token, gov_token_id.into(), deployer, user, asset_amount)
+        (gov_token, gov_token_id.into(), deployer, user, asset_amount, governor_id.into())
     }
 }

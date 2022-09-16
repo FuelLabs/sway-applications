@@ -9,7 +9,7 @@ mod success {
 
     #[tokio::test]
     pub async fn user_can_check_user_balance() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (_gov_token, gov_token_id, deployer, user, asset_amount, _) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         mint(

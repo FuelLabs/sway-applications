@@ -9,7 +9,7 @@ mod success {
 
     #[tokio::test]
     async fn user_can_withdraw() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (_gov_token, gov_token_id, deployer, user, asset_amount, _) = setup().await;
 
         mint(
             &deployer.gov_token.as_ref().unwrap(),
@@ -51,7 +51,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn on_withdraw_zero() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (_gov_token, gov_token_id, deployer, user, asset_amount, _) = setup().await;
 
         mint(
             &deployer.gov_token.as_ref().unwrap(),
@@ -74,7 +74,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn on_not_enough_assets() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (_gov_token, gov_token_id, deployer, user, asset_amount, _) = setup().await;
 
         mint(
             &deployer.gov_token.as_ref().unwrap(),
