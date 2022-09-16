@@ -50,15 +50,19 @@ sway-applications/
 
 ### Projects
 
+- [Airdrop](./airdrop/) is a token distribution program where users are able to claim tokens given a valid merkle proof.
 - [Decentralized Autonomous Organization (DAO)](./dao-voting) is an organization where users get to vote on governance proposals using governance tokens
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
 - [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
+- [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
+
+To see an overview of the progress, and plans, for applications take a look at [APPLICATION_PROGRESS.md](./APPLICATION_PROGRESS.md).
 
 ## Running a project
 
-If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/latest/introduction/installation.html) steps required to use our tools.
+If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/) steps required to use our tools.
 
 Any instructions related to running a specific project should be found within the README.md of that project.
 

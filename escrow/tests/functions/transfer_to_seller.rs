@@ -2,7 +2,6 @@ use crate::utils::{
     abi_calls::{create_escrow, deposit, propose_arbiter, transfer_to_seller},
     test_helpers::{asset_amount, create_arbiter, create_asset, mint, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -20,15 +19,15 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -74,15 +73,15 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -129,15 +128,15 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
 
@@ -203,7 +202,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_escrow_is_not_pending() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -215,15 +214,15 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -249,7 +248,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_buyer_has_not_deposited() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -261,15 +260,15 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -287,7 +286,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_caller_is_not_buyer() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -299,15 +298,15 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 

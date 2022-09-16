@@ -1,0 +1,17 @@
+[project]
+name = "airdrop-distributor"
+version = "0.0.0"
+authors = ["Fuel Labs <contact@fuel.sh>"]
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+fuel-merkle = { version = "0.3" }
+fuels = { version = "0.22", features = ["fuel-core-lib"] }
+sha2 = { version = "0.10" }
+tokio = { version = "1.12", features = ["rt", "macros"] }
+
+[[test]]
+harness = true
+name = "integration_tests"
+path = "tests/harness.rs"

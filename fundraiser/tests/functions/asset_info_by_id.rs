@@ -2,7 +2,6 @@ use crate::utils::{
     abi_calls::{asset_info_by_id, create_campaign, pledge},
     test_helpers::{mint, setup},
 };
-use fuels::signers::Signer;
 
 mod success {
 

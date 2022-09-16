@@ -1,16 +1,19 @@
 contract;
 
-dep contract_abi;
+dep interface;
 dep data_structures;
 dep errors;
 dep events;
 dep utils;
 
+use interface::Fundraiser;
+use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
+use errors::{CampaignError, CreationError, UserError};
+use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
 use std::{
     block::height,
-    chain::auth::{AuthError, msg_sender},
-    constants::BASE_ASSET_ID,
-    context::{call_frames::msg_asset_id, msg_amount, this_balance},
+    chain::auth::msg_sender,
+    context::{call_frames::msg_asset_id, msg_amount},
     contract_id::ContractId,
     identity::Identity,
     logging::log,
@@ -20,10 +23,6 @@ use std::{
     token::transfer,
 };
 
-use contract_abi::Fundraiser;
-use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
-use errors::{CampaignError, CreationError, UserError};
-use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
 use utils::validate_id;
 
 storage {
@@ -70,23 +69,97 @@ storage {
 }
 
 impl Fundraiser for Contract {
-    /// Creates a data structure representing a campaign that users can pledge to
-    ///
-    /// Instead of having a contract per campaign we create an internal representation for the data
-    /// and manage it via mappings.
-    ///
-    /// # Arguments
-    ///
-    /// * `asset` - A coin that the campaign accepts as a pledge
-    /// * `beneficiary` - The recipient to whom the pledge will be sent to upon a successful campaign
-    /// * `deadline` - Block height used to dictate the end time of a campaign
-    /// * `target_amount` - The amount of `asset` required to deem the campaign a success
-    ///
-    /// # Reverts
-    ///
-    /// * When `asset` is the BASE_ASSET
-    /// * When the `deadline` is not ahead of the current block height
-    /// * When the `target_amount` is 0
+    #[storage(read)]fn asset_count() -> u64 {
+        storage.asset_count
+    }
+
+    #[storage(read)]fn asset_info_by_id(asset: ContractId) -> AssetInfo {
+        storage.asset_info.get(asset)
+    }
+
+    #[storage(read)]fn asset_info_by_count(index: u64) -> AssetInfo {
+        storage.asset_info.get(storage.asset_index.get(index))
+    }
+
+    #[storage(read)]fn campaign(id: u64, user: Identity) -> Campaign {
+        // Validate the ID to ensure that the user has created the campaign
+        validate_id(id, storage.user_campaign_count.get(user));
+        storage.campaign_history.get((user, id))
+    }
+
+    #[storage(read)]fn campaign_info(id: u64) -> CampaignInfo {
+        // User cannot interact with a non-existent campaign
+        validate_id(id, storage.total_campaigns);
+        storage.campaign_info.get(id)
+    }
+
+    #[storage(read, write)]fn cancel_campaign(id: u64) {
+        // User cannot interact with a non-existent campaign
+        validate_id(id, storage.total_campaigns);
+
+        // Retrieve the campaign in order to check its data / update it
+        let mut campaign_info = storage.campaign_info.get(id);
+
+        // Only the creator (author) of the campaign can cancel it
+        require(campaign_info.author == msg_sender().unwrap(), UserError::UnauthorizedUser);
+
+        // The campaign can only be cancelled before it has reached its deadline (ended)
+        require(height() < campaign_info.deadline, CampaignError::CampaignEnded);
+
+        // User cannot cancel a campaign that has already been cancelled
+        // Given the logic below this is unnecessary aside from ignoring event spam
+        require(!campaign_info.cancelled, CampaignError::CampaignHasBeenCancelled);
+
+        // Mark the campaign as cancelled
+        campaign_info.cancelled = true;
+
+        // Overwrite the previous campaign (which has not been cancelled) with the updated version
+        storage.campaign_info.insert(id, campaign_info);
+
+        // We have updated the state of a campaign therefore we must log it
+        log(CancelledCampaignEvent {
+            id
+        });
+    }
+
+    #[storage(read, write)]fn claim_pledges(id: u64) {
+        // User cannot interact with a non-existent campaign
+        validate_id(id, storage.total_campaigns);
+
+        // Retrieve the campaign in order to check its data / update it
+        let mut campaign_info = storage.campaign_info.get(id);
+
+        // Only the creator (author) of the campaign can initiate the claiming process
+        require(campaign_info.author == msg_sender().unwrap(), UserError::UnauthorizedUser);
+
+        // The author should only have the ability to claim after the deadline has been reached
+        // (campaign has naturally ended i.e. has not been cancelled)
+        require(campaign_info.deadline <= height(), CampaignError::DeadlineNotReached);
+
+        // The author can only claim the pledges once the target amount has been reached otherwise
+        // users should be able to withdraw
+        require(campaign_info.target_amount <= campaign_info.total_pledge, CampaignError::TargetNotReached);
+
+        // The author can only claim once to prevent the entire contract from being drained
+        require(!campaign_info.claimed, UserError::AlreadyClaimed);
+
+        // The author cannot claim after they have cancelled the campaign regardless of any other
+        // checks
+        require(!campaign_info.cancelled, CampaignError::CampaignHasBeenCancelled);
+
+        // Mark the campaign as claimed and overwrite the previous state with the updated version
+        campaign_info.claimed = true;
+        storage.campaign_info.insert(id, campaign_info);
+
+        // Transfer the total pledged to this campaign to the beneficiary
+        transfer(campaign_info.total_pledge, campaign_info.asset, campaign_info.beneficiary);
+
+        // We have updated the state of a campaign therefore we must log it
+        log(ClaimedEvent {
+            id
+        });
+    }
+
     #[storage(read, write)]fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64) {
         // Users cannot interact with a campaign that has already ended (is in the past)
         require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
@@ -141,115 +214,6 @@ impl Fundraiser for Contract {
         });
     }
 
-    /// Marks a campaign as cancelled preventing further pledges or a claim to be made
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
-    ///
-    /// # Reverts
-    ///
-    /// * When the `id` is either 0 or greater than the total number of campaigns created
-    /// * When the user is not the author of the campaign
-    /// * When the deadline has been surpassed
-    /// * When the campaign has already been cancelled
-    #[storage(read, write)]fn cancel_campaign(id: u64) {
-        // User cannot interact with a non-existent campaign
-        validate_id(id, storage.total_campaigns);
-
-        // Retrieve the campaign in order to check its data / update it
-        let mut campaign_info = storage.campaign_info.get(id);
-
-        // Only the creator (author) of the campaign can cancel it
-        require(campaign_info.author == msg_sender().unwrap(), UserError::UnauthorizedUser);
-
-        // The campaign can only be cancelled before it has reached its deadline (ended)
-        require(height() < campaign_info.deadline, CampaignError::CampaignEnded);
-
-        // User cannot a campaign that has already been cancelled
-        // Given the logic below this is unnecessary aside from ignoring event spam
-        require(!campaign_info.cancelled, CampaignError::CampaignHasBeenCancelled);
-
-        // Mark the campaign as cancelled
-        campaign_info.cancelled = true;
-
-        // Overwrite the previous campaign (which has not been cancelled) with the updated version
-        storage.campaign_info.insert(id, campaign_info);
-
-        // We have updated the state of a campaign therefore we must log it
-        log(CancelledCampaignEvent {
-            id
-        });
-    }
-
-    /// Transfers the total pledge to the beneficiary
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
-    ///
-    /// # Reverts
-    ///
-    /// * When the `id` is either 0 or greater than the total number of campaigns created
-    /// * When the user is not the author of the campaign
-    /// * When the deadline has not been reached
-    /// * When the total pledge has not reached the minimum `target_amount`
-    /// * When the campaign has already been claimed
-    /// * When the campaign has already been cancelled
-    #[storage(read, write)]fn claim_pledges(id: u64) {
-        // User cannot interact with a non-existent campaign
-        validate_id(id, storage.total_campaigns);
-
-        // Retrieve the campaign in order to check its data / update it
-        let mut campaign_info = storage.campaign_info.get(id);
-
-        // Only the creator (author) of the campaign can initiate the claiming process
-        require(campaign_info.author == msg_sender().unwrap(), UserError::UnauthorizedUser);
-
-        // The author should only have the ability to claim after the deadline has been reached
-        // (campaign has naturally ended i.e. has not been cancelled)
-        require(campaign_info.deadline <= height(), CampaignError::DeadlineNotReached);
-
-        // The author can only claim the pledges once the target amount has been reached otherwise
-        // users should be able to withdraw
-        require(campaign_info.target_amount <= campaign_info.total_pledge, CampaignError::TargetNotReached);
-
-        // The author can only claim once to prevent the entire contract from being drained
-        require(!campaign_info.claimed, UserError::AlreadyClaimed);
-
-        // The author cannot claim after they have cancelled the campaign regardless of any other
-        // checks
-        require(!campaign_info.cancelled, CampaignError::CampaignHasBeenCancelled);
-
-        // Mark the campaign as claimed and overwrite the previous state with the updated version
-        campaign_info.claimed = true;
-        storage.campaign_info.insert(id, campaign_info);
-
-        // Transfer the total pledged to this campaign to the beneficiary
-        transfer(campaign_info.total_pledge, campaign_info.asset, campaign_info.beneficiary);
-
-        // We have updated the state of a campaign therefore we must log it
-        log(ClaimedEvent {
-            id
-        });
-    }
-
-    /// Allows a user to pledge any amount of the campaign asset towards the campaign goal
-    ///
-    /// In order to reach the campaign's target amount users must pledge some amount of asset towards
-    /// that campaign.
-    /// This information is recorded for the campaign and for the user so that they can unpledge.
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
-    ///
-    /// # Reverts
-    ///
-    /// * When the `id` is either 0 or greater than the total number of campaigns created
-    /// * When the user attempts to pledge when the deadline has been reached
-    /// * When the user pledges a different asset to the one specified in the campaign
-    /// * When the user pledges after the campaign has been cancelled
     #[storage(read, write)]fn pledge(id: u64) {
         // User cannot interact with a non-existent campaign
         validate_id(id, storage.total_campaigns);
@@ -326,22 +290,20 @@ impl Fundraiser for Contract {
         });
     }
 
-    /// Allows a user to unpledge an amount of the campaign asset that they have pledged
-    ///
-    /// A user may have changed their mind about the amount of an asset that they have pledged
-    /// therefore they may wish to unpledge some amount of that pledge.
-    /// If they attempt to unpledge more than they have pledged then their total pledge will be returned
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
-    /// * `amount` - The amount of asset that the user wishes to unpledge
-    ///
-    /// # Reverts
-    ///
-    /// * When the `id` is either 0 or greater than the total number of campaigns created
-    /// * When the user attempts to unpledge after the deadline and `target_amount` have been reached
-    /// * When the user has not pledged to the campaign represented by the `id`
+    #[storage(read)]fn pledged(pledge_history_index: u64, user: Identity) -> Pledge {
+        // Validate the ID to ensure that the user has pledged
+        validate_id(pledge_history_index, storage.pledge_count.get(user));
+        storage.pledge_history.get((user, pledge_history_index))
+    }
+
+    #[storage(read)]fn pledge_count(user: Identity) -> u64 {
+        storage.pledge_count.get(user)
+    }
+
+    #[storage(read)]fn total_campaigns() -> u64 {
+        storage.total_campaigns
+    }
+
     #[storage(read, write)]fn unpledge(id: u64, amount: u64) {
         // User cannot interact with a non-existent campaign
         validate_id(id, storage.total_campaigns);
@@ -402,95 +364,7 @@ impl Fundraiser for Contract {
         });
     }
 
-    /// Returns the total number of campaigns that have been created by all users
-    #[storage(read)]fn total_campaigns() -> u64 {
-        storage.total_campaigns
-    }
-
-    /// Returns information about the specified campaign
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
-    ///
-    /// # Reverts
-    ///
-    /// * When the `id` is either 0 or greater than the total number of campaigns created
-    #[storage(read)]fn campaign_info(id: u64) -> CampaignInfo {
-        // User cannot interact with a non-existent campaign
-        validate_id(id, storage.total_campaigns);
-        storage.campaign_info.get(id)
-    }
-
-    /// Returns the number of campaigns that the user has created
     #[storage(read)]fn user_campaign_count(user: Identity) -> u64 {
         storage.user_campaign_count.get(user)
-    }
-
-    /// Returns information about the specified campaign for the campaign author
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - Unique identifier which is a number starting from 1...storage.user_campaign_count
-    ///
-    /// # Reverts
-    ///
-    /// * When the `id` is either 0 or greater than the total number of campaigns created by the author
-    #[storage(read)]fn campaign(id: u64, user: Identity) -> Campaign {
-        // Validate the ID to ensure that the user has created the campaign
-        validate_id(id, storage.user_campaign_count.get(user));
-        storage.campaign_history.get((user, id))
-    }
-
-    /// Returns the number of campaigns that the user has pledged to
-    ///
-    /// # Reverts
-    ///
-    /// * When an AuthError is generated
-    #[storage(read)]fn pledge_count(user: Identity) -> u64 {
-        storage.pledge_count.get(user)
-    }
-
-    /// Returns information about the specified pledge for the user
-    ///
-    /// # Arguments
-    ///
-    /// * `pledge_history_index` - Unique identifier which is a number starting from 1...storage.pledge_count
-    ///
-    /// # Reverts
-    ///
-    /// * When the `pledge_history_index` is either 0 or greater than the total number of pledges made by the user
-    #[storage(read)]fn pledged(pledge_history_index: u64, user: Identity) -> Pledge {
-        // Validate the ID to ensure that the user has pledged
-        validate_id(pledge_history_index, storage.pledge_count.get(user));
-        storage.pledge_history.get((user, pledge_history_index))
-    }
-
-    /// Returns the number of unique assets that have added across all campaigns
-    #[storage(read)]fn asset_count() -> u64 {
-        storage.asset_count
-    }
-
-    /// Returns information about the specificed asset, specifically if it has been added and the
-    /// pledged amount
-    ///
-    /// # Arguments
-    ///
-    /// * `asset` - Uniquie identifier that identifies the asset
-    #[storage(read)]fn asset_info_by_id(asset: ContractId) -> AssetInfo {
-        storage.asset_info.get(asset)
-    }
-
-    /// Returns information about the specificed asset, specifically if it has been added and the
-    /// pledged amount
-    ///
-    /// The user interface will not know all possible assets that the contract contains therefore
-    /// this helper method allows the interface to iterate over the asset_count to discover all assets
-    ///
-    /// # Arguments
-    ///
-    /// * `index` - Number from 1...asset_count
-    #[storage(read)]fn asset_info_by_count(index: u64) -> AssetInfo {
-        storage.asset_info.get(storage.asset_index.get(index))
     }
 }

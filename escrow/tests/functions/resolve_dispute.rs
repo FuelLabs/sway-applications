@@ -1,9 +1,7 @@
 use crate::utils::{
     abi_calls::{create_escrow, deposit, dispute, propose_arbiter, resolve_dispute},
     test_helpers::{asset_amount, create_arbiter, create_asset, mint, setup},
-    Identity,
 };
-use fuels::signers::Signer;
 
 mod success {
 
@@ -21,15 +19,15 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -60,7 +58,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
 
@@ -87,15 +85,15 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -125,7 +123,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount - 1,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
 
@@ -152,15 +150,15 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -190,7 +188,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(seller.wallet.address()),
+            seller.wallet.address(),
         )
         .await;
 
@@ -217,15 +215,15 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -255,7 +253,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount - 1,
-            Identity::Address(seller.wallet.address()),
+            seller.wallet.address(),
         )
         .await;
 
@@ -282,15 +280,15 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -321,7 +319,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
 
@@ -351,15 +349,15 @@ mod success {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount * 2,
+            &defaults.asset,
         )
         .await;
 
@@ -408,7 +406,7 @@ mod success {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
 
@@ -427,7 +425,7 @@ mod success {
             &arbiter.contract,
             1,
             arbiter_obj.fee_amount,
-            Identity::Address(seller.wallet.address()),
+            seller.wallet.address(),
         )
         .await;
 
@@ -451,7 +449,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_escrow_is_not_pending() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -463,15 +461,15 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -499,20 +497,20 @@ mod revert {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
         resolve_dispute(
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_not_disputed() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -524,15 +522,15 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -557,13 +555,13 @@ mod revert {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_caller_is_not_arbiter() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -575,15 +573,15 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -609,13 +607,13 @@ mod revert {
             &buyer.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_user_is_not_buyer_or_seller() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -627,15 +625,15 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -661,14 +659,14 @@ mod revert {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
-            Identity::Address(arbiter.wallet.address()),
+            arbiter.wallet.address(),
         )
         .await;
     }
 
     #[tokio::test]
     #[ignore]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_buyer_has_not_deposited() {
         // Note: Buyer can only dispute after they deposit and we cannot get past the require
         //       checks in resolve_dispute unless there is a dispute therefore this cannot
@@ -676,7 +674,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_payment_amount_is_too_large() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
@@ -688,15 +686,15 @@ mod revert {
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
-            &defaults.asset,
             seller.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
         mint(
-            &defaults.asset,
             buyer.wallet.address(),
             defaults.asset_amount,
+            &defaults.asset,
         )
         .await;
 
@@ -722,7 +720,7 @@ mod revert {
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount + 1,
-            Identity::Address(buyer.wallet.address()),
+            buyer.wallet.address(),
         )
         .await;
     }

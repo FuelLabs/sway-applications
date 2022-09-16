@@ -1,9 +1,8 @@
 use crate::utils::{
     abi_calls::{campaign_info, cancel_campaign, claim_pledges, create_campaign, pledge},
-    test_helpers::{mint, setup},
-    Identity,
+    test_helpers::{identity, mint, setup},
 };
-use fuels::{signers::Signer, tx::AssetId};
+use fuels::tx::AssetId;
 
 mod success {
 
@@ -12,8 +11,8 @@ mod success {
     #[tokio::test]
     async fn claims() {
         let (author, user, asset, _, defaults) = setup().await;
-        let beneficiary = Identity::Address(author.wallet.address());
-        let deadline = 6;
+        let beneficiary = identity(author.wallet.address()).await;
+        let deadline = 7;
 
         mint(
             &asset.contract,
@@ -113,28 +112,34 @@ mod revert {
         claim_pledges(&user.contract, 1).await;
     }
 
-    // #[tokio::test]
-    // #[should_panic(expected = "Revert(42)")]
-    // async fn when_claiming_before_deadline() {
-    //     let (author, user, asset, _, defaults) = setup().await;
-    //     let deadline = 5;
+    #[tokio::test]
+    #[ignore]
+    #[should_panic(expected = "Revert(42)")]
+    async fn when_claiming_before_deadline() {
+        let (author, user, asset, _, defaults) = setup().await;
+        let deadline = 5;
 
-    //     mint(&asset.contract, defaults.target_amount, user.wallet.address()).await;
-    //     create_campaign(
-    //         &author.contract,
-    //         &defaults.asset_id,
-    //         &defaults.beneficiary,
-    //         deadline,
-    //         defaults.target_amount,
-    //     )
-    //     .await;
-    //     pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+        mint(
+            &asset.contract,
+            defaults.target_amount,
+            user.wallet.address(),
+        )
+        .await;
+        create_campaign(
+            &author.contract,
+            &defaults.asset_id,
+            &defaults.beneficiary,
+            deadline,
+            defaults.target_amount,
+        )
+        .await;
+        pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
-    //     // TODO: shift block height to be before deadline
+        // TODO: shift block height to be before deadline
 
-    //     // Reverts
-    //     claim_pledges(&author.contract, 1).await;
-    // }
+        // Reverts
+        claim_pledges(&author.contract, 1).await;
+    }
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]

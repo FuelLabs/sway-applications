@@ -1,9 +1,8 @@
 use crate::utils::{
     abi_calls::{balance, constructor, deposit, user_balance, withdraw},
     test_helpers::{mint, setup},
-    Identity,
 };
-use fuels::{prelude::CallParameters, signers::Signer, tx::AssetId};
+use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
@@ -31,14 +30,14 @@ mod success {
         assert_eq!(balance(&user.dao_voting).await, asset_amount);
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             asset_amount
         );
 
         withdraw(&user.dao_voting, asset_amount).await;
 
         assert_eq!(
-            user_balance(&user.dao_voting, Identity::Address(user.wallet.address())).await,
+            user_balance(&user.dao_voting, user.wallet.address()).await,
             0
         );
 
@@ -50,8 +49,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_withdraw_zero() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_withdraw_zero() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
         mint(
@@ -73,8 +72,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_not_enough_assets() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_not_enough_assets() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
         mint(

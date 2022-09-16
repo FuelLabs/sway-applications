@@ -14,10 +14,10 @@ mod success {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
-        let minter = Identity::Address(owner1.wallet.address());
+        let minter = Identity::Address(owner1.wallet.address().into());
         mint(1, &owner1.contract, &minter).await;
 
         // assert_eq!(owner_of(&owner1.contract, 0).await, Option::Some(minter.clone()));
@@ -29,13 +29,13 @@ mod success {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 2).await;
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 2).await;
 
-        let minter1 = Identity::Address(owner1.wallet.address());
+        let minter1 = Identity::Address(owner1.wallet.address().into());
         mint(1, &owner1.contract, &minter1).await;
 
-        let minter2 = Identity::Address(owner2.wallet.address());
+        let minter2 = Identity::Address(owner2.wallet.address().into());
         mint(1, &owner1.contract, &minter2).await;
 
         // assert_eq!(owner_of(&owner1.contract, 0).await, Option::Some(minter1.clone()));
@@ -64,7 +64,7 @@ mod reverts {
     async fn gets_owner_of_none() {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
-        let admin = Identity::Address(owner1.wallet.address());
+        let admin = Identity::Address(owner1.wallet.address().into());
         constructor(true, &deploy_wallet.contract, &admin, 1).await;
 
         owner_of(&owner1.contract, 0).await;

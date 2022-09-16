@@ -15,7 +15,7 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
   REGISTRY: ghcr.io
-  RUST_VERSION: 1.61.0
+  RUST_VERSION: 1.63.0
   PATH_TO_SCRIPTS: .github/scripts
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
 
     strategy:
       matrix:
-        project: ["dao-voting", "escrow", "fundraiser", "multisig-wallet", "NFT", 'staking-rewards']
+        project: ["airdrop/airdrop-distributor", "airdrop/simple-asset", "dao-voting", "escrow", "fundraiser", "multisig-wallet", "NFT", "oracle", "staking-rewards"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -71,7 +71,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.2.0
         with:
           name: my-toolchain
-          components: forc@0.19.2, fuel-core@0.9.8
+          components: forc@0.24.1, fuel-core@0.10.1
 
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
