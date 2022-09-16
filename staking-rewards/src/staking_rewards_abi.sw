@@ -6,19 +6,19 @@ abi StakingRewards {
     #[storage(read)]
     fn balance_of(account: Identity) -> u64;
     #[storage(read)]
-    fn earned(account: Identity, test_timestamp: u64) -> u64;
+    fn earned(account: Identity, ) -> u64;
     #[storage(read, write)]
-    fn exit(test_timestamp: u64);
+    fn exit();
     #[storage(read, write)]
-    fn get_reward(test_timestamp: u64);
+    fn get_reward();
     #[storage(read)]
     fn get_reward_for_duration() -> u64;
     #[storage(read)]
-    fn last_time_reward_applicable(test_timestamp: u64) -> u64;
+    fn last_time_reward_applicable() -> u64;
     #[storage(read)]
     fn last_update_time() -> u64;
     #[storage(read, write)]
-    fn notify_reward_amount(reward: u64, test_timestamp: u64);
+    fn notify_reward_amount(reward: u64);
     #[storage(read)]
     fn owner() -> Identity;
     #[storage(read)]
@@ -26,7 +26,7 @@ abi StakingRewards {
     #[storage(read, write)]
     fn recover_tokens(token_address: ContractId, token_amount: u64);
     #[storage(read)]
-    fn reward_per_token(test_timestamp: u64) -> u64;
+    fn reward_per_token() -> u64;
     #[storage(read)]
     fn reward_per_token_stored() -> u64;
     #[storage(read)]
@@ -42,13 +42,13 @@ abi StakingRewards {
     #[storage(read)]
     fn rewards_token() -> ContractId;
     #[storage(read, write)]
-    fn set_rewards_duration(rewards_duration: u64, test_timestamp: u64);
+    fn set_rewards_duration(rewards_duration: u64);
     #[storage(read, write)]
-    fn stake(test_timestamp: u64);
+    fn stake();
     #[storage(read)]
     fn staking_token() -> ContractId;
     #[storage(read)]
     fn total_supply() -> u64;
     #[storage(read, write)]
-    fn withdraw(amount: u64, test_timestamp: u64);
+    fn withdraw(amount: u64);
 }

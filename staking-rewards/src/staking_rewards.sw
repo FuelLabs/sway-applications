@@ -6,6 +6,7 @@ dep staking_rewards_events;
 
 use std::{
     address::Address,
+    block::timestamp,
     chain::auth::msg_sender,
     constants::ZERO_B256,
     context::{
@@ -58,19 +59,19 @@ impl StakingRewards for Contract {
     }
 
     #[storage(read)]
-    fn earned(account: Identity, test_timestamp: u64) -> u64 {
-        _earned(account, test_timestamp)
+    fn earned(account: Identity) -> u64 {
+        _earned(account)
     }
 
     #[storage(read, write)]
-    fn exit(test_timestamp: u64) {
-        _withdraw(storage.balances.get(msg_sender().unwrap()), test_timestamp);
-        _get_reward(test_timestamp);
+    fn exit() {
+        _withdraw(storage.balances.get(msg_sender().unwrap()));
+        _get_reward();
     }
 
     #[storage(read, write)]
-    fn get_reward(test_timestamp: u64) {
-        _get_reward(test_timestamp);
+    fn get_reward() {
+        _get_reward();
     }
 
     #[storage(read)]
@@ -79,8 +80,8 @@ impl StakingRewards for Contract {
     }
 
     #[storage(read)]
-    fn last_time_reward_applicable(test_timestamp: u64) -> u64 {
-        _last_time_reward_applicable(test_timestamp)
+    fn last_time_reward_applicable() -> u64 {
+        _last_time_reward_applicable()
     }
 
     #[storage(read)]
@@ -89,16 +90,17 @@ impl StakingRewards for Contract {
     }
 
     #[storage(read, write)]
-    fn notify_reward_amount(reward: u64, test_timestamp: u64) {
+    fn notify_reward_amount(reward: u64) {
         let sender = msg_sender().unwrap();
-        _update_reward(sender, test_timestamp);
+        let ts = timestamp();
+        _update_reward(sender);
 
         require(sender == storage.rewards_distribution, "Caller is not RewardsDistribution contract");
 
-        if test_timestamp >= storage.period_finish {
+        if ts >= storage.period_finish {
             storage.reward_rate = reward / storage.rewards_duration;
         } else {
-            let remaining = storage.period_finish - test_timestamp;
+            let remaining = storage.period_finish - ts;
             let leftover = remaining * storage.reward_rate;
             storage.reward_rate = (reward + leftover) / storage.rewards_duration;
         }
@@ -110,8 +112,8 @@ impl StakingRewards for Contract {
         let balance = this_balance(storage.rewards_token);
         require(storage.reward_rate <= balance / storage.rewards_duration, "Provided reward too high");
 
-        storage.last_update_time = test_timestamp;
-        storage.period_finish = test_timestamp + storage.rewards_duration;
+        storage.last_update_time = ts;
+        storage.period_finish = ts + storage.rewards_duration;
         log(RewardAddedEvent {
             reward,
         });
@@ -142,8 +144,8 @@ impl StakingRewards for Contract {
     }
 
     #[storage(read)]
-    fn reward_per_token(test_timestamp: u64) -> u64 {
-        _reward_per_token(test_timestamp)
+    fn reward_per_token() -> u64 {
+        _reward_per_token()
     }
 
     #[storage(read)]
@@ -182,10 +184,10 @@ impl StakingRewards for Contract {
     }
 
     #[storage(read, write)]
-    fn set_rewards_duration(rewards_duration: u64, test_timestamp: u64) {
+    fn set_rewards_duration(rewards_duration: u64) {
         require(msg_sender().unwrap() == storage.owner, "Sender not owner");
 
-        require(test_timestamp > storage.period_finish, "Previous rewards period must be complete before changing the duration for the new period");
+        require(timestamp() > storage.period_finish, "Previous rewards period must be complete before changing the duration for the new period");
         storage.rewards_duration = rewards_duration;
         log(RewardsDurationUpdatedEvent {
             new_duration: rewards_duration,
@@ -193,14 +195,14 @@ impl StakingRewards for Contract {
     }
 
     #[storage(read, write)]
-    fn stake(test_timestamp: u64) {
+    fn stake() {
         let amount = msg_amount();
         require(amount > 0, StakingRewardsError::StakeZero);
 
         require(msg_asset_id() == storage.staking_token, StakingRewardsError::StakeIncorrectToken);
 
         let user = msg_sender().unwrap();
-        _update_reward(user, test_timestamp);
+        _update_reward(user);
 
         storage.total_supply += amount;
         storage.balances.insert(user, storage.balances.get(user) + amount);
@@ -218,26 +220,25 @@ impl StakingRewards for Contract {
     }
 
     #[storage(read, write)]
-    fn withdraw(amount: u64, test_timestamp: u64) {
-        _withdraw(amount, test_timestamp)
+    fn withdraw(amount: u64) {
+        _withdraw(amount)
     }
 }
 
 // Non-abi (internal) functions
 #[storage(read)]
-fn _earned(account: Identity, test_timestamp: u64) -> u64 {
-    storage.balances.get(account) * (_reward_per_token(test_timestamp) - storage.user_reward_per_token_paid.get(account)) / ONE + storage.rewards.get(account)
+fn _earned(account: Identity) -> u64 {
+    storage.balances.get(account) * (_reward_per_token() - storage.user_reward_per_token_paid.get(account)) / ONE + storage.rewards.get(account)
 }
 
 #[storage(read)]
-fn _last_time_reward_applicable(test_timestamp: u64) -> u64 {
-    // TODO (functionality): use block timestamp once implemented
-    let timestamp = test_timestamp;
+fn _last_time_reward_applicable() -> u64 {
+    let ts = timestamp();
     let period_finish = storage.period_finish;
     // TODO (code quality): replace with a generic min function once implemented
-    match timestamp < period_finish {
+    match ts < period_finish {
         true => {
-            timestamp
+            ts
         },
         false => {
             period_finish
@@ -246,19 +247,19 @@ fn _last_time_reward_applicable(test_timestamp: u64) -> u64 {
 }
 
 #[storage(read)]
-fn _reward_per_token(test_timestamp: u64) -> u64 {
+fn _reward_per_token() -> u64 {
     let reward_per_token = storage.reward_per_token_stored;
 
     match storage.total_supply {
         0 => reward_per_token,
-        _ => reward_per_token + ((_last_time_reward_applicable(test_timestamp) - storage.last_update_time) * storage.reward_rate * ONE / storage.total_supply),
+        _ => reward_per_token + ((_last_time_reward_applicable() - storage.last_update_time) * storage.reward_rate * ONE / storage.total_supply),
     }
 }
 
 #[storage(read, write)]
-fn _get_reward(test_timestamp: u64) {
+fn _get_reward() {
     let sender = msg_sender().unwrap();
-    _update_reward(sender, test_timestamp);
+    _update_reward(sender);
 
     let reward = storage.rewards.get(sender);
 
@@ -273,11 +274,11 @@ fn _get_reward(test_timestamp: u64) {
 }
 
 #[storage(read, write)]
-fn _withdraw(amount: u64, test_timestamp: u64) {
+fn _withdraw(amount: u64) {
     require(amount > 0, StakingRewardsError::WithdrawZero);
 
     let sender = msg_sender().unwrap();
-    _update_reward(sender, test_timestamp);
+    _update_reward(sender);
 
     storage.total_supply -= amount;
     storage.balances.insert(sender, storage.balances.get(sender) - amount);
@@ -289,9 +290,9 @@ fn _withdraw(amount: u64, test_timestamp: u64) {
 }
 
 #[storage(read, write)]
-fn _update_reward(account: Identity, test_timestamp: u64) {
-    storage.reward_per_token_stored = _reward_per_token(test_timestamp);
-    storage.last_update_time = _last_time_reward_applicable(test_timestamp);
-    storage.rewards.insert(account, _earned(account, test_timestamp));
+fn _update_reward(account: Identity) {
+    storage.reward_per_token_stored = _reward_per_token();
+    storage.last_update_time = _last_time_reward_applicable();
+    storage.rewards.insert(account, _earned(account));
     storage.user_reward_per_token_paid.insert(account, storage.reward_per_token_stored);
 }
