@@ -1,8 +1,6 @@
 contract;
 
-dep interface;
-
-use interface::Governor;
+use governor_abi::Governor;
 
 storage {
     var1: u64 = 0,

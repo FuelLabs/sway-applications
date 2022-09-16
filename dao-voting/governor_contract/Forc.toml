@@ -5,3 +5,4 @@ license = "Apache-2.0"
 name = "governor_contract"
 
 [dependencies]
+governor_abi = { path = "../governor_abi" }
