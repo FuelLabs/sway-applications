@@ -13,7 +13,14 @@ mod success {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, false);
-        create_proposal(&user.dao_voting, 10, 10, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            10,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
 
         assert_eq!(
             proposal(&user.dao_voting, 0).await,
@@ -36,7 +43,14 @@ mod success {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&user.dao_voting, 10, 10, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            10,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         assert_eq!(
             proposal(&user.dao_voting, 0).await,
             ProposalInfo {
@@ -51,7 +65,14 @@ mod success {
             }
         );
 
-        create_proposal(&user.dao_voting, 20, 20, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            20,
+            20,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         assert_eq!(
             proposal(&user.dao_voting, 1).await,
             ProposalInfo {
@@ -78,7 +99,14 @@ mod revert {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&deployer.dao_voting, 10, 0, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &deployer.dao_voting,
+            10,
+            0,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
     }
 
     #[tokio::test]
@@ -88,7 +116,14 @@ mod revert {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&deployer.dao_voting, 0, 10, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &deployer.dao_voting,
+            0,
+            10,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
     }
 
     #[tokio::test]
@@ -98,6 +133,13 @@ mod revert {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&deployer.dao_voting, 101, 10, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &deployer.dao_voting,
+            101,
+            10,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
     }
 }

@@ -2,7 +2,10 @@ use crate::utils::{
     abi_calls::{constructor, create_proposal, deposit, execute, vote},
     test_helpers::{mint, proposal_transaction, setup},
 };
-use fuels::{prelude::{abigen, CallParameters, Bech32ContractId}, tx::AssetId};
+use fuels::{
+    prelude::{abigen, Bech32ContractId, CallParameters},
+    tx::AssetId,
+};
 
 abigen!(
     Governor,
@@ -32,12 +35,23 @@ mod success {
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&user.dao_voting, 10, 1, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            1,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
         execute(&user.dao_voting, governor_id, 0).await;
 
-        let governor = GovernorBuilder::new(Bech32ContractId::from(governor_id).to_string(), deployer.wallet.clone()).build();
+        let governor = GovernorBuilder::new(
+            Bech32ContractId::from(governor_id).to_string(),
+            deployer.wallet.clone(),
+        )
+        .build();
         let (var1, var2) = governor.vars().call().await.unwrap().value;
         assert_eq!(var1, 42);
         assert_eq!(var2, true);
@@ -50,7 +64,8 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn on_invalid_proposal_id() {
-        let (_gov_token, _gov_token_id, _deployer, user, _asset_amount, governor_id) = setup().await;
+        let (_gov_token, _gov_token_id, _deployer, user, _asset_amount, governor_id) =
+            setup().await;
         execute(&user.dao_voting, governor_id, 0).await;
     }
 
@@ -75,7 +90,14 @@ mod revert {
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&user.dao_voting, 10, 1, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            1,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
         execute(&user.dao_voting, governor_id, 0).await;
@@ -103,7 +125,14 @@ mod revert {
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&user.dao_voting, 10, 100, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            100,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
         execute(&user.dao_voting, governor_id, 0).await;
@@ -130,7 +159,14 @@ mod revert {
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&user.dao_voting, 10, 100, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            100,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         vote(&user.dao_voting, false, 0, asset_amount / 2).await;
 
         execute(&user.dao_voting, governor_id, 0).await;

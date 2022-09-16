@@ -28,7 +28,14 @@ mod success {
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, false);
-        create_proposal(&user.dao_voting, 10, 10, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            10,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
 
         vote(&user.dao_voting, true, 0, asset_amount / 4).await;
         vote(&user.dao_voting, false, 0, asset_amount / 4).await;
@@ -81,7 +88,14 @@ mod success {
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, false);
-        create_proposal(&user.dao_voting, 10, 10, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            10,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
 
         vote(&user.dao_voting, true, 0, asset_amount / 4).await;
         vote(&user.dao_voting, false, 0, asset_amount / 4).await;
@@ -99,7 +113,14 @@ mod success {
             }
         );
 
-        create_proposal(&user.dao_voting, 20, 20, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            20,
+            20,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
 
         vote(&user.dao_voting, true, 1, asset_amount / 4).await;
 
@@ -135,7 +156,14 @@ mod revert {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, false);
-        create_proposal(&user.dao_voting, 10, 10, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            10,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         vote(&user.dao_voting, true, 0, 0).await;
     }
 
@@ -153,7 +181,14 @@ mod revert {
         .await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, false);
-        create_proposal(&user.dao_voting, 1, 1, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            1,
+            1,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
 
         let call_params = CallParameters::new(
             Some(asset_amount),
@@ -171,7 +206,14 @@ mod revert {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, false);
-        create_proposal(&user.dao_voting, 10, 10, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            10,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         vote(&user.dao_voting, true, 10, asset_amount).await;
     }
 }

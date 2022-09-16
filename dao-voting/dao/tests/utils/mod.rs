@@ -67,11 +67,20 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn execute(contract: &DaoVoting, contract_id: ContractId, id: u64) -> CallResponse<()> {
+    pub async fn execute(
+        contract: &DaoVoting,
+        contract_id: ContractId,
+        id: u64,
+    ) -> CallResponse<()> {
         println!("{contract_id}");
         let temp = Bech32ContractId::from(contract_id);
         println!("{temp}");
-        contract.execute(id).set_contracts(&[Bech32ContractId::from(contract_id)]).call().await.unwrap()
+        contract
+            .execute(id)
+            .set_contracts(&[Bech32ContractId::from(contract_id)])
+            .call()
+            .await
+            .unwrap()
     }
 
     pub async fn unlock_votes(contract: &DaoVoting, id: u64) -> CallResponse<()> {
@@ -217,6 +226,13 @@ pub mod test_helpers {
 
         let asset_amount: u64 = 10;
 
-        (gov_token, gov_token_id.into(), deployer, user, asset_amount, governor_id.into())
+        (
+            gov_token,
+            gov_token_id.into(),
+            deployer,
+            user,
+            asset_amount,
+            governor_id.into(),
+        )
     }
 }

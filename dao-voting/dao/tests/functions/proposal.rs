@@ -13,7 +13,14 @@ mod success {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&user.dao_voting, 10, 10, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            10,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
 
         assert_eq!(
             proposal(&user.dao_voting, 0).await,

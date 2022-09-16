@@ -30,7 +30,14 @@ mod success {
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&user.dao_voting, 1, 1, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            1,
+            1,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
         assert_eq!(
@@ -73,8 +80,22 @@ mod success {
         .await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&user.dao_voting, 1, 3, governor_id, proposal_transaction.clone()).await;
-        create_proposal(&user.dao_voting, 10, 4, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            1,
+            3,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            4,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
 
         let call_params = CallParameters::new(
             Some(asset_amount),
@@ -150,7 +171,14 @@ mod success {
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&user.dao_voting, 1, 1, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            1,
+            1,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
         assert_eq!(
@@ -179,7 +207,14 @@ mod success {
             }
         );
 
-        create_proposal(&user.dao_voting, 10, 1, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            1,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         vote(&user.dao_voting, true, 1, asset_amount / 2).await;
 
         assert_eq!(
@@ -241,7 +276,14 @@ mod revert {
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id, 42, true);
-        create_proposal(&user.dao_voting, 10, 100, governor_id, proposal_transaction.clone()).await;
+        create_proposal(
+            &user.dao_voting,
+            10,
+            100,
+            governor_id,
+            proposal_transaction.clone(),
+        )
+        .await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
         unlock_votes(&user.dao_voting, 0).await;
     }
