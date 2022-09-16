@@ -2,7 +2,7 @@ use crate::utils::{
     abi_calls::{constructor, create_proposal, deposit, execute, vote},
     test_helpers::{mint, proposal_transaction, setup},
 };
-use fuels::{prelude::{abigen, CallParameters}, tx::AssetId};
+use fuels::{prelude::{abigen, CallParameters, Bech32ContractId}, tx::AssetId};
 
 abigen!(
     Governor,
@@ -37,7 +37,7 @@ mod success {
 
         execute(&user.dao_voting, governor_id, 0).await;
 
-        let governor = GovernorBuilder::new(governor_id.to_string(), deployer.wallet.clone()).build();
+        let governor = GovernorBuilder::new(Bech32ContractId::from(governor_id).to_string(), deployer.wallet.clone()).build();
         let (var1, var2) = governor.vars().call().await.unwrap().value;
         assert_eq!(var1, 42);
         assert_eq!(var2, true);
@@ -56,7 +56,6 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    #[ignore]
     async fn on_already_executed_proposal() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount, governor_id) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
