@@ -67,8 +67,11 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn execute(contract: &DaoVoting, id: u64) -> CallResponse<()> {
-        contract.execute(id).call().await.unwrap()
+    pub async fn execute(contract: &DaoVoting, contract_id: ContractId, id: u64) -> CallResponse<()> {
+        println!("{contract_id}");
+        let temp = Bech32ContractId::from(contract_id);
+        println!("{temp}");
+        contract.execute(id).set_contracts(&[Bech32ContractId::from(contract_id)]).call().await.unwrap()
     }
 
     pub async fn unlock_votes(contract: &DaoVoting, id: u64) -> CallResponse<()> {
