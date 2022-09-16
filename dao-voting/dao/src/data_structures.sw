@@ -3,6 +3,7 @@ library data_structures;
 use std::{block::height, contract_id::ContractId, identity::Identity};
 use core::ops::Eq;
 
+
 // TODO uncomment once/if arbitrary function calls can be made on contracts not known at CT
 // struct CallData {
 //     /// Data to pass into the called function
@@ -24,7 +25,6 @@ use core::ops::Eq;
 //     /// Specifies the amount of gas to forward to the arbitrary function call
 //     gas: u64,
 // }
-
 /// Dummy struct for demonstration purposes.
 pub struct Proposal {
     var1: u64,
