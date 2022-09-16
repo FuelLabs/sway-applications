@@ -16,7 +16,9 @@ impl Governor for Contract {
 
     #[storage(read)]
     fn vars() -> (u64, bool) {
-        (storage.var1, storage.var2)
+        (
+            storage.var1,
+            storage.var2,
+        )
     }
 }
-

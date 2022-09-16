@@ -187,10 +187,10 @@ impl DaoVoting for Contract {
         proposal.executed = true;
         storage.proposals.insert(proposal_id, proposal);
 
+
         // asm(call_data: proposal.proposal_transaction.call_data, amount: proposal.proposal_transaction.amount, asset: proposal.proposal_transaction.asset, gas: proposal.proposal_transaction.gas) {
         //     call call_data amount asset gas;
         // }
-
         let governor = abi(Governor, proposal.id.into());
         governor.govern(proposal.proposal_transaction.var1, proposal.proposal_transaction.var2);
 

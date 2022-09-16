@@ -3,6 +3,7 @@ library data_structures;
 use std::{block::height, contract_id::ContractId, identity::Identity};
 use core::ops::Eq;
 
+
 // struct CallData {
 //     /// Data to pass into the called function
 //     arguments: u64,
@@ -23,7 +24,6 @@ use core::ops::Eq;
 //     /// Specifies the amount of gas to forward to the arbitrary function call
 //     gas: u64,
 // }
-
 pub struct Proposal {
     var1: u64,
     var2: bool,
