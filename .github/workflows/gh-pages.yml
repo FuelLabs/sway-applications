@@ -28,7 +28,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .docs/contributing-book/book
-          destination_dir: master
+          destination_dir: .docs/contributing-book/live-book
         if: github.ref == 'refs/heads/master'
 
       - name: Get tag
@@ -48,17 +48,18 @@ jobs:
       - name: Create latest HTML redirect file
         if: startsWith(github.ref, 'refs/tags')
         run: |
-          mkdir ./latest
-          cat > ./latest/index.html <<EOF
+          mkdir .docs/contributing-book/latest
+          cat > .docs/contributing-book/latest/index.html <<EOF
           <!DOCTYPE html>
           <meta charset="utf-8">
           <meta http-equiv="refresh" content="0; URL=../${{ steps.branch_name.outputs.BRANCH_NAME }}/">
           <link rel="canonical" href="../${{ steps.branch_name.outputs.BRANCH_NAME }}/">
           EOF
+      
       - name: Set latest to point to tag
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./latest/
-          destination_dir: ./latest/
+          publish_dir: .docs/contributing-book/latest/
+          destination_dir: .docs/contributing-book/latest/
         if: startsWith(github.ref, 'refs/tags')
