@@ -95,7 +95,7 @@ impl StakingRewards for Contract {
         let ts = timestamp();
         _update_reward(sender);
 
-        require(sender == storage.rewards_distribution, "Caller is not RewardsDistribution contract");
+        require(sender == storage.rewards_distribution, StakingRewardsErrors::CallerIsNotRewardsDistributionContract);
 
         if ts >= storage.period_finish {
             storage.reward_rate = reward / storage.rewards_duration;
@@ -110,7 +110,7 @@ impl StakingRewards for Contract {
         // very high values of rewardRate in the earned and rewardsPerToken functions;
         // Reward + leftover must be less than 2^256 / 10^18 to avoid overflow.
         let balance = this_balance(storage.rewards_token);
-        require(storage.reward_rate <= balance / storage.rewards_duration, "Provided reward too high");
+        require(storage.reward_rate <= balance / storage.rewards_duration, StakingRewardsErrors::ProvidedRewardTooHigh);
 
         storage.last_update_time = ts;
         storage.period_finish = ts + storage.rewards_duration;
@@ -132,9 +132,9 @@ impl StakingRewards for Contract {
     // Added to support recovering LP Rewards from other systems such as BAL to be distributed to holders
     #[storage(read, write)]
     fn recover_tokens(asset_id: ContractId, amount: u64) {
-        require(msg_sender().unwrap() == storage.owner, "Sender not owner");
+        require(msg_sender().unwrap() == storage.owner, StakingRewardsErrors::SenderNotOwner);
 
-        require(asset_id != storage.staking_token, "Cannot withdraw the staking token");
+        require(asset_id != storage.staking_token, StakingRewardsErrors::CannotWithdrawTheStakingToken);
         transfer(amount, asset_id, storage.owner);
 
         log(RecoveredEvent {
@@ -185,9 +185,9 @@ impl StakingRewards for Contract {
 
     #[storage(read, write)]
     fn set_rewards_duration(rewards_duration: u64) {
-        require(msg_sender().unwrap() == storage.owner, "Sender not owner");
+        require(msg_sender().unwrap() == storage.owner, StakingRewardsErrors::SenderNotOwner);
 
-        require(timestamp() > storage.period_finish, "Previous rewards period must be complete before changing the duration for the new period");
+        require(timestamp() > storage.period_finish, StakingRewardsErrors::PreviousRewardsPeriodMustBeCompleteBeforeChangingTheDurationForTheNewPeriod);
         storage.rewards_duration = rewards_duration;
         log(RewardsDurationUpdatedEvent {
             new_duration: rewards_duration,
