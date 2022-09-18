@@ -4,6 +4,9 @@ dep interface;
 dep errors;
 dep data_structures;
 
+use data_structures::*;
+use errors::StakingRewardsError;
+use interface::StakingRewards;
 use std::{
     address::Address,
     block::timestamp,
@@ -22,10 +25,6 @@ use std::{
     storage::StorageMap,
     token::transfer,
 };
-
-use data_structures::*;
-use errors::StakingRewardsError;
-use interface::StakingRewards;
 
 // Precision for staking and rewards token
 //const PRECISION: u64 = 9;
