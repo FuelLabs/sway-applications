@@ -2,22 +2,7 @@ Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
   - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
-    - [`create_campaign()`](#create_campaign)
-    - [`cancel_campaign()`](#cancel_campaign)
-    - [`claim_pledges()`](#claim_pledges)
-    - [`pledge()`](#pledge)
-    - [`unpledge()`](#unpledge)
   - [Information that is presented to users](#information-that-is-presented-to-users)
-    - [`asset_count()`](#asset_count)
-    - [`asset_info_by_id()`](#asset_info_by_id)
-    - [`asset_info_by_count()`](#asset_info_by_count)
-    - [`campaign()`](#campaign)
-    - [`campaign_info()`](#campaign_info)
-    - [`pledged()`](#pledged)
-    - [`pledge_count()`](#pledge_count)
-    - [`total_campaigns()`](#total_campaigns)
-    - [`user_campaign_count()`](#user_campaign_count)
-  - [Sequence diagram](#sequence-diagram)
 
 # Overview
 
