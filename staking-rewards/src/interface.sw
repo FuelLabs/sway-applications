@@ -24,7 +24,7 @@ abi StakingRewards {
     #[storage(read)]
     fn period_finish() -> u64;
     #[storage(read, write)]
-    fn recover_tokens(token_address: ContractId, token_amount: u64);
+    fn recover_tokens(asset_id: ContractId, token_amount: u64);
     #[storage(read)]
     fn reward_per_token() -> u64;
     #[storage(read)]

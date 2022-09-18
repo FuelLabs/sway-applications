@@ -23,9 +23,9 @@ use std::{
     token::transfer,
 };
 
-use interface::StakingRewards;
-use errors::*;
 use data_structures::*;
+use errors::StakingRewardsError;
+use interface::StakingRewards;
 
 // Precision for staking and rewards token
 //const PRECISION: u64 = 9;
