@@ -1,8 +1,8 @@
 contract;
 
-dep staking_rewards_abi;
-dep staking_rewards_errors;
-dep staking_rewards_events;
+dep interface;
+dep errors;
+dep data_structures;
 
 use std::{
     address::Address,
@@ -23,9 +23,9 @@ use std::{
     token::transfer,
 };
 
-use staking_rewards_abi::StakingRewards;
-use staking_rewards_errors::*;
-use staking_rewards_events::*;
+use interface::StakingRewards;
+use errors::*;
+use data_structures::*;
 
 // Precision for staking and rewards token
 //const PRECISION: u64 = 9;

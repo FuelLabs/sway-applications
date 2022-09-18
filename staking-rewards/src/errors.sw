@@ -1,4 +1,4 @@
-library staking_rewards_errors;
+library errors;
 
 use std::contract_id::ContractId;
 use std::identity::Identity;

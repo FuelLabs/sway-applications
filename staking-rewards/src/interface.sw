@@ -1,4 +1,4 @@
-library staking_rewards_abi;
+library interface;
 
 use std::{contract_id::ContractId, identity::Identity};
 

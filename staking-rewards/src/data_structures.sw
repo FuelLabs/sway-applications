@@ -1,4 +1,4 @@
-library staking_rewards_events;
+library data_structures;
 
 use std::contract_id::ContractId;
 use std::identity::Identity;
