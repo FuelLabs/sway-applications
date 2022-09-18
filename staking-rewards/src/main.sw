@@ -268,7 +268,7 @@ fn _get_reward() {
         transfer(reward, storage.rewards_token, sender);
         log(RewardPaidEvent {
             user: sender,
-            reward: reward,
+            reward,
         });
     }
 }
@@ -285,7 +285,7 @@ fn _withdraw(amount: u64) {
     transfer(amount, storage.staking_token, sender);
     log(WithdrawnEvent {
         user: sender,
-        amount: amount,
+        amount,
     });
 }
 
