@@ -6,7 +6,7 @@ abi StakingRewards {
     #[storage(read)]
     fn balance_of(account: Identity) -> u64;
     #[storage(read)]
-    fn earned(account: Identity, ) -> u64;
+    fn earned(account: Identity) -> u64;
     #[storage(read, write)]
     fn exit();
     #[storage(read, write)]
