@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset=".docs/fundraiser-logo-dark-theme.png">
-        <img alt="SwayApps Fundraiser Logo" width="400px" src=".docs/fundraiser-logo-light-theme.png">
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/staking-rewards-logo-dark-theme.png">
+        <img alt="SwayApps Fundraiser Logo" width="400px" src=".docs/staking-rewards-logo-light-theme.png">
     </picture>
 </p>
 
