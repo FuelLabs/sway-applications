@@ -57,10 +57,7 @@ impl AirdropDistributor for Contract {
         storage.claims.insert(to, ~ClaimData::new(amount, true));
         mint_to(amount, storage.asset.unwrap(), to);
 
-        log(ClaimEvent {
-            to,
-            amount,
-        });
+        log(ClaimEvent { to, amount });
     }
 
     #[storage(read)]

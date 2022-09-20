@@ -249,10 +249,7 @@ impl NFT for Contract {
         // 3. Has operator approval for the `from` identity and this token belongs to the `from` identity
         let sender = msg_sender().unwrap();
         let approved = storage.approved.get(token_id);
-        require(sender == token_owner || (approved.is_some() && sender == approved.unwrap()) || (from == token_owner && storage.operator_approval.get((
-            from,
-            sender,
-        ))), AccessError::SenderNotOwnerOrApproved);
+        require(sender == token_owner || (approved.is_some() && sender == approved.unwrap()) || (from == token_owner && storage.operator_approval.get((from, sender, ))), AccessError::SenderNotOwnerOrApproved);
 
         // Set the new owner of the token and reset the approved Identity
         storage.owners.insert(token_id, Option::Some(to));
