@@ -105,12 +105,7 @@ abi Fundraiser {
     /// * When the `deadline` is not ahead of the current block height
     /// * When the `target_amount` is 0
     #[storage(read, write)]
-    fn create_campaign(
-        asset: ContractId,
-        beneficiary: Identity,
-        deadline: u64,
-        target_amount: u64,
-    );
+    fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64, );
 
     /// Allows a user to pledge any amount of the campaign asset towards the campaign goal
     /// 
