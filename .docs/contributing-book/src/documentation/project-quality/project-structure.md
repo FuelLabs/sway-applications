@@ -52,4 +52,4 @@ The entry point to your contract that contains the implementation of your `abi`.
 ## utils.sw
 
 Any private functions (helper functions) that your contracts use inside their functions.
-Since a contract cannot call its own function we need to abstract away the code into some functions so that they can be used inside many functions of your contract
+Since a contract cannot call its own `ABI` functions, we need to abstract away some of the code into private functions so that they can be reused in your contract

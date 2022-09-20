@@ -5,7 +5,7 @@ The following sections provide a quickstart guide for navigating the issues in t
 
 ## [Filtering by label](./filtering.md)
 
-Issues can be categorized into categories through the use of labels and depending on the category a user may choose to contribute to one task or another.
+Issues can be grouped into categories through the use of labels and depending on the category a user may choose to contribute to one task or another.
 
 - Is it a bug fix, improvement, documentation etc.
 - Is it for the compiler, user interface, tooling etc.

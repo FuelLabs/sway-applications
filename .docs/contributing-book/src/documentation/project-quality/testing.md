@@ -44,16 +44,16 @@ This file is the one that is called by `forc test` and thus it only contains the
 
 Here are some tips on how to approach testing:
 
-- Similar to [code structure](code-structure.md) all content in each file should be ordered alphabetically so that it's easy to navigate
+- Similar to [code structure](code-structure.md) content in each file should be ordered alphabetically, with one exception, so that it's easy to navigate
+  - Test conditions in the order in which they may occur
+    - If a test has multiple assertions then the first assertion should be tested first, second assertion second etc.
 - Check the code coverage
-  - All assertions should be tested to ensure that all safety checks pass
+  - All assertions & requirements should be tested
   - Check boundary conditions to see if the values passed in work throughout the entire range
 - There should be positive and negative test cases meaning that a test should pass with correct data passed in but it should also revert when incorrect data is used
 - When writing a test that changes state the test should first assert the initial condition before performing some operation and then testing the outcome of that operation
   - If the initial condition is not proven to be what is expected then there is no guarantee that the operation has performed the correct behavior
   - This also means that the initial condition should be compared to the post condition
-- Test conditions in the order in which they may occur
-  - If a test has multiple assertions then the first assertion should be tested first, second assertion second etc.
 - Comments should only be added to explain sections of each test if they provide insight into some complex behavior
   - If a function sets up the initial environment then there is no point in adding a comment "set up the environment" because the function name should be clear enough e.g. `fn setup()`
 - Any tests that are ignored should be documented in the test so that the reader knows why something is currently unimplemented
