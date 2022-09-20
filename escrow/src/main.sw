@@ -277,9 +277,7 @@ impl Escrow for Contract {
             storage.arbiter_proposal.insert(identifier, Option::None);
         }
 
-        log(ReturnedDepositEvent {
-            identifier,
-        });
+        log(ReturnedDepositEvent { identifier });
     }
 
     #[storage(read, write)]
@@ -309,9 +307,7 @@ impl Escrow for Contract {
             storage.arbiter_proposal.insert(identifier, Option::None);
         }
 
-        log(PaymentTakenEvent {
-            identifier,
-        });
+        log(PaymentTakenEvent { identifier });
     }
 
     #[storage(read, write)]
@@ -338,9 +334,7 @@ impl Escrow for Contract {
             storage.arbiter_proposal.insert(identifier, Option::None);
         }
 
-        log(TransferredToSellerEvent {
-            identifier,
-        });
+        log(TransferredToSellerEvent { identifier });
     }
 
     #[storage(read, write)]
@@ -368,8 +362,6 @@ impl Escrow for Contract {
             storage.arbiter_proposal.insert(identifier, Option::None);
         }
 
-        log(WithdrawnCollateralEvent {
-            identifier,
-        });
+        log(WithdrawnCollateralEvent { identifier });
     }
 }
