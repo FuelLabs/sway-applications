@@ -13,6 +13,7 @@ import { formatValue } from "../utils/helpers";
 import { DECIMAL_PLACES } from "@/config";
 import { useTransferToSeller } from "../hooks/useTransferToSeller";
 import { useDispute } from "../hooks/useDispute";
+import { EscrowInfo } from "../components/EscrowInfo";
 
 export default function BuyerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
@@ -29,30 +30,12 @@ export default function BuyerPage() {
     <Layout>
       <Flex css={{ flexDirection: "row", justifyContent: "center" }}>
         <Card css={{ flex: "1", maxW: "900px", marginTop: "$5" }}>
+          <Card.Header>
+            Buyer Escrows
+          </Card.Header>
           {(!!buyerEscrows && buyerEscrows.length > 0)
             ? <>
-              <Card.Header>
-                Buyer Escrows
-              </Card.Header>
-              <Card.Body>
-                <div>{`Arbiter: ${!!buyerEscrows[0].arbiter.address.Address ? buyerEscrows[0].arbiter.address.Address?.value : buyerEscrows[0].arbiter.address.ContractId!.value}`}</div>
-                <div>{`Arbiter Asset: ${buyerEscrows[0].arbiter.asset.value}`}</div>
-                <div>{`Arbiter Fee: ${formatValue(buyerEscrows[0].arbiter.fee_amount, DECIMAL_PLACES)}`}</div>
-                {buyerEscrows[0].assets.map((assetInfo) => {
-                  return <>
-                    <div>{`Asset Id: ${assetInfo.id.value}`}</div>
-                    <div>{`Asset Amount: ${formatValue(assetInfo.amount, DECIMAL_PLACES)}`}</div>
-                  </>
-                })}
-                <div>{`Buyer: ${!!buyerEscrows[0].buyer.address.Address ? buyerEscrows[0].buyer.address.Address?.value : buyerEscrows[0].buyer.address.ContractId?.value}`}</div>
-                {/** TODO fix buyer.asset.None/Some is undefined */}
-                <div>{`Buyer Desposit Asset: ${!buyerEscrows[0].buyer.asset ? "None" : buyerEscrows[0].buyer.asset.values}`}</div>
-                <div>{`Buyer Deposit Amount: ${formatValue(buyerEscrows[0].buyer.deposited_amount, DECIMAL_PLACES)}`}</div>
-                <div>{`Seller: ${!!buyerEscrows[0].seller.address.Address ? buyerEscrows[0].seller.address.Address?.value : buyerEscrows[0].seller.address.ContractId?.value}`}</div>
-                <div>{`Deadline: ${buyerEscrows[0].deadline.toString()}`}</div>
-                <div>{`Disputed: ${buyerEscrows[0].disputed}`}</div>
-                <div>{`State: ${!!buyerEscrows[0].state.Pending ? "Pending" : "Completed"}`}</div>
-              </Card.Body>
+              <EscrowInfo escrows={buyerEscrows} />
 
               {!buyerEscrows[0].buyer.asset &&
                 <Card.Footer>
@@ -81,9 +64,6 @@ export default function BuyerPage() {
               </Card.Footer>
             </>
             : <>
-              <Card.Header>
-                Buyer Escrows
-              </Card.Header>
               <Card.Body>
                 Buyer has no Escrows
               </Card.Body>
