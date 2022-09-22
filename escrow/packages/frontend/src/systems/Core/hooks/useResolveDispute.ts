@@ -6,6 +6,7 @@ import { walletIndexAtom } from "../jotai";
 import { txFeedback } from "../utils/feedback";
 import { parseInputValueBigInt } from "../utils/math";
 import { useContract } from "./useContract";
+import { updateEscrowQueries } from "../utils/helpers";
 
 interface UseResolveDisputeProps {
     escrowId: bigint,
@@ -55,9 +56,7 @@ export function useResolveDispute({
     function handleSuccess() {
         // Trigger query to update blanaces etc
         queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
-        queryClient.fetchQuery(["SellerEscrows"]);
-        queryClient.fetchQuery(["BuyerEscrows"]);
-        queryClient.fetchQuery(["ArbiterEscrows"]);
+        updateEscrowQueries();
     }
 
     function handleError(e: any) {

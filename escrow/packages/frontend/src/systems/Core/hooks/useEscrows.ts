@@ -4,18 +4,20 @@ import { useContract } from "./useContract";
 export function useEscrows(queryString: string, escrowIds: bigint[] | null | undefined) {
     const contract = useContract();
 
+    // We have to convert the bigints to strings bc bigints are not serializable
     const { data: escrows } = useQuery(
-        [queryString],
+        [queryString, escrowIds?.map(escrowId => { return escrowId.toString() })],
         async () => {
-            const escrowPromises = escrowIds!.map(async escrowId => {
-                return (await contract!.functions.escrows(escrowId).call()).value
+            const escrowPromises = escrowIds!.map(escrowId => {
+                return contract!.functions.escrows(escrowId).get()
             });
             return await Promise.all(escrowPromises);
         },
         {
-            enabled: !!escrowIds
+            enabled: !!escrowIds,
+            onError: (err) => console.log(`use error: ${err}`),
         }
     );
 
-    return escrows;
+    return escrows?.map(escrow => { return escrow.value });
 }

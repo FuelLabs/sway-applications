@@ -8,13 +8,16 @@ export function useArbiterEscrows() {
     const wallet = useWallet();
 
     const { data: arbiterEscrowIds } = useQuery(
-        ["ArbiterPage-arbiterEscrowIds"],
+        ["ArbiterPage-arbiterEscrowIds", wallet],
         async () => {
             return contract && (await contract.functions.arbiter_escrows({
                 Address: {
                     value: wallet?.address.toHexString()!
                 }
-            }).call()).value
+            }).get()).value
+        },
+        {
+            onError: (err) => console.log(`Arbiter error: ${err}`),
         }
     );
 

@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { walletIndexAtom } from "../jotai";
 import { txFeedback } from "../utils/feedback";
 import { useContract } from "./useContract";
+import { updateEscrowQueries } from "../utils/helpers";
 
 interface UseReturnDepositProps {
     escrowId: bigint;
@@ -19,6 +20,7 @@ export function useReturnDeposit({
 
     const mutation = useMutation(
         async () => {
+            console.log("return mutation");
             if (!contract) {
                 throw new Error("Contract not found");
             }
@@ -46,9 +48,7 @@ export function useReturnDeposit({
     function handleSuccess() {
         // Trigger queries to update components
         queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
-        queryClient.fetchQuery(["SellerEscrows"]);
-        queryClient.fetchQuery(["BuyerEscrows"]);
-        queryClient.fetchQuery(["ArbiterEscrows"]);
+        updateEscrowQueries();
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { walletIndexAtom } from "../jotai";
 import { txFeedback } from "../utils/feedback";
 import { useContract } from "./useContract";
+import { updateEscrowQueries } from "../utils/helpers";
 
 interface UseTransferToSellerProps {
     escrowId: bigint;
@@ -44,9 +45,7 @@ export function useTransferToSeller({ escrowId }: UseTransferToSellerProps) {
 
     function handleSuccess() {
         // Trigger queries to update components
-        queryClient.fetchQuery(["SellerEscrows"]);
-        queryClient.fetchQuery(["BuyerEscrows"]);
-        queryClient.fetchQuery(["ArbiterEscrows"]);
+        updateEscrowQueries();
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

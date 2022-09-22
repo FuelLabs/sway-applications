@@ -9,13 +9,13 @@ export function useBuyerEscrows() {
     const wallet = useWallet();
 
     const { data: buyerEscrowIds } = useQuery(
-        ['BuyerPage-buyerEscrowIds'],
+        ['BuyerPage-buyerEscrowIds', wallet],
         async () => {
-            return contract && (await contract!.functions.buyer_escrows({ Address: { value: wallet?.address!.toHexString()! } }).call()).value
+            return contract && (await contract!.functions.buyer_escrows({ Address: { value: wallet?.address!.toHexString()! } }).get()).value
         },
         {
             onSuccess: (data) => console.log("data 1: ", data),
-            onError: (err) => console.log(JSON.stringify(err, null, 2)),
+            onError: (err) => console.log(`Buyer error: ${err}`),
         }
     );
 

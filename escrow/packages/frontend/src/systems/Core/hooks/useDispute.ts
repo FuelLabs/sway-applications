@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
 import { txFeedback } from "../utils/feedback";
 import { useContract } from "./useContract";
+import { updateEscrowQueries } from "../utils/helpers";
 
 interface UseDisputeProps {
     escrowId: bigint;
@@ -41,9 +42,7 @@ export function useDispute({
     );
 
     function handleSuccess() {
-        queryClient.fetchQuery(["SellerEscrows"]);
-        queryClient.fetchQuery(["BuyerEscrows"]);
-        queryClient.fetchQuery(["ArbiterEscrows"]);
+        updateEscrowQueries()
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

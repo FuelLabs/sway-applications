@@ -8,6 +8,8 @@ import { ArbiterInput, AssetInput, IdentityInput } from "@/types/contracts/Escro
 import { txFeedback } from "../utils/feedback";
 import React from "react";
 import { walletIndexAtom } from "../jotai";
+import { useWallet } from "../context/AppContext";
+import { updateEscrowQueries } from "../utils/helpers";
 
 // TODO it may be a good idea to refactor this to resemble
 // UseAddLiquidityProps from SwaySwap
@@ -49,6 +51,7 @@ export function useCreateEscrow({
 }: UseCreateEscrowProps) {
     const queryClient = useQueryClient();
     const walletIdx = useAtomValue(walletIndexAtom);
+    const wallet = useWallet();
     const contract = useContract();
     const successMsg = "New escrow created.";
 
@@ -108,10 +111,8 @@ export function useCreateEscrow({
         setDeadline("");
 
         // Trigger query to update blanaces etc
-        queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
-        queryClient.fetchQuery(["SellerEscrows"]);
-        queryClient.fetchQuery(["BuyerEscrows"]);
-        queryClient.fetchQuery(["ArbiterEscrows"]);
+        queryClient.invalidateQueries(['EscrowPage-balances', walletIdx]);
+        updateEscrowQueries();
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

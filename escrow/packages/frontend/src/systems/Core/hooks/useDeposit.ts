@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
 import { walletIndexAtom } from "../jotai";
 import { txFeedback } from "../utils/feedback";
+import { updateEscrowQueries } from "../utils/helpers";
 import { parseInputValueBigInt } from "../utils/math";
 
 import { useContract } from "./useContract";
@@ -57,9 +58,7 @@ export function useDeposit({
     function handleSuccess() {
         // Trigger queries to update components
         queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
-        queryClient.fetchQuery(["SellerEscrows"]);
-        queryClient.fetchQuery(["BuyerEscrows"]);
-        queryClient.fetchQuery(["ArbiterEscrows"]);
+        updateEscrowQueries();
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
