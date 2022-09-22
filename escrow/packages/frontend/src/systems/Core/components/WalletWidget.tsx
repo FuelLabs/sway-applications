@@ -57,7 +57,7 @@ export const WalletWidget = () => {
     wallets?.forEach((nextWallet, i) => {
       walletOptions.push(
         <option key={i} value={i}>
-          {nextWallet?.address.toHexString().slice(0, 4)}...{nextWallet?.address.toHexString().slice(-4)} (
+          {nextWallet?.address.slice(0, 4)}...{nextWallet?.address.slice(-4)} (
           {WALLET_NAMES[i]})
         </option>
       );
@@ -74,7 +74,7 @@ export const WalletWidget = () => {
   };
 
   const handleCopy = () => {
-    clipboard.copy(wallet!.address.toHexString());
+    clipboard.copy(wallet!.address);
     toast("Address copied", { icon: "✨" });
   };
 

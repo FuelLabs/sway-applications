@@ -48,10 +48,9 @@ export const AppContextProvider = ({
   }, [privateKeyList]);
 
   const wallet = useMemo(() => {
-    if (currentWalletIndex === null || !wallets) {
+    if (currentWalletIndex === null || !wallets || wallets.length === 0) {
       return null;
     }
-    console.log("app wallet", wallets[currentWalletIndex].address);
     return wallets[currentWalletIndex];
   }, [currentWalletIndex]);
 

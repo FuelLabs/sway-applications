@@ -10,7 +10,7 @@ export function useSellerEscrows() {
   const { data: sellerEscrowIds } = useQuery(
     ['SellerPage-sellerEscrowIds', wallet],
     async () => {
-      return contract && (await contract!.functions.seller_escrows({ Address: { value: wallet?.address!.toHexString()! } }).get()).value
+      return contract && (await contract!.functions.seller_escrows({ Address: { value: wallet?.address! } }).get()).value
     },
     {
       onError: (err) => console.log(`Seller error: ${err}`)
