@@ -5,4 +5,5 @@ license = "Apache-2.0"
 name = "swayswap_contract"
 
 [dependencies]
+swayswap_abi = { path = "../swayswap_abi" }
 swayswap_helpers = { path = "../swayswap_helpers" }
