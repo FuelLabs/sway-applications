@@ -48,7 +48,7 @@
     "decimal.js": "^10.3.1",
     "ethers": "^5.6.9",
     "framer-motion": "^6.3.15",
-    "fuels": "0.0.0-next-20220901172638",
+    "fuels": "0.0.0-next-20220806154159",
     "graphql": "^16.5.0",
     "graphql-request": "^4.3.0",
     "jotai": "^1.7.2",
@@ -95,7 +95,7 @@
     "prettier": "^2.7.1",
     "tailwindcss": "^3.1.4",
     "ts-node": "^10.8.1",
-    "typechain-target-fuels": "0.0.0-next-20220901172638",
+    "typechain-target-fuels": "0.0.0-next-20220806154159",
     "typescript": "^4.7.4",
     "vite": "^2.9.12"
   }

@@ -12,7 +12,7 @@ import type {
   InvokeFunction,
 } from "fuels";
 
-import type { Enum, Option } from "./common";
+import type { Enum } from "./common";
 
 export type AddressInput = { value: string };
 
@@ -84,9 +84,9 @@ export type IdentityOutput = Enum<{
   ContractId: ContractIdOutput;
 }>;
 
-export type OptionInput = Option<[]>;
+export type OptionInput = Enum<{ None: []; Some: ArbiterInput }>;
 
-export type OptionOutput = Option<[]>;
+export type OptionOutput = Enum<{ None: []; Some: ArbiterOutput }>;
 
 export type StateInput = Enum<{ Pending: []; Completed: [] }>;
 
@@ -96,6 +96,7 @@ interface EscrowAbiInterface extends Interface {
   functions: {
     accept_arbiter: FunctionFragment;
     arbiter_escrows: FunctionFragment;
+    arbiter_proposals: FunctionFragment;
     buyer_escrows: FunctionFragment;
     create_escrow: FunctionFragment;
     deposit: FunctionFragment;
@@ -117,6 +118,10 @@ interface EscrowAbiInterface extends Interface {
   encodeFunctionData(
     functionFragment: "arbiter_escrows",
     values: [IdentityInput]
+  ): Uint8Array;
+  encodeFunctionData(
+    functionFragment: "arbiter_proposals",
+    values: [BigNumberish]
   ): Uint8Array;
   encodeFunctionData(
     functionFragment: "buyer_escrows",
@@ -181,6 +186,10 @@ interface EscrowAbiInterface extends Interface {
     data: BytesLike
   ): DecodedValue;
   decodeFunctionData(
+    functionFragment: "arbiter_proposals",
+    data: BytesLike
+  ): DecodedValue;
+  decodeFunctionData(
     functionFragment: "buyer_escrows",
     data: BytesLike
   ): DecodedValue;
@@ -236,6 +245,8 @@ export class EscrowAbi extends Contract {
     accept_arbiter: InvokeFunction<[identifier: BigNumberish], void>;
 
     arbiter_escrows: InvokeFunction<[arbiter: IdentityInput], [bigint]>;
+
+    arbiter_proposals: InvokeFunction<[identifier: BigNumberish], OptionOutput>;
 
     buyer_escrows: InvokeFunction<[buyer: IdentityInput], [bigint]>;
 

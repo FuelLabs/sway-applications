@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { Provider, Wallet, AbstractAddress } from "fuels";
+import type { Provider, Wallet } from "fuels";
 import { Interface, Contract } from "fuels";
 import type { EscrowAbi, EscrowAbiInterface } from "../EscrowAbi";
 const _abi = [
@@ -77,6 +77,152 @@ const _abi = [
           },
         ],
         typeArguments: null,
+      },
+    ],
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "identifier",
+        type: "u64",
+        components: null,
+        typeArguments: null,
+      },
+    ],
+    name: "arbiter_proposals",
+    outputs: [
+      {
+        name: "",
+        type: "enum Option",
+        components: [
+          {
+            name: "None",
+            type: "()",
+            components: [],
+            typeArguments: null,
+          },
+          {
+            name: "Some",
+            type: "struct Arbiter",
+            components: [
+              {
+                name: "address",
+                type: "enum Identity",
+                components: [
+                  {
+                    name: "Address",
+                    type: "struct Address",
+                    components: [
+                      {
+                        name: "value",
+                        type: "b256",
+                        components: null,
+                        typeArguments: null,
+                      },
+                    ],
+                    typeArguments: null,
+                  },
+                  {
+                    name: "ContractId",
+                    type: "struct ContractId",
+                    components: [
+                      {
+                        name: "value",
+                        type: "b256",
+                        components: null,
+                        typeArguments: null,
+                      },
+                    ],
+                    typeArguments: null,
+                  },
+                ],
+                typeArguments: null,
+              },
+              {
+                name: "asset",
+                type: "struct ContractId",
+                components: [
+                  {
+                    name: "value",
+                    type: "b256",
+                    components: null,
+                    typeArguments: null,
+                  },
+                ],
+                typeArguments: null,
+              },
+              {
+                name: "fee_amount",
+                type: "u64",
+                components: null,
+                typeArguments: null,
+              },
+            ],
+            typeArguments: null,
+          },
+        ],
+        typeArguments: [
+          {
+            name: "T",
+            type: "struct Arbiter",
+            components: [
+              {
+                name: "address",
+                type: "enum Identity",
+                components: [
+                  {
+                    name: "Address",
+                    type: "struct Address",
+                    components: [
+                      {
+                        name: "value",
+                        type: "b256",
+                        components: null,
+                        typeArguments: null,
+                      },
+                    ],
+                    typeArguments: null,
+                  },
+                  {
+                    name: "ContractId",
+                    type: "struct ContractId",
+                    components: [
+                      {
+                        name: "value",
+                        type: "b256",
+                        components: null,
+                        typeArguments: null,
+                      },
+                    ],
+                    typeArguments: null,
+                  },
+                ],
+                typeArguments: null,
+              },
+              {
+                name: "asset",
+                type: "struct ContractId",
+                components: [
+                  {
+                    name: "value",
+                    type: "b256",
+                    components: null,
+                    typeArguments: null,
+                  },
+                ],
+                typeArguments: null,
+              },
+              {
+                name: "fee_amount",
+                type: "u64",
+                components: null,
+                typeArguments: null,
+              },
+            ],
+            typeArguments: null,
+          },
+        ],
       },
     ],
   },
@@ -868,10 +1014,7 @@ export class EscrowAbi__factory {
   static createInterface(): EscrowAbiInterface {
     return new Interface(_abi) as EscrowAbiInterface;
   }
-  static connect(
-    id: string | AbstractAddress,
-    walletOrProvider: Wallet | Provider
-  ): EscrowAbi {
+  static connect(id: string, walletOrProvider: Wallet | Provider): EscrowAbi {
     return new Contract(id, _abi, walletOrProvider) as EscrowAbi;
   }
 }
