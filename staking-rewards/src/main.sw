@@ -27,7 +27,7 @@ use std::{
 };
 
 // Precision for staking and rewards token
-//const PRECISION: u64 = 9;
+
 const ONE: u64 = 1_000_000_000; // Can this be constant-evaluated from `PRECISION` ?
 storage {
     balances: StorageMap<Identity, u64> = StorageMap {},
@@ -66,6 +66,10 @@ impl StakingRewards for Contract {
     fn exit() {
         _withdraw(storage.balances.get(msg_sender().unwrap()));
         _get_reward();
+        log(WithdrawnEvent {
+            user: sender,
+            amount,
+        });
     }
 
     #[storage(read, write)]
@@ -221,6 +225,10 @@ impl StakingRewards for Contract {
     #[storage(read, write)]
     fn withdraw(amount: u64) {
         _withdraw(amount)
+        log(WithdrawnEvent {
+            user: sender,
+            amount,
+        });
     }
 }
 
@@ -282,10 +290,6 @@ fn _withdraw(amount: u64) {
     storage.total_supply -= amount;
     storage.balances.insert(sender, storage.balances.get(sender) - amount);
     transfer(amount, storage.staking_token, sender);
-    log(WithdrawnEvent {
-        user: sender,
-        amount,
-    });
 }
 
 #[storage(read, write)]
