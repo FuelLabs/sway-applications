@@ -110,7 +110,7 @@ impl Escrow for Contract {
     }
 
     #[storage(read)]fn arbiter_proposals(identifier: u64) -> Option<Arbiter> {
-        storage.arbiter_proposals.get(identifier)
+        storage.arbiter_proposal.get(identifier)
     }
 
     #[storage(read)]fn buyer_escrows(buyer: Identity) -> [u64;1] {
