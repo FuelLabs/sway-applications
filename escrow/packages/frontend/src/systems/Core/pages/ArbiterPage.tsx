@@ -27,8 +27,9 @@ export default function BuyerPage() {
     setArbiterPayment(event.target.value);
   }
 
-  const handleUserChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFavoredUser(event.target.value);
+  const handleUserChange = (event: any) => {
+    console.log(event);
+    setFavoredUser(event);
   }
 
   return (
@@ -58,11 +59,11 @@ export default function BuyerPage() {
                     <Dropdown.Trigger>
                       <Button>User to favor</Button>
                     </Dropdown.Trigger>
-                    <Dropdown.Menu autoFocus aria-label="Actions">
-                      <Dropdown.MenuItem key="seller" textValue="Seller">
+                    <Dropdown.Menu autoFocus aria-label="Actions" onAction={(e) => handleUserChange(e)}>
+                      <Dropdown.MenuItem key={`${arbiterEscrows[0].seller.address.Address?.value}`} textValue="Seller">
                         Seller
                       </Dropdown.MenuItem>
-                      <Dropdown.MenuItem key="buyer" textValue="Buyer">
+                      <Dropdown.MenuItem key={`${arbiterEscrows[0].buyer.address.Address?.value}`} textValue="Buyer">
                         Buyer
                       </Dropdown.MenuItem>
                     </Dropdown.Menu>

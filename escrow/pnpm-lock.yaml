@@ -114,8 +114,8 @@ importers:
       '@ethersproject/units': ^5.6.1
       '@fontsource/inter': ^4.5.11
       '@fontsource/raleway': ^4.5.9
-      '@fuel-ui/css': 0.7.0-dev-8f424da
-      '@fuel-ui/react': 0.7.0-dev-8f424da
+      '@fuel-ui/css': 0.7.1-dev-4ff150a
+      '@fuel-ui/react': 0.7.1-dev-4ff150a
       '@headlessui/react': ^1.6.5
       '@jest/globals': ^28.1.1
       '@radix-ui/react-accordion': ^0.1.6
@@ -198,8 +198,8 @@ importers:
       '@ethersproject/units': 5.6.1
       '@fontsource/inter': 4.5.11
       '@fontsource/raleway': 4.5.9
-      '@fuel-ui/css': 0.7.0-dev-8f424da
-      '@fuel-ui/react': 0.7.0-dev-8f424da_xlxk7dafylgb3n3cj4ze7ifvjm
+      '@fuel-ui/css': 0.7.1-dev-4ff150a
+      '@fuel-ui/react': 0.7.1-dev-4ff150a_xlxk7dafylgb3n3cj4ze7ifvjm
       '@headlessui/react': 1.6.6_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-accordion': 0.1.6_react@18.2.0
       '@radix-ui/react-alert-dialog': 0.1.7_bb2bxwco6ptpubzwpazr52qf6i
@@ -2565,8 +2565,8 @@ packages:
     resolution: {integrity: sha512-X2j76dqN6H0hBMCJqMQOiI1I8mLn3N+Y5wbu5rI9UKVcVQb7UG6tvyYCvs9UmK3U/NCsTw/OO2Jf0/WtRQZBDQ==}
     dev: false
 
-  /@fuel-ui/css/0.7.0-dev-8f424da:
-    resolution: {integrity: sha512-hW9W4jRKwlDXojThSfMv2FfgXp9AWnjr5ayn+HnLJqURmNevEmeSJs8W2NGVYCy0tL8yd/gAWqKftozq/yOcJg==}
+  /@fuel-ui/css/0.7.1-dev-4ff150a:
+    resolution: {integrity: sha512-Y5AtgIV5cUeWsxqGKADDC01YMVBYPK4mF491Gxjc0ZRugFV0L+2Gym5m6f88SyiokO3+nzBCOhBUJZEC1VbZ9w==}
     dependencies:
       '@radix-ui/colors': 0.1.8
       '@stitches/react': 1.2.8_react@18.2.0
@@ -2575,11 +2575,11 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@fuel-ui/react/0.7.0-dev-8f424da_xlxk7dafylgb3n3cj4ze7ifvjm:
-    resolution: {integrity: sha512-ZrP4LcZ6QnDBzm4rlls22kKj2f1p4ObF5U8B+Ec4LwwDZmSbq2hcXmukTk1co1duknuN8roYo+QqC6gZ4vIc7A==}
+  /@fuel-ui/react/0.7.1-dev-4ff150a_xlxk7dafylgb3n3cj4ze7ifvjm:
+    resolution: {integrity: sha512-ZIZU9JO03htoShkXmXPgjQf2x+sLXSGzvrVleI0sN3fIgCqff/Ck1IxiaBNyRULdJaVwXqQRNbQTkFQ8u+6AJg==}
     dependencies:
-      '@fuel-ui/css': 0.7.0-dev-8f424da
-      '@fuel-ui/test-utils': 0.7.0-dev-8f424da_szqdwqlyg7to66paeefk4fuxja
+      '@fuel-ui/css': 0.7.1-dev-4ff150a
+      '@fuel-ui/test-utils': 0.7.1-dev-4ff150a_szqdwqlyg7to66paeefk4fuxja
       '@radix-ui/react-accordion': 1.0.0_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-alert-dialog': 1.0.0_bb2bxwco6ptpubzwpazr52qf6i
       '@radix-ui/react-aspect-ratio': 1.0.0_biqbaboplfbrettd7655fr4n2y
@@ -2627,8 +2627,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@fuel-ui/test-utils/0.7.0-dev-8f424da_szqdwqlyg7to66paeefk4fuxja:
-    resolution: {integrity: sha512-XYawMWEHYcYPvdaFlOngjEoZyOmBcIKuUcAaFZHvfS79YvXwlFV3bMbj+gBcjYPPFIdAVMfthRJ/rvdnBVQclQ==}
+  /@fuel-ui/test-utils/0.7.1-dev-4ff150a_szqdwqlyg7to66paeefk4fuxja:
+    resolution: {integrity: sha512-ZR0Tmn2TWfZ6hWrI9C4PR7/283aapsU8hZ7L5Yx1cCbc3piJDxkBb0Hzcifs3Q0Gxrb3/Z4rYIQ/JUIcKK1lfg==}
     peerDependencies:
       react: '*'
     peerDependenciesMeta:

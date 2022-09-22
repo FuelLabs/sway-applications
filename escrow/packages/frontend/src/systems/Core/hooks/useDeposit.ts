@@ -69,6 +69,8 @@ export function useDeposit({
         if (errors?.length) {
             if (errors[0].message === 'enough coins could not be found') {
                 toast.error('Not enough balance in your wallet to deposit');
+            } else {
+                toast.error(`Error: ${errors[0].message}`)
             }
         } else {
             toast.error('Error when trying to deposit');
