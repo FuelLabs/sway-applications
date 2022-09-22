@@ -1,0 +1,9 @@
+[project]
+authors = ["Fuel Labs <contact@fuel.sh>"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "exchange_contract"
+
+[dependencies]
+exchange_abi = { path = "../exchange_abi" }
+swayswap_helpers = { path = "../swayswap_helpers" }

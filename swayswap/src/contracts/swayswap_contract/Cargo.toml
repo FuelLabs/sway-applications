@@ -1,0 +1,19 @@
+[package]
+authors = ["Fuel Labs <contact@fuel.sh>"]
+edition = "2021"
+license = "Apache-2.0"
+name = "tests"
+version = "0.0.0"
+
+[dependencies]
+fuel-gql-client = { version = "0.6", default-features = false }
+fuel-tx = "0.9"
+fuels-abigen-macro = "0.13"
+fuels = "0.13"
+rand = "0.8"
+tokio = { version = "1.15", features = ["rt", "macros"] }
+
+[[test]]
+harness = true
+name = "tests"
+path = "tests/harness.rs"
