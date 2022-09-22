@@ -65,16 +65,42 @@ impl StakingRewards for Contract {
     #[storage(read, write)]
     fn exit() {
         _withdraw(storage.balances.get(msg_sender().unwrap()));
-        _get_reward();
         log(WithdrawnEvent {
             user: sender,
             amount,
         });
+
+        let sender = msg_sender().unwrap();
+        _update_reward(sender);
+
+        let reward = storage.rewards.get(sender);
+
+        if (reward > 0) {
+            storage.rewards.insert(sender, 0);
+            transfer(reward, storage.rewards_token, sender);
+            log(RewardPaidEvent {
+                user: sender,
+                reward,
+            });
+        }
+        
     }
 
     #[storage(read, write)]
     fn get_reward() {
-        _get_reward();
+        let sender = msg_sender().unwrap();
+        _update_reward(sender);
+
+        let reward = storage.rewards.get(sender);
+
+        if (reward > 0) {
+            storage.rewards.insert(sender, 0);
+            transfer(reward, storage.rewards_token, sender);
+            log(RewardPaidEvent {
+                user: sender,
+                reward,
+            });
+        }
     }
 
     #[storage(read)]
@@ -265,19 +291,7 @@ fn _reward_per_token() -> u64 {
 
 #[storage(read, write)]
 fn _get_reward() {
-    let sender = msg_sender().unwrap();
-    _update_reward(sender);
-
-    let reward = storage.rewards.get(sender);
-
-    if (reward > 0) {
-        storage.rewards.insert(sender, 0);
-        transfer(reward, storage.rewards_token, sender);
-        log(RewardPaidEvent {
-            user: sender,
-            reward,
-        });
-    }
+    
 }
 
 #[storage(read, write)]
