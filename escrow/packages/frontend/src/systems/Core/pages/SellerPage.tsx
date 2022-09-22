@@ -96,7 +96,7 @@ export default function SellerPage() {
   return (
     <Layout>
       <Flex direction="column" justify="center">
-      <Flex css={{ flexDirection: "row", justifyContent: "center" }}>
+        <Flex css={{ flexDirection: "row", justifyContent: "center" }}>
           <CreateEscrow />
           {showBalances && <ShowBalances />}
         </Flex>
@@ -126,31 +126,35 @@ export default function SellerPage() {
                   <div>{`State: ${!!sellerEscrows[0].state.Pending ? "Pending" : "Completed"}`}</div>
                 </Card.Body>
 
-                <Card.Footer justify="space-evenly">
-                  <ArbiterInputContainer
-                    onArbiterAddressChange={handleArbiterAddressChange}
-                    onAssetIdChange={handleArbiterAssetChange}
-                    onFeeChange={handleArbiterFeeChange}
-                    arbiterAddress={arbiter}
-                    asset={arbiterAsset}
-                    feeAmount={arbiterFee}
-                  />
-                  <Button onPress={() => handleProposeArbiter(BigInt(0))}>
-                    Propose Arbiter
-                  </Button>
-                </Card.Footer>
+                {!!sellerEscrows[0].state.Pending &&
+                  <Card.Footer justify="space-evenly">
+                    <ArbiterInputContainer
+                      onArbiterAddressChange={handleArbiterAddressChange}
+                      onAssetIdChange={handleArbiterAssetChange}
+                      onFeeChange={handleArbiterFeeChange}
+                      arbiterAddress={arbiter}
+                      asset={arbiterAsset}
+                      feeAmount={arbiterFee}
+                    />
+                    <Button onPress={() => handleProposeArbiter(BigInt(0))}>
+                      Propose Arbiter
+                    </Button>
+                  </Card.Footer>
+                }
 
-                <Card.Footer justify="space-evenly">
-                  <Button onPress={() => returnDepositMutation.mutate()}>
-                    Return Deposit
-                  </Button>
-                  <Button onPress={() => handleTakePayment(BigInt(0))}>
-                    Take Payment
-                  </Button>
-                  <Button onPress={() => handleWithdrawCollateral(BigInt(0))}>
-                    Withdraw Collateral
-                  </Button>
-                </Card.Footer>
+                {!!sellerEscrows[0].state.Pending &&
+                  <Card.Footer justify="space-evenly">
+                    <Button onPress={() => returnDepositMutation.mutate()}>
+                      Return Deposit
+                    </Button>
+                    <Button onPress={() => handleTakePayment(BigInt(0))}>
+                      Take Payment
+                    </Button>
+                    <Button onPress={() => handleWithdrawCollateral(BigInt(0))}>
+                      Withdraw Collateral
+                    </Button>
+                  </Card.Footer>
+                }
 
                 <Card.Footer direction="row-reverse" gap="$4">
                   <Button leftIcon="DotsThree">

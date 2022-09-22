@@ -60,17 +60,19 @@ export default function BuyerPage() {
                 </Card.Footer>
               }
 
-              <Card.Footer justify="space-evenly">
-                <Button onPress={() => handleAcceptArbiter(BigInt(0))}>
-                  Accept Arbiter
-                </Button>
-                <Button onPress={() => transferToSellerMutation.mutate()}>
-                  Transfer To Seller
-                </Button>
-                <Button onPress={() => disputeMutation.mutate()}>
-                  Dispute
-                </Button>
-              </Card.Footer>
+              {!!buyerEscrows[0].state.Pending &&
+                <Card.Footer justify="space-evenly">
+                  <Button onPress={() => handleAcceptArbiter(BigInt(0))}>
+                    Accept Arbiter
+                  </Button>
+                  <Button onPress={() => transferToSellerMutation.mutate()}>
+                    Transfer To Seller
+                  </Button>
+                  <Button onPress={() => disputeMutation.mutate()}>
+                    Dispute
+                  </Button>
+                </Card.Footer>
+              }
 
               <Card.Footer direction="row-reverse" gap="$4">
                 <Button leftIcon="DotsThree">
