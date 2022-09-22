@@ -1,6 +1,10 @@
 import { formatUnits } from "ethers/lib/utils";
-import { useQueryClient } from "react-query";
+import { QueryClient, useQueryClient } from "react-query";
 import { useWallet } from "../context/AppContext";
+
+import type { EscrowAbi } from "@/types/contracts";
+import { Maybe } from "@/types";
+import { Wallet } from "fuels";
 
 export   const formatValue = (amount: bigint | null | undefined, decimals: number) => {
   if (amount != null) {
@@ -9,10 +13,14 @@ export   const formatValue = (amount: bigint | null | undefined, decimals: numbe
   return "";
 };
 
-export const updateEscrowQueries = () => {
-  const queryClient = useQueryClient();
-  const wallet = useWallet();
+export const updateEscrowQueries = (queryClient: QueryClient, wallet: Maybe<Wallet>) => {
   queryClient.invalidateQueries(["SellerEscrows", wallet]);
   queryClient.invalidateQueries(["BuyerEscrows", wallet]);
   queryClient.invalidateQueries(["ArbiterEscrows", wallet]);
+}
+
+export const contractCheck = (contract: EscrowAbi | null | undefined ) => {
+  if (!contract) {
+    throw new Error('Contract not found');
+  }
 }

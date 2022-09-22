@@ -5,6 +5,7 @@ import { walletIndexAtom } from "../jotai";
 import { txFeedback } from "../utils/feedback";
 import { useContract } from "./useContract";
 import { updateEscrowQueries } from "../utils/helpers";
+import { useWallet } from "../context/AppContext";
 
 interface UseTransferToSellerProps {
     escrowId: bigint;
@@ -12,6 +13,7 @@ interface UseTransferToSellerProps {
 
 export function useTransferToSeller({ escrowId }: UseTransferToSellerProps) {
     const queryClient = useQueryClient();
+    const wallet = useWallet();
     const walletIdx = useAtomValue(walletIndexAtom);
     const contract = useContract();
     const successMsg = "Transfer to seller successful.";
@@ -45,7 +47,7 @@ export function useTransferToSeller({ escrowId }: UseTransferToSellerProps) {
 
     function handleSuccess() {
         // Trigger queries to update components
-        updateEscrowQueries();
+        updateEscrowQueries(queryClient, wallet);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

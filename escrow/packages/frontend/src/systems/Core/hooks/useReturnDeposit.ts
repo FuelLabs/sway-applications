@@ -5,6 +5,7 @@ import { walletIndexAtom } from "../jotai";
 import { txFeedback } from "../utils/feedback";
 import { useContract } from "./useContract";
 import { updateEscrowQueries } from "../utils/helpers";
+import { useWallet } from "../context/AppContext";
 
 interface UseReturnDepositProps {
     escrowId: bigint;
@@ -14,6 +15,7 @@ export function useReturnDeposit({
     escrowId
 }: UseReturnDepositProps) {
     const queryClient = useQueryClient();
+    const wallet = useWallet();
     const walletIdx = useAtomValue(walletIndexAtom);
     const contract = useContract();
     const successMsg = "Deposit returned to buyer.";
@@ -48,7 +50,7 @@ export function useReturnDeposit({
     function handleSuccess() {
         // Trigger queries to update components
         queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
-        updateEscrowQueries();
+        updateEscrowQueries(queryClient, wallet);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

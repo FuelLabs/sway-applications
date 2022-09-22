@@ -112,7 +112,7 @@ export function useCreateEscrow({
 
         // Trigger query to update blanaces etc
         queryClient.invalidateQueries(['EscrowPage-balances', walletIdx]);
-        updateEscrowQueries();
+        updateEscrowQueries(queryClient, wallet);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

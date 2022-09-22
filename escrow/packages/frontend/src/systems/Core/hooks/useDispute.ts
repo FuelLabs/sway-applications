@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { txFeedback } from "../utils/feedback";
 import { useContract } from "./useContract";
 import { updateEscrowQueries } from "../utils/helpers";
+import { useWallet } from "../context/AppContext";
 
 interface UseDisputeProps {
     escrowId: bigint;
@@ -12,6 +13,7 @@ export function useDispute({
     escrowId
 }: UseDisputeProps) {
     const queryClient = useQueryClient();
+    const wallet = useWallet()
     const contract = useContract();
     const successMsg = "Dispute successful.";
 
@@ -42,7 +44,7 @@ export function useDispute({
     );
 
     function handleSuccess() {
-        updateEscrowQueries()
+        updateEscrowQueries(queryClient, wallet);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

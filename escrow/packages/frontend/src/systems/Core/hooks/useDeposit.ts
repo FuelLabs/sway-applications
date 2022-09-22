@@ -1,6 +1,7 @@
 import { useAtomValue } from "jotai";
 import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
+import { useWallet } from "../context/AppContext";
 import { walletIndexAtom } from "../jotai";
 import { txFeedback } from "../utils/feedback";
 import { updateEscrowQueries } from "../utils/helpers";
@@ -20,6 +21,7 @@ export function useDeposit({
     escrowId,
 }: UseDepositProps) {
     const queryClient = useQueryClient();
+    const wallet = useWallet();
     const walletIdx = useAtomValue(walletIndexAtom);
     const contract = useContract();
     const successMsg = "Deposit successful.";
@@ -58,7 +60,7 @@ export function useDeposit({
     function handleSuccess() {
         // Trigger queries to update components
         queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
-        updateEscrowQueries();
+        updateEscrowQueries(queryClient, wallet);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
