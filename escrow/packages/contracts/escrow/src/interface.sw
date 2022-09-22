@@ -21,6 +21,8 @@ abi Escrow {
 
     #[storage(read)]fn arbiter_escrows(arbiter: Identity) -> [u64;1];
 
+    #[storage(read)]fn arbiter_proposals(identifier: u64) -> Option<Arbiter>;
+
     #[storage(read)]fn buyer_escrows(buyer: Identity) -> [u64;1];
 
     /// Creates an internal representation of an escrow instead of deploying a contract per escrow
