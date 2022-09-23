@@ -2,6 +2,4 @@
 authors = ["Bikem"]
 entry = "main.sw"
 license = "Apache-2.0"
-name = "swayswap"
-
-[dependencies]
+name = "scripts"
