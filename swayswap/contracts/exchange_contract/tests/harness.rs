@@ -1,8 +1,8 @@
-use std::{vec, str::FromStr};
-use fuel_tx::{AssetId, ContractId, Bytes32};
-use fuels::prelude::*;
-use fuels_abigen_macro::abigen;
-use fuels::tx::StorageSlot;
+use fuels::{
+    prelude::*,
+    tx::{AssetId, Bytes32, ContractId, StorageSlot},
+};
+use std::{str::FromStr, vec};
 
 ///////////////////////////////
 // Load the Exchange Contract abi
@@ -47,7 +47,11 @@ async fn deposit_and_add_liquidity(
     // It should return the same amount of LP as the amount of ETH deposited
     let result = exchange_instance
         .add_liquidity(1, 1000)
-        .call_params(CallParameters::new(Some(0), Some(token_asset_id.clone()), Some(100_000_000)))
+        .call_params(CallParameters::new(
+            Some(0),
+            Some(token_asset_id.clone()),
+            Some(100_000_000),
+        ))
         .append_variable_outputs(2)
         .tx_params(TxParameters {
             gas_price: 0,
@@ -76,13 +80,14 @@ async fn exchange_contract() {
         "../token_contract/out/debug/token_contract.bin",
         &wallet,
         TxParameters::default(),
-        StorageConfiguration::default()
+        StorageConfiguration::default(),
     )
     .await
     .unwrap();
 
-
-    let key = Bytes32::from_str("0x0000000000000000000000000000000000000000000000000000000000000001").unwrap();
+    let key =
+        Bytes32::from_str("0x0000000000000000000000000000000000000000000000000000000000000001")
+            .unwrap();
     let value = token_contract_id.hash();
     let storage_slot = StorageSlot::new(key, value);
     let storage_vec = vec![storage_slot.clone()];
@@ -96,8 +101,10 @@ async fn exchange_contract() {
     )
     .await
     .unwrap();
-    let exchange_instance = TestExchangeBuilder::new(exchange_contract_id.to_string(), wallet.clone()).build();
-    let token_instance = TestTokenBuilder::new(token_contract_id.to_string(), wallet.clone()).build();
+    let exchange_instance =
+        TestExchangeBuilder::new(exchange_contract_id.to_string(), wallet.clone()).build();
+    let token_instance =
+        TestTokenBuilder::new(token_contract_id.to_string(), wallet.clone()).build();
 
     // Native contract id
     let native_contract_id = ContractId::new(*BASE_ASSET_ID);
@@ -196,7 +203,7 @@ async fn exchange_contract() {
         .call_params(CallParameters::new(
             Some(lp_amount_received),
             Some(lp_asset_id.clone()),
-            Some(100_000_000)
+            Some(100_000_000),
         ))
         .tx_params(TxParameters {
             gas_price: 0,
@@ -266,7 +273,11 @@ async fn exchange_contract() {
     // Get expected swap amount TOKEN -> ETH
     let amount_expected = exchange_instance
         .get_swap_with_minimum(amount)
-        .call_params(CallParameters::new(Some(0), Some(token_asset_id.clone()), None))
+        .call_params(CallParameters::new(
+            Some(0),
+            Some(token_asset_id.clone()),
+            None,
+        ))
         .call()
         .await
         .unwrap();
@@ -277,7 +288,7 @@ async fn exchange_contract() {
         .call_params(CallParameters::new(
             Some(amount),
             Some(token_asset_id.clone()),
-            None
+            None,
         ))
         .append_variable_outputs(1)
         .call()
@@ -328,7 +339,7 @@ async fn exchange_contract() {
         .call_params(CallParameters::new(
             Some(amount_expected.value.amount),
             None,
-            None
+            None,
         ))
         .append_variable_outputs(1)
         .call()
@@ -343,7 +354,11 @@ async fn exchange_contract() {
     // Get expected swap amount TOKEN -> ETH
     let amount_expected = exchange_instance
         .get_swap_with_maximum(amount)
-        .call_params(CallParameters::new(None, Some(token_asset_id.clone()), None))
+        .call_params(CallParameters::new(
+            None,
+            Some(token_asset_id.clone()),
+            None,
+        ))
         .call()
         .await
         .unwrap();
@@ -354,7 +369,7 @@ async fn exchange_contract() {
         .call_params(CallParameters::new(
             Some(amount_expected.value.amount),
             Some(token_asset_id.clone()),
-            None
+            None,
         ))
         .append_variable_outputs(1)
         .call()
@@ -367,7 +382,7 @@ async fn exchange_contract() {
     ////////////////////////////////////////////////////////
 
     let add_liquidity_preview = exchange_instance
-        .get_add_liquidity(eth_to_add_liquidity_amount, *BASE_ASSET_ID)
+        .get_add_liquidity(eth_to_add_liquidity_amount, Bits256(*BASE_ASSET_ID))
         .call_params(CallParameters::new(
             Some(amount_expected.value.amount),
             Some(token_asset_id.clone()),
@@ -387,7 +402,7 @@ async fn exchange_contract() {
         &exchange_instance,
         native_amount_deposit,
         token_asset_id,
-        add_liquidity_preview.value.token_amount
+        add_liquidity_preview.value.token_amount,
     )
     .await
         + lp_amount_received;
@@ -404,7 +419,7 @@ async fn exchange_contract() {
         .call_params(CallParameters::new(
             Some(lp_amount_received),
             Some(lp_asset_id.clone()),
-            Some(100_000_000)
+            Some(100_000_000),
         ))
         .tx_params(TxParameters {
             gas_price: 0,

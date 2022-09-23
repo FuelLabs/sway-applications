@@ -1,6 +1,7 @@
-use fuel_tx::{AssetId, ContractId};
-use fuels::{prelude::*};
-use fuels_abigen_macro::abigen;
+use fuels::{
+    prelude::*,
+    tx::{AssetId, ContractId},
+};
 
 ///////////////////////////////
 // Load the Token Contract abi
@@ -34,7 +35,8 @@ async fn token_contract() {
     )
     .await
     .unwrap();
-    let token_instance = TestTokenBuilder::new(token_contract_id.to_string(), wallet_owner.clone()).build();
+    let token_instance =
+        TestTokenBuilder::new(token_contract_id.to_string(), wallet_owner.clone()).build();
 
     ////////////////////////////////////////////////////////
     // Test Token Contract
@@ -51,7 +53,7 @@ async fn token_contract() {
         .call()
         .await
         .unwrap();
-    
+
     // Contract can be initialized only once
     let is_error = token_instance
         .initialize(token_mint_amount, Address::from(wallet_owner.address()))
@@ -61,24 +63,12 @@ async fn token_contract() {
     assert!(is_error);
 
     // Verify the mint amount
-    let mint_amount_contract = token_instance
-        .get_mint_amount()
-        .call()
-        .await
-        .unwrap();
+    let mint_amount_contract = token_instance.get_mint_amount().call().await.unwrap();
     assert_eq!(mint_amount_contract.value, token_mint_amount);
 
     // Verify update mint amount
-    token_instance
-        .set_mint_amount(1)
-        .call()
-        .await
-        .unwrap();
-    let mint_amount_contract = token_instance
-        .get_mint_amount()
-        .call()
-        .await
-        .unwrap();
+    token_instance.set_mint_amount(1).call().await.unwrap();
+    let mint_amount_contract = token_instance.get_mint_amount().call().await.unwrap();
     assert_eq!(mint_amount_contract.value, 1);
 
     // Update mint amount to the original value
@@ -127,7 +117,8 @@ async fn token_contract() {
     // Test mint and transfer to address
     ////////////////////////////////////////////////////////
 
-    let token_mint1_instance = TestTokenBuilder::new(token_contract_id.to_string(), wallet_mint1.clone()).build();
+    let token_mint1_instance =
+        TestTokenBuilder::new(token_contract_id.to_string(), wallet_mint1.clone()).build();
     // Mint and transfer some alt tokens to the wallet
     token_mint1_instance
         .mint()
@@ -146,15 +137,13 @@ async fn token_contract() {
 
     // Inspect the wallet for alt tokens
     let alt_token_id = AssetId::from(*token_contract_id.hash());
-    let alt_token_balance = wallet_mint1
-        .get_asset_balance(&alt_token_id)
-        .await
-        .unwrap();
+    let alt_token_balance = wallet_mint1.get_asset_balance(&alt_token_id).await.unwrap();
     // The wallet shall received the tokens minted
     assert_eq!(alt_token_balance, token_mint_amount);
 
     //  Other wallet should be able to mint tokens
-    let token_mint2_instance = TestTokenBuilder::new(token_contract_id.to_string(), wallet_mint2.clone()).build();
+    let token_mint2_instance =
+        TestTokenBuilder::new(token_contract_id.to_string(), wallet_mint2.clone()).build();
     token_mint2_instance
         .mint()
         .append_variable_outputs(1)
@@ -163,10 +152,7 @@ async fn token_contract() {
         .unwrap();
 
     // Inspect the wallet for alt tokens
-    let alt_token_balance2 = wallet_mint2
-        .get_asset_balance(&alt_token_id)
-        .await
-        .unwrap();
+    let alt_token_balance2 = wallet_mint2.get_asset_balance(&alt_token_id).await.unwrap();
     // The wallet shall received the tokens minted
     assert_eq!(alt_token_balance2, token_mint_amount);
 
@@ -178,17 +164,9 @@ async fn token_contract() {
     // Check only owner can call contract
     ////////////////////////////////////////////////////////
 
-    let is_error = token_mint1_instance
-        .burn_coins(1)
-        .call()
-        .await
-        .is_err();
+    let is_error = token_mint1_instance.burn_coins(1).call().await.is_err();
     assert!(is_error);
-    let is_error = token_mint1_instance
-        .mint_coins(1)
-        .call()
-        .await
-        .is_err();
+    let is_error = token_mint1_instance.mint_coins(1).call().await.is_err();
     assert!(is_error);
     let is_error = token_mint1_instance
         .set_mint_amount(1)
@@ -197,7 +175,11 @@ async fn token_contract() {
         .is_err();
     assert!(is_error);
     let is_error = token_mint1_instance
-        .transfer_token_to_output(1, ContractId::from(*token_contract_id.hash()), Address::from(wallet_mint2.address()))
+        .transfer_token_to_output(
+            1,
+            ContractId::from(*token_contract_id.hash()),
+            Address::from(wallet_mint2.address()),
+        )
         .call()
         .await
         .is_err();
@@ -224,21 +206,27 @@ async fn token_contract() {
         .call()
         .await
         .unwrap();
-    assert_eq!(contract_native_token_balance.value, send_native_token_amount);
+    assert_eq!(
+        contract_native_token_balance.value,
+        send_native_token_amount
+    );
 
     // Check user balance didn't has the sent native tokens
     let wallet_native_balance_after = wallet_owner
         .get_asset_balance(&BASE_ASSET_ID)
         .await
         .unwrap();
-    assert_eq!(wallet_native_balance_after, wallet_native_balance_before - send_native_token_amount);
+    assert_eq!(
+        wallet_native_balance_after,
+        wallet_native_balance_before - send_native_token_amount
+    );
 
     // Transfer coins back to the wallet from the contract
     token_instance
         .transfer_token_to_output(
             send_native_token_amount,
             ContractId::from(*BASE_ASSET_ID),
-            Address::from(wallet_owner.address())
+            Address::from(wallet_owner.address()),
         )
         .append_variable_outputs(1)
         .call()
