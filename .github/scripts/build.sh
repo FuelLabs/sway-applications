@@ -20,7 +20,7 @@ elif [ $PROJECT = 'multisig-wallet' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'NFT' ]; then
     forc build --path $PROJECT
-elif [ $PROJECT = 'oracle']; then
+elif [ $PROJECT = 'oracle' ]; then
     forc build --path $PROJECT
 else
     echo "project name did not match"
