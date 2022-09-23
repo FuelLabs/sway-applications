@@ -6,4 +6,3 @@ name = "swayswap_contract"
 
 [dependencies]
 swayswap_abi = { path = "../swayswap_abi" }
-swayswap_helpers = { path = "../swayswap_helpers" }
