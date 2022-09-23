@@ -22,4 +22,8 @@ elif [ $PROJECT = 'NFT' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'oracle']; then
     forc build --path $PROJECT
+elif [ $PROJECT = 'swayswap/contracts']; then
+    forc build --path $PROJECT/exchange_contract
+    forc build --path $PROJECT/swayswap_contract
+    forc build --path $PROJECT/token_contract
 fi
