@@ -5,7 +5,10 @@ use std::{
     assert::assert,
     block::*,
     chain::auth::*,
-    context::{*, call_frames::*},
+    context::{
+        *,
+        call_frames::*,
+    },
     contract_id::ContractId,
     hash::*,
     result::*,
@@ -15,13 +18,19 @@ use std::{
     u128::U128,
 };
 
-use exchange_abi::{Exchange, PoolInfo, PositionInfo, PreviewInfo, RemoveLiquidityInfo, PreviewAddLiquidityInfo};
-use swayswap_helpers::get_msg_sender_address_or_panic;
+use exchange_abi::{
+    Exchange,
+    PoolInfo,
+    PositionInfo,
+    PreviewAddLiquidityInfo,
+    PreviewInfo,
+    RemoveLiquidityInfo,
+};
+use swayswap_abi::get_msg_sender_address_or_panic;
 
 ////////////////////////////////////////
 // Constants
 ////////////////////////////////////////
-
 /// Token ID of Ether
 const ETH_ID = 0x0000000000000000000000000000000000000000000000000000000000000000;
 
@@ -38,7 +47,6 @@ const LIQUIDITY_MINER_FEE = 333;
 ////////////////////////////////////////
 // Storage declarations
 ////////////////////////////////////////
-
 storage {
     lp_token_supply: u64 = 0,
     deposits: StorageMap<(Address, ContractId), u64> = StorageMap {},
@@ -47,7 +55,6 @@ storage {
 ////////////////////////////////////////
 // Helper functions
 ////////////////////////////////////////
-
 /// Return token reserve balance
 #[storage(read)]
 fn get_current_reserve(token_id: b256) -> u64 {
@@ -79,7 +86,8 @@ fn mutiply_div(a: u64, b: u64, c: u64) -> u64 {
 
     // TODO remove workaround once https://github.com/FuelLabs/sway/pull/1671 lands.
     match result_wrapped {
-        Result::Ok(inner_value) => inner_value, _ => revert(0), 
+        Result::Ok(inner_value) => inner_value,
+        _ => revert(0),
     }
 }
 
@@ -89,7 +97,8 @@ fn div_mutiply(a: u64, b: u64, c: u64) -> u64 {
 
     // TODO remove workaround once https://github.com/FuelLabs/sway/pull/1671 lands.
     match result_wrapped {
-        Result::Ok(inner_value) => inner_value, _ => revert(0), 
+        Result::Ok(inner_value) => inner_value,
+        _ => revert(0),
     }
 }
 
@@ -102,7 +111,8 @@ fn get_input_price(input_amount: u64, input_reserve: u64, output_reserve: u64) -
     let result_wrapped = (numerator / denominator).as_u64();
     // TODO remove workaround once https://github.com/FuelLabs/sway/pull/1671 lands.
     match result_wrapped {
-        Result::Ok(inner_value) => inner_value, _ => revert(0), 
+        Result::Ok(inner_value) => inner_value,
+        _ => revert(0),
     }
 }
 
@@ -118,7 +128,8 @@ fn get_output_price(output_amount: u64, input_reserve: u64, output_reserve: u64)
     } else {
         // TODO remove workaround once https://github.com/FuelLabs/sway/pull/1671 lands.
         match result_wrapped {
-            Result::Ok(inner_value) => inner_value + 1, _ => revert(0), 
+            Result::Ok(inner_value) => inner_value + 1,
+            _ => revert(0),
         }
     }
 }
@@ -155,7 +166,7 @@ impl Exchange for Contract {
             eth_reserve: eth_reserve,
             token_reserve: token_reserve,
             eth_amount: eth_amount,
-            token_amount: token_amount
+            token_amount: token_amount,
         }
     }
 
@@ -168,7 +179,7 @@ impl Exchange for Contract {
         let mut current_eth_amount = amount;
         let mut lp_token_received = 0;
         let mut token_amount = 0;
-  
+
         if (asset_id == token_id) {
             current_eth_amount = mutiply_div(amount, eth_reserve, token_reserve);
         }
@@ -196,8 +207,14 @@ impl Exchange for Contract {
 
         let sender = get_msg_sender_address_or_panic();
 
-        let total_amount = storage.deposits.get((sender, msg_asset_id())) + msg_amount();
-        storage.deposits.insert((sender, msg_asset_id()), total_amount);
+        let total_amount = storage.deposits.get((
+            sender,
+            msg_asset_id(),
+        )) + msg_amount();
+        storage.deposits.insert((
+            sender,
+            msg_asset_id(),
+        ), total_amount);
     }
 
     #[storage(read, write)]
@@ -225,8 +242,14 @@ impl Exchange for Contract {
 
         let total_liquidity = storage.lp_token_supply;
 
-        let current_eth_amount = storage.deposits.get((sender, ~ContractId::from(ETH_ID)));
-        let current_token_amount = storage.deposits.get((sender, ~ContractId::from(get::<b256>(TOKEN_ID_KEY))));
+        let current_eth_amount = storage.deposits.get((
+            sender,
+            ~ContractId::from(ETH_ID),
+        ));
+        let current_token_amount = storage.deposits.get((
+            sender,
+            ~ContractId::from(get::<b256>(TOKEN_ID_KEY)),
+        ));
 
         assert(current_eth_amount > 0);
 
@@ -284,8 +307,14 @@ impl Exchange for Contract {
         };
 
         // Clear user contract balances after finishing add/create liquidity
-        storage.deposits.insert((sender, ~ContractId::from(get::<b256>(TOKEN_ID_KEY))), 0);
-        storage.deposits.insert((sender, ~ContractId::from(ETH_ID)), 0);
+        storage.deposits.insert((
+            sender,
+            ~ContractId::from(get::<b256>(TOKEN_ID_KEY)),
+        ), 0);
+        storage.deposits.insert((
+            sender,
+            ~ContractId::from(ETH_ID),
+        ), 0);
 
         minted
     }

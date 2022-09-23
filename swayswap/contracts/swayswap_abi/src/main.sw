@@ -1,6 +1,16 @@
 library swayswap_abi;
 
-use std::contract_id::ContractId;
+use std::{chain::auth::{AuthError, msg_sender}, contract_id::ContractId, result::Result};
+
+/// Return the sender as an Address or panic
+pub fn get_msg_sender_address_or_panic() -> Address {
+    let sender: Result<Identity, AuthError> = msg_sender();
+    if let Identity::Address(address) = sender.unwrap() {
+        address
+    } else {
+        revert(0);
+    }
+}
 
 abi SwaySwap {
     // Add exchange contract to the token

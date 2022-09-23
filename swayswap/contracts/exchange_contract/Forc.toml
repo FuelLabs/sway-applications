@@ -6,4 +6,4 @@ name = "exchange_contract"
 
 [dependencies]
 exchange_abi = { path = "../exchange_abi" }
-swayswap_helpers = { path = "../swayswap_helpers" }
+swayswap_abi = { path = "../swayswap_abi" }
