@@ -1,4 +1,4 @@
-FROM ghcr.io/fuellabs/fuel-core:v0.9.6
+FROM ghcr.io/fuellabs/fuel-core:v0.10.1
 
 ARG IP=0.0.0.0
 ARG PORT=4000
@@ -20,13 +20,12 @@ COPY chainConfig.json .
 # https://stackoverflow.com/a/44671685
 # https://stackoverflow.com/a/40454758
 # hadolint ignore=DL3025
-CMD ./fuel-core \
+CMD ./fuel-core run \
     --ip ${IP} \
     --port ${PORT} \
     --db-path ${DB_PATH} \
     --utxo-validation \
     --min-gas-price ${MIN_GAS_PRICE} \
-    --min-byte-price ${MIN_BYTE_PRICE} \
     --chain ./chainConfig.json
 
 EXPOSE ${PORT}

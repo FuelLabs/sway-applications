@@ -1,43 +1,41 @@
 import { readFileSync } from 'fs';
-import type { Wallet } from 'fuels';
-import { CreateTransactionRequest, ZeroBytes32, ContractUtils } from 'fuels';
+import type { JsonAbi, Wallet } from 'fuels';
+import { ContractFactory } from 'fuels';
 import path from 'path';
 import { log } from 'src/log';
+import type { DeployContractOptions } from 'src/types';
 
 function getBinaryName(contractPath: string) {
   const fileName = contractPath.split('/').slice(-1);
   return `/out/debug/${fileName}.bin`;
 }
 
-export async function deployContractBinary(wallet: Wallet, binaryPath: string) {
-  const { GAS_PRICE, BYTE_PRICE } = process.env;
+function getABIName(contractPath: string) {
+  const fileName = contractPath.split('/').slice(-1);
+  return `/out/debug/${fileName}-abi.json`;
+}
+
+export async function deployContractBinary(
+  wallet: Wallet,
+  binaryPath: string,
+  options?: DeployContractOptions
+) {
   if (!wallet) {
     throw new Error('Cannot deploy without wallet');
   }
   const binaryFilePath = path.join(binaryPath, getBinaryName(binaryPath));
+  const abiFilePath = path.join(binaryPath, getABIName(binaryPath));
   log('read binary file from: ', binaryFilePath);
   const bytecode = readFileSync(binaryFilePath);
-  // Calculate contractId
-  const stateRoot = ZeroBytes32;
-  const contractId = ContractUtils.getContractId(bytecode, ZeroBytes32, stateRoot);
-  const request = new CreateTransactionRequest({
-    gasPrice: GAS_PRICE || 3,
-    bytePrice: BYTE_PRICE || 3,
-    gasLimit: 1_000_000,
-    bytecodeWitnessIndex: 0,
-    witnesses: [bytecode],
-  });
-  // Deploy contract using wallet
+  const abiJSON = JSON.parse(readFileSync(abiFilePath).toString()) as JsonAbi;
+  const contractFactory = new ContractFactory(bytecode, abiJSON, wallet);
+
   log('deploy contract');
-  request.addContractCreatedOutput(contractId, stateRoot);
-  // Add input coins on the wallet to deploy contract
-  await wallet.fund(request);
-  // Send deploy transaction
-  log('send [CREATE CONTRACT] transaction to', wallet.provider.url);
-  const response = await wallet.sendTransaction(request);
-  // Await contract to be fully deployed
-  log('Waiting contract to be fully deployed');
-  await response.wait();
-  log('contract successful deployed to', contractId);
-  return contractId;
+  const contract = await contractFactory.deployContract({
+    gasLimit: 1_000_000,
+    storageSlots: [],
+    ...options,
+  });
+  log('contract successful deployed');
+  return contract.id.toB256();
 }

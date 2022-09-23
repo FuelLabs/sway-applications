@@ -1,5 +1,5 @@
+import { runTypeChain, glob } from 'fuelchain';
 import type { Config } from 'src/types';
-import { runTypeChain, glob } from 'typechain';
 
 // Generate types using typechain
 // and typechain-target-fuels modules
