@@ -15,6 +15,7 @@ import { useTransferToSeller } from "../hooks/useTransferToSeller";
 import { useDispute } from "../hooks/useDispute";
 import { EscrowInfo } from "../components/EscrowInfo";
 import { useArbiterProposal } from "../hooks/useArbiterProposal";
+import { useAcceptArbiter } from "../hooks/useAcceptArbiter";
 
 export default function BuyerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
@@ -22,11 +23,9 @@ export default function BuyerPage() {
   const contract = useContract();
   const transferToSellerMutation = useTransferToSeller({ escrowId: BigInt(0) });
   const disputeMutation = useDispute({ escrowId: BigInt(0) });
+  const acceptArbiterMutation = useAcceptArbiter({ escrowId: BigInt(0) });
   const arbiterProposal = useArbiterProposal(BigInt(0));
 
-  const handleAcceptArbiter = (escrowId: bigint) => {
-
-  }
 
   return (
     <Layout>
@@ -40,25 +39,24 @@ export default function BuyerPage() {
               <EscrowInfo escrows={buyerEscrows} />
 
               {!buyerEscrows[0].buyer.asset &&
-                <Card.Footer>
+                <Card.Footer justify="space-evenly">
                   <Deposit escrowId={BigInt(0)} />
                 </Card.Footer>
               }
 
               {(!!buyerEscrows[0].state.Pending && arbiterProposal?.Some) &&
                 <Card.Footer justify="space-evenly">
-                    <div>{`Arbiter: ${arbiterProposal.Some?.address}`}</div>
-                    <div>{`Fee: ${arbiterProposal.Some?.fee_amount}`}</div>
-                    <div>{`Asset: ${arbiterProposal.Some?.asset}`}</div>
+                  <div>{`Arbiter: ${arbiterProposal.Some?.address}`}</div>
+                  <div>{`Fee: ${arbiterProposal.Some?.fee_amount}`}</div>
+                  <div>{`Asset: ${arbiterProposal.Some?.asset}`}</div>
+                  <Button onPress={() => acceptArbiterMutation.mutate()}>
+                    Accept Arbiter
+                  </Button>
                 </Card.Footer>
-
               }
 
               {!!buyerEscrows[0].state.Pending &&
                 <Card.Footer justify="space-evenly">
-                  <Button onPress={() => handleAcceptArbiter(BigInt(0))}>
-                    Accept Arbiter
-                  </Button>
                   <Button onPress={() => transferToSellerMutation.mutate()}>
                     Transfer To Seller
                   </Button>

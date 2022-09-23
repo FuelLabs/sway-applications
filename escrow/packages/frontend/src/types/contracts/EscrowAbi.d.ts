@@ -10,9 +10,10 @@ import type {
   BytesLike,
   BigNumberish,
   InvokeFunction,
+  BN,
 } from "fuels";
 
-import type { Enum } from "./common";
+import type { Enum, Option } from "./common";
 
 export type AddressInput = { value: string };
 
@@ -31,12 +32,12 @@ export type ArbiterInput = {
 export type ArbiterOutput = {
   address: IdentityOutput;
   asset: ContractIdOutput;
-  fee_amount: bigint;
+  fee_amount: BN;
 };
 
 export type AssetInput = { amount: BigNumberish; id: ContractIdInput };
 
-export type AssetOutput = { amount: bigint; id: ContractIdOutput };
+export type AssetOutput = { amount: BN; id: ContractIdOutput };
 
 export type BuyerInput = {
   address: IdentityInput;
@@ -47,7 +48,7 @@ export type BuyerInput = {
 export type BuyerOutput = {
   address: IdentityOutput;
   asset: OptionOutput;
-  deposited_amount: bigint;
+  deposited_amount: BN;
 };
 
 export type SellerInput = { address: IdentityInput };
@@ -56,7 +57,7 @@ export type SellerOutput = { address: IdentityOutput };
 
 export type EscrowInfoInput = {
   arbiter: ArbiterInput;
-  assets: [AssetInput, AssetInput];
+  assets: [any, any];
   buyer: BuyerInput;
   deadline: BigNumberish;
   disputed: boolean;
@@ -66,9 +67,9 @@ export type EscrowInfoInput = {
 
 export type EscrowInfoOutput = {
   arbiter: ArbiterOutput;
-  assets: [AssetOutput, AssetOutput];
+  assets: [any, any];
   buyer: BuyerOutput;
-  deadline: bigint;
+  deadline: BN;
   disputed: boolean;
   seller: SellerOutput;
   state: StateOutput;
@@ -84,9 +85,9 @@ export type IdentityOutput = Enum<{
   ContractId: ContractIdOutput;
 }>;
 
-export type OptionInput = Enum<{ None: []; Some: ArbiterInput }>;
+export type OptionInput = Option<[]>;
 
-export type OptionOutput = Enum<{ None: []; Some: ArbiterOutput }>;
+export type OptionOutput = Option<[]>;
 
 export type StateInput = Enum<{ Pending: []; Completed: [] }>;
 
@@ -129,12 +130,7 @@ interface EscrowAbiInterface extends Interface {
   ): Uint8Array;
   encodeFunctionData(
     functionFragment: "create_escrow",
-    values: [
-      ArbiterInput,
-      [AssetInput, AssetInput],
-      IdentityInput,
-      BigNumberish
-    ]
+    values: [ArbiterInput, [any, any], IdentityInput, BigNumberish]
   ): Uint8Array;
   encodeFunctionData(
     functionFragment: "deposit",
@@ -244,16 +240,16 @@ export class EscrowAbi extends Contract {
   functions: {
     accept_arbiter: InvokeFunction<[identifier: BigNumberish], void>;
 
-    arbiter_escrows: InvokeFunction<[arbiter: IdentityInput], [bigint]>;
+    arbiter_escrows: InvokeFunction<[arbiter: IdentityInput], [any]>;
 
     arbiter_proposals: InvokeFunction<[identifier: BigNumberish], OptionOutput>;
 
-    buyer_escrows: InvokeFunction<[buyer: IdentityInput], [bigint]>;
+    buyer_escrows: InvokeFunction<[buyer: IdentityInput], [any]>;
 
     create_escrow: InvokeFunction<
       [
         arbiter: ArbiterInput,
-        assets: [AssetInput, AssetInput],
+        assets: [any, any],
         buyer: IdentityInput,
         deadline: BigNumberish
       ],
@@ -282,7 +278,7 @@ export class EscrowAbi extends Contract {
 
     return_deposit: InvokeFunction<[identifier: BigNumberish], void>;
 
-    seller_escrows: InvokeFunction<[seller: IdentityInput], [bigint]>;
+    seller_escrows: InvokeFunction<[seller: IdentityInput], [any]>;
 
     take_payment: InvokeFunction<[identifier: BigNumberish], void>;
 

@@ -1,11 +1,12 @@
 import * as ethers from '@ethersproject/units';
 import { Decimal } from 'decimal.js';
+import { bn } from 'fuels';
 import type { BigNumberish } from 'fuels';
 
 import { DECIMAL_PLACES, FIXED_UNITS } from '../../../config';
 import type { Maybe } from '../../../types';
 
-export const ZERO = toBigInt(0);
+export const ZERO = bn(0);
 
 export const ONE_ASSET = parseUnits('1', DECIMAL_PLACES);
 // Max value supported
@@ -23,7 +24,7 @@ export function toFixed(number: Maybe<BigNumberish>, maxDecimals: number = FIXED
 }
 
 export function toNumber(number: Maybe<BigNumberish>) {
-  return Number(BigInt(number || '0'));
+  return Number(bn(number || '0'));
 }
 
 export function parseUnits(number: string, precision: number = DECIMAL_PLACES) {
@@ -33,17 +34,17 @@ export function parseUnits(number: string, precision: number = DECIMAL_PLACES) {
 export function parseInputValueBigInt(value: string) {
   if (value !== '') {
     const nextValue = value === '.' ? '0.' : value;
-    return toBigInt(parseUnits(nextValue));
+    return bn(parseUnits(nextValue));
   }
   return ZERO;
 }
 
-export function toBigInt(number: BigNumberish) {
-  return BigInt(number);
+export function toBN(number: BigNumberish) {
+  return bn(number);
 }
 
 export function formatUnits(number: BigNumberish, precision: number = DECIMAL_PLACES): string {
-  return ethers.formatUnits(number, precision);
+  return ethers.formatUnits(number.toString(), precision);
 }
 
 export function divideFn(value?: Maybe<BigNumberish>, by?: Maybe<BigNumberish>) {
@@ -62,7 +63,7 @@ export function parseToFormattedNumber(
 ) {
   let val = value;
   if (typeof value === 'number') {
-    val = BigInt(Math.trunc(value));
+    val = bn(Math.trunc(value));
   }
   return ethers.commify(toFixed(formatUnits(val, precision), FIXED_UNITS));
 }

@@ -10,6 +10,7 @@ import type {
   BytesLike,
   BigNumberish,
   InvokeFunction,
+  BN,
 } from "fuels";
 
 export type AddressInput = { value: string };

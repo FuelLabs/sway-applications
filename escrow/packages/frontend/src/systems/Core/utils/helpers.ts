@@ -4,11 +4,11 @@ import { useWallet } from "../context/AppContext";
 
 import type { EscrowAbi } from "@/types/contracts";
 import { Maybe } from "@/types";
-import { Wallet } from "fuels";
+import { BigNumberish, Wallet } from "fuels";
 
-export   const formatValue = (amount: bigint | null | undefined, decimals: number) => {
+export   const formatValue = (amount: BigNumberish | null | undefined, decimals: number) => {
   if (amount != null) {
-    return formatUnits(amount, decimals);
+    return formatUnits(amount.toString(), decimals);
   }
   return "";
 };

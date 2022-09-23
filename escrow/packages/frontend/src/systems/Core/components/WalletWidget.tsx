@@ -1,7 +1,7 @@
 import { css } from "@fuel-ui/css";
 import { Button } from "@fuel-ui/react";
 import clipboard from "clipboard";
-import { toBigInt } from "fuels";
+import { bn } from "fuels";
 import type { CoinQuantity } from "fuels";
 import { useAtom, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
@@ -32,7 +32,7 @@ export const WalletWidget = () => {
   const wallet = useWallet();
   const setCurrentWalletIndex = useSetAtom(walletIndexAtom);
   const [, setBalance] = useState<CoinQuantity | null>({
-    amount: toBigInt(0),
+    amount: bn(0),
     assetId: "",
   });
   const [showBalance, setShowBalance] = useAtom(showBalancesAtom);
@@ -57,7 +57,7 @@ export const WalletWidget = () => {
     wallets?.forEach((nextWallet, i) => {
       walletOptions.push(
         <option key={i} value={i}>
-          {nextWallet?.address.slice(0, 4)}...{nextWallet?.address.slice(-4)} (
+          {nextWallet?.address.toHexString().slice(0, 4)}...{nextWallet?.address.toHexString().slice(-4)} (
           {WALLET_NAMES[i]})
         </option>
       );
@@ -74,7 +74,7 @@ export const WalletWidget = () => {
   };
 
   const handleCopy = () => {
-    clipboard.copy(wallet!.address);
+    clipboard.copy(wallet!.address.toHexString());
     toast("Address copied", { icon: "✨" });
   };
 

@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "react-query";
 import toast from 'react-hot-toast';
 import { useAtomValue } from "jotai";
+import { bn } from "fuels";
 
 import { useContract } from "./useContract";
 import { parseInputValueBigInt } from "../utils/math";
@@ -9,7 +10,7 @@ import { txFeedback } from "../utils/feedback";
 import React from "react";
 import { walletIndexAtom } from "../jotai";
 import { useWallet } from "../context/AppContext";
-import { updateEscrowQueries } from "../utils/helpers";
+import { contractCheck, updateEscrowQueries } from "../utils/helpers";
 
 // TODO it may be a good idea to refactor this to resemble
 // UseAddLiquidityProps from SwaySwap
@@ -57,9 +58,7 @@ export function useCreateEscrow({
 
     const mutation = useMutation(
         async () => {
-            if (!contract) {
-                throw new Error('Contract not found');
-            }
+            contractCheck(contract);
 
             // TODO make this more flexible for assets of arbitrary decimal precision
             const actualFee = parseInputValueBigInt(arbiterFee!);
@@ -81,11 +80,10 @@ export function useCreateEscrow({
             const scope = await contract!.functions
                 .create_escrow(arbiterArg, assetsArg, buyerArg, deadline)
                 .callParams({
-                    forward: [actualFee, arbiterAsset]
+                    forward: { amount: actualFee, assetId: arbiterAsset }
                 })
                 .txParams({
-                    gasPrice: BigInt(5),
-                    bytePrice: BigInt(5),
+                    gasPrice: bn(5),
                     gasLimit: 100_000_000,
                 })
                 .fundWithRequiredCoins();

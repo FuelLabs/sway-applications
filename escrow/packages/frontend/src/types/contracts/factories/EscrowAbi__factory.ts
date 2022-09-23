@@ -2,225 +2,183 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { Provider, Wallet } from "fuels";
+import type { Provider, Wallet, AbstractAddress } from "fuels";
 import { Interface, Contract } from "fuels";
 import type { EscrowAbi, EscrowAbiInterface } from "../EscrowAbi";
 const _abi = [
   {
     type: "function",
-    inputs: [
-      {
-        name: "identifier",
-        type: "u64",
-        components: null,
-        typeArguments: null,
-      },
-    ],
     name: "accept_arbiter",
-    outputs: [
-      {
-        name: "",
-        type: "()",
-        components: [],
-        typeArguments: null,
-      },
-    ],
-  },
-  {
-    type: "function",
     inputs: [
       {
-        name: "arbiter",
-        type: "enum Identity",
-        components: [
-          {
-            name: "Address",
-            type: "struct Address",
-            components: [
-              {
-                name: "value",
-                type: "b256",
-                components: null,
-                typeArguments: null,
-              },
-            ],
-            typeArguments: null,
-          },
-          {
-            name: "ContractId",
-            type: "struct ContractId",
-            components: [
-              {
-                name: "value",
-                type: "b256",
-                components: null,
-                typeArguments: null,
-              },
-            ],
-            typeArguments: null,
-          },
-        ],
-        typeArguments: null,
-      },
-    ],
-    name: "arbiter_escrows",
-    outputs: [
-      {
-        name: "",
-        type: "[u64; 1]",
-        components: [
-          {
-            name: "__array_element",
-            type: "u64",
-            components: null,
-            typeArguments: null,
-          },
-        ],
-        typeArguments: null,
-      },
-    ],
-  },
-  {
-    type: "function",
-    inputs: [
-      {
-        name: "identifier",
         type: "u64",
-        components: null,
-        typeArguments: null,
+        name: "identifier",
       },
     ],
-    name: "arbiter_proposals",
     outputs: [
       {
+        type: "()",
         name: "",
-        type: "enum Option",
+        components: [],
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "arbiter_escrows",
+    inputs: [
+      {
+        type: "enum Identity",
+        name: "arbiter",
         components: [
           {
-            name: "None",
-            type: "()",
-            components: [],
-            typeArguments: null,
-          },
-          {
-            name: "Some",
-            type: "struct Arbiter",
+            type: "struct Address",
+            name: "Address",
             components: [
               {
-                name: "address",
-                type: "enum Identity",
-                components: [
-                  {
-                    name: "Address",
-                    type: "struct Address",
-                    components: [
-                      {
-                        name: "value",
-                        type: "b256",
-                        components: null,
-                        typeArguments: null,
-                      },
-                    ],
-                    typeArguments: null,
-                  },
-                  {
-                    name: "ContractId",
-                    type: "struct ContractId",
-                    components: [
-                      {
-                        name: "value",
-                        type: "b256",
-                        components: null,
-                        typeArguments: null,
-                      },
-                    ],
-                    typeArguments: null,
-                  },
-                ],
-                typeArguments: null,
-              },
-              {
-                name: "asset",
-                type: "struct ContractId",
-                components: [
-                  {
-                    name: "value",
-                    type: "b256",
-                    components: null,
-                    typeArguments: null,
-                  },
-                ],
-                typeArguments: null,
-              },
-              {
-                name: "fee_amount",
-                type: "u64",
-                components: null,
-                typeArguments: null,
+                type: "b256",
+                name: "value",
               },
             ],
-            typeArguments: null,
+          },
+          {
+            type: "struct ContractId",
+            name: "ContractId",
+            components: [
+              {
+                type: "b256",
+                name: "value",
+              },
+            ],
           },
         ],
+      },
+    ],
+    outputs: [
+      {
+        type: "[_; 1]",
+        name: "",
+        components: [
+          {
+            type: "u64",
+            name: "__array_element",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "arbiter_proposals",
+    inputs: [
+      {
+        type: "u64",
+        name: "identifier",
+      },
+    ],
+    outputs: [
+      {
+        type: "enum Option",
+        name: "",
         typeArguments: [
           {
-            name: "T",
             type: "struct Arbiter",
+            name: "",
             components: [
               {
-                name: "address",
                 type: "enum Identity",
+                name: "address",
                 components: [
                   {
-                    name: "Address",
                     type: "struct Address",
+                    name: "Address",
                     components: [
                       {
-                        name: "value",
                         type: "b256",
-                        components: null,
-                        typeArguments: null,
+                        name: "value",
                       },
                     ],
-                    typeArguments: null,
                   },
                   {
-                    name: "ContractId",
                     type: "struct ContractId",
+                    name: "ContractId",
                     components: [
                       {
-                        name: "value",
                         type: "b256",
-                        components: null,
-                        typeArguments: null,
+                        name: "value",
                       },
                     ],
-                    typeArguments: null,
                   },
                 ],
-                typeArguments: null,
               },
               {
-                name: "asset",
                 type: "struct ContractId",
+                name: "asset",
                 components: [
                   {
-                    name: "value",
                     type: "b256",
-                    components: null,
-                    typeArguments: null,
+                    name: "value",
                   },
                 ],
-                typeArguments: null,
               },
               {
-                name: "fee_amount",
                 type: "u64",
-                components: null,
-                typeArguments: null,
+                name: "fee_amount",
               },
             ],
-            typeArguments: null,
+          },
+        ],
+        components: [
+          {
+            type: "()",
+            name: "None",
+            components: [],
+          },
+          {
+            type: "struct Arbiter",
+            name: "Some",
+            components: [
+              {
+                type: "enum Identity",
+                name: "address",
+                components: [
+                  {
+                    type: "struct Address",
+                    name: "Address",
+                    components: [
+                      {
+                        type: "b256",
+                        name: "value",
+                      },
+                    ],
+                  },
+                  {
+                    type: "struct ContractId",
+                    name: "ContractId",
+                    components: [
+                      {
+                        type: "b256",
+                        name: "value",
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: "struct ContractId",
+                name: "asset",
+                components: [
+                  {
+                    type: "b256",
+                    name: "value",
+                  },
+                ],
+              },
+              {
+                type: "u64",
+                name: "fee_amount",
+              },
+            ],
           },
         ],
       },
@@ -228,782 +186,631 @@ const _abi = [
   },
   {
     type: "function",
-    inputs: [
-      {
-        name: "buyer",
-        type: "enum Identity",
-        components: [
-          {
-            name: "Address",
-            type: "struct Address",
-            components: [
-              {
-                name: "value",
-                type: "b256",
-                components: null,
-                typeArguments: null,
-              },
-            ],
-            typeArguments: null,
-          },
-          {
-            name: "ContractId",
-            type: "struct ContractId",
-            components: [
-              {
-                name: "value",
-                type: "b256",
-                components: null,
-                typeArguments: null,
-              },
-            ],
-            typeArguments: null,
-          },
-        ],
-        typeArguments: null,
-      },
-    ],
     name: "buyer_escrows",
-    outputs: [
-      {
-        name: "",
-        type: "[u64; 1]",
-        components: [
-          {
-            name: "__array_element",
-            type: "u64",
-            components: null,
-            typeArguments: null,
-          },
-        ],
-        typeArguments: null,
-      },
-    ],
-  },
-  {
-    type: "function",
     inputs: [
       {
-        name: "arbiter",
-        type: "struct Arbiter",
-        components: [
-          {
-            name: "address",
-            type: "enum Identity",
-            components: [
-              {
-                name: "Address",
-                type: "struct Address",
-                components: [
-                  {
-                    name: "value",
-                    type: "b256",
-                    components: null,
-                    typeArguments: null,
-                  },
-                ],
-                typeArguments: null,
-              },
-              {
-                name: "ContractId",
-                type: "struct ContractId",
-                components: [
-                  {
-                    name: "value",
-                    type: "b256",
-                    components: null,
-                    typeArguments: null,
-                  },
-                ],
-                typeArguments: null,
-              },
-            ],
-            typeArguments: null,
-          },
-          {
-            name: "asset",
-            type: "struct ContractId",
-            components: [
-              {
-                name: "value",
-                type: "b256",
-                components: null,
-                typeArguments: null,
-              },
-            ],
-            typeArguments: null,
-          },
-          {
-            name: "fee_amount",
-            type: "u64",
-            components: null,
-            typeArguments: null,
-          },
-        ],
-        typeArguments: null,
-      },
-      {
-        name: "assets",
-        type: "[struct Asset; 2]",
-        components: [
-          {
-            name: "__array_element",
-            type: "struct Asset",
-            components: [
-              {
-                name: "amount",
-                type: "u64",
-                components: null,
-                typeArguments: null,
-              },
-              {
-                name: "id",
-                type: "struct ContractId",
-                components: [
-                  {
-                    name: "value",
-                    type: "b256",
-                    components: null,
-                    typeArguments: null,
-                  },
-                ],
-                typeArguments: null,
-              },
-            ],
-            typeArguments: null,
-          },
-        ],
-        typeArguments: null,
-      },
-      {
-        name: "buyer",
         type: "enum Identity",
+        name: "buyer",
         components: [
           {
-            name: "Address",
             type: "struct Address",
+            name: "Address",
             components: [
               {
-                name: "value",
                 type: "b256",
-                components: null,
-                typeArguments: null,
+                name: "value",
               },
             ],
-            typeArguments: null,
           },
           {
-            name: "ContractId",
             type: "struct ContractId",
+            name: "ContractId",
             components: [
               {
-                name: "value",
                 type: "b256",
-                components: null,
-                typeArguments: null,
+                name: "value",
               },
             ],
-            typeArguments: null,
           },
         ],
-        typeArguments: null,
-      },
-      {
-        name: "deadline",
-        type: "u64",
-        components: null,
-        typeArguments: null,
       },
     ],
-    name: "create_escrow",
     outputs: [
       {
+        type: "[_; 1]",
         name: "",
-        type: "()",
-        components: [],
-        typeArguments: null,
-      },
-    ],
-  },
-  {
-    type: "function",
-    inputs: [
-      {
-        name: "identifier",
-        type: "u64",
-        components: null,
-        typeArguments: null,
-      },
-    ],
-    name: "deposit",
-    outputs: [
-      {
-        name: "",
-        type: "()",
-        components: [],
-        typeArguments: null,
-      },
-    ],
-  },
-  {
-    type: "function",
-    inputs: [
-      {
-        name: "identifier",
-        type: "u64",
-        components: null,
-        typeArguments: null,
-      },
-    ],
-    name: "dispute",
-    outputs: [
-      {
-        name: "",
-        type: "()",
-        components: [],
-        typeArguments: null,
-      },
-    ],
-  },
-  {
-    type: "function",
-    inputs: [
-      {
-        name: "identifier",
-        type: "u64",
-        components: null,
-        typeArguments: null,
-      },
-    ],
-    name: "escrows",
-    outputs: [
-      {
-        name: "",
-        type: "struct EscrowInfo",
         components: [
           {
-            name: "arbiter",
-            type: "struct Arbiter",
+            type: "u64",
+            name: "__array_element",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "create_escrow",
+    inputs: [
+      {
+        type: "struct Arbiter",
+        name: "arbiter",
+        components: [
+          {
+            type: "enum Identity",
+            name: "address",
             components: [
               {
-                name: "address",
-                type: "enum Identity",
+                type: "struct Address",
+                name: "Address",
                 components: [
                   {
-                    name: "Address",
-                    type: "struct Address",
-                    components: [
-                      {
-                        name: "value",
-                        type: "b256",
-                        components: null,
-                        typeArguments: null,
-                      },
-                    ],
-                    typeArguments: null,
-                  },
-                  {
-                    name: "ContractId",
-                    type: "struct ContractId",
-                    components: [
-                      {
-                        name: "value",
-                        type: "b256",
-                        components: null,
-                        typeArguments: null,
-                      },
-                    ],
-                    typeArguments: null,
-                  },
-                ],
-                typeArguments: null,
-              },
-              {
-                name: "asset",
-                type: "struct ContractId",
-                components: [
-                  {
-                    name: "value",
                     type: "b256",
-                    components: null,
-                    typeArguments: null,
+                    name: "value",
                   },
                 ],
-                typeArguments: null,
               },
               {
-                name: "fee_amount",
+                type: "struct ContractId",
+                name: "ContractId",
+                components: [
+                  {
+                    type: "b256",
+                    name: "value",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: "struct ContractId",
+            name: "asset",
+            components: [
+              {
+                type: "b256",
+                name: "value",
+              },
+            ],
+          },
+          {
+            type: "u64",
+            name: "fee_amount",
+          },
+        ],
+      },
+      {
+        type: "[_; 2]",
+        name: "assets",
+        components: [
+          {
+            type: "struct Asset",
+            name: "__array_element",
+            components: [
+              {
                 type: "u64",
-                components: null,
-                typeArguments: null,
+                name: "amount",
               },
-            ],
-            typeArguments: null,
-          },
-          {
-            name: "assets",
-            type: "[struct Asset; 2]",
-            components: [
               {
-                name: "__array_element",
-                type: "struct Asset",
+                type: "struct ContractId",
+                name: "id",
                 components: [
                   {
-                    name: "amount",
-                    type: "u64",
-                    components: null,
-                    typeArguments: null,
-                  },
-                  {
-                    name: "id",
-                    type: "struct ContractId",
-                    components: [
-                      {
-                        name: "value",
-                        type: "b256",
-                        components: null,
-                        typeArguments: null,
-                      },
-                    ],
-                    typeArguments: null,
+                    type: "b256",
+                    name: "value",
                   },
                 ],
-                typeArguments: null,
               },
             ],
-            typeArguments: null,
           },
+        ],
+      },
+      {
+        type: "enum Identity",
+        name: "buyer",
+        components: [
           {
-            name: "buyer",
-            type: "struct Buyer",
+            type: "struct Address",
+            name: "Address",
             components: [
               {
-                name: "address",
+                type: "b256",
+                name: "value",
+              },
+            ],
+          },
+          {
+            type: "struct ContractId",
+            name: "ContractId",
+            components: [
+              {
+                type: "b256",
+                name: "value",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: "u64",
+        name: "deadline",
+      },
+    ],
+    outputs: [
+      {
+        type: "()",
+        name: "",
+        components: [],
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "deposit",
+    inputs: [
+      {
+        type: "u64",
+        name: "identifier",
+      },
+    ],
+    outputs: [
+      {
+        type: "()",
+        name: "",
+        components: [],
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "dispute",
+    inputs: [
+      {
+        type: "u64",
+        name: "identifier",
+      },
+    ],
+    outputs: [
+      {
+        type: "()",
+        name: "",
+        components: [],
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "escrows",
+    inputs: [
+      {
+        type: "u64",
+        name: "identifier",
+      },
+    ],
+    outputs: [
+      {
+        type: "struct EscrowInfo",
+        name: "",
+        components: [
+          {
+            type: "struct Arbiter",
+            name: "arbiter",
+            components: [
+              {
                 type: "enum Identity",
+                name: "address",
                 components: [
                   {
-                    name: "Address",
                     type: "struct Address",
+                    name: "Address",
                     components: [
                       {
-                        name: "value",
                         type: "b256",
-                        components: null,
-                        typeArguments: null,
+                        name: "value",
                       },
                     ],
-                    typeArguments: null,
                   },
                   {
-                    name: "ContractId",
                     type: "struct ContractId",
+                    name: "ContractId",
                     components: [
                       {
-                        name: "value",
                         type: "b256",
-                        components: null,
-                        typeArguments: null,
+                        name: "value",
                       },
                     ],
-                    typeArguments: null,
                   },
                 ],
-                typeArguments: null,
               },
               {
+                type: "struct ContractId",
                 name: "asset",
-                type: "enum Option",
                 components: [
                   {
-                    name: "None",
-                    type: "()",
-                    components: [],
-                    typeArguments: null,
-                  },
-                  {
-                    name: "Some",
-                    type: "struct ContractId",
-                    components: [
-                      {
-                        name: "value",
-                        type: "b256",
-                        components: null,
-                        typeArguments: null,
-                      },
-                    ],
-                    typeArguments: null,
+                    type: "b256",
+                    name: "value",
                   },
                 ],
+              },
+              {
+                type: "u64",
+                name: "fee_amount",
+              },
+            ],
+          },
+          {
+            type: "[_; 2]",
+            name: "assets",
+            components: [
+              {
+                type: "struct Asset",
+                name: "__array_element",
+                components: [
+                  {
+                    type: "u64",
+                    name: "amount",
+                  },
+                  {
+                    type: "struct ContractId",
+                    name: "id",
+                    components: [
+                      {
+                        type: "b256",
+                        name: "value",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: "struct Buyer",
+            name: "buyer",
+            components: [
+              {
+                type: "enum Identity",
+                name: "address",
+                components: [
+                  {
+                    type: "struct Address",
+                    name: "Address",
+                    components: [
+                      {
+                        type: "b256",
+                        name: "value",
+                      },
+                    ],
+                  },
+                  {
+                    type: "struct ContractId",
+                    name: "ContractId",
+                    components: [
+                      {
+                        type: "b256",
+                        name: "value",
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: "enum Option",
+                name: "asset",
                 typeArguments: [
                   {
-                    name: "T",
                     type: "struct ContractId",
+                    name: "",
                     components: [
                       {
-                        name: "value",
                         type: "b256",
-                        components: null,
-                        typeArguments: null,
+                        name: "value",
                       },
                     ],
-                    typeArguments: null,
+                  },
+                ],
+                components: [
+                  {
+                    type: "()",
+                    name: "None",
+                    components: [],
+                  },
+                  {
+                    type: "struct ContractId",
+                    name: "Some",
+                    components: [
+                      {
+                        type: "b256",
+                        name: "value",
+                      },
+                    ],
                   },
                 ],
               },
               {
-                name: "deposited_amount",
                 type: "u64",
-                components: null,
-                typeArguments: null,
+                name: "deposited_amount",
               },
             ],
-            typeArguments: null,
           },
           {
+            type: "u64",
             name: "deadline",
-            type: "u64",
-            components: null,
-            typeArguments: null,
           },
           {
-            name: "disputed",
             type: "bool",
-            components: null,
-            typeArguments: null,
+            name: "disputed",
           },
           {
-            name: "seller",
             type: "struct Seller",
+            name: "seller",
             components: [
               {
-                name: "address",
                 type: "enum Identity",
+                name: "address",
                 components: [
                   {
-                    name: "Address",
                     type: "struct Address",
+                    name: "Address",
                     components: [
                       {
-                        name: "value",
                         type: "b256",
-                        components: null,
-                        typeArguments: null,
+                        name: "value",
                       },
                     ],
-                    typeArguments: null,
                   },
                   {
-                    name: "ContractId",
                     type: "struct ContractId",
+                    name: "ContractId",
                     components: [
                       {
-                        name: "value",
                         type: "b256",
-                        components: null,
-                        typeArguments: null,
+                        name: "value",
                       },
                     ],
-                    typeArguments: null,
                   },
                 ],
-                typeArguments: null,
               },
             ],
-            typeArguments: null,
           },
           {
-            name: "state",
             type: "enum State",
+            name: "state",
             components: [
               {
+                type: "()",
                 name: "Pending",
-                type: "()",
                 components: [],
-                typeArguments: null,
               },
               {
+                type: "()",
                 name: "Completed",
-                type: "()",
                 components: [],
-                typeArguments: null,
               },
             ],
-            typeArguments: null,
           },
         ],
-        typeArguments: null,
       },
     ],
   },
   {
     type: "function",
-    inputs: [
-      {
-        name: "arbiter",
-        type: "struct Arbiter",
-        components: [
-          {
-            name: "address",
-            type: "enum Identity",
-            components: [
-              {
-                name: "Address",
-                type: "struct Address",
-                components: [
-                  {
-                    name: "value",
-                    type: "b256",
-                    components: null,
-                    typeArguments: null,
-                  },
-                ],
-                typeArguments: null,
-              },
-              {
-                name: "ContractId",
-                type: "struct ContractId",
-                components: [
-                  {
-                    name: "value",
-                    type: "b256",
-                    components: null,
-                    typeArguments: null,
-                  },
-                ],
-                typeArguments: null,
-              },
-            ],
-            typeArguments: null,
-          },
-          {
-            name: "asset",
-            type: "struct ContractId",
-            components: [
-              {
-                name: "value",
-                type: "b256",
-                components: null,
-                typeArguments: null,
-              },
-            ],
-            typeArguments: null,
-          },
-          {
-            name: "fee_amount",
-            type: "u64",
-            components: null,
-            typeArguments: null,
-          },
-        ],
-        typeArguments: null,
-      },
-      {
-        name: "identifier",
-        type: "u64",
-        components: null,
-        typeArguments: null,
-      },
-    ],
     name: "propose_arbiter",
-    outputs: [
-      {
-        name: "",
-        type: "()",
-        components: [],
-        typeArguments: null,
-      },
-    ],
-  },
-  {
-    type: "function",
     inputs: [
       {
-        name: "identifier",
-        type: "u64",
-        components: null,
-        typeArguments: null,
-      },
-      {
-        name: "payment_amount",
-        type: "u64",
-        components: null,
-        typeArguments: null,
-      },
-      {
-        name: "user",
-        type: "enum Identity",
+        type: "struct Arbiter",
+        name: "arbiter",
         components: [
           {
-            name: "Address",
-            type: "struct Address",
+            type: "enum Identity",
+            name: "address",
             components: [
               {
-                name: "value",
-                type: "b256",
-                components: null,
-                typeArguments: null,
+                type: "struct Address",
+                name: "Address",
+                components: [
+                  {
+                    type: "b256",
+                    name: "value",
+                  },
+                ],
+              },
+              {
+                type: "struct ContractId",
+                name: "ContractId",
+                components: [
+                  {
+                    type: "b256",
+                    name: "value",
+                  },
+                ],
               },
             ],
-            typeArguments: null,
           },
           {
-            name: "ContractId",
             type: "struct ContractId",
+            name: "asset",
             components: [
               {
-                name: "value",
                 type: "b256",
-                components: null,
-                typeArguments: null,
+                name: "value",
               },
             ],
-            typeArguments: null,
-          },
-        ],
-        typeArguments: null,
-      },
-    ],
-    name: "resolve_dispute",
-    outputs: [
-      {
-        name: "",
-        type: "()",
-        components: [],
-        typeArguments: null,
-      },
-    ],
-  },
-  {
-    type: "function",
-    inputs: [
-      {
-        name: "identifier",
-        type: "u64",
-        components: null,
-        typeArguments: null,
-      },
-    ],
-    name: "return_deposit",
-    outputs: [
-      {
-        name: "",
-        type: "()",
-        components: [],
-        typeArguments: null,
-      },
-    ],
-  },
-  {
-    type: "function",
-    inputs: [
-      {
-        name: "seller",
-        type: "enum Identity",
-        components: [
-          {
-            name: "Address",
-            type: "struct Address",
-            components: [
-              {
-                name: "value",
-                type: "b256",
-                components: null,
-                typeArguments: null,
-              },
-            ],
-            typeArguments: null,
           },
           {
-            name: "ContractId",
-            type: "struct ContractId",
-            components: [
-              {
-                name: "value",
-                type: "b256",
-                components: null,
-                typeArguments: null,
-              },
-            ],
-            typeArguments: null,
-          },
-        ],
-        typeArguments: null,
-      },
-    ],
-    name: "seller_escrows",
-    outputs: [
-      {
-        name: "",
-        type: "[u64; 1]",
-        components: [
-          {
-            name: "__array_element",
             type: "u64",
-            components: null,
-            typeArguments: null,
+            name: "fee_amount",
           },
         ],
-        typeArguments: null,
+      },
+      {
+        type: "u64",
+        name: "identifier",
+      },
+    ],
+    outputs: [
+      {
+        type: "()",
+        name: "",
+        components: [],
       },
     ],
   },
   {
     type: "function",
+    name: "resolve_dispute",
     inputs: [
       {
-        name: "identifier",
         type: "u64",
-        components: null,
-        typeArguments: null,
+        name: "identifier",
+      },
+      {
+        type: "u64",
+        name: "payment_amount",
+      },
+      {
+        type: "enum Identity",
+        name: "user",
+        components: [
+          {
+            type: "struct Address",
+            name: "Address",
+            components: [
+              {
+                type: "b256",
+                name: "value",
+              },
+            ],
+          },
+          {
+            type: "struct ContractId",
+            name: "ContractId",
+            components: [
+              {
+                type: "b256",
+                name: "value",
+              },
+            ],
+          },
+        ],
       },
     ],
+    outputs: [
+      {
+        type: "()",
+        name: "",
+        components: [],
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "return_deposit",
+    inputs: [
+      {
+        type: "u64",
+        name: "identifier",
+      },
+    ],
+    outputs: [
+      {
+        type: "()",
+        name: "",
+        components: [],
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "seller_escrows",
+    inputs: [
+      {
+        type: "enum Identity",
+        name: "seller",
+        components: [
+          {
+            type: "struct Address",
+            name: "Address",
+            components: [
+              {
+                type: "b256",
+                name: "value",
+              },
+            ],
+          },
+          {
+            type: "struct ContractId",
+            name: "ContractId",
+            components: [
+              {
+                type: "b256",
+                name: "value",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    outputs: [
+      {
+        type: "[_; 1]",
+        name: "",
+        components: [
+          {
+            type: "u64",
+            name: "__array_element",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: "function",
     name: "take_payment",
+    inputs: [
+      {
+        type: "u64",
+        name: "identifier",
+      },
+    ],
     outputs: [
       {
-        name: "",
         type: "()",
+        name: "",
         components: [],
-        typeArguments: null,
       },
     ],
   },
   {
     type: "function",
-    inputs: [
-      {
-        name: "identifier",
-        type: "u64",
-        components: null,
-        typeArguments: null,
-      },
-    ],
     name: "transfer_to_seller",
+    inputs: [
+      {
+        type: "u64",
+        name: "identifier",
+      },
+    ],
     outputs: [
       {
-        name: "",
         type: "()",
+        name: "",
         components: [],
-        typeArguments: null,
       },
     ],
   },
   {
     type: "function",
+    name: "withdraw_collateral",
     inputs: [
       {
-        name: "identifier",
         type: "u64",
-        components: null,
-        typeArguments: null,
+        name: "identifier",
       },
     ],
-    name: "withdraw_collateral",
     outputs: [
       {
-        name: "",
         type: "()",
+        name: "",
         components: [],
-        typeArguments: null,
       },
     ],
   },
@@ -1012,9 +819,12 @@ const _abi = [
 export class EscrowAbi__factory {
   static readonly abi = _abi;
   static createInterface(): EscrowAbiInterface {
-    return new Interface(_abi) as EscrowAbiInterface;
+    return new Interface(_abi) as unknown as EscrowAbiInterface;
   }
-  static connect(id: string, walletOrProvider: Wallet | Provider): EscrowAbi {
-    return new Contract(id, _abi, walletOrProvider) as EscrowAbi;
+  static connect(
+    id: string | AbstractAddress,
+    walletOrProvider: Wallet | Provider
+  ): EscrowAbi {
+    return new Contract(id, _abi, walletOrProvider) as unknown as EscrowAbi;
   }
 }

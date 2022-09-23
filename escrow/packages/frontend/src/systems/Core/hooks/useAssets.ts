@@ -1,4 +1,4 @@
-import { toBigInt } from 'fuels';
+import { bn } from 'fuels';
 import type { CoinQuantity } from 'fuels';
 
 import { useBalances } from './useBalances';
@@ -12,7 +12,7 @@ const mergeCoinsWithMetadata = (coins: CoinQuantity[] = []) =>
       name: coinMetadata?.name,
       assetId: coin.assetId,
       symbol: coinMetadata?.symbol,
-      amount: toBigInt(coin.amount || 0),
+      amount: bn(coin.amount || 0),
       decimals: coinMetadata?.decimals,
     };
   });
