@@ -39,7 +39,7 @@ jobs:
 
     strategy:
       matrix:
-        project: ["airdrop/airdrop-distributor", "airdrop/simple-asset", "dao-voting", "escrow", "fundraiser", "multisig-wallet", "NFT", "oracle", "swayswap/contracts/exchange_contract", "swayswap/contracts/swayswap_contract", "swayswap/contracts/token_contract" ]
+        project: ["airdrop/airdrop-distributor", "airdrop/simple-asset", "dao-voting", "escrow", "fundraiser", "multisig-wallet", "NFT", "oracle", "swayswap/contracts/exchange", "swayswap/contracts/swayswap", "swayswap/contracts/token" ]
 
     steps:
       - name: Checkout repository

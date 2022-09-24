@@ -22,12 +22,12 @@ elif [ $PROJECT = 'NFT' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'oracle' ]; then
     forc build --path $PROJECT
-elif [ $PROJECT = 'swayswap/contracts/exchange_contract' ]; then
+elif [ $PROJECT = 'swayswap/contracts/exchange' ]; then
     forc build --path $PROJECT
-    forc build --path $PROJECT/../token_contract/
-elif [ $PROJECT = 'swayswap/contracts/swayswap_contract' ]; then
+    forc build --path $PROJECT/../token/
+elif [ $PROJECT = 'swayswap/contracts/swayswap' ]; then
     forc build --path $PROJECT
-elif [ $PROJECT = 'swayswap/contracts/token_contract' ]; then
+elif [ $PROJECT = 'swayswap/contracts/token' ]; then
     forc build --path $PROJECT
 else
     echo "project name did not match"
