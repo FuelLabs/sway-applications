@@ -1,44 +1,21 @@
-library exchange_abi;
+library interface;
 
+dep data_structures;
+
+use data_structures::{
+    PoolInfo,
+    PositionInfo,
+    PreviewAddLiquidityInfo,
+    PreviewInfo,
+    RemoveLiquidityInfo,
+};
 use std::contract_id::ContractId;
 
-pub struct RemoveLiquidityInfo {
-    eth_amount: u64,
-    token_amount: u64,
-}
-
-pub struct PositionInfo {
-    eth_amount: u64,
-    token_amount: u64,
-    eth_reserve: u64,
-    token_reserve: u64,
-    lp_token_supply: u64,
-}
-
-pub struct PoolInfo {
-    eth_reserve: u64,
-    token_reserve: u64,
-    lp_token_supply: u64,
-}
-
-pub struct PreviewInfo {
-    amount: u64,
-    has_liquidity: bool,
-}
-
-pub struct PreviewAddLiquidityInfo {
-    token_amount: u64,
-    lp_token_received: u64,
-}
-
 abi Exchange {
-    ////////////////////
-    // Read only
-    ////////////////////
     /// Return the current balance of given token on the contract
     #[storage(read)]
     fn get_balance(asset_id: ContractId) -> u64;
-    /// Get information on the liquidity pool.
+    /// Get information on the liquidity pool
     #[storage(read)]
     fn get_pool_info() -> PoolInfo;
     /// Get add liquidity preview
@@ -47,9 +24,6 @@ abi Exchange {
     /// Get current positions
     #[storage(read)]
     fn get_position(amount: u64) -> PositionInfo;
-    ////////////////////
-    // Actions
-    ////////////////////
     /// Deposit coins for later adding to liquidity pool.
     #[storage(read, write)]
     fn deposit();

@@ -1,83 +1,21 @@
+use crate::utils::*;
 use fuels::{
     prelude::*,
     tx::{AssetId, Bytes32, ContractId, StorageSlot},
 };
 use std::{str::FromStr, vec};
 
-///////////////////////////////
-// Load the Exchange Contract abi
-///////////////////////////////
-abigen!(TestExchange, "out/debug/exchange_contract-abi.json");
-
-///////////////////////////////
-// Load the Token Contract abi
-///////////////////////////////
-abigen!(
-    TestToken,
-    "../token_contract/out/debug/token_contract-abi.json"
-);
-
-async fn deposit_and_add_liquidity(
-    exchange_instance: &TestExchange,
-    native_amount: u64,
-    token_asset_id: AssetId,
-    token_amount_deposit: u64,
-) -> u64 {
-    // Deposit some Native Asset
-    let _t = exchange_instance
-        .deposit()
-        .call_params(CallParameters::new(Some(native_amount), None, None))
-        .call()
-        .await
-        .unwrap();
-
-    // Deposit some Token Asset
-    let _t = exchange_instance
-        .deposit()
-        .call_params(CallParameters::new(
-            Some(token_amount_deposit),
-            Some(token_asset_id.clone()),
-            None,
-        ))
-        .call()
-        .await
-        .unwrap();
-
-    // Add liquidity for the second time. Keeping the proportion 1:2
-    // It should return the same amount of LP as the amount of ETH deposited
-    let result = exchange_instance
-        .add_liquidity(1, 1000)
-        .call_params(CallParameters::new(
-            Some(0),
-            Some(token_asset_id.clone()),
-            Some(100_000_000),
-        ))
-        .append_variable_outputs(2)
-        .tx_params(TxParameters {
-            gas_price: 0,
-            gas_limit: 100_000_000,
-            maturity: 0,
-        })
-        .call()
-        .await
-        .unwrap();
-
-    result.value
-}
-
 #[tokio::test]
 async fn exchange_contract() {
     // default initial amount 1000000000
     let wallet = launch_provider_and_get_wallet().await;
-    // Wallet address
-    let address = wallet.address();
 
     //////////////////////////////////////////
     // Setup contracts
     //////////////////////////////////////////
 
     let token_contract_id = Contract::deploy(
-        "../token_contract/out/debug/token_contract.bin",
+        "../token/out/debug/token.bin",
         &wallet,
         TxParameters::default(),
         StorageConfiguration::default(),
@@ -94,7 +32,7 @@ async fn exchange_contract() {
 
     // Deploy contract and get ID
     let exchange_contract_id = Contract::deploy(
-        "out/debug/exchange_contract.bin",
+        "out/debug/exchange.bin",
         &wallet,
         TxParameters::default(),
         StorageConfiguration::with_manual_storage(Some(storage_vec)),
@@ -102,9 +40,8 @@ async fn exchange_contract() {
     .await
     .unwrap();
     let exchange_instance =
-        TestExchangeBuilder::new(exchange_contract_id.to_string(), wallet.clone()).build();
-    let token_instance =
-        TestTokenBuilder::new(token_contract_id.to_string(), wallet.clone()).build();
+        ExchangeBuilder::new(exchange_contract_id.to_string(), wallet.clone()).build();
+    let token_instance = MyTokenBuilder::new(token_contract_id.to_string(), wallet.clone()).build();
 
     // Native contract id
     let native_contract_id = ContractId::new(*BASE_ASSET_ID);
@@ -124,7 +61,10 @@ async fn exchange_contract() {
 
     // Initialize token contract
     token_instance
-        .initialize(wallet_token_amount, Address::from(address))
+        .initialize(
+            wallet_token_amount,
+            Identity::Address(Address::from(wallet.address())),
+        )
         .call()
         .await
         .unwrap();

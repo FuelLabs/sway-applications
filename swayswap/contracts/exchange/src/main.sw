@@ -1,146 +1,49 @@
 contract;
 
-use std::{
-    address::*,
-    assert::assert,
-    block::*,
-    chain::auth::*,
-    context::{
-        *,
-        call_frames::*,
-    },
-    contract_id::ContractId,
-    hash::*,
-    result::*,
-    revert::revert,
-    storage::*,
-    token::*,
-    u128::U128,
-};
+dep data_structures;
+dep interface;
+dep utils;
 
-use exchange_abi::{
-    Exchange,
+use data_structures::{
     PoolInfo,
     PositionInfo,
     PreviewAddLiquidityInfo,
     PreviewInfo,
     RemoveLiquidityInfo,
 };
-use swayswap_abi::get_msg_sender_address_or_panic;
+use interface::Exchange;
+use std::{
+    address::Address,
+    assert::assert,
+    block::height,
+    chain::auth::{
+        AuthError,
+        msg_sender,
+    },
+    context::{
+        call_frames::*,
+        msg_amount,
+    },
+    contract_id::ContractId,
+    identity::Identity,
+    storage::*,
+    token::{
+        burn,
+        mint,
+        transfer,
+    },
+};
+use utils::*;
 
-////////////////////////////////////////
-// Constants
-////////////////////////////////////////
-/// Token ID of Ether
-const ETH_ID = 0x0000000000000000000000000000000000000000000000000000000000000000;
-
-/// The token id key from storage
-/// Contract ID of the token on the other side of the pool.
-/// Set of the deploy time
-const TOKEN_ID_KEY = 0x0000000000000000000000000000000000000000000000000000000000000001;
-
-/// Minimum ETH liquidity to open a pool.
-const MINIMUM_LIQUIDITY = 1; //A more realistic value would be 1000000000;
-// Liquidity miner fee apply to all swaps
-const LIQUIDITY_MINER_FEE = 333;
-
-////////////////////////////////////////
-// Storage declarations
-////////////////////////////////////////
 storage {
     lp_token_supply: u64 = 0,
-    deposits: StorageMap<(Address, ContractId), u64> = StorageMap {},
+    deposits: StorageMap<(Identity, ContractId), u64> = StorageMap {},
 }
 
-////////////////////////////////////////
-// Helper functions
-////////////////////////////////////////
-/// Return token reserve balance
-#[storage(read)]
-fn get_current_reserve(token_id: b256) -> u64 {
-    get::<u64>(token_id)
-}
-
-/// Add amount to the token reserve
-#[storage(read, write)]
-fn add_reserve(token_id: b256, amount: u64) {
-    let value = get::<u64>(token_id);
-    store(token_id, value + amount);
-}
-
-/// Remove amount to the token reserve
-#[storage(read, write)]
-fn remove_reserve(token_id: b256, amount: u64) {
-    let value = get::<u64>(token_id);
-    store(token_id, value - amount);
-}
-// Calculate 0.3% fee
-fn calculate_amount_with_fee(amount: u64) -> u64 {
-    let fee: u64 = (amount / LIQUIDITY_MINER_FEE);
-    amount - fee
-}
-
-fn mutiply_div(a: u64, b: u64, c: u64) -> u64 {
-    let calculation = (~U128::from(0, a) * ~U128::from(0, b));
-    let result_wrapped = (calculation / ~U128::from(0, c)).as_u64();
-
-    // TODO remove workaround once https://github.com/FuelLabs/sway/pull/1671 lands.
-    match result_wrapped {
-        Result::Ok(inner_value) => inner_value,
-        _ => revert(0),
-    }
-}
-
-fn div_mutiply(a: u64, b: u64, c: u64) -> u64 {
-    let calculation = (~U128::from(0, a) / ~U128::from(0, b));
-    let result_wrapped = (calculation * ~U128::from(0, c)).as_u64();
-
-    // TODO remove workaround once https://github.com/FuelLabs/sway/pull/1671 lands.
-    match result_wrapped {
-        Result::Ok(inner_value) => inner_value,
-        _ => revert(0),
-    }
-}
-
-/// Pricing function for converting between ETH and Tokens.
-fn get_input_price(input_amount: u64, input_reserve: u64, output_reserve: u64) -> u64 {
-    assert(input_reserve > 0 && output_reserve > 0);
-    let input_amount_with_fee: u64 = calculate_amount_with_fee(input_amount);
-    let numerator = ~U128::from(0, input_amount_with_fee) * ~U128::from(0, output_reserve);
-    let denominator = ~U128::from(0, input_reserve) + ~U128::from(0, input_amount_with_fee);
-    let result_wrapped = (numerator / denominator).as_u64();
-    // TODO remove workaround once https://github.com/FuelLabs/sway/pull/1671 lands.
-    match result_wrapped {
-        Result::Ok(inner_value) => inner_value,
-        _ => revert(0),
-    }
-}
-
-/// Pricing function for converting between ETH and Tokens.
-fn get_output_price(output_amount: u64, input_reserve: u64, output_reserve: u64) -> u64 {
-    assert(input_reserve > 0 && output_reserve > 0);
-    let numerator = ~U128::from(0, input_reserve) * ~U128::from(0, output_amount);
-    let denominator = ~U128::from(0, calculate_amount_with_fee(output_reserve - output_amount));
-    let result_wrapped = (numerator / denominator).as_u64();
-    if denominator > numerator {
-        // Emulate Infinity Value
-        ~u64::max()
-    } else {
-        // TODO remove workaround once https://github.com/FuelLabs/sway/pull/1671 lands.
-        match result_wrapped {
-            Result::Ok(inner_value) => inner_value + 1,
-            _ => revert(0),
-        }
-    }
-}
-
-// ////////////////////////////////////////
-// // ABI definitions
-// ////////////////////////////////////////
 impl Exchange for Contract {
     #[storage(read)]
     fn get_balance(asset_id: ContractId) -> u64 {
-        let sender = get_msg_sender_address_or_panic();
+        let sender = msg_sender().unwrap();
         storage.deposits.get((sender, asset_id))
     }
 
@@ -205,7 +108,7 @@ impl Exchange for Contract {
     fn deposit() {
         assert(msg_asset_id().into() == ETH_ID || msg_asset_id().into() == get::<b256>(TOKEN_ID_KEY));
 
-        let sender = get_msg_sender_address_or_panic();
+        let sender = msg_sender().unwrap();
 
         let total_amount = storage.deposits.get((
             sender,
@@ -221,7 +124,7 @@ impl Exchange for Contract {
     fn withdraw(amount: u64, asset_id: ContractId) {
         assert(asset_id.into() == ETH_ID || asset_id.into() == get::<b256>(TOKEN_ID_KEY));
 
-        let sender = get_msg_sender_address_or_panic();
+        let sender = msg_sender().unwrap();
 
         let deposited_amount = storage.deposits.get((sender, asset_id));
         assert(deposited_amount >= amount);
@@ -229,7 +132,7 @@ impl Exchange for Contract {
         let new_amount = deposited_amount - amount;
         storage.deposits.insert((sender, asset_id), new_amount);
 
-        transfer_to_output(amount, asset_id, sender)
+        transfer(amount, asset_id, sender)
     }
 
     #[storage(read, write)]
@@ -238,7 +141,7 @@ impl Exchange for Contract {
         assert(deadline > height());
         assert(msg_asset_id().into() == ETH_ID || msg_asset_id().into() == get::<b256>(TOKEN_ID_KEY));
 
-        let sender = get_msg_sender_address_or_panic();
+        let sender = msg_sender().unwrap();
 
         let total_liquidity = storage.lp_token_supply;
 
@@ -274,18 +177,18 @@ impl Exchange for Contract {
                 mint(liquidity_minted);
                 storage.lp_token_supply = total_liquidity + liquidity_minted;
 
-                transfer_to_output(liquidity_minted, contract_id(), sender);
+                transfer(liquidity_minted, contract_id(), sender);
 
                 // If user sent more than the correct ratio, we deposit back the extra tokens
                 let token_extra = current_token_amount - token_amount;
                 if (token_extra > 0) {
-                    transfer_to_output(token_extra, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
+                    transfer(token_extra, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
                 }
 
                 minted = liquidity_minted;
             } else {
-                transfer_to_output(current_token_amount, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
-                transfer_to_output(current_eth_amount, ~ContractId::from(ETH_ID), sender);
+                transfer(current_token_amount, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
+                transfer(current_eth_amount, ~ContractId::from(ETH_ID), sender);
                 minted = 0;
             }
         } else {
@@ -301,7 +204,7 @@ impl Exchange for Contract {
             mint(initial_liquidity);
             storage.lp_token_supply = initial_liquidity;
 
-            transfer_to_output(initial_liquidity, contract_id(), sender);
+            transfer(initial_liquidity, contract_id(), sender);
 
             minted = initial_liquidity;
         };
@@ -326,7 +229,7 @@ impl Exchange for Contract {
         assert(deadline > height());
         assert(min_eth > 0 && min_tokens > 0);
 
-        let sender = get_msg_sender_address_or_panic();
+        let sender = msg_sender().unwrap();
 
         let total_liquidity = storage.lp_token_supply;
         assert(total_liquidity > 0);
@@ -346,8 +249,8 @@ impl Exchange for Contract {
         remove_reserve(ETH_ID, eth_amount);
 
         // Send tokens back
-        transfer_to_output(eth_amount, ~ContractId::from(ETH_ID), sender);
-        transfer_to_output(token_amount, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
+        transfer(eth_amount, ~ContractId::from(ETH_ID), sender);
+        transfer(token_amount, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
 
         RemoveLiquidityInfo {
             eth_amount: eth_amount,
@@ -364,7 +267,7 @@ impl Exchange for Contract {
         assert(forwarded_amount > 0 && min > 0);
         assert(asset_id == ETH_ID || asset_id == get::<b256>(TOKEN_ID_KEY));
 
-        let sender = get_msg_sender_address_or_panic();
+        let sender = msg_sender().unwrap();
 
         let eth_reserve = get_current_reserve(ETH_ID);
         let token_reserve = get_current_reserve(get::<b256>(TOKEN_ID_KEY));
@@ -373,7 +276,7 @@ impl Exchange for Contract {
         if (asset_id == ETH_ID) {
             let tokens_bought = get_input_price(forwarded_amount, eth_reserve, token_reserve);
             assert(tokens_bought >= min);
-            transfer_to_output(tokens_bought, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
+            transfer(tokens_bought, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
             bought = tokens_bought;
             // Update reserve
             add_reserve(ETH_ID, forwarded_amount);
@@ -381,7 +284,7 @@ impl Exchange for Contract {
         } else {
             let eth_bought = get_input_price(forwarded_amount, token_reserve, eth_reserve);
             assert(eth_bought >= min);
-            transfer_to_output(eth_bought, ~ContractId::from(ETH_ID), sender);
+            transfer(eth_bought, ~ContractId::from(ETH_ID), sender);
             bought = eth_bought;
             // Update reserve
             remove_reserve(ETH_ID, eth_bought);
@@ -399,7 +302,7 @@ impl Exchange for Contract {
         assert(amount > 0 && forwarded_amount > 0);
         assert(asset_id == ETH_ID || asset_id == get::<b256>(TOKEN_ID_KEY));
 
-        let sender = get_msg_sender_address_or_panic();
+        let sender = msg_sender().unwrap();
         let eth_reserve = get_current_reserve(ETH_ID);
         let token_reserve = get_current_reserve(get::<b256>(TOKEN_ID_KEY));
 
@@ -409,9 +312,9 @@ impl Exchange for Contract {
             assert(forwarded_amount >= eth_sold);
             let refund = forwarded_amount - eth_sold;
             if refund > 0 {
-                transfer_to_output(refund, ~ContractId::from(ETH_ID), sender);
+                transfer(refund, ~ContractId::from(ETH_ID), sender);
             };
-            transfer_to_output(amount, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
+            transfer(amount, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
             sold = eth_sold;
             // Update reserve
             add_reserve(ETH_ID, eth_sold);
@@ -421,9 +324,9 @@ impl Exchange for Contract {
             assert(forwarded_amount >= tokens_sold);
             let refund = forwarded_amount - tokens_sold;
             if refund > 0 {
-                transfer_to_output(refund, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
+                transfer(refund, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
             };
-            transfer_to_output(amount, ~ContractId::from(ETH_ID), sender);
+            transfer(amount, ~ContractId::from(ETH_ID), sender);
             sold = tokens_sold;
             // Update reserve
             remove_reserve(ETH_ID, amount);
