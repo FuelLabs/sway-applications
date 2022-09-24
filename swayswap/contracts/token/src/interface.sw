@@ -1,11 +1,11 @@
-library token_abi;
+library interface;
 
-use std::{address::Address, contract_id::ContractId, token::*};
+use std::{contract_id::ContractId, identity::Identity, token::*};
 
 abi Token {
     // Initialize contract
     #[storage(read, write)]
-    fn initialize(mint_amount: u64, address: Address);
+    fn initialize(mint_amount: u64, identity: Identity);
     // Set mint amount for each address
     #[storage(read, write)]
     fn set_mint_amount(mint_amount: u64);
@@ -24,10 +24,10 @@ abi Token {
     fn burn_coins(burn_amount: u64);
     // Transfer a contract coins to a given output
     #[storage(read)]
-    fn transfer_coins(coins: u64, address: Address);
+    fn transfer_coins(coins: u64, identity: Identity);
     // Transfer a specified token from the contract to a given output
     #[storage(read)]
-    fn transfer_token_to_output(coins: u64, asset_id: ContractId, address: Address);
+    fn transfer_token_to_output(coins: u64, asset_id: ContractId, identity: Identity);
     // Method called from address to mint coins
     #[storage(read, write)]
     fn mint();
