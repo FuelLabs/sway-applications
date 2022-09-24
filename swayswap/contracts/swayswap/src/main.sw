@@ -1,19 +1,10 @@
 contract;
 
-use std::{
-    address::*,
-    block::*,
-    context::{
-        *,
-        call_frames::*,
-    },
-    contract_id::ContractId,
-    identity::Identity,
-    revert::revert,
-    storage::StorageMap,
-};
+dep interface;
 
-use swayswap_abi::SwaySwap;
+use std::{contract_id::ContractId, storage::StorageMap};
+
+use interface::SwaySwap;
 
 /// Store token ID and exchange contract ID in storage
 storage {

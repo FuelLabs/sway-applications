@@ -1,10 +1,6 @@
+use crate::utils::*;
 use fuels::{prelude::*, tx::ContractId};
 use std::str::FromStr;
-
-///////////////////////////////
-// Load the SwaySwap Contract abi
-///////////////////////////////
-abigen!(TestSwaySwap, "out/debug/swayswap_contract-abi.json");
 
 #[tokio::test]
 async fn swayswap() {
@@ -13,17 +9,17 @@ async fn swayswap() {
 
     // Get the contract ID and a handle to it
     let swayswap_contract_id = Contract::deploy(
-        "out/debug/swayswap_contract.bin",
+        "out/debug/swayswap.bin",
         &wallet,
         TxParameters::default(),
         StorageConfiguration::with_storage_path(Some(
-            "./out/debug/swayswap_contract-storage_slots.json".to_string(),
+            "./out/debug/swayswap-storage_slots.json".to_string(),
         )),
     )
     .await
     .unwrap();
     let swayswap_instance =
-        TestSwaySwapBuilder::new(swayswap_contract_id.to_string(), wallet.clone()).build();
+        SwaySwapBuilder::new(swayswap_contract_id.to_string(), wallet.clone()).build();
 
     // Create fake contract ids
     let token_id =
