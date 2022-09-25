@@ -8,7 +8,7 @@ Moreover, it may not be immediately clear why, or what, some line of code is doi
 
 The following snippet looks at two items being documented using the comment syntax `//`.
 
-- `Item1` has poor comments that do not convey any meaningful information and it's better of to not include them at all.
+- `Item1` has poor comments that do not convey any meaningful information and it's better to not include them at all.
 - `Item2` has taken the approach of describing the context in order to provide meaning behind each field
 
 ```rust

@@ -15,4 +15,3 @@ impl Game {
 }
 
 pub struct Player {}
-pub struct Winner {}

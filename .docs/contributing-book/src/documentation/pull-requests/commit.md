@@ -33,14 +33,14 @@ This creates a clear separation within the task of fixing the test suites by fix
 
 Once the issue has been resolved it's time to write a message that will distinguish this commit from any other.
 
-The commit message should be a short sentence summarizing the changes:
+The commit message should be a concise and accurate summary of the work done:
 
 - `Good commit message:` 
-  - Fixed a conditional check in the deposit function which did not fail under condition XYZ
+  - Fixed precondition in `withdraw()` which allowed draining to occur
 - `Bad commit message:`
   - Fix
   - Fixed function
-  - Fixed assertion
+  - Fixed an assertion where a user is able to repeatedly call the `withdraw()` functions under an edge case which may lead to the contract being drained
 
 More information about commit messages may be found in:
 

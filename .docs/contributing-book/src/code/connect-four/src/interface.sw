@@ -33,7 +33,3 @@ abi ConnectFour {
     /// - When a marker is placed into a `column` that is full
     fn move(column: u64, game: Game) -> Game;
 }
-
-pub struct DrawEvent {}
-pub struct MoveEvent {}
-pub struct WinnerEvent {}

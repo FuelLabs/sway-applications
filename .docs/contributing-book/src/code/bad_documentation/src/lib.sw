@@ -1,6 +1,6 @@
 library bad_documentation;
 
-// This is bad. It's just repeating what I can already read from the field names
+// This is bad. It's repeating the names of the fields which can be easily read
 pub struct Item1 {
     /// Identifier
     id: u64,
@@ -8,7 +8,7 @@ pub struct Item1 {
     quantity: u64,
 }
 
-// This is better. It tells me the context of what the fields are
+// This is better. It conveys the context of what the fields are
 pub struct Item2 {
     /// Unique identifier used to retrieve the item from a vector of items held in storage
     id: u64,

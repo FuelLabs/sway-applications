@@ -1,20 +1,18 @@
 # Code Structure
 
-In order to structure your code there is only 1 rule that you must remember and that is that everything must always be ordered alphabetically - as long as there isn't a dependency error or a better name for a default field of an enum. The reason is that it provides a structure that almost everyone will be familiar with. This means that nobody has to learn how you have decided to structure your code and thus where to look for a variable, function, import etc. This makes it really easy to navigate your entire project and in turn navigate all projects without having to memorize the intricacies of each project.
+Structuring code in a way that is easy to navigate allows for a greater developer experience. In order to achieve this there are some guidelines to consider.
 
-To be explicit
+1. Fields in data structures should be alphabetical
+2. Avoid ordering by "admin functions", "getters", etc.
+   1. Group data structures by module and alphabetically order the content there
+   2. Functions should be declared by the weight of their purity e.g.
+      1. `read & write` first
+      2. `read` second
+      3. `pure` last
+4. Dependencies and imports should be alphabetical
+5. Document the parameters of the interface in alphabetical order and preferably declare them in the same order
 
-- All dependencies must be declared in alphabetical order just below the declaration of the program type e.g. below `contract;`
-- All imports must be in alphabetical order and any modules within those imports must be in alphabetical order
-- All functions, structs, enums, fields inside structs and enums, parameters of a function, parameters in documentation etc. must be in alphabetical order in all files (this does not apply to variables inside a function)
+An important aspect to remember is to use the formatter(s) to format the code prior to a commit.
 
-Example
-
-```rust
-{{#include ../../code/connect-four/src/main.sw}}
-```
-
-The only other aspect to remember is to use the formatter before commiting your work.
-
-- `cargo fmt` to format your `Rust` files (SDK tests)
-- `forc fmt` to format your `Sway` files
+- `cargo fmt` to format `Rust` files
+- `forc fmt` to format `Sway` files

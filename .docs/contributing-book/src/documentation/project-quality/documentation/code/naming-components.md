@@ -26,7 +26,7 @@ Using a single character to name a variable conveys little to no information to 
 
 - Is this a throw away variable?
 - What is the variable meant to represent where ever it is used?
-- Does it make sense to call it by the chosen character e.g. `x` when referring to forumlas
+- Does it make sense to call it by the chosen character e.g. `x` when referring to forumlas?
 
 ### Ambigious Abbreviations
 
@@ -48,6 +48,6 @@ For example:
 
 - `can_change` -> `authorized`
   - The "can" can be read as a question or a statement. 
-  - Are you asking the reader whether something can change or are you asserting that something either is or is not authorized to change?
+  - Is the developer asking the reader whether something can change or are they asserting that something either is or is not authorized to change?
 - `is_on` -> `enabled`
   - "is" can also be read as a question posed to the reader rather than a simple declaration.
