@@ -9,17 +9,17 @@ async fn swayswap() {
 
     // Get the contract ID and a handle to it
     let swayswap_contract_id = Contract::deploy(
-        "out/debug/swayswap.bin",
+        "out/debug/AMM.bin",
         &wallet,
         TxParameters::default(),
         StorageConfiguration::with_storage_path(Some(
-            "./out/debug/swayswap-storage_slots.json".to_string(),
+            "./out/debug/AMM-storage_slots.json".to_string(),
         )),
     )
     .await
     .unwrap();
     let swayswap_instance =
-        SwaySwapBuilder::new(swayswap_contract_id.to_string(), wallet.clone()).build();
+        AMMBuilder::new(swayswap_contract_id.to_string(), wallet.clone()).build();
 
     // Create fake contract ids
     let token_id =

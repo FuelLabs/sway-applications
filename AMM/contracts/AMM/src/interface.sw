@@ -2,7 +2,7 @@ library interface;
 
 use std::contract_id::ContractId;
 
-abi SwaySwap {
+abi AMM {
     // Add exchange contract to the token
     #[storage(write)]
     fn add_exchange_contract(exchange_id: ContractId, token_id: ContractId);
