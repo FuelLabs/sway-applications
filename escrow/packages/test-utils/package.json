@@ -1,0 +1,48 @@
+{
+  "name": "@escrow/test-utils",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "typings": "dist/index.d.ts",
+    "exports": {
+      ".": {
+        "require": "./dist/index.js",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "files": [
+      "dist",
+      "config.ts",
+      "setup.ts"
+    ]
+  },
+  "scripts": {
+    "build": "tsup --dts"
+  },
+  "dependencies": {
+    "@chakra-ui/utils": "2.0.2",
+    "@testing-library/dom": "^8.14.0",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@testing-library/user-event": "^14.2.1",
+    "@types/testing-library__jest-dom": "^5.14.5",
+    "jest-axe": "^6.0.0",
+    "jest-fail-on-console": "^2.4.2",
+    "jest-matcher-utils": "^28.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.3.0"
+  },
+  "devDependencies": {
+    "@escrow/config": "workspace:*",
+    "@types/jest-axe": "^3.5.4"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  }
+}
