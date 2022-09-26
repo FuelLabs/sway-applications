@@ -23,9 +23,9 @@ const ZERO_B256 = 0x000000000000000000000000000000000000000000000000000000000000
 storage {
     /// The owner of contract
     owner: Identity = Identity::Address(~Address::from(ZERO_B256)),
-    /// The amount 
+    /// The amount to mint
     mint_amount: u64 = 0,
-    /// Information describing whether an identity has minted
+    /// Information describing whether an identity has mint
     mint_list: StorageMap<Identity, bool> = StorageMap {},
 }
 
