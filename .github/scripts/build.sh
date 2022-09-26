@@ -7,6 +7,13 @@ if [ $PROJECT = 'airdrop/airdrop-distributor' ]; then
     forc build --path $PROJECT/../simple-asset/
 elif [ $PROJECT = 'airdrop/simple-asset' ]; then
     forc build --path $PROJECT
+elif [ $PROJECT = 'AMM/contracts/AMM' ]; then
+    forc build --path $PROJECT
+elif [ $PROJECT = 'AMM/contracts/exchange' ]; then
+    forc build --path $PROJECT
+    forc build --path $PROJECT/../token/
+elif [ $PROJECT = 'AMM/contracts/token' ]; then
+    forc build --path $PROJECT
 elif [ $PROJECT = 'dao-voting' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/gov_token
@@ -21,13 +28,6 @@ elif [ $PROJECT = 'multisig-wallet' ]; then
 elif [ $PROJECT = 'NFT' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'oracle' ]; then
-    forc build --path $PROJECT
-elif [ $PROJECT = 'swayswap/contracts/exchange' ]; then
-    forc build --path $PROJECT
-    forc build --path $PROJECT/../token/
-elif [ $PROJECT = 'swayswap/contracts/swayswap' ]; then
-    forc build --path $PROJECT
-elif [ $PROJECT = 'swayswap/contracts/token' ]; then
     forc build --path $PROJECT
 else
     echo "project name did not match"
