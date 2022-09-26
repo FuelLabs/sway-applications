@@ -25,7 +25,7 @@ export function EscrowInfo({
             })}
             <div>{`Buyer: ${!!escrows[0].buyer.address.Address ? escrows[0].buyer.address.Address?.value : escrows[0].buyer.address.ContractId?.value}`}</div>
             {/** TODO fix buyer.asset.None/Some is undefined */}
-            <div>{`Buyer Desposit Asset: ${!escrows[0].buyer.asset ? "None" : escrows[0].buyer.asset.values}`}</div>
+            <div>{`Buyer Desposit Asset: ${!escrows[0].buyer.asset ? "None" : escrows[0].buyer.asset.value}`}</div>
             <div>{`Buyer Deposit Amount: ${formatValue(escrows[0].buyer.deposited_amount, DECIMAL_PLACES)}`}</div>
             <div>{`Seller: ${!!escrows[0].seller.address.Address ? escrows[0].seller.address.Address?.value : escrows[0].seller.address.ContractId?.value}`}</div>
             <div>{`Deadline: ${escrows[0].deadline.toString()}`}</div>

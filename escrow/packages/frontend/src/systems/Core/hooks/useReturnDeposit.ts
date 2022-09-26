@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { walletIndexAtom } from "../jotai";
 import { txFeedback } from "../utils/feedback";
 import { useContract } from "./useContract";
-import { updateEscrowQueries } from "../utils/helpers";
+import { contractCheck, updateEscrowQueries } from "../utils/helpers";
 import { useWallet } from "../context/AppContext";
 import { BigNumberish, bn } from "fuels";
 
@@ -23,12 +23,9 @@ export function useReturnDeposit({
 
     const mutation = useMutation(
         async () => {
-            console.log("return mutation");
-            if (!contract) {
-                throw new Error("Contract not found");
-            }
+            contractCheck(contract);
 
-            const scope = await contract.functions
+            const scope = await contract!.functions
                 .return_deposit(escrowId)
                 .txParams({
                     gasPrice: bn(5),
@@ -36,7 +33,7 @@ export function useReturnDeposit({
                 })
                 .fundWithRequiredCoins();
 
-            const response = await contract.wallet?.sendTransaction(scope.transactionRequest);
+            const response = await contract!.wallet?.sendTransaction(scope.transactionRequest);
             const result = await response?.waitForResult();
 
             return result;
