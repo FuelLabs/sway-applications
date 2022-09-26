@@ -14,9 +14,9 @@ export   const formatValue = (amount: BigNumberish | null | undefined, decimals:
 };
 
 export const updateEscrowQueries = (queryClient: QueryClient, wallet: Maybe<Wallet>) => {
-  queryClient.invalidateQueries(["SellerEscrows", wallet]);
-  queryClient.invalidateQueries(["BuyerEscrows", wallet]);
-  queryClient.invalidateQueries(["ArbiterEscrows", wallet]);
+  queryClient.invalidateQueries(["SellerPage-sellerEscrowIds", wallet]);
+  queryClient.invalidateQueries(["BuyerPage-buyerEscrowIds", wallet]);
+  queryClient.invalidateQueries(["ArbiterPage-arbiterEscrowIds", wallet]);
 }
 
 export const contractCheck = (contract: EscrowAbi | null | undefined ) => {
