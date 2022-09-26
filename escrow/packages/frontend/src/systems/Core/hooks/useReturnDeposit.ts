@@ -42,7 +42,7 @@ export function useReturnDeposit({
             onSuccess: txFeedback(successMsg, handleSuccess),
             onError: handleError,
         }
-    )
+    );
 
     function handleSuccess() {
         // Trigger queries to update components

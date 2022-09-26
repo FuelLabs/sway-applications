@@ -15,11 +15,15 @@ import { ArbiterInputContainer } from "../components/ArbiterInputContainer";
 import { useReturnDeposit } from "../hooks/useReturnDeposit";
 import { EscrowInfo } from "../components/EscrowInfo";
 import { useProposeArbiter } from "../hooks/useProposeArbiter";
+import { useTakePayment } from "../hooks/useTakePayment";
+import { useWithdrawCollateral } from "../hooks/useWithdrawCollateral";
 
 export default function SellerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
   const sellerEscrows = useSellerEscrows();
   const returnDepositMutation = useReturnDeposit({ escrowId: bn(0) });
+  const takePaymentMutation = useTakePayment({ escrowId: bn(0) });
+  const withdrawCollateralMutation = useWithdrawCollateral({ escrowId: bn(0) });
 
   // TODO DRY for repeated code in CreateEscrow.tsx
   const [arbiter, setArbiter] = useState("");
@@ -50,14 +54,6 @@ const handleArbiterAssetChange = (event: ChangeEvent<HTMLInputElement>) => {
 const handleArbiterFeeChange = (event: ChangeEvent<HTMLInputElement>) => {
   const newFee = event.target.value;
   setArbiterFee(newFee);
-}
-
-const handleTakePayment = (escrowId: bigint) => {
-
-}
-
-const handleWithdrawCollateral = (escrowId: bigint) => {
-
 }
 
 return (
@@ -99,10 +95,10 @@ return (
                   <Button onPress={() => returnDepositMutation.mutate()}>
                     Return Deposit
                   </Button>
-                  <Button onPress={() => handleTakePayment(BigInt(0))}>
+                  <Button onPress={() => takePaymentMutation.mutate()}>
                     Take Payment
                   </Button>
-                  <Button onPress={() => handleWithdrawCollateral(BigInt(0))}>
+                  <Button onPress={() => withdrawCollateralMutation.mutate()}>
                     Withdraw Collateral
                   </Button>
                 </Card.Footer>
