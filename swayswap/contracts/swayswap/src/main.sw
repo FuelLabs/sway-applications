@@ -2,9 +2,8 @@ contract;
 
 dep interface;
 
-use std::{contract_id::ContractId, storage::StorageMap};
-
 use interface::SwaySwap;
+use std::{contract_id::ContractId, storage::StorageMap};
 
 /// Store token ID and exchange contract ID in storage
 storage {
@@ -13,7 +12,7 @@ storage {
 
 impl SwaySwap for Contract {
     #[storage(write)]
-    fn add_exchange_contract(token_id: ContractId, exchange_id: ContractId) {
+    fn add_exchange_contract(exchange_id: ContractId, token_id: ContractId) {
         storage.tokens.insert(token_id.into(), exchange_id.into());
     }
     #[storage(read)]

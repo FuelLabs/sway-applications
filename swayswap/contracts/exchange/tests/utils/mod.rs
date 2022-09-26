@@ -6,8 +6,8 @@ abigen!(MyToken, "../token/out/debug/token-abi.json");
 pub async fn deposit_and_add_liquidity(
     exchange_instance: &Exchange,
     native_amount: u64,
-    token_asset_id: AssetId,
     token_amount_deposit: u64,
+    token_asset_id: AssetId,
 ) -> u64 {
     // Deposit some Native Asset
     let _t = exchange_instance
@@ -32,7 +32,7 @@ pub async fn deposit_and_add_liquidity(
     // Add liquidity for the second time. Keeping the proportion 1:2
     // It should return the same amount of LP as the amount of ETH deposited
     let result = exchange_instance
-        .add_liquidity(1, 1000)
+        .add_liquidity(1000, 1)
         .call_params(CallParameters::new(
             Some(0),
             Some(token_asset_id.clone()),

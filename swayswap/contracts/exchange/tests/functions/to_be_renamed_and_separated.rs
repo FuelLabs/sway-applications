@@ -62,8 +62,8 @@ async fn exchange_contract() {
     // Initialize token contract
     token_instance
         .initialize(
-            wallet_token_amount,
             Identity::Address(Address::from(wallet.address())),
+            wallet_token_amount,
         )
         .call()
         .await
@@ -126,8 +126,8 @@ async fn exchange_contract() {
     let lp_amount_received = deposit_and_add_liquidity(
         &exchange_instance,
         native_amount_deposit,
-        token_asset_id,
         token_amount_deposit,
+        token_asset_id,
     )
     .await;
     assert_eq!(lp_amount_received, native_amount);
@@ -139,7 +139,7 @@ async fn exchange_contract() {
     // Remove LP tokens from liquidity it should keep proportion 1:2
     // It should return the exact amount added on the add liquidity
     let result = exchange_instance
-        .remove_liquidity(1, 1, 1000)
+        .remove_liquidity(1000, 1, 1)
         .call_params(CallParameters::new(
             Some(lp_amount_received),
             Some(lp_asset_id.clone()),
@@ -165,8 +165,8 @@ async fn exchange_contract() {
     let _t = deposit_and_add_liquidity(
         &exchange_instance,
         native_amount_deposit,
-        token_asset_id,
         token_amount_deposit,
+        token_asset_id,
     )
     .await;
 
@@ -198,7 +198,7 @@ async fn exchange_contract() {
     assert!(amount_expected.value.has_liquidity);
     // Swap using expected amount ETH -> TOKEN
     let response = exchange_instance
-        .swap_with_minimum(amount_expected.value.amount, 1000)
+        .swap_with_minimum(1000, amount_expected.value.amount)
         .call_params(CallParameters::new(Some(amount), None, None))
         .append_variable_outputs(1)
         .call()
@@ -224,7 +224,7 @@ async fn exchange_contract() {
     assert!(amount_expected.value.has_liquidity);
     // Swap using expected amount TOKEN -> ETH
     let response = exchange_instance
-        .swap_with_minimum(amount_expected.value.amount, 1000)
+        .swap_with_minimum(1000, amount_expected.value.amount)
         .call_params(CallParameters::new(
             Some(amount),
             Some(token_asset_id.clone()),
@@ -341,8 +341,8 @@ async fn exchange_contract() {
     let lp_amount_received = deposit_and_add_liquidity(
         &exchange_instance,
         native_amount_deposit,
-        token_asset_id,
         add_liquidity_preview.value.token_amount,
+        token_asset_id,
     )
     .await
         + lp_amount_received;
@@ -355,7 +355,7 @@ async fn exchange_contract() {
     ////////////////////////////////////////////////////////
 
     let response = exchange_instance
-        .remove_liquidity(1, 1, 1000)
+        .remove_liquidity(1000, 1, 1)
         .call_params(CallParameters::new(
             Some(lp_amount_received),
             Some(lp_asset_id.clone()),

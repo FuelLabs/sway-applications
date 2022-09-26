@@ -36,11 +36,11 @@ async fn swayswap() {
             .unwrap();
 
     let _result = swayswap_instance
-        .add_exchange_contract(token_id, swayswap_id)
+        .add_exchange_contract(swayswap_id, token_id)
         .call()
         .await;
     let _result = swayswap_instance
-        .add_exchange_contract(token_id_2, swayswap_id_2)
+        .add_exchange_contract(swayswap_id_2, token_id_2)
         .call()
         .await;
 

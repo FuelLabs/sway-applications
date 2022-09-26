@@ -43,8 +43,8 @@ async fn token_contract() {
     // Initialize contract
     token_instance
         .initialize(
-            token_mint_amount,
             Identity::Address(Address::from(wallet_owner.address())),
+            token_mint_amount,
         )
         .call()
         .await
@@ -53,8 +53,8 @@ async fn token_contract() {
     // Contract can be initialized only once
     let is_error = token_instance
         .initialize(
-            token_mint_amount,
             Identity::Address(Address::from(wallet_owner.address())),
+            token_mint_amount,
         )
         .call()
         .await
@@ -178,8 +178,8 @@ async fn token_contract() {
     assert!(is_error);
     let is_error = token_mint1_instance
         .transfer_token_to_output(
-            1,
             ContractId::from(*token_contract_id.hash()),
+            1,
             Identity::Address(Address::from(wallet_mint2.address())),
         )
         .call()
@@ -226,8 +226,8 @@ async fn token_contract() {
     // Transfer coins back to the wallet from the contract
     token_instance
         .transfer_token_to_output(
-            send_native_token_amount,
             ContractId::from(*BASE_ASSET_ID),
+            send_native_token_amount,
             Identity::Address(Address::from(wallet_owner.address())),
         )
         .append_variable_outputs(1)
