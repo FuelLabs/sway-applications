@@ -16,10 +16,7 @@
     "url": "https://github.com/FuelLabs/sway-applications/issues"
   },
   "workspaces": [
-    "/contracts/*",
-    "/frontend/*",
-    "/scripts/*",
-    "/test-utils/*"
+    "packages/*"
   ],
   "scripts": {
     "build": "turbo run build",
@@ -58,6 +55,7 @@
   "devDependencies": {
     "@babel/core": "^7.18.2",
     "@cypress/react": "^5.12.5",
+    "@escrow/test-utils": "workspace:*",
     "@jest/types": "^28.1.1",
     "@swc/core": "^1.2.197",
     "@swc/jest": "^0.2.21",

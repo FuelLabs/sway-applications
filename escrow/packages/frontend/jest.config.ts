@@ -1,6 +1,6 @@
 import type { Config } from '@jest/types';
 
-import baseConfig from '../../../jest.config';
+import baseConfig from '@escrow/test-utils/config';
 
 import pkg from './package.json';
 

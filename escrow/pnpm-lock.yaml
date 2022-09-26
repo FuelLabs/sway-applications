@@ -6,6 +6,7 @@ importers:
     specifiers:
       '@babel/core': ^7.18.2
       '@cypress/react': ^5.12.5
+      '@escrow/test-utils': workspace:*
       '@jest/types': ^28.1.1
       '@swc/core': ^1.2.197
       '@swc/jest': ^0.2.21
@@ -34,6 +35,7 @@ importers:
     devDependencies:
       '@babel/core': 7.18.9
       '@cypress/react': 5.12.5_xxfd6qtbgfjg5j7oqyjh7qmxmi
+      '@escrow/test-utils': link:packages/test-utils
       '@jest/types': 28.1.3
       '@swc/core': 1.2.222
       '@swc/jest': 0.2.22_@swc+core@1.2.222

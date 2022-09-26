@@ -1,4 +1,4 @@
-import baseConfig from '@swayswap/config/tsup';
+import baseConfig from '@escrow/config/tsup';
 import { defineConfig } from 'tsup';
 
 export default defineConfig((options) => ({
