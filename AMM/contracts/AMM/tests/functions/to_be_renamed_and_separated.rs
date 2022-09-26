@@ -9,11 +9,11 @@ async fn swayswap() {
 
     // Get the contract ID and a handle to it
     let swayswap_contract_id = Contract::deploy(
-        "out/debug/AMM.bin",
+        "out/debug/amm.bin",
         &wallet,
         TxParameters::default(),
         StorageConfiguration::with_storage_path(Some(
-            "./out/debug/AMM-storage_slots.json".to_string(),
+            "./out/debug/amm-storage_slots.json".to_string(),
         )),
     )
     .await
