@@ -41,13 +41,13 @@ export type AssetOutput = { amount: BN; id: ContractIdOutput };
 
 export type BuyerInput = {
   address: IdentityInput;
-  asset: OptionInput;
+  asset: OptionalContractIdInput;
   deposited_amount: BigNumberish;
 };
 
 export type BuyerOutput = {
   address: IdentityOutput;
-  asset: OptionOutput;
+  asset: OptionalContractIdOutput;
   deposited_amount: BN;
 };
 
@@ -85,9 +85,13 @@ export type IdentityOutput = Enum<{
   ContractId: ContractIdOutput;
 }>;
 
-export type OptionInput = Option<[]>;
+export type OptionalArbiterInput = Option<ArbiterInput>;
 
-export type OptionOutput = Option<[]>;
+export type OptionalArbiterOutput = Option<ArbiterOutput>;
+
+export type OptionalContractIdInput = Option<ContractIdInput>;
+
+export type OptionalContractIdOutput = Option<ContractIdOutput>;
 
 export type StateInput = Enum<{ Pending: []; Completed: [] }>;
 
@@ -242,7 +246,10 @@ export class EscrowAbi extends Contract {
 
     arbiter_escrows: InvokeFunction<[arbiter: IdentityInput], [any]>;
 
-    arbiter_proposals: InvokeFunction<[identifier: BigNumberish], OptionOutput>;
+    arbiter_proposals: InvokeFunction<
+      [identifier: BigNumberish],
+      OptionalArbiterOutput
+    >;
 
     buyer_escrows: InvokeFunction<[buyer: IdentityInput], [any]>;
 
