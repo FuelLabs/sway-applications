@@ -1,1 +1,10 @@
-mod to_be_renamed_and_separated;
+mod burn_coins;
+mod get_balance;
+mod get_mint_amount;
+mod get_token_balance;
+mod initialize;
+mod mint;
+mod mint_coins;
+mod set_mint_amount;
+mod transfer_coins;
+mod transfer_token_to_output;
