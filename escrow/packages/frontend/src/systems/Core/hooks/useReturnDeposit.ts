@@ -6,9 +6,10 @@ import { txFeedback } from "../utils/feedback";
 import { useContract } from "./useContract";
 import { updateEscrowQueries } from "../utils/helpers";
 import { useWallet } from "../context/AppContext";
+import { BigNumberish, bn } from "fuels";
 
 interface UseReturnDepositProps {
-    escrowId: bigint;
+    escrowId: BigNumberish;
 }
 
 export function useReturnDeposit({
@@ -30,8 +31,7 @@ export function useReturnDeposit({
             const scope = await contract.functions
                 .return_deposit(escrowId)
                 .txParams({
-                    gasPrice: BigInt(5),
-                    bytePrice: BigInt(5),
+                    gasPrice: bn(5),
                     variableOutputs: 3,
                 })
                 .fundWithRequiredCoins();

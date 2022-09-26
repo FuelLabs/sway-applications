@@ -1,3 +1,4 @@
+import { BigNumberish, bn } from "fuels";
 import { useAtomValue } from "jotai";
 import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
@@ -12,7 +13,7 @@ import { useContract } from "./useContract";
 interface UseDepositProps {
     depositAmount: string;
     depositAsset: string;
-    escrowId: bigint;
+    escrowId: BigNumberish;
 }
 
 export function useDeposit({
@@ -40,8 +41,7 @@ export function useDeposit({
                     forward: [actualDeposit, depositAsset]
                 })
                 .txParams({
-                    gasPrice: BigInt(5),
-                    bytePrice: BigInt(5),
+                    gasPrice: bn(5),
                     gasLimit: 100_000_000,
                 })
                 .fundWithRequiredCoins();

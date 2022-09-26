@@ -4,9 +4,10 @@ import { useWallet } from "../context/AppContext";
 import { contractCheck, updateEscrowQueries } from "../utils/helpers";
 import { txFeedback } from "../utils/feedback";
 import { useContract } from "./useContract";
+import { BigNumberish, bn } from "fuels";
 
 interface UseAcceptArbiterProps { 
-    escrowId: bigint;
+    escrowId: BigNumberish;
 }
 
 export function useAcceptArbiter({
@@ -24,8 +25,7 @@ export function useAcceptArbiter({
             const scope = await contract?.functions
                 .accept_arbiter(escrowId)
                 .txParams({
-                    gasPrice: BigInt(5),
-                    bytePrice: BigInt(5),
+                    gasPrice: bn(5),
                     gasLimit: 100_000_000,
                     variableOutputs: 1,
                 })

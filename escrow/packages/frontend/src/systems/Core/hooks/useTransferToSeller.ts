@@ -4,11 +4,12 @@ import toast from "react-hot-toast";
 import { walletIndexAtom } from "../jotai";
 import { txFeedback } from "../utils/feedback";
 import { useContract } from "./useContract";
-import { updateEscrowQueries } from "../utils/helpers";
+import { updateEscrowQueries, contractCheck } from "../utils/helpers";
 import { useWallet } from "../context/AppContext";
+import { BigNumberish, bn } from "fuels";
 
 interface UseTransferToSellerProps {
-    escrowId: bigint;
+    escrowId: BigNumberish;
 }
 
 export function useTransferToSeller({ escrowId }: UseTransferToSellerProps) {
@@ -20,15 +21,12 @@ export function useTransferToSeller({ escrowId }: UseTransferToSellerProps) {
 
     const mutation = useMutation(
         async () => {
-            if (!contract) {
-                throw new Error("Contract not found");
-            }
+            contractCheck(contract);
 
             const scope = await contract!.functions
                 .transfer_to_seller(escrowId)
                 .txParams({
-                    gasPrice: BigInt(5),
-                    bytePrice: BigInt(5),
+                    gasPrice: bn(5),
                     gasLimit: 100_000_000,
                     variableOutputs: 3,
                 })

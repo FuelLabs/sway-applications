@@ -1,7 +1,8 @@
+import { BigNumberish } from "fuels";
 import { useQuery } from "react-query";
 import { useContract } from "./useContract";
 
-export function useEscrows(queryString: string, escrowIds: bigint[] | null | undefined) {
+export function useEscrows(queryString: string, escrowIds: BigNumberish[] | null | undefined) {
     const contract = useContract();
 
     // We have to convert the bigints to strings bc bigints are not serializable

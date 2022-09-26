@@ -1,21 +1,17 @@
 import { useAtomValue } from "jotai";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import type { ChangeEvent } from "react";
 import { useQueryClient } from "react-query";
 import { Button, Card, Flex } from "@fuel-ui/react";
+import { bn } from "fuels";
 import { CreateEscrow } from "../components/CreateEscrow";
 
 import { Layout } from "../components/Layout";
 import { ShowBalances } from "../components/ShowBalances";
 import { showBalancesAtom, walletIndexAtom } from "../jotai";
 import { useSellerEscrows } from "../hooks/useSellerEscrows";
-import { formatValue } from "../utils/helpers";
-import { DECIMAL_PLACES } from "@/config";
 import { useContract } from "../hooks/useContract";
 import { ArbiterInputContainer } from "../components/ArbiterInputContainer";
-import { parseInputValueBigInt } from "../utils/math";
-import { ArbiterInput } from "@/types/contracts/EscrowAbi";
 import { useReturnDeposit } from "../hooks/useReturnDeposit";
 import { EscrowInfo } from "../components/EscrowInfo";
 import { useProposeArbiter } from "../hooks/useProposeArbiter";
@@ -26,7 +22,7 @@ export default function SellerPage() {
   const walletIdx = useAtomValue(walletIndexAtom);
   const sellerEscrows = useSellerEscrows();
   const contract = useContract();
-  const returnDepositMutation = useReturnDeposit({ escrowId: BigInt(0) });
+  const returnDepositMutation = useReturnDeposit({ escrowId: bn(0) });
 
   // TODO DRY for repeated code in CreateEscrow.tsx
   const [arbiter, setArbiter] = useState("");

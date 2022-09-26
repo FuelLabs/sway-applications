@@ -12,7 +12,7 @@ export function useArbiterEscrows() {
         async () => {
             return contract && (await contract.functions.arbiter_escrows({
                 Address: {
-                    value: wallet?.address!
+                    value: wallet?.address!.toHexString()!
                 }
             }).get()).value
         },

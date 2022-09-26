@@ -11,7 +11,7 @@ export function useBuyerEscrows() {
     const { data: buyerEscrowIds } = useQuery(
         ['BuyerPage-buyerEscrowIds', wallet],
         async () => {
-            return contract && (await contract!.functions.buyer_escrows({ Address: { value: wallet?.address! } }).get()).value
+            return contract && (await contract!.functions.buyer_escrows({ Address: { value: wallet?.address!.toHexString()! } }).get()).value
         },
         {
             onSuccess: (data) => console.log("data 1: ", data),

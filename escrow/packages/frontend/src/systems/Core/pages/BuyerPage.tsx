@@ -1,7 +1,6 @@
 import { useAtomValue } from "jotai";
 import { Flex, Card, Button, Input, Grid } from "@fuel-ui/react";
-import toast from 'react-hot-toast';
-import { useQueryClient } from "react-query";
+import { bn } from "fuels";
 
 import { Layout } from "../components/Layout";
 import { ShowBalances } from "../components/ShowBalances";
@@ -21,10 +20,10 @@ export default function BuyerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
   const buyerEscrows = useBuyerEscrows();
   const contract = useContract();
-  const transferToSellerMutation = useTransferToSeller({ escrowId: BigInt(0) });
-  const disputeMutation = useDispute({ escrowId: BigInt(0) });
-  const acceptArbiterMutation = useAcceptArbiter({ escrowId: BigInt(0) });
-  const arbiterProposal = useArbiterProposal(BigInt(0));
+  const transferToSellerMutation = useTransferToSeller({ escrowId: bn(0) });
+  const disputeMutation = useDispute({ escrowId: bn(0) });
+  const acceptArbiterMutation = useAcceptArbiter({ escrowId: bn(0) });
+  const arbiterProposal = useArbiterProposal(bn(0));
 
 
   return (
@@ -44,11 +43,11 @@ export default function BuyerPage() {
                 </Card.Footer>
               }
 
-              {(!!buyerEscrows[0].state.Pending && arbiterProposal?.Some) &&
+              {(!!buyerEscrows[0].state.Pending && !!arbiterProposal) &&
                 <Card.Footer justify="space-evenly">
-                  <div>{`Arbiter: ${arbiterProposal.Some?.address}`}</div>
-                  <div>{`Fee: ${arbiterProposal.Some?.fee_amount}`}</div>
-                  <div>{`Asset: ${arbiterProposal.Some?.asset}`}</div>
+                  <div>{`Arbiter: ${arbiterProposal?.address}`}</div>
+                  <div>{`Fee: ${arbiterProposal?.fee_amount}`}</div>
+                  <div>{`Asset: ${arbiterProposal?.asset}`}</div>
                   <Button onPress={() => acceptArbiterMutation.mutate()}>
                     Accept Arbiter
                   </Button>
