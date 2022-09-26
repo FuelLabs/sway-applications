@@ -11,9 +11,9 @@ import type {
   BigNumberish,
   InvokeFunction,
   BN,
-} from "fuels";
+} from 'fuels';
 
-import type { Enum, Option } from "./common";
+import type { Enum, Option } from './common';
 
 export type AddressInput = { value: string };
 
@@ -116,127 +116,46 @@ interface EscrowAbiInterface extends Interface {
     withdraw_collateral: FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: 'accept_arbiter', values: [BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'arbiter_escrows', values: [IdentityInput]): Uint8Array;
+  encodeFunctionData(functionFragment: 'arbiter_proposals', values: [BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'buyer_escrows', values: [IdentityInput]): Uint8Array;
   encodeFunctionData(
-    functionFragment: "accept_arbiter",
-    values: [BigNumberish]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "arbiter_escrows",
-    values: [IdentityInput]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "arbiter_proposals",
-    values: [BigNumberish]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "buyer_escrows",
-    values: [IdentityInput]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "create_escrow",
+    functionFragment: 'create_escrow',
     values: [ArbiterInput, [any, any], IdentityInput, BigNumberish]
   ): Uint8Array;
+  encodeFunctionData(functionFragment: 'deposit', values: [BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'dispute', values: [BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'escrows', values: [BigNumberish]): Uint8Array;
   encodeFunctionData(
-    functionFragment: "deposit",
-    values: [BigNumberish]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "dispute",
-    values: [BigNumberish]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "escrows",
-    values: [BigNumberish]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "propose_arbiter",
+    functionFragment: 'propose_arbiter',
     values: [ArbiterInput, BigNumberish]
   ): Uint8Array;
   encodeFunctionData(
-    functionFragment: "resolve_dispute",
+    functionFragment: 'resolve_dispute',
     values: [BigNumberish, BigNumberish, IdentityInput]
   ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "return_deposit",
-    values: [BigNumberish]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "seller_escrows",
-    values: [IdentityInput]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "take_payment",
-    values: [BigNumberish]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "transfer_to_seller",
-    values: [BigNumberish]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "withdraw_collateral",
-    values: [BigNumberish]
-  ): Uint8Array;
+  encodeFunctionData(functionFragment: 'return_deposit', values: [BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'seller_escrows', values: [IdentityInput]): Uint8Array;
+  encodeFunctionData(functionFragment: 'take_payment', values: [BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'transfer_to_seller', values: [BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'withdraw_collateral', values: [BigNumberish]): Uint8Array;
 
-  decodeFunctionData(
-    functionFragment: "accept_arbiter",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "arbiter_escrows",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "arbiter_proposals",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "buyer_escrows",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "create_escrow",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "deposit",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "dispute",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "escrows",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "propose_arbiter",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "resolve_dispute",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "return_deposit",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "seller_escrows",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "take_payment",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "transfer_to_seller",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "withdraw_collateral",
-    data: BytesLike
-  ): DecodedValue;
+  decodeFunctionData(functionFragment: 'accept_arbiter', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'arbiter_escrows', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'arbiter_proposals', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'buyer_escrows', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'create_escrow', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'deposit', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'dispute', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'escrows', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'propose_arbiter', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'resolve_dispute', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'return_deposit', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'seller_escrows', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'take_payment', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'transfer_to_seller', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'withdraw_collateral', data: BytesLike): DecodedValue;
 }
 
 export class EscrowAbi extends Contract {
@@ -246,20 +165,12 @@ export class EscrowAbi extends Contract {
 
     arbiter_escrows: InvokeFunction<[arbiter: IdentityInput], [any]>;
 
-    arbiter_proposals: InvokeFunction<
-      [identifier: BigNumberish],
-      OptionalArbiterOutput
-    >;
+    arbiter_proposals: InvokeFunction<[identifier: BigNumberish], OptionalArbiterOutput>;
 
     buyer_escrows: InvokeFunction<[buyer: IdentityInput], [any]>;
 
     create_escrow: InvokeFunction<
-      [
-        arbiter: ArbiterInput,
-        assets: [any, any],
-        buyer: IdentityInput,
-        deadline: BigNumberish
-      ],
+      [arbiter: ArbiterInput, assets: [any, any], buyer: IdentityInput, deadline: BigNumberish],
       void
     >;
 
@@ -269,17 +180,10 @@ export class EscrowAbi extends Contract {
 
     escrows: InvokeFunction<[identifier: BigNumberish], EscrowInfoOutput>;
 
-    propose_arbiter: InvokeFunction<
-      [arbiter: ArbiterInput, identifier: BigNumberish],
-      void
-    >;
+    propose_arbiter: InvokeFunction<[arbiter: ArbiterInput, identifier: BigNumberish], void>;
 
     resolve_dispute: InvokeFunction<
-      [
-        identifier: BigNumberish,
-        payment_amount: BigNumberish,
-        user: IdentityInput
-      ],
+      [identifier: BigNumberish, payment_amount: BigNumberish, user: IdentityInput],
       void
     >;
 

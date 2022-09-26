@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { TransactionResult } from "fuels";
 import { Link } from "@fuel-ui/react";
+import type { TransactionResult } from "fuels";
 import toast from "react-hot-toast";
 
 import { BLOCK_EXPLORER_URL } from "@/config";
@@ -27,30 +27,30 @@ export function TxLink({ id }: TxLinkProps) {
 }
 
 export function txFeedback(
-    txMsg: string,
-    onSuccess?: (data: TransactionResult<any>) => void | Promise<void>
-  ) {
-    return async (data: Maybe<TransactionResult<any>>) => {
-      const txLink = <TxLink id={data?.transactionId} />;
-  
-      /**
-       * Show a toast success message if status.type === 'success'
-       */
-      if (data?.status.type === "success") {
-        await onSuccess?.(data);
-        toast.success(
-          <>
-            {" "}
-            {txMsg} {txLink}{" "}
-          </>,
-          { duration: 8000 }
-        );
-        return;
-      }
-  
-      /**
-       * Show a toast error if status.type !== 'success''
-       */
-      toast.error(<>Transaction reverted! {txLink}</>);
-    };
-  }
+  txMsg: string,
+  onSuccess?: (data: TransactionResult<any>) => void | Promise<void>
+) {
+  return async (data: Maybe<TransactionResult<any>>) => {
+    const txLink = <TxLink id={data?.transactionId} />;
+
+    /**
+     * Show a toast success message if status.type === 'success'
+     */
+    if (data?.status.type === "success") {
+      await onSuccess?.(data);
+      toast.success(
+        <>
+          {" "}
+          {txMsg} {txLink}{" "}
+        </>,
+        { duration: 8000 }
+      );
+      return;
+    }
+
+    /**
+     * Show a toast error if status.type !== 'success''
+     */
+    toast.error(<>Transaction reverted! {txLink}</>);
+  };
+}

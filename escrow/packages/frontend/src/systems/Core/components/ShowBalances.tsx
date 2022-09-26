@@ -8,7 +8,15 @@ export const ShowBalances = () => {
   const coins = useAssets();
 
   return (
-    <Card css={{ width: "250px", selfAlign: "flex-end", bg: "$gray7", marginTop: "10px", marginRight: "10px" }}>
+    <Card
+      css={{
+        width: "250px",
+        selfAlign: "flex-end",
+        bg: "$gray7",
+        marginTop: "10px",
+        marginRight: "10px",
+      }}
+    >
       <Card.Header>
         <Heading>Balances</Heading>
       </Card.Header>

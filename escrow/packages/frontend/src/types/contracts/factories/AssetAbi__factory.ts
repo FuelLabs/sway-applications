@@ -2,33 +2,33 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { Provider, Wallet, AbstractAddress } from "fuels";
-import { Interface, Contract } from "fuels";
-import type { AssetAbi, AssetAbiInterface } from "../AssetAbi";
+import type { Provider, Wallet, AbstractAddress } from 'fuels';
+import { Interface, Contract } from 'fuels';
+import type { AssetAbi, AssetAbiInterface } from '../AssetAbi';
 const _abi = [
   {
-    type: "function",
-    name: "mint_and_send_to_address",
+    type: 'function',
+    name: 'mint_and_send_to_address',
     inputs: [
       {
-        type: "u64",
-        name: "amount",
+        type: 'u64',
+        name: 'amount',
       },
       {
-        type: "struct Address",
-        name: "recipient",
+        type: 'struct Address',
+        name: 'recipient',
         components: [
           {
-            type: "b256",
-            name: "value",
+            type: 'b256',
+            name: 'value',
           },
         ],
       },
     ],
     outputs: [
       {
-        type: "bool",
-        name: "",
+        type: 'bool',
+        name: '',
       },
     ],
   },
@@ -39,10 +39,7 @@ export class AssetAbi__factory {
   static createInterface(): AssetAbiInterface {
     return new Interface(_abi) as unknown as AssetAbiInterface;
   }
-  static connect(
-    id: string | AbstractAddress,
-    walletOrProvider: Wallet | Provider
-  ): AssetAbi {
+  static connect(id: string | AbstractAddress, walletOrProvider: Wallet | Provider): AssetAbi {
     return new Contract(id, _abi, walletOrProvider) as unknown as AssetAbi;
   }
 }

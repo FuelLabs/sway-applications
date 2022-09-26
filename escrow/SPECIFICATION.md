@@ -1,4 +1,5 @@
 Table of Content
+
 - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
   - [Arbiter](#arbiter)
     - [`resolve_dispute()`](#resolve_dispute)

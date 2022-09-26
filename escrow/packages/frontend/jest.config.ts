@@ -1,4 +1,3 @@
-/* eslint-disable import/no-relative-packages */
 import type { Config } from '@jest/types';
 
 import baseConfig from '../../../jest.config';

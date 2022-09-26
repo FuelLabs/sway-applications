@@ -1,4 +1,5 @@
 import { useQuery } from 'react-query';
+
 import { useWallet } from '../context/AppContext';
 
 import { useContract } from './useContract';
@@ -8,16 +9,21 @@ export function useSellerEscrows() {
   const contract = useContract();
   const wallet = useWallet();
   const { data: sellerEscrowIds } = useQuery(
-    ['SellerPage-sellerEscrowIds', wallet?.address.toHexString()!],
+    ['SellerPage-sellerEscrowIds', wallet?.address.toHexString()],
     async () => {
-      return contract && (await contract!.functions.seller_escrows({ Address: { value: wallet?.address!.toHexString()! } }).get()).value
-    },
-    {
-      onError: (err) => console.log(`Seller error: ${err}`)
+      return (
+        contract &&
+        wallet &&
+        (
+          await contract!.functions
+            .seller_escrows({ Address: { value: wallet.address!.toHexString() } })
+            .get()
+        ).value
+      );
     }
   );
 
-  const sellerEscrows = useEscrows("SellerEscrows", sellerEscrowIds);
+  const sellerEscrows = useEscrows('SellerEscrows', sellerEscrowIds);
 
   return sellerEscrows;
 }

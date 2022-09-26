@@ -6,8 +6,8 @@ import type { CoinQuantity } from "fuels";
 import { useAtom, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
-import { FaRegCopy } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { FaRegCopy } from "react-icons/fa";
 
 import { useWallet, useWalletList } from "../context/AppContext";
 import { showBalancesAtom, walletIndexAtom } from "../jotai";
@@ -57,8 +57,8 @@ export const WalletWidget = () => {
     wallets?.forEach((nextWallet, i) => {
       walletOptions.push(
         <option key={i} value={i}>
-          {nextWallet?.address.toHexString().slice(0, 4)}...{nextWallet?.address.toHexString().slice(-4)} (
-          {WALLET_NAMES[i]})
+          {nextWallet?.address.toHexString().slice(0, 4)}...
+          {nextWallet?.address.toHexString().slice(-4)} ({WALLET_NAMES[i]})
         </option>
       );
     });

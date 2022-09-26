@@ -90,17 +90,17 @@ To make life easier we added as many useful scripts as possible to our [package.
 pnpm <command name>
 ```
 
-| Script             | Description                                                                                                          |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `dev`              | Run development server for the WebApp [packages/app](../packages/app/).                                              |
-| `contracts`        | Build, generate types, deploy [packages/contracts](../packages/contracts). It should be used when editing contracts. |
-| `contracts:build`  | Build and generate types [packages/contracts](../packages/contracts).                                                |
-| `contracts:deploy` | Deploy the current binaries.                                                                                         |
-| `scripts:setup`    | Setup [escrow-scripts](../packages/scripts/) used to build and deploy contracts and generate types.                |
-| `services:clean`   | Stop and remove all development containers that are running locally.                                                 |
-| `services:run`     | Run the local network with `fuel-core`                                                      |
-| `services:setup`   | Run the local network, setup `escrow-scripts`, build and deploy contracts normally used on the first run, and generate and seed wallets.       |
-| `services:reset`   | Runs `services:clean` then `services:setup`       |
+| Script             | Description                                                                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `dev`              | Run development server for the WebApp [packages/app](../packages/app/).                                                                  |
+| `contracts`        | Build, generate types, deploy [packages/contracts](../packages/contracts). It should be used when editing contracts.                     |
+| `contracts:build`  | Build and generate types [packages/contracts](../packages/contracts).                                                                    |
+| `contracts:deploy` | Deploy the current binaries.                                                                                                             |
+| `scripts:setup`    | Setup [escrow-scripts](../packages/scripts/) used to build and deploy contracts and generate types.                                      |
+| `services:clean`   | Stop and remove all development containers that are running locally.                                                                     |
+| `services:run`     | Run the local network with `fuel-core`                                                                                                   |
+| `services:setup`   | Run the local network, setup `escrow-scripts`, build and deploy contracts normally used on the first run, and generate and seed wallets. |
+| `services:reset`   | Runs `services:clean` then `services:setup`                                                                                              |
 
 > Other scripts can be found in [package.json](../package.json). (some of these commands don't currently work as some features are still in development)
 

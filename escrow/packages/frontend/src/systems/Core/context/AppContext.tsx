@@ -3,15 +3,14 @@ import { useAtom } from "jotai";
 import React, { useContext, useState, useMemo, useEffect } from "react";
 import type { PropsWithChildren } from "react";
 
-import {  NUM_WALLETS, FUEL_PROVIDER_URL, ESCROW_ID } from "../../../config";
+import { NUM_WALLETS, FUEL_PROVIDER_URL } from "../../../config";
 import { walletIndexAtom } from "../jotai";
-import { EscrowAbi, EscrowAbi__factory } from "../../../types/contracts";
-import type { Maybe } from "@/types"; 
+
+import type { Maybe } from "@/types";
 
 interface AppContextValue {
   wallets: Maybe<Array<Wallet>>;
   wallet: Maybe<Wallet>;
-  //contract: EscrowAbi | null;
 }
 
 export const AppContext = React.createContext<Maybe<AppContextValue>>(null);
@@ -54,11 +53,6 @@ export const AppContextProvider = ({
     return wallets[currentWalletIndex];
   }, [currentWalletIndex]);
 
-  // const contract = useMemo(() => {
-  //   if (!wallet) return null;
-  //   return EscrowAbi__factory.connect(ESCROW_ID, wallet);
-  // }, [wallet]);
-
   // TODO store wallets in local storage or somewhere more persistant
   useEffect(() => {
     if (wallets!.length > 0) {
@@ -67,7 +61,7 @@ export const AppContextProvider = ({
     const nextPrivateKeyList: Array<string> | null = Array(NUM_WALLETS);
     for (let i = 0; i < NUM_WALLETS; i += 1) {
       const nextPrivateKey = process.env[`VITE_WALLET${i}`]!;
-      const nextWallet = new Wallet(nextPrivateKey, FUEL_PROVIDER_URL)
+      const nextWallet = new Wallet(nextPrivateKey, FUEL_PROVIDER_URL);
       nextPrivateKeyList[i] = nextWallet.privateKey;
     }
     setPrivateKeyList(nextPrivateKeyList);
@@ -79,7 +73,7 @@ export const AppContextProvider = ({
       value={{
         wallets,
         wallet,
-        //contract,
+        // contract,
       }}
     >
       {children}
