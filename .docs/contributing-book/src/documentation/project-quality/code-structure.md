@@ -1,6 +1,6 @@
 # Code Structure
 
-Structuring code in a way that is easy to navigate allows for a greater developer experience. In order to achieve this there are some guidelines to consider.
+Structuring code in a way that is easy to navigate allows for a greater developer experience. In order to achieve this, there are some guidelines to consider.
 
 1. Fields in data structures should be alphabetical
 2. Avoid ordering by "admin functions", "getters", etc.

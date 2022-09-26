@@ -17,7 +17,7 @@ Which one should be chosen may come down to preference or the contributing guide
 
 ## How to structure a pull request
 
-Depending on the account permissions and where the pull request is being made there may be some features that are unavailable for example an external contributor may not be able to set a label to categorize the request.
+Depending on the account permissions and where the pull request is being made, there may be some features that are unavailable. For example, an external contributor may not be able to set a label to categorize the request.
 
 There are at least five sections to consider when creating a pull request:
 

@@ -44,7 +44,7 @@ This file is the one that is called by `forc test` and thus it only contains the
 
 Here are some tips on how to approach testing:
 
-- Similar to [code structure](code-structure.md) content in each file should be ordered alphabetically, with one exception, so that it's easy to navigate
+- Similar to [code structure](code-structure.md) content, each file should be ordered alphabetically, with one exception, so that it's easy to navigate
   - Test conditions in the order in which they may occur
     - If a test has multiple assertions then the first assertion should be tested first, second assertion second etc.
 - Check the code coverage

@@ -6,7 +6,7 @@ We encourage the use of the provided templates because they guide a user into an
 
 - What steps can be taken to reproduce the issue?
 - What feature is missing and how would you like it to work?
-- Is the improvement an improvement or a personal knitpick?
+- Is the improvement an improvement or a personal nitpick?
 
 <br>
 
@@ -14,4 +14,4 @@ We encourage the use of the provided templates because they guide a user into an
 
 <br>
 
-The questions themselves are not that important but what is important is providing as much detail about the task as possible because it allows us to come to a decision efficiently.
+The questions themselves are not that important, but what is important is providing as much detail about the task as possible. This allows other developers to come to a decision quickly and efficiently regarding the new issue.

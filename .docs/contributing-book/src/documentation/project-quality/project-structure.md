@@ -1,6 +1,6 @@
 # Project Structure
 
-In order to navigate through a project easily there needs to be a structure that compartmentalizes concepts. This means that code is grouped together based on some concept. 
+In order to navigate through a project easily, there needs to be a structure that compartmentalizes concepts. This means that code is grouped together based on some concept. 
 
 For example, here is an example structure that we follow for `Sway` files in the `src` directory.
 
@@ -14,7 +14,7 @@ src/
 └── utils.sw
 ```
 
-In the example above there are no directories however it may make sense for a project to categorize concepts differently such as splitting the `data_structures.sw` into a directory containing individual Sway modules.
+In the example above there are no directories, however, it may make sense for a project to categorize concepts differently such as splitting the `data_structures.sw` into a directory containing individual `Sway` modules.
 
 ## data_structures.sw
 
@@ -54,4 +54,4 @@ The entry point to your contract that contains the implementation of your `abi`.
 ## utils.sw
 
 Any private functions (helper functions) that your contracts use inside their functions.
-Since a contract cannot call its own `ABI` functions, we need to abstract away some of the code into private functions so that they can be reused in your contract
+Since a contract cannot call its own `ABI` functions, we need to abstract away some of the code into private functions so that they can be reused in your contract.

@@ -18,7 +18,7 @@ On the other hand, common abbreviations may be meaningful for a given context an
 
 In general, a developer should take a moment to consider if an abbreviation provides more benefit than cost and how other developers may interpret that name in the given context.
 
-That being said here are some examples that should be avoided.
+That being said, here are some examples that should be avoided.
 
 ### Single Character Names
 
@@ -38,11 +38,11 @@ For example, in the context of an industry that deals with temperature sensors w
 - `temporary`
 - `tempo`
 
-Perhaps in the specific function it makes sense to use the abbreviation nevertheless it's better to add a few more characters to finish the variable name.
+Perhaps in the specific function it makes sense to use the abbreviation. Nevertheless, it's better to add a few more characters to finish the variable name.
 
 ## Declarative statements
 
-When choosing a name the name should be a statement from the developer and not a question. Statements provide a simple true or false dynamic while a variable that may be read as a question provides doubt to the intended functionality.
+When choosing a name, the name should be a statement from the developer and not a question. Statements provide a simple true or false dynamic while a variable that may be read as a question provides doubt to the intended functionality.
 
 For example:
 

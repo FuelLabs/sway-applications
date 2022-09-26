@@ -12,7 +12,7 @@ Once a user has an idea of what they are getting into they can move onto the nex
 
 The quickstart should inform the user where the project is supported, and has been tested to work, before moving onto the installation and removal instructions.
 
-A user should be able to easily install, use and potentially remove your project to create a good experience.
+A user should be able to easily install, use, and potentially remove your project to create a good experience.
 
 
 ## Miscellaneous 
@@ -25,4 +25,4 @@ Some information may include:
 - Ways to support the project
 - Known issues
 
-There is a variety of content that may be added however it's important to know that this is the first document a user will see and thus the user should not be overloaded with information. If the user can learn a little about the project, use it and find links to additional content then the document has achieved its purpose.
+There is a variety of content that may be added, however, it's important to note that this is the first document a user will see and thus should not be overloaded with information. If the user can learn a little about the project, use it, and find links to additional content then the document has achieved its purpose.
