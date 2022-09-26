@@ -5,6 +5,8 @@ import { contractCheck, updateEscrowQueries } from "../utils/helpers";
 import { txFeedback } from "../utils/feedback";
 import { useContract } from "./useContract";
 import { BigNumberish, bn } from "fuels";
+import { useAtomValue } from "jotai";
+import { walletIndexAtom } from "../jotai";
 
 interface UseAcceptArbiterProps { 
     escrowId: BigNumberish;
@@ -15,6 +17,7 @@ export function useAcceptArbiter({
 }: UseAcceptArbiterProps) {
     const queryClient = useQueryClient();
     const wallet = useWallet();
+    const walletIdx = useAtomValue(walletIndexAtom);
     const contract = useContract();
     const successMsg = "Arbiter accepted successfully.";
 
@@ -43,7 +46,10 @@ export function useAcceptArbiter({
     );
 
     function handleSuccess() {
-        updateEscrowQueries(queryClient, wallet);
+        queryClient.invalidateQueries(['EscrowPage-balances', walletIdx]);
+        queryClient.invalidateQueries(['BuyerEscrows', wallet?.address.toHexString()!]);
+        queryClient.invalidateQueries(["ArbiterProposal", wallet?.address.toHexString()!, escrowId.toString()]);
+        //updateEscrowQueries(queryClient, wallet);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

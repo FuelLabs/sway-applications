@@ -59,8 +59,9 @@ export function useDeposit({
 
     function handleSuccess() {
         // Trigger queries to update components
-        queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
-        updateEscrowQueries(queryClient, wallet);
+        queryClient.invalidateQueries(['EscrowPage-balances', walletIdx]);
+        queryClient.invalidateQueries(['BuyerEscrows', wallet?.address.toHexString()!]);
+        //updateEscrowQueries(queryClient, wallet);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

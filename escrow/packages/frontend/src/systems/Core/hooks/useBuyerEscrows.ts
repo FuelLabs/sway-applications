@@ -9,7 +9,7 @@ export function useBuyerEscrows() {
     const wallet = useWallet();
 
     const { data: buyerEscrowIds } = useQuery(
-        ['BuyerPage-buyerEscrowIds', wallet],
+        ['BuyerPage-buyerEscrowIds', wallet?.address.toHexString()!],
         async () => {
             return contract && (await contract!.functions.buyer_escrows({ Address: { value: wallet?.address!.toHexString()! } }).get()).value
         },

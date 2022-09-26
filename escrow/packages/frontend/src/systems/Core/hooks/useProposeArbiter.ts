@@ -7,12 +7,15 @@ import { parseInputValueBigInt } from "../utils/math";
 import { ArbiterInput } from "../../../types/contracts/EscrowAbi";
 import { txFeedback } from "../utils/feedback";
 import { useWallet } from "../context/AppContext";
+import { BigNumberish, bn } from "fuels";
+import { useAtomValue } from "jotai";
+import { walletIndexAtom } from "../jotai";
 
 interface UseProposeArbiterProps {
     arbiterFee: string;
     arbiterAddress: string;
     arbiterAsset: string;
-    escrowId: bigint;
+    escrowId: BigNumberish;
     setArbiterFee: React.Dispatch<React.SetStateAction<string>>;
     setArbiterAddress: React.Dispatch<React.SetStateAction<string>>;
     setArbiterAsset: React.Dispatch<React.SetStateAction<string>>;
@@ -29,6 +32,7 @@ export function useProposeArbiter({
 }: UseProposeArbiterProps) {
     const queryClient = useQueryClient();
     const wallet = useWallet();
+    const walletIdx = useAtomValue(walletIndexAtom);
     const contract = useContract();
     const successMsg = "New arbiter proposed.";
 
@@ -49,8 +53,7 @@ export function useProposeArbiter({
                     forward: [actualFee, arbiterAsset],
                 })
                 .txParams({
-                    gasPrice: BigInt(5),
-                    bytePrice: BigInt(5),
+                    gasPrice: bn(5),
                     gasLimit: 100_000_000,
                     variableOutputs: 1,
                 })
@@ -72,7 +75,7 @@ export function useProposeArbiter({
         setArbiterAsset("");
         setArbiterFee("");
 
-        updateEscrowQueries(queryClient, wallet);
+        queryClient.invalidateQueries(['EscrowPage-balances', walletIdx]);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

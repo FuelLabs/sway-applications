@@ -1,26 +1,20 @@
-import { Flex, Card, Input, Button, toast } from "@fuel-ui/react";
-import { ChangeEvent, SyntheticEvent, useState } from "react";
-import { walletIndexAtom } from "../jotai";
-import { useAtomValue } from "jotai";
-import { parseInputValueBigInt } from "../utils/math";
-import { useContract } from "../hooks/useContract";
-import { queryClient } from "@/queryClient";
+import { Button } from "@fuel-ui/react";
+import { ChangeEvent, useState } from "react";
 import { AssetInput } from "./AssetInput";
 import { useDeposit } from "../hooks/useDeposit";
+import { BigNumberish, bn } from "fuels";
 
 interface Props {
-    escrowId: bigint,
+    escrowId: BigNumberish,
 }
 
 export function Deposit(props: Props) {
     const [assetAmount, setAssetAmount] = useState("");
     const [assetId, setAssetId] = useState("");
-    const contract = useContract();
-    const walletIdx = useAtomValue(walletIndexAtom);
     const depositMutation = useDeposit({
         depositAmount: assetAmount,
         depositAsset: assetId,
-        escrowId: BigInt(props.escrowId)
+        escrowId: bn(props.escrowId)
     });
 
     const handleAssetAmountChange = (event: ChangeEvent<HTMLInputElement>) => {

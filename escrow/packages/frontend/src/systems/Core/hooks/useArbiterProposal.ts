@@ -8,7 +8,7 @@ export function useArbiterProposal(escrowId: BigNumberish) {
     const contract = useContract();
 
     const { data: arbiterProposal } = useQuery(
-        ["ArbiterProposal", wallet, escrowId.toString()],
+        ["ArbiterProposal", wallet?.address.toHexString()!, escrowId.toString()],
         async () => {
             return contract && (await contract!.functions.arbiter_proposals(escrowId).get()).value;
         }

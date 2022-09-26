@@ -8,9 +8,10 @@ import { parseInputValueBigInt } from "../utils/math";
 import { useContract } from "./useContract";
 import { updateEscrowQueries } from "../utils/helpers";
 import { useWallet } from "../context/AppContext";
+import { BigNumberish, bn } from "fuels";
 
 interface UseResolveDisputeProps {
-    escrowId: bigint,
+    escrowId: BigNumberish,
     arbiterPayment: string,
     favoredUser: string,
 }
@@ -37,8 +38,7 @@ export function useResolveDispute({
             const scope = await contract!.functions
                 .resolve_dispute(escrowId, actualPayment, userArg)
                 .txParams({
-                    gasPrice: BigInt(5),
-                    bytePrice: BigInt(5),
+                    gasPrice: bn(5),
                     gasLimit: 100_000_000,
                     variableOutputs: 3
                 })
@@ -57,8 +57,8 @@ export function useResolveDispute({
 
     function handleSuccess() {
         // Trigger query to update blanaces etc
-        queryClient.fetchQuery(['EscrowPage-balances', walletIdx]);
-        updateEscrowQueries(queryClient, wallet);
+        queryClient.invalidateQueries(['EscrowPage-balances', walletIdx]);
+        queryClient.invalidateQueries(["ArbiterEscrows", wallet?.address.toHexString()!]);
     }
 
     function handleError(e: any) {

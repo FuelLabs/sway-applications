@@ -28,13 +28,13 @@ export function toNumber(number: Maybe<BigNumberish>) {
 }
 
 export function parseUnits(number: string, precision: number = DECIMAL_PLACES) {
-  return ethers.parseUnits(number, precision).toBigInt();
+  return ethers.parseUnits(number, precision);
 }
 
 export function parseInputValueBigInt(value: string) {
   if (value !== '') {
     const nextValue = value === '.' ? '0.' : value;
-    return bn(parseUnits(nextValue));
+    return bn(parseUnits(nextValue).toString());
   }
   return ZERO;
 }

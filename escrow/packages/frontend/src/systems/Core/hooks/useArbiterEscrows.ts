@@ -8,7 +8,7 @@ export function useArbiterEscrows() {
     const wallet = useWallet();
 
     const { data: arbiterEscrowIds } = useQuery(
-        ["ArbiterPage-arbiterEscrowIds", wallet],
+        ["ArbiterPage-arbiterEscrowIds", wallet?.address.toHexString()],
         async () => {
             return contract && (await contract.functions.arbiter_escrows({
                 Address: {

@@ -42,7 +42,7 @@ export function useDispute({
     );
 
     function handleSuccess() {
-        updateEscrowQueries(queryClient, wallet);
+        queryClient.invalidateQueries(["BuyerEscrows", wallet?.address.toHexString()!]);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -17,11 +17,8 @@ import { EscrowInfo } from "../components/EscrowInfo";
 import { useProposeArbiter } from "../hooks/useProposeArbiter";
 
 export default function SellerPage() {
-  const queryClient = useQueryClient();
   const showBalances = useAtomValue(showBalancesAtom);
-  const walletIdx = useAtomValue(walletIndexAtom);
   const sellerEscrows = useSellerEscrows();
-  const contract = useContract();
   const returnDepositMutation = useReturnDeposit({ escrowId: bn(0) });
 
   // TODO DRY for repeated code in CreateEscrow.tsx
@@ -33,7 +30,7 @@ export default function SellerPage() {
     { arbiterAddress: arbiter,
       arbiterAsset,
       arbiterFee,
-      escrowId: BigInt(0),
+      escrowId: bn(0),
       setArbiterAddress: setArbiter,
       setArbiterAsset,
       setArbiterFee
