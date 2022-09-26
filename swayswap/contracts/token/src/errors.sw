@@ -1,7 +1,7 @@
 library errors;
 
 pub enum Error {
-    AddressAlreadyMint: (),
+    IdentityAlreadyMint: (),
     CannotReinitialize: (),
     MintIsClosed: (),
     NotOwner: (),

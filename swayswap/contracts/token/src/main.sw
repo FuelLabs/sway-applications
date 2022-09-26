@@ -21,8 +21,11 @@ use std::{
 const ZERO_B256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
 
 storage {
+    /// The owner of contract
     owner: Identity = Identity::Address(~Address::from(ZERO_B256)),
+    /// The amount 
     mint_amount: u64 = 0,
+    /// Information describing whether an identity has minted
     mint_list: StorageMap<Identity, bool> = StorageMap {},
 }
 
@@ -49,17 +52,16 @@ impl Token for Contract {
     #[storage(read, write)]
     fn initialize(identity: Identity, mint_amount: u64) {
         require(storage.owner == Identity::Address(~Address::from(ZERO_B256)), Error::CannotReinitialize);
-        // Start the next message to be signed
         storage.owner = identity;
         storage.mint_amount = mint_amount;
     }
+
     #[storage(read, write)]
     fn mint() {
         require(storage.mint_amount > 0, Error::MintIsClosed);
 
-        // Enable a address to mint only once
         let sender = msg_sender().unwrap();
-        require(storage.mint_list.get(sender) == false, Error::AddressAlreadyMint);
+        require(storage.mint_list.get(sender) == false, Error::IdentityAlreadyMint);
 
         storage.mint_list.insert(sender, true);
         mint_to(storage.mint_amount, sender);
@@ -78,14 +80,14 @@ impl Token for Contract {
     }
 
     #[storage(read)]
-    fn transfer_coins(coins: u64, identity: Identity) {
+    fn transfer_coins(amount: u64, identity: Identity) {
         require(msg_sender().unwrap() == storage.owner, Error::NotOwner);
-        transfer(coins, contract_id(), identity);
+        transfer(amount, contract_id(), identity);
     }
 
     #[storage(read)]
-    fn transfer_token_to_output(asset_id: ContractId, coins: u64, identity: Identity) {
+    fn transfer_token_to_output(asset_id: ContractId, amount: u64, identity: Identity) {
         require(msg_sender().unwrap() == storage.owner, Error::NotOwner);
-        transfer(coins, asset_id, identity);
+        transfer(amount, asset_id, identity);
     }
 }
