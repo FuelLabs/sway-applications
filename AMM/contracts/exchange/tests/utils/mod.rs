@@ -139,6 +139,23 @@ pub mod abi_calls {
             .unwrap()
     }
 
+    pub async fn token_initialize(
+        contract: &MyToken,
+        identity: Identity,
+        amount: u64,
+    ) -> CallResponse<()> {
+        contract.initialize(identity, amount).call().await.unwrap()
+    }
+
+    pub async fn token_mint(contract: &MyToken) -> CallResponse<()> {
+        contract
+            .mint()
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+    }
+
     pub async fn withdraw(contract: &Exchange, amount: u64, asset: ContractId) -> CallResponse<()> {
         contract
             .withdraw(amount, asset)
@@ -151,7 +168,7 @@ pub mod abi_calls {
 
 pub mod test_helpers {
     use super::*;
-    use abi_calls::{add_liquidity, deposit};
+    use abi_calls::{add_liquidity, deposit, token_initialize, token_mint};
 
     pub async fn deposit_and_add_liquidity(
         exchange_instance: &Exchange,
@@ -185,16 +202,38 @@ pub mod test_helpers {
         result.value
     }
 
-    pub async fn setup() -> (
-        Exchange,
-        MyToken,
-        WalletUnlocked,
-        ContractId,
-        AssetId,
-        AssetId,
-    ) {
-        // default initial amount 1000000000
-        let wallet = launch_provider_and_get_wallet().await;
+    pub async fn setup() -> (Exchange, ContractId, AssetId, AssetId) {
+        let mut wallet = WalletUnlocked::new_random(None);
+
+        let asset_base = AssetConfig {
+            id: BASE_ASSET_ID,
+            num_coins: 10,
+            coin_amount: 100000,
+        };
+
+        let asset_token = AssetConfig {
+            id: AssetId::from_str(
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            )
+            .unwrap(),
+            num_coins: 10,
+            coin_amount: 100000,
+        };
+
+        let asset_invalid = AssetConfig {
+            id: AssetId::from_str(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            )
+            .unwrap(),
+            num_coins: 1,
+            coin_amount: 10,
+        };
+
+        let assets = vec![asset_base, asset_token, asset_invalid];
+
+        let coins = setup_custom_assets_coins(wallet.address(), &assets);
+        let (provider, _socket_addr) = setup_test_provider(coins, vec![], None).await;
+        wallet.set_provider(provider);
 
         let token_contract_id = Contract::deploy(
             "../token/out/debug/token.bin",
@@ -221,24 +260,27 @@ pub mod test_helpers {
         )
         .await
         .unwrap();
+
         let exchange_instance =
             ExchangeBuilder::new(exchange_contract_id.to_string(), wallet.clone()).build();
         let token_instance =
             MyTokenBuilder::new(token_contract_id.to_string(), wallet.clone()).build();
 
-        // Native contract id
         let native_contract_id = ContractId::new(*BASE_ASSET_ID);
-        // Token contract id
-        let token_contract_id = token_contract_id;
-        // Token asset id
         let token_asset_id = AssetId::from(*token_contract_id.hash());
-        // LP Token asset id
         let lp_asset_id = AssetId::from(*exchange_contract_id.hash());
+
+        // Mint some tokens to the wallet
+        token_initialize(
+            &token_instance,
+            Identity::Address(Address::from(wallet.address())),
+            20000,
+        )
+        .await;
+        token_mint(&token_instance).await;
 
         (
             exchange_instance,
-            token_instance,
-            wallet,
             native_contract_id,
             token_asset_id,
             lp_asset_id,
