@@ -46,7 +46,7 @@ abi Token {
     /// 
     /// # Reverts
     /// 
-    /// * When `mint_amount` is 0, i.e. when mint is closed
+    /// * When `mint_amount` is 0, i.e., when mint is closed
     /// * When the caller has already minted coins
     #[storage(read, write)]
     fn mint();
