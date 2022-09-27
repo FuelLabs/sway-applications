@@ -1,4 +1,4 @@
-# How to name a component
+# Naming Components
 
 Documenting the interface and adding comments is important however the holy grail is writing code that is self-documenting. 
 
