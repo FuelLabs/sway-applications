@@ -98,7 +98,8 @@ jobs:
       matrix:
         project: [
           ".docs/contributing-book/src/code/bad_documentation", 
-          ".docs/contributing-book/src/code/connect_four"
+          ".docs/contributing-book/src/code/connect_four",
+          ".docs/contributing-book/src/code/style_guide",
         ]
 
     steps:
