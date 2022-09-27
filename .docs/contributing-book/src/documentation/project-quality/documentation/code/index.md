@@ -5,7 +5,7 @@ Documenting code is an important skill to have because it conveys information to
 In the following sections we'll take a look at three ways of documenting code.
 
 <!-- no toc --> 
-- [API Documentation](api.md)
+- [ABI Documentation](abi.md)
 - [Comments](comments.md)
 - [How to name a component](naming-components.md)
 
