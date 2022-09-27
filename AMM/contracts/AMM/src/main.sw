@@ -5,8 +5,8 @@ dep interface;
 use interface::AMM;
 use std::{contract_id::ContractId, storage::StorageMap};
 
-/// Store token ID and exchange contract ID in storage
 storage {
+    /// Map that stores (exchange contract ID, token contract ID)
     tokens: StorageMap<b256, b256> = StorageMap {},
 }
 
