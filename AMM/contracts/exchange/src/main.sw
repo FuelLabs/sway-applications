@@ -35,6 +35,16 @@ use std::{
 };
 use utils::*;
 
+/// Token ID of Ether
+pub const ETH_ID = 0x0000000000000000000000000000000000000000000000000000000000000000;
+// Liquidity miner fee apply to all swaps
+pub const LIQUIDITY_MINER_FEE = 333;
+/// Minimum ETH liquidity to open a pool
+pub const MINIMUM_LIQUIDITY = 1; // A more realistic value would be 1000000000
+/// The token ID key from storage, set of deploy time
+/// Contract ID of the token on the other side of the pool
+pub const TOKEN_ID_KEY = 0x0000000000000000000000000000000000000000000000000000000000000001;
+
 storage {
     deposits: StorageMap<(Identity, ContractId), u64> = StorageMap {},
     lp_token_supply: u64 = 0,
@@ -73,8 +83,8 @@ impl Exchange for Contract {
 
             assert(liquidity_minted >= min_liquidity);
 
-            // if token ratio is correct, proceed with liquidity operation
-            // otherwise, return current user balances in contract
+            // If token ratio is correct, proceed with liquidity operation
+            // Otherwise, return current user balances in contract
             if (current_token_amount >= token_amount) {
                 // Add fund to the reserves
                 add_reserve(token_amount, get::<b256>(TOKEN_ID_KEY));
@@ -85,7 +95,7 @@ impl Exchange for Contract {
 
                 transfer(liquidity_minted, contract_id(), sender);
 
-                // If user sent more than the correct ratio, we deposit back the extra tokens
+                // If user sent more than the correct ratio, deposit the extra tokens back
                 let token_extra = current_token_amount - token_amount;
                 if (token_extra > 0) {
                     transfer(token_extra, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
@@ -127,6 +137,7 @@ impl Exchange for Contract {
 
         minted
     }
+
     #[storage(read, write)]
     fn deposit() {
         assert(msg_asset_id().into() == ETH_ID || msg_asset_id().into() == get::<b256>(TOKEN_ID_KEY));
@@ -214,11 +225,11 @@ impl Exchange for Contract {
         let mut has_liquidity = true;
         if (msg_asset_id().into() == ETH_ID) {
             assert(amount < token_reserve);
-            sold = get_output_price(eth_reserve, amount, token_reserve);
+            sold = get_output_price(eth_reserve, LIQUIDITY_MINER_FEE, amount, token_reserve);
             has_liquidity = sold < eth_reserve;
         } else {
             assert(amount < eth_reserve);
-            sold = get_output_price(token_reserve, amount, eth_reserve);
+            sold = get_output_price(token_reserve, LIQUIDITY_MINER_FEE, amount, eth_reserve);
             has_liquidity = sold < token_reserve;
         }
         PreviewInfo {
@@ -234,10 +245,10 @@ impl Exchange for Contract {
         let mut sold = 0;
         let mut has_liquidity = true;
         if (msg_asset_id().into() == ETH_ID) {
-            sold = get_input_price(amount, eth_reserve, token_reserve);
+            sold = get_input_price(amount, eth_reserve, LIQUIDITY_MINER_FEE, token_reserve);
             has_liquidity = sold < token_reserve;
         } else {
-            sold = get_input_price(amount, token_reserve, eth_reserve);
+            sold = get_input_price(amount, token_reserve, LIQUIDITY_MINER_FEE, eth_reserve);
             has_liquidity = sold < eth_reserve;
         }
         PreviewInfo {
@@ -297,7 +308,7 @@ impl Exchange for Contract {
 
         let mut sold = 0;
         if (asset_id == ETH_ID) {
-            let eth_sold = get_output_price(eth_reserve, amount, token_reserve);
+            let eth_sold = get_output_price(eth_reserve, LIQUIDITY_MINER_FEE, amount, token_reserve);
             assert(forwarded_amount >= eth_sold);
             let refund = forwarded_amount - eth_sold;
             if refund > 0 {
@@ -309,7 +320,7 @@ impl Exchange for Contract {
             add_reserve(eth_sold, ETH_ID);
             remove_reserve(amount, get::<b256>(TOKEN_ID_KEY));
         } else {
-            let tokens_sold = get_output_price(token_reserve, amount, eth_reserve);
+            let tokens_sold = get_output_price(token_reserve, LIQUIDITY_MINER_FEE, amount, eth_reserve);
             assert(forwarded_amount >= tokens_sold);
             let refund = forwarded_amount - tokens_sold;
             if refund > 0 {
@@ -340,7 +351,7 @@ impl Exchange for Contract {
 
         let mut bought = 0;
         if (asset_id == ETH_ID) {
-            let tokens_bought = get_input_price(forwarded_amount, eth_reserve, token_reserve);
+            let tokens_bought = get_input_price(forwarded_amount, eth_reserve, LIQUIDITY_MINER_FEE, token_reserve);
             assert(tokens_bought >= min);
             transfer(tokens_bought, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
             bought = tokens_bought;
@@ -348,7 +359,7 @@ impl Exchange for Contract {
             add_reserve(forwarded_amount, ETH_ID);
             remove_reserve(tokens_bought, get::<b256>(TOKEN_ID_KEY));
         } else {
-            let eth_bought = get_input_price(forwarded_amount, token_reserve, eth_reserve);
+            let eth_bought = get_input_price(forwarded_amount, token_reserve, LIQUIDITY_MINER_FEE, eth_reserve);
             assert(eth_bought >= min);
             transfer(eth_bought, ~ContractId::from(ETH_ID), sender);
             bought = eth_bought;
