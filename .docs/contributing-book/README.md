@@ -15,7 +15,7 @@ If you wish to alter the documentation presented in this book then follow the fo
    cargo install mdbook
    ```
 
-3. To [build](https://rust-lang.github.io/mdBook/cli/build.html) the book make sure that you are in `/contributing-book` and run
+3. To [build](https://rust-lang.github.io/mdBook/cli/build.html) the book make sure that you are in `/.docs/contributing-book` and run
 
    ```bash
    mdbook build

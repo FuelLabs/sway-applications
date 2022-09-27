@@ -10,7 +10,7 @@ Once a user has an idea of what they are getting into they can move onto the nex
 
 ## Quickstart
 
-The quickstart should inform the user where the project is supported, and has been tested to work, before moving onto the installation and removal instructions.
+The quickstart should inform the user where the project is supported (e.g. the operating system), and has been tested to work, before moving onto the installation and removal instructions.
 
 A user should be able to easily install, use, and potentially remove your project to create a good experience.
 

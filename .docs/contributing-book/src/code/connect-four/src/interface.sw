@@ -12,13 +12,13 @@ abi ConnectFour {
     /// 
     /// # Arguments
     /// 
-    /// - `player_two` - The second player to make a move
     /// - `player_one` - The first player to make a move
+    /// - `player_two` - The second player to make a move
     /// 
     /// # Reverts
     /// 
     /// - When a player has been blacklisted for cheating
-    fn create_game(player_two: Player, player_one: Player) -> Game;
+    fn create_game(player_one: Player, player_two: Player) -> Game;
 
     /// Places a marker from the next player in the game in the specified column
     /// 

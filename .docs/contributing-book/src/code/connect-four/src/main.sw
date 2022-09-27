@@ -7,7 +7,7 @@ use data_structures::{Game, Player};
 use interface::ConnectFour;
 
 impl ConnectFour for Contract {
-    fn create_game(player_two: Player, player_one: Player) -> Game {
+    fn create_game(player_one: Player, player_two: Player) -> Game {
         ~Game::new(player_one, player_two)
     }
 
