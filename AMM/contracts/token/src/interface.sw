@@ -1,6 +1,6 @@
 library interface;
 
-use std::{contract_id::ContractId, identity::Identity, token::*};
+use std::{contract_id::ContractId, identity::Identity};
 
 abi Token {
     /// Burn coins.

@@ -15,27 +15,32 @@ use data_structures::{
 use errors::{InputError, TransactionError};
 use interface::Exchange;
 use std::{
-    address::Address,
-    assert::assert,
     block::height,
     chain::auth::{
-        AuthError,
         msg_sender,
     },
     context::{
         call_frames::*,
         msg_amount,
     },
-    contract_id::ContractId,
-    identity::Identity,
-    storage::*,
+    prelude::*,
+    storage::StorageMap,
     token::{
         burn,
         mint,
         transfer,
     },
 };
-use utils::*;
+use utils::{
+    add_reserve,
+    calculate_amount_with_fee,
+    div_mutiply,
+    get_current_reserve,
+    get_input_price,
+    get_output_price,
+    mutiply_div,
+    remove_reserve,
+};
 
 /// Token ID of Ether
 pub const ETH_ID = 0x0000000000000000000000000000000000000000000000000000000000000000;

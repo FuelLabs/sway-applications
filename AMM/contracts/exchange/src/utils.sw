@@ -2,14 +2,12 @@ library utils;
 
 use core::num::*;
 use std::{
-    assert::assert,
     chain::auth::{
         AuthError,
         msg_sender,
     },
-    contract_id::ContractId,
+    prelude::*,
     result::Result,
-    revert::revert,
     storage::{
         get,
         store,

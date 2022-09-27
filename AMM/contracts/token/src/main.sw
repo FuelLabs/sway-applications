@@ -6,19 +6,21 @@ dep interface;
 use errors::Error;
 use interface::Token;
 use std::{
-    address::*,
     chain::auth::msg_sender,
+    constants::ZERO_B256,
     context::{
-        *,
-        call_frames::*,
+        balance_of,
+        call_frames::contract_id,
     },
-    contract_id::ContractId,
-    revert::require,
-    storage::*,
-    token::*,
+    prelude::*,
+    storage::StorageMap,
+    token::{
+        burn,
+        mint,
+        mint_to,
+        transfer,
+    },
 };
-
-const ZERO_B256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
 
 storage {
     /// The owner of contract
