@@ -1,6 +1,6 @@
 use crate::utils::{
-    abi_calls::{get_token_balance, initialize, transfer_token_to_output},
-    test_helpers::{build_contract, setup},
+    abi_calls::{get_token_balance, transfer_token_to_output},
+    test_helpers::{build_contract, setup_and_initialize},
     Identity,
 };
 use fuels::prelude::*;
@@ -10,14 +10,7 @@ mod success {
 
     #[tokio::test]
     async fn can_transfer_coins() {
-        let (owner, .., token_instance) = setup().await;
-        let mint_amount = 10000;
-        initialize(
-            &token_instance,
-            Identity::Address(Address::from(owner.address())),
-            mint_amount,
-        )
-        .await;
+        let (owner, .., token_instance) = setup_and_initialize().await;
 
         let wallet_native_balance_before = owner.get_asset_balance(&BASE_ASSET_ID).await.unwrap();
 
@@ -53,17 +46,14 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn on_non_owner_transfer_token_to_output() {
-        let (owner, minter, .., token_contract_id, token_instance) = setup().await;
-        let mint_amount = 10000;
-        initialize(
-            &token_instance,
-            Identity::Address(Address::from(owner.address())),
-            mint_amount,
-        )
-        .await;
+        let (owner, minter, mint_amount, token_contract_id, _token_instance) =
+            setup_and_initialize().await;
+
         let token_instance_alternative =
             build_contract(token_contract_id.clone(), minter.clone()).await;
+
         let address = Address::from(owner.address());
+
         transfer_token_to_output(
             &token_instance_alternative,
             ContractId::from(*token_contract_id.hash()),
