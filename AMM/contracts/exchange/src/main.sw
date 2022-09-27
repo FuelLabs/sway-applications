@@ -48,7 +48,7 @@ pub const MINIMUM_LIQUIDITY = 1; // A more realistic value would be 1000000000
 pub const TOKEN_ID_KEY = 0x0000000000000000000000000000000000000000000000000000000000000001;
 
 storage {
-    /// Map that stores deposit amounts per (depositer, token identifier) 
+    /// Map that stores deposit amounts per (depositer, token identifier)
     deposits: StorageMap<(Identity, ContractId), u64> = StorageMap {},
     /// Token supply in liquidity pool
     lp_token_supply: u64 = 0,
