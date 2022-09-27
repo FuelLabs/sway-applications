@@ -3,7 +3,7 @@ use fuels::{prelude::*, tx::ContractId};
 use std::str::FromStr;
 
 #[tokio::test]
-async fn swayswap() {
+async fn can_add_and_get_exchange_contracts() {
     // Provider and Wallet
     let wallet = launch_provider_and_get_wallet().await;
 
