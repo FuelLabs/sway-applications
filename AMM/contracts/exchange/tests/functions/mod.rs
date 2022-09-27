@@ -1,1 +1,11 @@
-mod to_be_renamed_and_separated;
+mod add_liquidity;
+mod deposit;
+mod get_add_liquidity;
+mod get_balance;
+mod get_pool_info;
+mod get_swap_with_maximum;
+mod get_swap_with_minimum;
+mod remove_liquidity;
+mod swap_with_maximum;
+mod swap_with_minimum;
+mod withdraw;
