@@ -1,7 +1,4 @@
-use crate::utils::{
-    abi_calls::get_add_liquidity,
-    test_helpers::setup,
-};
+use crate::utils::{abi_calls::get_add_liquidity, test_helpers::setup};
 use fuels::prelude::*;
 
 mod success {
