@@ -30,7 +30,7 @@ Contains enums that are used in `require(..., MyError::SomeError)` statements.
 The enums are split into individual errors e.g. `DepositError`, `OwnerError` etc.
 
 ```rust
-{{#include ../../code/connect-four/src/errors.sw:3:}}
+{{#include ../../code/connect_four/src/errors.sw:error}}
 ```
 
 ## events.sw
@@ -38,7 +38,7 @@ The enums are split into individual errors e.g. `DepositError`, `OwnerError` etc
 Contains structs definitions which are used inside `log()` statements.
 
 ```rust
-{{#include ../../code/connect-four/src/events.sw:3:}}
+{{#include ../../code/connect_four/src/events.sw:event}}
 ```
 
 ## interface.sw

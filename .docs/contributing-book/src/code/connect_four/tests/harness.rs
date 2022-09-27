@@ -1,7 +1,7 @@
 use fuels::{prelude::*, tx::ContractId};
 
 // Load abi from json
-abigen!(MyContract, "out/debug/connect-four-abi.json");
+abigen!(MyContract, "out/debug/connect_four-abi.json");
 
 async fn get_contract_instance() -> (MyContract, ContractId) {
     // Launch a local network and deploy the contract
@@ -17,11 +17,11 @@ async fn get_contract_instance() -> (MyContract, ContractId) {
     let wallet = wallets.pop().unwrap();
 
     let id = Contract::deploy(
-        "./out/debug/connect-four.bin",
+        "./out/debug/connect_four.bin",
         &wallet,
         TxParameters::default(),
         StorageConfiguration::with_storage_path(Some(
-            "./out/debug/connect-four-storage_slots.json".to_string(),
+            "./out/debug/connect_four-storage_slots.json".to_string(),
         )),
     )
     .await

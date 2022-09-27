@@ -12,5 +12,5 @@ The following snippet looks at two items being documented using the comment synt
 - `Item2` has taken the approach of describing the context in order to provide meaning behind each field
 
 ```rust
-{{#include ../../../../code/bad_documentation/src/lib.sw:3:19}}
+{{#include ../../../../code/bad_documentation/src/lib.sw:data_structures}}
 ```

@@ -1,3 +1,4 @@
+// ANCHOR: interface
 library interface;
 
 dep data_structures;
@@ -33,3 +34,4 @@ abi ConnectFour {
     /// - When a marker is placed into a `column` that is full
     fn move(column: u64, game: Game) -> Game;
 }
+// ANCHOR_END: interface

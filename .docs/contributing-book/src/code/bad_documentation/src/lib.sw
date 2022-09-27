@@ -1,5 +1,6 @@
 library bad_documentation;
 
+// ANCHOR: data_structures
 // This is bad. It's repeating the names of the fields which can be easily read
 pub struct Item1 {
     /// Identifier
@@ -15,3 +16,4 @@ pub struct Item2 {
     /// The number of remaining items left in production
     quantity: u64,
 }
+// ANCHOR_END: data_structures

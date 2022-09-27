@@ -7,7 +7,7 @@ The form of documentation we focus on uses the `///` syntax as we are interested
 In the following snippet, we provide a short description about the functions, the arguments they take, and when the calls will revert. Additional data may be added such as the structure of the return type, how to call the function, etc.
 
 ```rust
-{{#include ../../../../code/connect-four/src/interface.sw::36}}
+{{#include ../../../../code/connect_four/src/interface.sw:interface}}
 ```
 
 <br>
