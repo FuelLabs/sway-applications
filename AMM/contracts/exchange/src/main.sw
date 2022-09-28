@@ -11,6 +11,7 @@ use interface::Exchange;
 use std::{
     block::height,
     chain::auth::{
+        AuthError,
         msg_sender,
     },
     context::{
@@ -18,7 +19,6 @@ use std::{
         msg_amount,
     },
     prelude::*,
-    result::Result,
     storage::StorageMap,
     token::{
         burn,

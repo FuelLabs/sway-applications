@@ -6,7 +6,10 @@ dep interface;
 use errors::Error;
 use interface::Asset;
 use std::{
-    chain::auth::msg_sender,
+    chain::auth::{
+        AuthError,
+        msg_sender,
+    },
     constants::ZERO_B256,
     context::{
         balance_of,
