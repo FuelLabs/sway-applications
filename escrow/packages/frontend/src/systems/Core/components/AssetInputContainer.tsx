@@ -59,6 +59,7 @@ export const AssetInputContainer = (props: Props) => {
         leftIcon="Plus"
         css={{ font: "$sans", width: "50%" }}
         onPress={props.onAddAsset}
+        aria-label="Add asset"
       >
         Add Asset
       </Button>

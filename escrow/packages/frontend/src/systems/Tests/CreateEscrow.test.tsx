@@ -9,7 +9,8 @@ let numWallets = 4;
 
 beforeAll(() => {
     for (let i = 0; i < numWallets; ++i) {
-        wallets.push(createWallet());
+        const wallet = createWallet();
+        wallets.push(wallet);
     }
     mockUseWalletList(wallets);
 });
@@ -19,10 +20,15 @@ const coins = ASSETS.map(assetId => {
 });
 
 describe("Create Escrow", () => {
-    beforeEach(() => {
-        wallets.map(async wallet => {
-            await TestUtils.seedWallet(wallet, coins);
-        })
+    beforeEach(async () => {
+        await wallets.reduce(async (_, wallet) => {
+            try {
+                console.log(process.env.GENESIS_SECRET);
+                await TestUtils.seedWallet(wallet, coins);
+            } catch (e) {
+                console.log(e);
+            }
+        }, Promise.resolve());
     });
 
     afterEach(() => {
@@ -92,6 +98,10 @@ describe("Create Escrow", () => {
                 value: "0.1",
             },
         });
+
+        const addAssetBtn = await screen.findByLabelText(/Add asset/);
+        expect(addAssetBtn).toBeInTheDocument();
+        await user.click(addAssetBtn);
 
         const assetInput1 = await screen.findByLabelText(/Asset input 1/);
         fireEvent.change(assetInput1, {
