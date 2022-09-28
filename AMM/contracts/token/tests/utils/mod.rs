@@ -1,6 +1,6 @@
 use fuels::{
     contract::contract::CallResponse,
-    prelude::{Bech32ContractId, *},
+    prelude::*,
     tx::ContractId,
 };
 
