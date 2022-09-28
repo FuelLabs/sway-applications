@@ -6,7 +6,7 @@ The following snippets present the style for writing `Sway`.
 
 ## CapitalCase
 
-Structs, traits, and enums are `CapitalCase` which means each word has a capitalized first letter.
+Structs, traits, and enums are `CapitalCase` which means each word has a capitalized first letter. The fields inside a struct should be [snake_case](#snake_case) and `CapitalCase` inside an enum.
 
 ```rust
 {{#include ../../../../code/style_guide/src/lib.sw:structures}}

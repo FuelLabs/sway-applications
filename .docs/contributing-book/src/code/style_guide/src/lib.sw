@@ -5,9 +5,10 @@ library style_guide;
 const MAXIMUM_DEPOSIT = 10;
 // ANCHOR_END: const
 // ANCHOR: structures
-struct MultiSignatureWallet {}
+struct MultiSignatureWallet {
+    owner_count: u64,
+}
 
-    // fields
 trait MetaData {
     // code
 }
