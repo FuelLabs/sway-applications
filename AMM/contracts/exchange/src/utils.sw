@@ -17,7 +17,7 @@ use std::{
 
 // Calculate 0.3% fee
 pub fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
-    let fee: u64 = (amount / liquidity_miner_fee);
+    let fee = (amount / liquidity_miner_fee);
     amount - fee
 }
 
@@ -35,7 +35,7 @@ pub fn get_input_price(
     output_reserve: u64,
 ) -> u64 {
     assert(input_reserve > 0 && output_reserve > 0);
-    let input_amount_with_fee: u64 = calculate_amount_with_fee(input_amount, liquidity_miner_fee);
+    let input_amount_with_fee = calculate_amount_with_fee(input_amount, liquidity_miner_fee);
     let numerator = ~U128::from(0, input_amount_with_fee) * ~U128::from(0, output_reserve);
     let denominator = ~U128::from(0, input_reserve) + ~U128::from(0, input_amount_with_fee);
     let result_wrapped = (numerator / denominator).as_u64();

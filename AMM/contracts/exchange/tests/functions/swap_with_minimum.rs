@@ -12,7 +12,7 @@ mod success {
     async fn can_swap_with_minimum_eth_for_tokens() {
         let (exchange_instance, _native_contract_id, token_asset_id, _lp_asset_id) = setup().await;
 
-        let swap_amount: u64 = 10;
+        let swap_amount = 10;
         let native_amount_deposit = 100;
         let token_amount_deposit = 200;
 
@@ -43,7 +43,7 @@ mod success {
     async fn can_swap_with_minimum_tokens_for_eth() {
         let (exchange_instance, _native_contract_id, token_asset_id, _lp_asset_id) = setup().await;
 
-        let swap_amount: u64 = 10;
+        let swap_amount = 10;
         let native_amount_deposit = 100;
         let token_amount_deposit = 200;
 
@@ -80,7 +80,7 @@ mod revert {
     async fn on_deadline_passed() {
         let (exchange_instance, _native_contract_id, token_asset_id, _lp_asset_id) = setup().await;
 
-        let swap_amount: u64 = 10;
+        let swap_amount = 10;
         let native_amount_deposit = 100;
         let token_amount_deposit = 200;
 
@@ -106,7 +106,7 @@ mod revert {
     async fn on_swap_amount_zero() {
         let (exchange_instance, _native_contract_id, token_asset_id, _lp_asset_id) = setup().await;
 
-        let swap_amount: u64 = 10;
+        let swap_amount = 10;
         let native_amount_deposit = 100;
         let token_amount_deposit = 200;
 
@@ -128,7 +128,7 @@ mod revert {
     async fn on_msg_amount_zero() {
         let (exchange_instance, _native_contract_id, token_asset_id, _lp_asset_id) = setup().await;
 
-        let swap_amount: u64 = 10;
+        let swap_amount = 10;
         let native_amount_deposit = 100;
         let token_amount_deposit = 200;
 
@@ -161,7 +161,7 @@ mod revert {
     async fn on_msg_asset_id_invalid() {
         let (exchange_instance, _native_contract_id, token_asset_id, _lp_asset_id) = setup().await;
 
-        let swap_amount: u64 = 10;
+        let swap_amount = 10;
         let native_amount_deposit = 100;
         let token_amount_deposit = 200;
 
@@ -196,7 +196,7 @@ mod revert {
     async fn on_swap_amount_insufficient() {
         let (exchange_instance, _native_contract_id, token_asset_id, _lp_asset_id) = setup().await;
 
-        let swap_amount: u64 = 10;
+        let swap_amount = 10;
         let native_amount_deposit = 100;
         let token_amount_deposit = 200;
 

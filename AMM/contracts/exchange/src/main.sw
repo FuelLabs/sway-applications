@@ -64,7 +64,7 @@ impl Exchange for Contract {
         let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
         let asset_reserve = storage.reserves.get(asset_contract_id);
 
-        let mut minted: u64 = 0;
+        let mut minted = 0;
 
         if total_liquidity > 0 {
             require(min_liquidity > 0, InputError::PassedAmountCannotBeZero);

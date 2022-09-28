@@ -14,6 +14,9 @@ mod success {
         let token_instance_alternative =
             build_contract(token_contract_id.clone(), minter.clone()).await;
 
-        assert_eq!(mint_amount(&token_instance_alternative).await, initial_mint_amount);
+        assert_eq!(
+            mint_amount(&token_instance_alternative).await,
+            initial_mint_amount
+        );
     }
 }

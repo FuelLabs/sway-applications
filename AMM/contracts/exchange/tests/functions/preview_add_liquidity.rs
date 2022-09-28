@@ -8,8 +8,8 @@ mod success {
     async fn can_preview_add_liquidity() {
         let (exchange_instance, _native_contract_id, token_asset_id, ..) = setup().await;
 
-        let forwarded: u64 = 100;
-        let expected_amount: u64 = 99;
+        let forwarded = 100;
+        let expected_amount = 99;
 
         let call_params = CallParameters::new(
             Some(forwarded),

@@ -1,8 +1,4 @@
-use fuels::{
-    contract::contract::CallResponse,
-    prelude::*,
-    tx::ContractId,
-};
+use fuels::{contract::contract::CallResponse, prelude::*, tx::ContractId};
 
 abigen!(MyToken, "../token/out/debug/token-abi.json");
 
