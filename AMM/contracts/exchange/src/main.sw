@@ -41,12 +41,12 @@ storage {
 impl Exchange for Contract {
     #[storage(read, write)]
     fn add_liquidity(deadline: u64, min_liquidity: u64) -> u64 {
-        require(msg_amount() == 0, InputError::MessageAmountShouldBeZero);
-        require(deadline > height(), TransactionError::DeadlineHasPassed);
+        require(deadline > height(), TransactionError::DeadlinePassed);
+        require(msg_amount() == 0, InputError::SentInvalidAmount);
 
         let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
 
-        require(msg_asset_id().into() == eth_id || msg_asset_id() == asset_contract_id, InputError::MessageAssetIdDoesNotMatch);
+        require(msg_asset_id().into() == eth_id || msg_asset_id() == asset_contract_id, InputError::SentInvalidAsset);
 
         let sender = msg_sender().unwrap();
         let total_liquidity = storage.lp_asset_supply;
@@ -59,7 +59,7 @@ impl Exchange for Contract {
             asset_contract_id,
         ));
 
-        require(eth_amount_in_deposit > 0, TransactionError::InsufficientReserve);
+        require(eth_amount_in_deposit > 0, TransactionError::InsufficientDeposit);
 
         let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
         let asset_reserve = storage.reserves.get(asset_contract_id);
@@ -67,12 +67,12 @@ impl Exchange for Contract {
         let mut minted = 0;
 
         if total_liquidity > 0 {
-            require(min_liquidity > 0, InputError::PassedAmountCannotBeZero);
+            require(min_liquidity > 0, InputError::SentInvalidAmount);
 
             let asset_amount_to_add = mutiply_div(eth_amount_in_deposit, asset_reserve, eth_reserve);
             let liquidity_to_mint = mutiply_div(eth_amount_in_deposit, total_liquidity, eth_reserve);
 
-            require(liquidity_to_mint >= min_liquidity, TransactionError::InsufficientReserve);
+            require(liquidity_to_mint >= min_liquidity, TransactionError::CannotSatisfyConstraint);
 
             // If ratio is correct, proceed with liquidity operation
             // Otherwise, return current user balances in contract
@@ -100,7 +100,7 @@ impl Exchange for Contract {
                 minted = 0;
             }
         } else {
-            require(eth_amount_in_deposit > minimum_liquidity, TransactionError::InsufficientLiquidity);
+            require(eth_amount_in_deposit > minimum_liquidity, TransactionError::CannotSatisfyConstraint);
 
             let initial_liquidity = eth_amount_in_deposit;
 
@@ -140,7 +140,7 @@ impl Exchange for Contract {
     fn deposit() {
         let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
 
-        require(msg_asset_id().into() == eth_id || msg_asset_id() == asset_contract_id, InputError::MessageAssetIdDoesNotMatch);
+        require(msg_asset_id().into() == eth_id || msg_asset_id() == asset_contract_id, InputError::SentInvalidAsset);
 
         let sender = msg_sender().unwrap();
 
@@ -243,10 +243,10 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn remove_liquidity(deadline: u64, min_eth: u64, min_tokens: u64) -> RemoveLiquidityInfo {
-        require(msg_amount() > 0, InputError::MessageAmountCannotBeZero);
-        require(msg_asset_id().into() == (contract_id()).into(), InputError::PassedAssetIdDoesNotMatch);
-        require(deadline > height(), TransactionError::DeadlineHasPassed);
-        require(min_eth > 0 && min_tokens > 0, InputError::PassedAmountCannotBeZero);
+        require(min_eth > 0 && min_tokens > 0, TransactionError::CannotSatisfyConstraint);
+        require(deadline > height(), TransactionError::DeadlinePassed);
+        require(msg_amount() > 0, InputError::SentInvalidAmount);
+        require(msg_asset_id().into() == (contract_id()).into(), InputError::SentInvalidAsset);
 
         let sender = msg_sender().unwrap();
         let total_liquidity = storage.lp_asset_supply;
@@ -258,7 +258,7 @@ impl Exchange for Contract {
         let eth_amount = mutiply_div(msg_amount(), eth_reserve, total_liquidity);
         let asset_amount = mutiply_div(msg_amount(), asset_reserve, total_liquidity);
 
-        require((eth_amount >= min_eth) && (asset_amount >= min_tokens), TransactionError::InsufficientReserve);
+        require((eth_amount >= min_eth) && (asset_amount >= min_tokens), TransactionError::CannotSatisfyConstraint);
 
         burn(msg_amount());
         storage.lp_asset_supply = total_liquidity - msg_amount();
@@ -279,16 +279,17 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn swap_with_maximum(amount: u64, deadline: u64) -> u64 {
+        require(amount > 0, InputError::SentInvalidAmount);
+        require(deadline > height(), TransactionError::DeadlinePassed);
+
         let swap_asset_id = msg_asset_id().into();
         let forwarded_amount = msg_amount();
 
-        require(deadline > height(), TransactionError::DeadlineHasPassed);
-        require(forwarded_amount > 0, InputError::PassedAmountCannotBeZero);
-        require(amount > 0, InputError::MessageAmountCannotBeZero);
+        require(forwarded_amount > 0, InputError::SentInvalidAmount);
 
         let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
 
-        require(swap_asset_id == eth_id || swap_asset_id == asset_contract_id.into(), InputError::MessageAssetIdDoesNotMatch);
+        require(swap_asset_id == eth_id || swap_asset_id == asset_contract_id.into(), InputError::SentInvalidAsset);
 
         let sender = msg_sender().unwrap();
         let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
@@ -298,7 +299,7 @@ impl Exchange for Contract {
 
         if (swap_asset_id == eth_id) {
             let eth_sold = get_output_price(eth_reserve, liquidity_miner_fee, amount, asset_reserve);
-            require(forwarded_amount >= eth_sold, TransactionError::InsufficientInput);
+            require(forwarded_amount >= eth_sold, TransactionError::InsufficientReserve);
             let refund = forwarded_amount - eth_sold;
             if refund > 0 {
                 transfer(refund, ~ContractId::from(eth_id), sender);
@@ -310,7 +311,7 @@ impl Exchange for Contract {
             storage.reserves.insert(asset_contract_id, asset_reserve - amount);
         } else {
             let sold_asset_amount = get_output_price(asset_reserve, liquidity_miner_fee, amount, eth_reserve);
-            require(forwarded_amount >= sold_asset_amount, TransactionError::InsufficientInput);
+            require(forwarded_amount >= sold_asset_amount, TransactionError::InsufficientReserve);
             let refund = forwarded_amount - sold_asset_amount;
             if refund > 0 {
                 transfer(refund, asset_contract_id, sender);
@@ -326,16 +327,17 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn swap_with_minimum(deadline: u64, min: u64) -> u64 {
+        require(min > 0, TransactionError::CannotSatisfyConstraint);
+        require(deadline >= height(), TransactionError::DeadlinePassed);
+
         let swap_asset_id = msg_asset_id().into();
         let forwarded_amount = msg_amount();
 
-        require(deadline >= height(), TransactionError::DeadlineHasPassed);
-        require(forwarded_amount > 0, InputError::MessageAmountCannotBeZero);
-        require(min > 0, InputError::PassedAmountCannotBeZero);
+        require(forwarded_amount > 0, InputError::SentInvalidAmount);
 
         let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
 
-        require(swap_asset_id == eth_id || swap_asset_id == asset_contract_id.into(), InputError::MessageAssetIdDoesNotMatch);
+        require(swap_asset_id == eth_id || swap_asset_id == asset_contract_id.into(), InputError::SentInvalidAsset);
 
         let sender = msg_sender().unwrap();
 
@@ -345,7 +347,7 @@ impl Exchange for Contract {
         let mut bought = 0;
         if (swap_asset_id == eth_id) {
             let bought_asset_amount = get_input_price(forwarded_amount, eth_reserve, liquidity_miner_fee, asset_reserve);
-            require(bought_asset_amount >= min, TransactionError::InsufficientInput);
+            require(bought_asset_amount >= min, TransactionError::CannotSatisfyConstraint);
             transfer(bought_asset_amount, asset_contract_id, sender);
             bought = bought_asset_amount;
             // Update reserves
@@ -353,7 +355,7 @@ impl Exchange for Contract {
             storage.reserves.insert(asset_contract_id, asset_reserve - bought_asset_amount);
         } else {
             let eth_bought = get_input_price(forwarded_amount, asset_reserve, liquidity_miner_fee, eth_reserve);
-            require(eth_bought >= min, TransactionError::InsufficientInput);
+            require(eth_bought >= min, TransactionError::CannotSatisfyConstraint);
             transfer(eth_bought, ~ContractId::from(eth_id), sender);
             bought = eth_bought;
             // Update reserves
@@ -365,12 +367,12 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn withdraw(amount: u64, id: ContractId) {
-        require(id.into() == eth_id || id == storage.asset.get(~ContractId::from(asset_id)), InputError::MessageAssetIdDoesNotMatch);
+        require(id.into() == eth_id || id == storage.asset.get(~ContractId::from(asset_id)), InputError::SentInvalidAsset);
 
         let sender = msg_sender().unwrap();
 
         let deposited_amount = storage.deposits.get((sender, id));
-        require(deposited_amount >= amount, TransactionError::SenderDoesNotHaveEnoughBalance);
+        require(deposited_amount >= amount, TransactionError::InsufficientDeposit);
 
         let new_amount = deposited_amount - amount;
         storage.deposits.insert((sender, id), new_amount);

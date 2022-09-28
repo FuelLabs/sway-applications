@@ -1,17 +1,14 @@
 library errors;
 
-pub enum TransactionError {
-    DeadlineHasPassed: (),
-    InsufficientInput: (),
-    InsufficientLiquidity: (),
-    InsufficientReserve: (),
-    SenderDoesNotHaveEnoughBalance: (),
+pub enum InputError {
+    SentInvalidAmount: (),
+    SentInvalidAsset: (),
 }
 
-pub enum InputError {
-    MessageAmountCannotBeZero: (),
-    MessageAmountShouldBeZero: (),
-    MessageAssetIdDoesNotMatch: (),
-    PassedAmountCannotBeZero: (),
-    PassedAssetIdDoesNotMatch: (),
+pub enum TransactionError {
+    CannotSatisfyConstraint: (),
+    DeadlinePassed: (),
+    InsufficientDeposit: (),
+    InsufficientLiquidity: (),
+    InsufficientReserve: (),
 }
