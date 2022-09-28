@@ -7,7 +7,6 @@ dep utils;
 
 use data_structures::{
     PoolInfo,
-    PositionInfo,
     PreviewAddLiquidityInfo,
     PreviewInfo,
     RemoveLiquidityInfo,
@@ -197,23 +196,6 @@ impl Exchange for Contract {
             eth_reserve: storage.reserves.get(~ContractId::from(eth_id)),
             token_reserve: storage.reserves.get(storage.asset.get(~ContractId::from(asset_id))),
             lp_token_supply: storage.lp_asset_supply,
-        }
-    }
-
-    #[storage(read)]
-    fn get_position(amount: u64) -> PositionInfo {
-        let total_liquidity = storage.lp_asset_supply;
-        let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
-        let asset_reserve = storage.reserves.get(storage.asset.get(~ContractId::from(asset_id)));
-        let eth_amount = mutiply_div(amount, eth_reserve, total_liquidity);
-        let asset_amount = mutiply_div(amount, asset_reserve, total_liquidity);
-
-        PositionInfo {
-            eth_amount: eth_amount,
-            eth_reserve: eth_reserve,
-            lp_token_supply: total_liquidity,
-            token_amount: asset_amount,
-            token_reserve: asset_reserve,
         }
     }
 

@@ -6,14 +6,6 @@ pub struct PoolInfo {
     token_reserve: u64,
 }
 
-pub struct PositionInfo {
-    eth_amount: u64,
-    eth_reserve: u64,
-    lp_token_supply: u64,
-    token_amount: u64,
-    token_reserve: u64,
-}
-
 pub struct PreviewAddLiquidityInfo {
     lp_token_received: u64,
     token_amount: u64,

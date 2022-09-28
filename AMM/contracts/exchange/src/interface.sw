@@ -4,7 +4,6 @@ dep data_structures;
 
 use data_structures::{
     PoolInfo,
-    PositionInfo,
     PreviewAddLiquidityInfo,
     PreviewInfo,
     RemoveLiquidityInfo,
@@ -46,7 +45,7 @@ abi Exchange {
     /// - ` amount ` - amount of liquidity to add
     /// - ` id ` - identifier of the asset to add
     #[storage(read)]
-    fn get_add_liquidity(amount: u64, id: b256) -> PreviewAddLiquidityInfo;
+    fn get_add_liquidity_preview(amount: u64, id: ContractId) -> PreviewAddLiquidityInfo;
 
     /// Get current balance of given token on the contract.
     /// 
@@ -59,14 +58,6 @@ abi Exchange {
     /// Get information on the liquidity pool on contract.
     #[storage(read)]
     fn get_pool_info() -> PoolInfo;
-
-    /// Get position information about both tokens.
-    /// 
-    /// # Arguments
-    /// 
-    /// - ` amount ` - amount of tokens supplied
-    #[storage(read)]
-    fn get_position(amount: u64) -> PositionInfo;
 
     /// Get required amount of coins for a ` swap_with_maximum `.
     /// 
