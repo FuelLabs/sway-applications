@@ -28,6 +28,10 @@ pub mod abi_calls {
             .unwrap()
     }
 
+    pub async fn balance(contract: &Exchange, asset: ContractId) -> u64 {
+        contract.balance(asset).call().await.unwrap().value
+    }
+
     pub async fn deposit(contract: &Exchange, call_params: CallParameters) -> CallResponse<()> {
         contract
             .deposit()
@@ -35,59 +39,6 @@ pub mod abi_calls {
             .call()
             .await
             .unwrap()
-    }
-
-    pub async fn get_add_liquidity(
-        contract: &Exchange,
-        call_params: CallParameters,
-        tx_params: TxParameters,
-        amount: u64,
-        asset: Bits256,
-    ) -> PreviewAddLiquidityInfo {
-        contract
-            .get_add_liquidity(amount, asset)
-            .call_params(call_params)
-            .tx_params(tx_params)
-            .simulate()
-            .await
-            .unwrap()
-            .value
-    }
-
-    pub async fn get_balance(contract: &Exchange, asset: ContractId) -> u64 {
-        contract.get_balance(asset).call().await.unwrap().value
-    }
-
-    pub async fn get_pool_info(contract: &Exchange) -> PoolInfo {
-        contract.get_pool_info().call().await.unwrap().value
-    }
-
-    pub async fn get_swap_with_maximum(
-        contract: &Exchange,
-        call_params: CallParameters,
-        amount: u64,
-    ) -> PreviewInfo {
-        contract
-            .get_swap_with_maximum(amount)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
-
-    pub async fn get_swap_with_minimum(
-        contract: &Exchange,
-        call_params: CallParameters,
-        amount: u64,
-    ) -> PreviewInfo {
-        contract
-            .get_swap_with_minimum(amount)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value
     }
 
     pub async fn initialize(
@@ -100,6 +51,55 @@ pub mod abi_calls {
             .call()
             .await
             .unwrap()
+    }
+
+    pub async fn pool_info(contract: &Exchange) -> PoolInfo {
+        contract.pool_info().call().await.unwrap().value
+    }
+
+    pub async fn preview_add_liquidity(
+        contract: &Exchange,
+        call_params: CallParameters,
+        tx_params: TxParameters,
+        amount: u64,
+        asset: AssetId,
+    ) -> PreviewAddLiquidityInfo {
+        contract
+            .preview_add_liquidity(amount, ContractId::new(*asset))
+            .call_params(call_params)
+            .tx_params(tx_params)
+            .simulate()
+            .await
+            .unwrap()
+            .value
+    }
+
+    pub async fn preview_swap_with_maximum(
+        contract: &Exchange,
+        call_params: CallParameters,
+        amount: u64,
+    ) -> PreviewInfo {
+        contract
+            .preview_swap_with_maximum(amount)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+
+    pub async fn preview_swap_with_minimum(
+        contract: &Exchange,
+        call_params: CallParameters,
+        amount: u64,
+    ) -> PreviewInfo {
+        contract
+            .preview_swap_with_minimum(amount)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn remove_liquidity(

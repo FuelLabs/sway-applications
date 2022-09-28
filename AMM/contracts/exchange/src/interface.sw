@@ -2,12 +2,7 @@ library interface;
 
 dep data_structures;
 
-use data_structures::{
-    PoolInfo,
-    PreviewAddLiquidityInfo,
-    PreviewInfo,
-    RemoveLiquidityInfo,
-};
+use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewInfo, RemoveLiquidityInfo};
 use std::contract_id::ContractId;
 
 abi Exchange {
@@ -30,6 +25,14 @@ abi Exchange {
     #[storage(read, write)]
     fn add_liquidity(deadline: u64, min_liquidity: u64) -> u64;
 
+    /// Get current balance of given token on the contract.
+    /// 
+    /// # Arguments
+    /// 
+    /// - ` id ` - identifier of the asset to get balance of
+    #[storage(read)]
+    fn balance(id: ContractId) -> u64;
+
     /// Deposit coins for later adding to the liquidity pool.
     /// 
     /// # Reverts
@@ -38,26 +41,27 @@ abi Exchange {
     #[storage(read, write)]
     fn deposit();
 
-    /// Get add liquidity preview.
+    /// Initialize contract by specifying the asset on the other side of the contract.
+    /// 
+    /// # Arguments
+    /// 
+    /// - ` asset_id ` - identifier of other asset
+    /// - ` asset_contract_id ` - contract identifier of other asset
+    #[storage(write)]
+    fn initialize(asset_id: ContractId, asset_contract_id: ContractId);
+
+    /// Get information on the liquidity pool on contract.
+    #[storage(read)]
+    fn pool_info() -> PoolInfo;
+
+    /// Preview "add liquidity" information.
     /// 
     /// # Arguments
     /// 
     /// - ` amount ` - amount of liquidity to add
     /// - ` id ` - identifier of the asset to add
     #[storage(read)]
-    fn get_add_liquidity_preview(amount: u64, id: ContractId) -> PreviewAddLiquidityInfo;
-
-    /// Get current balance of given token on the contract.
-    /// 
-    /// # Arguments
-    /// 
-    /// - ` id ` - identifier of the asset to get balance of
-    #[storage(read)]
-    fn get_balance(id: ContractId) -> u64;
-
-    /// Get information on the liquidity pool on contract.
-    #[storage(read)]
-    fn get_pool_info() -> PoolInfo;
+    fn preview_add_liquidity(amount: u64, id: ContractId) -> PreviewAddLiquidityInfo;
 
     /// Get required amount of coins for a ` swap_with_maximum `.
     /// 
@@ -69,7 +73,7 @@ abi Exchange {
     /// 
     /// * When the reserve of the token with provided ` msg_asset_id ` is insufficient
     #[storage(read, write)]
-    fn get_swap_with_maximum(amount: u64) -> PreviewInfo;
+    fn preview_swap_with_maximum(amount: u64) -> PreviewInfo;
 
     /// Get the minimum amount of coins that will be received for a ` swap_with_minimum `.
     /// 
@@ -77,16 +81,7 @@ abi Exchange {
     /// 
     /// - ` amount ` - amount of tokens supplied
     #[storage(read, write)]
-    fn get_swap_with_minimum(amount: u64) -> PreviewInfo;
-
-    /// Initialize contract by specifying the asset on the other side of the contract.
-    /// 
-    /// # Arguments
-    /// 
-    /// - ` asset_id ` - identifier of other asset
-    /// - ` asset_contract_id ` - contract identifier of other asset
-    #[storage(write)]
-    fn initialize(asset_id: ContractId, asset_contract_id: ContractId);
+    fn preview_swap_with_minimum(amount: u64) -> PreviewInfo;
 
     /// Burn tokens to transfer ETH and Tokens at current ratio to the sender.
     /// 

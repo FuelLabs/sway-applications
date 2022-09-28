@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{get_token_balance, transfer_token_to_output},
+    abi_calls::{token_balance, transfer_token_to_output},
     test_helpers::{build_contract, setup_and_initialize},
     Identity,
 };
@@ -18,7 +18,7 @@ mod success {
 
         // Send native tokens to the contract
         let call_params = CallParameters::new(Some(send_native_token_amount), None, None);
-        let contract_native_token_balance = get_token_balance(
+        let contract_native_token_balance = token_balance(
             &token_instance,
             call_params,
             ContractId::from(*BASE_ASSET_ID),

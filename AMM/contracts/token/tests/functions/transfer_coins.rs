@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{get_balance, mint_coins, transfer_coins},
+    abi_calls::{balance, mint_coins, transfer_coins},
     test_helpers::{build_contract, setup_and_initialize},
     Identity,
 };
@@ -24,7 +24,7 @@ mod success {
         )
         .await;
 
-        let balance = get_balance(&token_instance).await;
+        let balance = balance(&token_instance).await;
         assert_eq!(balance, 0);
     }
 }

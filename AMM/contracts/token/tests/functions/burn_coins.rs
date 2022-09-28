@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{burn_coins, get_balance, mint_coins},
+    abi_calls::{balance, burn_coins, mint_coins},
     test_helpers::{build_contract, setup_and_initialize},
 };
 
@@ -14,7 +14,7 @@ mod success {
         mint_coins(&token_instance, mint_amount).await;
         burn_coins(&token_instance, mint_amount).await;
 
-        assert_eq!(get_balance(&token_instance).await, 0);
+        assert_eq!(balance(&token_instance).await, 0);
     }
 
     #[tokio::test]
@@ -26,10 +26,7 @@ mod success {
         mint_coins(&token_instance, mint_amount).await;
         burn_coins(&token_instance, burn_amount).await;
 
-        assert_eq!(
-            get_balance(&token_instance).await,
-            mint_amount - burn_amount
-        );
+        assert_eq!(balance(&token_instance).await, mint_amount - burn_amount);
     }
 }
 

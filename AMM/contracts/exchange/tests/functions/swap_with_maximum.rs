@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{get_swap_with_maximum, swap_with_maximum},
+    abi_calls::{preview_swap_with_maximum, swap_with_maximum},
     test_helpers::{deposit_and_add_liquidity, setup},
 };
 use fuels::prelude::*;
@@ -25,7 +25,8 @@ mod success {
         .await;
 
         let amount_expected =
-            get_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount).await;
+            preview_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount)
+                .await;
 
         let call_params = CallParameters::new(Some(amount_expected.amount), None, None);
         let response = swap_with_maximum(&exchange_instance, call_params, swap_amount, 1000).await;
@@ -50,7 +51,7 @@ mod success {
 
         let call_params = CallParameters::new(None, Some(token_asset_id.clone()), None);
         let amount_expected =
-            get_swap_with_maximum(&exchange_instance, call_params, swap_amount).await;
+            preview_swap_with_maximum(&exchange_instance, call_params, swap_amount).await;
 
         let call_params = CallParameters::new(
             Some(amount_expected.amount),
@@ -83,7 +84,8 @@ mod revert {
         .await;
 
         let amount_expected =
-            get_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount).await;
+            preview_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount)
+                .await;
 
         let call_params = CallParameters::new(Some(amount_expected.amount), None, None);
         // deadline is 0
@@ -108,7 +110,8 @@ mod revert {
         .await;
 
         let amount_expected =
-            get_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount).await;
+            preview_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount)
+                .await;
 
         let call_params = CallParameters::new(Some(amount_expected.amount), None, None);
         // swap amount is 0
@@ -155,7 +158,8 @@ mod revert {
         .await;
 
         let amount_expected =
-            get_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount).await;
+            preview_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount)
+                .await;
 
         let unmatched_id =
             AssetId::from_str("0x0000000000000000000000000000000000000000000000000000000000000002")
@@ -185,7 +189,8 @@ mod revert {
         .await;
 
         let amount_expected =
-            get_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount).await;
+            preview_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount)
+                .await;
 
         let call_params = CallParameters::new(Some(amount_expected.amount), None, None);
         // swap amount is too low

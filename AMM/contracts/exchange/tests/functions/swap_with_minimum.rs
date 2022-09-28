@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{get_swap_with_minimum, swap_with_minimum},
+    abi_calls::{preview_swap_with_minimum, swap_with_minimum},
     test_helpers::{deposit_and_add_liquidity, setup},
 };
 use fuels::prelude::*;
@@ -25,7 +25,8 @@ mod success {
         .await;
 
         let amount_expected =
-            get_swap_with_minimum(&exchange_instance, CallParameters::default(), swap_amount).await;
+            preview_swap_with_minimum(&exchange_instance, CallParameters::default(), swap_amount)
+                .await;
 
         let call_params = CallParameters::new(Some(swap_amount), None, None);
         let response = swap_with_minimum(
@@ -56,7 +57,7 @@ mod success {
 
         let call_params = CallParameters::new(Some(0), Some(token_asset_id.clone()), None);
         let amount_expected =
-            get_swap_with_minimum(&exchange_instance, call_params, swap_amount).await;
+            preview_swap_with_minimum(&exchange_instance, call_params, swap_amount).await;
 
         let call_params =
             CallParameters::new(Some(swap_amount), Some(token_asset_id.clone()), None);
@@ -92,7 +93,8 @@ mod revert {
         .await;
 
         let amount_expected =
-            get_swap_with_minimum(&exchange_instance, CallParameters::default(), swap_amount).await;
+            preview_swap_with_minimum(&exchange_instance, CallParameters::default(), swap_amount)
+                .await;
 
         let call_params = CallParameters::new(Some(swap_amount), None, None);
         // deadline is 0
@@ -139,7 +141,8 @@ mod revert {
         .await;
 
         let amount_expected =
-            get_swap_with_minimum(&exchange_instance, CallParameters::default(), swap_amount).await;
+            preview_swap_with_minimum(&exchange_instance, CallParameters::default(), swap_amount)
+                .await;
 
         // msg_amount is 0
         let call_params = CallParameters::new(Some(0), None, None);
@@ -171,7 +174,8 @@ mod revert {
         .await;
 
         let amount_expected =
-            get_swap_with_minimum(&exchange_instance, CallParameters::default(), swap_amount).await;
+            preview_swap_with_minimum(&exchange_instance, CallParameters::default(), swap_amount)
+                .await;
 
         let unmatched_id =
             AssetId::from_str("0x0000000000000000000000000000000000000000000000000000000000000002")

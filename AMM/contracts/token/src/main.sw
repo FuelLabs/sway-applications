@@ -32,23 +32,14 @@ storage {
 }
 
 impl Token for Contract {
-    #[storage(read)]
-    fn burn_coins(burn_amount: u64) {
-        require(msg_sender().unwrap() == storage.owner, Error::NotOwner);
-        burn(burn_amount);
-    }
-
-    fn get_balance() -> u64 {
+    fn balance() -> u64 {
         balance_of(contract_id(), contract_id())
     }
 
     #[storage(read)]
-    fn get_mint_amount() -> u64 {
-        storage.mint_amount
-    }
-
-    fn get_token_balance(asset_id: ContractId) -> u64 {
-        balance_of(asset_id, contract_id())
+    fn burn_coins(burn_amount: u64) {
+        require(msg_sender().unwrap() == storage.owner, Error::NotOwner);
+        burn(burn_amount);
     }
 
     #[storage(read, write)]
@@ -70,6 +61,11 @@ impl Token for Contract {
     }
 
     #[storage(read)]
+    fn mint_amount() -> u64 {
+        storage.mint_amount
+    }
+
+    #[storage(read)]
     fn mint_coins(mint_amount: u64) {
         require(msg_sender().unwrap() == storage.owner, Error::NotOwner);
         mint(mint_amount);
@@ -79,6 +75,10 @@ impl Token for Contract {
     fn set_mint_amount(mint_amount: u64) {
         require(msg_sender().unwrap() == storage.owner, Error::NotOwner);
         storage.mint_amount = mint_amount;
+    }
+
+    fn token_balance(asset_id: ContractId) -> u64 {
+        balance_of(asset_id, contract_id())
     }
 
     #[storage(read)]

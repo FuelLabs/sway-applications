@@ -1,10 +1,10 @@
 mod add_liquidity;
+mod balance;
 mod deposit;
-mod get_add_liquidity;
-mod get_balance;
-mod get_pool_info;
-mod get_swap_with_maximum;
-mod get_swap_with_minimum;
+mod pool_info;
+mod preview_add_liquidity;
+mod preview_swap_with_maximum;
+mod preview_swap_with_minimum;
 mod remove_liquidity;
 mod swap_with_maximum;
 mod swap_with_minimum;

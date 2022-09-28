@@ -17,5 +17,5 @@ abi AMM {
     /// 
     /// - ` token_id ` - identifier of token contract
     #[storage(read)]
-    fn get_exchange_contract(token_id: ContractId) -> ContractId;
+    fn exchange_contract(token_id: ContractId) -> ContractId;
 }

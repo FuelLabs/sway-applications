@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{get_mint_amount, set_mint_amount},
+    abi_calls::{mint_amount, set_mint_amount},
     test_helpers::{build_contract, setup_and_initialize},
 };
 
@@ -11,7 +11,7 @@ mod success {
         let (.., token_instance) = setup_and_initialize().await;
         let new_mint_amount = 1;
         set_mint_amount(&token_instance, new_mint_amount).await;
-        let mint_amount = get_mint_amount(&token_instance).await;
+        let mint_amount = mint_amount(&token_instance).await;
         assert_eq!(mint_amount, new_mint_amount);
     }
 }

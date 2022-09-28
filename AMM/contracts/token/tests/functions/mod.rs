@@ -1,10 +1,10 @@
+mod balance;
 mod burn_coins;
-mod get_balance;
-mod get_mint_amount;
-mod get_token_balance;
 mod initialize;
 mod mint;
+mod mint_amount;
 mod mint_coins;
 mod set_mint_amount;
+mod token_balance;
 mod transfer_coins;
 mod transfer_token_to_output;

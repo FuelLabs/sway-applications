@@ -5,12 +5,7 @@ dep errors;
 dep interface;
 dep utils;
 
-use data_structures::{
-    PoolInfo,
-    PreviewAddLiquidityInfo,
-    PreviewInfo,
-    RemoveLiquidityInfo,
-};
+use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewInfo, RemoveLiquidityInfo};
 use errors::{InputError, TransactionError};
 use interface::Exchange;
 use std::{
@@ -135,6 +130,12 @@ impl Exchange for Contract {
         minted
     }
 
+    #[storage(read)]
+    fn balance(id: ContractId) -> u64 {
+        let sender = msg_sender().unwrap();
+        storage.deposits.get((sender, id))
+    }
+
     #[storage(read, write)]
     fn deposit() {
         let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
@@ -153,8 +154,22 @@ impl Exchange for Contract {
         ), total_amount);
     }
 
+    #[storage(write)]
+    fn initialize(asset_id: ContractId, asset_contract_id: ContractId) {
+        storage.asset.insert(asset_id, asset_contract_id);
+    }
+
     #[storage(read)]
-    fn get_add_liquidity(amount: u64, id: b256) -> PreviewAddLiquidityInfo {
+    fn pool_info() -> PoolInfo {
+        PoolInfo {
+            eth_reserve: storage.reserves.get(~ContractId::from(eth_id)),
+            token_reserve: storage.reserves.get(storage.asset.get(~ContractId::from(asset_id))),
+            lp_token_supply: storage.lp_asset_supply,
+        }
+    }
+
+    #[storage(read)]
+    fn preview_add_liquidity(amount: u64, id: ContractId) -> PreviewAddLiquidityInfo {
         let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
         let total_liquidity = storage.lp_asset_supply;
         let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
@@ -163,7 +178,7 @@ impl Exchange for Contract {
         let mut lp_asset_received = 0;
         let mut asset_amount = 0;
 
-        if (id == asset_contract_id.into()) {
+        if (id == asset_contract_id) {
             current_eth_amount = mutiply_div(amount, eth_reserve, asset_reserve);
         }
 
@@ -174,7 +189,7 @@ impl Exchange for Contract {
             lp_asset_received = current_eth_amount;
         };
 
-        if (id == asset_contract_id.into()) {
+        if (id == asset_contract_id) {
             asset_amount = current_eth_amount;
         }
 
@@ -184,23 +199,8 @@ impl Exchange for Contract {
         }
     }
 
-    #[storage(read)]
-    fn get_balance(id: ContractId) -> u64 {
-        let sender = msg_sender().unwrap();
-        storage.deposits.get((sender, id))
-    }
-
-    #[storage(read)]
-    fn get_pool_info() -> PoolInfo {
-        PoolInfo {
-            eth_reserve: storage.reserves.get(~ContractId::from(eth_id)),
-            token_reserve: storage.reserves.get(storage.asset.get(~ContractId::from(asset_id))),
-            lp_token_supply: storage.lp_asset_supply,
-        }
-    }
-
     #[storage(read, write)]
-    fn get_swap_with_maximum(amount: u64) -> PreviewInfo {
+    fn preview_swap_with_maximum(amount: u64) -> PreviewInfo {
         let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
         let asset_reserve = storage.reserves.get(storage.asset.get(~ContractId::from(asset_id)));
         let mut sold = 0;
@@ -222,7 +222,7 @@ impl Exchange for Contract {
     }
 
     #[storage(read, write)]
-    fn get_swap_with_minimum(amount: u64) -> PreviewInfo {
+    fn preview_swap_with_minimum(amount: u64) -> PreviewInfo {
         let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
         let asset_reserve = storage.reserves.get(storage.asset.get(~ContractId::from(asset_id)));
         let mut sold = 0;
@@ -239,11 +239,6 @@ impl Exchange for Contract {
             amount: sold,
             has_liquidity: has_liquidity,
         }
-    }
-
-    #[storage(write)]
-    fn initialize(asset_id: ContractId, asset_contract_id: ContractId) {
-        storage.asset.insert(asset_id, asset_contract_id);
     }
 
     #[storage(read, write)]

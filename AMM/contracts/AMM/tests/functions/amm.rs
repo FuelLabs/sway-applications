@@ -45,14 +45,14 @@ async fn can_add_and_get_exchange_contracts() {
         .await;
 
     let result = swayswap_instance
-        .get_exchange_contract(token_id)
+        .exchange_contract(token_id)
         .call()
         .await
         .unwrap();
     assert_eq!(result.value, swayswap_id);
 
     let result = swayswap_instance
-        .get_exchange_contract(token_id_2)
+        .exchange_contract(token_id_2)
         .call()
         .await
         .unwrap();

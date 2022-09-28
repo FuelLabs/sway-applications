@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{deposit, get_balance, withdraw},
+    abi_calls::{balance, deposit, withdraw},
     test_helpers::setup,
 };
 use fuels::{prelude::*, tx::ContractId};
@@ -23,7 +23,7 @@ mod success {
         )
         .await;
 
-        let balance = get_balance(&exchange_instance, native_contract_id).await;
+        let balance = balance(&exchange_instance, native_contract_id).await;
         assert_eq!(balance, 0);
     }
 
@@ -38,7 +38,7 @@ mod success {
         deposit(&exchange_instance, call_params).await;
         withdraw(&exchange_instance, token_amount, token_contract_id.clone()).await;
 
-        let balance = get_balance(&exchange_instance, token_contract_id).await;
+        let balance = balance(&exchange_instance, token_contract_id).await;
         assert_eq!(balance, 0);
     }
 }

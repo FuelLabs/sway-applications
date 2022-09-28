@@ -1,4 +1,4 @@
-use crate::utils::{abi_calls::get_add_liquidity, test_helpers::setup};
+use crate::utils::{abi_calls::preview_add_liquidity, test_helpers::setup};
 use fuels::prelude::*;
 
 mod success {
@@ -21,12 +21,12 @@ mod success {
             gas_limit: 100_000_000,
             maturity: 0,
         };
-        let add_liquidity_preview = get_add_liquidity(
+        let add_liquidity_preview = preview_add_liquidity(
             &exchange_instance,
             call_params,
             tx_params,
             expected_amount,
-            Bits256(*BASE_ASSET_ID),
+            BASE_ASSET_ID,
         )
         .await;
 

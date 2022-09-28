@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{get_balance, mint_coins},
+    abi_calls::{balance, mint_coins},
     test_helpers::{build_contract, setup_and_initialize},
 };
 
@@ -11,7 +11,7 @@ mod success {
         let (_owner, _minter, mint_amount, _token_contract_id, token_instance) =
             setup_and_initialize().await;
         mint_coins(&token_instance, mint_amount).await;
-        let balance = get_balance(&token_instance).await;
+        let balance = balance(&token_instance).await;
         assert_eq!(balance, mint_amount);
     }
 }

@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::get_token_balance,
+    abi_calls::token_balance,
     test_helpers::{build_contract, setup_and_initialize},
 };
 use fuels::prelude::*;
@@ -13,7 +13,7 @@ mod success {
         let send_native_token_amount = 100;
 
         let call_params = CallParameters::new(Some(send_native_token_amount), None, None);
-        let contract_native_token_balance = get_token_balance(
+        let contract_native_token_balance = token_balance(
             &token_instance,
             call_params,
             ContractId::from(*BASE_ASSET_ID),
@@ -33,7 +33,7 @@ mod success {
             build_contract(token_contract_id.clone(), minter.clone()).await;
 
         let call_params = CallParameters::new(Some(send_native_token_amount), None, None);
-        let contract_native_token_balance = get_token_balance(
+        let contract_native_token_balance = token_balance(
             &token_instance_alternative,
             call_params,
             ContractId::from(*BASE_ASSET_ID),

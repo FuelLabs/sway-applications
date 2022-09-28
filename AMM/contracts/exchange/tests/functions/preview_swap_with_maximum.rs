@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::get_swap_with_maximum,
+    abi_calls::preview_swap_with_maximum,
     test_helpers::{deposit_and_add_liquidity, setup},
 };
 use fuels::prelude::*;
@@ -8,7 +8,7 @@ mod success {
     use super::*;
 
     #[tokio::test]
-    async fn can_get_swap_with_maximum_eth_for_tokens() {
+    async fn can_preview_swap_with_maximum_eth_for_tokens() {
         let (exchange_instance, _native_contract_id, token_asset_id, _lp_asset_id) = setup().await;
 
         let swap_amount: u64 = 10;
@@ -24,12 +24,13 @@ mod success {
         .await;
 
         let amount_expected =
-            get_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount).await;
+            preview_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount)
+                .await;
         assert!(amount_expected.has_liquidity);
     }
 
     #[tokio::test]
-    async fn can_get_swap_with_maximum_tokens_for_eth() {
+    async fn can_preview_swap_with_maximum_tokens_for_eth() {
         let (exchange_instance, _native_contract_id, token_asset_id, _lp_asset_id) = setup().await;
 
         let swap_amount: u64 = 10;
@@ -46,7 +47,7 @@ mod success {
 
         let call_params = CallParameters::new(None, Some(token_asset_id.clone()), None);
         let amount_expected =
-            get_swap_with_maximum(&exchange_instance, call_params, swap_amount).await;
+            preview_swap_with_maximum(&exchange_instance, call_params, swap_amount).await;
         assert!(amount_expected.has_liquidity);
     }
 }
@@ -71,7 +72,7 @@ mod revert {
         .await;
 
         // swap amount more than reserve
-        get_swap_with_maximum(
+        preview_swap_with_maximum(
             &exchange_instance,
             CallParameters::default(),
             token_amount_deposit + 1,

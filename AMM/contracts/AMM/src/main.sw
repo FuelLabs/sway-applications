@@ -16,7 +16,7 @@ impl AMM for Contract {
         storage.tokens.insert(token_id, exchange_id);
     }
     #[storage(read)]
-    fn get_exchange_contract(token_id: ContractId) -> ContractId {
+    fn exchange_contract(token_id: ContractId) -> ContractId {
         storage.tokens.get(token_id)
     }
 }

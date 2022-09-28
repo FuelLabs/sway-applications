@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{get_mint_amount, initialize},
+    abi_calls::{initialize, mint_amount},
     test_helpers::build_contract,
     Identity, MyTokenBuilder,
 };
@@ -24,16 +24,16 @@ mod success {
         let token_instance =
             MyTokenBuilder::new(token_contract_id.to_string(), owner.clone()).build();
 
-        let mint_amount = 10000;
+        let initial_mint_amount = 10000;
 
         initialize(
             &token_instance,
             Identity::Address(Address::from(owner.address())),
-            mint_amount,
+            initial_mint_amount,
         )
         .await;
 
-        assert_eq!(get_mint_amount(&token_instance).await, mint_amount);
+        assert_eq!(mint_amount(&token_instance).await, initial_mint_amount);
     }
 }
 

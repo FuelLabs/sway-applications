@@ -9,30 +9,12 @@ abigen!(MyToken, "../token/out/debug/token-abi.json");
 pub mod abi_calls {
     use super::*;
 
+    pub async fn balance(contract: &MyToken) -> u64 {
+        contract.balance().call().await.unwrap().value
+    }
+
     pub async fn burn_coins(contract: &MyToken, amount: u64) -> CallResponse<()> {
         contract.burn_coins(amount).call().await.unwrap()
-    }
-
-    pub async fn get_balance(contract: &MyToken) -> u64 {
-        contract.get_balance().call().await.unwrap().value
-    }
-
-    pub async fn get_mint_amount(contract: &MyToken) -> u64 {
-        contract.get_mint_amount().call().await.unwrap().value
-    }
-
-    pub async fn get_token_balance(
-        contract: &MyToken,
-        call_params: CallParameters,
-        asset: ContractId,
-    ) -> u64 {
-        contract
-            .get_token_balance(asset)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value
     }
 
     pub async fn initialize(
@@ -52,12 +34,30 @@ pub mod abi_calls {
             .unwrap()
     }
 
+    pub async fn mint_amount(contract: &MyToken) -> u64 {
+        contract.mint_amount().call().await.unwrap().value
+    }
+
     pub async fn mint_coins(contract: &MyToken, amount: u64) -> CallResponse<()> {
         contract.mint_coins(amount).call().await.unwrap()
     }
 
     pub async fn set_mint_amount(contract: &MyToken, amount: u64) -> CallResponse<()> {
         contract.set_mint_amount(amount).call().await.unwrap()
+    }
+
+    pub async fn token_balance(
+        contract: &MyToken,
+        call_params: CallParameters,
+        asset: ContractId,
+    ) -> u64 {
+        contract
+            .token_balance(asset)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn transfer_coins(

@@ -3,6 +3,9 @@ library interface;
 use std::{contract_id::ContractId, identity::Identity};
 
 abi Token {
+    /// Get balance of contract coins.
+    fn balance() -> u64;
+
     /// Burn coins.
     /// 
     /// # Arguments
@@ -14,20 +17,6 @@ abi Token {
     /// * When the caller is not the owner of contract
     #[storage(read)]
     fn burn_coins(burn_amount: u64);
-
-    /// Get balance of contract coins.
-    fn get_balance() -> u64;
-
-    /// Get mint amount of coins.
-    #[storage(read)]
-    fn get_mint_amount() -> u64;
-
-    /// Get balance of the specified token on contract.
-    /// 
-    /// # Arguments
-    /// 
-    /// - ` asset_id ` - identifier for the specified token
-    fn get_token_balance(asset_id: ContractId) -> u64;
 
     /// Initialize the token contract with the specified `mint_amount` for coins.
     /// 
@@ -50,6 +39,10 @@ abi Token {
     /// * When the caller has already minted coins
     #[storage(read, write)]
     fn mint();
+
+    /// Get mint amount of coins.
+    #[storage(read)]
+    fn mint_amount() -> u64;
 
     /// Mint ` mint_amount ` coins.
     /// 
@@ -74,6 +67,13 @@ abi Token {
     /// * When the caller is not the owner of contract
     #[storage(read, write)]
     fn set_mint_amount(mint_amount: u64);
+
+    /// Get balance of the specified token on contract.
+    /// 
+    /// # Arguments
+    /// 
+    /// - ` asset_id ` - identifier for the specified token
+    fn token_balance(asset_id: ContractId) -> u64;
 
     /// Transfer contract coins to the given identity.
     /// 
