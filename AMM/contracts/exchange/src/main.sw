@@ -18,6 +18,7 @@ use std::{
         msg_amount,
     },
     prelude::*,
+    result::Result,
     storage::StorageMap,
     token::{
         burn,
@@ -48,6 +49,7 @@ impl Exchange for Contract {
 
         require(msg_asset_id().into() == eth_id || msg_asset_id() == asset_contract_id, InputError::SentInvalidAsset);
 
+        let sender = msg_sender();
         let sender = msg_sender().unwrap();
         let total_liquidity = storage.lp_asset_supply;
         let eth_amount_in_deposit = storage.deposits.get((
