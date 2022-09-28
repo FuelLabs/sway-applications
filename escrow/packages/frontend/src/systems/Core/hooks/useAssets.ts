@@ -3,7 +3,7 @@ import type { CoinQuantity } from 'fuels';
 
 import { useBalances } from './useBalances';
 
-import { CoinsMetadata } from '@/config';
+import { CoinsMetadata } from '../../../config';
 
 const mergeCoinsWithMetadata = (coins: CoinQuantity[] = []) =>
   coins.map((coin) => {

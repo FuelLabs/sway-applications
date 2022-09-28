@@ -22,6 +22,7 @@ export const ArbiterInputContainer = (props: Props) => {
           type="text"
           onChange={(e) => props.onArbiterAddressChange(e)}
           css={{ font: "$sans" }}
+          aria-label="Arbiter address input"
         />
       </Input>
       <Input css={{ alignSelf: "stretch" }}>
@@ -33,6 +34,7 @@ export const ArbiterInputContainer = (props: Props) => {
           type="text"
           onChange={(e) => props.onAssetIdChange(e)}
           css={{ font: "$sans" }}
+          aria-label="Arbiter asset input"
         />
       </Input>
       <Input css={{ alignSelf: "stretch" }}>
@@ -42,6 +44,7 @@ export const ArbiterInputContainer = (props: Props) => {
           inputMode="decimal"
           value={props.feeAmount}
           onChange={(e) => props.onFeeChange(e)}
+          aria-label="Arbiter fee input"
         />
       </Input>
     </>

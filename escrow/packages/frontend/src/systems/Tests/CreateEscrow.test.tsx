@@ -1,17 +1,51 @@
-import { ASSETS } from "@/config";
+import { ASSETS, DECIMAL_PRECISION } from "../../config";
+import { TestUtils, Wallet } from "fuels";
 import { screen, renderWithRouter, fireEvent } from "@escrow/test-utils";
 import { App } from "../../App";
+import { createWallet, mockUseWalletList } from "../Core/hooks/__mocks__/useWallet";
+
+let wallets: Wallet[] = [];
+let numWallets = 4;
+
+beforeAll(() => {
+    for (let i = 0; i < numWallets; ++i) {
+        wallets.push(createWallet());
+    }
+    mockUseWalletList(wallets);
+});
+
+const coins = ASSETS.map(assetId => {
+    return { assetId, amount: DECIMAL_PRECISION.mul(100) };
+});
 
 describe("Create Escrow", () => {
+    beforeEach(() => {
+        wallets.map(async wallet => {
+            await TestUtils.seedWallet(wallet, coins);
+        })
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     it("Should be able to create an escrow", async () => {
         const { user } = renderWithRouter(<App />, {
             route: "/seller",
         });
 
+        const seller = wallets[0];
+        const arbiter = wallets[1];
+        const buyer = wallets[2];
+
+        const showCreateEscrowBtn = await screen.findByLabelText(/Show create escrow/);
+        expect(showCreateEscrowBtn).toBeInTheDocument();
+        await user.click(showCreateEscrowBtn);
+
         const arbiterAddressInput = await screen.findByLabelText(/Arbiter address input/);
         fireEvent.change(arbiterAddressInput, {
             target: {
-                value: "",
+                value: arbiter.address.toHexString(),
             },
         });
 
@@ -32,7 +66,7 @@ describe("Create Escrow", () => {
         const buyerAddressInput = await screen.findByLabelText(/Buyer address input/);
         fireEvent.change(buyerAddressInput, {
             target: {
-                value: "",
+                value: buyer.address.toHexString(),
             },
         });
 
@@ -73,7 +107,7 @@ describe("Create Escrow", () => {
             },
         });
 
-        const submitBtn = await screen.findByText(/Create escrow/);
+        const submitBtn = await screen.findByLabelText(/Create escrow/);
         expect(submitBtn).toBeInTheDocument();
         await user.click(submitBtn);
     });

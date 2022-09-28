@@ -1,4 +1,3 @@
-// import { ESCROW_PATH } from "@/config";
 import { Button, Stack, Input, Card, Flex } from "@fuel-ui/react";
 import type { ChangeEvent } from "react";
 import { useState } from "react";
@@ -105,6 +104,7 @@ export const CreateEscrow = () => {
           leftIcon={showCreateEscrow ? "Minus" : "Plus"}
           css={{ margin: "10px", width: "475px" }}
           onPress={() => handleShowCreateEscrow()}
+          aria-label="Show create escrow"
         >
           Create Escrow
         </Button>
@@ -130,6 +130,7 @@ export const CreateEscrow = () => {
                   type="text"
                   onChange={(e) => handleBuyerAddressChange(e)}
                   css={{ font: "$sans" }}
+                  aria-label="Buyer address input"
                 />
               </Input>
               <Input css={{ alignSelf: "stretch" }}>
@@ -138,6 +139,7 @@ export const CreateEscrow = () => {
                   inputMode="numeric"
                   value={deadline}
                   onChange={(e) => handleDeadlineChange(e)}
+                  aria-label="Escrow deadline input"
                 />
               </Input>
               <AssetInputContainer
@@ -155,6 +157,7 @@ export const CreateEscrow = () => {
                 }}
                 leftIcon="PlusIcon"
                 css={{ font: "$sans", alignSelf: "stretch" }}
+                aria-label="Create escrow"
               >
                 Create Escrow
               </Button>

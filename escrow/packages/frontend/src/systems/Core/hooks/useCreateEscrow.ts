@@ -12,7 +12,7 @@ import { parseInputValueBigInt } from '../utils/math';
 
 import { useContract } from './useContract';
 
-import type { ArbiterInput, AssetInput, IdentityInput } from '@/types/contracts/EscrowAbi';
+import type { ArbiterInput, AssetInput, IdentityInput } from '../../../types/contracts/EscrowAbi';
 
 // TODO it may be a good idea to refactor this to resemble
 // UseAddLiquidityProps from SwaySwap

@@ -6,7 +6,7 @@ import type { PropsWithChildren } from "react";
 import { NUM_WALLETS, FUEL_PROVIDER_URL } from "../../../config";
 import { walletIndexAtom } from "../jotai";
 
-import type { Maybe } from "@/types";
+import type { Maybe } from "../../../types";
 
 interface AppContextValue {
   wallets: Maybe<Array<Wallet>>;

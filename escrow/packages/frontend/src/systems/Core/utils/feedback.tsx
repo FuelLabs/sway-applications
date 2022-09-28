@@ -3,8 +3,8 @@ import { Link } from "@fuel-ui/react";
 import type { TransactionResult } from "fuels";
 import toast from "react-hot-toast";
 
-import { BLOCK_EXPLORER_URL } from "@/config";
-import type { Maybe } from "@/types";
+import { BLOCK_EXPLORER_URL } from "../../../config";
+import type { Maybe } from "../../../types";
 
 type TxLinkProps = {
   id?: string;

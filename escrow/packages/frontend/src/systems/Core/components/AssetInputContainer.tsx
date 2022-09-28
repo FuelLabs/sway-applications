@@ -32,6 +32,7 @@ export const AssetInputContainer = (props: Props) => {
               type="text"
               onChange={(e) => props.onAssetIdChange(e, i)}
               css={{ font: "$sans" }}
+              aria-label={`Asset input ${i}`}
             />
           </Input>
           <Input css={{ alignSelf: "stretch" }}>
@@ -42,6 +43,7 @@ export const AssetInputContainer = (props: Props) => {
               value={asset.assetAmount}
               inputMode="decimal"
               onChange={(e) => props.onAssetAmountChange(e, i)}
+              aria-label={`Asset amount input ${i}`}
             />
             <Input.ElementRight>
               <Button

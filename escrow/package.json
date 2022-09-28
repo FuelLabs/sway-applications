@@ -46,7 +46,7 @@
     "services:run-test": "make -C docker services-run-test",
     "services:reset-test": "NODE_ENV=test run-s services:clean-test services:setup-test",
     "deps:update": "./scripts/update-deps.sh",
-    "test": "pnpm run --filter=swayswap-app test",
+    "test": "pnpm run --filter=escrow-frontend test",
     "test:coverage": "pnpm run --filter=swayswap-app test --coverage",
     "test:clear": "pnpm -r exec jest --clearCache",
     "test:e2e": "run-p --race dev cy:run",

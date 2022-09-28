@@ -4,7 +4,7 @@ import ArbiterPage from "./pages/ArbiterPage";
 import BuyerPage from "./pages/BuyerPage";
 import SellerPage from "./pages/SellerPage";
 
-import { Pages } from "@/types";
+import { Pages } from "../../types";
 
 export const coreRoutes = (
   <Route>

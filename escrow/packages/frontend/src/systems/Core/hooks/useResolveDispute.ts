@@ -11,7 +11,7 @@ import { parseInputValueBigInt } from '../utils/math';
 
 import { useContract } from './useContract';
 
-import type { IdentityInput } from '@/types/contracts/EscrowAbi';
+import type { IdentityInput } from '../../../types/contracts/EscrowAbi';
 
 interface UseResolveDisputeProps {
   escrowId: BigNumberish;
