@@ -31,32 +31,17 @@ use std::{
         transfer,
     },
 };
-use utils::{
-    add_reserve,
-    calculate_amount_with_fee,
-    div_mutiply,
-    get_current_reserve,
-    get_input_price,
-    get_output_price,
-    mutiply_div,
-    remove_reserve,
-};
-
-/// Token ID of Ether
-pub const ETH_ID = 0x0000000000000000000000000000000000000000000000000000000000000000;
-// Liquidity miner fee apply to all swaps
-pub const LIQUIDITY_MINER_FEE = 333;
-/// Minimum ETH liquidity to open a pool
-pub const MINIMUM_LIQUIDITY = 1; // A more realistic value would be 1000000000
-/// The token ID key from storage, set of deploy time
-/// Contract ID of the token on the other side of the pool
-pub const TOKEN_ID_KEY = 0x0000000000000000000000000000000000000000000000000000000000000001;
+use utils::{calculate_amount_with_fee, div_mutiply, get_input_price, get_output_price, mutiply_div};
 
 storage {
-    /// Map that stores deposit amounts per (depositer, token identifier)
+    /// Nonnative asset's ID to its contract ID
+    asset: StorageMap<ContractId, ContractId> = StorageMap {},
+    /// Deposit amounts per (depositer, asset identifier)
     deposits: StorageMap<(Identity, ContractId), u64> = StorageMap {},
-    /// Token supply in liquidity pool
-    lp_token_supply: u64 = 0,
+    /// Nonnative asset supply in liquidity pool
+    lp_asset_supply: u64 = 0,
+    /// Mapping of asset ID to reserve amount
+    reserves: StorageMap<ContractId, u64> = StorageMap {},
 }
 
 impl Exchange for Contract {
@@ -64,70 +49,74 @@ impl Exchange for Contract {
     fn add_liquidity(deadline: u64, min_liquidity: u64) -> u64 {
         require(msg_amount() == 0, InputError::MessageAmountShouldBeZero);
         require(deadline > height(), TransactionError::DeadlineHasPassed);
-        require(msg_asset_id().into() == ETH_ID || msg_asset_id().into() == get::<b256>(TOKEN_ID_KEY), InputError::MessageAssetIdDoesNotMatch);
+
+        let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
+
+        require(msg_asset_id().into() == eth_id || msg_asset_id() == asset_contract_id, InputError::MessageAssetIdDoesNotMatch);
 
         let sender = msg_sender().unwrap();
-
-        let total_liquidity = storage.lp_token_supply;
-
-        let current_eth_amount = storage.deposits.get((
+        let total_liquidity = storage.lp_asset_supply;
+        let eth_amount_in_deposit = storage.deposits.get((
             sender,
-            ~ContractId::from(ETH_ID),
+            ~ContractId::from(eth_id),
         ));
-        let current_token_amount = storage.deposits.get((
+        let asset_amount_in_deposit = storage.deposits.get((
             sender,
-            ~ContractId::from(get::<b256>(TOKEN_ID_KEY)),
+            asset_contract_id,
         ));
 
-        require(current_eth_amount > 0, TransactionError::InsufficientReserve);
+        require(eth_amount_in_deposit > 0, TransactionError::InsufficientReserve);
+
+        let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
+        let asset_reserve = storage.reserves.get(asset_contract_id);
 
         let mut minted: u64 = 0;
+
         if total_liquidity > 0 {
             require(min_liquidity > 0, InputError::PassedAmountCannotBeZero);
 
-            let eth_reserve = get_current_reserve(ETH_ID);
-            let token_reserve = get_current_reserve(get::<b256>(TOKEN_ID_KEY));
-            let token_amount = mutiply_div(current_eth_amount, token_reserve, eth_reserve);
-            let liquidity_minted = mutiply_div(current_eth_amount, total_liquidity, eth_reserve);
+            let asset_amount_to_add = mutiply_div(eth_amount_in_deposit, asset_reserve, eth_reserve);
+            let liquidity_to_mint = mutiply_div(eth_amount_in_deposit, total_liquidity, eth_reserve);
 
-            require(liquidity_minted >= min_liquidity, TransactionError::InsufficientReserve);
+            require(liquidity_to_mint >= min_liquidity, TransactionError::InsufficientReserve);
 
-            // If token ratio is correct, proceed with liquidity operation
+            // If ratio is correct, proceed with liquidity operation
             // Otherwise, return current user balances in contract
-            if (current_token_amount >= token_amount) {
+            if (asset_amount_in_deposit >= asset_amount_to_add) {
                 // Add fund to the reserves
-                add_reserve(token_amount, get::<b256>(TOKEN_ID_KEY));
-                add_reserve(current_eth_amount, ETH_ID);
-                // Mint LP token
-                mint(liquidity_minted);
-                storage.lp_token_supply = total_liquidity + liquidity_minted;
+                storage.reserves.insert(asset_contract_id, asset_reserve + asset_amount_to_add);
+                storage.reserves.insert(~ContractId::from(eth_id), eth_reserve + eth_amount_in_deposit);
 
-                transfer(liquidity_minted, contract_id(), sender);
+                            // Mint LP asset
+                mint(liquidity_to_mint);
+                storage.lp_asset_supply = total_liquidity + liquidity_to_mint;
 
-                // If user sent more than the correct ratio, deposit the extra tokens back
-                let token_extra = current_token_amount - token_amount;
-                if (token_extra > 0) {
-                    transfer(token_extra, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
+                transfer(liquidity_to_mint, contract_id(), sender);
+
+                // If user sent more than the correct ratio, deposit the extra assets back
+                let asset_amount_extra = asset_amount_in_deposit - asset_amount_to_add;
+                if (asset_amount_extra > 0) {
+                    transfer(asset_amount_extra, storage.asset.get(~ContractId::from(asset_id)), sender);
                 }
 
-                minted = liquidity_minted;
+                minted = liquidity_to_mint;
             } else {
-                transfer(current_token_amount, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
-                transfer(current_eth_amount, ~ContractId::from(ETH_ID), sender);
+                transfer(asset_amount_in_deposit, storage.asset.get(~ContractId::from(asset_id)), sender);
+                transfer(eth_amount_in_deposit, ~ContractId::from(eth_id), sender);
                 minted = 0;
             }
         } else {
-            require(current_eth_amount > MINIMUM_LIQUIDITY, TransactionError::InsufficientLiquidity);
+            require(eth_amount_in_deposit > minimum_liquidity, TransactionError::InsufficientLiquidity);
 
-            let initial_liquidity = current_eth_amount;
+            let initial_liquidity = eth_amount_in_deposit;
 
             // Add fund to the reserves
-            add_reserve(current_token_amount, get::<b256>(TOKEN_ID_KEY));
-            add_reserve(current_eth_amount, ETH_ID);
+            storage.reserves.insert(asset_contract_id, asset_reserve + asset_amount_in_deposit);
+            storage.reserves.insert(~ContractId::from(eth_id), eth_reserve + eth_amount_in_deposit);
 
-            // Mint LP token
+            // Mint LP asset
             mint(initial_liquidity);
-            storage.lp_token_supply = initial_liquidity;
+            storage.lp_asset_supply = initial_liquidity;
 
             transfer(initial_liquidity, contract_id(), sender);
 
@@ -137,11 +126,11 @@ impl Exchange for Contract {
         // Clear user contract balances after finishing add/create liquidity
         storage.deposits.insert((
             sender,
-            ~ContractId::from(get::<b256>(TOKEN_ID_KEY)),
+            asset_contract_id,
         ), 0);
         storage.deposits.insert((
             sender,
-            ~ContractId::from(ETH_ID),
+            ~ContractId::from(eth_id),
         ), 0);
 
         minted
@@ -149,7 +138,9 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn deposit() {
-        require(msg_asset_id().into() == ETH_ID || msg_asset_id().into() == get::<b256>(TOKEN_ID_KEY), InputError::MessageAssetIdDoesNotMatch);
+        let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
+
+        require(msg_asset_id().into() == eth_id || msg_asset_id() == asset_contract_id, InputError::MessageAssetIdDoesNotMatch);
 
         let sender = msg_sender().unwrap();
 
@@ -164,82 +155,83 @@ impl Exchange for Contract {
     }
 
     #[storage(read)]
-    fn get_add_liquidity(amount: u64, asset_id: b256) -> PreviewAddLiquidityInfo {
-        let token_id = get::<b256>(TOKEN_ID_KEY);
-        let total_liquidity = storage.lp_token_supply;
-        let eth_reserve = get_current_reserve(ETH_ID);
-        let token_reserve = get_current_reserve(token_id);
+    fn get_add_liquidity(amount: u64, id: b256) -> PreviewAddLiquidityInfo {
+        let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
+        let total_liquidity = storage.lp_asset_supply;
+        let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
+        let asset_reserve = storage.reserves.get(asset_contract_id);
         let mut current_eth_amount = amount;
-        let mut lp_token_received = 0;
-        let mut token_amount = 0;
+        let mut lp_asset_received = 0;
+        let mut asset_amount = 0;
 
-        if (asset_id == token_id) {
-            current_eth_amount = mutiply_div(amount, eth_reserve, token_reserve);
+        if (id == asset_contract_id.into()) {
+            current_eth_amount = mutiply_div(amount, eth_reserve, asset_reserve);
         }
 
         if total_liquidity > 0 {
-            token_amount = mutiply_div(current_eth_amount, token_reserve, eth_reserve);
-            lp_token_received = mutiply_div(current_eth_amount, total_liquidity, eth_reserve);
+            asset_amount = mutiply_div(current_eth_amount, asset_reserve, eth_reserve);
+            lp_asset_received = mutiply_div(current_eth_amount, total_liquidity, eth_reserve);
         } else {
-            lp_token_received = current_eth_amount;
+            lp_asset_received = current_eth_amount;
         };
 
-        if (asset_id == token_id) {
-            token_amount = current_eth_amount;
+        if (id == asset_contract_id.into()) {
+            asset_amount = current_eth_amount;
         }
 
         PreviewAddLiquidityInfo {
-            lp_token_received: lp_token_received,
-            token_amount: token_amount,
+            lp_token_received: lp_asset_received,
+            token_amount: asset_amount,
         }
     }
 
     #[storage(read)]
-    fn get_balance(asset_id: ContractId) -> u64 {
+    fn get_balance(id: ContractId) -> u64 {
         let sender = msg_sender().unwrap();
-        storage.deposits.get((sender, asset_id))
+        storage.deposits.get((sender, id))
     }
 
     #[storage(read)]
     fn get_pool_info() -> PoolInfo {
         PoolInfo {
-            eth_reserve: get_current_reserve(ETH_ID),
-            token_reserve: get_current_reserve(get::<b256>(TOKEN_ID_KEY)),
-            lp_token_supply: storage.lp_token_supply,
+            eth_reserve: storage.reserves.get(~ContractId::from(eth_id)),
+            token_reserve: storage.reserves.get(storage.asset.get(~ContractId::from(asset_id))),
+            lp_token_supply: storage.lp_asset_supply,
         }
     }
 
     #[storage(read)]
     fn get_position(amount: u64) -> PositionInfo {
-        let total_liquidity = storage.lp_token_supply;
-        let eth_reserve = get_current_reserve(ETH_ID);
-        let token_reserve = get_current_reserve(get::<b256>(TOKEN_ID_KEY));
+        let total_liquidity = storage.lp_asset_supply;
+        let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
+        let asset_reserve = storage.reserves.get(storage.asset.get(~ContractId::from(asset_id)));
         let eth_amount = mutiply_div(amount, eth_reserve, total_liquidity);
-        let token_amount = mutiply_div(amount, token_reserve, total_liquidity);
+        let asset_amount = mutiply_div(amount, asset_reserve, total_liquidity);
 
         PositionInfo {
             eth_amount: eth_amount,
             eth_reserve: eth_reserve,
             lp_token_supply: total_liquidity,
-            token_amount: token_amount,
-            token_reserve: token_reserve,
+            token_amount: asset_amount,
+            token_reserve: asset_reserve,
         }
     }
 
     #[storage(read, write)]
     fn get_swap_with_maximum(amount: u64) -> PreviewInfo {
-        let eth_reserve = get_current_reserve(ETH_ID);
-        let token_reserve = get_current_reserve(get::<b256>(TOKEN_ID_KEY));
+        let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
+        let asset_reserve = storage.reserves.get(storage.asset.get(~ContractId::from(asset_id)));
         let mut sold = 0;
         let mut has_liquidity = true;
-        if (msg_asset_id().into() == ETH_ID) {
-            require(amount < token_reserve, TransactionError::InsufficientReserve);
-            sold = get_output_price(eth_reserve, LIQUIDITY_MINER_FEE, amount, token_reserve);
+
+        if (msg_asset_id().into() == eth_id) {
+            require(amount < asset_reserve, TransactionError::InsufficientReserve);
+            sold = get_output_price(eth_reserve, liquidity_miner_fee, amount, asset_reserve);
             has_liquidity = sold < eth_reserve;
         } else {
             require(amount < eth_reserve, TransactionError::InsufficientReserve);
-            sold = get_output_price(token_reserve, LIQUIDITY_MINER_FEE, amount, eth_reserve);
-            has_liquidity = sold < token_reserve;
+            sold = get_output_price(asset_reserve, liquidity_miner_fee, amount, eth_reserve);
+            has_liquidity = sold < asset_reserve;
         }
         PreviewInfo {
             amount: sold,
@@ -249,21 +241,27 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn get_swap_with_minimum(amount: u64) -> PreviewInfo {
-        let eth_reserve = get_current_reserve(ETH_ID);
-        let token_reserve = get_current_reserve(get::<b256>(TOKEN_ID_KEY));
+        let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
+        let asset_reserve = storage.reserves.get(storage.asset.get(~ContractId::from(asset_id)));
         let mut sold = 0;
         let mut has_liquidity = true;
-        if (msg_asset_id().into() == ETH_ID) {
-            sold = get_input_price(amount, eth_reserve, LIQUIDITY_MINER_FEE, token_reserve);
-            has_liquidity = sold < token_reserve;
+
+        if (msg_asset_id().into() == eth_id) {
+            sold = get_input_price(amount, eth_reserve, liquidity_miner_fee, asset_reserve);
+            has_liquidity = sold < asset_reserve;
         } else {
-            sold = get_input_price(amount, token_reserve, LIQUIDITY_MINER_FEE, eth_reserve);
+            sold = get_input_price(amount, asset_reserve, liquidity_miner_fee, eth_reserve);
             has_liquidity = sold < eth_reserve;
         }
         PreviewInfo {
             amount: sold,
             has_liquidity: has_liquidity,
         }
+    }
+
+    #[storage(write)]
+    fn initialize(asset_id: ContractId, asset_contract_id: ContractId) {
+        storage.asset.insert(asset_id, asset_contract_id);
     }
 
     #[storage(read, write)]
@@ -274,125 +272,132 @@ impl Exchange for Contract {
         require(min_eth > 0 && min_tokens > 0, InputError::PassedAmountCannotBeZero);
 
         let sender = msg_sender().unwrap();
-
-        let total_liquidity = storage.lp_token_supply;
+        let total_liquidity = storage.lp_asset_supply;
         require(total_liquidity > 0, TransactionError::InsufficientLiquidity);
 
-        let eth_reserve = get_current_reserve(ETH_ID);
-        let token_reserve = get_current_reserve(get::<b256>(TOKEN_ID_KEY));
+        let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
+        let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
+        let asset_reserve = storage.reserves.get(asset_contract_id);
         let eth_amount = mutiply_div(msg_amount(), eth_reserve, total_liquidity);
-        let token_amount = mutiply_div(msg_amount(), token_reserve, total_liquidity);
+        let asset_amount = mutiply_div(msg_amount(), asset_reserve, total_liquidity);
 
-        require((eth_amount >= min_eth) && (token_amount >= min_tokens), TransactionError::InsufficientReserve);
+        require((eth_amount >= min_eth) && (asset_amount >= min_tokens), TransactionError::InsufficientReserve);
 
         burn(msg_amount());
-        storage.lp_token_supply = total_liquidity - msg_amount();
+        storage.lp_asset_supply = total_liquidity - msg_amount();
 
-        // Add fund to the reserves
-        remove_reserve(token_amount, get::<b256>(TOKEN_ID_KEY));
-        remove_reserve(eth_amount, ETH_ID);
+        // Remove fund from reserves
+        storage.reserves.insert(asset_contract_id, asset_reserve - asset_amount);
+        storage.reserves.insert(~ContractId::from(eth_id), eth_reserve - eth_amount);
 
         // Send tokens back
-        transfer(eth_amount, ~ContractId::from(ETH_ID), sender);
-        transfer(token_amount, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
+        transfer(eth_amount, ~ContractId::from(eth_id), sender);
+        transfer(asset_amount, asset_contract_id, sender);
 
         RemoveLiquidityInfo {
             eth_amount: eth_amount,
-            token_amount: token_amount,
+            token_amount: asset_amount,
         }
     }
 
     #[storage(read, write)]
     fn swap_with_maximum(amount: u64, deadline: u64) -> u64 {
-        let asset_id = msg_asset_id().into();
+        let swap_asset_id = msg_asset_id().into();
         let forwarded_amount = msg_amount();
 
         require(deadline > height(), TransactionError::DeadlineHasPassed);
         require(forwarded_amount > 0, InputError::PassedAmountCannotBeZero);
         require(amount > 0, InputError::MessageAmountCannotBeZero);
-        require(asset_id == ETH_ID || asset_id == get::<b256>(TOKEN_ID_KEY), InputError::MessageAssetIdDoesNotMatch);
+
+        let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
+
+        require(swap_asset_id == eth_id || swap_asset_id == asset_contract_id.into(), InputError::MessageAssetIdDoesNotMatch);
 
         let sender = msg_sender().unwrap();
-        let eth_reserve = get_current_reserve(ETH_ID);
-        let token_reserve = get_current_reserve(get::<b256>(TOKEN_ID_KEY));
+        let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
+        let asset_reserve = storage.reserves.get(asset_contract_id);
 
         let mut sold = 0;
-        if (asset_id == ETH_ID) {
-            let eth_sold = get_output_price(eth_reserve, LIQUIDITY_MINER_FEE, amount, token_reserve);
+
+        if (swap_asset_id == eth_id) {
+            let eth_sold = get_output_price(eth_reserve, liquidity_miner_fee, amount, asset_reserve);
             require(forwarded_amount >= eth_sold, TransactionError::InsufficientInput);
             let refund = forwarded_amount - eth_sold;
             if refund > 0 {
-                transfer(refund, ~ContractId::from(ETH_ID), sender);
+                transfer(refund, ~ContractId::from(eth_id), sender);
             };
-            transfer(amount, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
+            transfer(amount, asset_contract_id, sender);
             sold = eth_sold;
-            // Update reserve
-            add_reserve(eth_sold, ETH_ID);
-            remove_reserve(amount, get::<b256>(TOKEN_ID_KEY));
+            // Update reserves
+            storage.reserves.insert(~ContractId::from(eth_id), eth_reserve + eth_sold);
+            storage.reserves.insert(asset_contract_id, asset_reserve - amount);
         } else {
-            let tokens_sold = get_output_price(token_reserve, LIQUIDITY_MINER_FEE, amount, eth_reserve);
-            require(forwarded_amount >= tokens_sold, TransactionError::InsufficientInput);
-            let refund = forwarded_amount - tokens_sold;
+            let sold_asset_amount = get_output_price(asset_reserve, liquidity_miner_fee, amount, eth_reserve);
+            require(forwarded_amount >= sold_asset_amount, TransactionError::InsufficientInput);
+            let refund = forwarded_amount - sold_asset_amount;
             if refund > 0 {
-                transfer(refund, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
+                transfer(refund, asset_contract_id, sender);
             };
-            transfer(amount, ~ContractId::from(ETH_ID), sender);
-            sold = tokens_sold;
-            // Update reserve
-            remove_reserve(amount, ETH_ID);
-            add_reserve(tokens_sold, get::<b256>(TOKEN_ID_KEY));
+            transfer(amount, ~ContractId::from(eth_id), sender);
+            sold = sold_asset_amount;
+            // Update reserves
+            storage.reserves.insert(~ContractId::from(eth_id), eth_reserve - amount);
+            storage.reserves.insert(asset_contract_id, asset_reserve + sold_asset_amount);
         };
         sold
     }
 
     #[storage(read, write)]
     fn swap_with_minimum(deadline: u64, min: u64) -> u64 {
-        let asset_id = msg_asset_id().into();
+        let swap_asset_id = msg_asset_id().into();
         let forwarded_amount = msg_amount();
 
         require(deadline >= height(), TransactionError::DeadlineHasPassed);
         require(forwarded_amount > 0, InputError::MessageAmountCannotBeZero);
         require(min > 0, InputError::PassedAmountCannotBeZero);
-        require(asset_id == ETH_ID || asset_id == get::<b256>(TOKEN_ID_KEY), InputError::MessageAssetIdDoesNotMatch);
+
+        let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
+
+        require(swap_asset_id == eth_id || swap_asset_id == asset_contract_id.into(), InputError::MessageAssetIdDoesNotMatch);
 
         let sender = msg_sender().unwrap();
 
-        let eth_reserve = get_current_reserve(ETH_ID);
-        let token_reserve = get_current_reserve(get::<b256>(TOKEN_ID_KEY));
+        let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
+        let asset_reserve = storage.reserves.get(asset_contract_id);
 
         let mut bought = 0;
-        if (asset_id == ETH_ID) {
-            let tokens_bought = get_input_price(forwarded_amount, eth_reserve, LIQUIDITY_MINER_FEE, token_reserve);
-            require(tokens_bought >= min, TransactionError::InsufficientInput);
-            transfer(tokens_bought, ~ContractId::from(get::<b256>(TOKEN_ID_KEY)), sender);
-            bought = tokens_bought;
-            // Update reserve
-            add_reserve(forwarded_amount, ETH_ID);
-            remove_reserve(tokens_bought, get::<b256>(TOKEN_ID_KEY));
+        if (swap_asset_id == eth_id) {
+            let bought_asset_amount = get_input_price(forwarded_amount, eth_reserve, liquidity_miner_fee, asset_reserve);
+            require(bought_asset_amount >= min, TransactionError::InsufficientInput);
+            transfer(bought_asset_amount, asset_contract_id, sender);
+            bought = bought_asset_amount;
+            // Update reserves
+            storage.reserves.insert(~ContractId::from(eth_id), eth_reserve + forwarded_amount);
+            storage.reserves.insert(asset_contract_id, asset_reserve - bought_asset_amount);
         } else {
-            let eth_bought = get_input_price(forwarded_amount, token_reserve, LIQUIDITY_MINER_FEE, eth_reserve);
+            let eth_bought = get_input_price(forwarded_amount, asset_reserve, liquidity_miner_fee, eth_reserve);
             require(eth_bought >= min, TransactionError::InsufficientInput);
-            transfer(eth_bought, ~ContractId::from(ETH_ID), sender);
+            transfer(eth_bought, ~ContractId::from(eth_id), sender);
             bought = eth_bought;
-            // Update reserve
-            remove_reserve(eth_bought, ETH_ID);
-            add_reserve(bought, get::<b256>(TOKEN_ID_KEY));
+            // Update reserves
+            storage.reserves.insert(~ContractId::from(eth_id), eth_reserve - eth_bought);
+            storage.reserves.insert(asset_contract_id, asset_reserve + bought);
         };
         bought
     }
 
     #[storage(read, write)]
-    fn withdraw(amount: u64, asset_id: ContractId) {
-        require(asset_id.into() == ETH_ID || asset_id.into() == get::<b256>(TOKEN_ID_KEY), InputError::MessageAssetIdDoesNotMatch);
+    fn withdraw(amount: u64, id: ContractId) {
+        require(id.into() == eth_id || id == storage.asset.get(~ContractId::from(asset_id)), InputError::MessageAssetIdDoesNotMatch);
 
         let sender = msg_sender().unwrap();
 
-        let deposited_amount = storage.deposits.get((sender, asset_id));
+        let deposited_amount = storage.deposits.get((sender, id));
         require(deposited_amount >= amount, TransactionError::SenderDoesNotHaveEnoughBalance);
 
         let new_amount = deposited_amount - amount;
-        storage.deposits.insert((sender, asset_id), new_amount);
+        storage.deposits.insert((sender, id), new_amount);
 
-        transfer(amount, asset_id, sender)
+        transfer(amount, id, sender)
     }
 }

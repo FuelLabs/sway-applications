@@ -1,7 +1,7 @@
 use fuels::{
     contract::contract::CallResponse,
     prelude::*,
-    tx::{AssetId, Bytes32, ContractId, StorageSlot},
+    tx::{AssetId, ContractId},
 };
 use std::str::FromStr;
 
@@ -90,6 +90,18 @@ pub mod abi_calls {
             .value
     }
 
+    pub async fn initialize(
+        contract: &Exchange,
+        asset_id: AssetId,
+        contract_id: ContractId,
+    ) -> CallResponse<()> {
+        contract
+            .initialize(ContractId::new(*asset_id), contract_id)
+            .call()
+            .await
+            .unwrap()
+    }
+
     pub async fn remove_liquidity(
         contract: &Exchange,
         call_params: CallParameters,
@@ -168,7 +180,7 @@ pub mod abi_calls {
 
 pub mod test_helpers {
     use super::*;
-    use abi_calls::{add_liquidity, deposit, token_initialize, token_mint};
+    use abi_calls::{add_liquidity, deposit, initialize, token_initialize, token_mint};
 
     pub async fn deposit_and_add_liquidity(
         exchange_instance: &Exchange,
@@ -244,19 +256,12 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let key =
-            Bytes32::from_str("0x0000000000000000000000000000000000000000000000000000000000000001")
-                .unwrap();
-        let value = token_contract_id.hash();
-        let storage_slot = StorageSlot::new(key, value);
-        let storage_vec = vec![storage_slot.clone()];
-
         // Deploy contract and get ID
         let exchange_contract_id = Contract::deploy(
             "out/debug/exchange.bin",
             &wallet,
             TxParameters::default(),
-            StorageConfiguration::with_manual_storage(Some(storage_vec)),
+            StorageConfiguration::default(),
         )
         .await
         .unwrap();
@@ -265,6 +270,13 @@ pub mod test_helpers {
             ExchangeBuilder::new(exchange_contract_id.to_string(), wallet.clone()).build();
         let token_instance =
             MyTokenBuilder::new(token_contract_id.to_string(), wallet.clone()).build();
+
+        let asset_id =
+            AssetId::from_str("0x0000000000000000000000000000000000000000000000000000000000000001")
+                .unwrap();
+        let contract_id = ContractId::new(*token_contract_id.hash());
+
+        initialize(&exchange_instance, asset_id, contract_id).await;
 
         let native_contract_id = ContractId::new(*BASE_ASSET_ID);
         let token_asset_id = AssetId::from(*token_contract_id.hash());

@@ -44,17 +44,17 @@ abi Exchange {
     /// # Arguments
     /// 
     /// - ` amount ` - amount of liquidity to add
-    /// - ` asset_id ` - identifier of the asset to add
+    /// - ` id ` - identifier of the asset to add
     #[storage(read)]
-    fn get_add_liquidity(amount: u64, asset_id: b256) -> PreviewAddLiquidityInfo;
+    fn get_add_liquidity(amount: u64, id: b256) -> PreviewAddLiquidityInfo;
 
     /// Get current balance of given token on the contract.
     /// 
     /// # Arguments
     /// 
-    /// - ` asset_id ` - identifier of the asset to get balance of
+    /// - ` id ` - identifier of the asset to get balance of
     #[storage(read)]
-    fn get_balance(asset_id: ContractId) -> u64;
+    fn get_balance(id: ContractId) -> u64;
 
     /// Get information on the liquidity pool on contract.
     #[storage(read)]
@@ -87,6 +87,15 @@ abi Exchange {
     /// - ` amount ` - amount of tokens supplied
     #[storage(read, write)]
     fn get_swap_with_minimum(amount: u64) -> PreviewInfo;
+
+    /// Initialize contract by specifying the asset on the other side of the contract.
+    /// 
+    /// # Arguments
+    /// 
+    /// - ` asset_id ` - identifier of other asset
+    /// - ` asset_contract_id ` - contract identifier of other asset
+    #[storage(write)]
+    fn initialize(asset_id: ContractId, asset_contract_id: ContractId);
 
     /// Burn tokens to transfer ETH and Tokens at current ratio to the sender.
     /// 
@@ -148,12 +157,12 @@ abi Exchange {
     /// # Arguments
     /// 
     /// - ` amount ` - amount of coins to withdraw
-    /// - ` asset_id ` - identifier of asset to withdraw
+    /// - ` id ` - identifier of asset to withdraw
     /// 
     /// # Reverts
     /// 
-    /// * When the ` asset_id ` is not of either ETH or Token
+    /// * When the ` id ` is not of either ETH or Token
     /// * If the sender does not have ` amount ` of asset in contract storage
     #[storage(read, write)]
-    fn withdraw(amount: u64, asset_id: ContractId);
+    fn withdraw(amount: u64, id: ContractId);
 }

@@ -15,13 +15,6 @@ use std::{
     u128::U128,
 };
 
-/// Add amount to the token reserve
-#[storage(read, write)]
-pub fn add_reserve(amount: u64, token_id: b256) {
-    let value = get::<u64>(token_id);
-    store(token_id, value + amount);
-}
-
 // Calculate 0.3% fee
 pub fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
     let fee: u64 = (amount / liquidity_miner_fee);
@@ -32,12 +25,6 @@ pub fn div_mutiply(a: u64, b: u64, c: u64) -> u64 {
     let calculation = (~U128::from(0, a) / ~U128::from(0, b));
     let result_wrapped = (calculation * ~U128::from(0, c)).as_u64();
     result_wrapped.unwrap()
-}
-
-/// Return token reserve balance
-#[storage(read)]
-pub fn get_current_reserve(token_id: b256) -> u64 {
-    get::<u64>(token_id)
 }
 
 /// Pricing function for converting between ETH and Tokens.
@@ -77,11 +64,4 @@ pub fn mutiply_div(a: u64, b: u64, c: u64) -> u64 {
     let calculation = (~U128::from(0, a) * ~U128::from(0, b));
     let result_wrapped = (calculation / ~U128::from(0, c)).as_u64();
     result_wrapped.unwrap()
-}
-
-/// Remove amount from the token reserve.
-#[storage(read, write)]
-pub fn remove_reserve(amount: u64, token_id: b256) {
-    let value = get::<u64>(token_id);
-    store(token_id, value - amount);
 }
