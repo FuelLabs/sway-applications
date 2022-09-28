@@ -35,3 +35,12 @@ fn maximum_deposit() -> u64 {
     MAXIMUM_DEPOSIT
 }
 // ANCHOR_END: getters
+// ANCHOR: type_annotation
+fn execute() {
+    // Avoid unless it's more helpful to annotate
+    let executed: bool = false;
+
+    // Generally encouraged
+    let executed = false;
+}
+// ANCHOR_END: type_annotation
