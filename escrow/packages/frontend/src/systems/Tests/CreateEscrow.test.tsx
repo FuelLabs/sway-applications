@@ -1,6 +1,6 @@
 import { ASSETS, DECIMAL_PRECISION } from "../../config";
 import { TestUtils, Wallet } from "fuels";
-import { screen, renderWithRouter, fireEvent } from "@escrow/test-utils";
+import { screen, renderWithRouter, fireEvent, render } from "@escrow/test-utils";
 import { App } from "../../App";
 import { createWallet, mockUseWalletList } from "../Core/hooks/__mocks__/useWallet";
 
@@ -24,6 +24,21 @@ beforeAll(async () => {
 describe("Create Escrow", () => {
     afterEach(() => {
         jest.clearAllMocks();
+    });
+
+    // TODO disable the create escrow button unless inputs are valid
+    it("should disable create escrow button by default", async () => {
+        const { user } = renderWithRouter(<App />, {
+            route: "/seller",
+        });
+
+        const showCreateEscrowBtn = await screen.findByLabelText(/Show create escrow/);
+        expect(showCreateEscrowBtn).toBeInTheDocument();
+        await user.click(showCreateEscrowBtn);
+
+        const createEscrowBtn = await screen.findByLabelText(/Create escrow/);
+        expect(createEscrowBtn).toBeInTheDocument();
+        expect(createEscrowBtn).toBeDisabled();
     });
 
     it("Should be able to create an escrow", async () => {
