@@ -22,7 +22,7 @@ export const AssetInputContainer = (props: Props) => {
   return (
     <>
       {props.assets.map((asset, i) => (
-        <>
+        <div key={i}>
           <Input css={{ alignSelf: "stretch" }}>
             <Input.Field
               id={`assetId${i}`}
@@ -53,7 +53,7 @@ export const AssetInputContainer = (props: Props) => {
               />
             </Input.ElementRight>
           </Input>
-        </>
+        </div>
       ))}
       <Button
         leftIcon="Plus"

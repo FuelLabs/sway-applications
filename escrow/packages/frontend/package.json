@@ -7,7 +7,7 @@
     "build": "tsc && vite build",
     "postinstall": "sh ./scripts/postinstall.sh",
     "preview": "vite preview",
-    "test": "jest",
+    "test": "jest --runInBand",
     "wallets:init": "pnpm exec ts-node ./scripts/wallets-init",
     "xstate:typegen": "xstate typegen 'src/**/*.ts?(x)'",
     "xstate:typegen:watch": "xstate typegen 'src/**/*.ts?(x)' --watch"
@@ -49,8 +49,7 @@
     "decimal.js": "^10.3.1",
     "ethers": "^5.6.9",
     "framer-motion": "^6.3.15",
-    "fuelchain": "0.0.0-next-20220926142549",
-    "fuels": "0.0.0-next-20220926142549",
+    "fuels": "0.17.0",
     "graphql": "^16.5.0",
     "graphql-request": "^4.3.0",
     "jotai": "^1.7.2",
@@ -60,7 +59,6 @@
     "react-dom": "^18.2.0",
     "react-error-boundary": "^3.1.4",
     "react-google-recaptcha": "^2.1.0",
-    "react-helmet": "^6.1.0",
     "react-hot-toast": "^2.3.0",
     "react-icons": "^4.4.0",
     "react-number-format": "^4.9.3",
@@ -91,6 +89,7 @@
     "dotenv": "^16.0.1",
     "eslint": "^8.18.0",
     "eslint-plugin-cypress": "^2.12.1",
+    "fuelchain": "0.17.0",
     "http-server": "^14.1.1",
     "jest": "^28.1.1",
     "postcss": "^8.4.14",
@@ -98,7 +97,7 @@
     "prettier": "^2.7.1",
     "tailwindcss": "^3.1.4",
     "ts-node": "^10.8.1",
-    "typechain-target-fuels": "0.0.0-next-20220926142549",
+    "typechain-target-fuels": "0.17.0",
     "typescript": "^4.7.4",
     "vite": "^2.9.12"
   }

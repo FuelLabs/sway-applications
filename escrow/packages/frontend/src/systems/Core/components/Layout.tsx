@@ -1,7 +1,6 @@
 import { cx, globalCss } from "@fuel-ui/css";
 import { Box, Spinner } from "@fuel-ui/react";
 import type { FC, ReactNode } from "react";
-import { Helmet } from "react-helmet";
 
 import { TopNav } from "./TopNav";
 
@@ -23,10 +22,6 @@ export const Layout: FC<Props> = ({
   globalStyles();
   return (
     <>
-      <Helmet>
-        <title>{title && `${title} | `}FuelEscrow</title>
-        <meta name="description" content="Fuel Escrow" />
-      </Helmet>
       {isLoading ? (
         <Box as="main" className={cx("loading", className)}>
           <Spinner />

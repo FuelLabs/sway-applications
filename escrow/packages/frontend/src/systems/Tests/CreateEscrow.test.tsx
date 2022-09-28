@@ -6,31 +6,22 @@ import { createWallet, mockUseWalletList } from "../Core/hooks/__mocks__/useWall
 
 let wallets: Wallet[] = [];
 let numWallets = 4;
+const coins = ASSETS.map(assetId => {
+    return { assetId, amount: DECIMAL_PRECISION.mul(100) };
+});
 
-beforeAll(() => {
+beforeAll(async () => {
     for (let i = 0; i < numWallets; ++i) {
         const wallet = createWallet();
         wallets.push(wallet);
     }
     mockUseWalletList(wallets);
-});
-
-const coins = ASSETS.map(assetId => {
-    return { assetId, amount: DECIMAL_PRECISION.mul(100) };
+    for (const wallet of wallets) {
+        await TestUtils.seedWallet(wallet, coins);
+    }
 });
 
 describe("Create Escrow", () => {
-    beforeEach(async () => {
-        await wallets.reduce(async (_, wallet) => {
-            try {
-                console.log(process.env.GENESIS_SECRET);
-                await TestUtils.seedWallet(wallet, coins);
-            } catch (e) {
-                console.log(e);
-            }
-        }, Promise.resolve());
-    });
-
     afterEach(() => {
         jest.clearAllMocks();
     });

@@ -22,15 +22,15 @@ export function EscrowInfo({ escrows }: EscrowInfoProps) {
         escrows[0].arbiter.fee_amount,
         DECIMAL_PLACES
       )}`}</div>
-      {escrows[0].assets.map((assetInfo) => {
+      {escrows[0].assets.map((assetInfo, i) => {
         return (
-          <>
+          <div key={i}>
             <div>{`Asset Id: ${assetInfo.id.value}`}</div>
             <div>{`Asset Amount: ${formatValue(
               assetInfo.amount,
               DECIMAL_PLACES
             )}`}</div>
-          </>
+          </div>
         );
       })}
       <div>{`Buyer: ${
@@ -38,7 +38,6 @@ export function EscrowInfo({ escrows }: EscrowInfoProps) {
           ? escrows[0].buyer.address.Address?.value
           : escrows[0].buyer.address.ContractId?.value
       }`}</div>
-      {/** TODO fix buyer.asset.None/Some is undefined */}
       <div>{`Buyer Desposit Asset: ${
         !escrows[0].buyer.asset ? "None" : escrows[0].buyer.asset.value
       }`}</div>
