@@ -2,7 +2,7 @@
 
 Structuring code in a way that is easy to navigate allows for a greater developer experience. In order to achieve this, there are some guidelines to consider.
 
-1. Fields in data structures should be alphabetical
+1. Fields in all structures should be alphabetical
 2. Functions should be declared by the weight of their purity e.g.
    1. `read & write` first
    2. `read` second

@@ -1,6 +1,6 @@
 # ABI Documentation
 
-API documentation refers to documenting the interface that another developer may be interested in using. 
+ABI documentation refers to documenting the interface that another developer may be interested in using. 
 
 The form of documentation we focus on uses the `///` syntax as we are interested in documenting the `ABI` functions.
 
