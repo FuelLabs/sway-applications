@@ -19,6 +19,7 @@ use std::{
         msg_amount,
     },
     prelude::*,
+    result::Result,
     storage::StorageMap,
     token::{
         burn,

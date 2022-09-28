@@ -16,6 +16,7 @@ use std::{
         call_frames::contract_id,
     },
     prelude::*,
+    result::Result,
     storage::StorageMap,
     token::{
         burn,
