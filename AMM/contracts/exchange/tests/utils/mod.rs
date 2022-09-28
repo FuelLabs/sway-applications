@@ -6,7 +6,7 @@ use fuels::{
 use std::str::FromStr;
 
 abigen!(Exchange, "out/debug/exchange-abi.json");
-abigen!(MyToken, "../token/out/debug/token-abi.json");
+abigen!(Asset, "../asset/out/debug/asset-abi.json");
 
 pub mod abi_calls {
     use super::*;
@@ -152,14 +152,14 @@ pub mod abi_calls {
     }
 
     pub async fn token_initialize(
-        contract: &MyToken,
+        contract: &Asset,
         identity: Identity,
         amount: u64,
     ) -> CallResponse<()> {
         contract.initialize(identity, amount).call().await.unwrap()
     }
 
-    pub async fn token_mint(contract: &MyToken) -> CallResponse<()> {
+    pub async fn token_mint(contract: &Asset) -> CallResponse<()> {
         contract
             .mint()
             .append_variable_outputs(1)
@@ -248,7 +248,7 @@ pub mod test_helpers {
         wallet.set_provider(provider);
 
         let token_contract_id = Contract::deploy(
-            "../token/out/debug/token.bin",
+            "../asset/out/debug/asset.bin",
             &wallet,
             TxParameters::default(),
             StorageConfiguration::default(),
@@ -269,7 +269,7 @@ pub mod test_helpers {
         let exchange_instance =
             ExchangeBuilder::new(exchange_contract_id.to_string(), wallet.clone()).build();
         let token_instance =
-            MyTokenBuilder::new(token_contract_id.to_string(), wallet.clone()).build();
+            AssetBuilder::new(token_contract_id.to_string(), wallet.clone()).build();
 
         let asset_id =
             AssetId::from_str("0x0000000000000000000000000000000000000000000000000000000000000001")

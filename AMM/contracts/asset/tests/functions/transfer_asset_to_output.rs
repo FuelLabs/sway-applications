@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{token_balance, transfer_token_to_output},
+    abi_calls::{asset_balance, transfer_asset_to_output},
     test_helpers::{build_contract, setup_and_initialize},
     Identity,
 };
@@ -10,27 +10,27 @@ mod success {
 
     #[tokio::test]
     async fn can_transfer_coins() {
-        let (owner, .., token_instance) = setup_and_initialize().await;
+        let (owner, .., asset_instance) = setup_and_initialize().await;
 
         let wallet_native_balance_before = owner.get_asset_balance(&BASE_ASSET_ID).await.unwrap();
 
-        let send_native_token_amount = 100;
+        let send_native_asset_amount = 100;
 
-        // Send native tokens to the contract
-        let call_params = CallParameters::new(Some(send_native_token_amount), None, None);
-        let contract_native_token_balance = token_balance(
-            &token_instance,
+        // Send native assets to the contract
+        let call_params = CallParameters::new(Some(send_native_asset_amount), None, None);
+        let contract_native_asset_balance = asset_balance(
+            &asset_instance,
             call_params,
             ContractId::from(*BASE_ASSET_ID),
         )
         .await;
 
-        assert_eq!(contract_native_token_balance, send_native_token_amount);
+        assert_eq!(contract_native_asset_balance, send_native_asset_amount);
 
-        transfer_token_to_output(
-            &token_instance,
+        transfer_asset_to_output(
+            &asset_instance,
             ContractId::from(*BASE_ASSET_ID),
-            send_native_token_amount,
+            send_native_asset_amount,
             Identity::Address(Address::from(owner.address())),
         )
         .await;
@@ -45,18 +45,18 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn on_non_owner_transfer_token_to_output() {
-        let (owner, minter, mint_amount, token_contract_id, _token_instance) =
+    async fn on_non_owner_transfer_asset_to_output() {
+        let (owner, minter, mint_amount, asset_contract_id, _asset_instance) =
             setup_and_initialize().await;
 
-        let token_instance_alternative =
-            build_contract(token_contract_id.clone(), minter.clone()).await;
+        let asset_instance_alternative =
+            build_contract(asset_contract_id.clone(), minter.clone()).await;
 
         let address = Address::from(owner.address());
 
-        transfer_token_to_output(
-            &token_instance_alternative,
-            ContractId::from(*token_contract_id.hash()),
+        transfer_asset_to_output(
+            &asset_instance_alternative,
+            ContractId::from(*asset_contract_id.hash()),
             mint_amount,
             Identity::Address(Address::from(address.clone())),
         )

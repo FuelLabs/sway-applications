@@ -1,3 +1,4 @@
+mod asset_balance;
 mod balance;
 mod burn_coins;
 mod initialize;
@@ -5,6 +6,5 @@ mod mint;
 mod mint_amount;
 mod mint_coins;
 mod set_mint_amount;
-mod token_balance;
+mod transfer_asset_to_output;
 mod transfer_coins;
-mod transfer_token_to_output;

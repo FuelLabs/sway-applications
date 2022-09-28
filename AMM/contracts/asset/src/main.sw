@@ -4,7 +4,7 @@ dep errors;
 dep interface;
 
 use errors::Error;
-use interface::Token;
+use interface::Asset;
 use std::{
     chain::auth::msg_sender,
     constants::ZERO_B256,
@@ -31,7 +31,11 @@ storage {
     mint_list: StorageMap<Identity, bool> = StorageMap {},
 }
 
-impl Token for Contract {
+impl Asset for Contract {
+    fn asset_balance(asset_id: ContractId) -> u64 {
+        balance_of(asset_id, contract_id())
+    }
+
     fn balance() -> u64 {
         balance_of(contract_id(), contract_id())
     }
@@ -77,19 +81,15 @@ impl Token for Contract {
         storage.mint_amount = mint_amount;
     }
 
-    fn token_balance(asset_id: ContractId) -> u64 {
-        balance_of(asset_id, contract_id())
+    #[storage(read)]
+    fn transfer_asset_to_output(asset_id: ContractId, amount: u64, identity: Identity) {
+        require(msg_sender().unwrap() == storage.owner, Error::NotOwner);
+        transfer(amount, asset_id, identity);
     }
 
     #[storage(read)]
     fn transfer_coins(amount: u64, identity: Identity) {
         require(msg_sender().unwrap() == storage.owner, Error::NotOwner);
         transfer(amount, contract_id(), identity);
-    }
-
-    #[storage(read)]
-    fn transfer_token_to_output(asset_id: ContractId, amount: u64, identity: Identity) {
-        require(msg_sender().unwrap() == storage.owner, Error::NotOwner);
-        transfer(amount, asset_id, identity);
     }
 }

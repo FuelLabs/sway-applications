@@ -1,7 +1,7 @@
 use crate::utils::{
     abi_calls::{initialize, mint_amount},
     test_helpers::build_contract,
-    Identity, MyTokenBuilder,
+    AssetBuilder, Identity,
 };
 use fuels::prelude::*;
 
@@ -12,8 +12,8 @@ mod success {
     async fn address_can_initialize_contract() {
         let owner = launch_provider_and_get_wallet().await;
 
-        let token_contract_id = Contract::deploy(
-            "../token/out/debug/token.bin",
+        let asset_contract_id = Contract::deploy(
+            "../asset/out/debug/asset.bin",
             &owner,
             TxParameters::default(),
             StorageConfiguration::default(),
@@ -21,19 +21,19 @@ mod success {
         .await
         .unwrap();
 
-        let token_instance =
-            MyTokenBuilder::new(token_contract_id.to_string(), owner.clone()).build();
+        let asset_instance =
+            AssetBuilder::new(asset_contract_id.to_string(), owner.clone()).build();
 
         let initial_mint_amount = 10000;
 
         initialize(
-            &token_instance,
+            &asset_instance,
             Identity::Address(Address::from(owner.address())),
             initial_mint_amount,
         )
         .await;
 
-        assert_eq!(mint_amount(&token_instance).await, initial_mint_amount);
+        assert_eq!(mint_amount(&asset_instance).await, initial_mint_amount);
     }
 }
 
@@ -51,31 +51,31 @@ mod revert {
         let owner = wallets.pop().unwrap();
         let minter = wallets.pop().unwrap();
 
-        let token_contract_id = Contract::deploy(
-            "../token/out/debug/token.bin",
+        let asset_contract_id = Contract::deploy(
+            "../asset/out/debug/asset.bin",
             &owner,
             TxParameters::default(),
             StorageConfiguration::default(),
         )
         .await
         .unwrap();
-        let token_instance =
-            MyTokenBuilder::new(token_contract_id.to_string(), owner.clone()).build();
+        let asset_instance =
+            AssetBuilder::new(asset_contract_id.to_string(), owner.clone()).build();
 
         let mint_amount = 10000;
 
         initialize(
-            &token_instance,
+            &asset_instance,
             Identity::Address(Address::from(owner.address())),
             mint_amount,
         )
         .await;
 
-        let token_instance_alternative =
-            build_contract(token_contract_id.clone(), minter.clone()).await;
+        let asset_instance_alternative =
+            build_contract(asset_contract_id.clone(), minter.clone()).await;
 
         initialize(
-            &token_instance_alternative,
+            &asset_instance_alternative,
             Identity::Address(Address::from(minter.address())),
             mint_amount,
         )

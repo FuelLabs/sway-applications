@@ -2,7 +2,14 @@ library interface;
 
 use std::{contract_id::ContractId, identity::Identity};
 
-abi Token {
+abi Asset {
+    /// Get balance of the specified asset on contract.
+    /// 
+    /// # Arguments
+    /// 
+    /// - ` asset_id ` - identifier for the specified asset
+    fn asset_balance(asset_id: ContractId) -> u64;
+
     /// Get balance of contract coins.
     fn balance() -> u64;
 
@@ -18,7 +25,7 @@ abi Token {
     #[storage(read)]
     fn burn_coins(burn_amount: u64);
 
-    /// Initialize the token contract with the specified `mint_amount` for coins.
+    /// Initialize the asset contract with the specified `mint_amount` for coins.
     /// 
     /// # Arguments
     /// 
@@ -68,12 +75,19 @@ abi Token {
     #[storage(read, write)]
     fn set_mint_amount(mint_amount: u64);
 
-    /// Get balance of the specified token on contract.
+    /// Transfer the specified contract asset to the given identity.
     /// 
     /// # Arguments
     /// 
-    /// - ` asset_id ` - identifier for the specified token
-    fn token_balance(asset_id: ContractId) -> u64;
+    /// - ` asset_id ` - identifier for the asset to transfer
+    /// - ` amount ` - amount of asset to transfer
+    /// - ` identity ` - recipient of the transfer
+    /// 
+    /// # Reverts
+    /// 
+    /// * When the caller is not the owner of contract
+    #[storage(read)]
+    fn transfer_asset_to_output(asset_id: ContractId, amount: u64, identity: Identity);
 
     /// Transfer contract coins to the given identity.
     /// 
@@ -87,18 +101,4 @@ abi Token {
     /// * When the caller is not the owner of contract
     #[storage(read)]
     fn transfer_coins(amount: u64, identity: Identity);
-
-    /// Transfer the specified contract tokens to the given identity.
-    /// 
-    /// # Arguments
-    /// 
-    /// - ` asset_id ` - identifier for the tokens to transfer
-    /// - ` amount ` - amount of tokens to transfer
-    /// - ` identity ` - recipient of the transfer
-    /// 
-    /// # Reverts
-    /// 
-    /// * When the caller is not the owner of contract
-    #[storage(read)]
-    fn transfer_token_to_output(asset_id: ContractId, amount: u64, identity: Identity);
 }

@@ -8,14 +8,14 @@ mod success {
 
     #[tokio::test]
     async fn can_get_mint_amount() {
-        let (_owner, minter, initial_mint_amount, token_contract_id, _token_instance) =
+        let (_owner, minter, initial_mint_amount, asset_contract_id, _asset_instance) =
             setup_and_initialize().await;
 
-        let token_instance_alternative =
-            build_contract(token_contract_id.clone(), minter.clone()).await;
+        let asset_instance_alternative =
+            build_contract(asset_contract_id.clone(), minter.clone()).await;
 
         assert_eq!(
-            mint_amount(&token_instance_alternative).await,
+            mint_amount(&asset_instance_alternative).await,
             initial_mint_amount
         );
     }
