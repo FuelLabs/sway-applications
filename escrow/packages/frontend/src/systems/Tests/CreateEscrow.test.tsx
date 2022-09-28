@@ -41,6 +41,102 @@ describe("Create Escrow", () => {
         expect(createEscrowBtn).toBeDisabled();
     });
 
+    it("should be able to set input values", async () => {
+        const { user } = renderWithRouter(<App />, {
+            route: "/seller",
+        });
+
+        const seller = wallets[0];
+        const arbiter = wallets[1];
+        const buyer = wallets[2];
+
+        const showCreateEscrowBtn = await screen.findByLabelText(/Show create escrow/);
+        expect(showCreateEscrowBtn).toBeInTheDocument();
+        await user.click(showCreateEscrowBtn);
+
+        const arbiterAddressInput = await screen.findByLabelText(/Arbiter address input/);
+        fireEvent.change(arbiterAddressInput, {
+            target: {
+                value: arbiter.address.toHexString(),
+            },
+        });
+        expect(arbiterAddressInput).toHaveValue(arbiter.address.toHexString());
+
+        const arbiterAssetInput = await screen.findByLabelText(/Arbiter asset input/);
+        fireEvent.change(arbiterAssetInput, {
+            target: {
+                value: ASSETS[0]
+            },
+        });
+        expect(arbiterAddressInput).toHaveValue(ASSETS[0]);
+
+        const arbiterFeeInput = await screen.findByLabelText(/Arbiter fee input/);
+        const arbiterFeeValue = "0.1";
+        fireEvent.change(arbiterFeeInput, {
+            target: {
+                value: arbiterFeeValue,
+            },
+        });
+        expect(arbiterFeeInput).toHaveValue(arbiterFeeValue);
+
+        const buyerAddressInput = await screen.findByLabelText(/Buyer address input/);
+        fireEvent.change(buyerAddressInput, {
+            target: {
+                value: buyer.address.toHexString(),
+            },
+        });
+        expect(buyerAddressInput).toHaveValue(buyer.address.toHexString());
+
+        // TODO this test should get the current blockheight and add some constant
+        // Instead of hardcoding "1000".
+        const escrowDeadlineInput = await screen.findByLabelText(/Escrow deadline input/);
+        const escrowDeadlineValue = "1000";
+        fireEvent.change(escrowDeadlineInput, {
+            target: {
+                value: escrowDeadlineValue,
+            },
+        });
+        expect(escrowDeadlineInput).toHaveValue(escrowDeadlineValue);
+
+        const assetInput0 = await screen.findByLabelText(/Asset input 0/);
+        fireEvent.change(assetInput0, {
+            target: {
+                value: ASSETS[0],
+            },
+        });
+        expect(assetInput0).toHaveValue(ASSETS[0]);
+
+        const assetAmount0 = await screen.findByLabelText(/Asset amount input 0/);
+        const assetAmountValue0 = "0.1";
+        fireEvent.change(assetAmount0, {
+            target: {
+                value: assetAmountValue0,
+            },
+        });
+        expect(assetAmount0).toHaveValue()
+
+        const addAssetBtn = await screen.findByLabelText(/Add asset/);
+        expect(addAssetBtn).toBeInTheDocument();
+        await user.click(addAssetBtn);
+
+        const assetInput1 = await screen.findByLabelText(/Asset input 1/);
+        fireEvent.change(assetInput1, {
+            target: {
+                value: ASSETS[1],
+            },
+        });
+        expect(assetInput1).toHaveValue(ASSETS[1]);
+
+        const assetAmount1 = await screen.findByLabelText(/Asset amount input 1/);
+        const assetAmountValue1 = "0.2";
+        fireEvent.change(assetAmount1, {
+            target: {
+                value: assetAmountValue1,
+            },
+        });
+        expect(assetAmount1).toHaveValue(assetAmountValue1);
+    });
+
     it("Should be able to create an escrow", async () => {
         const { user } = renderWithRouter(<App />, {
             route: "/seller",
