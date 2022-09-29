@@ -29,7 +29,7 @@ Contains data structures written for your project.
 Contains enums that are used in `require(..., MyError::SomeError)` statements.
 The enums are split into individual errors e.g. `DepositError`, `OwnerError` etc.
 
-```rust
+```sway
 {{#include ../../code/connect_four/src/errors.sw:error}}
 ```
 
@@ -37,7 +37,7 @@ The enums are split into individual errors e.g. `DepositError`, `OwnerError` etc
 
 Contains structs definitions which are used inside `log()` statements.
 
-```rust
+```sway
 {{#include ../../code/connect_four/src/events.sw:event}}
 ```
 
