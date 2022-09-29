@@ -8,7 +8,7 @@ use data_structures::Record;
 use errors::Errors;
 use interface::NameRegistry;
 use std::{
-    revert::require,
+    revert::{require, revert},
     block::timestamp,
     context::msg_amount,
     context::call_frames::msg_asset_id,
@@ -16,6 +16,7 @@ use std::{
         BASE_ASSET_ID,
     },
     chain::auth::msg_sender,
+    logging::log,
     storage::StorageMap
 };
 
@@ -39,6 +40,45 @@ impl NameRegistry for Contract {
             identity: record.identity,
             owner: record.owner,
         }))
+    }
+
+    #[storage(read)]
+    fn expiry(name: str[8]) -> u64 {
+        match storage.names.get(name) {
+            Option::Some(record) => {
+                record.expiry
+            },
+            None => {
+                log(Errors::NameNotRegistered);
+                revert(0)
+            }
+        }
+    }
+
+    #[storage(read)]
+    fn identity(name: str[8]) -> Identity {
+        match storage.names.get(name) {
+            Option::Some(record) => {
+                record.identity
+            },
+            None => {
+                log(Errors::NameNotRegistered);
+                revert(0)
+            }
+        }
+    }
+
+    #[storage(read)]
+    fn owner(name: str[8]) -> Identity {
+        match storage.names.get(name) {
+            Option::Some(record) => {
+                record.owner
+            },
+            None => {
+                log(Errors::NameNotRegistered);
+                revert(0)
+            }
+        }
     }
 
     #[storage(read, write)]
