@@ -21,14 +21,14 @@ jobs:
         with:
           mdbook-version: "0.4.15"
 
-      - run: mdbook build
+      - run: mdbook build ./.docs/contributing-book
 
       - name: Deploy master
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .docs/contributing-book/book
-          destination_dir: .docs/contributing-book/live-book
+          publish_dir: ./.docs/contributing-book/book
+          destination_dir: live-book
         if: github.ref == 'refs/heads/master'
 
       - name: Get tag
@@ -41,15 +41,15 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .docs/contributing-book/book
+          publish_dir: ./.docs/contributing-book/book
           destination_dir: ${{ steps.branch_name.outputs.BRANCH_NAME }}
         if: startsWith(github.ref, 'refs/tags')
 
       - name: Create latest HTML redirect file
         if: startsWith(github.ref, 'refs/tags')
         run: |
-          mkdir .docs/contributing-book/latest
-          cat > .docs/contributing-book/latest/index.html <<EOF
+          mkdir ./latest
+          cat > ./latest/index.html <<EOF
           <!DOCTYPE html>
           <meta charset="utf-8">
           <meta http-equiv="refresh" content="0; URL=../${{ steps.branch_name.outputs.BRANCH_NAME }}/">
@@ -60,6 +60,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .docs/contributing-book/latest/
-          destination_dir: .docs/contributing-book/latest/
+          publish_dir: ./latest/
+          destination_dir: ./latest/
         if: startsWith(github.ref, 'refs/tags')
