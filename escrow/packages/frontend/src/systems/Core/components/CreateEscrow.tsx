@@ -94,7 +94,9 @@ export const CreateEscrow = () => {
     setShowCreateEscrow(!showCreateEscrow);
   };
 
-  const shouldDisableCreateButton = createEscrowMutation.isLoading;
+  const validate = () => {
+    return !createEscrowMutation.isLoading && arbiter.length && arbiterAsset.length && arbiterFee.length && buyer.length && deadline.length && assets.length;
+  }
 
   return (
     <Flex css={{ flex: "1", justifyContent: "center" }}>
@@ -152,7 +154,7 @@ export const CreateEscrow = () => {
                 assets={assets}
               />
               <Button
-                isDisabled={shouldDisableCreateButton}
+                isDisabled={!validate()}
                 isLoading={createEscrowMutation.isLoading}
                 onPress={() => {
                   createEscrowMutation.mutate();

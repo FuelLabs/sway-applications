@@ -32,7 +32,7 @@ describe("Create Escrow", () => {
     });
 
     // TODO disable the create escrow button unless inputs are valid
-    xit("should disable create escrow button by default", async () => {
+    it("should disable create escrow button by default", async () => {
         const { user } = renderWithRouter(<App />, {
             route: "/seller",
         });
