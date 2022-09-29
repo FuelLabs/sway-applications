@@ -2,8 +2,8 @@ library errors;
 
 pub enum Errors {
     InsufficientPayment: (),
-    SenderNotOwner: (),
     NameNotRegistered: (),
     NameNotExpired: (),
+    SenderNotOwner: (),
     WrongAssetSent: (),
 }
