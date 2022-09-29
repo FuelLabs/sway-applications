@@ -17,16 +17,6 @@ export const AppContext = React.createContext<Maybe<AppContextValue>>(null);
 
 export const useAppContext = () => useContext(AppContext);
 
-export const useWallet = () => {
-  const { wallet } = useContext(AppContext)!;
-  return wallet;
-};
-
-export const useWalletList = () => {
-  const { wallets } = useContext(AppContext)!;
-  return wallets;
-};
-
 export const AppContextProvider = ({
   children,
 }: PropsWithChildren<unknown>) => {
@@ -73,7 +63,6 @@ export const AppContextProvider = ({
       value={{
         wallets,
         wallet,
-        // contract,
       }}
     >
       {children}
