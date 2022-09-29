@@ -238,25 +238,17 @@ The following sections provide a quickstart guide for navigating the issues in t
 <h2 id="errorssw"><a class="header" href="#errorssw">errors.sw</a></h2>
 <p>Contains enums that are used in <code>require(..., MyError::SomeError)</code> statements.
 The enums are split into individual errors e.g. <code>DepositError</code>, <code>OwnerError</code> etc.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub enum MoveError {
+<pre><code class="language-sway">pub enum MoveError {
     OccupiedSquare: (),
     OutOfBounds: (),
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <h2 id="eventssw"><a class="header" href="#eventssw">events.sw</a></h2>
 <p>Contains structs definitions which are used inside <code>log()</code> statements.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub struct WinnerEvent {
+<pre><code class="language-sway">pub struct WinnerEvent {
     player: Identity,
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <h2 id="interfacesw"><a class="header" href="#interfacesw">interface.sw</a></h2>
 <p>Anything that may be exposed to the user e.g. the Application Binary Interface (<code>ABI</code>) for your contract(s).</p>
 <p>This means that the <code>events.sw</code> may not be necessary and that information can be held with the <code>ABI</code>. Similarly, certain data structures may be more suited to be in the interface.</p>
@@ -338,10 +330,7 @@ Since a contract cannot call its own <code>ABI</code> functions, we need to abst
 <p>ABI documentation refers to documenting the interface that another developer may be interested in using. </p>
 <p>The form of documentation we focus on uses the <code>///</code> syntax as we are interested in documenting the <code>ABI</code> functions.</p>
 <p>In the following snippet, we provide a short description about the functions, the arguments they take, and when the calls will revert. Additional data may be added such as the structure of the return type, how to call the function, etc.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>library interface;
+<pre><code class="language-sway">library interface;
 
 dep data_structures;
 
@@ -376,8 +365,7 @@ abi ConnectFour {
     /// - When a marker is placed into a `column` that is full
     fn move(column: u64, game: Game) -&gt; Game;
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <br>
 <p>In order to know what should be documented, the author of the code should put themselves in the position of a developer that knows nothing about the function and think about what sort of questions they may have.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="comments"><a class="header" href="#comments">Comments</a></h1>
@@ -389,10 +377,7 @@ abi ConnectFour {
 <li><code>Item1</code> has poor comments that do not convey any meaningful information and it's better to not include them at all.</li>
 <li><code>Item2</code> has taken the approach of describing the context in order to provide meaning behind each field</li>
 </ul>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// This is bad. It's repeating the names of the fields which can be easily read
+<pre><code class="language-sway">// This is bad. It's repeating the names of the fields which can be easily read
 pub struct Item1 {
     /// Identifier
     id: u64,
@@ -407,8 +392,7 @@ pub struct Item2 {
     /// The number of remaining items left in production
     quantity: u64,
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="naming-components"><a class="header" href="#naming-components">Naming Components</a></h1>
 <p>Documenting the interface and adding comments is important however the holy grail is writing code that is self-documenting. </p>
 <p>Self-documenting code refers to code that written in such a way that a regular user who has never seen a line of code before could interpret what it is doing.</p>
@@ -457,10 +441,7 @@ pub struct Item2 {
 <p>The following snippets present the style for writing <code>Sway</code>.</p>
 <h2 id="capitalcase"><a class="header" href="#capitalcase">CapitalCase</a></h2>
 <p>Structs, traits, and enums are <code>CapitalCase</code> which means each word has a capitalized first letter. The fields inside a struct should be <a href="documentation/project-quality/documentation/code/style.html#snake_case">snake_case</a> and <code>CapitalCase</code> inside an enum.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>struct MultiSignatureWallet {
+<pre><code class="language-sway">struct MultiSignatureWallet {
     owner_count: u64,
 }
 
@@ -472,56 +453,36 @@ enum DepositError {
     IncorrectAmount: (),
     IncorrectAsset: (),
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <h2 id="snake_case"><a class="header" href="#snake_case">snake_case</a></h2>
 <p>Modules, variables, and functions are <code>snake_case</code> which means that each word is lowercase and separated by an underscore.</p>
 <p>Module name:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>library style_guide;
-<span class="boring">}
-</span></code></pre></pre>
+<pre><code class="language-sway">library style_guide;
+</code></pre>
 <p>Function and variable:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn authorize_user(user: Identity) {
+<pre><code class="language-sway">fn authorize_user(user: Identity) {
     let blacklist_user = false;
     // code
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <h2 id="screaming_snake_case"><a class="header" href="#screaming_snake_case">SCREAMING_SNAKE_CASE</a></h2>
 <p>Constants are <code>SCREAMING_SNAKE_CASE</code> which means that each word in capitalized and separated by an underscore.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>const MAXIMUM_DEPOSIT = 10;
-<span class="boring">}
-</span></code></pre></pre>
+<pre><code class="language-sway">const MAXIMUM_DEPOSIT = 10;
+</code></pre>
 <h2 id="type-annotations"><a class="header" href="#type-annotations">Type Annotations</a></h2>
 <p>When declaring a variable it is possible to annotate it with a type however the compiler can usually infer that information.</p>
 <p>The general approach is to omit a type if the compiler does not throw an error however if it is deemed clearer by the developer to indicate the type then that is also encouraged.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn execute() {
+<pre><code class="language-sway">fn execute() {
     // Avoid unless it's more helpful to annotate
     let executed: bool = false;
 
     // Generally encouraged
     let executed = false;
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <h2 id="getters"><a class="header" href="#getters">Getters</a></h2>
 <p>Getters should not follow the pattern of <code>get_XYZ()</code> and instead should follow <code>XYZ()</code>.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Discouraged style
+<pre><code class="language-sway">// Discouraged style
 fn get_maximum_deposit() -&gt; u64 {
     MAXIMUM_DEPOSIT
 }
@@ -530,8 +491,7 @@ fn get_maximum_deposit() -&gt; u64 {
 fn maximum_deposit() -&gt; u64 {
     MAXIMUM_DEPOSIT
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="specification"><a class="header" href="#specification">Specification</a></h1>
 <p>A specification is a document which outlines the requirements and design of the project. There are many ways to structure a specification and this number only grows when considering the industry and target audience.</p>
 <p>For simplicity, a specification can be broken into two levels of detail and the one you choose depends on your target audiance.</p>

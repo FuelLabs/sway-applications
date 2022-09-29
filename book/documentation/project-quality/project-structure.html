@@ -159,25 +159,17 @@
 <h2 id="errorssw"><a class="header" href="#errorssw">errors.sw</a></h2>
 <p>Contains enums that are used in <code>require(..., MyError::SomeError)</code> statements.
 The enums are split into individual errors e.g. <code>DepositError</code>, <code>OwnerError</code> etc.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub enum MoveError {
+<pre><code class="language-sway">pub enum MoveError {
     OccupiedSquare: (),
     OutOfBounds: (),
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <h2 id="eventssw"><a class="header" href="#eventssw">events.sw</a></h2>
 <p>Contains structs definitions which are used inside <code>log()</code> statements.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub struct WinnerEvent {
+<pre><code class="language-sway">pub struct WinnerEvent {
     player: Identity,
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <h2 id="interfacesw"><a class="header" href="#interfacesw">interface.sw</a></h2>
 <p>Anything that may be exposed to the user e.g. the Application Binary Interface (<code>ABI</code>) for your contract(s).</p>
 <p>This means that the <code>events.sw</code> may not be necessary and that information can be held with the <code>ABI</code>. Similarly, certain data structures may be more suited to be in the interface.</p>

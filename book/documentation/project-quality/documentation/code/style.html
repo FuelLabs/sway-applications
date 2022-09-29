@@ -142,10 +142,7 @@
 <p>The following snippets present the style for writing <code>Sway</code>.</p>
 <h2 id="capitalcase"><a class="header" href="#capitalcase">CapitalCase</a></h2>
 <p>Structs, traits, and enums are <code>CapitalCase</code> which means each word has a capitalized first letter. The fields inside a struct should be <a href="#snake_case">snake_case</a> and <code>CapitalCase</code> inside an enum.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>struct MultiSignatureWallet {
+<pre><code class="language-sway">struct MultiSignatureWallet {
     owner_count: u64,
 }
 
@@ -157,56 +154,36 @@ enum DepositError {
     IncorrectAmount: (),
     IncorrectAsset: (),
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <h2 id="snake_case"><a class="header" href="#snake_case">snake_case</a></h2>
 <p>Modules, variables, and functions are <code>snake_case</code> which means that each word is lowercase and separated by an underscore.</p>
 <p>Module name:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>library style_guide;
-<span class="boring">}
-</span></code></pre></pre>
+<pre><code class="language-sway">library style_guide;
+</code></pre>
 <p>Function and variable:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn authorize_user(user: Identity) {
+<pre><code class="language-sway">fn authorize_user(user: Identity) {
     let blacklist_user = false;
     // code
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <h2 id="screaming_snake_case"><a class="header" href="#screaming_snake_case">SCREAMING_SNAKE_CASE</a></h2>
 <p>Constants are <code>SCREAMING_SNAKE_CASE</code> which means that each word in capitalized and separated by an underscore.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>const MAXIMUM_DEPOSIT = 10;
-<span class="boring">}
-</span></code></pre></pre>
+<pre><code class="language-sway">const MAXIMUM_DEPOSIT = 10;
+</code></pre>
 <h2 id="type-annotations"><a class="header" href="#type-annotations">Type Annotations</a></h2>
 <p>When declaring a variable it is possible to annotate it with a type however the compiler can usually infer that information.</p>
 <p>The general approach is to omit a type if the compiler does not throw an error however if it is deemed clearer by the developer to indicate the type then that is also encouraged.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn execute() {
+<pre><code class="language-sway">fn execute() {
     // Avoid unless it's more helpful to annotate
     let executed: bool = false;
 
     // Generally encouraged
     let executed = false;
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <h2 id="getters"><a class="header" href="#getters">Getters</a></h2>
 <p>Getters should not follow the pattern of <code>get_XYZ()</code> and instead should follow <code>XYZ()</code>.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Discouraged style
+<pre><code class="language-sway">// Discouraged style
 fn get_maximum_deposit() -&gt; u64 {
     MAXIMUM_DEPOSIT
 }
@@ -215,8 +192,7 @@ fn get_maximum_deposit() -&gt; u64 {
 fn maximum_deposit() -&gt; u64 {
     MAXIMUM_DEPOSIT
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 
                     </main>
 

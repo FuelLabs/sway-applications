@@ -146,10 +146,7 @@
 <li><code>Item1</code> has poor comments that do not convey any meaningful information and it's better to not include them at all.</li>
 <li><code>Item2</code> has taken the approach of describing the context in order to provide meaning behind each field</li>
 </ul>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// This is bad. It's repeating the names of the fields which can be easily read
+<pre><code class="language-sway">// This is bad. It's repeating the names of the fields which can be easily read
 pub struct Item1 {
     /// Identifier
     id: u64,
@@ -164,8 +161,7 @@ pub struct Item2 {
     /// The number of remaining items left in production
     quantity: u64,
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 
                     </main>
 

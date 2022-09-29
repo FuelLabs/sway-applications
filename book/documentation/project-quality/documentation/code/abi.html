@@ -141,10 +141,7 @@
 <p>ABI documentation refers to documenting the interface that another developer may be interested in using. </p>
 <p>The form of documentation we focus on uses the <code>///</code> syntax as we are interested in documenting the <code>ABI</code> functions.</p>
 <p>In the following snippet, we provide a short description about the functions, the arguments they take, and when the calls will revert. Additional data may be added such as the structure of the return type, how to call the function, etc.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>library interface;
+<pre><code class="language-sway">library interface;
 
 dep data_structures;
 
@@ -179,8 +176,7 @@ abi ConnectFour {
     /// - When a marker is placed into a `column` that is full
     fn move(column: u64, game: Game) -&gt; Game;
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <br>
 <p>In order to know what should be documented, the author of the code should put themselves in the position of a developer that knows nothing about the function and think about what sort of questions they may have.</p>
 
