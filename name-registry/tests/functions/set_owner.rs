@@ -2,7 +2,7 @@ use crate::utils::*;
 use fuels::prelude::*;
 
 #[tokio::test]
-async fn can_get_owner() {
+async fn can_set_owner() {
     let (instance, _id, wallet) = get_contract_instance().await;
 
     let name = String::from("SwaySway");
