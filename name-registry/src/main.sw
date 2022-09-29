@@ -2,10 +2,17 @@ contract;
 
 dep data_structures;
 dep errors;
+dep events;
 dep interface;
 
 use data_structures::Record;
 use errors::Errors;
+use events::{
+    IdentityChanged,
+    NameRegistered,
+    OwnerChanged,
+    RegistrationExtended,
+}
 use interface::NameRegistry;
 use std::{
     block::timestamp,
@@ -51,13 +58,20 @@ impl NameRegistry for Contract {
         require(duration / 100 * PRICE_PER_HUNDRED <= msg_amount(), Errors::InsufficientPayment);
         require(msg_asset_id() == BASE_ASSET_ID, Errors::WrongAssetSent);
 
-        let record = storage.names.get(name).unwrap();
+        let old_record = storage.names.get(name).unwrap();
+        let new_record = Record {
+            expiry: old_record.expiry + duration,
+            identity: old_record.identity,
+            owner: old_record.owner,
+        }
 
-        storage.names.insert(name, Option::Some(Record {
-            expiry: record.expiry + duration,
-            identity: record.identity,
-            owner: record.owner,
-        }))
+        storage.names.insert(name, Option::Some(new_record))
+
+        log(RegistrationExtended {
+            duration,
+            name,
+            new_expiry: new_record.expiry
+        })
     }
 
     #[storage(read)]
@@ -96,35 +110,59 @@ impl NameRegistry for Contract {
         require(duration / 100 * PRICE_PER_HUNDRED <= msg_amount(), Errors::InsufficientPayment);
         require(msg_asset_id() == BASE_ASSET_ID, Errors::WrongAssetSent);
 
-        storage.names.insert(name, Option::Some(Record {
+        let record = Record {
             expiry: timestamp() + duration,
             identity: msg_sender().unwrap(),
             owner: msg_sender().unwrap(),
-        }));
+        }
+
+        storage.names.insert(name, Option::Some(record));
+
+        log(NameRegistered {
+            expiry: record.expiry,
+            name,
+            owner: record.owner,
+        })
     }
     #[storage(read, write)]
     fn set_identity(name: str[8], identity: Identity) {
         require(storage.names.get(name).is_some(), Errors::NameNotRegistered);
-        let record = storage.names.get(name).unwrap();
-        require(record.owner == msg_sender().unwrap(), Errors::SenderNotOwner);
+        let old_record = storage.names.get(name).unwrap();
+        require(old_record.owner == msg_sender().unwrap(), Errors::SenderNotOwner);
 
-        storage.names.insert(name, Option::Some(Record {
-            expiry: record.expiry,
+        let new_record = Record {
+            expiry: old_record.expiry,
             identity,
-            owner: record.owner,
-        }))
+            owner: old_record.owner,
+        }
+
+        storage.names.insert(name, Option::Some(new_record))
+
+        log(IdentityChanged {
+            name, 
+            new_identity: new_record.identity,
+            old_identity: old_record.identity,
+        })
     }
 
     #[storage(read, write)]
     fn set_owner(name: str[8], new_owner: Identity) {
         require(storage.names.get(name).is_some(), Errors::NameNotRegistered);
-        let record = storage.names.get(name).unwrap();
+        let old_record = storage.names.get(name).unwrap();
         require(record.owner == msg_sender().unwrap(), Errors::SenderNotOwner);
 
-        storage.names.insert(name, Option::Some(Record {
-            expiry: record.expiry,
-            identity: record.identity,
+        let new_record = Record {
+            expiry: old_record.expiry,
+            identity: old_record.identity,
             owner: new_owner,
-        }))
+        }
+
+        storage.names.insert(name, Option::Some(new_record))
+
+        log(OwnerChanged {
+            name,
+            new_owner: new_record.owner,
+            old_owner: old_record.owner,
+        })
     }
 }
