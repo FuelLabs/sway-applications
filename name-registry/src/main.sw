@@ -36,9 +36,9 @@ impl NameRegistry for Contract {
         let record = storage.names.get(name).unwrap();
 
         storage.names.insert(name, Option::Some(Record {
-            owner: record.owner,
-            identity: record.identity,
             expiry: record.expiry + duration,
+            identity: record.identity,
+            owner: record.owner,
         }))
     }
 
@@ -53,9 +53,9 @@ impl NameRegistry for Contract {
         require(msg_asset_id() == BASE_ASSET_ID, Errors::WrongAssetSent);
 
         storage.names.insert(name, Option::Some(Record {
-            owner: msg_sender().unwrap(),
-            identity: msg_sender().unwrap(),
             expiry: timestamp() + duration,
+            identity: msg_sender().unwrap(),
+            owner: msg_sender().unwrap(),
         }));
     }    
 
@@ -66,9 +66,9 @@ impl NameRegistry for Contract {
         require(record.owner == msg_sender().unwrap(), Errors::SenderNotOwner);
 
         storage.names.insert(name, Option::Some(Record {
-            owner: record.owner,
-            identity,
             expiry: record.expiry,
+            identity,
+            owner: record.owner,
         }))
     }
 
@@ -79,9 +79,9 @@ impl NameRegistry for Contract {
         require(record.owner == msg_sender().unwrap(), Errors::SenderNotOwner);
 
         storage.names.insert(name, Option::Some(Record {
-            owner: new_owner,
-            identity: record.identity,
             expiry: record.expiry,
+            identity: record.identity,
+            owner: new_owner,
         }))
     }
 }
