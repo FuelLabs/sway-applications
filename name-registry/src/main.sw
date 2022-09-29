@@ -14,7 +14,6 @@ use std::{
     context::call_frames::msg_asset_id,
     constants::{
         BASE_ASSET_ID,
-        ZERO_B256,
     },
     chain::auth::msg_sender,
     storage::StorageMap
