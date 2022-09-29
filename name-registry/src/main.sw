@@ -21,9 +21,11 @@ use std::{
 };
 
 storage {
+    /// A mapping of names to an option of records, with a none representing an unregistered name
     names: StorageMap<str[8], Option<Record>> = StorageMap {},
 }
 
+/// The amount to charge per hundred seconds per name
 const PRICE_PER_HUNDRED: u64 = 1;
 
 impl NameRegistry for Contract {
