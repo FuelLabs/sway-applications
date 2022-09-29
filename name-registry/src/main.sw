@@ -12,7 +12,7 @@ use std::chain::auth::msg_sender;
 
 pub struct Record {
     owner: Identity,
-    address: Identity,
+    identity: Identity,
     expiry: u64,
 }
 
@@ -21,6 +21,10 @@ abi MyContract {
     fn register(name: str[8], duration: u64);
     #[storage(read, write)]
     fn extend(name: str[8], duration: u64);
+    #[storage(read, write)]
+    fn set_identity(name: str[8], identity: Identity);
+    #[storage(read, write)]
+    fn set_owner(name: str[8], new_owner: Identity);
 }
 
 storage {
@@ -42,7 +46,7 @@ impl MyContract for Contract {
 
         storage.names.insert(name, Option::Some(Record {
             owner: msg_sender().unwrap(),
-            address: msg_sender().unwrap(),
+            identity: msg_sender().unwrap(),
             expiry: timestamp() + duration,
         }));
     }
@@ -56,10 +60,34 @@ impl MyContract for Contract {
 
         storage.names.insert(name, Option::Some(Record {
             owner: record.owner,
-            address: record.address,
+            identity: record.identity,
             expiry: record.expiry + duration,
         }))
     }
 
-    
+    #[storage(read, write)]
+    fn set_identity(name: str[8], identity: Identity) {
+        assert(storage.names.get(name).is_some());
+        let record = storage.names.get(name).unwrap();
+        assert(record.owner == msg_sender().unwrap());
+
+        storage.names.insert(name, Option::Some(Record {
+            owner: record.owner,
+            identity,
+            expiry: record.expiry,
+        }))
+    }
+
+    #[storage(read, write)]
+    fn set_owner(name: str[8], new_owner: Identity) {
+        assert(storage.names.get(name).is_some());
+        let record = storage.names.get(name).unwrap();
+        assert(record.owner == msg_sender().unwrap());
+
+        storage.names.insert(name, Option::Some(Record {
+            owner: new_owner,
+            identity: record.identity,
+            expiry: record.expiry,
+        }))
+    }
 }
