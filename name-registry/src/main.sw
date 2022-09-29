@@ -30,31 +30,19 @@ const PRICE_PER_HUNDRED: u64 = 1;
 impl MyContract for Contract {
     #[storage(read, write)]
     fn register(name: str[8], duration: u64) {
-        match storage.names.get(name) {
-            Option::Some(record) => {
-                if timestamp() > record.expiry {
-                    let time_diff = duration - timestamp();
-                    assert(time_diff/100 * PRICE_PER_HUNDRED <= msg_amount());
-                    assert(msg_asset_id() == BASE_ASSET_ID);
-
-                    storage.names.insert(name, Option::Some(Record {
-                        owner: msg_sender().unwrap(),
-                        address: msg_sender().unwrap(),
-                        expiry: timestamp() + duration,
-                    }));
-                }
-            }, 
-            Option::None => {
-                let time_diff = duration - timestamp();
-                assert(time_diff/100 * PRICE_PER_HUNDRED <= msg_amount());
-                assert(msg_asset_id() == BASE_ASSET_ID);
-
-                storage.names.insert(name, Option::Some(Record {
-                    owner: msg_sender().unwrap(),
-                    address: msg_sender().unwrap(),
-                    expiry: timestamp() + duration,
-                }));
-            }
+        if storage.names.get(name).is_some() { 
+            let record = storage.names.get(name).unwrap();
+            assert(timestamp() > record.expiry);
         }
+
+        let time_diff = duration - timestamp();
+        assert(time_diff/100 * PRICE_PER_HUNDRED <= msg_amount());
+        assert(msg_asset_id() == BASE_ASSET_ID);
+
+        storage.names.insert(name, Option::Some(Record {
+            owner: msg_sender().unwrap(),
+            address: msg_sender().unwrap(),
+            expiry: timestamp() + duration,
+        }));
     }
 }
