@@ -11,6 +11,6 @@ The following snippet looks at two items being documented using the comment synt
 - `Item1` has poor comments that do not convey any meaningful information and it's better to not include them at all.
 - `Item2` has taken the approach of describing the context in order to provide meaning behind each field
 
-```rust
+```sway
 {{#include ../../../../code/bad_documentation/src/lib.sw:data_structures}}
 ```
