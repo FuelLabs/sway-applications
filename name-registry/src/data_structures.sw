@@ -8,5 +8,5 @@ pub struct Record {
     /// The identity to which the name resolves to
     identity: Identity,
     /// The identity which controls the name, and can change the identity and owner
-    owner: Identity, 
+    owner: Identity,
 }

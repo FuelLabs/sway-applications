@@ -3,19 +3,6 @@ library interface;
 use std::identity::Identity;
 
 abi NameRegistry {
-    /// Extends the registration duration for the name 
-    /// 
-    /// # Arguments
-    /// 
-    /// * `name` - The name to extend the duration of
-    /// * `duration` - The duration to extend by
-    /// 
-    /// # Reverts
-    /// 
-    /// Reverts if the name is not registered, if the payment is not sufficient for the duration, or if the wrong asset is sent
-    #[storage(read, write)]
-    fn extend(name: str[8], duration: u64);
-
     /// Returns the expiry timestamp of the given name
     /// 
     /// # Arguments
@@ -28,6 +15,19 @@ abi NameRegistry {
     #[storage(read)]
     fn expiry(name: str[8]) -> u64;
 
+    /// Extends the registration duration for the name
+    /// 
+    /// # Arguments
+    /// 
+    /// * `name` - The name to extend the duration of
+    /// * `duration` - The duration to extend by
+    /// 
+    /// # Reverts
+    /// 
+    /// Reverts if the name is not registered, if the payment is not sufficient for the duration, or if the wrong asset is sent
+    #[storage(read, write)]
+    fn extend(name: str[8], duration: u64);
+
     /// Returns the identity which the name resolves to
     /// 
     /// # Arguments
@@ -39,7 +39,7 @@ abi NameRegistry {
     /// Reverts if the name is not registered
     #[storage(read)]
     fn identity(name: str[8]) -> Identity;
-    
+
     /// Returns the owner of the name
     /// 
     /// # Arguments
@@ -51,8 +51,8 @@ abi NameRegistry {
     /// Reverts if the name is not registered
     #[storage(read)]
     fn owner(name: str[8]) -> Identity;
-    
-    /// Registers the name and assigns the sender as the owner and identity to resolve to 
+
+    /// Registers the name and assigns the sender as the owner and identity to resolve to
     /// 
     /// # Arguments
     /// 
@@ -64,7 +64,7 @@ abi NameRegistry {
     /// Reverts if the name is registered and not expired yet, if the payment is insufficient, or if the wrong asset is sent
     #[storage(read, write)]
     fn register(name: str[8], duration: u64);
-    
+
     /// Sets the identity to which the name will resolve to
     /// 
     /// # Arguments
@@ -77,7 +77,7 @@ abi NameRegistry {
     /// Reverts if the name is registered, or if the sender is not the owner of the name
     #[storage(read, write)]
     fn set_identity(name: str[8], identity: Identity);
-    
+
     /// Changes the owner of the name
     /// 
     /// # Arguments

@@ -8,16 +8,19 @@ use data_structures::Record;
 use errors::Errors;
 use interface::NameRegistry;
 use std::{
-    revert::{require, revert},
     block::timestamp,
-    context::msg_amount,
-    context::call_frames::msg_asset_id,
+    chain::auth::msg_sender,
     constants::{
         BASE_ASSET_ID,
     },
-    chain::auth::msg_sender,
+    context::call_frames::msg_asset_id,
+    context::msg_amount,
     logging::log,
-    storage::StorageMap
+    revert::{
+        require,
+        revert,
+    },
+    storage::StorageMap,
 };
 
 storage {
@@ -29,21 +32,6 @@ storage {
 const PRICE_PER_HUNDRED: u64 = 1;
 
 impl NameRegistry for Contract {
-    #[storage(read, write)]
-    fn extend(name: str[8], duration: u64) {
-        require(storage.names.get(name).is_some(), Errors::NameNotRegistered);
-        require(duration/100 * PRICE_PER_HUNDRED <= msg_amount(), Errors::InsufficientPayment);
-        require(msg_asset_id() == BASE_ASSET_ID, Errors::WrongAssetSent);
-
-        let record = storage.names.get(name).unwrap();
-
-        storage.names.insert(name, Option::Some(Record {
-            expiry: record.expiry + duration,
-            identity: record.identity,
-            owner: record.owner,
-        }))
-    }
-
     #[storage(read)]
     fn expiry(name: str[8]) -> u64 {
         match storage.names.get(name) {
@@ -55,6 +43,21 @@ impl NameRegistry for Contract {
                 revert(0)
             }
         }
+    }
+
+    #[storage(read, write)]
+    fn extend(name: str[8], duration: u64) {
+        require(storage.names.get(name).is_some(), Errors::NameNotRegistered);
+        require(duration / 100 * PRICE_PER_HUNDRED <= msg_amount(), Errors::InsufficientPayment);
+        require(msg_asset_id() == BASE_ASSET_ID, Errors::WrongAssetSent);
+
+        let record = storage.names.get(name).unwrap();
+
+        storage.names.insert(name, Option::Some(Record {
+            expiry: record.expiry + duration,
+            identity: record.identity,
+            owner: record.owner,
+        }))
     }
 
     #[storage(read)]
@@ -85,12 +88,12 @@ impl NameRegistry for Contract {
 
     #[storage(read, write)]
     fn register(name: str[8], duration: u64) {
-        if storage.names.get(name).is_some() { 
+        if storage.names.get(name).is_some() {
             let record = storage.names.get(name).unwrap();
             require(timestamp() > record.expiry, Errors::NameNotExpired);
         }
 
-        require(duration/100 * PRICE_PER_HUNDRED <= msg_amount(), Errors::InsufficientPayment);
+        require(duration / 100 * PRICE_PER_HUNDRED <= msg_amount(), Errors::InsufficientPayment);
         require(msg_asset_id() == BASE_ASSET_ID, Errors::WrongAssetSent);
 
         storage.names.insert(name, Option::Some(Record {
@@ -98,8 +101,7 @@ impl NameRegistry for Contract {
             identity: msg_sender().unwrap(),
             owner: msg_sender().unwrap(),
         }));
-    }    
-
+    }
     #[storage(read, write)]
     fn set_identity(name: str[8], identity: Identity) {
         require(storage.names.get(name).is_some(), Errors::NameNotRegistered);
