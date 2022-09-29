@@ -19,6 +19,8 @@ pub struct Record {
 abi MyContract {
     #[storage(read, write)]
     fn register(name: str[8], duration: u64);
+    #[storage(read, write)]
+    fn extend(name: str[8], duration: u64);
 }
 
 storage {
@@ -35,8 +37,7 @@ impl MyContract for Contract {
             assert(timestamp() > record.expiry);
         }
 
-        let time_diff = duration - timestamp();
-        assert(time_diff/100 * PRICE_PER_HUNDRED <= msg_amount());
+        assert(duration/100 * PRICE_PER_HUNDRED <= msg_amount());
         assert(msg_asset_id() == BASE_ASSET_ID);
 
         storage.names.insert(name, Option::Some(Record {
@@ -45,4 +46,20 @@ impl MyContract for Contract {
             expiry: timestamp() + duration,
         }));
     }
+
+    #[storage(read, write)]
+    fn extend(name: str[8], duration: u64) {
+        assert(storage.names.get(name).is_some());
+        assert(duration/100 * PRICE_PER_HUNDRED <= msg_amount());
+
+        let record = storage.names.get(name).unwrap();
+
+        storage.names.insert(name, Option::Some(Record {
+            owner: record.owner,
+            address: record.address,
+            expiry: record.expiry + duration,
+        }))
+    }
+
+    
 }
