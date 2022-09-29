@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import toast from 'react-hot-toast';
 import { useQueryClient, useMutation } from 'react-query';
 
-import { useWallet } from '../context/AppContext';
+import { useWallet } from './useWallet';
 import { walletIndexAtom } from '../jotai';
 import { txFeedback } from '../utils/feedback';
 

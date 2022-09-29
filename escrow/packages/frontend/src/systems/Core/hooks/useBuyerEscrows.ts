@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
 
-import { useWallet } from '../context/AppContext';
+import { useWallet } from './useWallet';
 
 import { useContract } from './useContract';
 import { useEscrows } from './useEscrows';

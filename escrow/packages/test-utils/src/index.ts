@@ -1,4 +1,4 @@
-export { act, fireEvent, screen, waitFor, RenderResult } from '@testing-library/react';
+export { act, fireEvent, screen, waitFor, RenderResult, cleanup } from '@testing-library/react';
 export * from './accessibility';
 export { blur, focus } from './focus';
 export * from './hooks';

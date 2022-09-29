@@ -4,7 +4,7 @@ import type React from 'react';
 import toast from 'react-hot-toast';
 import { useMutation, useQueryClient } from 'react-query';
 
-import { useWallet } from '../context/AppContext';
+import { useWallet } from './useWallet';
 import { walletIndexAtom } from '../jotai';
 import { txFeedback } from '../utils/feedback';
 import { contractCheck } from '../utils/helpers';

@@ -1,5 +1,5 @@
 import { ESCROW_ID } from '../../../config';
-import { useWallet } from '../context/AppContext';
+import { useWallet } from './useWallet';
 
 import { EscrowAbi__factory } from '../../../types/contracts';
 

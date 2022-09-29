@@ -1,7 +1,7 @@
 import type { BigNumberish } from 'fuels';
 import { useQuery } from 'react-query';
 
-import { useWallet } from '../context/AppContext';
+import { useWallet } from './useWallet';
 
 import { useContract } from './useContract';
 

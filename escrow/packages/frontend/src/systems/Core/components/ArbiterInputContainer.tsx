@@ -8,6 +8,9 @@ interface Props {
   arbiterAddress: string;
   asset: string;
   feeAmount: string | undefined;
+  addressLabel: string | undefined;
+  assetLabel: string | undefined;
+  feeLabel: string | undefined;
 }
 
 export const ArbiterInputContainer = (props: Props) => {
@@ -22,7 +25,7 @@ export const ArbiterInputContainer = (props: Props) => {
           type="text"
           onChange={(e) => props.onArbiterAddressChange(e)}
           css={{ font: "$sans" }}
-          aria-label="Arbiter address input"
+          aria-label={props.addressLabel}
         />
       </Input>
       <Input css={{ alignSelf: "stretch" }}>
@@ -34,7 +37,7 @@ export const ArbiterInputContainer = (props: Props) => {
           type="text"
           onChange={(e) => props.onAssetIdChange(e)}
           css={{ font: "$sans" }}
-          aria-label="Arbiter asset input"
+          aria-label={props.assetLabel}
         />
       </Input>
       <Input css={{ alignSelf: "stretch" }}>
@@ -44,7 +47,7 @@ export const ArbiterInputContainer = (props: Props) => {
           inputMode="decimal"
           value={props.feeAmount}
           onChange={(e) => props.onFeeChange(e)}
-          aria-label="Arbiter fee input"
+          aria-label={props.feeLabel}
         />
       </Input>
     </>

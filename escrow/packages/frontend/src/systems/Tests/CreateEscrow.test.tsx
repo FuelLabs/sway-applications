@@ -1,8 +1,8 @@
 import { ASSETS, DECIMAL_PRECISION } from "../../config";
 import { TestUtils, Wallet } from "fuels";
-import { screen, renderWithRouter, fireEvent, render } from "@escrow/test-utils";
+import { screen, renderWithRouter, fireEvent } from "@escrow/test-utils";
 import { App } from "../../App";
-import { createWallet, mockUseWalletList } from "../Core/hooks/__mocks__/useWallet";
+import { createWallet, mockUseWallet, mockUseWalletList } from "../Core/hooks/__mocks__/useWallet";
 
 let wallets: Wallet[] = [];
 let numWallets = 4;
@@ -15,10 +15,15 @@ beforeAll(async () => {
         const wallet = createWallet();
         wallets.push(wallet);
     }
+    mockUseWallet(wallets[0]);
     mockUseWalletList(wallets);
-    for (const wallet of wallets) {
+    // for (const wallet of wallets) {
+    //     await TestUtils.seedWallet(wallet, coins);
+    // }
+    await wallets.reduce(async (promise, wallet) => {
+        await promise;
         await TestUtils.seedWallet(wallet, coins);
-    }
+    }, Promise.resolve());
 });
 
 describe("Create Escrow", () => {
@@ -27,7 +32,7 @@ describe("Create Escrow", () => {
     });
 
     // TODO disable the create escrow button unless inputs are valid
-    it("should disable create escrow button by default", async () => {
+    xit("should disable create escrow button by default", async () => {
         const { user } = renderWithRouter(<App />, {
             route: "/seller",
         });
@@ -46,7 +51,8 @@ describe("Create Escrow", () => {
             route: "/seller",
         });
 
-        const seller = wallets[0];
+        //screen.debug();
+
         const arbiter = wallets[1];
         const buyer = wallets[2];
 
@@ -54,7 +60,7 @@ describe("Create Escrow", () => {
         expect(showCreateEscrowBtn).toBeInTheDocument();
         await user.click(showCreateEscrowBtn);
 
-        const arbiterAddressInput = await screen.findByLabelText(/Arbiter address input/);
+        const arbiterAddressInput = await screen.findByLabelText(/Create arbiter address input/);
         fireEvent.change(arbiterAddressInput, {
             target: {
                 value: arbiter.address.toHexString(),
@@ -62,15 +68,15 @@ describe("Create Escrow", () => {
         });
         expect(arbiterAddressInput).toHaveValue(arbiter.address.toHexString());
 
-        const arbiterAssetInput = await screen.findByLabelText(/Arbiter asset input/);
+        const arbiterAssetInput = await screen.findByLabelText(/Create arbiter asset input/);
         fireEvent.change(arbiterAssetInput, {
             target: {
                 value: ASSETS[0]
             },
         });
-        expect(arbiterAddressInput).toHaveValue(ASSETS[0]);
+        expect(arbiterAssetInput).toHaveValue(ASSETS[0]);
 
-        const arbiterFeeInput = await screen.findByLabelText(/Arbiter fee input/);
+        const arbiterFeeInput = await screen.findByLabelText(/Create arbiter fee input/);
         const arbiterFeeValue = "0.1";
         fireEvent.change(arbiterFeeInput, {
             target: {
@@ -142,7 +148,6 @@ describe("Create Escrow", () => {
             route: "/seller",
         });
 
-        const seller = wallets[0];
         const arbiter = wallets[1];
         const buyer = wallets[2];
 
@@ -150,21 +155,21 @@ describe("Create Escrow", () => {
         expect(showCreateEscrowBtn).toBeInTheDocument();
         await user.click(showCreateEscrowBtn);
 
-        const arbiterAddressInput = await screen.findByLabelText(/Arbiter address input/);
+        const arbiterAddressInput = await screen.findByLabelText(/Create arbiter address input/);
         fireEvent.change(arbiterAddressInput, {
             target: {
                 value: arbiter.address.toHexString(),
             },
         });
 
-        const arbiterAssetInput = await screen.findByLabelText(/Arbiter asset input/);
+        const arbiterAssetInput = await screen.findByLabelText(/Create arbiter asset input/);
         fireEvent.change(arbiterAssetInput, {
             target: {
                 value: ASSETS[0]
             },
         });
 
-        const arbiterFeeInput = await screen.findByLabelText(/Arbiter fee input/);
+        const arbiterFeeInput = await screen.findByLabelText(/Create arbiter fee input/);
         fireEvent.change(arbiterFeeInput, {
             target: {
                 value: "0.1",
@@ -222,5 +227,24 @@ describe("Create Escrow", () => {
         const submitBtn = await screen.findByLabelText(/Create escrow/);
         expect(submitBtn).toBeInTheDocument();
         await user.click(submitBtn);
+    });
+
+    // TODO handle this input edge case
+    xit("should show '0.' if only '.' is typed in the input", async () => {
+        const { user } = renderWithRouter(<App />, {
+            route: "/seller",
+        });
+
+        const showCreateEscrowBtn = await screen.findByLabelText(/Show create escrow/);
+        expect(showCreateEscrowBtn).toBeInTheDocument();
+        await user.click(showCreateEscrowBtn);
+
+        const arbiterFeeInput = await screen.findByLabelText(/Arbiter fee input/);
+        fireEvent.change(arbiterFeeInput, {
+            target: {
+                value: ".",
+            },
+        });
+        expect(await screen.findByLabelText(/Arbiter fee input/)).toHaveValue("0.");
     });
 });

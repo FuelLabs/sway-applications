@@ -7,7 +7,7 @@
     "build": "tsc && vite build",
     "postinstall": "sh ./scripts/postinstall.sh",
     "preview": "vite preview",
-    "test": "jest --runInBand",
+    "test": "jest --verbose --runInBand",
     "wallets:init": "pnpm exec ts-node ./scripts/wallets-init",
     "xstate:typegen": "xstate typegen 'src/**/*.ts?(x)'",
     "xstate:typegen:watch": "xstate typegen 'src/**/*.ts?(x)' --watch"

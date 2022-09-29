@@ -96,7 +96,6 @@ export const CreateEscrow = () => {
 
   const shouldDisableCreateButton = createEscrowMutation.isLoading;
 
-  // TODO fix create escrow button icon
   return (
     <Flex css={{ flex: "1", justifyContent: "center" }}>
       <Flex direction="column">
@@ -120,6 +119,9 @@ export const CreateEscrow = () => {
                 arbiterAddress={arbiter}
                 asset={arbiterAsset}
                 feeAmount={arbiterFee}
+                addressLabel="Create arbiter address input"
+                assetLabel="Create arbiter asset input"
+                feeLabel="Create arbiter fee input"
               />
               <Input css={{ alignSelf: "stretch" }}>
                 <Input.Field

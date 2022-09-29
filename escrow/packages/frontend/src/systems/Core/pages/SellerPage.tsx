@@ -76,6 +76,9 @@ export default function SellerPage() {
                       arbiterAddress={arbiter}
                       asset={arbiterAsset}
                       feeAmount={arbiterFee}
+                      addressLabel="Propose arbiter address input"
+                      assetLabel="Propose arbiter asset input"
+                      feeLabel="Propose arbiter fee input"
                     />
                     <Button onPress={() => proposeArbiterMutation.mutate()}>
                       Propose Arbiter

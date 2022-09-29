@@ -3,7 +3,7 @@ import { bn } from 'fuels';
 import toast from 'react-hot-toast';
 import { useMutation, useQueryClient } from 'react-query';
 
-import { useWallet } from '../context/AppContext';
+import { useWallet } from './useWallet';
 import { txFeedback } from '../utils/feedback';
 import { contractCheck } from '../utils/helpers';
 

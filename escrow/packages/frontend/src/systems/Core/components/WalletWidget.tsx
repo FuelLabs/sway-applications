@@ -9,7 +9,8 @@ import type { ChangeEvent } from "react";
 import toast from "react-hot-toast";
 import { FaRegCopy } from "react-icons/fa";
 
-import { useWallet, useWalletList } from "../context/AppContext";
+import { useWallet } from "../hooks/useWallet";
+import { useWalletList } from "../hooks/useWalletList";
 import { showBalancesAtom, walletIndexAtom } from "../jotai";
 
 import { Dropdown } from "./Dropdown";

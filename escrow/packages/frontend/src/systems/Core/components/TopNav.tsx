@@ -2,7 +2,7 @@ import { Box, Button, Container, Stack } from "@fuel-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { Pages } from "../../../types";
-import { useWallet } from "../context/AppContext";
+import { useWallet } from "../hooks/useWallet";
 
 import { WalletWidget } from "./WalletWidget";
 
