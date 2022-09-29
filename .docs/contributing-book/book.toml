@@ -1,0 +1,16 @@
+[book]
+authors = ["Fuel Labs <contact@fuel.sh>"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Contributing to Sway Applications"
+
+[output.html]
+git-repository-url = "https://github.com/FuelLabs/sway-applications"
+
+[output.html.playground]
+runnable = false
+
+[output.html.fold]
+enable = true
+level = 100     # Allow them to fold but keep it all visible as the default 
