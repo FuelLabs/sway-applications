@@ -7,12 +7,7 @@ dep interface;
 
 use data_structures::Record;
 use errors::Errors;
-use events::{
-    IdentityChanged,
-    NameRegistered,
-    OwnerChanged,
-    RegistrationExtended,
-};
+use events::{IdentityChanged, NameRegistered, OwnerChanged, RegistrationExtended};
 use interface::NameRegistry;
 use std::{
     block::timestamp,
@@ -70,7 +65,7 @@ impl NameRegistry for Contract {
         log(RegistrationExtended {
             duration,
             name,
-            new_expiry: new_record.expiry
+            new_expiry: new_record.expiry,
         });
     }
 
@@ -139,7 +134,7 @@ impl NameRegistry for Contract {
         storage.names.insert(name, Option::Some(new_record));
 
         log(IdentityChanged {
-            name, 
+            name,
             new_identity: new_record.identity,
             old_identity: old_record.identity,
         });

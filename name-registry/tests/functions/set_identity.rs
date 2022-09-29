@@ -39,10 +39,14 @@ mod failing {
 
         register(&instance, &name, 5000).await;
 
-
         let wallet2 = WalletUnlocked::new_random(None);
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
-        set_identity(&instance._with_wallet(wallet2).unwrap(), &name, wallet_identity2.clone()).await;
+        set_identity(
+            &instance._with_wallet(wallet2).unwrap(),
+            &name,
+            wallet_identity2.clone(),
+        )
+        .await;
     }
 }

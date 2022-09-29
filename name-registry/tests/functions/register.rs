@@ -7,7 +7,7 @@ mod passing {
         let name = String::from("SwaySway");
 
         register(&instance, &name, 5000).await;
-    }  
+    }
 }
 
 mod failing {

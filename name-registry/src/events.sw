@@ -3,7 +3,7 @@ library events;
 use std::identity::Identity;
 
 pub struct IdentityChanged {
-    name: str[8], 
+    name: str[8],
     new_identity: Identity,
     old_identity: Identity,
 }
