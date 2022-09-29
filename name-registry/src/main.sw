@@ -12,7 +12,7 @@ use events::{
     NameRegistered,
     OwnerChanged,
     RegistrationExtended,
-}
+};
 use interface::NameRegistry;
 use std::{
     block::timestamp,
@@ -63,15 +63,15 @@ impl NameRegistry for Contract {
             expiry: old_record.expiry + duration,
             identity: old_record.identity,
             owner: old_record.owner,
-        }
+        };
 
-        storage.names.insert(name, Option::Some(new_record))
+        storage.names.insert(name, Option::Some(new_record));
 
         log(RegistrationExtended {
             duration,
             name,
             new_expiry: new_record.expiry
-        })
+        });
     }
 
     #[storage(read)]
@@ -114,7 +114,7 @@ impl NameRegistry for Contract {
             expiry: timestamp() + duration,
             identity: msg_sender().unwrap(),
             owner: msg_sender().unwrap(),
-        }
+        };
 
         storage.names.insert(name, Option::Some(record));
 
@@ -122,7 +122,7 @@ impl NameRegistry for Contract {
             expiry: record.expiry,
             name,
             owner: record.owner,
-        })
+        });
     }
     #[storage(read, write)]
     fn set_identity(name: str[8], identity: Identity) {
@@ -134,35 +134,35 @@ impl NameRegistry for Contract {
             expiry: old_record.expiry,
             identity,
             owner: old_record.owner,
-        }
+        };
 
-        storage.names.insert(name, Option::Some(new_record))
+        storage.names.insert(name, Option::Some(new_record));
 
         log(IdentityChanged {
             name, 
             new_identity: new_record.identity,
             old_identity: old_record.identity,
-        })
+        });
     }
 
     #[storage(read, write)]
     fn set_owner(name: str[8], new_owner: Identity) {
         require(storage.names.get(name).is_some(), Errors::NameNotRegistered);
         let old_record = storage.names.get(name).unwrap();
-        require(record.owner == msg_sender().unwrap(), Errors::SenderNotOwner);
+        require(old_record.owner == msg_sender().unwrap(), Errors::SenderNotOwner);
 
         let new_record = Record {
             expiry: old_record.expiry,
             identity: old_record.identity,
             owner: new_owner,
-        }
+        };
 
-        storage.names.insert(name, Option::Some(new_record))
+        storage.names.insert(name, Option::Some(new_record));
 
         log(OwnerChanged {
             name,
             new_owner: new_record.owner,
             old_owner: old_record.owner,
-        })
+        });
     }
 }
