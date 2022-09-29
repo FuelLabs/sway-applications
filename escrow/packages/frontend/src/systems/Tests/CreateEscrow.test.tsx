@@ -17,9 +17,6 @@ beforeAll(async () => {
     }
     mockUseWallet(wallets[0]);
     mockUseWalletList(wallets);
-    // for (const wallet of wallets) {
-    //     await TestUtils.seedWallet(wallet, coins);
-    // }
     await wallets.reduce(async (promise, wallet) => {
         await promise;
         await TestUtils.seedWallet(wallet, coins);
