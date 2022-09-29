@@ -47,8 +47,6 @@ describe("Create Escrow", () => {
             route: "/seller",
         });
 
-        //screen.debug();
-
         const arbiter = wallets[1];
         const buyer = wallets[2];
 
