@@ -17,7 +17,6 @@ mod passing {
 
         assert_eq!(old_expiry + 5000, new_expiry);
     }
-
 }
 
 mod failing {
