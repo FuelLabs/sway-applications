@@ -21,6 +21,7 @@ export function TopNav() {
             variant={location.pathname === Pages.seller ? undefined : "ghost"}
             leftIcon="Package"
             onPress={() => navigate(Pages.seller)}
+            aria-label="Go to seller page"
           >
             Seller
           </Button>
@@ -28,6 +29,7 @@ export function TopNav() {
             variant={location.pathname === Pages.buyer ? undefined : "ghost"}
             leftIcon="Money"
             onPress={() => navigate(Pages.buyer)}
+            aria-label="Go to buyer page"
           >
             Buyer
           </Button>
@@ -35,6 +37,7 @@ export function TopNav() {
             variant={location.pathname === Pages.arbiter ? undefined : "ghost"}
             leftIcon="Scales"
             onPress={() => navigate(Pages.arbiter)}
+            aria-label="Go to arbiter page"
           >
             Arbiter
           </Button>

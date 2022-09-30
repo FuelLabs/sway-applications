@@ -52,7 +52,10 @@ export default function BuyerPage() {
                     0,
                     4
                   )}...${arbiterProposal.asset.value.slice(-4)}`}</div>
-                  <Button onPress={() => acceptArbiterMutation.mutate()}>
+                  <Button
+                    aria-label="Accept arbiter button"
+                    onPress={() => acceptArbiterMutation.mutate()}
+                  >
                     Accept Arbiter
                   </Button>
                 </Card.Footer>
