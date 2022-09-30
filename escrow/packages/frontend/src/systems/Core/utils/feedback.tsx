@@ -18,11 +18,11 @@ export function getBlockExplorerLink(path: string) {
 
 export function TxLink({ id }: TxLinkProps) {
   return (
-    <p className="text-xs text-gray-300 mt-1">
+    <span className="text-xs text-gray-300 mt-1">
       <Link isExternal href={getBlockExplorerLink(`/transaction/${id}`)}>
         View it on Fuel Explorer
       </Link>
-    </p>
+    </span>
   );
 }
 

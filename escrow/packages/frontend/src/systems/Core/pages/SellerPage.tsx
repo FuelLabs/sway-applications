@@ -80,7 +80,10 @@ export default function SellerPage() {
                       assetLabel="Propose arbiter asset input"
                       feeLabel="Propose arbiter fee input"
                     />
-                    <Button onPress={() => proposeArbiterMutation.mutate()}>
+                    <Button
+                      aria-label="Propose arbiter button"
+                      onPress={() => proposeArbiterMutation.mutate()}
+                    >
                       Propose Arbiter
                     </Button>
                   </Card.Footer>
