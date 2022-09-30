@@ -27,7 +27,3 @@ Run the tests
 ```bash
 forc test
 ```
-
-## Contributing
-
-Check [CONTRIBUTING.md](../CONTRIBUTING.md) for more info!
