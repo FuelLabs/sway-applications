@@ -18,6 +18,8 @@ use std::{
     context::call_frames::msg_asset_id,
     context::msg_amount,
     logging::log,
+    option::Option,
+    result::Result,
     revert::{
         require,
         revert,
