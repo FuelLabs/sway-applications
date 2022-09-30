@@ -67,7 +67,10 @@ export default function BuyerPage() {
                     Transfer To Seller
                   </Button>
                   {!buyerEscrows[0].disputed && (
-                    <Button onPress={() => disputeMutation.mutate()}>
+                    <Button
+                      aria-label="Dispute"
+                      onPress={() => disputeMutation.mutate()}
+                    >
                       Dispute
                     </Button>
                   )}
