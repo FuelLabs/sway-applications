@@ -39,6 +39,7 @@ export function Deposit(props: Props) {
         onAssetIdChange={handleAssetIdChange}
       />
       <Button
+        aria-label="Deposit"
         isDisabled={depositMutation.isLoading}
         isLoading={depositMutation.isLoading}
         onPress={() => depositMutation.mutate()}
