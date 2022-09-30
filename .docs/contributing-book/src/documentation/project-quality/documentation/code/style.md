@@ -8,7 +8,7 @@ The following snippets present the style for writing `Sway`.
 
 Structs, traits, and enums are `CapitalCase` which means each word has a capitalized first letter. The fields inside a struct should be [snake_case](#snake_case) and `CapitalCase` inside an enum.
 
-```rust
+```sway
 {{#include ../../../../code/style_guide/src/lib.sw:structures}}
 ```
 
@@ -18,13 +18,13 @@ Modules, variables, and functions are `snake_case` which means that each word is
 
 Module name:
 
-```rust
+```sway
 {{#include ../../../../code/style_guide/src/lib.sw:module}}
 ```
 
 Function and variable:
 
-```rust
+```sway
 {{#include ../../../../code/style_guide/src/lib.sw:function_case}}
 ```
 
@@ -32,7 +32,7 @@ Function and variable:
 
 Constants are `SCREAMING_SNAKE_CASE` which means that each word in capitalized and separated by an underscore.
 
-```rust
+```sway
 {{#include ../../../../code/style_guide/src/lib.sw:const}}
 ```
 
@@ -42,7 +42,7 @@ When declaring a variable it is possible to annotate it with a type however the 
 
 The general approach is to omit a type if the compiler does not throw an error however if it is deemed clearer by the developer to indicate the type then that is also encouraged.
 
-```rust
+```sway
 {{#include ../../../../code/style_guide/src/lib.sw:type_annotation}}
 ```
 
@@ -50,6 +50,6 @@ The general approach is to omit a type if the compiler does not throw an error h
 
 Getters should not follow the pattern of `get_XYZ()` and instead should follow `XYZ()`.
 
-```rust
+```sway
 {{#include ../../../../code/style_guide/src/lib.sw:getters}}
 ```
