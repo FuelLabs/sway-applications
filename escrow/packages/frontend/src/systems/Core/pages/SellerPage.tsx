@@ -91,13 +91,22 @@ export default function SellerPage() {
 
                 {!!sellerEscrows[0].state.Pending && (
                   <Card.Footer justify="space-evenly">
-                    <Button onPress={() => returnDepositMutation.mutate()}>
+                    <Button
+                      aria-label="Return deposit"
+                      onPress={() => returnDepositMutation.mutate()}
+                    >
                       Return Deposit
                     </Button>
-                    <Button onPress={() => takePaymentMutation.mutate()}>
+                    <Button
+                      aria-label="Take payment"
+                      onPress={() => takePaymentMutation.mutate()}
+                    >
                       Take Payment
                     </Button>
-                    <Button onPress={() => withdrawCollateralMutation.mutate()}>
+                    <Button
+                      aria-label="Withdraw collateral"
+                      onPress={() => withdrawCollateralMutation.mutate()}
+                    >
                       Withdraw Collateral
                     </Button>
                   </Card.Footer>
