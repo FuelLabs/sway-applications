@@ -46,7 +46,7 @@ The general approach is to omit a type if the compiler does not throw an error h
 {{#include ../../../../code/style_guide/src/lib.sw:type_annotation}}
 ```
 
-## Field initialization shorthand
+## Field Initialization Shorthand
 
 A struct has a shorthand notation for initializing its fields. The shorthand works by passing a variable into a struct with the exact same name and type.
 
