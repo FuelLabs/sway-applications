@@ -11,7 +11,7 @@ const coins = ASSETS.map(assetId => {
 test.describe("e2e", () => {
     test.beforeAll(async () => {
         const provider = new Provider(FUEL_PROVIDER_URL);
-        for(let i = 0; i < numWallets; ++i) {
+        for (let i = 0; i < numWallets; ++i) {
             const wallet = await TestUtils.generateTestWallet(
                 provider,
                 coins
@@ -29,7 +29,6 @@ test.describe("e2e", () => {
         // Seller creates escrow
         const showCreateEscrow = page.locator('[aria-label="Show create escrow"]');
         expect(showCreateEscrow).toContainText("Create Escrow");
-        console.log("show button", showCreateEscrow);
         await showCreateEscrow.click();
 
         const arbiterAddressInput = page.locator('[aria-label="Create arbiter address input"]');
@@ -51,7 +50,7 @@ test.describe("e2e", () => {
         await assetAmount0.fill("0.1");
 
         const addAsset = page.locator('[aria-label="Add asset"]');
-        expect(addAsset).toBeDefined();
+        expect(addAsset).toContainText("PlusAdd Asset");
         await addAsset.click();
 
         const assetInput1 = page.locator('[aria-label="Asset input 1"]');
@@ -60,11 +59,36 @@ test.describe("e2e", () => {
         await assetAmount1.fill("0.2");
 
         const createEscrow = page.locator('[aria-label="Create escrow"]');
-        expect(createEscrow).toBeDefined();
+        expect(createEscrow).toContainText("PlusIconCreate Escrow");
         await createEscrow.click();
 
+        page.on('dialog', async dialog => {
+            expect(dialog.message()).toContain("New escrow created");
+        });
+
+        // TODO Switch page and wallet
+        await page.goto("localhost:3000/buyer");
+
         // Buyer deposits
+        const depositAssetInput = page.locator('[aria-label="Asset input"]');
+        await depositAssetInput.fill(ASSETS[1]);
+        const depositAmountInput = page.locator('[aria-label="Asset amount input"]');
+        await depositAmountInput.fill("0.1");
+
+        const deposit = page.locator('[aria-label="Deposit"]');
+        await deposit.click();
+
+        page.on('dialog', async dialog => {
+            expect(dialog.message()).toContain("Deposit successful.");
+        });
 
         // Buyer transfers to seller
+        const transferToSeller = page.locator('[aria-label="Transfer to seller"]');
+        expect(transferToSeller).toBeDefined();
+        await transferToSeller.click();
+
+        page.on('dialog', async dialog => {
+            expect(dialog.message()).toContain("Transfer to seller successful.");
+        });
     });
 });

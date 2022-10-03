@@ -63,7 +63,7 @@ export function useTransferToSeller({ escrowId }: UseTransferToSellerProps) {
         toast.error(errors[0].message);
       }
     } else {
-      toast.error('Error when trying to deposit');
+      toast.error('Error when trying to transfer to seller');
     }
   }
 

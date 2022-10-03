@@ -63,7 +63,10 @@ export default function BuyerPage() {
 
               {!!buyerEscrows[0].state.Pending && (
                 <Card.Footer justify="space-evenly">
-                  <Button onPress={() => transferToSellerMutation.mutate()}>
+                  <Button
+                    aria-label="Transfer to seller"
+                    onPress={() => transferToSellerMutation.mutate()}
+                  >
                     Transfer To Seller
                   </Button>
                   {!buyerEscrows[0].disputed && (

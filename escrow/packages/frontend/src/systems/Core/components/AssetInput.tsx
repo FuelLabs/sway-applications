@@ -12,6 +12,7 @@ export function AssetInput(props: Props) {
     <>
       <Input css={{ alignSelf: "stretch" }}>
         <Input.Field
+          aria-label="Asset input"
           id={`assetId`}
           name={`assetId`}
           placeholder={`Asset Id`}
@@ -23,6 +24,7 @@ export function AssetInput(props: Props) {
       </Input>
       <Input css={{ alignSelf: "stretch" }}>
         <Input.Number
+          aria-label="Asset amount input"
           id={`assetAmount`}
           name={`assetAmount`}
           placeholder={`Asset Amount`}
