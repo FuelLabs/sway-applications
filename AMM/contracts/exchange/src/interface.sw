@@ -33,6 +33,14 @@ abi Exchange {
     #[storage(read)]
     fn balance(asset: ContractId) -> u64;
 
+    /// Initialize contract by specifying the asset on the other side of the contract.
+    /// 
+    /// # Arguments
+    /// 
+    /// - ` asset ` - identifier of other asset
+    #[storage(read, write)]
+    fn constructor(asset: ContractId);
+
     /// Deposit coins for later adding to the liquidity pool.
     /// 
     /// # Reverts
@@ -40,15 +48,6 @@ abi Exchange {
     /// * When the ` msg_asset_id ` does not identify either one of the assets in the pool
     #[storage(read, write)]
     fn deposit();
-
-    /// Initialize contract by specifying the asset on the other side of the contract.
-    /// 
-    /// # Arguments
-    /// 
-    /// - ` asset_id ` - identifier of other asset
-    /// - ` asset_contract_id ` - contract identifier of other asset
-    #[storage(write)]
-    fn initialize(asset_id: ContractId, asset_contract_id: ContractId);
 
     /// Get information on the liquidity pool on contract.
     #[storage(read)]

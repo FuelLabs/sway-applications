@@ -6,7 +6,7 @@ dep interface;
 dep utils;
 
 use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewInfo, RemoveLiquidityInfo};
-use errors::{InputError, TransactionError};
+use errors::{InitError, InputError, TransactionError};
 use interface::Exchange;
 use std::{
     block::height,
@@ -43,6 +43,7 @@ storage {
 impl Exchange for Contract {
     #[storage(read, write)]
     fn add_liquidity(deadline: u64, min_liquidity: u64) -> u64 {
+        require(storage.other_asset.is_some(), InitError::NotInitialized);
         require(deadline > height(), TransactionError::DeadlinePassed);
         require(msg_amount() == 0, InputError::SentInvalidAmount);
 
@@ -122,13 +123,23 @@ impl Exchange for Contract {
 
     #[storage(read)]
     fn balance(asset: ContractId) -> u64 {
+        require(storage.other_asset.is_some(), InitError::NotInitialized);
+        require(asset.into() == base_asset || asset == storage.other_asset.unwrap(), InputError::SentInvalidAsset);
+
         let sender = msg_sender().unwrap();
         storage.deposits.get((sender, asset))
     }
 
     #[storage(read, write)]
+    fn constructor(asset: ContractId) {
+        require(storage.other_asset.is_none(), InitError::NotInitialized);
+
+        storage.other_asset = Option::Some(asset);
+    }
+
+    #[storage(read, write)]
     fn deposit() {
-        let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
+        require(storage.other_asset.is_some(), InitError::NotInitialized);
 
         let deposit_asset = msg_asset_id();
 
@@ -145,13 +156,9 @@ impl Exchange for Contract {
         ), total_amount);
     }
 
-    #[storage(write)]
-    fn initialize(asset_id: ContractId, asset_contract_id: ContractId) {
-        storage.asset.insert(asset_id, asset_contract_id);
-    }
-
     #[storage(read)]
     fn pool_info() -> PoolInfo {
+        require(storage.other_asset.is_some(), InitError::NotInitialized);
         PoolInfo {
             base_asset_reserve: storage.reserves.get(~ContractId::from(base_asset)),
             other_asset_reserve: storage.reserves.get(storage.other_asset.unwrap()),
@@ -161,9 +168,11 @@ impl Exchange for Contract {
 
     #[storage(read)]
     fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo {
-        let asset_contract_id = storage.asset.get(~ContractId::from(asset_id));
+        require(storage.other_asset.is_some(), InitError::NotInitialized);
 
         let other_asset = storage.other_asset.unwrap();
+
+        require(asset.into() == base_asset || asset == other_asset, InputError::SentInvalidAsset);
 
         let total_liquidity = storage.total_liquidity;
         let base_asset_reserve = storage.reserves.get(~ContractId::from(base_asset));
@@ -191,12 +200,13 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn preview_swap_with_maximum(amount: u64) -> PreviewInfo {
-        let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
+        require(storage.other_asset.is_some(), InitError::NotInitialized);
 
         let asset_to_preview = msg_asset_id();
         let other_asset = storage.other_asset.unwrap();
-            sold = get_output_price(eth_reserve, liquidity_miner_fee, amount, asset_reserve);
-            has_liquidity = sold < eth_reserve;
+
+        require(asset_to_preview.into() == base_asset || asset_to_preview == other_asset, InputError::SentInvalidAsset);
+
         let base_asset_reserve = storage.reserves.get(~ContractId::from(base_asset));
         let other_asset_reserve = storage.reserves.get(other_asset);
         let mut amount_to_sell = 0;
@@ -218,11 +228,13 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn preview_swap_with_minimum(amount: u64) -> PreviewInfo {
-        let eth_reserve = storage.reserves.get(~ContractId::from(eth_id));
+        require(storage.other_asset.is_some(), InitError::NotInitialized);
 
         let asset_to_preview = msg_asset_id();
         let other_asset = storage.other_asset.unwrap();
-            has_liquidity = sold < asset_reserve;
+
+        require(asset_to_preview.into() == base_asset || asset_to_preview == other_asset, InputError::SentInvalidAsset);
+
         let base_asset_reserve = storage.reserves.get(~ContractId::from(base_asset));
         let other_asset_reserve = storage.reserves.get(other_asset);
         let mut amount_to_sell = 0;
@@ -246,6 +258,8 @@ impl Exchange for Contract {
         min_base_asset: u64,
         min_other_asset: u64,
     ) -> RemoveLiquidityInfo {
+        require(storage.other_asset.is_some(), InitError::NotInitialized);
+
         let other_asset = storage.other_asset.unwrap();
 
         require(msg_asset_id() == contract_id(), InputError::SentInvalidAsset);
@@ -283,6 +297,8 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn swap_with_maximum(amount: u64, deadline: u64) -> u64 {
+        require(storage.other_asset.is_some(), InitError::NotInitialized);
+
         let other_asset = storage.other_asset.unwrap();
         let swap_asset_id = msg_asset_id();
 
@@ -332,6 +348,8 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn swap_with_minimum(deadline: u64, min: u64) -> u64 {
+        require(storage.other_asset.is_some(), InitError::NotInitialized);
+
         let other_asset = storage.other_asset.unwrap();
         let swap_asset_id = msg_asset_id();
 
@@ -373,7 +391,7 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn withdraw(amount: u64, asset: ContractId) {
-        require(id.into() == eth_id || id == storage.asset.get(~ContractId::from(asset_id)), InputError::SentInvalidAsset);
+        require(storage.other_asset.is_some(), InitError::NotInitialized);
         require(asset.into() == base_asset || asset == storage.other_asset.unwrap(), InputError::SentInvalidAsset);
 
         let sender = msg_sender().unwrap();

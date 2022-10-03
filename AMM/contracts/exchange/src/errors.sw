@@ -1,5 +1,10 @@
 library errors;
 
+pub enum InitError {
+    CannotReinitialize: (),
+    NotInitialized: (),
+}
+
 pub enum InputError {
     SentInvalidAmount: (),
     SentInvalidAsset: (),
