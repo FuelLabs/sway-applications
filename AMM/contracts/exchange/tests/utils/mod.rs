@@ -28,7 +28,9 @@ pub mod abi_calls {
     }
 
     pub async fn balance(contract: &Exchange, asset: ContractId) -> u64 {
-        contract.balance(asset).call().await.unwrap().value
+        contract.balance(asset).simulate().await.unwrap().value
+    }
+
     pub async fn constructor(contract: &Exchange, asset: ContractId) -> CallResponse<()> {
         contract.constructor(asset).call().await.unwrap()
     }
@@ -43,7 +45,7 @@ pub mod abi_calls {
     }
 
     pub async fn pool_info(contract: &Exchange) -> PoolInfo {
-        contract.pool_info().call().await.unwrap().value
+        contract.pool_info().simulate().await.unwrap().value
     }
 
     pub async fn preview_add_liquidity(
@@ -71,7 +73,7 @@ pub mod abi_calls {
         contract
             .preview_swap_with_maximum(amount)
             .call_params(call_params)
-            .call()
+            .simulate()
             .await
             .unwrap()
             .value
@@ -85,7 +87,7 @@ pub mod abi_calls {
         contract
             .preview_swap_with_minimum(amount)
             .call_params(call_params)
-            .call()
+            .simulate()
             .await
             .unwrap()
             .value
