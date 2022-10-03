@@ -1,35 +1,31 @@
-use crate::utils::{abi_calls::preview_add_liquidity, test_helpers::setup};
+use crate::utils::{abi_calls::preview_add_liquidity, test_helpers::setup_and_initialize};
 use fuels::prelude::*;
 
 mod success {
     use super::*;
 
     #[tokio::test]
-    async fn can_preview_add_liquidity() {
-        let (exchange_instance, _native_contract_id, token_asset_id, ..) = setup().await;
+    async fn previews_add_base_asset_when_total_liquidity_zero() {
+        let (
+            exchange_instance,
+            _wallet,
+            _pool_asset_id,
+            base_asset_id,
+            _other_asset_id,
+            _invalid_asset_id,
+        ) = setup_and_initialize().await;
+        let base_preview_amount = 99;
 
-        let forwarded = 100;
-        let expected_amount = 99;
-
-        let call_params = CallParameters::new(
-            Some(forwarded),
-            Some(token_asset_id.clone()),
-            Some(100_000_000),
-        );
-        let tx_params = TxParameters {
-            gas_price: 0,
-            gas_limit: 100_000_000,
-            maturity: 0,
-        };
-        let add_liquidity_preview = preview_add_liquidity(
+        let preview = preview_add_liquidity(
             &exchange_instance,
-            call_params,
-            tx_params,
-            expected_amount,
-            BASE_ASSET_ID,
+            CallParameters::default(),
+            TxParameters::default(),
+            base_preview_amount,
+            base_asset_id,
         )
         .await;
 
-        assert_eq!(add_liquidity_preview.lp_token_received, expected_amount);
+        assert_eq!(preview.received_liquidity, base_preview_amount);
+        assert_eq!(preview.other_asset_amount, 0);
     }
 }

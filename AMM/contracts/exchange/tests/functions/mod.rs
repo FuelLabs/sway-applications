@@ -1,5 +1,6 @@
 mod add_liquidity;
 mod balance;
+mod constructor;
 mod deposit;
 mod pool_info;
 mod preview_add_liquidity;
