@@ -6,7 +6,6 @@ use fuels::{
 use std::str::FromStr;
 
 abigen!(Exchange, "out/debug/exchange-abi.json");
-abigen!(Asset, "../asset/out/debug/asset-abi.json");
 
 pub mod abi_calls {
     use super::*;
@@ -135,23 +134,6 @@ pub mod abi_calls {
         contract
             .swap_with_minimum(deadline, amount)
             .call_params(call_params)
-            .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn token_initialize(
-        contract: &Asset,
-        identity: Identity,
-        amount: u64,
-    ) -> CallResponse<()> {
-        contract.initialize(identity, amount).call().await.unwrap()
-    }
-
-    pub async fn token_mint(contract: &Asset) -> CallResponse<()> {
-        contract
-            .mint()
             .append_variable_outputs(1)
             .call()
             .await
