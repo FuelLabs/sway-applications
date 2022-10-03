@@ -216,7 +216,7 @@ impl Exchange for Contract {
         let base_asset_reserve = storage.reserves.get(~ContractId::from(base_asset));
         let other_asset_reserve = storage.reserves.get(other_asset);
         let mut amount_to_sell = 0;
-        let mut liquidity_remains = true;
+        let mut liquidity_remains = false;
         if (asset_to_preview.into() == base_asset) {
             require(amount < other_asset_reserve, TransactionError::InsufficientReserve);
             amount_to_sell = get_output_price(base_asset_reserve, liquidity_miner_fee, amount, other_asset_reserve);
@@ -244,7 +244,7 @@ impl Exchange for Contract {
         let base_asset_reserve = storage.reserves.get(~ContractId::from(base_asset));
         let other_asset_reserve = storage.reserves.get(other_asset);
         let mut amount_to_sell = 0;
-        let mut liquidity_remains = true;
+        let mut liquidity_remains = false;
         if (asset_to_preview.into() == base_asset) {
             amount_to_sell = get_input_price(amount, base_asset_reserve, liquidity_miner_fee, other_asset_reserve);
             liquidity_remains = amount_to_sell < other_asset_reserve;
