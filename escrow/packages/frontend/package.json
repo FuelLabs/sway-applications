@@ -7,7 +7,7 @@
     "build": "tsc && vite build",
     "postinstall": "sh ./scripts/postinstall.sh",
     "preview": "vite preview",
-    "test": "jest --verbose --runInBand",
+    "test": "playwright test --workers=1",
     "wallets:init": "pnpm exec ts-node ./scripts/wallets-init",
     "xstate:typegen": "xstate typegen 'src/**/*.ts?(x)'",
     "xstate:typegen:watch": "xstate typegen 'src/**/*.ts?(x)' --watch"
@@ -71,7 +71,7 @@
     "xstate": "^4.32.1"
   },
   "devDependencies": {
-    "@jest/globals": "^28.1.1",
+    "@playwright/test": "^1.26.1",
     "@react-types/button": "^3.5.1",
     "@react-types/dialog": "^3.4.1",
     "@react-types/link": "^3.3.1",
@@ -91,7 +91,7 @@
     "eslint-plugin-cypress": "^2.12.1",
     "fuelchain": "0.17.0",
     "http-server": "^14.1.1",
-    "jest": "^28.1.1",
+    "playwright": "^1.26.1",
     "postcss": "^8.4.14",
     "postcss-import": "^14.1.0",
     "prettier": "^2.7.1",

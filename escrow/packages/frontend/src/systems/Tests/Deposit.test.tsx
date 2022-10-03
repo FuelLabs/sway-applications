@@ -28,6 +28,10 @@ describe("Buyer deposit", () => {
         jest.clearAllMocks();
     });
 
+    xit("should not be able to deposit until escrow is created", async () => {
+
+    });
+
     xit("should disable the deposit button by default", async () => {
         renderWithRouter(<App />, {
             route: "/buyer",

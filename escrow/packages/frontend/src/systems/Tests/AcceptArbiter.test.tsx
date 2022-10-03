@@ -28,10 +28,21 @@ describe("Accept arbiter", () => {
         jest.clearAllMocks();
     });
 
+    xit("should not show accept arbiter if escrow is not created", async () => {
+        renderWithRouter(<App />, {
+            route: "/buyer",
+        });
+
+        const acceptArbiterBtn = screen.queryByLabelText(/Accept arbiter button/);
+        expect(acceptArbiterBtn).toBeNull();
+    });
+
     it("should only show accept arbiter if an arbiter has been proposed", async () => {
         renderWithRouter(<App />, {
             route: "/buyer",
         });
+
+        // TODO create mock escrow
 
         const acceptArbiterBtn = screen.queryByLabelText(/Accept arbiter button/);
         expect(acceptArbiterBtn).toBeNull();

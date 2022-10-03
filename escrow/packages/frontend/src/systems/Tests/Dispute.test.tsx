@@ -28,6 +28,10 @@ describe("Dispute", () => {
         jest.clearAllMocks();
     });
 
+    xit("should hide the dispute button if there is no escrow", async () => {
+
+    });
+
     xit("should be able to dispute", async () => {
         const { user } = renderWithRouter(<App />, {
             route: "/buyer"
@@ -38,7 +42,7 @@ describe("Dispute", () => {
         await user.click(disputeBtn);
     });
 
-    xit("should hide the disput button after dispute", async () => {
+    xit("should hide the dispute button after dispute", async () => {
         const { user } = renderWithRouter(<App />, {
             route: "/buyer"
         });
