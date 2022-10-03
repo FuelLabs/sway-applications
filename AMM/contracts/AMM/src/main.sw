@@ -6,17 +6,17 @@ use interface::AMM;
 use std::{contract_id::ContractId, storage::StorageMap};
 
 storage {
-    /// Map that stores (exchange contract ID, token contract ID)
-    tokens: StorageMap<ContractId, ContractId> = StorageMap {},
+    /// Map that stores (asset ID, exchange contract ID) pairs
+    pools: StorageMap<ContractId, ContractId> = StorageMap {},
 }
 
 impl AMM for Contract {
     #[storage(write)]
-    fn add_exchange_contract(exchange_id: ContractId, token_id: ContractId) {
-        storage.tokens.insert(token_id, exchange_id);
+    fn add_exchange_contract_to_asset(asset_id: ContractId, exchange_id: ContractId) {
+        storage.pools.insert(asset_id, exchange_id);
     }
     #[storage(read)]
-    fn exchange_contract(token_id: ContractId) -> ContractId {
-        storage.tokens.get(token_id)
+    fn exchange_contract_of_asset(asset_id: ContractId) -> ContractId {
+        storage.pools.get(asset_id)
     }
 }
