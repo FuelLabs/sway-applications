@@ -6,7 +6,7 @@ use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewInfo, RemoveLiqu
 use std::contract_id::ContractId;
 
 abi Exchange {
-    /// Mint ETH and Token at current ratio and add to liquidity pool.
+    /// Mint base asset and other asset at current ratio and add to liquidity pool.
     /// 
     /// # Arguments
     /// 
@@ -17,27 +17,27 @@ abi Exchange {
     /// 
     /// * When the associated ` msg_amount ` with function call is not 0
     /// * When the deadline has passed, i.e.: deadline is greater than current block height
-    /// * When the associated ` msg_asset_id ` is not of either ETH or Token
-    /// * If the sender does not have ETH balance in contract
+    /// * When the associated ` msg_asset_id ` is not of either base asset or the other asset
+    /// * If the sender does not have base asset balance in contract
     /// * When total liquidity exists but ` min_liquidity ` is 0
     /// * When the calculated mint amount is lesser than ` min_liquidity `
-    /// * In the case of liquidity pool being empty, when sender ETH balance is lesser than ` MINIMUM_LIQUIDITY `
+    /// * In the case of liquidity pool being empty, when sender base asset balance is lesser than ` MINIMUM_LIQUIDITY `
     #[storage(read, write)]
     fn add_liquidity(deadline: u64, min_liquidity: u64) -> u64;
 
-    /// Get current balance of given token on the contract.
+    /// Get current balance of given asset on the contract.
     /// 
     /// # Arguments
     /// 
-    /// - ` id ` - identifier of the asset to get balance of
+    /// - ` asset ` - identifier of the asset to get balance of
     #[storage(read)]
-    fn balance(id: ContractId) -> u64;
+    fn balance(asset: ContractId) -> u64;
 
     /// Deposit coins for later adding to the liquidity pool.
     /// 
     /// # Reverts
     /// 
-    /// * When the ` msg_asset_id ` does not identify either one of the tokens in the pool
+    /// * When the ` msg_asset_id ` does not identify either one of the assets in the pool
     #[storage(read, write)]
     fn deposit();
 
@@ -59,19 +59,19 @@ abi Exchange {
     /// # Arguments
     /// 
     /// - ` amount ` - amount of liquidity to add
-    /// - ` id ` - identifier of the asset to add
+    /// - ` asset ` - identifier of the asset to add
     #[storage(read)]
-    fn preview_add_liquidity(amount: u64, id: ContractId) -> PreviewAddLiquidityInfo;
+    fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo;
 
     /// Get required amount of coins for a ` swap_with_maximum `.
     /// 
     /// # Arguments
     /// 
-    /// - ` amount ` - amount of tokens supplied
+    /// - ` amount ` - amount of assets supplied
     /// 
     /// # Reverts
     /// 
-    /// * When the reserve of the token with provided ` msg_asset_id ` is insufficient
+    /// * When the reserve of the asset with provided ` msg_asset_id ` is insufficient
     #[storage(read, write)]
     fn preview_swap_with_maximum(amount: u64) -> PreviewInfo;
 
@@ -79,32 +79,32 @@ abi Exchange {
     /// 
     /// # Arguments
     /// 
-    /// - ` amount ` - amount of tokens supplied
+    /// - ` amount ` - amount of assets supplied
     #[storage(read, write)]
     fn preview_swap_with_minimum(amount: u64) -> PreviewInfo;
 
-    /// Burn tokens to transfer ETH and Tokens at current ratio to the sender.
+    /// Burn assets to transfer base asset and other asset at current ratio to the sender.
     /// 
     /// # Arguments
     /// 
     /// - ` deadline ` - limit on block height for operation
-    /// - ` min_eth ` - minimum amount of ETH to calculate amount to transfer
-    /// - ` min_tokens ` - minimum amount of Token to calculate amount to transfer
+    /// - ` min_base_asset ` - minimum amount of base asset to calculate amount to transfer
+    /// - ` min_other_asset ` - minimum amount of other asset to calculate amount to transfer
     /// 
     /// # Reverts
     /// 
     /// * When the associated ` msg_amount ` with function call is 0
     /// * When the associated ` msg_asset_id ` does not match ` contract_id `
     /// * When the deadline has passed, i.e.: deadline is greater than current block height
-    /// * When the associated ` min_eth ` is 0
-    /// * When the associated ` min_tokens ` is 0
+    /// * When the associated ` min_base_asset ` is 0
+    /// * When the associated ` min_other_asset ` is 0
     /// * When the total liquidity in the pool is 0
-    /// * When the calculated ETH amount to transfer is lesser than ` min_eth `
-    /// * When the calculated Token amount to transfer is lesser than ` min_tokens `
+    /// * When the calculated base asset amount to transfer is lesser than ` min_base_asset `
+    /// * When the calculated other asset amount to transfer is lesser than ` min_other_asset `
     #[storage(read, write)]
-    fn remove_liquidity(deadline: u64, min_eth: u64, min_tokens: u64) -> RemoveLiquidityInfo;
+    fn remove_liquidity(deadline: u64, min_base_asset: u64, min_other_asset: u64) -> RemoveLiquidityInfo;
 
-    /// Swap ETH <-> Tokens and transfer to the sender.
+    /// Swap base asset <-> other asset and transfer to the sender.
     /// 
     /// # Arguments
     /// 
@@ -116,12 +116,12 @@ abi Exchange {
     /// * When the deadline has passed, i.e.: deadline is greater than current block height
     /// * When the passed ` amount ` is 0
     /// * When the associated ` msg_amount ` with function call is 0
-    /// * When the associated ` msg_asset_id ` is not of either ETH or Token
+    /// * When the associated ` msg_asset_id ` is not of either base asset or the other asset
     /// * When the passed ` amount ` is insufficient for swap
     #[storage(read, write)]
     fn swap_with_maximum(amount: u64, deadline: u64) -> u64;
 
-    /// Swap ETH <-> Tokens and transfer to the sender.
+    /// Swap base asset <-> other asset and transfer to the sender.
     /// 
     /// # Arguments
     /// 
@@ -133,7 +133,7 @@ abi Exchange {
     /// * When the deadline has passed, i.e.: deadline is greater than current block height
     /// * When the passed ` min ` is 0
     /// * When the associated ` msg_amount ` with function call is 0
-    /// * When the associated ` msg_asset_id ` is not of either ETH or Token
+    /// * When the associated ` msg_asset_id ` is not of either base asset or the other asset
     /// * When the resulting amount is lesser than the provided minimum
     #[storage(read, write)]
     fn swap_with_minimum(deadline: u64, min: u64) -> u64;
@@ -143,12 +143,12 @@ abi Exchange {
     /// # Arguments
     /// 
     /// - ` amount ` - amount of coins to withdraw
-    /// - ` id ` - identifier of asset to withdraw
+    /// - ` asset ` - identifier of asset to withdraw
     /// 
     /// # Reverts
     /// 
-    /// * When the ` id ` is not of either ETH or Token
+    /// * When the ` asset ` is not of either base asset or the other asset
     /// * If the sender does not have ` amount ` of asset in contract storage
     #[storage(read, write)]
-    fn withdraw(amount: u64, id: ContractId);
+    fn withdraw(amount: u64, asset: ContractId);
 }

@@ -27,7 +27,7 @@ pub fn div_mutiply(a: u64, b: u64, c: u64) -> u64 {
     result_wrapped.unwrap()
 }
 
-/// Pricing function for converting between ETH and Tokens.
+/// Pricing function for converting between base asset and other asset
 pub fn get_input_price(
     input_amount: u64,
     input_reserve: u64,
@@ -42,7 +42,7 @@ pub fn get_input_price(
     result_wrapped.unwrap()
 }
 
-/// Pricing function for converting between ETH and Tokens.
+/// Pricing function for converting between base asset and other asset
 pub fn get_output_price(
     input_reserve: u64,
     liquidity_miner_fee: u64,
