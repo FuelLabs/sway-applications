@@ -18,8 +18,14 @@ use std::{
         call_frames::*,
         msg_amount,
     },
-    prelude::*,
+    contract_id::ContractId,
+    identity::Identity,
+    option::Option,
     result::Result,
+    revert::{
+        require,
+        revert,
+    },
     storage::StorageMap,
     token::{
         burn,
