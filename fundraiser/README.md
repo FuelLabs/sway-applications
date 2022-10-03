@@ -57,7 +57,3 @@ There are two commands required to run the tests
 The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the fundraiser.
 
 Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
-
-## Contributing
-
-Check [CONTRIBUTING.md](../CONTRIBUTING.md) for more info!

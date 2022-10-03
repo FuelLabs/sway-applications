@@ -71,4 +71,4 @@ Any instructions related to running a specific project should be found within th
 
 ## Contributing
 
-Check [CONTRIBUTING.md](./CONTRIBUTING.md) for more info!
+Check out the [book](https://fuellabs.github.io/sway-applications/book/index.html) for more info!
