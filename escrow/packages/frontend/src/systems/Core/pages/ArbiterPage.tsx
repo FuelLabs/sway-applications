@@ -43,6 +43,7 @@ export default function BuyerPage() {
                 <Card.Footer justify="space-evenly">
                   <Input>
                     <Input.Number
+                      aria-label="Arbiter fee input"
                       placeholder="Fee Amount"
                       value={arbiterPayment}
                       inputMode="decimal"
@@ -72,7 +73,10 @@ export default function BuyerPage() {
                       </Dropdown.MenuItem>
                     </Dropdown.Menu>
                   </Dropdown>
-                  <Button onPress={() => resolveDisputeMutation.mutate()}>
+                  <Button
+                    aria-label="Resolve dispute"
+                    onPress={() => resolveDisputeMutation.mutate()}
+                  >
                     Resolve Dispute
                   </Button>
                 </Card.Footer>
