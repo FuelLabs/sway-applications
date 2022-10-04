@@ -181,6 +181,25 @@ enum DepositError {
     let executed = false;
 }
 </code></pre>
+<h2 id="field-initialization-shorthand"><a class="header" href="#field-initialization-shorthand">Field Initialization Shorthand</a></h2>
+<p>A struct has a shorthand notation for initializing its fields. The shorthand works by passing a variable into a struct with the exact same name and type.</p>
+<p>The following struct has a field <code>amount</code> with type <code>u64</code>.</p>
+<pre><code class="language-sway">struct Structure {
+    amount: u64,
+}
+</code></pre>
+<p>Using the shorthand notation we can initialize the struct in the following way.</p>
+<pre><code class="language-sway">fn call(amount: u64) {
+    let structure = Structure { amount };
+}
+</code></pre>
+<p>The shorthand is encouraged because it is a cleaner alternative to the following.</p>
+<pre><code class="language-sway">fn action(value: u64) {
+    let amount = value;
+    let structure = Structure { amount: value };
+    let structure = Structure { amount: amount };
+}
+</code></pre>
 <h2 id="getters"><a class="header" href="#getters">Getters</a></h2>
 <p>Getters should not follow the pattern of <code>get_XYZ()</code> and instead should follow <code>XYZ()</code>.</p>
 <pre><code class="language-sway">// Discouraged style
