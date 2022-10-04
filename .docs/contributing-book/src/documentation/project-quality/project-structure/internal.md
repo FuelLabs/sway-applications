@@ -1,8 +1,8 @@
-# Project Structure
+# Internal Project
 
-In order to navigate through a project easily, there needs to be a structure that compartmentalizes concepts. This means that code is grouped together based on some concept. 
+These projects have `contract` type entry points and provide no external use.
 
-For example, here is an example structure that we follow for `Sway` files in the `src` directory.
+Here is an example structure that we follow for `Sway` files in the `src` directory.
 
 ```
 src/
