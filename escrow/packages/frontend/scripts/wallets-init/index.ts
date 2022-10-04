@@ -12,7 +12,7 @@ async function main() {
     const nextWallet = await TestUtils.generateTestWallet(
       provider,
       ASSETS.map((assetId) => {
-        const randAssetAmount = bn(Math.floor(Math.random() * 9) + 1);
+        const randAssetAmount = bn(Math.floor(Math.random() * 99) + 10);
         const coin: CoinQuantityLike = { assetId, amount: DECIMAL_PRECISION.mul(randAssetAmount) };
         return coin;
       })
