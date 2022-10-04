@@ -43,7 +43,7 @@ export default function BuyerPage() {
                 <Card.Footer justify="space-evenly">
                   <Input>
                     <Input.Number
-                      aria-label="Arbiter fee input"
+                      aria-label="Resolve arbiter fee input"
                       placeholder="Fee Amount"
                       value={arbiterPayment}
                       inputMode="decimal"
