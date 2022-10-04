@@ -25,36 +25,36 @@ async fn can_add_and_get_exchange_contracts() {
     let token_id =
         ContractId::from_str("0x562a05877b940cc69d7a9a71000a0cfdd79e93f783f198de893165278712a480")
             .unwrap();
-    let swayswap_id =
+    let exchange_id =
         ContractId::from_str("0x014587212741268ad0b1bc727efce9711dbde69c484a9db38bd83bb1b3017c05")
             .unwrap();
     let token_id_2 =
         ContractId::from_str("0x716c345b96f3c17234c73881c40df43d3d492b902a01a062c12e92eeae0284e9")
             .unwrap();
-    let swayswap_id_2 =
+    let exchange_id_2 =
         ContractId::from_str("0x1c74b79b2c430e13380f51258434752ef661e6ebbb9d4970688424e0a63b8070")
             .unwrap();
 
     let _result = swayswap_instance
-        .add_exchange_contract(swayswap_id, token_id)
+        .add_exchange_contract_to_asset(token_id, exchange_id)
         .call()
         .await;
     let _result = swayswap_instance
-        .add_exchange_contract(swayswap_id_2, token_id_2)
+        .add_exchange_contract_to_asset(token_id_2, exchange_id_2)
         .call()
         .await;
 
     let result = swayswap_instance
-        .exchange_contract(token_id)
+        .exchange_contract_of_asset(token_id)
         .call()
         .await
         .unwrap();
-    assert_eq!(result.value, swayswap_id);
+    assert_eq!(result.value, exchange_id);
 
     let result = swayswap_instance
-        .exchange_contract(token_id_2)
+        .exchange_contract_of_asset(token_id_2)
         .call()
         .await
         .unwrap();
-    assert_eq!(result.value, swayswap_id_2);
+    assert_eq!(result.value, exchange_id_2);
 }
