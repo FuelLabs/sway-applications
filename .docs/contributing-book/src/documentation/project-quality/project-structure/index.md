@@ -4,8 +4,12 @@ In order to navigate through a project easily, there needs to be a structure tha
 
 Every Sway project has an entry point that is specified in its manifest file.
 
-```sway
-{{#include ../../../code/style_guide/Forc.toml:entry}}
+```
+[project]
+authors = ["Fuel Labs <contact@fuel.sh>"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "manifest_example"
 ```
 
 The type of the entry point is specified in its first line, just as in every Sway program. It can be one of the four Sway program types: a *contract*, a *predicate*, a *script* or a *library*. 

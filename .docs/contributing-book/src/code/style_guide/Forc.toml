@@ -1,9 +1,7 @@
-// ANCHOR: entry
 [project]
 authors = ["Fuel Labs <contact@fuel.sh>"]
 entry = "lib.sw"
 license = "Apache-2.0"
 name = "style_guide"
-// ANCHOR_END: entry
 
 [dependencies]
