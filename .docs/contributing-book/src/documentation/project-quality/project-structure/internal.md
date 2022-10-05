@@ -1,8 +1,8 @@
-# Project Structure
+# Internal Project
 
-In order to navigate through a project easily, there needs to be a structure that compartmentalizes concepts. This means that code is grouped together based on some concept. 
+These are projects that do not provide an externally available interface.
 
-For example, here is an example structure that we follow for `Sway` files in the `src` directory.
+Here is an example structure that we follow for `Sway` files in the `src` directory.
 
 ```
 src/
@@ -30,7 +30,7 @@ Contains enums that are used in `require(..., MyError::SomeError)` statements.
 The enums are split into individual errors e.g. `DepositError`, `OwnerError` etc.
 
 ```sway
-{{#include ../../code/connect_four/src/errors.sw:error}}
+{{#include ../../../code/connect_four/src/errors.sw:error}}
 ```
 
 ## events.sw
@@ -38,12 +38,12 @@ The enums are split into individual errors e.g. `DepositError`, `OwnerError` etc
 Contains structs definitions which are used inside `log()` statements.
 
 ```sway
-{{#include ../../code/connect_four/src/events.sw:event}}
+{{#include ../../../code/connect_four/src/events.sw:event}}
 ```
 
 ## interface.sw
 
-Anything that may be exposed to the user e.g. the Application Binary Interface (`ABI`) for your contract(s).
+The Application Binary Interface (`ABI`) for your contract(s).
 
 This means that the `events.sw` may not be necessary and that information can be held with the `ABI`. Similarly, certain data structures may be more suited to be in the interface.
 

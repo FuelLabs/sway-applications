@@ -46,6 +46,28 @@ The general approach is to omit a type if the compiler does not throw an error h
 {{#include ../../../../code/style_guide/src/lib.sw:type_annotation}}
 ```
 
+## Field Initialization Shorthand
+
+A struct has a shorthand notation for initializing its fields. The shorthand works by passing a variable into a struct with the exact same name and type.
+
+The following struct has a field `amount` with type `u64`.
+
+```sway
+{{#include ../../../../code/style_guide/src/lib.sw:struct_shorthand_definition}}
+```
+
+Using the shorthand notation we can initialize the struct in the following way.
+
+```sway
+{{#include ../../../../code/style_guide/src/lib.sw:struct_shorthand_use}}
+```
+
+The shorthand is encouraged because it is a cleaner alternative to the following.
+
+```sway
+{{#include ../../../../code/style_guide/src/lib.sw:struct_shorthand_avoid}}
+```
+
 ## Getters
 
 Getters should not follow the pattern of `get_XYZ()` and instead should follow `XYZ()`.
