@@ -53,7 +53,7 @@ export function useAcceptArbiter({ escrowId }: UseAcceptArbiterProps) {
     queryClient.invalidateQueries([
       'ArbiterProposal',
       wallet?.address.toHexString(),
-      escrowId.toString(),
+      escrowId!.toString(),
     ]);
   }
 

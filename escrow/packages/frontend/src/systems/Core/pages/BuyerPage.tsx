@@ -1,5 +1,4 @@
 import { Flex, Card, Button } from "@fuel-ui/react";
-import { bn } from "fuels";
 import { useAtomValue } from "jotai";
 
 import { Deposit } from "../components/Deposit";
@@ -16,11 +15,11 @@ import { parseToFormattedNumber } from "../utils/math";
 
 export default function BuyerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
-  const buyerEscrows = useBuyerEscrows();
-  const transferToSellerMutation = useTransferToSeller({ escrowId: bn(0) });
-  const disputeMutation = useDispute({ escrowId: bn(0) });
-  const acceptArbiterMutation = useAcceptArbiter({ escrowId: bn(0) });
-  const arbiterProposal = useArbiterProposal(bn(0));
+  const { buyerEscrows, buyerEscrowIds } = useBuyerEscrows();
+  const transferToSellerMutation = useTransferToSeller({ escrowId: buyerEscrowIds![0] });
+  const disputeMutation = useDispute({ escrowId: buyerEscrowIds![0] });
+  const acceptArbiterMutation = useAcceptArbiter({ escrowId: buyerEscrowIds[0] });
+  const arbiterProposal = useArbiterProposal(buyerEscrowIds[0]);
 
   return (
     <Layout>
@@ -33,7 +32,7 @@ export default function BuyerPage() {
 
               {!buyerEscrows[0].buyer.asset && (
                 <Card.Footer justify="space-evenly">
-                  <Deposit escrowId={bn(0)} />
+                  <Deposit escrowId={buyerEscrowIds[0]} />
                 </Card.Footer>
               )}
 
@@ -54,7 +53,7 @@ export default function BuyerPage() {
                   )}...${arbiterProposal.asset.value.slice(-4)}`}</div>
                   <Button
                     aria-label="Accept arbiter button"
-                    onPress={() => acceptArbiterMutation.mutate()}
+                    onPress={() => acceptArbiterMutation!.mutate()}
                   >
                     Accept Arbiter
                   </Button>

@@ -1,5 +1,4 @@
 import { Button, Card, Flex } from "@fuel-ui/react";
-import { bn } from "fuels";
 import { useAtomValue } from "jotai";
 import { useState } from "react";
 import type { ChangeEvent } from "react";
@@ -18,10 +17,10 @@ import { showBalancesAtom } from "../jotai";
 
 export default function SellerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
-  const sellerEscrows = useSellerEscrows();
-  const returnDepositMutation = useReturnDeposit({ escrowId: bn(0) });
-  const takePaymentMutation = useTakePayment({ escrowId: bn(0) });
-  const withdrawCollateralMutation = useWithdrawCollateral({ escrowId: bn(0) });
+  const { sellerEscrows, sellerEscrowIds } = useSellerEscrows();
+  const returnDepositMutation = useReturnDeposit({ escrowId: sellerEscrowIds![0] });
+  const takePaymentMutation = useTakePayment({ escrowId: sellerEscrowIds![0] });
+  const withdrawCollateralMutation = useWithdrawCollateral({ escrowId: sellerEscrowIds![0] });
 
   // TODO DRY for repeated code in CreateEscrow.tsx
   const [arbiter, setArbiter] = useState("");
@@ -32,7 +31,7 @@ export default function SellerPage() {
     arbiterAddress: arbiter,
     arbiterAsset,
     arbiterFee,
-    escrowId: bn(0),
+    escrowId: sellerEscrowIds[0],
     setArbiterAddress: setArbiter,
     setArbiterAsset,
     setArbiterFee,

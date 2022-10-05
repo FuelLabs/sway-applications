@@ -4,6 +4,7 @@ import { useWallet } from './useWallet';
 
 import { useContract } from './useContract';
 import { useEscrows } from './useEscrows';
+import { bn } from 'fuels';
 
 export function useSellerEscrows() {
   const contract = useContract();
@@ -25,5 +26,5 @@ export function useSellerEscrows() {
 
   const sellerEscrows = useEscrows('SellerEscrows', sellerEscrowIds);
 
-  return sellerEscrows;
+  return { sellerEscrows, sellerEscrowIds: !sellerEscrowIds ? [bn(0)] : sellerEscrowIds };
 }

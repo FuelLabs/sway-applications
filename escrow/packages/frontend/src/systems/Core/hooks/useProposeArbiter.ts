@@ -87,7 +87,7 @@ export function useProposeArbiter({
         toast.error(`Not enough balance in your wallet to create an escrow`);
       }
     } else {
-      toast.error(`Error when trying to create an escrow`);
+      toast.error(`Error when trying to propose arbiter`);
     }
   }
 

@@ -1,4 +1,5 @@
 import { useQuery } from 'react-query';
+import { bn } from 'fuels';
 
 import { useWallet } from './useWallet';
 
@@ -26,5 +27,5 @@ export function useBuyerEscrows() {
 
   const buyerEscrows = useEscrows('BuyerEscrows', buyerEscrowIds);
 
-  return buyerEscrows;
+  return { buyerEscrows, buyerEscrowIds: !buyerEscrowIds ? [bn(0)] : buyerEscrowIds };
 }

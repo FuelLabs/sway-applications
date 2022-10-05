@@ -1,5 +1,4 @@
 import { Flex, Card, Button, Input, Dropdown } from "@fuel-ui/react";
-import { bn } from "fuels";
 import { useAtomValue } from "jotai";
 import type { ChangeEvent } from "react";
 import React, { useState } from "react";
@@ -13,11 +12,11 @@ import { showBalancesAtom } from "../jotai";
 
 export default function BuyerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
-  const arbiterEscrows = useArbiterEscrows();
+  const { arbiterEscrows, arbiterEscrowIds } = useArbiterEscrows();
   const [arbiterPayment, setArbiterPayment] = useState("");
   const [favoredUser, setFavoredUser] = useState("");
   const resolveDisputeMutation = useResolveDispute({
-    escrowId: bn(0),
+    escrowId: arbiterEscrowIds![0],
     arbiterPayment,
     favoredUser,
   });
