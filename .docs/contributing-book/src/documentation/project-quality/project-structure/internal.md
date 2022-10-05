@@ -43,7 +43,7 @@ Contains structs definitions which are used inside `log()` statements.
 
 ## interface.sw
 
-Anything that may be exposed to the user e.g. the Application Binary Interface (`ABI`) for your contract(s).
+The Application Binary Interface (`ABI`) for your contract(s).
 
 This means that the `events.sw` may not be necessary and that information can be held with the `ABI`. Similarly, certain data structures may be more suited to be in the interface.
 

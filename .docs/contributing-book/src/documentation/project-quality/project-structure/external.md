@@ -1,36 +1,36 @@
 # External Project
 
-If part of a project needs to be accessed externally, e.g., the ABI of a contract., the structure can be divided. 
+These are projects that expose an interface, e.g., the `ABI` of your contract(s), that can be imported from other projects.
 
-Here is an example structure for an application that has a contract project and a library project. The contract depends on the library, which can be depended externally as well. 
-
-```
-application/
-├── contract/
-└── library/
-```
-
-The `contract` folder has a structure similar to an [internal project](internal.md), minus the `interface` part.
+Here is an example structure for such an application that consists of two separate projects. In this example, `my_library` contains the `ABI` of the contract. `my_contract` depends on `my_library` and contains the implementation of the `ABI`. This structure allows `my_library` to be imported from outside `my_application`.
 
 ```
-contract/
+my_application/
+├── my_library/
+└── my_contract/
+```
+
+Here, the interface that is exposed for external use is in `my_library` folder.
+
+```
+my_library/
+├── src/
+├──── lib.sw
+├── tests/
+├── Cargo.toml
+└── Forc.toml
+```
+
+`my_contract` folder has a structure similar to an [internal project](internal.md), minus the `interface.sw` file, since the interface is now defined in `my_library`.
+
+```
+my_contract/
 ├── src/
 ├──── data_structures.sw
 ├──── errors.sw
 ├──── events.sw
 ├──── main.sw
 ├──── utils.sw
-├── tests/
-├── Cargo.toml
-└── Forc.toml
-```
-
-The interface is in its own `library` project.
-
-```
-library/
-├── src/
-├──── lib.sw
 ├── tests/
 ├── Cargo.toml
 └── Forc.toml
