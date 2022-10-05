@@ -100,31 +100,31 @@ test.describe("e2e", () => {
         await toast.waitFor();
     });
 
-    test.fixme("Arbiter resolves in favor of buyer", async ({ page }) => {
+    test("Arbiter resolves in favor of buyer", async ({ page }) => {
         // Buyer disputes
         const dispute = page.locator('[aria-label="Dispute"]');
         expect(dispute).toContainText("Dispute");
         await dispute.click();
 
-        page.on('dialog', async dialog => {
-            expect(dialog.message()).toContain("Dispute successful.");
-        });
+        let txFeedback = page.locator('text="Dispute successful."');
+        await txFeedback.waitFor();
 
         await page.goto("localhost:3000/arbiter");
+        const showWallets = page.locator('[aria-label="Display wallets"]');
+        await showWallets.selectOption({ index: 1 });
 
         // Arbiter resolves in favor of buyer
         const newArbiterFeeInput = page.locator('[aria-label="Resolve arbiter fee input"]');
         await newArbiterFeeInput.fill("0.1");
-        const userToFavor = page.locator('[aria-label="Actions"]');
-        // TODO figure out how to "fill" user to favor
+        const userToFavor = page.locator('[aria-label="Resolve dropdown"]');
+        await userToFavor.selectOption({ index: 1 });
 
         const resolveDispute = page.locator('[aria-label="Resolve dispute"]');
         expect(resolveDispute).toContainText("Resolve Dispute");
         await resolveDispute.click();
 
-        page.on('dialog', async dialog => {
-            expect(dialog.message()).toContain("Dispute resolved.")
-        });
+        txFeedback = page.locator('text="Dispute resolved."');
+        await txFeedback.waitFor();
     });
 
     test.fixme("Arbiter resolves in favor of seller", async ({ page }) => {

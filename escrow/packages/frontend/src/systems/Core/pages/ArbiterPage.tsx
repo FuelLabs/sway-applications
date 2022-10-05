@@ -49,7 +49,7 @@ export default function BuyerPage() {
                       onChange={(e) => handleAssetAmountChange(e)}
                     />
                   </Input>
-                  <Dropdown>
+                  <Dropdown aria-label="Resolve dropdown">
                     <Dropdown.Trigger>
                       <Button>User to favor</Button>
                     </Dropdown.Trigger>
