@@ -1,6 +1,6 @@
 # Internal Project
 
-These projects have `contract` type entry points and provide no external use.
+These are projects that do not provide an externally available interface.
 
 Here is an example structure that we follow for `Sway` files in the `src` directory.
 
