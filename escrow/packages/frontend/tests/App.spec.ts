@@ -13,7 +13,6 @@ test.beforeAll(async () => {
         const wallet = new Wallet(process.env[`VITE_WALLET${i}`]!);
         wallets.push(wallet);
     }
-    console.log(wallets[0].address.toHexString());
 });
 
 test.describe("e2e", () => {
@@ -43,7 +42,7 @@ test.describe("e2e", () => {
         await escrowDeadlineInput.fill("1000");
 
         const assetInput0 = page.locator('[aria-label="Asset input 0"]');
-        assetInput0.fill(ASSETS[1]);
+        await assetInput0.fill(ASSETS[1]);
         const assetAmount0 = page.locator('[aria-label="Asset amount input 0"]');
         await assetAmount0.fill("0.1");
 
@@ -60,18 +59,17 @@ test.describe("e2e", () => {
         expect(createEscrow).toContainText("PlusIconCreate Escrow");
         await createEscrow.click();
 
-        // const temp = page.locator("text=Error when trying to create an escrow");
-        // expect(temp).toHaveCount(1);
+        await page.screenshot({ path: 'screenshot.png' });
 
-        // const txFeedback = page.locator('text="New escrow created."')
-        // expect(txFeedback).toHaveCount(1);
+        let toast = page.locator('text="New escrow created."');
+        await toast.waitFor();
 
-        // page.on('dialog', async dialog => {
-        //     expect(dialog.message()).toContain("New escrow created");
-        // });
-
-        // TODO Switch page and wallet
+        // Switch page and wallet
         await page.goto("localhost:3000/buyer");
+        const showWallets = page.locator('[aria-label="Display wallets"]');
+        await showWallets.click();
+        const selectWallet = page.locator(`[aria-label="${buyer.address.toHexString()}"]`);
+        await selectWallet.click();
 
         // Buyer deposits
         const depositAssetInput = page.locator('[aria-label="Asset input"]');
@@ -83,9 +81,8 @@ test.describe("e2e", () => {
         expect(deposit).toContainText("Deposit Asset");
         await deposit.click();
 
-        page.on('dialog', async dialog => {
-            expect(dialog.message()).toContain("Deposit successful.");
-        });
+        toast = page.locator('text="Deposit successful."');
+        await toast.waitFor();
     });
 
     test("Buyer transfers to seller", async ({ page }) => {
@@ -93,9 +90,8 @@ test.describe("e2e", () => {
         const transferToSeller = page.locator('[aria-label="Transfer to seller"]');
         expect(transferToSeller).toContainText("Transfer To Seller");
         await transferToSeller.click();
-
-        // const txFeedback = page.locator('text="Transfer to seller successful."')
-        // expect(txFeedback).toHaveCount(1);
+        const toast = page.locator('text="Transfer to seller successful."');
+        await toast.waitFor();
     });
 
     test("Seller returns deposit to buyer", async ({ page }) => {
@@ -108,12 +104,11 @@ test.describe("e2e", () => {
         expect(returnToBuyer).toContainText("Return Deposit");
         await returnToBuyer.click();
 
-        page.on('dialog', async dialog => {
-            expect(dialog.message()).toContain("Deposit returned to buyer.");
-        });
+        const toast = page.locator('text="Deposit returned to buyer."');
+        await toast.waitFor();
     });
 
-    test("Arbiter resolves in favor of buyer", async ({ page }) => {
+    test.fixme("Arbiter resolves in favor of buyer", async ({ page }) => {
         // Buyer disputes
         const dispute = page.locator('[aria-label="Dispute"]');
         expect(dispute).toContainText("Dispute");

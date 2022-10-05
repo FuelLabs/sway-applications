@@ -57,7 +57,7 @@ export const WalletWidget = () => {
     const walletOptions: Array<JSX.Element> = [];
     wallets?.forEach((nextWallet, i) => {
       walletOptions.push(
-        <option key={i} value={i}>
+        <option aria-label={nextWallet.address.toHexString()} key={i} value={i}>
           {nextWallet?.address.toHexString().slice(0, 4)}...
           {nextWallet?.address.toHexString().slice(-4)} ({WALLET_NAMES[i]})
         </option>
@@ -85,7 +85,7 @@ export const WalletWidget = () => {
 
   return (
     <>
-      <Dropdown className={dropDownStyle()} onChange={handleWalletChange}>
+      <Dropdown aria-label="Display wallets" className={dropDownStyle()} onChange={handleWalletChange}>
         {getWalletOptions()}
       </Dropdown>
       <Button aria-label="Copy your wallet address" onPress={handleCopy}>
