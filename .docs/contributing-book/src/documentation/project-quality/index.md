@@ -4,7 +4,7 @@ The quality of a project can be determined by a variety of measures such as inte
 
 In the following sections we will take a look at:
 
-- [Project Structure](project-structure.md)
+- [Project Structure](project-structure/index.md)
   - The file structure and how easily a project may be navigated
 - [Code Structure](code-structure.md)
   - How to structure the code inside a file
