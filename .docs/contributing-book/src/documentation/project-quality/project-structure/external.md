@@ -1,8 +1,8 @@
 # External Project
 
-These are projects that expose an interface, e.g., the `ABI` of your contract(s), that can be imported from other projects.
+These are projects that expose an interface, e.g., the `ABI` of your contract(s), that can be imported into other projects.
 
-Here is an example structure for such an application that consists of two separate projects. In this example, `my_library` contains the `ABI` of the contract. `my_contract` depends on `my_library` and contains the implementation of the `ABI`. This structure allows `my_library` to be imported from outside `my_application`.
+The following structure separates the interface of the contract into its own library project so that it can be imported alongside projects in the `my_application` directory and outside of it.
 
 ```
 my_application/
@@ -10,7 +10,7 @@ my_application/
 └── my_contract/
 ```
 
-Here, the interface that is exposed for external use is in `my_library` folder.
+The interface has a simple structure in this example because it consists of a single file, `lib.sw`.
 
 ```
 my_library/
@@ -21,7 +21,7 @@ my_library/
 └── Forc.toml
 ```
 
-`my_contract` folder has a structure similar to an [internal project](internal.md), minus the `interface.sw` file, since the interface is now defined in `my_library`.
+The contract follows the structure of an [internal project](internal.md) however since the interface is now its own project `interface.sw` has been removed from the `src` directory and it is being imported in the manifest file.
 
 ```
 my_contract/

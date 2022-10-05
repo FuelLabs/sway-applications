@@ -7,4 +7,4 @@ The following sections will outline the structures of broadly two kinds of proje
 - [Internal project](internal.md)
   - Projects that do not need to expose any interface for external use
 - [External project](external.md)
-  - Projects that expose an interface that can be imported from other projects
+  - Projects that expose an interface that can be imported into other projects
