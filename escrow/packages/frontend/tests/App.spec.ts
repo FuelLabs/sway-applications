@@ -6,6 +6,7 @@ let wallets: Wallet[] = [];
 let numWallets = 4;
 let arbiter: Wallet;
 let buyer: Wallet;
+let seller: Wallet;
 
 test.beforeAll(async () => {
     for (let i = 0; i < numWallets; ++i) {
@@ -17,6 +18,7 @@ test.beforeAll(async () => {
 test.beforeEach(async ({ page }, testInfo) => {
     await page.goto('localhost:3000/seller');
 
+    seller = wallets[0];
     arbiter = wallets[1];
     buyer = wallets[2];
 
@@ -133,8 +135,35 @@ test.describe("e2e", () => {
         await txFeedback.waitFor();
     });
 
-    test.fixme("Arbiter resolves in favor of seller", async ({ page }) => {
+    test("Arbiter resolves in favor of seller", async ({ page }) => {
+        // Buyer disputes
+        const dispute = page.locator('[aria-label="Dispute"]');
+        expect(dispute).toContainText("Dispute");
+        await dispute.click();
 
+        let txFeedback = page.locator('text="Dispute successful."');
+        await txFeedback.waitFor();
+
+        await page.goto("localhost:3000/arbiter");
+        const showWallets = page.locator('[aria-label="Display wallets"]');
+        await showWallets.selectOption({ index: 1 });
+
+        // Arbiter resolves in favor of buyer
+        const newArbiterFeeInput = page.locator('[aria-label="Resolve arbiter fee input"]');
+        await newArbiterFeeInput.fill("0.1");
+
+        const userToFavor = page.locator('text=User to favor');
+        await userToFavor.click();
+
+        const sellerSelection = page.locator(`[data-key="${seller.address.toHexString()}"]`);
+        await sellerSelection.click();
+
+        const resolveDispute = page.locator('[aria-label="Resolve dispute"]');
+        expect(resolveDispute).toContainText("Resolve Dispute");
+        await resolveDispute.click();
+
+        txFeedback = page.locator('text="Dispute resolved."');
+        await txFeedback.waitFor();
     });
 
     // TODO marked as fixme until block manipulation/query
