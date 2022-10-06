@@ -4,6 +4,8 @@ import { Provider, TestUtils, Wallet } from "fuels";
 
 let wallets: Wallet[] = [];
 let numWallets = 4;
+let arbiter: Wallet;
+let buyer: Wallet;
 
 test.beforeAll(async () => {
     for (let i = 0; i < numWallets; ++i) {
@@ -15,8 +17,8 @@ test.beforeAll(async () => {
 test.beforeEach(async ({ page }, testInfo) => {
     await page.goto('localhost:3000/seller');
 
-    const arbiter = wallets[1];
-    const buyer = wallets[2];
+    arbiter = wallets[1];
+    buyer = wallets[2];
 
     // Seller creates escrow
     const showCreateEscrow = page.locator('[aria-label="Show create escrow"]');
@@ -116,8 +118,12 @@ test.describe("e2e", () => {
         // Arbiter resolves in favor of buyer
         const newArbiterFeeInput = page.locator('[aria-label="Resolve arbiter fee input"]');
         await newArbiterFeeInput.fill("0.1");
-        const userToFavor = page.locator('[aria-label="Resolve dropdown"]');
-        await userToFavor.selectOption({ index: 1 });
+
+        const userToFavor = page.locator('text=User to favor');
+        await userToFavor.click();
+
+        const buyerSelection = page.locator(`[data-key="${buyer.address.toHexString()}"]`);
+        await buyerSelection.click();
 
         const resolveDispute = page.locator('[aria-label="Resolve dispute"]');
         expect(resolveDispute).toContainText("Resolve Dispute");
