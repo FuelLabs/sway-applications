@@ -57,12 +57,12 @@ export function useWithdrawCollateral({ escrowId }: UseWithdrawCollateralProps) 
 
     if (errors?.length) {
       if (errors[0].message === 'enough coins could not be found') {
-        toast.error('Not enough balance in your wallet to deposit');
+        toast.error('Not enough balance in your wallet to withdraw collateral');
       } else {
         toast.error(errors[0].message);
       }
     } else {
-      toast.error('Error when trying to deposit');
+      toast.error('Error when trying to withdraw collateral');
     }
   }
 
