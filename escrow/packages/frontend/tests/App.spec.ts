@@ -1,14 +1,16 @@
 import { test, expect } from "@playwright/test";
-import { ASSETS, DECIMAL_PRECISION, FUEL_PROVIDER_URL } from "../src/config";
-import { Provider, TestUtils, Wallet } from "fuels";
+import { ASSETS, FUEL_PROVIDER_URL } from "../src/config";
+import { Provider, Wallet } from "fuels";
 
 let wallets: Wallet[] = [];
 let numWallets = 4;
 let arbiter: Wallet;
 let buyer: Wallet;
 let seller: Wallet;
+let provider: Provider;
 
 test.beforeAll(async () => {
+    provider = new Provider(FUEL_PROVIDER_URL)
     for (let i = 0; i < numWallets; ++i) {
         const wallet = new Wallet(process.env[`VITE_WALLET${i}`]!);
         wallets.push(wallet);
@@ -21,6 +23,8 @@ test.beforeEach(async ({ page }, testInfo) => {
     seller = wallets[0];
     arbiter = wallets[1];
     buyer = wallets[2];
+
+    const deadline = testInfo.title === 'Seller can withdraw collateral and take payment after deadline' ? 3 : 1000;
 
     // Seller creates escrow
     const showCreateEscrow = page.locator('[aria-label="Show create escrow"]');
@@ -38,7 +42,8 @@ test.beforeEach(async ({ page }, testInfo) => {
     await buyerAddressInput.fill(buyer.address.toHexString());
 
     const escrowDeadlineInput = page.locator('[aria-label="Escrow deadline input"]');
-    await escrowDeadlineInput.fill("1000");
+    const blockNumber = await provider.getBlockNumber();
+    await escrowDeadlineInput.fill(blockNumber.add(deadline).toString());
 
     const assetInput0 = page.locator('[aria-label="Asset input 0"]');
     await assetInput0.fill(ASSETS[1]);
@@ -166,9 +171,22 @@ test.describe("e2e", () => {
         await txFeedback.waitFor();
     });
 
-    // TODO marked as fixme until block manipulation/query
-    test.fixme("Seller can withdraw collateral and take payment after deadline", async ({ page }) => {
+    test("Seller can withdraw collateral and take payment after deadline", async ({ page }) => {
+        await page.goto('localhost:3000/seller');
 
+        // Seller withdraws collateral
+        const withdrawCollateral = page.locator('[aria-label="Withdraw collateral"]');
+        await withdrawCollateral.click();
+
+        // TODO fix withdraw collateral 
+        // let toast = page.locator('text="Collateral withdrawn successfully."');
+        // await toast.waitFor();
+
+        // Seller takes payment
+        const takePayment = page.locator('[aria-label="Take payment"]');
+        await takePayment.click();
+        let toast = page.locator('text="Took payment successfully."');
+        await toast.waitFor();
     });
 
     test("can propose and accept arbiter", async ({ page }) => {
