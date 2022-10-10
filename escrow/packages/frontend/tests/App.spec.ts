@@ -85,11 +85,6 @@ test.beforeAll(async () => {
     }
 });
 
-test.beforeEach(async ({ page }) => {
-
-    
-});
-
 test.describe("e2e", () => {
     test("Buyer transfers to seller", async ({ page }) => {
         await createEscrow(1000, page);
