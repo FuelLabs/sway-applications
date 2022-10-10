@@ -1,6 +1,6 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 import { ASSETS, FUEL_PROVIDER_URL } from "../src/config";
-import { Provider, Wallet } from "fuels";
+import { BigNumberish, Provider, Wallet } from "fuels";
 
 let wallets: Wallet[] = [];
 let numWallets = 4;
@@ -9,22 +9,12 @@ let buyer: Wallet;
 let seller: Wallet;
 let provider: Provider;
 
-test.beforeAll(async () => {
-    provider = new Provider(FUEL_PROVIDER_URL)
-    for (let i = 0; i < numWallets; ++i) {
-        const wallet = new Wallet(process.env[`VITE_WALLET${i}`]!);
-        wallets.push(wallet);
-    }
-});
-
-test.beforeEach(async ({ page }, testInfo) => {
+const createEscrow = async (deadline: BigNumberish, page: Page) => {
     await page.goto('localhost:3000/seller');
 
     seller = wallets[0];
     arbiter = wallets[1];
     buyer = wallets[2];
-
-    const deadline = testInfo.title === 'Seller can withdraw collateral and take payment after deadline' ? 3 : 1000;
 
     // Seller creates escrow
     const showCreateEscrow = page.locator('[aria-label="Show create escrow"]');
@@ -65,7 +55,9 @@ test.beforeEach(async ({ page }, testInfo) => {
 
     let toast = page.locator('text="New escrow created."');
     await toast.waitFor();
+}
 
+const buyerDeposit = async (page: Page) => {
     // Switch page and wallet
     await page.goto("localhost:3000/buyer");
     const showWallets = page.locator('[aria-label="Display wallets"]');
@@ -81,12 +73,28 @@ test.beforeEach(async ({ page }, testInfo) => {
     expect(deposit).toContainText("Deposit Asset");
     await deposit.click();
 
-    toast = page.locator('text="Deposit successful."');
+    let toast = page.locator('text="Deposit successful."');
     await toast.waitFor();
+}
+
+test.beforeAll(async () => {
+    provider = new Provider(FUEL_PROVIDER_URL)
+    for (let i = 0; i < numWallets; ++i) {
+        const wallet = new Wallet(process.env[`VITE_WALLET${i}`]!);
+        wallets.push(wallet);
+    }
+});
+
+test.beforeEach(async ({ page }) => {
+
+    
 });
 
 test.describe("e2e", () => {
     test("Buyer transfers to seller", async ({ page }) => {
+        await createEscrow(1000, page);
+        await buyerDeposit(page);
+
         // Buyer transfers to seller
         const transferToSeller = page.locator('[aria-label="Transfer to seller"]');
         expect(transferToSeller).toContainText("Transfer To Seller");
@@ -96,6 +104,9 @@ test.describe("e2e", () => {
     });
 
     test("Seller returns deposit to buyer", async ({ page }) => {
+        await createEscrow(1000, page);
+        await buyerDeposit(page);
+
         // Switch back to seller page
         await page.goto("localhost:3000/seller");
         expect(page.locator('[aria-label="Show create escrow"]')).toContainText("Create Escrow");
@@ -110,6 +121,9 @@ test.describe("e2e", () => {
     });
 
     test("Arbiter resolves in favor of buyer", async ({ page }) => {
+        await createEscrow(1000, page);
+        await buyerDeposit(page);
+
         // Buyer disputes
         const dispute = page.locator('[aria-label="Dispute"]');
         expect(dispute).toContainText("Dispute");
@@ -141,6 +155,9 @@ test.describe("e2e", () => {
     });
 
     test("Arbiter resolves in favor of seller", async ({ page }) => {
+        await createEscrow(1000, page);
+        await buyerDeposit(page);
+
         // Buyer disputes
         const dispute = page.locator('[aria-label="Dispute"]');
         expect(dispute).toContainText("Dispute");
@@ -171,25 +188,43 @@ test.describe("e2e", () => {
         await txFeedback.waitFor();
     });
 
-    test("Seller can withdraw collateral and take payment after deadline", async ({ page }) => {
+    test("Seller can take payment after deadline", async ({ page }) => {
+        await createEscrow(3, page);
+        await buyerDeposit(page);
+
         await page.goto('localhost:3000/seller');
-
-        // Seller withdraws collateral
-        const withdrawCollateral = page.locator('[aria-label="Withdraw collateral"]');
-        await withdrawCollateral.click();
-
-        // TODO fix withdraw collateral 
-        // let toast = page.locator('text="Collateral withdrawn successfully."');
-        // await toast.waitFor();
 
         // Seller takes payment
         const takePayment = page.locator('[aria-label="Take payment"]');
         await takePayment.click();
+
         let toast = page.locator('text="Took payment successfully."');
         await toast.waitFor();
     });
 
+    test("Seller can withdraw collateral", async ({ page }) => {
+        await createEscrow(2, page);
+
+        await page.goto('localhost:3000/seller');
+
+        // Initiate a click to change blockheight
+        // TODO change once block manipulation is available
+        const withdrawCollateral = page.locator('[aria-label="Withdraw collateral"]');
+        await withdrawCollateral.click();
+
+        let toast = page.locator('text="Transaction reverted!"');
+        await toast.waitFor();
+
+        // Actually withdraw collateral
+        await withdrawCollateral.click();
+
+        toast = page.locator('text="Collateral withdrawn successfully."');
+        await toast.waitFor();
+    });
+
     test("can propose and accept arbiter", async ({ page }) => {
+        await createEscrow(1000, page);
+
         // Switch back to seller page
         await page.goto("localhost:3000/seller");
         expect(page.locator('[aria-label="Show create escrow"]')).toContainText("Create Escrow");
