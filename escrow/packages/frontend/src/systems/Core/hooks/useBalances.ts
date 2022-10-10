@@ -2,8 +2,9 @@ import { useAtomValue } from 'jotai';
 import type { UseQueryOptions } from 'react-query';
 import { useQuery } from 'react-query';
 
-import { useWallet } from './useWallet';
 import { walletIndexAtom } from '../jotai';
+
+import { useWallet } from './useWallet';
 
 export function useBalances(opts: UseQueryOptions = {}) {
   const walletIdx = useAtomValue(walletIndexAtom);

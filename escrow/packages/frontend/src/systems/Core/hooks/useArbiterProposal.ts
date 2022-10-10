@@ -1,9 +1,8 @@
 import type { BigNumberish } from 'fuels';
 import { useQuery } from 'react-query';
 
-import { useWallet } from './useWallet';
-
 import { useContract } from './useContract';
+import { useWallet } from './useWallet';
 
 export function useArbiterProposal(escrowId: BigNumberish) {
   const wallet = useWallet();

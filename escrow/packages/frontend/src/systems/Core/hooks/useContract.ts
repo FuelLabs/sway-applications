@@ -1,7 +1,7 @@
 import { ESCROW_ID } from '../../../config';
-import { useWallet } from './useWallet';
-
 import { EscrowAbi__factory } from '../../../types/contracts';
+
+import { useWallet } from './useWallet';
 
 export const useContract = () => {
   const wallet = useWallet();

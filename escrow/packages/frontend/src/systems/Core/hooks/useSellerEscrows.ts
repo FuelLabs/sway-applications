@@ -1,10 +1,9 @@
+import { bn } from 'fuels';
 import { useQuery } from 'react-query';
-
-import { useWallet } from './useWallet';
 
 import { useContract } from './useContract';
 import { useEscrows } from './useEscrows';
-import { bn } from 'fuels';
+import { useWallet } from './useWallet';
 
 export function useSellerEscrows() {
   const contract = useContract();

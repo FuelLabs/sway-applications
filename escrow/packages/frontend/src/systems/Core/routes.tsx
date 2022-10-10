@@ -1,10 +1,10 @@
 import { Route, Navigate } from "react-router-dom";
 
+import { Pages } from "../../types";
+
 import ArbiterPage from "./pages/ArbiterPage";
 import BuyerPage from "./pages/BuyerPage";
 import SellerPage from "./pages/SellerPage";
-
-import { Pages } from "../../types";
 
 export const coreRoutes = (
   <Route>

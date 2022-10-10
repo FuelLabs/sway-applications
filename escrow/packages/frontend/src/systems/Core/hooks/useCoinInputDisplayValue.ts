@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 export function useCoinInputDisplayValue(
   initialValue: string,
-  onChange: (val: string) => void,
+  onChange: (val: string) => void
 ): [string, (e: React.ChangeEvent<HTMLInputElement>) => void] {
   const [value, setValue] = useState(initialValue);
 

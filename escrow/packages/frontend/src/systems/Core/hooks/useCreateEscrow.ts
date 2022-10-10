@@ -4,15 +4,14 @@ import type React from 'react';
 import toast from 'react-hot-toast';
 import { useMutation, useQueryClient } from 'react-query';
 
-import { useWallet } from './useWallet';
+import type { ArbiterInput, AssetInput, IdentityInput } from '../../../types/contracts/EscrowAbi';
 import { walletIndexAtom } from '../jotai';
 import { txFeedback } from '../utils/feedback';
 import { contractCheck } from '../utils/helpers';
 import { parseInputValueBigInt } from '../utils/math';
 
 import { useContract } from './useContract';
-
-import type { ArbiterInput, AssetInput, IdentityInput } from '../../../types/contracts/EscrowAbi';
+import { useWallet } from './useWallet';
 
 // TODO it may be a good idea to refactor this to resemble
 // UseAddLiquidityProps from SwaySwap

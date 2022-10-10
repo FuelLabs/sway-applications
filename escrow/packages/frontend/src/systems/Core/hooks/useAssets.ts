@@ -1,9 +1,9 @@
 import { bn } from 'fuels';
 import type { CoinQuantity } from 'fuels';
 
-import { useBalances } from './useBalances';
-
 import { CoinsMetadata } from '../../../config';
+
+import { useBalances } from './useBalances';
 
 const mergeCoinsWithMetadata = (coins: CoinQuantity[] = []) =>
   coins.map((coin) => {

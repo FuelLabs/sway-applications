@@ -4,9 +4,8 @@ import React, { useContext, useState, useMemo, useEffect } from "react";
 import type { PropsWithChildren } from "react";
 
 import { NUM_WALLETS, FUEL_PROVIDER_URL } from "../../../config";
-import { walletIndexAtom } from "../jotai";
-
 import type { Maybe } from "../../../types";
+import { walletIndexAtom } from "../jotai";
 
 interface AppContextValue {
   wallets: Maybe<Array<Wallet>>;

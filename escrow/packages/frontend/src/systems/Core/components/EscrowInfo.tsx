@@ -1,9 +1,8 @@
 import { Card } from "@fuel-ui/react";
 
-import { formatValue } from "../utils/helpers";
-
 import { DECIMAL_PLACES } from "../../../config";
 import type { EscrowInfoOutput } from "../../../types/contracts/EscrowAbi";
+import { formatValue } from "../utils/helpers";
 
 interface EscrowInfoProps {
   escrows: EscrowInfoOutput[];

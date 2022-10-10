@@ -1,16 +1,15 @@
+import { bn } from 'fuels';
 import { useQuery } from 'react-query';
-
-import { useWallet } from './useWallet';
 
 import { useContract } from './useContract';
 import { useEscrows } from './useEscrows';
-import { bn } from 'fuels';
+import { useWallet } from './useWallet';
 
 export function useArbiterEscrows() {
   const contract = useContract();
   const wallet = useWallet();
 
-  let { data: arbiterEscrowIds } = useQuery(
+  const { data: arbiterEscrowIds } = useQuery(
     ['ArbiterPage-arbiterEscrowIds', wallet?.address.toHexString()],
     async () => {
       return (
@@ -31,5 +30,5 @@ export function useArbiterEscrows() {
 
   const arbiterEscrows = useEscrows('ArbiterEscrows', arbiterEscrowIds);
 
-  return { arbiterEscrows, arbiterEscrowIds: !arbiterEscrowIds ? [bn(0)] : arbiterEscrowIds};
+  return { arbiterEscrows, arbiterEscrowIds: !arbiterEscrowIds ? [bn(0)] : arbiterEscrowIds };
 }

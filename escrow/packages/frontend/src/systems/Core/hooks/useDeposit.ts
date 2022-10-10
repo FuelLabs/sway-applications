@@ -4,12 +4,12 @@ import { useAtomValue } from 'jotai';
 import toast from 'react-hot-toast';
 import { useMutation, useQueryClient } from 'react-query';
 
-import { useWallet } from './useWallet';
 import { walletIndexAtom } from '../jotai';
 import { txFeedback } from '../utils/feedback';
 import { parseInputValueBigInt } from '../utils/math';
 
 import { useContract } from './useContract';
+import { useWallet } from './useWallet';
 
 interface UseDepositProps {
   depositAmount: string;

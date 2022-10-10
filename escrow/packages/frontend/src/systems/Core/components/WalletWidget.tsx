@@ -85,7 +85,11 @@ export const WalletWidget = () => {
 
   return (
     <>
-      <Dropdown aria-label="Display wallets" className={dropDownStyle()} onChange={handleWalletChange}>
+      <Dropdown
+        aria-label="Display wallets"
+        className={dropDownStyle()}
+        onChange={handleWalletChange}
+      >
         {getWalletOptions()}
       </Dropdown>
       <Button aria-label="Copy your wallet address" onPress={handleCopy}>

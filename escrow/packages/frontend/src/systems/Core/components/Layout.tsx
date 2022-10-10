@@ -13,7 +13,6 @@ interface Props {
 }
 
 export const Layout: FC<Props> = ({
-  title = "",
   children,
   isLoading,
   className,

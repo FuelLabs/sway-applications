@@ -16,9 +16,13 @@ import { parseToFormattedNumber } from "../utils/math";
 export default function BuyerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
   const { buyerEscrows, buyerEscrowIds } = useBuyerEscrows();
-  const transferToSellerMutation = useTransferToSeller({ escrowId: buyerEscrowIds![0] });
+  const transferToSellerMutation = useTransferToSeller({
+    escrowId: buyerEscrowIds![0],
+  });
   const disputeMutation = useDispute({ escrowId: buyerEscrowIds![0] });
-  const acceptArbiterMutation = useAcceptArbiter({ escrowId: buyerEscrowIds[0] });
+  const acceptArbiterMutation = useAcceptArbiter({
+    escrowId: buyerEscrowIds[0],
+  });
   const arbiterProposal = useArbiterProposal(buyerEscrowIds[0]);
 
   return (

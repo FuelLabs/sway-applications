@@ -95,8 +95,16 @@ export const CreateEscrow = () => {
   };
 
   const validate = () => {
-    return !createEscrowMutation.isLoading && arbiter.length && arbiterAsset.length && arbiterFee.length && buyer.length && deadline.length && assets.length;
-  }
+    return (
+      !createEscrowMutation.isLoading &&
+      arbiter.length &&
+      arbiterAsset.length &&
+      arbiterFee.length &&
+      buyer.length &&
+      deadline.length &&
+      assets.length
+    );
+  };
 
   return (
     <Flex css={{ flex: "1", justifyContent: "center" }}>

@@ -18,9 +18,13 @@ import { showBalancesAtom } from "../jotai";
 export default function SellerPage() {
   const showBalances = useAtomValue(showBalancesAtom);
   const { sellerEscrows, sellerEscrowIds } = useSellerEscrows();
-  const returnDepositMutation = useReturnDeposit({ escrowId: sellerEscrowIds![0] });
+  const returnDepositMutation = useReturnDeposit({
+    escrowId: sellerEscrowIds![0],
+  });
   const takePaymentMutation = useTakePayment({ escrowId: sellerEscrowIds![0] });
-  const withdrawCollateralMutation = useWithdrawCollateral({ escrowId: sellerEscrowIds![0] });
+  const withdrawCollateralMutation = useWithdrawCollateral({
+    escrowId: sellerEscrowIds![0],
+  });
 
   // TODO DRY for repeated code in CreateEscrow.tsx
   const [arbiter, setArbiter] = useState("");

@@ -4,14 +4,13 @@ import { useAtomValue } from 'jotai';
 import toast from 'react-hot-toast';
 import { useMutation, useQueryClient } from 'react-query';
 
-import { useWallet } from './useWallet';
+import type { IdentityInput } from '../../../types/contracts/EscrowAbi';
 import { walletIndexAtom } from '../jotai';
 import { txFeedback } from '../utils/feedback';
 import { parseInputValueBigInt } from '../utils/math';
 
 import { useContract } from './useContract';
-
-import type { IdentityInput } from '../../../types/contracts/EscrowAbi';
+import { useWallet } from './useWallet';
 
 interface UseResolveDisputeProps {
   escrowId: BigNumberish;
