@@ -1,5 +1,7 @@
+use crate::utils::*;
+
 mod success {
-    use crate::utils::*;
+    use super::*;
 
     #[tokio::test]
     async fn can_get_expiry() {
@@ -20,7 +22,7 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::*;
+    use super::*;
 
     #[tokio::test]
     #[should_panic]

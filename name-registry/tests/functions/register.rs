@@ -1,5 +1,7 @@
+use crate::utils::*;
+
 mod success {
-    use crate::utils::*;
+    use super::*;
     #[tokio::test]
     async fn can_register() {
         let (instance, _id, _wallet) = get_contract_instance().await;
@@ -11,7 +13,7 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::*;
+    use super::*;
     #[tokio::test]
     #[should_panic]
     async fn cant_repeat_register() {

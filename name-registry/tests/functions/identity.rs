@@ -1,6 +1,8 @@
+use crate::utils::*;
+use fuels::prelude::*;
+
 mod success {
-    use crate::utils::*;
-    use fuels::prelude::*;
+    use super::*;
 
     #[tokio::test]
     async fn can_get_identity() {
@@ -27,7 +29,7 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::*;
+    use super::*;
 
     #[tokio::test]
     #[should_panic]

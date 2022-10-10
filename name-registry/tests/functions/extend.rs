@@ -1,5 +1,7 @@
+use crate::utils::*;
+
 mod success {
-    use crate::utils::*;
+    use super::*;
 
     #[tokio::test]
     async fn can_extend() {
@@ -20,7 +22,7 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::*;
+    use super::*;
     #[tokio::test]
     #[should_panic]
     async fn cant_extend_insufficient_payment() {
