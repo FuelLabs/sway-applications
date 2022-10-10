@@ -1,7 +1,5 @@
 library data_structures;
 
-use std::identity::Identity;
-
 pub struct Record {
     /// The timestamp at which the name expires, and someone else can re-register the same name
     expiry: u64,

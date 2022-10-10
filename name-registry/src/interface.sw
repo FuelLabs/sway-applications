@@ -1,7 +1,5 @@
 library interface;
 
-use std::identity::Identity;
-
 abi NameRegistry {
     /// Returns the expiry timestamp of the given name
     /// 

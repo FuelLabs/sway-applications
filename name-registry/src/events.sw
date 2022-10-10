@@ -1,7 +1,5 @@
 library events;
 
-use std::identity::Identity;
-
 /// The event for when a name has its resolving identity changed
 pub struct IdentityChanged {
     /// The name which has its identity being changed
