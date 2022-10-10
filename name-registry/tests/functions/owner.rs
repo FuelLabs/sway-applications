@@ -2,7 +2,7 @@ use crate::utils::*;
 use fuels::prelude::*;
 
 mod success {
-    use super::*;   
+    use super::*;
 
     #[tokio::test]
     async fn can_get_owner() {
