@@ -115,7 +115,7 @@ impl NameRegistry for Contract {
             owner: record.owner,
         });
     }
-    
+
     #[storage(read, write)]
     fn set_identity(name: str[8], identity: Identity) {
         require(storage.names.get(name).is_some(), Errors::NameNotRegistered);
