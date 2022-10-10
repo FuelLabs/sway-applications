@@ -20,10 +20,6 @@ use std::{
     logging::log,
     option::Option,
     result::Result,
-    revert::{
-        require,
-        revert,
-    },
     storage::StorageMap,
 };
 
