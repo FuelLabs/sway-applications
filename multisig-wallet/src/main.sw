@@ -31,7 +31,7 @@ use std::{
     storage::StorageMap,
     token::{
         force_transfer_to_contract,
-        transfer_to_output,
+        transfer_to_address,
     },
 };
 
@@ -136,7 +136,7 @@ impl MultiSignatureWallet for Contract {
         storage.nonce = storage.nonce + 1;
 
         match to {
-            Identity::Address(address) => transfer_to_output(value, asset_id, address),
+            Identity::Address(address) => transfer_to_address(value, asset_id, address),
             Identity::ContractId(address) => force_transfer_to_contract(value, asset_id, address),
         };
 

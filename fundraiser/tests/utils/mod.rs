@@ -29,18 +29,18 @@ pub mod abi_calls {
     use super::*;
 
     pub async fn asset_count(contract: &Fundraiser) -> u64 {
-        contract.asset_count().call().await.unwrap().value
+        contract.methods().asset_count().call().await.unwrap().value
     }
 
     pub async fn asset_info_by_id(
         contract: &Fundraiser,
         asset: &ContractId,
     ) -> CallResponse<AssetInfo> {
-        contract.asset_info_by_id(*asset).call().await.unwrap()
+        contract.methods().asset_info_by_id(*asset).call().await.unwrap()
     }
 
     pub async fn asset_info_by_count(contract: &Fundraiser, id: u64) -> CallResponse<AssetInfo> {
-        contract.asset_info_by_count(id).call().await.unwrap()
+        contract.methods().asset_info_by_count(id).call().await.unwrap()
     }
 
     pub async fn campaign(
@@ -48,19 +48,20 @@ pub mod abi_calls {
         id: u64,
         user: Identity,
     ) -> CallResponse<Campaign> {
-        contract.campaign(id, user).call().await.unwrap()
+        contract.methods().campaign(id, user).call().await.unwrap()
     }
 
     pub async fn campaign_info(contract: &Fundraiser, id: u64) -> CallResponse<CampaignInfo> {
-        contract.campaign_info(id).call().await.unwrap()
+        contract.methods().campaign_info(id).call().await.unwrap()
     }
 
     pub async fn cancel_campaign(contract: &Fundraiser, id: u64) -> CallResponse<()> {
-        contract.cancel_campaign(id).call().await.unwrap()
+        contract.methods().cancel_campaign(id).call().await.unwrap()
     }
 
     pub async fn claim_pledges(contract: &Fundraiser, id: u64) -> CallResponse<()> {
         contract
+            .methods()
             .claim_pledges(id)
             .append_variable_outputs(1)
             .call()
@@ -76,6 +77,7 @@ pub mod abi_calls {
         target_amount: u64,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .create_campaign(asset.clone(), beneficiary.clone(), deadline, target_amount)
             .call()
             .await
@@ -92,6 +94,7 @@ pub mod abi_calls {
         let call_params = CallParameters::new(Some(amount), Some(AssetId::from(*asset.id)), None);
 
         contract
+            .methods()
             .pledge(id)
             .tx_params(tx_params)
             .call_params(call_params)
@@ -101,19 +104,20 @@ pub mod abi_calls {
     }
 
     pub async fn pledged(contract: &Fundraiser, id: u64, user: Identity) -> CallResponse<Pledge> {
-        contract.pledged(id, user).call().await.unwrap()
+        contract.methods().pledged(id, user).call().await.unwrap()
     }
 
     pub async fn pledge_count(contract: &Fundraiser, user: Identity) -> u64 {
-        contract.pledge_count(user).call().await.unwrap().value
+        contract.methods().pledge_count(user).call().await.unwrap().value
     }
 
     pub async fn total_campaigns(contract: &Fundraiser) -> u64 {
-        contract.total_campaigns().call().await.unwrap().value
+        contract.methods().total_campaigns().call().await.unwrap().value
     }
 
     pub async fn unpledge(contract: &Fundraiser, id: u64, amount: u64) -> CallResponse<()> {
         contract
+            .methods()
             .unpledge(id, amount)
             .append_variable_outputs(1)
             .call()
@@ -123,6 +127,7 @@ pub mod abi_calls {
 
     pub async fn user_campaign_count(contract: &Fundraiser, user: Identity) -> u64 {
         contract
+            .methods()
             .user_campaign_count(user)
             .call()
             .await
@@ -141,6 +146,7 @@ pub mod test_helpers {
 
     pub async fn mint(contract: &Asset, amount: u64, address: &Bech32Address) -> bool {
         contract
+            .methods()
             .mint_and_send_to_address(amount, address.into())
             .append_variable_outputs(1)
             .call()
@@ -201,22 +207,22 @@ pub mod test_helpers {
         .unwrap();
 
         let author = Metadata {
-            contract: FundraiserBuilder::new(id.to_string(), author_wallet.clone()).build(),
+            contract: Fundraiser::new(id.to_string(), author_wallet.clone()),
             wallet: author_wallet,
         };
 
         let user = Metadata {
-            contract: FundraiserBuilder::new(id.to_string(), user_wallet.clone()).build(),
+            contract: Fundraiser::new(id.to_string(), user_wallet.clone()),
             wallet: user_wallet.clone(),
         };
 
         let asset = MetaAsset {
-            contract: AssetBuilder::new(asset_id.to_string(), deployer_wallet.clone()).build(),
+            contract: Asset::new(asset_id.to_string(), deployer_wallet.clone()),
             id: asset_id.clone().into(),
         };
 
         let asset2 = MetaAsset {
-            contract: AssetBuilder::new(asset2_id.to_string(), deployer_wallet).build(),
+            contract: Asset::new(asset2_id.to_string(), deployer_wallet),
             id: asset2_id.into(),
         };
 

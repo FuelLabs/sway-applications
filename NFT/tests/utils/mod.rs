@@ -12,11 +12,12 @@ pub mod abi_calls {
     use super::*;
 
     pub async fn admin(contract: &Nft) -> Identity {
-        contract.admin().call().await.unwrap().value
+        contract.methods().admin().call().await.unwrap().value
     }
 
     pub async fn approve(approved: &Identity, contract: &Nft, token_id: u64) -> CallResponse<()> {
         contract
+            .methods()
             .approve(approved.clone(), token_id)
             .call()
             .await
@@ -24,11 +25,12 @@ pub mod abi_calls {
     }
 
     pub async fn approved(contract: &Nft, token_id: u64) -> Identity {
-        contract.approved(token_id).call().await.unwrap().value
+        contract.methods().approved(token_id).call().await.unwrap().value
     }
 
     pub async fn balance_of(contract: &Nft, wallet: &Identity) -> u64 {
         contract
+            .methods()
             .balance_of(wallet.clone())
             .call()
             .await
@@ -37,7 +39,7 @@ pub mod abi_calls {
     }
 
     pub async fn burn(contract: &Nft, token_id: u64) -> CallResponse<()> {
-        contract.burn(token_id).call().await.unwrap()
+        contract.methods().burn(token_id).call().await.unwrap()
     }
 
     pub async fn constructor(
@@ -47,6 +49,7 @@ pub mod abi_calls {
         token_supply: u64,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .constructor(access_control, owner.clone(), token_supply)
             .call()
             .await
@@ -59,6 +62,7 @@ pub mod abi_calls {
         owner: &Identity,
     ) -> bool {
         contract
+            .methods()
             .is_approved_for_all(operator.clone(), owner.clone())
             .call()
             .await
@@ -67,19 +71,19 @@ pub mod abi_calls {
     }
 
     pub async fn max_supply(contract: &Nft) -> u64 {
-        contract.max_supply().call().await.unwrap().value
+        contract.methods().max_supply().call().await.unwrap().value
     }
 
     pub async fn mint(amount: u64, contract: &Nft, owner: &Identity) -> CallResponse<()> {
-        contract.mint(amount, owner.clone()).call().await.unwrap()
+        contract.methods().mint(amount, owner.clone()).call().await.unwrap()
     }
 
     pub async fn meta_data(contract: &Nft, token_id: u64) -> TokenMetaData {
-        contract.meta_data(token_id).call().await.unwrap().value
+        contract.methods().meta_data(token_id).call().await.unwrap().value
     }
 
     pub async fn owner_of(contract: &Nft, token_id: u64) -> Identity {
-        contract.owner_of(token_id).call().await.unwrap().value
+        contract.methods().owner_of(token_id).call().await.unwrap().value
     }
 
     pub async fn set_approval_for_all(
@@ -88,6 +92,7 @@ pub mod abi_calls {
         operator: &Identity,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .set_approval_for_all(approve, operator.clone())
             .call()
             .await
@@ -95,11 +100,11 @@ pub mod abi_calls {
     }
 
     pub async fn set_admin(contract: &Nft, minter: &Identity) -> CallResponse<()> {
-        contract.set_admin(minter.clone()).call().await.unwrap()
+        contract.methods().set_admin(minter.clone()).call().await.unwrap()
     }
 
     pub async fn total_supply(contract: &Nft) -> u64 {
-        contract.total_supply().call().await.unwrap().value
+        contract.methods().total_supply().call().await.unwrap().value
     }
 
     pub async fn transfer_from(
@@ -109,6 +114,7 @@ pub mod abi_calls {
         token_id: u64,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .transfer_from(from.clone(), to.clone(), token_id)
             .call()
             .await
@@ -152,17 +158,17 @@ pub mod test_helpers {
         .unwrap();
 
         let deploy_wallet = Metadata {
-            contract: NftBuilder::new(nft_id.to_string(), wallet1.clone()).build(),
+            contract: Nft::new(nft_id.to_string(), wallet1.clone()),
             wallet: wallet1.clone(),
         };
 
         let owner1 = Metadata {
-            contract: NftBuilder::new(nft_id.to_string(), wallet2.clone()).build(),
+            contract: Nft::new(nft_id.to_string(), wallet2.clone()),
             wallet: wallet2.clone(),
         };
 
         let owner2 = Metadata {
-            contract: NftBuilder::new(nft_id.to_string(), wallet3.clone()).build(),
+            contract: Nft::new(nft_id.to_string(), wallet3.clone()),
             wallet: wallet3.clone(),
         };
 
