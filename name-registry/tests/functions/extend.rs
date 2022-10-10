@@ -5,7 +5,7 @@ mod success {
 
     #[tokio::test]
     async fn can_extend() {
-        let (instance, _id, _wallet) = get_contract_instance().await;
+        let (instance, _id, _wallet, _wallet2) = get_contract_instance().await;
 
         let name = String::from("SwaySway");
 
@@ -26,7 +26,7 @@ mod revert {
     #[tokio::test]
     #[should_panic]
     async fn cant_extend_insufficient_payment() {
-        let (instance, _id, _wallet) = get_contract_instance().await;
+        let (instance, _id, _wallet, _wallet2) = get_contract_instance().await;
 
         let name = String::from("SwaySway");
 
@@ -36,9 +36,9 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn cant_extend_name_not_registered() {
-        let (instance, _id, _wallet) = get_contract_instance().await;
+        let (instance, _id, _wallet, _wallet2) = get_contract_instance().await;
 
         let name = String::from("SwaySway");
 

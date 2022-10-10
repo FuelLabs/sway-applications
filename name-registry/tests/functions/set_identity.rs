@@ -6,7 +6,7 @@ mod success {
 
     #[tokio::test]
     async fn can_set_identity() {
-        let (instance, _id, wallet) = get_contract_instance().await;
+        let (instance, _id, wallet, _wallet2) = get_contract_instance().await;
 
         let name = String::from("SwaySway");
 
@@ -32,15 +32,14 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(42)")]
     async fn cant_set_identity() {
-        let (instance, _id, _wallet) = get_contract_instance().await;
+        let (instance, _id, _wallet, wallet2) = get_contract_instance().await;
 
         let name = String::from("SwaySway");
 
         register(&instance, &name, 5000).await;
 
-        let wallet2 = WalletUnlocked::new_random(None);
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
         set_identity(

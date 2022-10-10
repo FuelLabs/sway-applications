@@ -6,7 +6,7 @@ mod success {
 
     #[tokio::test]
     async fn can_get_identity() {
-        let (instance, _id, wallet) = get_contract_instance().await;
+        let (instance, _id, wallet, _wallet2) = get_contract_instance().await;
 
         let name = String::from("SwaySway");
 
@@ -32,9 +32,9 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "Revert(0)")]
     async fn cant_get_identity() {
-        let (instance, _id, _wallet) = get_contract_instance().await;
+        let (instance, _id, _wallet, _wallet2) = get_contract_instance().await;
 
         let name = String::from("SwaySway");
 
