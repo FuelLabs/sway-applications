@@ -1,4 +1,4 @@
-mod passing {
+mod success {
     use crate::utils::*;
     #[tokio::test]
     async fn can_register() {
@@ -10,7 +10,7 @@ mod passing {
     }
 }
 
-mod failing {
+mod revert {
     use crate::utils::*;
     #[tokio::test]
     #[should_panic]

@@ -1,4 +1,4 @@
-mod passing {
+mod success {
     use crate::utils::*;
     use fuels::prelude::*;
 
@@ -26,7 +26,7 @@ mod passing {
     }
 }
 
-mod failing {
+mod revert {
     use crate::utils::*;
     use fuels::prelude::*;
 

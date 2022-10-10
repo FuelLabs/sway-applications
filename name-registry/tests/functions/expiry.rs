@@ -1,4 +1,4 @@
-mod passing {
+mod success {
     use crate::utils::*;
 
     #[tokio::test]
@@ -19,7 +19,7 @@ mod passing {
     }
 }
 
-mod failing {
+mod revert {
     use crate::utils::*;
 
     #[tokio::test]
