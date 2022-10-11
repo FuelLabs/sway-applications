@@ -22,6 +22,7 @@ name-registry/
 ├── contract/
 |    └── src/main.sw
 |    └── tests/harness.rs
+├── frontend/
 ├── README.md
 └── SPECIFICATION.md
 ```
