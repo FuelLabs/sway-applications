@@ -88,5 +88,4 @@ abi NameRegistry {
     /// Reverts if the name is not registered
     #[storage(read)]
     fn owner(name: str[8]) -> Identity;
-
 }
