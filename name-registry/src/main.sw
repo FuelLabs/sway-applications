@@ -30,20 +30,6 @@ storage {
 const PRICE_PER_HUNDRED: u64 = 1;
 
 impl NameRegistry for Contract {
-    #[storage(read)]
-    fn expiry(name: str[8]) -> u64 {
-        match storage.names.get(name) {
-            Option::Some(record) => {
-                require(timestamp() < record.expiry, Errors::NameExpired);
-                record.expiry
-            },
-            None => {
-                log(Errors::NameNotRegistered);
-                revert(0)
-            }
-        }
-    }
-
     #[storage(read, write)]
     fn extend(name: str[8], duration: u64) {
         require(storage.names.get(name).is_some(), Errors::NameNotRegistered);
@@ -64,34 +50,6 @@ impl NameRegistry for Contract {
             name,
             new_expiry: new_record.expiry,
         });
-    }
-
-    #[storage(read)]
-    fn identity(name: str[8]) -> Identity {
-        match storage.names.get(name) {
-            Option::Some(record) => {
-                require(timestamp() < record.expiry, Errors::NameExpired);
-                record.identity
-            },
-            None => {
-                log(Errors::NameNotRegistered);
-                revert(0)
-            }
-        }
-    }
-
-    #[storage(read)]
-    fn owner(name: str[8]) -> Identity {
-        match storage.names.get(name) {
-            Option::Some(record) => {
-                require(timestamp() < record.expiry, Errors::NameExpired);
-                record.owner
-            },
-            None => {
-                log(Errors::NameNotRegistered);
-                revert(0)
-            }
-        }
     }
 
     #[storage(read, write)]
@@ -167,5 +125,47 @@ impl NameRegistry for Contract {
             new_owner: new_record.owner,
             old_owner: old_record.owner,
         });
+    }
+
+    #[storage(read)]
+    fn expiry(name: str[8]) -> u64 {
+        match storage.names.get(name) {
+            Option::Some(record) => {
+                require(timestamp() < record.expiry, Errors::NameExpired);
+                record.expiry
+            },
+            None => {
+                log(Errors::NameNotRegistered);
+                revert(0)
+            }
+        }
+    }
+
+    #[storage(read)]
+    fn identity(name: str[8]) -> Identity {
+        match storage.names.get(name) {
+            Option::Some(record) => {
+                require(timestamp() < record.expiry, Errors::NameExpired);
+                record.identity
+            },
+            None => {
+                log(Errors::NameNotRegistered);
+                revert(0)
+            }
+        }
+    }
+
+    #[storage(read)]
+    fn owner(name: str[8]) -> Identity {
+        match storage.names.get(name) {
+            Option::Some(record) => {
+                require(timestamp() < record.expiry, Errors::NameExpired);
+                record.owner
+            },
+            None => {
+                log(Errors::NameNotRegistered);
+                revert(0)
+            }
+        }
     }
 }
