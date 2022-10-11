@@ -34,6 +34,7 @@ impl NameRegistry for Contract {
     fn expiry(name: str[8]) -> u64 {
         match storage.names.get(name) {
             Option::Some(record) => {
+                require(timestamp() < record.expiry, Errors::NameExpired);
                 record.expiry
             },
             None => {
@@ -69,6 +70,7 @@ impl NameRegistry for Contract {
     fn identity(name: str[8]) -> Identity {
         match storage.names.get(name) {
             Option::Some(record) => {
+                require(timestamp() < record.expiry, Errors::NameExpired);
                 record.identity
             },
             None => {
@@ -82,6 +84,7 @@ impl NameRegistry for Contract {
     fn owner(name: str[8]) -> Identity {
         match storage.names.get(name) {
             Option::Some(record) => {
+                require(timestamp() < record.expiry, Errors::NameExpired);
                 record.owner
             },
             None => {
@@ -121,6 +124,7 @@ impl NameRegistry for Contract {
         require(storage.names.get(name).is_some(), Errors::NameNotRegistered);
         let old_record = storage.names.get(name).unwrap();
         require(old_record.owner == msg_sender().unwrap(), Errors::SenderNotOwner);
+        require(timestamp() < old_record.expiry, Errors::NameExpired);
 
         let new_record = Record {
             expiry: old_record.expiry,
@@ -142,6 +146,7 @@ impl NameRegistry for Contract {
         require(storage.names.get(name).is_some(), Errors::NameNotRegistered);
         let old_record = storage.names.get(name).unwrap();
         require(old_record.owner == msg_sender().unwrap(), Errors::SenderNotOwner);
+        require(timestamp() < old_record.expiry, Errors::NameExpired);
 
         let new_record = Record {
             expiry: old_record.expiry,
