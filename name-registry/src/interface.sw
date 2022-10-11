@@ -61,7 +61,7 @@ abi NameRegistry {
     /// 
     /// Reverts if the name is registered and not expired yet, if the payment is insufficient, or if the wrong asset is sent
     #[storage(read, write)]
-    fn register(name: str[8], duration: u64);
+    fn register(name: str[8], duration: u64, owner: Identity, identity: Identity);
 
     /// Sets the identity to which the name will resolve to
     /// 

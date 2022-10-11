@@ -8,9 +8,11 @@ mod success {
     async fn can_get_identity() {
         let (instance, _id, wallet, _wallet2) = get_contract_instance().await;
 
+        let wallet_identity = Identity::Address(Address::from(wallet.address()));
+
         let name = String::from("SwaySway");
 
-        register(&instance, &name, 5000).await;
+        register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
 
         let old_identity = identity(&instance, &name).await;
         let wallet_identity = Identity::Address(Address::from(wallet.address()));

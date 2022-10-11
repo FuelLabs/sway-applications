@@ -1,15 +1,18 @@
 use crate::utils::*;
+use fuels::prelude::*;
 
 mod success {
     use super::*;
 
     #[tokio::test]
     async fn can_get_expiry() {
-        let (instance, _id, _wallet, _wallet2) = get_contract_instance().await;
+        let (instance, _id, wallet, _wallet2) = get_contract_instance().await;
+
+        let wallet_identity = Identity::Address(Address::from(wallet.address()));
 
         let name = String::from("SwaySway");
 
-        register(&instance, &name, 5000).await;
+        register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
 
         let old_expiry = expiry(&instance, &name).await;
 

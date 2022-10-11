@@ -18,6 +18,8 @@ pub struct NameRegistered {
     name: str[8],
     /// The new owner of the name
     owner: Identity,
+    /// The identity to which the name resolves to
+    identity: Identity,
 }
 
 /// The event for when the owner of a name changes

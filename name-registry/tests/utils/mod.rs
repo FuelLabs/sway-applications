@@ -76,11 +76,13 @@ pub async fn owner(instance: &MyContract, name: &String) -> Identity {
         .value
 }
 
-pub async fn register(instance: &MyContract, name: &String, duration: u64) {
+pub async fn register(instance: &MyContract, name: &String, duration: u64, owner: &Identity, identity: &Identity) {
     instance
         .register(
             SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
             duration,
+            owner.to_owned(),
+            identity.to_owned()
         )
         .call_params(CallParameters {
             amount: duration / 100,
