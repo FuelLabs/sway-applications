@@ -26,12 +26,14 @@ A user should be able to register a name for themselves
 
 1. If the name is not already registered
 2. If the payment is sufficient for the duration
+3. If the payment is in the correct asset
 
 ### `extend()`
 
 Any user can extend the expiry of a given name
 
 1. If the payment is sufficient for the duration
+2. If the payment is in the correct asset
 
 ### `set_identity()`
 
