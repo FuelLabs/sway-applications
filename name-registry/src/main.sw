@@ -29,6 +29,7 @@ storage {
 /// The amount to charge per hundred seconds per name
 const PRICE_PER_HUNDRED: u64 = 1;
 
+// TODO: Change the static 8 length str with a dynamic string when possible
 impl NameRegistry for Contract {
     #[storage(read, write)]
     fn extend(name: str[8], duration: u64) {
