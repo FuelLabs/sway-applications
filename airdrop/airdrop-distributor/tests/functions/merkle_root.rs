@@ -2,10 +2,9 @@ use crate::utils::{
     airdrop_distributor_abi_calls::{airdrop_constructor, merkle_root},
     test_helpers::{defaults, setup},
 };
+use fuels::prelude::Bits256;
 
 mod success {
-
-    use fuels::prelude::Bits256;
 
     use super::*;
 
