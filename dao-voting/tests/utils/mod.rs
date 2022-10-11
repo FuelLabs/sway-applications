@@ -107,11 +107,23 @@ pub mod abi_calls {
     }
 
     pub async fn governance_token_id(contract: &DaoVoting) -> ContractId {
-        contract.methods().governance_token_id().call().await.unwrap().value
+        contract
+            .methods()
+            .governance_token_id()
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn proposal_count(contract: &DaoVoting) -> u64 {
-        contract.methods().proposal_count().call().await.unwrap().value
+        contract
+            .methods()
+            .proposal_count()
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 }
 
@@ -183,14 +195,14 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let gov_token =
-            GovToken::new(gov_token_id.to_string(), deployer_wallet.clone());
+        let gov_token = GovToken::new(gov_token_id.to_string(), deployer_wallet.clone());
 
         let deployer = Metadata {
             dao_voting: DaoVoting::new(dao_voting_id.to_string(), deployer_wallet.clone()),
-            gov_token: Some(
-                GovToken::new(gov_token_id.to_string(), deployer_wallet.clone()),
-            ),
+            gov_token: Some(GovToken::new(
+                gov_token_id.to_string(),
+                deployer_wallet.clone(),
+            )),
             wallet: deployer_wallet,
         };
 

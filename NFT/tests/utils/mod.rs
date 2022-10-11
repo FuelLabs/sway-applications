@@ -25,7 +25,13 @@ pub mod abi_calls {
     }
 
     pub async fn approved(contract: &Nft, token_id: u64) -> Identity {
-        contract.methods().approved(token_id).call().await.unwrap().value
+        contract
+            .methods()
+            .approved(token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn balance_of(contract: &Nft, wallet: &Identity) -> u64 {
@@ -75,15 +81,32 @@ pub mod abi_calls {
     }
 
     pub async fn mint(amount: u64, contract: &Nft, owner: &Identity) -> CallResponse<()> {
-        contract.methods().mint(amount, owner.clone()).call().await.unwrap()
+        contract
+            .methods()
+            .mint(amount, owner.clone())
+            .call()
+            .await
+            .unwrap()
     }
 
     pub async fn meta_data(contract: &Nft, token_id: u64) -> TokenMetaData {
-        contract.methods().meta_data(token_id).call().await.unwrap().value
+        contract
+            .methods()
+            .meta_data(token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn owner_of(contract: &Nft, token_id: u64) -> Identity {
-        contract.methods().owner_of(token_id).call().await.unwrap().value
+        contract
+            .methods()
+            .owner_of(token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn set_approval_for_all(
@@ -100,11 +123,22 @@ pub mod abi_calls {
     }
 
     pub async fn set_admin(contract: &Nft, minter: &Identity) -> CallResponse<()> {
-        contract.methods().set_admin(minter.clone()).call().await.unwrap()
+        contract
+            .methods()
+            .set_admin(minter.clone())
+            .call()
+            .await
+            .unwrap()
     }
 
     pub async fn total_supply(contract: &Nft) -> u64 {
-        contract.methods().total_supply().call().await.unwrap().value
+        contract
+            .methods()
+            .total_supply()
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn transfer_from(

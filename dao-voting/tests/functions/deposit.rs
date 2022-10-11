@@ -90,8 +90,7 @@ mod revert {
         .await
         .unwrap();
 
-        let another_asset =
-            GovToken::new(another_asset_id.to_string(), deployer.wallet.clone());
+        let another_asset = GovToken::new(another_asset_id.to_string(), deployer.wallet.clone());
         let id: ContractId = another_asset_id.into();
 
         mint(&another_asset, asset_amount, user.wallet.address()).await;

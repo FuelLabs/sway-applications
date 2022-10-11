@@ -19,7 +19,12 @@ pub mod abi_calls {
     }
 
     pub async fn set_price(contract: &Oracle, new_price: u64) -> CallResponse<()> {
-        contract.methods().set_price(new_price).call().await.unwrap()
+        contract
+            .methods()
+            .set_price(new_price)
+            .call()
+            .await
+            .unwrap()
     }
 }
 

@@ -36,11 +36,21 @@ pub mod abi_calls {
         contract: &Fundraiser,
         asset: &ContractId,
     ) -> CallResponse<AssetInfo> {
-        contract.methods().asset_info_by_id(*asset).call().await.unwrap()
+        contract
+            .methods()
+            .asset_info_by_id(*asset)
+            .call()
+            .await
+            .unwrap()
     }
 
     pub async fn asset_info_by_count(contract: &Fundraiser, id: u64) -> CallResponse<AssetInfo> {
-        contract.methods().asset_info_by_count(id).call().await.unwrap()
+        contract
+            .methods()
+            .asset_info_by_count(id)
+            .call()
+            .await
+            .unwrap()
     }
 
     pub async fn campaign(
@@ -108,11 +118,23 @@ pub mod abi_calls {
     }
 
     pub async fn pledge_count(contract: &Fundraiser, user: Identity) -> u64 {
-        contract.methods().pledge_count(user).call().await.unwrap().value
+        contract
+            .methods()
+            .pledge_count(user)
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn total_campaigns(contract: &Fundraiser) -> u64 {
-        contract.methods().total_campaigns().call().await.unwrap().value
+        contract
+            .methods()
+            .total_campaigns()
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn unpledge(contract: &Fundraiser, id: u64, amount: u64) -> CallResponse<()> {

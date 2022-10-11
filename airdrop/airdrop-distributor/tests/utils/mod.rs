@@ -46,7 +46,13 @@ pub mod airdrop_distributor_abi_calls {
     }
 
     pub async fn claim_data(contract: &AirdropDistributor, identity: Identity) -> ClaimData {
-        contract.methods().claim_data(identity).call().await.unwrap().value
+        contract
+            .methods()
+            .claim_data(identity)
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn airdrop_constructor(
@@ -128,9 +134,7 @@ pub mod test_helpers {
         (tree, merkle_root, merkle_leaf, proof.1)
     }
 
-    pub async fn build_tree_manual(
-        leaves: [(Identity, u64); 3],
-    ) -> (Bytes32, Bytes32, Bytes32) {
+    pub async fn build_tree_manual(leaves: [(Identity, u64); 3]) -> (Bytes32, Bytes32, Bytes32) {
         //            ABC
         //           /   \
         //          AB    C
@@ -146,7 +150,7 @@ pub mod test_helpers {
                 leaf_a.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
                 leaf_a.update(&*identity);
             }
-           Identity::ContractId(identity) => {
+            Identity::ContractId(identity) => {
                 leaf_a.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
                 leaf_a.update(&*identity);
             }

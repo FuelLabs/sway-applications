@@ -2,7 +2,7 @@ use crate::utils::{
     abi_calls::{constructor, mint_to},
     test_helpers::setup,
 };
-use fuels::{tx::AssetId, prelude::Identity};
+use fuels::{prelude::Identity, tx::AssetId};
 
 mod success {
 
