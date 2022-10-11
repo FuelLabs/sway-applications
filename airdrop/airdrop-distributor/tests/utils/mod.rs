@@ -1,8 +1,5 @@
-use fuel_merkle::{
-    binary::in_memory::MerkleTree,
-    common::{Bytes32, ProofSet},
-};
-use fuels::{contract::contract::CallResponse, prelude::*};
+use fuel_merkle::{binary::in_memory::MerkleTree, common::Bytes32};
+use fuels::{contract::contract::CallResponse, core::types::Bits256, prelude::*};
 use sha2::{Digest, Sha256};
 
 abigen!(AirdropDistributor, "out/debug/airdrop-distributor-abi.json");
@@ -32,7 +29,7 @@ pub mod airdrop_distributor_abi_calls {
         contract: &AirdropDistributor,
         key: u64,
         num_leaves: u64,
-        proof: Vec<[u8; 32]>,
+        proof: [Bits256; 2],
         to: Identity,
     ) -> CallResponse<()> {
         contract
@@ -59,7 +56,7 @@ pub mod airdrop_distributor_abi_calls {
         asset: ContractId,
         claim_time: u64,
         contract: &AirdropDistributor,
-        merkle_root: [u8; 32],
+        merkle_root: Bits256,
     ) -> CallResponse<()> {
         contract
             .methods()
@@ -73,7 +70,7 @@ pub mod airdrop_distributor_abi_calls {
         contract.methods().end_block().call().await.unwrap().value
     }
 
-    pub async fn merkle_root(contract: &AirdropDistributor) -> [u8; 32] {
+    pub async fn merkle_root(contract: &AirdropDistributor) -> Bits256 {
         contract.methods().merkle_root().call().await.unwrap().value
     }
 }
@@ -103,7 +100,7 @@ pub mod test_helpers {
     pub async fn build_tree(
         key: u64,
         leaves: Vec<(Identity, u64)>,
-    ) -> (MerkleTree, Bytes32, Bytes32, ProofSet) {
+    ) -> (MerkleTree, Bits256, Bytes32, [Bits256; 2]) {
         let mut tree = MerkleTree::new();
 
         for datum in leaves.iter() {
@@ -126,15 +123,20 @@ pub mod test_helpers {
             tree.push(&digest);
         }
 
-        let merkle_root = tree.root();
+        let merkle_root = Bits256(tree.root());
         let mut proof = tree.prove(key).unwrap();
         let merkle_leaf = proof.1[0];
         proof.1.remove(0);
 
-        (tree, merkle_root, merkle_leaf, proof.1)
+        (
+            tree,
+            merkle_root,
+            merkle_leaf,
+            [Bits256(proof.1[0]), Bits256(proof.1[1])],
+        )
     }
 
-    pub async fn build_tree_manual(leaves: [(Identity, u64); 3]) -> (Bytes32, Bytes32, Bytes32) {
+    pub async fn build_tree_manual(leaves: [(Identity, u64); 3]) -> (Bits256, Bits256, Bits256) {
         //            ABC
         //           /   \
         //          AB    C
@@ -220,7 +222,11 @@ pub mod test_helpers {
         node_abc.update(&leaf_c_hash);
         let node_abc_hash: Bytes32 = node_abc.finalize().try_into().unwrap();
 
-        (node_abc_hash, leaf_b_hash, leaf_c_hash)
+        (
+            Bits256(node_abc_hash),
+            Bits256(leaf_b_hash),
+            Bits256(leaf_c_hash),
+        )
     }
 
     pub async fn defaults(

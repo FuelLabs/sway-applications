@@ -5,6 +5,8 @@ use crate::utils::{
 
 mod success {
 
+    use fuels::prelude::Bits256;
+
     use super::*;
 
     #[tokio::test]
@@ -13,7 +15,7 @@ mod success {
         let (_, _, _, _, _, _, _, _, claim_time) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
         let provider = deploy_wallet.wallet.get_provider().unwrap();
-        let root = [2u8; 32];
+        let root = Bits256([2u8; 32]);
 
         airdrop_constructor(
             asset.asset_id,
