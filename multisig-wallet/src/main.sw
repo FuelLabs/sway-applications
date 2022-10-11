@@ -55,9 +55,9 @@ storage {
 
 impl MultiSignatureWallet for Contract {
     /// The constructor initializes the necessary values and unlocks further functionlity
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// - When the constructor is called more than once
     /// - When the user address is the 0th address (0x00000...)
     /// - When the threshold is set to 0
@@ -81,9 +81,9 @@ impl MultiSignatureWallet for Contract {
 
     /// Executes a Tx formed from the `to, `value` and `data` parameters if the signatures meet the
     /// threshold requirement
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// - When the constructor has not been called to initialize the contract
     /// - When the public key cannot be recovered from a signature
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
@@ -109,9 +109,9 @@ impl MultiSignatureWallet for Contract {
     }
 
     /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// - When the constructor has not been called to initialize the contract
     /// - When the amount of the asset being sent is greater than the balance in the contract
     /// - When the public key cannot be recovered from a signature
@@ -149,9 +149,9 @@ impl MultiSignatureWallet for Contract {
     }
 
     /// Returns a boolean value indicating if the given address is a user in the contract
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// - When the constructor has not been called to initialize the contract
     #[storage(read)]
     fn is_owner(user: Address) -> bool {
