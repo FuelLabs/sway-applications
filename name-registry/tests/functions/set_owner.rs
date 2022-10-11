@@ -1,4 +1,4 @@
-use crate::utils::{*, abi::*};
+use crate::utils::{abi::*, *};
 use fuels::prelude::*;
 
 mod success {

@@ -1,4 +1,4 @@
-use crate::utils::{*, abi::*};
+use crate::utils::{abi::*, *};
 use fuels::prelude::*;
 
 mod success {
@@ -39,6 +39,13 @@ mod revert {
 
         let name = String::from("SwaySway");
 
-        register(&instance, &name, u64::MAX, &wallet_identity, &wallet_identity).await;
+        register(
+            &instance,
+            &name,
+            u64::MAX,
+            &wallet_identity,
+            &wallet_identity,
+        )
+        .await;
     }
 }

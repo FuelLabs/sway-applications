@@ -95,7 +95,12 @@ impl NameRegistry for Contract {
     }
 
     #[storage(read, write)]
-    fn register(name: str[8], duration: u64, owner: Identity, identity: Identity) {
+    fn register(
+        name: str[8],
+        duration: u64,
+        owner: Identity,
+        identity: Identity,
+    ) {
         if storage.names.get(name).is_some() {
             let record = storage.names.get(name).unwrap();
             require(timestamp() > record.expiry, Errors::NameNotExpired);
@@ -116,7 +121,7 @@ impl NameRegistry for Contract {
             expiry: record.expiry,
             name,
             owner,
-            identity
+            identity,
         });
     }
 
