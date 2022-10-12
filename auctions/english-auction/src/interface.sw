@@ -15,7 +15,8 @@ abi EnglishAuction {
     /// # Reverts
     ///
     /// * When the auction id does not map to an existing auction
-    #[storage(read)]fn auction_info(auction_id: u64) -> Auction;
+    #[storage(read)]
+    fn auction_info(auction_id: u64) -> Auction;
 
     /// Places a bid on the auction specified.
     ///
@@ -42,7 +43,8 @@ abi EnglishAuction {
     /// * When the `new_bid_asset` amount provided is less than the initial price if there are no bids.
     /// * When the total of previous plus this bid amounts are not greater than the current bid
     ///   amount.
-    #[storage(read, write)]fn bid(auction_id: u64, bid_asset: Asset);
+    #[storage(read, write)]
+    fn bid(auction_id: u64, bid_asset: Asset);
 
     /// Cancels the specified auction.
     ///
@@ -56,7 +58,8 @@ abi EnglishAuction {
     ///
     /// * When the `auction_id` does not map to an existing auction.
     /// * When the `sender` is not the `seller` of the auction.
-    #[storage(read, write)]fn cancel(auction_id: u64);
+    #[storage(read, write)]
+    fn cancel(auction_id: u64);
 
     /// Starts an auction with a seller, selling asset, buying asset, prices, and length of the
     /// auction.
@@ -87,7 +90,8 @@ abi EnglishAuction {
     /// * When the `sender` is not the owner of the NFT's provided in the `sell_asset` struct.
     /// * When the auction contract is not approved to transfer the NFT's provided in the
     ///   `sell_asset` struct.
-    #[storage(read, write)]fn create(buy_asset: Asset, inital_price: u64, reserve_price: u64, seller: Identity, sell_asset: Asset, time: u64) -> u64;
+    #[storage(read, write)]
+    fn create(buy_asset: Asset, inital_price: u64, reserve_price: u64, seller: Identity, sell_asset: Asset, time: u64) -> u64;
 
     /// Returns the balance of the user's `bid_asset` deposits.
     ///
@@ -99,7 +103,8 @@ abi EnglishAuction {
     /// # Reverts
     ///
     /// * When the idendity and auction id provided do not map to an existing auction
-    #[storage(read)]fn deposit(auction_id: u64, identity: Identity) -> Asset;
+    #[storage(read)]
+    fn deposit(auction_id: u64, identity: Identity) -> Asset;
 
     /// Allows users to withdraw their assets if the auction has gone over time, the reserve has
     /// been met, or been canceled.
@@ -119,10 +124,12 @@ abi EnglishAuction {
     /// * When the duration of the auction has not ended.
     /// * When the auction's `state` is still in the open bidding state.
     /// * When the `sender` has already withdrawn their deposit.
-    #[storage(read, write)]fn withdraw(auction_id: u64);
+    #[storage(read, write)]
+    fn withdraw(auction_id: u64);
 
     /// Returns the total auctions which have been started using this auction contract.
-    #[storage(read)]fn total_auctions() -> u64;
+    #[storage(read)]
+    fn total_auctions() -> u64;
 }
 
 abi NFT {

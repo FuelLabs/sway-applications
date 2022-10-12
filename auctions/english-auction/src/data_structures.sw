@@ -9,7 +9,10 @@ use std::{
     option::Option,
     revert::require,
     revert::revert,
-    storage::{StorageMap, StorageVec},
+    storage::{
+        StorageMap,
+        StorageVec,
+    },
 };
 
 pub enum Asset {
@@ -43,17 +46,22 @@ impl Asset {
 
 impl core::ops::Add for Asset {
     fn add(self, other: Self) -> Self {
-        match(self, other) {
+        match (self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                require(nft_asset1.contract_id == nft_asset2.contract_id, AssetError::AssetsAreNotTheSame);
-                // TODO: Combine vecs
+                require(nft_asset1.contract_id == nft_asset2.contract_id, AssetError::AssetsAreNotTheSame);// TODO: Combine vecs
+
                 self
             },
-            (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
+            (
+
+                Asset::TokenAsset(token_asset1),
+                Asset::TokenAsset(token_asset2),
+            ) => {
                 require(token_asset1.contract_id == token_asset2.contract_id, AssetError::AssetsAreNotTheSame);
                 let total_amount = token_asset1.amount + token_asset2.amount;
                 let token = TokenAsset {
-                    amount: total_amount, contract_id: token_asset1.contract_id
+                    amount: total_amount,
+                    contract_id: token_asset1.contract_id,
                 };
                 Asset::TokenAsset(token)
             },
@@ -66,11 +74,15 @@ impl core::ops::Add for Asset {
 
 impl core::ops::Eq for Asset {
     fn eq(self, other: Self) -> bool {
-        match(self, other) {
+        match (self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 nft_asset1.contract_id == nft_asset2.contract_id
             },
-            (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
+            (
+
+                Asset::TokenAsset(token_asset1),
+                Asset::TokenAsset(token_asset2),
+            ) => {
                 token_asset1.contract_id == token_asset2.contract_id
             },
             _ => {
@@ -82,13 +94,16 @@ impl core::ops::Eq for Asset {
 
 impl core::ops::Ord for Asset {
     fn gt(self, other: Self) -> bool {
-        match(self, other) {
+        match (self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                // TODO: Compare NFT token ID Vec length
-                nft_asset1.contract_id == nft_asset2.contract_id
                 
+                // TODO: Compare NFT token ID Vec lengthnft_asset1.contract_id == nft_asset2.contract_id
             },
-            (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
+            (
+
+                Asset::TokenAsset(token_asset1),
+                Asset::TokenAsset(token_asset2),
+            ) => {
                 token_asset1.contract_id == token_asset2.contract_id && token_asset1.amount > token_asset2.amount
             },
             _ => {
@@ -96,14 +111,18 @@ impl core::ops::Ord for Asset {
             },
         }
     }
-
-    fn lt(self, other: Self) -> bool {
-        match(self, other) {
+    fn lt(self, other:
+ Self) -> bool {
+        match (self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
-                // TODO: Compare NFT token ID Vec length
-                nft_asset1.contract_id == nft_asset2.contract_id
+                
+                // TODO: Compare NFT token ID Vec lengthnft_asset1.contract_id == nft_asset2.contract_id
             },
-            (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
+            (
+
+                Asset::TokenAsset(token_asset1),
+                Asset::TokenAsset(token_asset2),
+            ) => {
                 token_asset1.contract_id == token_asset2.contract_id && token_asset1.amount < token_asset2.amount
             },
             _ => {
@@ -112,10 +131,10 @@ impl core::ops::Ord for Asset {
         }
     }
 }
-
 pub struct Auction {
     /// The asset which will be accepted in return for `sell_asset`.
     /// On initalization, the amount will be set to 0 and the `contract_id` will be set to the
+
     /// `ContractId` of the asset in return.
     bid_asset: Asset,
     /// The current highest bidder of the auction. When the auction is over, this is the winner.
@@ -135,30 +154,32 @@ pub struct Auction {
     /// The state of the auction describing if it is open or closed.
     state: State,
 }
-
 pub struct NFTAsset {
     /// The `ContractId` of the NFT that the struct is representing.
     contract_id: ContractId,
+
     /// The token id of the NFT that the struct is representing.
     token_id: u64,
 }
-
 pub enum State {
     Closed: (),
     Open: (),
 }
-
-impl core::ops::Eq for State {
-    fn eq(self, other: Self) -> bool {
-        match(self, other) {
-            (State::Open, State::Open) => true, (State::Closed, State::Closed) => true, _ => false, 
+impl
+ core::ops::Eq for State {
+    fn eq(self, other: Self)
+ -> bool {
+        match (self, other) {
+            (State::Open, State::Open) => true,
+            (State::Closed, State::Closed) => true,
+            _ => false,
         }
     }
 }
-
 pub struct TokenAsset {
     /// The amount of the native asset that the struct is representing.
     amount: u64,
+
     /// The `ContractId` of the native asset that the struct is representing.
     contract_id: ContractId,
 }

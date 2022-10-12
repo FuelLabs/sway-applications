@@ -14,8 +14,17 @@ use utils::{approved_for_nft_transfer, owns_nft, transfer_asset, transfer_nft, v
 
 use std::{
     block::height,
-    chain::auth::{AuthError, msg_sender},
-    context::{call_frames::{contract_id, msg_asset_id}, msg_amount},
+    chain::auth::{
+        AuthError,
+        msg_sender,
+    },
+    context::{
+        call_frames::{
+            contract_id,
+            msg_asset_id,
+        },
+        msg_amount,
+    },
     contract_id::ContractId,
     identity::Identity,
     logging::log,
@@ -28,20 +37,18 @@ use std::{
 storage {
     /// Stores the auction information based on auction ID
     /// Map(auction_id => auction)
-    auctions: StorageMap<u64,
-    Option<Auction>> = StorageMap {
-    }, // TODO: Move deposits into the Auction struct when StorageMaps are
+    auctions: StorageMap<u64, Option<Auction>> = StorageMap {}, // TODO: Move deposits into the Auction struct when StorageMaps are
     //       supported inside structs
     ///
-    deposits: StorageMap<(Identity,
-    u64), Option<Asset>> = StorageMap {
-    }, /// The total number of auctions that have been created
+    deposits: StorageMap<(Identity, u64), Option<Asset>> = StorageMap {},
+    /// The total number of auctions that have been created
     /// This should only be incremented
     total_auctions: u64 = 0,
 }
 
 impl EnglishAuction for Contract {
-    #[storage(read)]fn auction_info(auction_id: u64) -> Auction {
+    #[storage(read)]
+    fn auction_info(auction_id: u64) -> Auction {
         // TODO: This should be removed and the function definition should be updated to return an
         // Option once https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
         let auction = storage.auctions.get(auction_id);
@@ -49,7 +56,8 @@ impl EnglishAuction for Contract {
         auction.unwrap()
     }
 
-    #[storage(read, write)]fn bid(auction_id: u64, bid_asset: Asset) {
+    #[storage(read, write)]
+    fn bid(auction_id: u64, bid_asset: Asset) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -102,8 +110,7 @@ impl EnglishAuction for Contract {
                 // bidding an NFT
                 transfer_nft(sender, Identity::ContractId(contract_id()), nft_asset);
             }
-            _ => {
-            }
+            _ => {}
         }
 
         // Update the auction's information
@@ -116,11 +123,14 @@ impl EnglishAuction for Contract {
 
         // Log the bid
         log(BidEvent {
-            amount: auction.bid_asset.amount(), auction_id: auction_id, identity: sender
+            amount: auction.bid_asset.amount(),
+            auction_id: auction_id,
+            identity: sender,
         });
     }
 
-    #[storage(read, write)]fn cancel(auction_id: u64) {
+    #[storage(read, write)]
+    fn cancel(auction_id: u64) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -135,12 +145,18 @@ impl EnglishAuction for Contract {
         storage.auctions.insert(auction_id, Option::Some(auction));
 
         // Log that the auction was canceled
-        log(CancelAuctionEvent {
-            auction_id
-        });
+        log(CancelAuctionEvent { auction_id });
     }
 
-    #[storage(read, write)]fn create(bid_asset: Asset, initial_price: u64, reserve_price: u64, seller: Identity, sell_asset: Asset, time: u64) -> u64 {
+    #[storage(read, write)]
+    fn create(
+        bid_asset: Asset,
+        initial_price: u64,
+        reserve_price: u64,
+        seller: Identity,
+        sell_asset: Asset,
+        time: u64,
+    ) -> u64 {
         // Either there is no reserve price or the reserve must be greater than the initial price
         require((reserve_price >= initial_price && reserve_price != 0) || reserve_price == 0, InitError::ReserveLessThanInitialPrice);
         // The auction must last for some time
@@ -169,7 +185,8 @@ impl EnglishAuction for Contract {
 
         // Does the seller want a reserve
         let reserve = match reserve_price {
-            0 => Option::None(), _ => Option::Some(reserve_price), 
+            0 => Option::None(),
+            _ => Option::Some(reserve_price),
         };
 
         // Setup auction
@@ -190,7 +207,7 @@ impl EnglishAuction for Contract {
 
         // Log the start of the new auction
         log(CreateAuctionEvent {
-            auction_id: storage.total_auctions
+            auction_id: storage.total_auctions,
         });
 
         // Return the auction ID and increment the total auctions counter
@@ -198,7 +215,8 @@ impl EnglishAuction for Contract {
         storage.total_auctions - 1
     }
 
-    #[storage(read)]fn deposit(auction_id: u64, identity: Identity) -> Asset {
+    #[storage(read)]
+    fn deposit(auction_id: u64, identity: Identity) -> Asset {
         // TODO: This should be removed and the function definition should be updated to return an
         // Option once https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
         let deposit = storage.deposits.get((identity, auction_id));
@@ -206,7 +224,8 @@ impl EnglishAuction for Contract {
         deposit.unwrap()
     }
 
-    #[storage(read, write)]fn withdraw(auction_id: u64) {
+    #[storage(read, write)]
+    fn withdraw(auction_id: u64) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
@@ -216,7 +235,9 @@ impl EnglishAuction for Contract {
         require(auction.state == State::Closed || height() >= auction.end_block, AccessError::AuctionIsNotClosed);
 
         // If time has run out set the contract state to closed
-        if (height() >= auction.end_block && auction.state == State::Open) {
+        if (height() >= auction.end_block
+            && auction.state == State::Open)
+        {
             auction.state = State::Closed;
             storage.auctions.insert(auction_id, Option::Some(auction));
         }
@@ -232,7 +253,10 @@ impl EnglishAuction for Contract {
         let mut withdrawn_asset = sender_deposit.unwrap();
 
         // Go ahead and withdraw
-        if ((bidder.is_some() && sender == bidder.unwrap()) || sender == auction.seller) {
+        if ((bidder.is_some()
+            && sender == bidder.unwrap())
+            || sender == auction.seller)
+        {
             // The buyer is withdrawing or the seller is withdrawing and no one placed a bid
             transfer_asset(sender, auction.sell_asset);
             withdrawn_asset = auction.sell_asset;
@@ -247,11 +271,14 @@ impl EnglishAuction for Contract {
 
         // Log the withdrawal
         log(WithdrawEvent {
-            amount: withdrawn_asset.amount(), auction_id, identity: sender
+            amount: withdrawn_asset.amount(),
+            auction_id,
+            identity: sender,
         });
     }
 
-    #[storage(read)]fn total_auctions() -> u64 {
+    #[storage(read)]
+    fn total_auctions() -> u64 {
         storage.total_auctions
     }
 }
