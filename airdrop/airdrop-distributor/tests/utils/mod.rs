@@ -1,8 +1,5 @@
-use fuel_merkle::{
-    binary::in_memory::MerkleTree,
-    common::{Bytes32, ProofSet},
-};
-use fuels::{contract::contract::CallResponse, prelude::*};
+use fuel_merkle::{binary::in_memory::MerkleTree, common::Bytes32};
+use fuels::{contract::contract::CallResponse, core::types::Bits256, prelude::*};
 use sha2::{Digest, Sha256};
 
 abigen!(AirdropDistributor, "out/debug/airdrop-distributor-abi.json");
@@ -32,10 +29,11 @@ pub mod airdrop_distributor_abi_calls {
         contract: &AirdropDistributor,
         key: u64,
         num_leaves: u64,
-        proof: Vec<[u8; 32]>,
+        proof: [Bits256; 2],
         to: Identity,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .claim(amount, key, num_leaves, proof, to)
             .append_variable_outputs(1)
             .set_contracts(&[asset_id.into()])
@@ -45,16 +43,23 @@ pub mod airdrop_distributor_abi_calls {
     }
 
     pub async fn claim_data(contract: &AirdropDistributor, identity: Identity) -> ClaimData {
-        contract.claim_data(identity).call().await.unwrap().value
+        contract
+            .methods()
+            .claim_data(identity)
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn airdrop_constructor(
         asset: ContractId,
         claim_time: u64,
         contract: &AirdropDistributor,
-        merkle_root: [u8; 32],
+        merkle_root: Bits256,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .constructor(asset, claim_time, merkle_root)
             .call()
             .await
@@ -62,11 +67,11 @@ pub mod airdrop_distributor_abi_calls {
     }
 
     pub async fn end_block(contract: &AirdropDistributor) -> u64 {
-        contract.end_block().call().await.unwrap().value
+        contract.methods().end_block().call().await.unwrap().value
     }
 
-    pub async fn merkle_root(contract: &AirdropDistributor) -> [u8; 32] {
-        contract.merkle_root().call().await.unwrap().value
+    pub async fn merkle_root(contract: &AirdropDistributor) -> Bits256 {
+        contract.methods().merkle_root().call().await.unwrap().value
     }
 }
 
@@ -77,9 +82,10 @@ pub mod simple_asset_abi_calls {
     pub async fn asset_constructor(
         asset_supply: u64,
         contract: &SimpleAsset,
-        minter: simpleasset_mod::Identity,
+        minter: Identity,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .constructor(asset_supply, minter)
             .call()
             .await
@@ -93,8 +99,8 @@ pub mod test_helpers {
 
     pub async fn build_tree(
         key: u64,
-        leaves: Vec<(airdropdistributor_mod::Identity, u64)>,
-    ) -> (MerkleTree, Bytes32, Bytes32, ProofSet) {
+        leaves: Vec<(Identity, u64)>,
+    ) -> (MerkleTree, Bits256, Bytes32, [Bits256; 2]) {
         let mut tree = MerkleTree::new();
 
         for datum in leaves.iter() {
@@ -102,11 +108,11 @@ pub mod test_helpers {
             let identity = datum.0.clone();
 
             match identity {
-                airdropdistributor_mod::Identity::Address(identity) => {
+                Identity::Address(identity) => {
                     hasher.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
                     hasher.update(&*identity);
                 }
-                airdropdistributor_mod::Identity::ContractId(identity) => {
+                Identity::ContractId(identity) => {
                     hasher.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
                     hasher.update(&*identity);
                 }
@@ -117,17 +123,20 @@ pub mod test_helpers {
             tree.push(&digest);
         }
 
-        let merkle_root = tree.root();
+        let merkle_root = Bits256(tree.root());
         let mut proof = tree.prove(key).unwrap();
         let merkle_leaf = proof.1[0];
         proof.1.remove(0);
 
-        (tree, merkle_root, merkle_leaf, proof.1)
+        (
+            tree,
+            merkle_root,
+            merkle_leaf,
+            [Bits256(proof.1[0]), Bits256(proof.1[1])],
+        )
     }
 
-    pub async fn build_tree_manual(
-        leaves: [(airdropdistributor_mod::Identity, u64); 3],
-    ) -> (Bytes32, Bytes32, Bytes32) {
+    pub async fn build_tree_manual(leaves: [(Identity, u64); 3]) -> (Bits256, Bits256, Bits256) {
         //            ABC
         //           /   \
         //          AB    C
@@ -139,11 +148,11 @@ pub mod test_helpers {
         let mut leaf_a = Sha256::new();
         let identity_a = leaves[0].0.clone();
         match identity_a {
-            airdropdistributor_mod::Identity::Address(identity) => {
+            Identity::Address(identity) => {
                 leaf_a.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
                 leaf_a.update(&*identity);
             }
-            airdropdistributor_mod::Identity::ContractId(identity) => {
+            Identity::ContractId(identity) => {
                 leaf_a.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
                 leaf_a.update(&*identity);
             }
@@ -160,11 +169,11 @@ pub mod test_helpers {
         let mut leaf_b = Sha256::new();
         let identity_b = leaves[1].0.clone();
         match identity_b {
-            airdropdistributor_mod::Identity::Address(identity) => {
+            Identity::Address(identity) => {
                 leaf_b.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
                 leaf_b.update(&*identity);
             }
-            airdropdistributor_mod::Identity::ContractId(identity) => {
+            Identity::ContractId(identity) => {
                 leaf_b.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
                 leaf_b.update(&*identity);
             }
@@ -181,11 +190,11 @@ pub mod test_helpers {
         let mut leaf_c = Sha256::new();
         let identity_c = leaves[2].0.clone();
         match identity_c {
-            airdropdistributor_mod::Identity::Address(identity) => {
+            Identity::Address(identity) => {
                 leaf_c.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
                 leaf_c.update(&*identity);
             }
-            airdropdistributor_mod::Identity::ContractId(identity) => {
+            Identity::ContractId(identity) => {
                 leaf_c.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
                 leaf_c.update(&*identity);
             }
@@ -213,7 +222,11 @@ pub mod test_helpers {
         node_abc.update(&leaf_c_hash);
         let node_abc_hash: Bytes32 = node_abc.finalize().try_into().unwrap();
 
-        (node_abc_hash, leaf_b_hash, leaf_c_hash)
+        (
+            Bits256(node_abc_hash),
+            Bits256(leaf_b_hash),
+            Bits256(leaf_c_hash),
+        )
     }
 
     pub async fn defaults(
@@ -222,20 +235,20 @@ pub mod test_helpers {
         wallet2: &Metadata,
         wallet3: &Metadata,
     ) -> (
-        airdropdistributor_mod::Identity,
-        airdropdistributor_mod::Identity,
-        airdropdistributor_mod::Identity,
-        simpleasset_mod::Identity,
+        Identity,
+        Identity,
+        Identity,
+        Identity,
         u64,
         u64,
         u64,
-        [(airdropdistributor_mod::Identity, u64); 3],
+        [(Identity, u64); 3],
         u64,
     ) {
-        let identity_a = airdropdistributor_mod::Identity::Address(wallet1.wallet.address().into());
-        let identity_b = airdropdistributor_mod::Identity::Address(wallet2.wallet.address().into());
-        let identity_c = airdropdistributor_mod::Identity::Address(wallet3.wallet.address().into());
-        let minter = simpleasset_mod::Identity::ContractId(deploy_wallet.contract_id);
+        let identity_a = Identity::Address(wallet1.wallet.address().into());
+        let identity_b = Identity::Address(wallet2.wallet.address().into());
+        let identity_c = Identity::Address(wallet3.wallet.address().into());
+        let minter = Identity::ContractId(deploy_wallet.contract_id);
         let key = 0;
         let num_leaves = 3;
         let asset_supply = 10;
@@ -301,47 +314,43 @@ pub mod test_helpers {
         .unwrap();
 
         let deployer = Metadata {
-            airdrop_distributor: AirdropDistributorBuilder::new(
+            airdrop_distributor: AirdropDistributor::new(
                 airdrop_distributor_id.to_string(),
                 wallet1.clone(),
-            )
-            .build(),
+            ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
             wallet: wallet1.clone(),
         };
 
         let user1 = Metadata {
-            airdrop_distributor: AirdropDistributorBuilder::new(
+            airdrop_distributor: AirdropDistributor::new(
                 airdrop_distributor_id.to_string(),
                 wallet2.clone(),
-            )
-            .build(),
+            ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
             wallet: wallet2.clone(),
         };
 
         let user2 = Metadata {
-            airdrop_distributor: AirdropDistributorBuilder::new(
+            airdrop_distributor: AirdropDistributor::new(
                 airdrop_distributor_id.to_string(),
                 wallet3.clone(),
-            )
-            .build(),
+            ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
             wallet: wallet3.clone(),
         };
 
         let user3 = Metadata {
-            airdrop_distributor: AirdropDistributorBuilder::new(
+            airdrop_distributor: AirdropDistributor::new(
                 airdrop_distributor_id.to_string(),
                 wallet4.clone(),
-            )
-            .build(),
+            ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
             wallet: wallet4.clone(),
         };
 
         let asset = Asset {
-            asset: SimpleAssetBuilder::new(simple_asset_id.to_string(), wallet1.clone()).build(),
+            asset: SimpleAsset::new(simple_asset_id.to_string(), wallet1.clone()),
             asset_id: ContractId::new(*simple_asset_id.hash()),
         };
 
