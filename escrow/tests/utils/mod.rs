@@ -33,7 +33,7 @@ pub mod abi_calls {
         amount: u64,
         arbiter: &Arbiter,
         asset: &ContractId,
-        assets: [Asset; 2],
+        assets: Vec<Asset>,
         buyer: &Bech32Address,
         contract: &Escrow,
         deadline: u64,

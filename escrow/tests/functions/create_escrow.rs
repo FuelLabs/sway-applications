@@ -34,7 +34,7 @@ mod success {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            [asset.clone(), asset.clone()],
+            vec![asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -69,7 +69,7 @@ mod success {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            [asset.clone(), asset.clone()],
+            vec![asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -84,7 +84,7 @@ mod success {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            [asset.clone(), asset.clone()],
+            vec![asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -100,7 +100,6 @@ mod revert {
 
     // TODO marked as ignore until we use vec in the contract and can properly test this case
     #[tokio::test]
-    #[ignore]
     #[should_panic(expected = "Revert(42)")]
     async fn when_assets_are_not_specified() {
         let (arbiter, buyer, seller, defaults) = setup().await;
@@ -120,16 +119,16 @@ mod revert {
 
         // TODO: this test likely fails because the param expects an ARRAY of 2 and we provide 0
         //       args. This is likely a panic because of the SDK rather than the test itself
-        // create_escrow(
-        //     defaults.asset_amount,
-        //     &arbiter_obj,
-        //     &defaults.asset_id,
-        //     vec![],
-        //     buyer.wallet.address(),
-        //     &seller.contract,
-        //     defaults.deadline,
-        // )
-        // .await;
+        create_escrow(
+            defaults.asset_amount,
+            &arbiter_obj,
+            &defaults.asset_id,
+            vec![],
+            buyer.wallet.address(),
+            &seller.contract,
+            defaults.deadline,
+        )
+        .await;
     }
 
     #[tokio::test]
@@ -155,7 +154,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            [asset.clone(), asset.clone()],
+            vec![asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             0,
@@ -181,7 +180,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            [asset.clone(), asset.clone()],
+            vec![asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -212,7 +211,7 @@ mod revert {
             defaults.asset_amount - 1,
             &arbiter_obj,
             &defaults.asset_id,
-            [asset.clone(), asset.clone()],
+            vec![asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -243,7 +242,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            [asset.clone(), asset.clone()],
+            vec![asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -274,7 +273,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            [asset.clone(), asset.clone()],
+            vec![asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -305,7 +304,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            [asset.clone(), asset.clone()],
+            vec![asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -336,7 +335,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            [asset.clone(), asset.clone()],
+            vec![asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,

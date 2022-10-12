@@ -58,14 +58,14 @@ pub struct EscrowInfo {
 impl EscrowInfo {
     pub fn new(
         arbiter: Arbiter,
-        assets: [Asset; 2],
+        assets: Vec<Asset>,
         buyer: Identity,
         deadline: u64,
         seller: Identity,
     ) -> Self {
         Self {
             arbiter,
-            assets,
+            assets: [assets.get(0).unwrap(), assets.get(1).unwrap()],
             buyer: Buyer {
                 address: buyer,
                 asset: Option::None::<ContractId>(),
