@@ -35,7 +35,7 @@ mod success {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -72,7 +72,7 @@ mod success {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -119,7 +119,7 @@ mod success {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -129,7 +129,7 @@ mod success {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -173,7 +173,7 @@ mod success {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -183,7 +183,7 @@ mod success {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -254,7 +254,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -300,7 +300,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -351,7 +351,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -402,7 +402,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -448,7 +448,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -499,7 +499,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -515,6 +515,7 @@ mod revert {
 
         seller
             .contract
+            .methods()
             .propose_arbiter(arbiter_obj, 0)
             .tx_params(tx_params)
             .call_params(call_params)
@@ -573,7 +574,7 @@ mod revert {
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            [asset.clone(), asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
@@ -589,6 +590,7 @@ mod revert {
 
         seller
             .contract
+            .methods()
             .propose_arbiter(arbiter_obj_unequal, 0)
             .tx_params(tx_params)
             .call_params(call_params)
