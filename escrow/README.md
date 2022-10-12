@@ -15,7 +15,7 @@ For this application, the on-chain asset can be any native asset on the Fuel Net
 ### Current state of the application
 
 - The smart contract is deemed to be feature complete for now
-- The user interface does not currently exist but is a work in progress therefore there is nothing for the user to interact with
+- The user interface currently uses wallet code that will be updated
 
 ## Project Structure
 
@@ -104,15 +104,43 @@ pnpm <command name>
 | `services:setup`   | Run the local network, setup `escrow-scripts`, build and deploy contracts normally used on the first run, and generate and seed wallets. |
 | `services:reset`   | Runs `services:clean` then `services:setup`                                                                                              |
 
-> Other scripts can be found in [package.json](../package.json). (some of these commands don't currently work as some features are still in development)
+> Other scripts can be found in [package.json](../package.json).
 
 ## Testing the Program
 
-Insde of `/contracts/escrow` folder test the contracts:
+To test the contracts go to `/escrow/packages/contracts/escrow`
 
-```bash
-forc test
-```
+There are two commands required to run the contract tests:
+
+1. Build the asset used for depositing into the escrow
+   
+    ```bash
+    forc build --path tests/artifacts/asset/
+    ```
+
+2. Run the tests
+    
+    ```bash
+    forc test
+    ```
+
+To test the frontend go to back to the root of the project i.e. `/escrow`
+
+There are two commands required to run the frontend tests:
+
+1. Run the frontend required for testing
+    
+    ```bash
+    pnpm dev
+    ```
+
+2. Run the tests
+
+    ```bash
+    pnpm test
+    ```
+
+## Specification
 
 The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the escrow.
 
