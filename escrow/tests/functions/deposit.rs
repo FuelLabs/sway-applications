@@ -39,7 +39,7 @@ mod success {
             asset_amount(&defaults.asset_id, &buyer.wallet).await
         );
 
-        let res = create_escrow(
+        create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
