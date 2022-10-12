@@ -21,7 +21,7 @@ impl Asset {
     pub fn amount(self) -> u64 {
         match self {
             Asset::NFTAsset(nft_asset) => {
-                nft_asset.token_ids.len()
+                1
             },
             Asset::TokenAsset(token_asset) => {
                 token_asset.amount
@@ -42,7 +42,7 @@ impl Asset {
 }
 
 impl core::ops::Add for Asset {
-    pub fn add(self, other: Self) -> Self {
+    fn add(self, other: Self) -> Self {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 require(nft_asset1.contract_id == nft_asset2.contract_id, AssetError::AssetsAreNotTheSame);
@@ -65,7 +65,7 @@ impl core::ops::Add for Asset {
 }
 
 impl core::ops::Eq for Asset {
-    pub fn eq(self, other: Self) -> bool {
+    fn eq(self, other: Self) -> bool {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 nft_asset1.contract_id == nft_asset2.contract_id
@@ -81,7 +81,7 @@ impl core::ops::Eq for Asset {
 }
 
 impl core::ops::Ord for Asset {
-    pub fn gt(self, other: Self) -> bool {
+    fn gt(self, other: Self) -> bool {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 // TODO: Compare NFT token ID Vec length
@@ -97,7 +97,7 @@ impl core::ops::Ord for Asset {
         }
     }
 
-    pub fn lt(self, other: Self) -> bool {
+    fn lt(self, other: Self) -> bool {
         match(self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 // TODO: Compare NFT token ID Vec length
@@ -140,7 +140,7 @@ pub struct NFTAsset {
     /// The `ContractId` of the NFT that the struct is representing.
     contract_id: ContractId,
     /// The token id of the NFT that the struct is representing.
-    token_ids: StorageVec<u64>,
+    token_id: u64,
 }
 
 pub enum State {

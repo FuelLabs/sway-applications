@@ -27,7 +27,7 @@ use std::{
 pub fn approved_for_nft_transfer(from: Identity, to: Identity, asset: NFTAsset) -> bool {
     let nft_contract = asset.contract_id;
     // TODO: This will be a Vec
-    let nft_id = asset.token_ids;
+    let nft_id = asset.token_id;
 
     let nft_abi = abi(NFT, nft_contract.value);
     let approved_for_all = nft_abi.is_approved_for_all(from, to);
@@ -47,7 +47,7 @@ pub fn approved_for_nft_transfer(from: Identity, to: Identity, asset: NFTAsset) 
 pub fn owns_nft(owner: Identity, asset: NFTAsset) -> bool {
     let nft_contract = asset.contract_id;
     // TODO: This will be a Vec
-    let token_id = asset.token_ids;
+    let token_id = asset.token_id;
 
     let nft_abi = abi(NFT, nft_contract.value);
     // TODO: This will need to loop over a Vec of token_ids
@@ -76,7 +76,7 @@ pub fn transfer_asset(to: Identity, asset: Asset) {
 pub fn transfer_nft(from: Identity, to: Identity, asset: NFTAsset) {
     let nft_contract = asset.contract_id;
     // TODO: This will be a Vec
-    let token_id = asset.token_ids;
+    let token_id = asset.token_id;
 
     let nft_abi = abi(NFT, nft_contract.value);
     // TODO: This will need to itterate over a Vec of token IDs
