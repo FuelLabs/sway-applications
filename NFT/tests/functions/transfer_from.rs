@@ -3,9 +3,8 @@ use crate::utils::{
         approve, balance_of, constructor, mint, owner_of, set_approval_for_all, transfer_from,
     },
     test_helpers::setup,
-    Identity,
 };
-use fuels::signers::Signer;
+use fuels::{prelude::Identity, signers::Signer};
 
 mod success {
 

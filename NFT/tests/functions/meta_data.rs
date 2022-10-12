@@ -1,11 +1,13 @@
 use crate::utils::{
     abi_calls::{constructor, meta_data, mint},
     test_helpers::setup,
-    Identity, TokenMetaData,
+    TokenMetaData,
 };
-use fuels::signers::Signer;
+use fuels::{prelude::Identity, signers::Signer};
 
 mod success {
+
+    use fuels::prelude::SizedAsciiString;
 
     use super::*;
 
@@ -23,7 +25,7 @@ mod success {
         assert_eq!(
             meta_data(&owner1.contract, 0).await,
             TokenMetaData {
-                name: "Example".to_string()
+                name: SizedAsciiString::<7>::new("Example".to_string()).unwrap()
             }
         );
     }
@@ -42,21 +44,21 @@ mod success {
         assert_eq!(
             meta_data(&owner1.contract, 0).await,
             TokenMetaData {
-                name: "Example".to_string()
+                name: SizedAsciiString::<7>::new("Example".to_string()).unwrap()
             }
         );
 
         assert_eq!(
             meta_data(&owner1.contract, 1).await,
             TokenMetaData {
-                name: "Example".to_string()
+                name: SizedAsciiString::<7>::new("Example".to_string()).unwrap()
             }
         );
 
         assert_eq!(
             meta_data(&owner1.contract, 2).await,
             TokenMetaData {
-                name: "Example".to_string()
+                name: SizedAsciiString::<7>::new("Example".to_string()).unwrap()
             }
         );
     }

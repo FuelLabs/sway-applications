@@ -110,7 +110,7 @@ mod success {
             &deploy_wallet.airdrop_distributor,
             key,
             num_leaves,
-            [proof1, proof2].to_vec(),
+            [proof1, proof2],
             identity_a.clone(),
         )
         .await;
@@ -239,7 +239,7 @@ mod revert {
             &deploy_wallet.airdrop_distributor,
             key,
             num_leaves,
-            [proof1, proof2].to_vec(),
+            [proof1, proof2],
             identity_a.clone(),
         )
         .await;
@@ -259,7 +259,7 @@ mod revert {
             &deploy_wallet.airdrop_distributor,
             key,
             num_leaves,
-            [proof1, proof2].to_vec(),
+            [proof1, proof2],
             identity_a.clone(),
         )
         .await;
@@ -327,7 +327,7 @@ mod revert {
             &deploy_wallet.airdrop_distributor,
             key,
             num_leaves,
-            [proof1, proof2].to_vec(),
+            [proof1, proof2],
             identity_a.clone(),
         )
         .await;
