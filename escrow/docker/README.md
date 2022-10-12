@@ -1,7 +1,7 @@
 ## Fuel network environment with a Faucet API
 
 We enable developers to run locally a entire env with a
-`fuel-core` network and `faucet` api running together
+`fuel-core` network and `faucet` api running together (faucet unimplemented!)
 
 ### Environment variables
 
@@ -13,4 +13,3 @@ We enable developers to run locally a entire env with a
 | FUEL_FAUCET_PORT | 4040        | Faucet API PORT                                                                                                      |
 | DISPENSE_AMOUNT  | 50000000    | Faucet dispense amount                                                                                               |
 | GAS_PRICE        | 1           | Set Fuel Core `--min-gas-price`                                                                                      |
-| BYTE_PRICE       | 1           | Set Fuel Core `--min-byte-price`                                                                                     |

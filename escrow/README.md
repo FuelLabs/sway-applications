@@ -84,7 +84,16 @@ Start a local development frontend. After running the command below you can open
 pnpm dev
 ```
 
-### 🧰 Useful Scripts
+## 📗 Project Overview
+This section has a brief description of each directory.  More details can be found inside of each package by clicking the links.
+
+ - [packages/frontend](./packages/frontend/) Frontend Escrow application
+ - [packages/contract](./packages/contracts/) 🌴 Sway contracts
+ - [packages/scripts](./packages/scripts/) Escrow scripts CLI
+ - [packages/config](./packages/config/) Build configuration
+ - [docker](./docker/) Fuel core docker configuration
+
+## 🧰 Useful Scripts
 
 To make life easier we added as many useful scripts as possible to our [package.json](../package.json). These are some of the most used during development:
 
