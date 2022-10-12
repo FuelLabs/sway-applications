@@ -17,7 +17,7 @@ pub mod abi_calls {
     use super::*;
 
     pub async fn constructor(contract: &DaoVoting, token: ContractId) -> CallResponse<()> {
-        contract.constructor(token).call().await.unwrap()
+        contract.methods().constructor(token).call().await.unwrap()
     }
 
     pub async fn create_proposal(
@@ -27,6 +27,7 @@ pub mod abi_calls {
         proposal: Proposal,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .create_proposal(acceptance_percentage, deadline, proposal)
             .call()
             .await
@@ -36,6 +37,7 @@ pub mod abi_calls {
     pub async fn deposit(contract: &DaoVoting, call_params: CallParameters) -> CallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         contract
+            .methods()
             .deposit()
             .tx_params(tx_params)
             .call_params(call_params)
@@ -46,6 +48,7 @@ pub mod abi_calls {
 
     pub async fn withdraw(contract: &DaoVoting, amount: u64) -> CallResponse<()> {
         contract
+            .methods()
             .withdraw(amount)
             .append_variable_outputs(1)
             .call()
@@ -60,6 +63,7 @@ pub mod abi_calls {
         vote_amount: u64,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .vote(approve, proposal_id, vote_amount)
             .call()
             .await
@@ -67,19 +71,20 @@ pub mod abi_calls {
     }
 
     pub async fn execute(contract: &DaoVoting, id: u64) -> CallResponse<()> {
-        contract.execute(id).call().await.unwrap()
+        contract.methods().execute(id).call().await.unwrap()
     }
 
     pub async fn unlock_votes(contract: &DaoVoting, id: u64) -> CallResponse<()> {
-        contract.unlock_votes(id).call().await.unwrap()
+        contract.methods().unlock_votes(id).call().await.unwrap()
     }
 
     pub async fn balance(contract: &DaoVoting) -> u64 {
-        contract.balance().call().await.unwrap().value
+        contract.methods().balance().call().await.unwrap().value
     }
 
     pub async fn user_balance(contract: &DaoVoting, user_identity: &Bech32Address) -> u64 {
         contract
+            .methods()
             .user_balance(Identity::Address(user_identity.into()))
             .call()
             .await
@@ -89,6 +94,7 @@ pub mod abi_calls {
 
     pub async fn user_votes(contract: &DaoVoting, user_identity: &Bech32Address, id: u64) -> Votes {
         contract
+            .methods()
             .user_votes(id, Identity::Address(user_identity.into()))
             .call()
             .await
@@ -97,15 +103,27 @@ pub mod abi_calls {
     }
 
     pub async fn proposal(contract: &DaoVoting, id: u64) -> ProposalInfo {
-        contract.proposal(id).call().await.unwrap().value
+        contract.methods().proposal(id).call().await.unwrap().value
     }
 
     pub async fn governance_token_id(contract: &DaoVoting) -> ContractId {
-        contract.governance_token_id().call().await.unwrap().value
+        contract
+            .methods()
+            .governance_token_id()
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn proposal_count(contract: &DaoVoting) -> u64 {
-        contract.proposal_count().call().await.unwrap().value
+        contract
+            .methods()
+            .proposal_count()
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 }
 
@@ -115,6 +133,7 @@ pub mod test_helpers {
 
     pub async fn mint(contract: &GovToken, amount: u64, address: &Bech32Address) -> bool {
         contract
+            .methods()
             .mint_and_send_to_address(amount, address.into())
             .append_variable_outputs(1)
             .call()
@@ -176,21 +195,19 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let gov_token =
-            GovTokenBuilder::new(gov_token_id.to_string(), deployer_wallet.clone()).build();
+        let gov_token = GovToken::new(gov_token_id.to_string(), deployer_wallet.clone());
 
         let deployer = Metadata {
-            dao_voting: DaoVotingBuilder::new(dao_voting_id.to_string(), deployer_wallet.clone())
-                .build(),
-            gov_token: Some(
-                GovTokenBuilder::new(gov_token_id.to_string(), deployer_wallet.clone()).build(),
-            ),
+            dao_voting: DaoVoting::new(dao_voting_id.to_string(), deployer_wallet.clone()),
+            gov_token: Some(GovToken::new(
+                gov_token_id.to_string(),
+                deployer_wallet.clone(),
+            )),
             wallet: deployer_wallet,
         };
 
         let user = Metadata {
-            dao_voting: DaoVotingBuilder::new(dao_voting_id.to_string(), user_wallet.clone())
-                .build(),
+            dao_voting: DaoVoting::new(dao_voting_id.to_string(), user_wallet.clone()),
             gov_token: None,
             wallet: user_wallet,
         };

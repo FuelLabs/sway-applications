@@ -1,7 +1,7 @@
 use crate::utils::{
     abi_calls::{balance, constructor, deposit, user_balance},
     test_helpers::{mint, setup},
-    GovTokenBuilder,
+    GovToken,
 };
 use fuels::{
     prelude::{CallParameters, Contract, StorageConfiguration, TxParameters},
@@ -90,8 +90,7 @@ mod revert {
         .await
         .unwrap();
 
-        let another_asset =
-            GovTokenBuilder::new(another_asset_id.to_string(), deployer.wallet.clone()).build();
+        let another_asset = GovToken::new(another_asset_id.to_string(), deployer.wallet.clone());
         let id: ContractId = another_asset_id.into();
 
         mint(&another_asset, asset_amount, user.wallet.address()).await;
