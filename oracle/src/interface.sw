@@ -12,7 +12,9 @@ abi Oracle {
     #[storage(read)]
     fn price() -> u64;
 
-    /// Set price
+    /// Changes the price in storage to the value of `price`
+    ///
+    /// # Arguments
     ///
     /// - `price` - New price of tracked asset
     ///
