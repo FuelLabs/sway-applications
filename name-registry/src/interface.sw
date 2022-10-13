@@ -1,7 +1,7 @@
 library interface;
 
 abi NameRegistry {
-    /// Extends the registration duration for the name
+    /// Extends the duration of ownership for the name
     ///
     /// # Arguments
     ///
@@ -10,7 +10,9 @@ abi NameRegistry {
     ///
     /// # Reverts
     ///
-    /// Reverts if the name is not registered, if the payment is not sufficient for the duration, or if the wrong asset is sent
+    /// * If the name is not registered
+    /// * If the payment is not sufficient for the duration
+    /// * If the wrong asset is sent
     #[storage(read, write)]
     fn extend(name: str[8], duration: u64);
 
@@ -23,7 +25,9 @@ abi NameRegistry {
     ///
     /// # Reverts
     ///
-    /// Reverts if the name is registered and not expired yet, if the payment is insufficient, or if the wrong asset is sent
+    /// * If the name is registered or if it has not expired
+    /// * If the payment is not sufficient for the duration
+    /// * If the wrong asset is sent
     #[storage(read, write)]
     fn register(name: str[8], duration: u64, owner: Identity, identity: Identity);
 
@@ -36,7 +40,8 @@ abi NameRegistry {
     ///
     /// # Reverts
     ///
-    /// Reverts if the name is registered, or if the sender is not the owner of the name
+    /// * If the name is registered 
+    /// * If the sender is not the owner of the name
     #[storage(read, write)]
     fn set_identity(name: str[8], identity: Identity);
 
@@ -49,7 +54,8 @@ abi NameRegistry {
     ///
     /// # Reverts
     ///
-    /// Reverts if the name is registered, or if the sender is not the owner of the name
+    /// * If the name is registered
+    /// * If the sender is not the owner of the name
     #[storage(read, write)]
     fn set_owner(name: str[8], new_owner: Identity);
 
@@ -61,7 +67,7 @@ abi NameRegistry {
     ///
     /// # Reverts
     ///
-    /// Reverts if the name is not registered
+    /// * If the name is not registered
     #[storage(read)]
     fn expiry(name: str[8]) -> u64;
 
@@ -73,7 +79,7 @@ abi NameRegistry {
     ///
     /// # Reverts
     ///
-    /// Reverts if the name is not registered
+    /// * If the name is not registered
     #[storage(read)]
     fn identity(name: str[8]) -> Identity;
 
@@ -85,7 +91,7 @@ abi NameRegistry {
     ///
     /// # Reverts
     ///
-    /// Reverts if the name is not registered
+    /// * If the name is not registered
     #[storage(read)]
     fn owner(name: str[8]) -> Identity;
 }
