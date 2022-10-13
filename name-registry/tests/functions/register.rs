@@ -1,8 +1,6 @@
-use crate::utils::{abi::*, *};
-use fuels::prelude::*;
-
 mod success {
-    use super::*;
+    use fuels::prelude::*;
+    use crate::utils::{abi::register, get_contract_instance};
     #[tokio::test]
     async fn can_register() {
         let (instance, _id, wallet, _wallet2) = get_contract_instance().await;
@@ -16,7 +14,8 @@ mod success {
 }
 
 mod revert {
-    use super::*;
+    use fuels::prelude::*;
+    use crate::utils::{abi::register, get_contract_instance};
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn cant_repeat_register() {

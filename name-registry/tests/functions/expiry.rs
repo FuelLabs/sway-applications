@@ -1,8 +1,6 @@
-use crate::utils::{abi::*, *};
-use fuels::prelude::*;
-
 mod success {
-    use super::*;
+    use fuels::prelude::*;
+    use crate::utils::{abi::{register, expiry, extend}, get_contract_instance};
 
     #[tokio::test]
     async fn can_get_expiry() {
@@ -25,7 +23,7 @@ mod success {
 }
 
 mod revert {
-    use super::*;
+    use crate::utils::{abi::*, *};
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]

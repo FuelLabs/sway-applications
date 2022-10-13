@@ -1,8 +1,6 @@
-use crate::utils::{abi::*, *};
-use fuels::prelude::*;
-
 mod success {
-    use super::*;
+    use fuels::prelude::*;
+    use crate::utils::{abi::{register, owner, set_owner}, get_contract_instance};
 
     #[tokio::test]
     async fn can_get_owner() {
@@ -31,7 +29,7 @@ mod success {
 }
 
 mod revert {
-    use super::*;
+    use crate::utils::{abi::{owner}, get_contract_instance};
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]

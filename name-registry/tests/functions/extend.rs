@@ -1,8 +1,6 @@
-use crate::utils::{abi::*, *};
-use fuels::prelude::*;
-
 mod success {
-    use super::*;
+    use fuels::prelude::*;
+    use crate::utils::{abi::{register, expiry, extend}, get_contract_instance};
 
     #[tokio::test]
     async fn can_extend() {
@@ -25,7 +23,8 @@ mod success {
 }
 
 mod revert {
-    use super::*;
+    use fuels::prelude::*;
+    use crate::utils::{abi::{register, extend}, get_contract_instance};
     #[tokio::test]
     #[should_panic]
     async fn cant_extend_insufficient_payment() {
