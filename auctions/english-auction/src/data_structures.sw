@@ -49,7 +49,6 @@ impl core::ops::Add for Asset {
         match (self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 require(nft_asset1.contract_id == nft_asset2.contract_id, AssetError::AssetsAreNotTheSame);// TODO: Combine vecs
-
                 self
             },
             (
@@ -98,6 +97,7 @@ impl core::ops::Ord for Asset {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 
                 // TODO: Compare NFT token ID Vec lengthnft_asset1.contract_id == nft_asset2.contract_id
+                false
             },
             (
 
@@ -111,12 +111,12 @@ impl core::ops::Ord for Asset {
             },
         }
     }
-    fn lt(self, other:
- Self) -> bool {
+    fn lt(self, other: Self) -> bool {
         match (self, other) {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 
                 // TODO: Compare NFT token ID Vec lengthnft_asset1.contract_id == nft_asset2.contract_id
+                false
             },
             (
 
@@ -134,7 +134,6 @@ impl core::ops::Ord for Asset {
 pub struct Auction {
     /// The asset which will be accepted in return for `sell_asset`.
     /// On initalization, the amount will be set to 0 and the `contract_id` will be set to the
-
     /// `ContractId` of the asset in return.
     bid_asset: Asset,
     /// The current highest bidder of the auction. When the auction is over, this is the winner.
@@ -157,7 +156,6 @@ pub struct Auction {
 pub struct NFTAsset {
     /// The `ContractId` of the NFT that the struct is representing.
     contract_id: ContractId,
-
     /// The token id of the NFT that the struct is representing.
     token_id: u64,
 }
@@ -165,10 +163,8 @@ pub enum State {
     Closed: (),
     Open: (),
 }
-impl
- core::ops::Eq for State {
-    fn eq(self, other: Self)
- -> bool {
+impl core::ops::Eq for State {
+    fn eq(self, other: Self) -> bool {
         match (self, other) {
             (State::Open, State::Open) => true,
             (State::Closed, State::Closed) => true,
@@ -179,7 +175,6 @@ impl
 pub struct TokenAsset {
     /// The amount of the native asset that the struct is representing.
     amount: u64,
-
     /// The `ContractId` of the native asset that the struct is representing.
     contract_id: ContractId,
 }

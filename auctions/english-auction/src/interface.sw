@@ -11,12 +11,8 @@ abi EnglishAuction {
     /// # Arguments
     ///
     /// * `auction_id` - The `u64` id number of the auction.
-    ///
-    /// # Reverts
-    ///
-    /// * When the auction id does not map to an existing auction
     #[storage(read)]
-    fn auction_info(auction_id: u64) -> Auction;
+    fn auction_info(auction_id: u64) -> Option<Auction>;
 
     /// Places a bid on the auction specified.
     ///
@@ -71,13 +67,13 @@ abi EnglishAuction {
     ///
     /// `seller` - The `Identity` of the seller for this auction. This `Identity` will have the
     ///            ability to cancel and withdraw the originially provided assets.
+    /// `duration` - The amount of time the auction should be open.
     /// `sell_asset` - The `Asset` struct that contains information about what is being auctioned
     ///                off.
     /// `bid_asset` - The `Asset` struct that contains the `contract_id` of the asset the seller is
     ///               willing to accept in return for the `sell_asset`.
     /// `initial_price` - The starting price at which the auction should start.
     /// `reserve_price` - The price at which a buyer may purchase the `sell_asset` outright.
-    /// `time` - The duration of the auction in number of blocks.
     ///
     /// # Reverts
     ///
@@ -91,7 +87,7 @@ abi EnglishAuction {
     /// * When the auction contract is not approved to transfer the NFT's provided in the
     ///   `sell_asset` struct.
     #[storage(read, write)]
-    fn create(buy_asset: Asset, inital_price: u64, reserve_price: u64, seller: Identity, sell_asset: Asset, time: u64) -> u64;
+    fn create(buy_asset: Asset, duration: u64, inital_price: u64, reserve_price: u64, seller: Identity, sell_asset: Asset) -> u64;
 
     /// Returns the balance of the user's `bid_asset` deposits.
     ///
@@ -99,12 +95,8 @@ abi EnglishAuction {
     ///
     /// * `identity` - The `Identity` of the user which has deposited assets
     /// * `auction_id` - The `u64` id number of the auction.
-    ///
-    /// # Reverts
-    ///
-    /// * When the idendity and auction id provided do not map to an existing auction
     #[storage(read)]
-    fn deposit(auction_id: u64, identity: Identity) -> Asset;
+    fn deposit(auction_id: u64, identity: Identity) -> Option<Asset>;
 
     /// Allows users to withdraw their assets if the auction has gone over time, the reserve has
     /// been met, or been canceled.

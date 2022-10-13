@@ -35,16 +35,14 @@ use std::{
 /// * `asset` - The `NFTAsset` struct which contains the NFT data.
 pub fn approved_for_nft_transfer(from: Identity, to: Identity, asset: NFTAsset) -> bool {
     let nft_contract = asset.contract_id;
-    // TODO: This will be a Vec
     let nft_id = asset.token_id;
 
     let nft_abi = abi(NFT, nft_contract.value);
     let approved_for_all = nft_abi.is_approved_for_all(from, to);
-    // TODO: This needs to loop over a Vec of token_ids
-    let approved: Option<Identity> = nft_abi.approved(nft_id);
+    let approved_for_token: Option<Identity> = nft_abi.approved(nft_id);
 
     // The to address either needs to be approved for all or approved for this token id
-    approved_for_all || (approved.is_some() && to == approved.unwrap())
+    approved_for_all || (approved_for_token.is_some() && to == approved_for_token.unwrap())
 }
 
 /// This function returns true if the `owner` `Identity` owns the NFT token.
@@ -55,12 +53,11 @@ pub fn approved_for_nft_transfer(from: Identity, to: Identity, asset: NFTAsset) 
 /// * `asset` - The `NFTAsset` struct which contains the NFT data.
 pub fn owns_nft(owner: Identity, asset: NFTAsset) -> bool {
     let nft_contract = asset.contract_id;
-    // TODO: This will be a Vec
     let token_id = asset.token_id;
 
     let nft_abi = abi(NFT, nft_contract.value);
-    // TODO: This will need to loop over a Vec of token_ids
     let token_owner: Option<Identity> = nft_abi.owner_of(token_id);
+
     token_owner.is_some() && owner == token_owner.unwrap()
 }
 
@@ -84,16 +81,13 @@ pub fn transfer_asset(to: Identity, asset: Asset) {
 /// * The NFT transfer failed
 pub fn transfer_nft(from: Identity, to: Identity, asset: NFTAsset) {
     let nft_contract = asset.contract_id;
-    // TODO: This will be a Vec
-    let token_id = asset.token_id;
 
     let nft_abi = abi(NFT, nft_contract.value);
-    // TODO: This will need to itterate over a Vec of token IDs
-    nft_abi.transfer_from(from, to, token_id);
+    nft_abi.transfer_from(from, to, asset.token_id);
 
     // Make sure that the transfer worked
     // TODO: This may be removed in the future
-    let owner: Option<Identity> = nft_abi.owner_of(token_id);
+    let owner: Option<Identity> = nft_abi.owner_of(asset.token_id);
     require(owner.is_some() && owner.unwrap() == to, AccessError::NFTTransferNotApproved);
 }
 

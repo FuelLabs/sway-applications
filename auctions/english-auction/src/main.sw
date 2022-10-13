@@ -37,7 +37,9 @@ use std::{
 storage {
     /// Stores the auction information based on auction ID
     /// Map(auction_id => auction)
-    auctions: StorageMap<u64, Option<Auction>> = StorageMap {}, // TODO: Move deposits into the Auction struct when StorageMaps are
+    auctions: StorageMap<u64, Option<Auction>> = StorageMap {}, 
+    
+    // TODO: Move deposits into the Auction struct when StorageMaps are
     //       supported inside structs
     ///
     deposits: StorageMap<(Identity, u64), Option<Asset>> = StorageMap {},
@@ -48,12 +50,8 @@ storage {
 
 impl EnglishAuction for Contract {
     #[storage(read)]
-    fn auction_info(auction_id: u64) -> Auction {
-        // TODO: This should be removed and the function definition should be updated to return an
-        // Option once https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
-        let auction = storage.auctions.get(auction_id);
-        require(auction.is_some(), InputError::AuctionDoesNotExist);
-        auction.unwrap()
+    fn auction_info(auction_id: u64) -> Option<Auction> {
+        storage.auctions.get(auction_id)
     }
 
     #[storage(read, write)]
@@ -64,8 +62,7 @@ impl EnglishAuction for Contract {
         let mut auction = auction.unwrap();
 
         // Make sure this auction is open to taking bids
-        require(auction.state == State::Open, AccessError::AuctionIsNotOpen);
-        require(height() <= auction.end_block, AccessError::AuctionIsNotOpen);
+        require(auction.state == State::Open && height() <= auction.end_block, AccessError::AuctionIsNotOpen);
 
         // Ensure the `bid_asset` struct has the correct contract_id, the transaction's amount
         // is correct, and if it's an NFT we can transfer it to this auction contract
@@ -136,6 +133,8 @@ impl EnglishAuction for Contract {
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
         let mut auction = auction.unwrap();
 
+        // TODO: Should not be able to cancel auction if the auction is closed
+
         // The sender has to be the seller in order to cancel their auction
         require(msg_sender().unwrap() == auction.seller, AccessError::SenderIsNotSeller);
 
@@ -151,14 +150,14 @@ impl EnglishAuction for Contract {
     #[storage(read, write)]
     fn create(
         bid_asset: Asset,
+        duration: u64,
         initial_price: u64,
-        reserve_price: u64,
+        reserve_price: Option<u64>,
         seller: Identity,
         sell_asset: Asset,
-        time: u64,
     ) -> u64 {
         // Either there is no reserve price or the reserve must be greater than the initial price
-        require((reserve_price >= initial_price && reserve_price != 0) || reserve_price == 0, InitError::ReserveLessThanInitialPrice);
+        require(reserve_price.is_none() || (reserve_price.is_some() && reserve_price.unwrap() >= initial_price && reserve_price != 0), InitError::ReserveLessThanInitialPrice);
         // The auction must last for some time
         require(time != 0, InitError::AuctionTimeNotProvided);
 
@@ -183,17 +182,11 @@ impl EnglishAuction for Contract {
             }
         }
 
-        // Does the seller want a reserve
-        let reserve = match reserve_price {
-            0 => Option::None(),
-            _ => Option::Some(reserve_price),
-        };
-
         // Setup auction
         let auction = Auction {
             bid_asset: bid_asset,
             highest_bidder: Option::None(),
-            end_block: height() + time,
+            end_block: height() + duration,
             initial_price: initial_price,
             reserve_price: reserve,
             sell_asset: sell_asset,
@@ -211,17 +204,13 @@ impl EnglishAuction for Contract {
         });
 
         // Return the auction ID and increment the total auctions counter
-        storage.total_auctions = storage.total_auctions + 1;
+        storage.total_auctions += 1;
         storage.total_auctions - 1
     }
 
     #[storage(read)]
-    fn deposit(auction_id: u64, identity: Identity) -> Asset {
-        // TODO: This should be removed and the function definition should be updated to return an
-        // Option once https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
-        let deposit = storage.deposits.get((identity, auction_id));
-        require(deposit.is_some(), InputError::DepositDoesNotExist);
-        deposit.unwrap()
+    fn deposit(auction_id: u64, identity: Identity) -> Option<Asset> {
+        storage.deposits.get((identity, auction_id))
     }
 
     #[storage(read, write)]
