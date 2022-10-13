@@ -4,7 +4,7 @@ PROJECT=$1
 
 if [ $PROJECT = 'airdrop/airdrop-distributor' ]; then
     forc build --path $PROJECT
-    forc build --path $PROJECT/../simple-asset/
+    forc build --path $PROJECT/tests/artifacts/asset
 elif [ $PROJECT = 'airdrop/simple-asset' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'dao-voting' ]; then
