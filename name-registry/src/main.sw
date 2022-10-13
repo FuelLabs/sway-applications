@@ -41,7 +41,7 @@ impl NameRegistry for Contract {
 
         storage.names.insert(name, Option::Some(new_record));
 
-        log(RegistrationExtended {
+        log(RegistrationExtendedEvent {
             duration,
             name,
             new_expiry: new_record.expiry,
@@ -71,7 +71,7 @@ impl NameRegistry for Contract {
 
         storage.names.insert(name, Option::Some(record));
 
-        log(NameRegistered {
+        log(NameRegisteredEvent {
             expiry: record.expiry,
             name,
             owner,
@@ -94,7 +94,7 @@ impl NameRegistry for Contract {
 
         storage.names.insert(name, Option::Some(new_record));
 
-        log(IdentityChanged {
+        log(IdentityChangedEvent {
             name,
             new_identity: new_record.identity,
             old_identity: old_record.identity,
@@ -116,7 +116,7 @@ impl NameRegistry for Contract {
 
         storage.names.insert(name, Option::Some(new_record));
 
-        log(OwnerChanged {
+        log(OwnerChangedEvent {
             name,
             new_owner: new_record.owner,
             old_owner: old_record.owner,

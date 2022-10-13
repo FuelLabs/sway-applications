@@ -1,7 +1,7 @@
 library events;
 
 /// The event for when a name has its resolving identity changed
-pub struct IdentityChanged {
+pub struct IdentityChangedEvent {
     /// The name which has its identity being changed
     name: str[8],
     /// The new identity which the name will resolve to
@@ -11,7 +11,7 @@ pub struct IdentityChanged {
 }
 
 /// The event for when a name is registered by a new owner (includes expired names being re-registered)
-pub struct NameRegistered {
+pub struct NameRegisteredEvent {
     /// The new expiry for the name
     expiry: u64,
     /// The name being registered
@@ -23,7 +23,7 @@ pub struct NameRegistered {
 }
 
 /// The event for when the owner of a name changes
-pub struct OwnerChanged {
+pub struct OwnerChangedEvent {
     /// The name of which the owner is being changed
     name: str[8],
     /// The new owner of the name
@@ -33,7 +33,7 @@ pub struct OwnerChanged {
 }
 
 /// The event for when the expiry for a name is extended by paying of additional fees
-pub struct RegistrationExtended {
+pub struct RegistrationExtendedEvent {
     /// The duration by which the expiry is extended
     duration: u64,
     /// The name in subject
