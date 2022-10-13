@@ -24,15 +24,12 @@ storage {
     names: StorageMap<str[8], Option<Record>> = StorageMap {},
 }
 
-/// The amount to charge per hundred seconds per name
-const PRICE_PER_HUNDRED: u64 = 1;
-
 // TODO: Change the static 8 length str with a dynamic string when possible
 impl NameRegistry for Contract {
     #[storage(read, write)]
     fn extend(name: str[8], duration: u64) {
         require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
-        require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetErrors::InsufficientPayment);
+        require((duration / 100) * price_per_hundred <= msg_amount(), AssetErrors::InsufficientPayment);
         require(msg_asset_id() == BASE_ASSET_ID, AssetErrors::IncorrectAssetSent);
 
         let old_record = storage.names.get(name).unwrap();
@@ -63,7 +60,7 @@ impl NameRegistry for Contract {
             require(timestamp() > record.expiry, ValidityErrors::NameNotExpired);
         }
 
-        require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetErrors::InsufficientPayment);
+        require((duration / 100) * price_per_hundred <= msg_amount(), AssetErrors::InsufficientPayment);
         require(msg_asset_id() == BASE_ASSET_ID, AssetErrors::IncorrectAssetSent);
 
         let record = Record {
