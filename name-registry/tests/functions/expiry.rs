@@ -1,6 +1,9 @@
 mod success {
+    use crate::utils::{
+        abi::{expiry, extend, register},
+        get_contract_instance,
+    };
     use fuels::prelude::*;
-    use crate::utils::{abi::{register, expiry, extend}, get_contract_instance};
 
     #[tokio::test]
     async fn can_get_expiry() {

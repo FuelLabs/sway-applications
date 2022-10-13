@@ -2,7 +2,7 @@ use crate::utils::*;
 
 pub async fn extend(instance: &NameRegistry, name: &String, duration: u64) {
     instance
-    .methods()
+        .methods()
         .extend(
             SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
             duration,
@@ -19,7 +19,7 @@ pub async fn extend(instance: &NameRegistry, name: &String, duration: u64) {
 
 pub async fn expiry(instance: &NameRegistry, name: &String) -> u64 {
     instance
-    .methods()
+        .methods()
         .expiry(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
         .call()
         .await
@@ -29,7 +29,7 @@ pub async fn expiry(instance: &NameRegistry, name: &String) -> u64 {
 
 pub async fn identity(instance: &NameRegistry, name: &String) -> Identity {
     instance
-    .methods()
+        .methods()
         .identity(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
         .call()
         .await
@@ -38,7 +38,8 @@ pub async fn identity(instance: &NameRegistry, name: &String) -> Identity {
 }
 
 pub async fn owner(instance: &NameRegistry, name: &String) -> Identity {
-    instance.methods()
+    instance
+        .methods()
         .owner(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
         .call()
         .await
@@ -53,7 +54,8 @@ pub async fn register(
     owner: &Identity,
     identity: &Identity,
 ) {
-    instance.methods()
+    instance
+        .methods()
         .register(
             SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
             duration,
@@ -71,7 +73,8 @@ pub async fn register(
 }
 
 pub async fn set_identity(instance: &NameRegistry, name: &String, identity: Identity) {
-    instance.methods()
+    instance
+        .methods()
         .set_identity(
             SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
             identity,
@@ -82,7 +85,8 @@ pub async fn set_identity(instance: &NameRegistry, name: &String, identity: Iden
 }
 
 pub async fn set_owner(instance: &NameRegistry, name: &String, new_owner: Identity) {
-    instance.methods()
+    instance
+        .methods()
         .set_owner(
             SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
             new_owner,

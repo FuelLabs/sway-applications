@@ -7,7 +7,12 @@ dep interface;
 
 use data_structures::Record;
 use errors::{AssetErrors, AuthorisationErrors, ValidityErrors};
-use events::{IdentityChangedEvent, NameRegisteredEvent, OwnerChangedEvent, RegistrationExtendedEvent};
+use events::{
+    IdentityChangedEvent,
+    NameRegisteredEvent,
+    OwnerChangedEvent,
+    RegistrationExtendedEvent,
+};
 use interface::NameRegistry;
 use std::{
     block::timestamp,

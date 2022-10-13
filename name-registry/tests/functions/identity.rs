@@ -1,6 +1,9 @@
 mod success {
+    use crate::utils::{
+        abi::{identity, register, set_identity},
+        get_contract_instance,
+    };
     use fuels::prelude::*;
-    use crate::utils::{abi::{register, identity, set_identity}, get_contract_instance};
 
     #[tokio::test]
     async fn can_get_identity() {
@@ -29,7 +32,7 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::{abi::{identity}, get_contract_instance};
+    use crate::utils::{abi::identity, get_contract_instance};
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]

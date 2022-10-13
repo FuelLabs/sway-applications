@@ -34,4 +34,3 @@ pub async fn get_contract_instance() -> (NameRegistry, ContractId, WalletUnlocke
 
     (instance, id.into(), wallet, wallet2)
 }
-

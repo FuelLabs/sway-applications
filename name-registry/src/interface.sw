@@ -42,7 +42,7 @@ abi NameRegistry {
     ///
     /// # Reverts
     ///
-    /// * If the name is registered 
+    /// * If the name is registered
     /// * If the sender is not the owner of the name
     #[storage(read, write)]
     fn set_identity(name: str[8], identity: Identity);
