@@ -1,3 +1,5 @@
+pub mod abi;
+
 use fuels::{prelude::*, tx::ContractId};
 
 // Load abi from json
@@ -33,4 +35,3 @@ pub async fn get_contract_instance() -> (NameRegistry, ContractId, WalletUnlocke
     (instance, id.into(), wallet, wallet2)
 }
 
-pub mod abi;
