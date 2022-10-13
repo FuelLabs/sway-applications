@@ -1,7 +1,8 @@
 use crate::utils::*;
 
-pub async fn extend(instance: &MyContract, name: &String, duration: u64) {
+pub async fn extend(instance: &NameRegistry, name: &String, duration: u64) {
     instance
+    .methods()
         .extend(
             SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
             duration,
@@ -16,8 +17,9 @@ pub async fn extend(instance: &MyContract, name: &String, duration: u64) {
         .unwrap();
 }
 
-pub async fn expiry(instance: &MyContract, name: &String) -> u64 {
+pub async fn expiry(instance: &NameRegistry, name: &String) -> u64 {
     instance
+    .methods()
         .expiry(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
         .call()
         .await
@@ -25,8 +27,9 @@ pub async fn expiry(instance: &MyContract, name: &String) -> u64 {
         .value
 }
 
-pub async fn identity(instance: &MyContract, name: &String) -> Identity {
+pub async fn identity(instance: &NameRegistry, name: &String) -> Identity {
     instance
+    .methods()
         .identity(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
         .call()
         .await
@@ -34,8 +37,8 @@ pub async fn identity(instance: &MyContract, name: &String) -> Identity {
         .value
 }
 
-pub async fn owner(instance: &MyContract, name: &String) -> Identity {
-    instance
+pub async fn owner(instance: &NameRegistry, name: &String) -> Identity {
+    instance.methods()
         .owner(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
         .call()
         .await
@@ -44,13 +47,13 @@ pub async fn owner(instance: &MyContract, name: &String) -> Identity {
 }
 
 pub async fn register(
-    instance: &MyContract,
+    instance: &NameRegistry,
     name: &String,
     duration: u64,
     owner: &Identity,
     identity: &Identity,
 ) {
-    instance
+    instance.methods()
         .register(
             SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
             duration,
@@ -67,8 +70,8 @@ pub async fn register(
         .unwrap();
 }
 
-pub async fn set_identity(instance: &MyContract, name: &String, identity: Identity) {
-    instance
+pub async fn set_identity(instance: &NameRegistry, name: &String, identity: Identity) {
+    instance.methods()
         .set_identity(
             SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
             identity,
@@ -78,8 +81,8 @@ pub async fn set_identity(instance: &MyContract, name: &String, identity: Identi
         .unwrap();
 }
 
-pub async fn set_owner(instance: &MyContract, name: &String, new_owner: Identity) {
-    instance
+pub async fn set_owner(instance: &NameRegistry, name: &String, new_owner: Identity) {
+    instance.methods()
         .set_owner(
             SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
             new_owner,

@@ -47,7 +47,7 @@ mod revert {
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
         set_identity(
-            &instance._with_wallet(wallet2).unwrap(),
+            &instance.with_wallet(wallet2).unwrap(),
             &name,
             wallet_identity2.clone(),
         )
