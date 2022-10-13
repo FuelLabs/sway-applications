@@ -7,7 +7,7 @@
 
 ## Overview
 
-This is a simple name registry app built in Sway. Anyone can register a name for the price of 1 gwei per 100 seconds. The name will resolve to any Address/Identity that the owner sets.
+This is a simple name registry app built in Sway. Anyone can register a name for the price of 1 unit of the base asset per 100 seconds. The name will resolve to any Address/Identity that the owner sets.
 
 In this case the price paid is in the native asset on the Fuel network. More information can be found in the [specification](./SPECIFICATION.md).
 
