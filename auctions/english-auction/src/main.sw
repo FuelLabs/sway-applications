@@ -199,6 +199,8 @@ impl EnglishAuction for Contract {
         // Log the start of the new auction
         log(CreateAuctionEvent {
             auction_id: storage.total_auctions,
+            buy_asset: bid_asset,
+            sell_asset
         });
 
         // Return the auction ID and increment the total auctions counter
@@ -240,9 +242,7 @@ impl EnglishAuction for Contract {
         let mut withdrawn_asset = sender_deposit.unwrap();
 
         // Go ahead and withdraw
-        if ((bidder.is_some()
-            && sender == bidder.unwrap())
-            || sender == auction.seller)
+        if ((bidder.is_some() && sender == bidder.unwrap()) || sender == auction.seller)
         {
             // The buyer is withdrawing or the seller is withdrawing and no one placed a bid
             transfer_asset(sender, auction.sell_asset);
@@ -258,7 +258,7 @@ impl EnglishAuction for Contract {
 
         // Log the withdrawal
         log(WithdrawEvent {
-            amount: withdrawn_asset.amount(),
+            asset: withdrawn_asset,
             auction_id,
             identity: sender,
         });

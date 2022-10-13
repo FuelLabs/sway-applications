@@ -10,6 +10,8 @@ pub struct CancelAuctionEvent {
 
 pub struct CreateAuctionEvent {
     auction_id: u64,
+    buy_asset: Asset,
+    sell_asset: Asset,
 }
 
 pub struct BidEvent {
@@ -19,7 +21,7 @@ pub struct BidEvent {
 }
 
 pub struct WithdrawEvent {
-    amount: u64,
+    asset: Asset,
     auction_id: u64,
     identity: Identity,
 }
