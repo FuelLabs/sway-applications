@@ -11,15 +11,20 @@ pub mod abi_calls {
     use super::*;
 
     pub async fn owner(contract: &Oracle) -> Identity {
-        contract.owner().call().await.unwrap().value
+        contract.methods().owner().call().await.unwrap().value
     }
 
     pub async fn price(contract: &Oracle) -> u64 {
-        contract.price().call().await.unwrap().value
+        contract.methods().price().call().await.unwrap().value
     }
 
     pub async fn set_price(contract: &Oracle, new_price: u64) -> CallResponse<()> {
-        contract.set_price(new_price).call().await.unwrap()
+        contract
+            .methods()
+            .set_price(new_price)
+            .call()
+            .await
+            .unwrap()
     }
 }
 
@@ -39,7 +44,7 @@ pub mod test_helpers {
         .unwrap();
 
         let user = Metadata {
-            oracle: OracleBuilder::new(oracle_id.to_string(), wallets[0].clone()).build(),
+            oracle: Oracle::new(oracle_id.to_string(), wallets[0].clone()),
             wallet: wallets[0].clone().lock(),
         };
 

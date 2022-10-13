@@ -1,9 +1,8 @@
 use crate::utils::{
     abi_calls::{balance_of, constructor, max_supply, mint, owner_of, total_supply},
     test_helpers::setup,
-    Identity,
 };
-use fuels::signers::Signer;
+use fuels::{prelude::Identity, signers::Signer};
 
 mod success {
 
