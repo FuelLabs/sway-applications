@@ -52,6 +52,7 @@ abi EnglishAuction {
     /// # Reverts
     ///
     /// * When the `auction_id` does not map to an existing auction.
+    /// * When the auction is no longer open.
     /// * When the `sender` is not the `seller` of the auction.
     #[storage(read, write)]
     fn cancel(auction_id: u64);
@@ -82,6 +83,7 @@ abi EnglishAuction {
     ///   `sell_asset` struct.
     /// * When the transaction's token `contract_id` is not the same as the `contract_id` specified
     ///   in the `sell_asset` struct.
+    /// * When setting the quantity of NFTs to accept greater than one.
     /// * When the `sender` is not the owner of the NFT's provided in the `sell_asset` struct.
     /// * When the auction contract is not approved to transfer the NFT's provided in the
     ///   `sell_asset` struct.

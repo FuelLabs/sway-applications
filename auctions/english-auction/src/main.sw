@@ -101,6 +101,7 @@ impl EnglishAuction for Contract {
                 // We need to transfer ownership to the auction contract if they are
                 // bidding an NFT
                 transfer_nft(sender, Identity::ContractId(contract_id()), nft_asset);
+                auction.state = State::Closed;
             }
             _ => {}
         }
@@ -128,7 +129,7 @@ impl EnglishAuction for Contract {
         require(auction.is_some(), AccessError::AuctionDoesNotExist);
         let mut auction = auction.unwrap();
 
-        // TODO: Should not be able to cancel auction if the auction is closed
+        require(auction.state == State::Open && height() <= auction.end_block, AccessError::AuctionIsNotOpen);
 
         // The sender has to be the seller in order to cancel their auction
         require(msg_sender().unwrap() == auction.seller, AccessError::SenderIsNotSeller);
@@ -165,6 +166,8 @@ impl EnglishAuction for Contract {
             },
             Asset::NFTAsset(asset) => {
                 // Selling NFTs
+                require(initial_price <= 1, InitError::CannotAcceptMoreThanOneNFT);
+
                 // Ensure that the sender is the owner
                 let sender = msg_sender().unwrap();
                 require(owns_nft(sender, asset), AccessError::NFTTransferNotApproved);
