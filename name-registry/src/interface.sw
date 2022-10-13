@@ -16,12 +16,14 @@ abi NameRegistry {
     #[storage(read, write)]
     fn extend(name: str[8], duration: u64);
 
-    /// Registers the name and assigns the sender as the owner and identity to resolve to
+    /// Registers an entry into the registry for the given name, assigns it to the given owner, and resolves the name to the given identity when queried
     ///
     /// # Arguments
     ///
     /// * `name` - The name to register
     /// * `duration` - The duration to register for
+    /// * `owner` - The owner of the name, which will be able to control the ownership and the resolving identity of the name
+    /// * `identity` - The identity to which the name would resolve to when queried
     ///
     /// # Reverts
     ///

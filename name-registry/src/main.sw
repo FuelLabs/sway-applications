@@ -16,8 +16,6 @@ use std::{
     context::call_frames::msg_asset_id,
     context::msg_amount,
     logging::log,
-    option::Option,
-    result::Result,
     storage::StorageMap,
 };
 
@@ -35,7 +33,7 @@ impl NameRegistry for Contract {
     fn extend(name: str[8], duration: u64) {
         require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
         require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetErrors::InsufficientPayment);
-        require(msg_asset_id() == BASE_ASSET_ID, AssetErrors::WrongAssetSent);
+        require(msg_asset_id() == BASE_ASSET_ID, AssetErrors::IncorrectAssetSent);
 
         let old_record = storage.names.get(name).unwrap();
         let new_record = Record {
@@ -66,7 +64,7 @@ impl NameRegistry for Contract {
         }
 
         require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetErrors::InsufficientPayment);
-        require(msg_asset_id() == BASE_ASSET_ID, AssetErrors::WrongAssetSent);
+        require(msg_asset_id() == BASE_ASSET_ID, AssetErrors::IncorrectAssetSent);
 
         let record = Record {
             expiry: timestamp() + duration,
