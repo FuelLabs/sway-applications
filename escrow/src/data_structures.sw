@@ -40,15 +40,16 @@ pub struct Buyer {
 pub struct EscrowInfo {
     /// Trusted 3rd party who handles the resolution of a dispute
     arbiter: Arbiter,
-    /// The assets that the escrow accepts with their required quantities
-    /// This allows the buyer to select which asset they want to deposit
-    assets: [Asset; 2],
+    /// Total number of assets the escrow accepts
+    asset_count: u64,
     /// The authorized user who is able to make a payment into the escrow
     buyer: Buyer,
     /// End height after which the buyer can no longer deposit and the seller can take payment
     deadline: u64,
     /// Marker set by the buyer to lock the escrow and prevent the seller from taking payment
     disputed: bool,
+    /// Index of the first asset in storage vec `assets`
+    first_asset_index: u64,
     /// The authorized user who is the recipient of payments made by the buyer
     seller: Seller,
     /// Mechanism used to manage the control flow of the escrow
@@ -58,14 +59,15 @@ pub struct EscrowInfo {
 impl EscrowInfo {
     pub fn new(
         arbiter: Arbiter,
-        assets: Vec<Asset>,
+        asset_count: u64,
         buyer: Identity,
         deadline: u64,
+        first_asset_index: u64,
         seller: Identity,
     ) -> Self {
         Self {
             arbiter,
-            assets: [assets.get(0).unwrap(), assets.get(1).unwrap()],
+            asset_count,
             buyer: Buyer {
                 address: buyer,
                 asset: Option::None::<ContractId>(),
@@ -73,6 +75,7 @@ impl EscrowInfo {
             },
             deadline,
             disputed: false,
+            first_asset_index,
             seller: Seller {
                 address: seller,
             },
