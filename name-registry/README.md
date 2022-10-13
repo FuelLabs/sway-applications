@@ -7,9 +7,9 @@
 
 ## Overview
 
-This is a simple name registry app built in Sway. Anyone can register a name for the price of 1 unit of the base asset per 100 seconds. The name will resolve to any Address/Identity that the owner sets.
+This is a name registry app built in Sway, which allows users to use simple names instead of long addresses to recieve or send payments, making it easy to send money without copy pasting addresses. Anyone can register a name for the price of 1 unit of any asset per 100 seconds. The name will resolve to any Identity that the owner sets.
 
-In this case the price paid is in the native asset on the Fuel network. More information can be found in the [specification](./SPECIFICATION.md).
+In this implementation the price is paid in the base asset on the Fuel network. More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Project Structure
 
