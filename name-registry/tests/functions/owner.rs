@@ -34,7 +34,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(0)")]
+    #[should_panic(expected = "Revert(42)")]
     async fn cant_get_owner() {
         let (instance, _id, _wallet, _wallet2) = get_contract_instance().await;
 

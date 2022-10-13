@@ -125,43 +125,25 @@ impl NameRegistry for Contract {
 
     #[storage(read)]
     fn expiry(name: str[8]) -> u64 {
-        match storage.names.get(name) {
-            Option::Some(record) => {
-                require(timestamp() < record.expiry, ValidityErrors::NameExpired);
-                record.expiry
-            },
-            None => {
-                log(ValidityErrors::NameNotRegistered);
-                revert(0)
-            }
-        }
+        require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
+        let record = storage.names.get(name).unwrap();
+        require(timestamp() < record.expiry, ValidityErrors::NameExpired);
+        record.expiry
     }
 
     #[storage(read)]
     fn identity(name: str[8]) -> Identity {
-        match storage.names.get(name) {
-            Option::Some(record) => {
-                require(timestamp() < record.expiry, ValidityErrors::NameExpired);
-                record.identity
-            },
-            None => {
-                log(ValidityErrors::NameNotRegistered);
-                revert(0)
-            }
-        }
+        require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
+        let record = storage.names.get(name).unwrap();
+        require(timestamp() < record.expiry, ValidityErrors::NameExpired);
+        record.identity
     }
 
     #[storage(read)]
     fn owner(name: str[8]) -> Identity {
-        match storage.names.get(name) {
-            Option::Some(record) => {
-                require(timestamp() < record.expiry, ValidityErrors::NameExpired);
-                record.owner
-            },
-            None => {
-                log(ValidityErrors::NameNotRegistered);
-                revert(0)
-            }
-        }
+        require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
+        let record = storage.names.get(name).unwrap();
+        require(timestamp() < record.expiry, ValidityErrors::NameExpired);
+        record.owner
     }
 }
