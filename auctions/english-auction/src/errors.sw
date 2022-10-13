@@ -1,11 +1,9 @@
 library errors;
 
 pub enum AccessError {
-    AuctionDoesNotExist: (),
     AuctionIsNotClosed: (),
     AuctionIsNotOpen: (),
     NFTTransferNotApproved: (),
-    NoReserveSet: (),
     SenderIsNotSeller: (),
 }
 
@@ -14,19 +12,16 @@ pub enum AssetError {
 }
 
 pub enum InitError {
-    AuctionTimeNotProvided: (),
-    BuyAssetNotProvided: (),
+    AuctionDurationNotProvided: (),
     CannotAcceptMoreThanOneNFT: (),
-    CannotReinitialize: (),
     ReserveLessThanInitialPrice: (),
 }
 
 pub enum InputError {
     AuctionDoesNotExist: (),
-    DepositDoesNotExist: (),
     InitialPriceNotMet: (),
-    IncorrectAssetProvided: (),
     IncorrectAmountProvided: (),
+    IncorrectAssetProvided: (),
 }
 
 pub enum UserError {

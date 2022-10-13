@@ -53,7 +53,7 @@ impl EnglishAuction for Contract {
     fn bid(auction_id: u64, bid_asset: Asset) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
-        require(auction.is_some(), AccessError::AuctionDoesNotExist);
+        require(auction.is_some(), InputError::AuctionDoesNotExist);
         let mut auction = auction.unwrap();
 
         // Make sure this auction is open to taking bids
@@ -126,7 +126,7 @@ impl EnglishAuction for Contract {
     fn cancel(auction_id: u64) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
-        require(auction.is_some(), AccessError::AuctionDoesNotExist);
+        require(auction.is_some(), InputError::AuctionDoesNotExist);
         let mut auction = auction.unwrap();
 
         require(auction.state == State::Open && height() <= auction.end_block, AccessError::AuctionIsNotOpen);
@@ -155,7 +155,7 @@ impl EnglishAuction for Contract {
         // Either there is no reserve price or the reserve must be greater than the initial price
         require(reserve_price.is_none() || (reserve_price.is_some() && reserve_price.unwrap() >= initial_price && reserve_price.unwrap() != 0), InitError::ReserveLessThanInitialPrice);
         // The auction must last for some time
-        require(duration != 0, InitError::AuctionTimeNotProvided);
+        require(duration != 0, InitError::AuctionDurationNotProvided);
 
         // Ensure that the `sell_asset` struct and what was sent in the transaction match
         match sell_asset {
@@ -217,7 +217,7 @@ impl EnglishAuction for Contract {
     fn withdraw(auction_id: u64) {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
-        require(auction.is_some(), AccessError::AuctionDoesNotExist);
+        require(auction.is_some(), InputError::AuctionDoesNotExist);
         let mut auction = auction.unwrap();
 
         // Cannot withdraw if the auction is still on going
