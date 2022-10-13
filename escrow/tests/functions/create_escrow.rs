@@ -98,7 +98,6 @@ mod revert {
 
     use super::*;
 
-    // TODO marked as ignore until we use vec in the contract and can properly test this case
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_assets_are_not_specified() {

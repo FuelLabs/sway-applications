@@ -142,7 +142,6 @@ impl Escrow for Contract {
         while index < 2 {
             let asset = escrow.assets[index];
             if asset.id == msg_asset_id() {
-                log(69);
                 require(asset.amount == msg_amount(), DepositError::IncorrectAssetAmount);
                 escrow.buyer.asset = Option::Some(msg_asset_id());
                 escrow.buyer.deposited_amount = msg_amount();
