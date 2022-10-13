@@ -14,10 +14,10 @@ mod success {
 
         register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
 
-        let old_owner = owner(&instance, &name).await;
+        let previous_owner = owner(&instance, &name).await;
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
 
-        assert_eq!(old_owner, wallet_identity);
+        assert_eq!(previous_owner, wallet_identity);
 
         let wallet2 = WalletUnlocked::new_random(None);
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));

@@ -32,11 +32,11 @@ impl NameRegistry for Contract {
         require((duration / 100) * price_per_hundred <= msg_amount(), AssetErrors::InsufficientPayment);
         require(msg_asset_id() == BASE_ASSET_ID, AssetErrors::IncorrectAssetSent);
 
-        let old_record = storage.names.get(name).unwrap();
+        let previous_record = storage.names.get(name).unwrap();
         let new_record = Record {
-            expiry: old_record.expiry + duration,
-            identity: old_record.identity,
-            owner: old_record.owner,
+            expiry: previous_record.expiry + duration,
+            identity: previous_record.identity,
+            owner: previous_record.owner,
         };
 
         storage.names.insert(name, Option::Some(new_record));
@@ -82,14 +82,14 @@ impl NameRegistry for Contract {
     #[storage(read, write)]
     fn set_identity(name: str[8], identity: Identity) {
         require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
-        let old_record = storage.names.get(name).unwrap();
-        require(timestamp() < old_record.expiry, ValidityErrors::NameExpired);
-        require(old_record.owner == msg_sender().unwrap(), AuthorisationErrors::SenderNotOwner);
+        let previous_record = storage.names.get(name).unwrap();
+        require(timestamp() < previous_record.expiry, ValidityErrors::NameExpired);
+        require(previous_record.owner == msg_sender().unwrap(), AuthorisationErrors::SenderNotOwner);
 
         let new_record = Record {
-            expiry: old_record.expiry,
+            expiry: previous_record.expiry,
             identity,
-            owner: old_record.owner,
+            owner: previous_record.owner,
         };
 
         storage.names.insert(name, Option::Some(new_record));
@@ -97,20 +97,20 @@ impl NameRegistry for Contract {
         log(IdentityChangedEvent {
             name,
             new_identity: new_record.identity,
-            old_identity: old_record.identity,
+            previous_identity: previous_record.identity,
         });
     }
 
     #[storage(read, write)]
     fn set_owner(name: str[8], new_owner: Identity) {
         require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
-        let old_record = storage.names.get(name).unwrap();
-        require(timestamp() < old_record.expiry, ValidityErrors::NameExpired);
-        require(old_record.owner == msg_sender().unwrap(), AuthorisationErrors::SenderNotOwner);
+        let previous_record = storage.names.get(name).unwrap();
+        require(timestamp() < previous_record.expiry, ValidityErrors::NameExpired);
+        require(previous_record.owner == msg_sender().unwrap(), AuthorisationErrors::SenderNotOwner);
 
         let new_record = Record {
-            expiry: old_record.expiry,
-            identity: old_record.identity,
+            expiry: previous_record.expiry,
+            identity: previous_record.identity,
             owner: new_owner,
         };
 
@@ -119,7 +119,7 @@ impl NameRegistry for Contract {
         log(OwnerChangedEvent {
             name,
             new_owner: new_record.owner,
-            old_owner: old_record.owner,
+            previous_owner: previous_record.owner,
         });
     }
 

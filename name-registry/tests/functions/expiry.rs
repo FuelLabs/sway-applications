@@ -14,13 +14,13 @@ mod success {
 
         register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
 
-        let old_expiry = expiry(&instance, &name).await;
+        let previous_expiry = expiry(&instance, &name).await;
 
         extend(&instance, &name, 5000).await;
 
         let new_expiry = expiry(&instance, &name).await;
 
-        assert_eq!(old_expiry + 5000, new_expiry);
+        assert_eq!(previous_expiry + 5000, new_expiry);
     }
 }
 

@@ -6,8 +6,8 @@ pub struct IdentityChangedEvent {
     name: str[8],
     /// The new identity which the name will resolve to
     new_identity: Identity,
-    /// The old identity which the name resolved to
-    old_identity: Identity,
+    /// The previous identity which the name resolved to
+    previous_identity: Identity,
 }
 
 /// The event for when a name is registered by a new owner (includes expired names being re-registered)
@@ -28,8 +28,8 @@ pub struct OwnerChangedEvent {
     name: str[8],
     /// The new owner of the name
     new_owner: Identity,
-    /// The old owner of the name
-    old_owner: Identity,
+    /// The previous owner of the name
+    previous_owner: Identity,
 }
 
 /// The event for when the expiry for a name is extended by paying of additional fees
