@@ -14,6 +14,7 @@ pub enum AssetError {
 pub enum InitError {
     AuctionDurationNotProvided: (),
     CannotAcceptMoreThanOneNFT: (),
+    InitialPriceCannotBeZero: (),
     ReserveLessThanInitialPrice: (),
 }
 

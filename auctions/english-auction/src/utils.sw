@@ -22,31 +22,31 @@ use std::{
     token::transfer,
 };
 
-/// This function returns true if the `to` `Identity` is approved to transfer the token.
+/// Returns true if the `to` `Identity` is approved to transfer the token.
 ///
 /// # Arguments
 ///
-/// * `from` - The `Identity` which owns the NFTs.
-/// * `to` - The `Identity` which the NFTs should be transfered to.
-/// * `asset` - The `NFTAsset` struct which contains the NFT data.
-pub fn approved_for_nft_transfer(from: Identity, to: Identity, asset: NFTAsset) -> bool {
+/// * `asset` - The struct which contains the NFT data.
+/// * `from` - The owner the NFTs.
+/// * `to` - The user which the NFTs should be transfered to.
+pub fn approved_for_nft_transfer(asset: NFTAsset, from: Identity, to: Identity) -> bool {
     let nft_contract = asset.contract_id;
     let nft_abi = abi(NFT, nft_contract.value);
 
     let approved_for_all = nft_abi.is_approved_for_all(from, to);
     let approved_for_token: Option<Identity> = nft_abi.approved(asset.token_id);
 
-    // The to address either needs to be approved for all or approved for this token id
+    // The to `Identity` either needs to be approved for all or approved for this token id
     approved_for_all || (approved_for_token.is_some() && to == approved_for_token.unwrap())
 }
 
-/// This function returns true if the `owner` `Identity` owns the NFT token.
+/// Returns true if the `owner` `Identity` owns the NFT token.
 ///
 /// # Arguments
 ///
-/// * `owner` - The `Identity` which owns the tokens.
-/// * `asset` - The `NFTAsset` struct which contains the NFT data.
-pub fn owns_nft(owner: Identity, asset: NFTAsset) -> bool {
+/// * `asset` - The struct which contains the NFT data.
+/// * `owner` - The user which should be checked for ownership.
+pub fn owns_nft(asset: NFTAsset, owner: Identity) -> bool {
     let nft_contract = asset.contract_id;
     let nft_abi = abi(NFT, nft_contract.value);
 
@@ -55,11 +55,16 @@ pub fn owns_nft(owner: Identity, asset: NFTAsset) -> bool {
     token_owner.is_some() && owner == token_owner.unwrap()
 }
 
-/// This function will transfer the `Asset` given to the specified `Identity`.
-pub fn transfer_asset(to: Identity, asset: Asset) {
+/// Transfers assets out of the auction contract to the specified user.
+///
+/// # Arguments
+///
+/// * `asset` - The asset that is to be transfered.
+/// * `to` - The user which will recieve the asset.
+pub fn transfer_asset(asset: Asset, to: Identity) {
     match asset {
         Asset::NFTAsset(asset) => {
-            transfer_nft(Identity::ContractId(contract_id()), to, asset)
+            transfer_nft(asset, Identity::ContractId(contract_id()), to)
         },
         Asset::TokenAsset(asset) => {
             transfer(asset.amount, asset.contract_id, to)
@@ -67,38 +72,41 @@ pub fn transfer_asset(to: Identity, asset: Asset) {
     }
 }
 
-/// This function will transfer a NFT from one `Identity` to another.
+/// Transfers an NFT from one `Identity` to another.
+///
+/// # Arguments
+///
+/// * `asset` - The struct which contains the NFT data.
+/// * `from` - The owner of the NFT.
+/// * `to` - The user which the NFTs should be transfered to.
 ///
 /// # Reverts
 ///
-/// This function will panic when:
-/// * The NFT transfer failed
-pub fn transfer_nft(from: Identity, to: Identity, asset: NFTAsset) {
+/// * The NFT transfer failed.
+pub fn transfer_nft(asset: NFTAsset, from: Identity, to: Identity) {
     let nft_contract = asset.contract_id;
     let nft_abi = abi(NFT, nft_contract.value);
 
     nft_abi.transfer_from(from, to, asset.token_id);
 
-    // Make sure that the transfer worked
-    // TODO: This may be removed in the future
     let owner: Option<Identity> = nft_abi.owner_of(asset.token_id);
     require(owner.is_some() && owner.unwrap() == to, AccessError::NFTTransferNotApproved);
 }
 
-/// This function will panic when the `recieved_asset` and `bid_asset` `ContractId`s do not match.
-/// If `received_asset` is of type `TokenAsset`, the function ensures that the amount provided
-/// in the transaction and `recieved_asset` struct match. If the `received_asset` is of type
-/// `NFTAsset`, the function will ensure that the auction contract is permissioned to transfer the
-/// NFT tokens and the sender owns the NFT tokens.
+/// Ensures the assets provided match, NFTs must be permissioned for transfer, and token 
+/// amounts match.
+//
+/// # Arguments
+///
+/// * `bid_asset` - The struct containing information on the asset is accepted for bids.
+/// * `recieved_asset` - The struct containing information on the asset that was bid.
 ///
 /// # Reverts
 ///
-/// * When the `contract_id`s in the `bid_asset` and `recieved_asset` are different.
-/// * When the `sender` does not own the NFT tokens to be transfered
-/// * When the auction contract is not approved to transfer the NFT tokens specified in the
-///   `recieved_asset` struct.
-/// * When the transaction asset amount is not the same as the amount specified in the
-///   `recieved_asset` struct.
+/// * When the asset types are different.
+/// * When the sender does not own the NFT tokens to be transfered.
+/// * When the auction contract is not permissioned to transfer the NFT tokens.
+/// * When the transaction's token amount does not match the amount specified in the struct.
 pub fn validate_asset(bid_asset: Asset, recieved_asset: Asset) {
     let sender = msg_sender().unwrap();
 
@@ -106,8 +114,8 @@ pub fn validate_asset(bid_asset: Asset, recieved_asset: Asset) {
 
     match recieved_asset {
         Asset::NFTAsset(asset) => {
-            require(owns_nft(sender, asset), AccessError::NFTTransferNotApproved);
-            require(approved_for_nft_transfer(sender, Identity::ContractId(contract_id()), asset), AccessError::NFTTransferNotApproved);
+            require(owns_nft(asset, sender), AccessError::NFTTransferNotApproved);
+            require(approved_for_nft_transfer(asset, sender, Identity::ContractId(contract_id())), AccessError::NFTTransferNotApproved);
         },
         Asset::TokenAsset(asset) => {
             require(msg_amount() == asset.amount, InputError::IncorrectAmountProvided);

@@ -38,9 +38,8 @@ impl core::ops::Add for Asset {
         match (self, other) {
             (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
                 require(token_asset1.contract_id == token_asset2.contract_id, AssetError::AssetsAreNotTheSame);
-                let total_amount = token_asset1.amount + token_asset2.amount;
                 let token = TokenAsset {
-                    amount: total_amount,
+                    amount: token_asset1.amount + token_asset2.amount,
                     contract_id: token_asset1.contract_id,
                 };
                 Asset::TokenAsset(token)
@@ -69,23 +68,19 @@ impl core::ops::Eq for Asset {
 }
 
 pub struct Auction {
-    /// The asset which will be accepted in return for `sell_asset`.
-    /// On initalization, the amount will be set to 0 and the `contract_id` will be set to the
-    /// `ContractId` of the asset in return.
+    /// The asset which will be accepted in return for the selling asset.
     bid_asset: Asset,
-    /// The current highest bidder of the auction. When the auction is over, this is the winner.
-    /// If no one bid on the auction or the auction is canceled, this will be `None`.
+    /// The current highest bidder of the auction. 
     highest_bidder: Option<Identity>,
-    /// The block at which the auction should end
+    /// The block at which the auction's bidding period should end.
     end_block: u64,
-    /// The starting price for the auction to start. This can be 0.
+    /// The starting price for the auction.
     initial_price: u64,
-    /// The reserve price for the auction. When this amount is met, the auction will automatically
-    /// close and the `sell_asset` will be sold.
+    /// The price at which the selling asset may be bought outright.
     reserve_price: Option<u64>,
-    /// The asset that is being auctioned off. This can be a native token or an NFT.
+    /// The asset that is being auctioned off.
     sell_asset: Asset,
-    /// The `Identity` of the seller of the auction. Only the seller can cancel an auction.
+    /// The seller of the auction.
     seller: Identity,
     /// The state of the auction describing if it is open or closed.
     state: State,
@@ -99,7 +94,9 @@ pub struct NFTAsset {
 }
 
 pub enum State {
+    /// The state at which the auction is no longer accepting bids.
     Closed: (),
+    /// The state where bids may be placed on an auction.
     Open: (),
 }
 
