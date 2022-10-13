@@ -22,7 +22,7 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 ### `register()`
 
-A user should be able to register a name for themselves
+A user can register a name for themselves
 
 1. If the name is not already registered
 2. If the payment is sufficient for the duration
@@ -30,18 +30,18 @@ A user should be able to register a name for themselves
 
 ### `extend()`
 
-Any user can extend the expiry of a given name
+Any user can extend the registration duration of a given name
 
 1. If the payment is sufficient for the duration
 2. If the payment is in the correct asset
 
 ### `set_identity()`
 
-The owner of the name should be able to change the identity to which the name resolves
+The owner of the name can change the identity to which the name resolves
 
 ### `set_owner()`
 
-The owner of the name should be able to change the owner of the name
+The owner of the name can change the owner of the name
 
 ## Information that is presented to users
 
