@@ -45,7 +45,10 @@ use std::{
     option::Option,
     result::Result,
     revert::require,
-    storage::{StorageMap, StorageVec},
+    storage::{
+        StorageMap,
+        StorageVec,
+    },
     token::transfer,
 };
 
