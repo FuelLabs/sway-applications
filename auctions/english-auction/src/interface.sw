@@ -3,7 +3,6 @@ library interface;
 dep data_structures;
 
 use data_structures::{Asset, Auction};
-use std::{contract_id::ContractId, identity::Identity, option::Option};
 
 abi EnglishAuction {
     /// Returns the auction struct for the corresponding auction id.
@@ -87,7 +86,7 @@ abi EnglishAuction {
     /// * When the auction contract is not approved to transfer the NFT's provided in the
     ///   `sell_asset` struct.
     #[storage(read, write)]
-    fn create(buy_asset: Asset, duration: u64, inital_price: u64, reserve_price: u64, seller: Identity, sell_asset: Asset) -> u64;
+    fn create(buy_asset: Asset, duration: u64, inital_price: u64, reserve_price: Option<u64>, seller: Identity, sell_asset: Asset) -> u64;
 
     /// Returns the balance of the user's `bid_asset` deposits.
     ///

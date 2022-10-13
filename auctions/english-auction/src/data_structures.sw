@@ -3,17 +3,6 @@ library data_structures;
 dep errors;
 
 use errors::AssetError;
-use std::{
-    contract_id::ContractId,
-    identity::Identity,
-    option::Option,
-    revert::require,
-    revert::revert,
-    storage::{
-        StorageMap,
-        StorageVec,
-    },
-};
 
 pub enum Asset {
     NFTAsset: NFTAsset,

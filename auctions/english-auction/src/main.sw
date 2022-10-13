@@ -25,12 +25,7 @@ use std::{
         },
         msg_amount,
     },
-    contract_id::ContractId,
-    identity::Identity,
     logging::log,
-    option::Option,
-    result::Result,
-    revert::require,
     storage::StorageMap,
 };
 
@@ -157,9 +152,9 @@ impl EnglishAuction for Contract {
         sell_asset: Asset,
     ) -> u64 {
         // Either there is no reserve price or the reserve must be greater than the initial price
-        require(reserve_price.is_none() || (reserve_price.is_some() && reserve_price.unwrap() >= initial_price && reserve_price != 0), InitError::ReserveLessThanInitialPrice);
+        require(reserve_price.is_none() || (reserve_price.is_some() && reserve_price.unwrap() >= initial_price && reserve_price.unwrap() != 0), InitError::ReserveLessThanInitialPrice);
         // The auction must last for some time
-        require(time != 0, InitError::AuctionTimeNotProvided);
+        require(duration != 0, InitError::AuctionTimeNotProvided);
 
         // Ensure that the `sell_asset` struct and what was sent in the transaction match
         match sell_asset {
@@ -188,7 +183,7 @@ impl EnglishAuction for Contract {
             highest_bidder: Option::None(),
             end_block: height() + duration,
             initial_price: initial_price,
-            reserve_price: reserve,
+            reserve_price: reserve_price,
             sell_asset: sell_asset,
             seller: seller,
             state: State::Open,

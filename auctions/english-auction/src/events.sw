@@ -3,7 +3,6 @@ library events;
 dep data_structures;
 
 use data_structures::{Asset, Auction};
-use std::identity::Identity;
 
 pub struct CancelAuctionEvent {
     auction_id: u64,
