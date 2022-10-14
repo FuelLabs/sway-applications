@@ -45,7 +45,7 @@ TODO: UI does not currently exist
 
 In order to run the tests make sure that you are in the root of this project i.e. `/path/to/multisig-wallet/<you are here>`
 
-Use the following command to run th test
+Use the following command to run the tests
 
 1. Run the tests
 
