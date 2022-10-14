@@ -2,7 +2,7 @@ use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{auction_info, create},
     englishauction_mod::State,
-    test_helpers::{defaults_token, defaults_nft, setup, token_asset},
+    test_helpers::{defaults_nft, defaults_token, setup, token_asset},
 };
 use fuels::prelude::Identity;
 
@@ -12,7 +12,8 @@ mod success {
 
     #[tokio::test]
     async fn creates_new_token_auction() {
-        let (deployer, seller, buyer1, _, sell_asset_contract_id, _, buy_asset_contract_id, _) = setup().await;
+        let (deployer, seller, buyer1, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
+            setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
@@ -22,7 +23,16 @@ mod success {
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
         let provider = deployer.wallet.get_provider().unwrap();
 
-        let auction_id = create(buy_asset.clone(), &seller.auction, duration, initial_price, Some(reserve_price), seller_identity.clone(), sell_asset.clone()).await;
+        let auction_id = create(
+            buy_asset.clone(),
+            &seller.auction,
+            duration,
+            initial_price,
+            Some(reserve_price),
+            seller_identity.clone(),
+            sell_asset.clone(),
+        )
+        .await;
         let total_duration = provider.latest_block_height().await.unwrap() + duration;
 
         let auction = auction_info(auction_id, &seller.auction).await;
@@ -42,7 +52,8 @@ mod success {
 
     #[tokio::test]
     async fn creates_new_nft_auction() {
-        let (deployer, seller, buyer1, _, _, sell_nft_contract_id, _, buy_nft_contract_id) = setup().await;
+        let (deployer, seller, buyer1, _, _, sell_nft_contract_id, _, buy_nft_contract_id) =
+            setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_nft().await;
     }
 }
@@ -50,5 +61,4 @@ mod success {
 mod revert {
 
     use super::*;
-
 }
