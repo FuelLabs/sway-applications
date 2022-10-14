@@ -213,12 +213,7 @@ pub mod nft_abi_calls {
     }
 
     pub async fn mint(amount: u64, contract: &Nft, owner: Identity) -> CallResponse<()> {
-        contract
-            .methods()
-            .mint(amount, owner)
-            .call()
-            .await
-            .unwrap()
+        contract.methods().mint(amount, owner).call().await.unwrap()
     }
 
     pub async fn owner_of(contract: &Nft, token_id: u64) -> Identity {
@@ -265,7 +260,13 @@ pub mod test_helpers {
         let duration = 10;
         let access_control = true;
 
-        (sell_count, inital_count, reserve_count, duration, access_control)
+        (
+            sell_count,
+            inital_count,
+            reserve_count,
+            duration,
+            access_control,
+        )
     }
 
     pub async fn nft_asset(contract_id: ContractId, token_id: u64) -> Asset {

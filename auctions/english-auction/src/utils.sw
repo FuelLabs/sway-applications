@@ -93,7 +93,7 @@ pub fn transfer_nft(asset: NFTAsset, from: Identity, to: Identity) {
     require(owner == to, AccessError::NFTTransferNotApproved);
 }
 
-/// Ensures the assets provided match, NFTs must be permissioned for transfer, and token 
+/// Ensures the assets provided match, NFTs must be permissioned for transfer, and token
 /// amounts match.
 //
 /// # Arguments

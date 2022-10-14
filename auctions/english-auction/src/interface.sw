@@ -68,7 +68,7 @@ abi EnglishAuction {
     /// `initial_price` - The starting price at which the auction should start.
     /// `reserve_price` - The price at which a buyer may purchase the `sell_asset` outright.
     /// `seller` - The seller for this auction.
-    /// `sell_asset` - The struct that contains information about what is being auctioned off.          
+    /// `sell_asset` - The struct that contains information about what is being auctioned off.
     ///
     /// # Reverts
     ///

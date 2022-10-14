@@ -202,7 +202,7 @@ impl EnglishAuction for Contract {
         log(CreateAuctionEvent {
             auction_id: storage.total_auctions,
             bid_asset,
-            sell_asset
+            sell_asset,
         });
 
         // Return the auction ID and increment the total auctions counter
@@ -226,7 +226,8 @@ impl EnglishAuction for Contract {
         require(auction.state == State::Closed || height() >= auction.end_block, AccessError::AuctionIsNotClosed);
 
         // If time has run out set the contract state to closed
-        if (height() >= auction.end_block && auction.state == State::Open)
+        if (height() >= auction.end_block
+            && auction.state == State::Open)
         {
             auction.state = State::Closed;
             storage.auctions.insert(auction_id, Option::Some(auction));
@@ -243,7 +244,9 @@ impl EnglishAuction for Contract {
         let mut withdrawn_asset = sender_deposit.unwrap();
 
         // Go ahead and withdraw
-        if ((bidder.is_some() && sender == bidder.unwrap()) || sender == auction.seller)
+        if ((bidder.is_some()
+            && sender == bidder.unwrap())
+            || sender == auction.seller)
         {
             // The buyer is withdrawing or the seller is withdrawing and no one placed a bid
             transfer_asset(auction.sell_asset, sender);

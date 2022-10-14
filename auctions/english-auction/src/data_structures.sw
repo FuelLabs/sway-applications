@@ -36,7 +36,11 @@ impl Asset {
 impl core::ops::Add for Asset {
     fn add(self, other: Self) -> Self {
         match (self, other) {
-            (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
+            (
+
+                Asset::TokenAsset(token_asset1),
+                Asset::TokenAsset(token_asset2),
+            ) => {
                 require(token_asset1.contract_id == token_asset2.contract_id, AssetError::AssetsAreNotTheSame);
                 let token = TokenAsset {
                     amount: token_asset1.amount + token_asset2.amount,
@@ -57,7 +61,11 @@ impl core::ops::Eq for Asset {
             (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
                 nft_asset1.contract_id == nft_asset2.contract_id
             },
-            (Asset::TokenAsset(token_asset1), Asset::TokenAsset(token_asset2)) => {
+            (
+
+                Asset::TokenAsset(token_asset1),
+                Asset::TokenAsset(token_asset2),
+            ) => {
                 token_asset1.contract_id == token_asset2.contract_id
             },
             _ => {
@@ -70,7 +78,7 @@ impl core::ops::Eq for Asset {
 pub struct Auction {
     /// The asset which will be accepted in return for the selling asset.
     bid_asset: Asset,
-    /// The current highest bidder of the auction. 
+    /// The current highest bidder of the auction.
     highest_bidder: Option<Identity>,
     /// The block at which the auction's bidding period should end.
     end_block: u64,

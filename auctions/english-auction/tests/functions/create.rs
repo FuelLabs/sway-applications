@@ -13,14 +13,30 @@ mod success {
 
     #[tokio::test]
     async fn creates_new_nft_auction() {
-        let (deployer, seller, buyer1, _, auction_contract_id, _, sell_nft_contract_id, _, buy_nft_contract_id) =
-            setup().await;
-        let (sell_count, initial_count, reserve_count, duration, access_control) = defaults_nft().await;
+        let (
+            deployer,
+            seller,
+            buyer1,
+            _,
+            auction_contract_id,
+            _,
+            sell_nft_contract_id,
+            _,
+            buy_nft_contract_id,
+        ) = setup().await;
+        let (sell_count, initial_count, reserve_count, duration, access_control) =
+            defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let auction_identity = Identity::ContractId(auction_contract_id.into());
 
-        constructor(access_control, &seller.nft, seller_identity.clone(), sell_count).await;
+        constructor(
+            access_control,
+            &seller.nft,
+            seller_identity.clone(),
+            sell_count,
+        )
+        .await;
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
         approve(auction_identity.clone(), &seller.nft, 0).await;
 
