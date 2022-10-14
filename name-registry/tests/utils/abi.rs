@@ -71,7 +71,11 @@ pub async fn register(
         .unwrap()
 }
 
-pub async fn set_identity(instance: &NameRegistry, name: &String, identity: Identity) -> CallResponse<()> {
+pub async fn set_identity(
+    instance: &NameRegistry,
+    name: &String,
+    identity: Identity,
+) -> CallResponse<()> {
     instance
         .methods()
         .set_identity(
@@ -83,7 +87,11 @@ pub async fn set_identity(instance: &NameRegistry, name: &String, identity: Iden
         .unwrap()
 }
 
-pub async fn set_owner(instance: &NameRegistry, name: &String, new_owner: Identity) -> CallResponse<()> {
+pub async fn set_owner(
+    instance: &NameRegistry,
+    name: &String,
+    new_owner: Identity,
+) -> CallResponse<()> {
     instance
         .methods()
         .set_owner(
