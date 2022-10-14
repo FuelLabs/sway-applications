@@ -45,15 +45,9 @@ TODO: UI does not currently exist
 
 In order to run the tests make sure that you are in the root of this project i.e. `/path/to/multisig-wallet/<you are here>`
 
-There are two commands required to run the tests
+Use the following command to run th test
 
-1. Build the asset used for depositing into the multisig-wallet
-   
-   ```bash
-   forc build --path tests/artifacts/asset/
-   ```
-
-2. Run the tests
+1. Run the tests
 
    ```bash
    forc test
