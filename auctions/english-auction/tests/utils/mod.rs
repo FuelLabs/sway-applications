@@ -6,9 +6,9 @@ abigen!(EnglishAuction, "out/debug/english-auction-abi.json");
 abigen!(MyAsset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
 pub struct Metadata {
-    asset: Option<MyAsset>,
-    auction: EnglishAuction,
-    wallet: WalletUnlocked,
+    pub asset: Option<MyAsset>,
+    pub auction: EnglishAuction,
+    pub wallet: WalletUnlocked,
 }
 
 pub mod asset_abi_calls {
@@ -19,6 +19,7 @@ pub mod asset_abi_calls {
         contract
             .methods()
             .mint_and_send_to_address(amount, recipient)
+            .append_variable_outputs(1)
             .call()
             .await
             .unwrap()
@@ -147,6 +148,33 @@ pub mod test_helpers {
 
     use super::*;
 
+    pub async fn defaults_token() -> (u64, u64, u64, u64) {
+        let sell_amount = 10;
+        let inital_price = 1;
+        let reserve_price = 10;
+        let duration = 10;
+
+        (sell_amount, inital_price, reserve_price, duration)
+    }
+
+    pub async fn defaults_nft() -> (u64, u64, u64, u64) {
+        let sell_amount = 1;
+        let inital_price = 1;
+        let reserve_price = 1;
+        let duration = 10;
+
+        (sell_amount, inital_price, reserve_price, duration)
+    }
+
+    pub async fn nft_asset(contract_id: ContractId, token_id: u64) -> Asset {
+        let token = NFTAsset {
+            contract_id,
+            token_id,
+        };
+
+        Asset::NFTAsset(token)
+    }
+
     pub async fn setup() -> (
         Metadata,
         Metadata,
@@ -154,10 +182,6 @@ pub mod test_helpers {
         Metadata,
         ContractId,
         ContractId,
-        u64,
-        u64,
-        u64,
-        u64,
     ) {
         let num_wallets = 4;
         let coins_per_wallet = 1;
@@ -234,22 +258,13 @@ pub mod test_helpers {
             wallet: wallet4.clone(),
         };
 
-        let sell_amount = 10;
-        let inital_price = 1;
-        let reserve_price = 10;
-        let time = 10;
-
         (
             deploy_wallet,
             seller,
             buyer1,
             buyer2,
             sell_asset_id.into(),
-            buy_asset_id.into(),
-            sell_amount,
-            inital_price,
-            reserve_price,
-            time,
+            buy_asset_id.into()
         )
     }
 
@@ -260,14 +275,5 @@ pub mod test_helpers {
         };
 
         Asset::TokenAsset(token)
-    }
-
-    pub async fn nft_asset(contract_id: ContractId, token_id: u64) -> Asset {
-        let token = NFTAsset {
-            contract_id,
-            token_id,
-        };
-
-        Asset::NFTAsset(token)
     }
 }
