@@ -25,6 +25,124 @@ pub mod asset_abi_calls {
     }
 }
 
+pub mod english_auction_abi_calls {
+
+    use super::*;
+
+    pub async fn auction_info(auction_id: u64, contract: &EnglishAuction) -> Option<Auction> {
+        contract
+            .methods()
+            .auction_info(auction_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+
+    pub async fn bid(auction_id: u64, bid_asset: Asset, contract: &EnglishAuction) -> CallResponse<()> {
+        match bid_asset {
+            Asset::NFTAsset(bid_asset) => {
+                contract
+                    .methods()
+                    .bid(auction_id, Asset::NFTAsset(bid_asset.clone()))
+                    .set_contracts(&[bid_asset.contract_id.into()])
+                    .call()
+                    .await
+                    .unwrap()
+            },
+            Asset::TokenAsset(bid_asset) => {
+                let tx_params = TxParameters::new(None, Some(1_000_000), None);
+                let call_params = CallParameters::new(Some(bid_asset.amount), Some(AssetId::from(*bid_asset.contract_id)), None);
+        
+                contract
+                    .methods()
+                    .bid(auction_id, Asset::TokenAsset(bid_asset.clone()))
+                    .tx_params(tx_params)
+                    .call_params(call_params)
+                    .call()
+                    .await
+                    .unwrap()
+            }
+        }
+    }
+
+    pub async fn cancel(auction_id: u64, contract: &EnglishAuction) -> CallResponse<()> {
+        contract
+            .methods()
+            .cancel(auction_id)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn create(
+        bid_asset: Asset,
+        contract: &EnglishAuction,
+        duration: u64,
+        inital_price: u64,
+        reserve_price: Option<u64>,
+        seller: Identity,
+        sell_asset: Asset
+    ) -> u64 {
+        match sell_asset {
+            Asset::NFTAsset(sell_asset) => {
+                contract
+                    .methods()
+                    .create(bid_asset, duration, inital_price, reserve_price, seller, Asset::NFTAsset(sell_asset.clone()))
+                    .set_contracts(&[sell_asset.contract_id.into()])
+                    .call()
+                    .await
+                    .unwrap()
+                    .value
+            },
+            Asset::TokenAsset(sell_asset) => {
+                let tx_params = TxParameters::new(None, Some(1_000_000), None);
+                let call_params = CallParameters::new(Some(sell_asset.amount), Some(AssetId::from(*sell_asset.contract_id)), None);
+        
+                contract
+                    .methods()
+                    .create(bid_asset, duration, inital_price, reserve_price, seller, Asset::TokenAsset(sell_asset.clone()))
+                    .tx_params(tx_params)
+                    .call_params(call_params)
+                    .call()
+                    .await
+                    .unwrap()
+                    .value
+            }
+        }
+    }
+
+    pub async fn deposit(auction_id: u64, contract: &EnglishAuction, identity: Identity) -> Option<Asset> {
+        contract
+            .methods()
+            .deposit(auction_id, identity)
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+
+    pub async fn withdraw(auction_id: u64, contract: &EnglishAuction) -> CallResponse<()> {
+        contract
+            .methods()
+            .withdraw(auction_id)
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn total_auctions(contract: &EnglishAuction) -> u64 {
+        contract
+            .methods()
+            .total_auctions()
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+}
+
 pub mod test_helpers {
 
     use super::*;
