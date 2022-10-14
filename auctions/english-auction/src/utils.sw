@@ -34,10 +34,10 @@ pub fn approved_for_nft_transfer(asset: NFTAsset, from: Identity, to: Identity) 
     let nft_abi = abi(NFT, nft_contract.value);
 
     let approved_for_all = nft_abi.is_approved_for_all(from, to);
-    let approved_for_token: Option<Identity> = nft_abi.approved(asset.token_id);
+    let approved_for_token = nft_abi.approved(asset.token_id);
 
     // The to `Identity` either needs to be approved for all or approved for this token id
-    approved_for_all || (approved_for_token.is_some() && to == approved_for_token.unwrap())
+    approved_for_all || to == approved_for_token
 }
 
 /// Returns true if the `owner` `Identity` owns the NFT token.
@@ -50,9 +50,9 @@ pub fn owns_nft(asset: NFTAsset, owner: Identity) -> bool {
     let nft_contract = asset.contract_id;
     let nft_abi = abi(NFT, nft_contract.value);
 
-    let token_owner: Option<Identity> = nft_abi.owner_of(asset.token_id);
+    let token_owner = nft_abi.owner_of(asset.token_id);
 
-    token_owner.is_some() && owner == token_owner.unwrap()
+    owner == token_owner
 }
 
 /// Transfers assets out of the auction contract to the specified user.
@@ -89,8 +89,8 @@ pub fn transfer_nft(asset: NFTAsset, from: Identity, to: Identity) {
 
     nft_abi.transfer_from(from, to, asset.token_id);
 
-    let owner: Option<Identity> = nft_abi.owner_of(asset.token_id);
-    require(owner.is_some() && owner.unwrap() == to, AccessError::NFTTransferNotApproved);
+    let owner = nft_abi.owner_of(asset.token_id);
+    require(owner == to, AccessError::NFTTransferNotApproved);
 }
 
 /// Ensures the assets provided match, NFTs must be permissioned for transfer, and token 

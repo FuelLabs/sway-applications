@@ -179,19 +179,19 @@ pub mod nft_abi_calls {
 
     use super::*;
 
-    pub async fn approve(approved: &Identity, contract: &Nft, token_id: u64) -> CallResponse<()> {
+    pub async fn approve(approved: Identity, contract: &Nft, token_id: u64) -> CallResponse<()> {
         contract
             .methods()
-            .approve(approved.clone(), token_id)
+            .approve(approved, token_id)
             .call()
             .await
             .unwrap()
     }
 
-    pub async fn balance_of(contract: &Nft, wallet: &Identity) -> u64 {
+    pub async fn balance_of(contract: &Nft, wallet: Identity) -> u64 {
         contract
             .methods()
-            .balance_of(wallet.clone())
+            .balance_of(wallet)
             .call()
             .await
             .unwrap()
@@ -201,21 +201,21 @@ pub mod nft_abi_calls {
     pub async fn constructor(
         access_control: bool,
         contract: &Nft,
-        owner: &Identity,
+        owner: Identity,
         token_supply: u64,
     ) -> CallResponse<()> {
         contract
             .methods()
-            .constructor(access_control, owner.clone(), token_supply)
+            .constructor(access_control, owner, token_supply)
             .call()
             .await
             .unwrap()
     }
 
-    pub async fn mint(amount: u64, contract: &Nft, owner: &Identity) -> CallResponse<()> {
+    pub async fn mint(amount: u64, contract: &Nft, owner: Identity) -> CallResponse<()> {
         contract
             .methods()
-            .mint(amount, owner.clone())
+            .mint(amount, owner)
             .call()
             .await
             .unwrap()
@@ -234,11 +234,11 @@ pub mod nft_abi_calls {
     pub async fn set_approval_for_all(
         approve: bool,
         contract: &Nft,
-        operator: &Identity,
+        operator: Identity,
     ) -> CallResponse<()> {
         contract
             .methods()
-            .set_approval_for_all(approve, operator.clone())
+            .set_approval_for_all(approve, operator)
             .call()
             .await
             .unwrap()
@@ -258,13 +258,14 @@ pub mod test_helpers {
         (sell_amount, inital_price, reserve_price, duration)
     }
 
-    pub async fn defaults_nft() -> (u64, u64, u64, u64) {
-        let sell_amount = 1;
-        let inital_price = 1;
-        let reserve_price = 1;
+    pub async fn defaults_nft() -> (u64, u64, u64, u64, bool) {
+        let sell_count = 1;
+        let inital_count = 1;
+        let reserve_count = 1;
         let duration = 10;
+        let access_control = true;
 
-        (sell_amount, inital_price, reserve_price, duration)
+        (sell_count, inital_count, reserve_count, duration, access_control)
     }
 
     pub async fn nft_asset(contract_id: ContractId, token_id: u64) -> Asset {
@@ -281,6 +282,7 @@ pub mod test_helpers {
         Metadata,
         Metadata,
         Metadata,
+        ContractId,
         ContractId,
         ContractId,
         ContractId,
@@ -395,6 +397,7 @@ pub mod test_helpers {
             seller,
             buyer1,
             buyer2,
+            auction_id.into(),
             sell_asset_id.into(),
             sell_nft_id.into(),
             buy_asset_id.into(),
