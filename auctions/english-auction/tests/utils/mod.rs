@@ -1,14 +1,14 @@
 use fuels::{contract::contract::CallResponse, prelude::*, tx::ContractId, tx::Salt};
-use fuels_abigen_macro::abigen;
+use rand::prelude::{Rng, SeedableRng, StdRng};
 
 // Load abi from json
 abigen!(EnglishAuction, "out/debug/english-auction-abi.json");
 abigen!(MyAsset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
 pub struct Metadata {
-    asset: core::option::Option<MyAsset>,
+    asset: Option<MyAsset>,
     auction: EnglishAuction,
-    wallet: LocalWallet,
+    wallet: WalletUnlocked,
 }
 
 pub mod test_helpers {
@@ -27,12 +27,17 @@ pub mod test_helpers {
         u64,
         u64,
     ) {
-        // Setup 3 test wallets
-        let mut wallets = launch_provider_and_get_wallets(WalletsConfig {
-            num_wallets: 4,
-            coins_per_wallet: 1,
-            coin_amount: 1000000,
-        })
+        let num_wallets = 4;
+        let coins_per_wallet = 1;
+        let coin_amount = 1000000;
+        let config = Config {
+            manual_blocks_enabled: true, // Necessary so the `produce_blocks` API can be used locally
+            ..Config::local_node()
+        };
+        let mut wallets = launch_custom_provider_and_get_wallets(
+            WalletsConfig::new(Some(num_wallets), Some(coins_per_wallet), Some(coin_amount)),
+            Some(config),
+        )
         .await;
 
         // Get the wallets from that provider
@@ -45,6 +50,9 @@ pub mod test_helpers {
             "./out/debug/english-auction.bin",
             &wallet1,
             TxParameters::default(),
+            StorageConfiguration::with_storage_path(Some(
+                "./out/debug/english-auction-storage_slots.json".to_string(),
+            )),
         )
         .await
         .unwrap();
@@ -53,6 +61,7 @@ pub mod test_helpers {
             "./tests/artifacts/asset/out/debug/asset.bin",
             &wallet1,
             TxParameters::default(),
+            StorageConfiguration::default(),
         )
         .await
         .unwrap();
@@ -69,11 +78,14 @@ pub mod test_helpers {
             wallet: wallet2.clone(),
         };
 
-        let buy_asset_id = Contract::deploy_with_salt(
+        let rng = &mut StdRng::seed_from_u64(2322u64);
+        let salt: [u8; 32] = rng.gen();
+        let buy_asset_id = Contract::deploy_with_parameters(
             "./tests/artifacts/asset/out/debug/asset.bin",
             &wallet3,
             TxParameters::default(),
-            Salt::from([1u8; 32]),
+            StorageConfiguration::default(),
+            Salt::from(salt),
         )
         .await
         .unwrap();
@@ -100,8 +112,8 @@ pub mod test_helpers {
             seller,
             buyer1,
             buyer2,
-            sell_asset_id,
-            buy_asset_id,
+            sell_asset_id.into(),
+            buy_asset_id.into(),
             sell_amount,
             inital_price,
             reserve_price,
@@ -118,232 +130,12 @@ pub mod test_helpers {
         Asset::TokenAsset(token)
     }
 
-    pub async fn nft_asset(contract_id: ContractId, token_ids: u64) -> Asset {
+    pub async fn nft_asset(contract_id: ContractId, token_id: u64) -> Asset {
         let token = NFTAsset {
             contract_id,
-            token_ids,
+            token_id,
         };
 
         Asset::NFTAsset(token)
     }
-}
-
-pub mod abi_calls {
-
-    use super::*;
-
-    pub async fn init_token(
-        deploy_wallet: &Metadata,
-        seller: &Metadata,
-        sell_asset_id: ContractId,
-        sell_amount: u64,
-        _buy_asset_id: ContractId,
-        inital_price: u64,
-        reserve_price: u64,
-        time: u64,
-        buy_asset_struct: Asset,
-        sell_asset_struct: Asset,
-    ) -> u64 {
-        deploy_funds(&deploy_wallet, &seller.wallet, 100).await;
-
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params =
-            CallParameters::new(Some(sell_amount), Some(AssetId::from(*sell_asset_id)), None);
-
-        seller
-            .auction
-            .create(
-                englishauction_mod::Identity::Address(seller.wallet.address()),
-                sell_asset_struct,
-                buy_asset_struct,
-                inital_price,
-                reserve_price,
-                time,
-            )
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
-
-    pub async fn init_nft(
-        _deploy_wallet: &Metadata,
-        seller: &Metadata,
-        _sell_asset_id: ContractId,
-        _sell_amount: u64,
-        _sell_nft_id: u64,
-        _buy_asset_id: ContractId,
-        inital_price: u64,
-        reserve_price: u64,
-        time: u64,
-        buy_asset_struct: Asset,
-        sell_asset_struct: Asset,
-    ) -> u64 {
-        seller
-            .auction
-            .create(
-                englishauction_mod::Identity::Address(seller.wallet.address()),
-                sell_asset_struct,
-                buy_asset_struct,
-                inital_price,
-                reserve_price,
-                time,
-            )
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
-
-    pub async fn bid_tokens(
-        deploy_wallet: &Metadata,
-        bidder: &Metadata,
-        auction_id: u64,
-        asset_id: ContractId,
-        amount: u64,
-        asset: Asset,
-    ) -> CallResponse<()> {
-        deploy_funds(&deploy_wallet, &bidder.wallet, 100).await;
-
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
-        let call_params = CallParameters::new(Some(amount), Some(AssetId::from(*asset_id)), None);
-
-        bidder
-            .auction
-            .bid(auction_id, asset)
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .append_variable_outputs(2)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn bid_nft(
-        bidder: &Metadata,
-        auction_id: u64,
-        buy_asset_struct: Asset,
-    ) -> CallResponse<()> {
-        bidder
-            .auction
-            .bid(auction_id, buy_asset_struct)
-            .append_variable_outputs(2)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn withdraw(call_wallet: &Metadata, auction_id: u64) -> CallResponse<()> {
-        call_wallet
-            .auction
-            .withdraw(auction_id)
-            .append_variable_outputs(2)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    // pub async fn auction_end_block(call_wallet: &Metadata, auction_id: u64) -> u64 {
-    //     let auction = call_wallet
-    //         .auction
-    //         .auction_info(auction_id)
-    //         .call()
-    //         .await
-    //         .unwrap()
-    //         .value;
-
-    //     auction.end_block
-    // }
-
-    // pub async fn current_bid(call_wallet: &Metadata, auction_id: u64) -> u64 {
-    //     let auction = call_wallet
-    //         .auction
-    //         .auction_info(auction_id)
-    //         .call()
-    //         .await
-    //         .unwrap()
-    //         .value;
-
-    //     auction.buy_asset.amount()
-    // }
-
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/420 is resolved
-    // pub async fn deposits(call_wallet: &Metadata, auction_id: u64) -> englishauction_mod::Option {
-    //     call_wallet.auction.deposit(auction_id).call().await.unwrap().value
-    // }
-
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
-    // pub async fn highest_bidder(call_wallet: &Metadata, auction_id: u64) -> englishauction_mod::Option {
-    //     let auction = call_wallet.auction.auction_info(auction_id).call().await.unwrap().value;
-
-    //     auction.bidder
-    // }
-
-    // Uncomment when https://github.com/FuelLabs/fuels-rs/issues/421 is resolved
-    // pub async fn reserve(call_wallet: &Metadata, auction_id: u64) -> englishauction_mod::Option {
-    //     let auction = call_wallet.auction.auction_info(auction_id).call().await.unwrap().value;
-
-    //     auction.reserve_price
-    // }
-
-    // pub async fn sell_amount(call_wallet: &Metadata, auction_id: u64) -> u64 {
-    //     let auction = call_wallet
-    //         .auction
-    //         .auction_info(auction_id)
-    //         .call()
-    //         .await
-    //         .unwrap()
-    //         .value;
-
-    //     auction.sell_asset.amount()
-    // }
-
-    // pub async fn sell_asset(call_wallet: &Metadata, auction_id: u64) -> ContractId {
-    //     let auction = call_wallet
-    //         .auction
-    //         .auction_info(auction_id)
-    //         .call()
-    //         .await
-    //         .unwrap()
-    //         .value;
-
-    //     auction.sell_asset.contract_id()
-    // }
-
-    // pub async fn state(call_wallet: &Metadata, auction_id: u64) -> u64 {
-    //     let auction = call_wallet
-    //         .auction
-    //         .auction_info(auction_id)
-    //         .call()
-    //         .await
-    //         .unwrap()
-    //         .value;
-
-    //     auction.state
-    // }
-
-    pub async fn total_auctions(call_wallet: &Metadata) -> u64 {
-        call_wallet
-            .auction
-            .total_auctions()
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
-}
-
-pub async fn deploy_funds(deploy_wallet: &Metadata, wallet: &LocalWallet, asset_amount: u64) {
-    deploy_wallet
-        .asset
-        .as_ref()
-        .unwrap()
-        .mint_and_send_to_address(asset_amount, wallet.address())
-        .append_variable_outputs(1)
-        .call()
-        .await
-        .unwrap()
-        .value;
 }
