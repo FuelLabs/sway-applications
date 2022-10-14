@@ -12,10 +12,10 @@ mod success {
 
     #[tokio::test]
     async fn creates_new_token_auction() {
-        let (deployer, seller, buyer1, _, sell_asset_contract_id, buy_asset_contract_id) = setup().await;
+        let (deployer, seller, buyer1, _, sell_asset_contract_id, _, buy_asset_contract_id, _) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
 
-        mint_and_send_to_address(sell_amount, &seller.asset.unwrap(), seller.wallet.address().into()).await;
+        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
@@ -42,7 +42,7 @@ mod success {
 
     #[tokio::test]
     async fn creates_new_nft_auction() {
-        let (deployer, seller, buyer1, _, sell_asset_contract_id, buy_asset_contract_id) = setup().await;
+        let (deployer, seller, buyer1, _, _, sell_nft_contract_id, _, buy_nft_contract_id) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_nft().await;
     }
 }

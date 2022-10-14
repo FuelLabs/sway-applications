@@ -3,11 +3,15 @@ use rand::prelude::{Rng, SeedableRng, StdRng};
 
 // Load abi from json
 abigen!(EnglishAuction, "out/debug/english-auction-abi.json");
+// TODO: This should be a seperate project and added to the test artifacts once 
+// https://github.com/FuelLabs/sway-libs/issues/19 is resolved
+abigen!(Nft, "../../NFT/out/debug/NFT-abi.json");
 abigen!(MyAsset, "tests/artifacts/asset/out/debug/asset-abi.json");
 
 pub struct Metadata {
-    pub asset: Option<MyAsset>,
+    pub asset: MyAsset,
     pub auction: EnglishAuction,
+    pub nft: Nft,
     pub wallet: WalletUnlocked,
 }
 
@@ -144,6 +148,76 @@ pub mod english_auction_abi_calls {
     }
 }
 
+pub mod nft_abi_calls {
+
+    use super::*;
+
+    pub async fn approve(approved: &Identity, contract: &Nft, token_id: u64) -> CallResponse<()> {
+        contract
+            .methods()
+            .approve(approved.clone(), token_id)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn balance_of(contract: &Nft, wallet: &Identity) -> u64 {
+        contract
+            .methods()
+            .balance_of(wallet.clone())
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+
+    pub async fn constructor(
+        access_control: bool,
+        contract: &Nft,
+        owner: &Identity,
+        token_supply: u64,
+    ) -> CallResponse<()> {
+        contract
+            .methods()
+            .constructor(access_control, owner.clone(), token_supply)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn mint(amount: u64, contract: &Nft, owner: &Identity) -> CallResponse<()> {
+        contract
+            .methods()
+            .mint(amount, owner.clone())
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn owner_of(contract: &Nft, token_id: u64) -> Identity {
+        contract
+            .methods()
+            .owner_of(token_id)
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+
+    pub async fn set_approval_for_all(
+        approve: bool,
+        contract: &Nft,
+        operator: &Identity,
+    ) -> CallResponse<()> {
+        contract
+            .methods()
+            .set_approval_for_all(approve, operator.clone())
+            .call()
+            .await
+            .unwrap()
+    }
+}
+
 pub mod test_helpers {
 
     use super::*;
@@ -180,6 +254,8 @@ pub mod test_helpers {
         Metadata,
         Metadata,
         Metadata,
+        ContractId,
+        ContractId,
         ContractId,
         ContractId,
     ) {
@@ -222,15 +298,28 @@ pub mod test_helpers {
         .await
         .unwrap();
 
+        let sell_nft_id = Contract::deploy(
+            "../../NFT/out/debug/NFT.bin",
+            &wallet1,
+            TxParameters::default(),
+            StorageConfiguration::with_storage_path(Some(
+                "../../NFT/out/debug/NFT-storage_slots.json".to_string(),
+            )),
+        )
+        .await
+        .unwrap();
+
         let deploy_wallet = Metadata {
-            asset: Some(MyAsset::new(sell_asset_id.to_string(), wallet1.clone())),
+            asset: MyAsset::new(sell_asset_id.to_string(), wallet1.clone()),
             auction: EnglishAuction::new(auction_id.to_string(), wallet1.clone()),
+            nft: Nft::new(sell_nft_id.to_string(), wallet1.clone()),
             wallet: wallet1.clone(),
         };
 
         let seller = Metadata {
-            asset: Some(MyAsset::new(sell_asset_id.to_string(), wallet2.clone())),
+            asset: MyAsset::new(sell_asset_id.to_string(), wallet2.clone()),
             auction: EnglishAuction::new(auction_id.to_string(), wallet2.clone()),
+            nft: Nft::new(sell_nft_id.to_string(), wallet2.clone()),
             wallet: wallet2.clone(),
         };
 
@@ -246,15 +335,31 @@ pub mod test_helpers {
         .await
         .unwrap();
 
+        let rng = &mut StdRng::seed_from_u64(2322u64);
+        let salt: [u8; 32] = rng.gen();
+        let buy_nft_id = Contract::deploy_with_parameters(
+            "../../NFT/out/debug/NFT.bin",
+            &wallet3,
+            TxParameters::default(),
+            StorageConfiguration::with_storage_path(Some(
+                "../../NFT/out/debug/NFT-storage_slots.json".to_string(),
+            )),
+            Salt::from(salt),
+        )
+        .await
+        .unwrap();
+
         let buyer1 = Metadata {
-            asset: Some(MyAsset::new(buy_asset_id.to_string(), wallet3.clone())),
+            asset: MyAsset::new(buy_asset_id.to_string(), wallet3.clone()),
             auction: EnglishAuction::new(auction_id.to_string(), wallet3.clone()),
+            nft: Nft::new(buy_nft_id.to_string(), wallet3.clone()),
             wallet: wallet3.clone(),
         };
 
         let buyer2 = Metadata {
-            asset: Some(MyAsset::new(buy_asset_id.to_string(), wallet4.clone())),
+            asset: MyAsset::new(buy_asset_id.to_string(), wallet4.clone()),
             auction: EnglishAuction::new(auction_id.to_string(), wallet4.clone()),
+            nft: Nft::new(buy_nft_id.to_string(), wallet4.clone()),
             wallet: wallet4.clone(),
         };
 
@@ -264,7 +369,9 @@ pub mod test_helpers {
             buyer1,
             buyer2,
             sell_asset_id.into(),
-            buy_asset_id.into()
+            sell_nft_id.into(),
+            buy_asset_id.into(),
+            buy_nft_id.into(),
         )
     }
 

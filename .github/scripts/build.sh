@@ -13,6 +13,7 @@ elif [ $PROJECT = 'dao-voting' ]; then
 if [ $PROJECT = 'auctions/english-auction' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/asset
+    forc build --path $PROJECT/../../NFT
 elif [ $PROJECT = 'escrow' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/asset
