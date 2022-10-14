@@ -65,7 +65,7 @@ impl MultiSignatureWallet for Contract {
     #[storage(read, write)]
     fn constructor(users: [User; 25], threshold: u64) {
         require(storage.nonce == 0, InitError::CannotReinitialize);
-        require(storage.threshold != 0, InitError::ThresholdCannotBeZero);
+        require(threshold != 0, InitError::ThresholdCannotBeZero);
 
         let mut user_index = 0;
         while user_index < 25 {
