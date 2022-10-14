@@ -21,7 +21,7 @@ mod success {
 
         let new_expiry = expiry(&instance, &name).await;
 
-        assert_eq!(previous_expiry + 5000, new_expiry);
+        assert_eq!(previous_expiry.value + 5000, new_expiry.value);
     }
 }
 

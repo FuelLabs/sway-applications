@@ -1,6 +1,8 @@
+use fuels::contract::contract::CallResponse;
+
 use crate::utils::*;
 
-pub async fn extend(instance: &NameRegistry, name: &String, duration: u64) {
+pub async fn extend(instance: &NameRegistry, name: &String, duration: u64) -> CallResponse<()> {
     instance
         .methods()
         .extend(
@@ -14,37 +16,34 @@ pub async fn extend(instance: &NameRegistry, name: &String, duration: u64) {
         })
         .call()
         .await
-        .unwrap();
+        .unwrap()
 }
 
-pub async fn expiry(instance: &NameRegistry, name: &String) -> u64 {
+pub async fn expiry(instance: &NameRegistry, name: &String) -> CallResponse<u64> {
     instance
         .methods()
         .expiry(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
         .call()
         .await
         .unwrap()
-        .value
 }
 
-pub async fn identity(instance: &NameRegistry, name: &String) -> Identity {
+pub async fn identity(instance: &NameRegistry, name: &String) -> CallResponse<Identity> {
     instance
         .methods()
         .identity(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
         .call()
         .await
         .unwrap()
-        .value
 }
 
-pub async fn owner(instance: &NameRegistry, name: &String) -> Identity {
+pub async fn owner(instance: &NameRegistry, name: &String) -> CallResponse<Identity> {
     instance
         .methods()
         .owner(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
         .call()
         .await
         .unwrap()
-        .value
 }
 
 pub async fn register(
@@ -53,7 +52,7 @@ pub async fn register(
     duration: u64,
     owner: &Identity,
     identity: &Identity,
-) {
+) -> CallResponse<()> {
     instance
         .methods()
         .register(
@@ -69,10 +68,10 @@ pub async fn register(
         })
         .call()
         .await
-        .unwrap();
+        .unwrap()
 }
 
-pub async fn set_identity(instance: &NameRegistry, name: &String, identity: Identity) {
+pub async fn set_identity(instance: &NameRegistry, name: &String, identity: Identity) -> CallResponse<()> {
     instance
         .methods()
         .set_identity(
@@ -81,10 +80,10 @@ pub async fn set_identity(instance: &NameRegistry, name: &String, identity: Iden
         )
         .call()
         .await
-        .unwrap();
+        .unwrap()
 }
 
-pub async fn set_owner(instance: &NameRegistry, name: &String, new_owner: Identity) {
+pub async fn set_owner(instance: &NameRegistry, name: &String, new_owner: Identity) -> CallResponse<()> {
     instance
         .methods()
         .set_owner(
@@ -93,5 +92,5 @@ pub async fn set_owner(instance: &NameRegistry, name: &String, new_owner: Identi
         )
         .call()
         .await
-        .unwrap();
+        .unwrap()
 }

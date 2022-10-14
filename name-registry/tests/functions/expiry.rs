@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{expiry, extend, register},
-        get_contract_instance,
+        get_contract_instance//, *
     };
     use fuels::prelude::*;
 
@@ -10,18 +10,19 @@ mod success {
         let (instance, _id, wallet, _wallet2) = get_contract_instance().await;
 
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
-
         let name = String::from("SwaySway");
 
-        register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
+        let _registration_response = register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
+        let previous_expiry_response = expiry(&instance, &name).await;
 
-        let previous_expiry = expiry(&instance, &name).await;
+        // let log_registration_event = instance.logs_with_type::<NameRegisteredEvent>(&registration_response.receipts).unwrap();
+        // assert_eq!(log_registration_event, vec![NameRegisteredEvent { expiry: 5000, name: SizedAsciiString::<8>::new(name.to_owned()).unwrap(), identity: wallet_identity.clone(), owner: wallet_identity.clone()}]);
 
         extend(&instance, &name, 5000).await;
 
-        let new_expiry = expiry(&instance, &name).await;
+        let new_expiry_response = expiry(&instance, &name).await;
 
-        assert_eq!(previous_expiry + 5000, new_expiry);
+        assert_eq!(previous_expiry_response.value + 5000, new_expiry_response.value);
     }
 }
 
