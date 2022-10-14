@@ -11,6 +11,20 @@ pub struct Metadata {
     wallet: WalletUnlocked,
 }
 
+pub mod asset_abi_calls {
+
+    use super::*;
+
+    pub async fn mint_and_send_to_address(amount: u64, contract: &MyAsset, recipient: Address) -> CallResponse<()> {
+        contract
+            .methods()
+            .mint_and_send_to_address(amount, recipient)
+            .call()
+            .await
+            .unwrap()
+    }
+}
+
 pub mod test_helpers {
 
     use super::*;
