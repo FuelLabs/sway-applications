@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{expiry, extend, register},
-        get_contract_instance,
+        get_contract_instance, string_to_ascii, RegistrationExtendedEvent,
     };
     use fuels::prelude::*;
 
@@ -13,15 +13,27 @@ mod success {
 
         let name = String::from("SwaySway");
 
-        register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
+        let (_, register_time) =
+            register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
 
         let previous_expiry = expiry(&instance, &name).await;
 
-        extend(&instance, &name, 5000).await;
+        let extend_response = extend(&instance, &name, 5000).await;
+        let log = instance
+            .logs_with_type::<RegistrationExtendedEvent>(&extend_response.0.receipts)
+            .unwrap();
 
         let new_expiry = expiry(&instance, &name).await;
 
-        assert_eq!(previous_expiry.value + 5000, new_expiry.value);
+        assert_eq!(previous_expiry.0.value + 5000, new_expiry.0.value);
+        assert_eq!(
+            log,
+            vec![RegistrationExtendedEvent {
+                duration: 5000,
+                name: string_to_ascii(&name),
+                new_expiry: register_time + 10000
+            }]
+        );
     }
 }
 

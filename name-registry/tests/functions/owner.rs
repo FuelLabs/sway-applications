@@ -18,7 +18,7 @@ mod success {
         let previous_owner = owner(&instance, &name).await;
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
 
-        assert_eq!(previous_owner.value, wallet_identity);
+        assert_eq!(previous_owner.0.value, wallet_identity);
 
         let wallet2 = WalletUnlocked::new_random(None);
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
@@ -27,7 +27,7 @@ mod success {
 
         let new_owner = owner(&instance, &name).await;
 
-        assert_eq!(new_owner.value, wallet_identity2);
+        assert_eq!(new_owner.0.value, wallet_identity2);
     }
 }
 

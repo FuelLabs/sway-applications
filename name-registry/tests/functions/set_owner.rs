@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{owner, register, set_owner},
-        get_contract_instance,
+        get_contract_instance, string_to_ascii, OwnerChangedEvent,
     };
     use fuels::prelude::*;
 
@@ -18,16 +18,28 @@ mod success {
         let previous_owner = owner(&instance, &name).await;
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
 
-        assert_eq!(previous_owner.value, wallet_identity);
+        assert_eq!(previous_owner.0.value, wallet_identity);
 
         let wallet2 = WalletUnlocked::new_random(None);
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
-        set_owner(&instance, &name, wallet_identity2.clone()).await;
+        let response = set_owner(&instance, &name, wallet_identity2.clone()).await;
 
         let new_owner = owner(&instance, &name).await;
 
-        assert_eq!(new_owner.value, wallet_identity2);
+        assert_eq!(new_owner.0.value, wallet_identity2);
+
+        let log = instance
+            .logs_with_type::<OwnerChangedEvent>(&response.0.receipts)
+            .unwrap();
+        assert_eq!(
+            log,
+            vec![OwnerChangedEvent {
+                name: string_to_ascii(&name),
+                new_owner: wallet_identity2,
+                previous_owner: wallet_identity
+            }]
+        )
     }
 }
 

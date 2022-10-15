@@ -34,3 +34,7 @@ pub async fn get_contract_instance() -> (NameRegistry, ContractId, WalletUnlocke
 
     (instance, id.into(), wallet, wallet2)
 }
+
+pub fn string_to_ascii(name: &String) -> SizedAsciiString<8> {
+    SizedAsciiString::<8>::new(name.to_owned()).unwrap()
+}

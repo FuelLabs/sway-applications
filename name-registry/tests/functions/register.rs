@@ -1,5 +1,7 @@
 mod success {
-    use crate::utils::{abi::register, get_contract_instance};
+    use crate::utils::{
+        abi::register, get_contract_instance, string_to_ascii, NameRegisteredEvent,
+    };
     use fuels::prelude::*;
     #[tokio::test]
     async fn can_register() {
@@ -9,7 +11,20 @@ mod success {
 
         let name = String::from("SwaySway");
 
-        register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
+        let response = register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
+        let log = instance
+            .logs_with_type::<NameRegisteredEvent>(&response.0.receipts)
+            .unwrap();
+
+        assert_eq!(
+            log,
+            vec![NameRegisteredEvent {
+                expiry: response.1 + 5000,
+                name: string_to_ascii(&name),
+                owner: wallet_identity.clone(),
+                identity: wallet_identity
+            }]
+        )
     }
 }
 

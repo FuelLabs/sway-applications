@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{identity, register, set_identity},
-        get_contract_instance,
+        get_contract_instance, string_to_ascii, IdentityChangedEvent,
     };
     use fuels::prelude::*;
 
@@ -18,16 +18,28 @@ mod success {
         let previous_identity = identity(&instance, &name).await;
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
 
-        assert_eq!(previous_identity.value, wallet_identity);
+        assert_eq!(previous_identity.0.value, wallet_identity);
 
         let wallet2 = WalletUnlocked::new_random(None);
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
-        set_identity(&instance, &name, wallet_identity2.clone()).await;
+        let response = set_identity(&instance, &name, wallet_identity2.clone()).await;
 
         let new_identity = identity(&instance, &name).await;
 
-        assert_eq!(new_identity.value, wallet_identity2);
+        assert_eq!(new_identity.0.value, wallet_identity2);
+
+        let log = instance
+            .logs_with_type::<IdentityChangedEvent>(&response.0.receipts)
+            .unwrap();
+        assert_eq!(
+            log,
+            vec![IdentityChangedEvent {
+                name: string_to_ascii(&name),
+                new_identity: wallet_identity2,
+                previous_identity: wallet_identity
+            }]
+        )
     }
 }
 
