@@ -14,7 +14,7 @@ abi AirdropDistributor {
     ///
     /// # Arguments
     ///
-    /// * `amount` - The quantity of an asset the allotted to the user to claim.
+    /// * `amount` - The quantity of an asset allotted to the user to claim.
     /// * 'key' - The index of the leaf which will be proven on the Merkle Tree.
     /// * `num_leaves` - The number of leaves in the Merkle Tree.
     /// * `proof` - The Merkle proof to verify the user is authorized to claim.
@@ -32,7 +32,7 @@ abi AirdropDistributor {
     ///
     /// # Arguments
     ///
-    /// * `identity` - The user which the data on their claim should be returned
+    /// * `identity` - The user whose ClaimData will be returned
     #[storage(read)]
     fn claim_data(identity: Identity) -> ClaimData;
 
