@@ -6,22 +6,25 @@ use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewInfo, RemoveLiqu
 use std::contract_id::ContractId;
 
 abi AMM {
-    /// Add a (given asset ID, exchange contract ID) pair to storage.
-    /// The exchange contract defines the pool that consists of the base asset and the given asset.
+    /// Add an (asset pair, exchange contract ID) mapping to the storage.
     /// 
     /// # Arguments
     /// 
-    /// - ` asset_id ` - identifier of the asset
-    /// - ` exchange_id ` - identifier of exchange contract
+    /// - ` asset_pair ` - tuple of identifiers of the pair of assets that make up the pool
+    /// - ` pool ` - identifier of exchange contract that defines the pool of the given pair
+    /// 
+    /// # Reverts
+    /// 
+    /// * When the pool info of the exchange contract with the given address does not consist of the given asset pair
     #[storage(write)]
-    fn add_exchange_contract_to_asset(asset_id: ContractId, exchange_id: ContractId);
-    /// For the given asset ID, get the exchange contract, i.e., the pool that consists of the base asset and the given asset.
+    fn add_pool(asset_pair: (ContractId, ContractId), pool: ContractId);
+    /// For the given asset pair, get the exchange contract, i.e., the pool that consists of the asset pair.
     /// 
     /// # Arguments
     /// 
-    /// - ` asset_id ` - identifier of the asset
+    /// - ` asset_pair ` - tuple of identifiers of the pair of assets that make up the pool
     #[storage(read)]
-    fn exchange_contract_of_asset(asset_id: ContractId) -> ContractId;
+    fn pool(asset_pair: (ContractId, ContractId)) -> Option<ContractId>;
 }
 
 abi Exchange {
