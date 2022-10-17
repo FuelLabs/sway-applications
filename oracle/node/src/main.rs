@@ -2,6 +2,7 @@ use reqwest;
 use dotenv::dotenv;
 use serde::Deserialize;
 use tokio::time::{ self, Duration };
+use std::env;
 
 #[derive(Deserialize)]
 struct USDPrice {
@@ -10,6 +11,9 @@ struct USDPrice {
 
 #[tokio::main]
 async fn main() {
+    let mut env_path = env::current_dir().unwrap();
+    env_path.push(std::path::Path::new("node"));
+    env::set_current_dir(env_path).unwrap();
     dotenv().ok();
     let api_url = std::env::var("API_URL").expect("API_URL must be set.");
     let client = reqwest::Client::new();
