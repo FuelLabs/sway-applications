@@ -157,6 +157,7 @@ impl EnglishAuction for Contract {
         require(reserve_price.is_none() || (reserve_price.is_some() && reserve_price.unwrap() >= initial_price && reserve_price.unwrap() != 0), InitError::ReserveLessThanInitialPrice);
         // The auction must last for some time
         require(duration != 0, InitError::AuctionDurationNotProvided);
+        require(bid_asset.amount() == 0, InitError::BidAssetAmountNotZero);
 
         // Ensure that the `sell_asset` struct and what was sent in the transaction match
         match sell_asset {

@@ -89,7 +89,7 @@ pub mod english_auction_abi_calls {
         bid_asset: Asset,
         contract: &EnglishAuction,
         duration: u64,
-        inital_price: u64,
+        initial_price: u64,
         reserve_price: Option<u64>,
         seller: Identity,
         sell_asset: Asset,
@@ -101,7 +101,7 @@ pub mod english_auction_abi_calls {
                     .create(
                         bid_asset,
                         duration,
-                        inital_price,
+                        initial_price,
                         reserve_price,
                         seller,
                         Asset::NFTAsset(sell_asset.clone()),
@@ -125,7 +125,7 @@ pub mod english_auction_abi_calls {
                     .create(
                         bid_asset,
                         duration,
-                        inital_price,
+                        initial_price,
                         reserve_price,
                         seller,
                         Asset::TokenAsset(sell_asset.clone()),
@@ -246,11 +246,11 @@ pub mod test_helpers {
 
     pub async fn defaults_token() -> (u64, u64, u64, u64) {
         let sell_amount = 10;
-        let inital_price = 1;
+        let initial_price = 1;
         let reserve_price = 10;
         let duration = 10;
 
-        (sell_amount, inital_price, reserve_price, duration)
+        (sell_amount, initial_price, reserve_price, duration)
     }
 
     pub async fn defaults_nft() -> (u64, u64, u64, u64, bool) {
