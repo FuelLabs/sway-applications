@@ -5,3 +5,8 @@ license = "Apache-2.0"
 name = "eth-account-abstraction"
 
 [dependencies]
+
+[constants]
+#An example public key, derived from the example private key:
+#
+#config_spender = { type = "B512", value = "" }
