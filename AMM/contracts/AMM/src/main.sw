@@ -1,8 +1,6 @@
 contract;
 
-dep interface;
-
-use interface::AMM;
+use libraries::AMM;
 use std::{contract_id::ContractId, storage::StorageMap};
 
 storage {
