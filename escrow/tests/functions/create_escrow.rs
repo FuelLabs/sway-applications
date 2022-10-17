@@ -151,8 +151,6 @@ mod revert {
         )
         .await;
 
-        // TODO: this test likely fails because the param expects an ARRAY of 2 and we provide 0
-        //       args. This is likely a panic because of the SDK rather than the test itself
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
