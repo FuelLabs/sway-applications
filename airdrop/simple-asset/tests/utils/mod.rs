@@ -18,6 +18,7 @@ pub mod abi_calls {
         minter: Identity,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .constructor(asset_supply, minter)
             .call()
             .await
@@ -26,6 +27,7 @@ pub mod abi_calls {
 
     pub async fn mint_to(amount: u64, contract: &SimpleAsset, to: Identity) -> CallResponse<()> {
         contract
+            .methods()
             .mint_to(amount, to)
             .append_variable_outputs(1)
             .call()
@@ -64,15 +66,13 @@ pub mod test_helpers {
 
         let deployer = Metadata {
             asset_id: ContractId::new(*simple_asset_id.hash()),
-            simple_asset: SimpleAssetBuilder::new(simple_asset_id.to_string(), wallet1.clone())
-                .build(),
+            simple_asset: SimpleAsset::new(simple_asset_id.to_string(), wallet1.clone()),
             wallet: wallet1.clone(),
         };
 
         let user = Metadata {
             asset_id: ContractId::new(*simple_asset_id.hash()),
-            simple_asset: SimpleAssetBuilder::new(simple_asset_id.to_string(), wallet2.clone())
-                .build(),
+            simple_asset: SimpleAsset::new(simple_asset_id.to_string(), wallet2.clone()),
             wallet: wallet2.clone(),
         };
 

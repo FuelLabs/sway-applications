@@ -1,9 +1,8 @@
 use crate::utils::{
     abi_calls::{constructor, is_approved_for_all, set_approval_for_all},
     test_helpers::setup,
-    Identity,
 };
-use fuels::signers::Signer;
+use fuels::{prelude::Identity, signers::Signer};
 
 mod success {
 

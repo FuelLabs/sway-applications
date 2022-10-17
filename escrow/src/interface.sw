@@ -7,13 +7,13 @@ use std::identity::Identity;
 
 abi Escrow {
     /// Buyer accepts proposal to change arbiter details
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `identifier` - Identifier used to find a specific escrow
-    /// 
+    ///
     /// # Reverts
-    /// 
+    ///
     /// * When the escrow is not in the State::Pending state
     /// * When the caller is not the buyer
     /// * When the arbiter has not been proposed by the seller
@@ -21,18 +21,18 @@ abi Escrow {
     fn accept_arbiter(identifier: u64);
 
     /// Creates an internal representation of an escrow instead of deploying a contract per escrow
-    /// 
+    ///
     /// The escrow allows the buyer to deposit any asset from the specified assets
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `arbiter` - A third party which decides how a dispute is resolved
     /// * `assets` - The assets, with the required deposit amounts, that the campaign accepts
     /// * `buyer` - User who deposits funds into the escrow
     /// * `deadline` - End height after which the buyer can no longer deposit and the seller can take payment
-    /// 
+    ///
     /// # Reverts
-    /// 
+    ///
     /// * When the caller does not specify any assets
     /// * When the deadline is not in the future
     /// * When the arbiter fee is set to 0
@@ -44,15 +44,15 @@ abi Escrow {
     fn create_escrow(arbiter: Arbiter, assets: [Asset; 2], buyer: Identity, deadline: u64, );
 
     /// Accepts a deposit from the buyer for any of the assets specified in the escrow
-    /// 
+    ///
     /// A successful deposit unlocks functionality for the rest of the escrow
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `identifier` - Identifier used to find a specific escrow
-    /// 
+    ///
     /// # Reverts
-    /// 
+    ///
     /// * When the deposit is made during / after the deadline
     /// * When the escrow is not in the State::Pending state
     /// * When the caller is not the buyer
@@ -63,16 +63,16 @@ abi Escrow {
     fn deposit(identifier: u64);
 
     /// Changes a flag in the escrow marking it as disputed which results in the escrow being locked
-    /// 
+    ///
     /// Once the escrow is locked the seller cannot take the payment given that the conditions for
     /// taking a payment have been otherwise met
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `identifier` - Identifier used to find a specific escrow
-    /// 
+    ///
     /// # Reverts
-    /// 
+    ///
     /// * When the escrow is not in the State::Pending state
     /// * When the escrow is already in a dispute
     /// * When the caller is not the buyer
@@ -81,18 +81,18 @@ abi Escrow {
     fn dispute(identifier: u64);
 
     /// Allows the seller to propose a new arbiter and/or change the arbiter fee
-    /// 
+    ///
     /// If a dispute has been initiated and the arbiter is taking too long then the seller can change
     /// the arbiter, the asset for payment and the fee amount
     /// Seller can also set the same arbiter but with a different fee
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `arbiter` - A third party which decides how a dispute is resolved
     /// * `identifier` - Identifier used to find a specific escrow
-    /// 
+    ///
     /// # Reverts
-    /// 
+    ///
     /// * When the escrow is not in the State::Pending state
     /// * When the caller is not the seller
     /// * When the caller is setting the buyer or seller as the new arbiter
@@ -104,15 +104,15 @@ abi Escrow {
 
     /// The arbiter decides who the deposit is sent to and how much of the designated payment they
     /// will take
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `identifier` - Identifier used to find a specific escrow
     /// * `payment_amount` - The amount the arbiter will take as a payment for their work
     /// * `user` - The user who the deposit from the buyer will be sent to (either buyer or seller)
-    /// 
+    ///
     /// # Reverts
-    /// 
+    ///
     /// * When the escrow is not in the State::Pending state
     /// * When the escrow is not in dispute
     /// * When the caller is not the arbiter
@@ -123,13 +123,13 @@ abi Escrow {
     fn resolve_dispute(identifier: u64, payment_amount: u64, user: Identity);
 
     /// The seller transfers the funds from the escrow to the buyer
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `identifier` - Identifier used to find a specific escrow
-    /// 
+    ///
     /// # Reverts
-    /// 
+    ///
     /// * When the escrow is not in the State::Pending state
     /// * When the caller is not the seller
     /// * When the buyer does not currently have a deposit in the escrow
@@ -140,11 +140,11 @@ abi Escrow {
     /// can take the payment themselves
     //
     /// # Arguments
-    /// 
+    ///
     /// * `identifier` - Identifier used to find a specific escrow
-    /// 
+    ///
     /// # Reverts
-    /// 
+    ///
     /// * When the escrow is not in the State::Pending state
     /// * When the caller attempts to take payment before / during the deadline
     /// * When the caller attempts to take payment during a dispute
@@ -154,13 +154,13 @@ abi Escrow {
     fn take_payment(identifier: u64);
 
     /// After a buyer deposits they can transfer the deposit to the seller
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `identifier` - Identifier used to find a specific escrow
-    /// 
+    ///
     /// # Reverts
-    /// 
+    ///
     /// * When the escrow is not in the State::Pending state
     /// * When the buyer does not currently have a deposit in the escrow
     /// * When the caller is not the buyer
@@ -169,13 +169,13 @@ abi Escrow {
 
     /// If a buyer has not deposited and the deadline has been surpassed then the seller can withdraw
     /// their collateral
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `identifier` - Identifier used to find a specific escrow
-    /// 
+    ///
     /// # Reverts
-    /// 
+    ///
     /// * When the escrow is not in the State::Pending state
     /// * When the caller attempts to withdraw before / during the deadline
     /// * When the caller attempts to withdraw during a dispute
