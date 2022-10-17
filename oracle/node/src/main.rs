@@ -3,6 +3,10 @@ use dotenv::dotenv;
 use serde::Deserialize;
 use tokio::time::{ self, Duration };
 use std::env;
+use utils::{
+    abi_calls::{price, set_price},
+    test_helpers::setup,
+};
 
 #[derive(Deserialize)]
 struct USDPrice {

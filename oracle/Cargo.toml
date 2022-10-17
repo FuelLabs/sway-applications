@@ -16,6 +16,10 @@ dotenv = "0.15.0"
 name = "node"
 path = "node/src/main.rs"
 
+[lib]
+name = "utils"
+path = "utils/mod.rs"
+
 [[test]]
 harness = true
 name = "integration_tests"

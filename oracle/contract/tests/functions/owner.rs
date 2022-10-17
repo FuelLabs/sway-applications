@@ -1,4 +1,4 @@
-use crate::utils::{abi_calls::owner, test_helpers::setup};
+use utils::{abi_calls::owner, test_helpers::setup};
 use fuels::{prelude::Identity, tx::Address};
 
 mod success {

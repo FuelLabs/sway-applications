@@ -35,7 +35,7 @@ pub mod test_helpers {
         let wallets = launch_custom_provider_and_get_wallets(WalletsConfig::default(), None).await;
 
         let oracle_id = Contract::deploy(
-            "./out/debug/oracle.bin",
+            "./contract/out/debug/oracle.bin",
             &wallets[0],
             TxParameters::default(),
             StorageConfiguration::default(),
