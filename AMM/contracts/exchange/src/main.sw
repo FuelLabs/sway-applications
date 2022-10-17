@@ -43,369 +43,307 @@ use utils::{
 };
 
 storage {
-    /// Asset that is on the other side of the pool
-    other_asset: Option<ContractId> = Option::None(),
-    /// Deposit amounts per (depositer, asset)
+    /// Deposit amounts per (depositer, asset). Can be used to add liquidity or be withdrawn.
     deposits: StorageMap<(Identity, ContractId), u64> = StorageMap {},
-    /// Total asset supply
-    total_liquidity: u64 = 0,
-    /// Reserve amount per asset
+    /// Supply of the asset that makes up the liquidity pool.
+    /// This asset has a unique identifier different from the identifiers of assets on either side of the pool.
+    liquidity_pool_supply: u64 = 0,
+    /// The unique identifiers that make up the pool that can be set only once using the `constructor`.
+    pair: Option<(ContractId, ContractId)> = Option::None(),
+    /// Reserve amounts per asset identifiers that make up the pool.
     reserves: StorageMap<ContractId, u64> = StorageMap {},
 }
 
 impl Exchange for Contract {
     #[storage(read, write)]
     fn add_liquidity(deadline: u64, min_liquidity: u64) -> u64 {
-        require(storage.other_asset.is_some(), InitError::NotInitialized);
+        require(storage.pair.is_some(), InitError::NotInitialized);
         require(deadline > height(), TransactionError::DeadlinePassed);
         require(msg_amount() == 0, InputError::SentInvalidAmount);
 
-        let other_asset = storage.other_asset.unwrap();
+        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
 
-        require(msg_asset_id().into() == base_asset || msg_asset_id() == other_asset, InputError::SentInvalidAsset);
+        require(msg_asset_id() == asset_a_id || msg_asset_id() == asset_b_id, InputError::SentInvalidAsset);
 
         let sender = msg_sender().unwrap();
-        let total_liquidity = storage.total_liquidity;
-        let base_asset_in_deposit = storage.deposits.get((
+        let total_liquidity = storage.liquidity_pool_supply;
+        let asset_a_in_deposit = storage.deposits.get((
             sender,
-            ~ContractId::from(base_asset),
+            asset_a_id,
         ));
 
-        require(base_asset_in_deposit > 0, TransactionError::InsufficientDeposit);
+        require(asset_a_in_deposit > 0, TransactionError::InsufficientDeposit);
 
-        let other_asset_in_deposit = storage.deposits.get((
+        let asset_b_in_deposit = storage.deposits.get((
             sender,
-            other_asset,
+            asset_b_id,
         ));
-        let base_asset_in_reserve = storage.reserves.get(~ContractId::from(base_asset));
-        let other_asset_in_reserve = storage.reserves.get(other_asset);
+        let asset_a_in_reserve = storage.reserves.get(asset_a_id);
+        let asset_b_in_reserve = storage.reserves.get(asset_b_id);
         let mut minted = 0;
         if total_liquidity > 0 {
             require(min_liquidity > 0, InputError::SentInvalidAmount);
 
-            let other_asset_amount_to_add = mutiply_div(base_asset_in_deposit, other_asset_in_reserve, base_asset_in_reserve);
-            let liquidity_to_mint = mutiply_div(base_asset_in_deposit, total_liquidity, base_asset_in_reserve);
+            let asset_b_amount_to_add = multiply_div(asset_a_in_deposit, asset_b_in_reserve, asset_a_in_reserve);
+            let liquidity_to_mint = multiply_div(asset_a_in_deposit, total_liquidity, asset_a_in_reserve);
 
             require(liquidity_to_mint >= min_liquidity, TransactionError::CannotSatisfyConstraint);
 
-            // If ratio is correct, proceed with liquidity operation
-            // Otherwise, return current user balances in contract
-            if (other_asset_in_deposit >= other_asset_amount_to_add) {
-                // Add fund to the reserves
-                storage.reserves.insert(other_asset, other_asset_in_reserve + other_asset_amount_to_add);
-                storage.reserves.insert(~ContractId::from(base_asset), base_asset_in_reserve + base_asset_in_deposit);
-                // Mint LP asset
+            if (asset_b_in_deposit >= asset_b_amount_to_add) {
+                storage.reserves.insert(asset_b_id, asset_b_in_reserve + asset_b_amount_to_add);
+                storage.reserves.insert(asset_a_id, asset_a_in_reserve + asset_a_in_deposit);
                 mint(liquidity_to_mint);
-                storage.total_liquidity = total_liquidity + liquidity_to_mint;
+                storage.liquidity_pool_supply = total_liquidity + liquidity_to_mint;
                 transfer(liquidity_to_mint, contract_id(), sender);
-                // If user sent more than the correct ratio, deposit the extra assets back
-                let asset_amount_extra = other_asset_in_deposit - other_asset_amount_to_add;
-                if (asset_amount_extra > 0) {
-                    transfer(asset_amount_extra, other_asset, sender);
+                let asset_b_amount_extra = asset_b_in_deposit - asset_b_amount_to_add;
+                if (asset_b_amount_extra > 0) {
+                    transfer(asset_b_amount_extra, asset_b_id, sender);
                 }
                 minted = liquidity_to_mint;
             } else {
-                transfer(other_asset_in_deposit, other_asset, sender);
-                transfer(base_asset_in_deposit, ~ContractId::from(base_asset), sender);
+                transfer(asset_b_in_deposit, asset_b_id, sender);
+                transfer(asset_a_in_deposit, asset_a_id, sender);
                 minted = 0;
             }
         } else {
-            require(base_asset_in_deposit > min_liquidity, TransactionError::CannotSatisfyConstraint);
+            require(asset_a_in_deposit > minimum_liquidity, TransactionError::CannotSatisfyConstraint);
 
-            let initial_liquidity = base_asset_in_deposit;
-            // Add fund to the reserves
-            storage.reserves.insert(other_asset, other_asset_in_reserve + other_asset_in_deposit);
-            storage.reserves.insert(~ContractId::from(base_asset), base_asset_in_reserve + base_asset_in_deposit);
-            // Mint LP asset
+            let initial_liquidity = asset_a_in_deposit;
+            storage.reserves.insert(asset_b_id, asset_b_in_reserve + asset_b_in_deposit);
+            storage.reserves.insert(asset_a_id, asset_a_in_reserve + asset_a_in_deposit);
             mint(initial_liquidity);
-            storage.total_liquidity = initial_liquidity;
+            storage.liquidity_pool_supply = initial_liquidity;
             transfer(initial_liquidity, contract_id(), sender);
             minted = initial_liquidity;
         };
-        // Clear user contract balances after finishing add/create liquidity
         storage.deposits.insert((
             sender,
-            other_asset,
+            asset_b_id,
         ), 0);
         storage.deposits.insert((
             sender,
-            ~ContractId::from(base_asset),
+            asset_a_id,
         ), 0);
         minted
     }
 
-    #[storage(read)]
-    fn balance(asset: ContractId) -> u64 {
-        require(storage.other_asset.is_some(), InitError::NotInitialized);
-        require(asset.into() == base_asset || asset == storage.other_asset.unwrap(), InputError::SentInvalidAsset);
-
-        let sender = msg_sender().unwrap();
-        storage.deposits.get((sender, asset))
-    }
-
     #[storage(read, write)]
-    fn constructor(asset: ContractId) {
-        require(storage.other_asset.is_none(), InitError::NotInitialized);
+    fn constructor(pair: (ContractId, ContractId)) {
+        require(storage.pair.is_none(), InitError::CannotReinitialize);
+        require(pair.0 != pair.1, InitError::IdenticalAssets);
 
-        storage.other_asset = Option::Some(asset);
+        storage.pair = Option::Some(pair);
     }
 
     #[storage(read, write)]
     fn deposit() {
-        require(storage.other_asset.is_some(), InitError::NotInitialized);
+        require(storage.pair.is_some(), InitError::NotInitialized);
 
         let deposit_asset = msg_asset_id();
 
-        require(deposit_asset.into() == base_asset || deposit_asset == storage.other_asset.unwrap(), InputError::SentInvalidAsset);
+        require(deposit_asset == storage.pair.unwrap().0 || deposit_asset == storage.pair.unwrap().1, InputError::SentInvalidAsset);
 
         let sender = msg_sender().unwrap();
-        let total_amount = storage.deposits.get((
+        let new_deposit_amount = storage.deposits.get((
             sender,
             deposit_asset,
         )) + msg_amount();
         storage.deposits.insert((
             sender,
             deposit_asset,
-        ), total_amount);
+        ), new_deposit_amount);
     }
 
-    #[storage(read)]
-    fn pool_info() -> PoolInfo {
-        require(storage.other_asset.is_some(), InitError::NotInitialized);
-        PoolInfo {
-            base_asset_reserve: storage.reserves.get(~ContractId::from(base_asset)),
-            other_asset_reserve: storage.reserves.get(storage.other_asset.unwrap()),
-            total_liquidity: storage.total_liquidity,
-        }
-    }
+    #[storage(read, write)]
+    fn preview_swap_with_maximum(exact_output_amount: u64) -> PreviewSwapInfo {
+        require(storage.pair.is_some(), InitError::NotInitialized);
 
-    #[storage(read)]
-    fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo {
-        require(storage.other_asset.is_some(), InitError::NotInitialized);
+        let asset_to_sell = msg_asset_id();
+        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
 
-        let other_asset = storage.other_asset.unwrap();
+        require(asset_to_sell == asset_a_id || asset_to_sell == asset_b_id, InputError::SentInvalidAsset);
 
-        require(asset.into() == base_asset || asset == other_asset, InputError::SentInvalidAsset);
+        let asset_a_in_reserve = storage.reserves.get(asset_a_id);
+        let asset_b_in_reserve = storage.reserves.get(asset_b_id);
+        let mut maximum_amount_to_input = 0;
+        let mut reserve_remains = false;
+        if (asset_to_sell == asset_a_id) {
+            require(exact_output_amount < asset_b_in_reserve, TransactionError::InsufficientReserve);
 
-        let total_liquidity = storage.total_liquidity;
-        let base_asset_reserve = storage.reserves.get(~ContractId::from(base_asset));
-        let other_asset_reserve = storage.reserves.get(other_asset);
-        let mut current_base_asset_amount = amount;
-        let mut liquidity_to_mint = 0;
-        let mut other_asset_amount_to_add = 0;
-        if (asset == other_asset) {
-            current_base_asset_amount = mutiply_div(amount, base_asset_reserve, other_asset_reserve);
-        }
-        if total_liquidity > 0 {
-            other_asset_amount_to_add = mutiply_div(current_base_asset_amount, other_asset_reserve, base_asset_reserve);
-            liquidity_to_mint = mutiply_div(current_base_asset_amount, total_liquidity, base_asset_reserve);
+            maximum_amount_to_input = get_maximum_input_for_exact_output(asset_a_in_reserve, liquidity_miner_fee, exact_output_amount, asset_b_in_reserve);
+            reserve_remains = maximum_amount_to_input < asset_a_in_reserve;
         } else {
-            liquidity_to_mint = current_base_asset_amount;
-        };
-        if (asset == other_asset) {
-            other_asset_amount_to_add = current_base_asset_amount;
+            require(exact_output_amount < asset_a_in_reserve, TransactionError::InsufficientReserve);
+
+            maximum_amount_to_input = get_maximum_input_for_exact_output(asset_b_in_reserve, liquidity_miner_fee, exact_output_amount, asset_a_in_reserve);
+            reserve_remains = maximum_amount_to_input < asset_b_in_reserve;
         }
-        PreviewAddLiquidityInfo {
-            other_asset_amount: other_asset_amount_to_add,
-            received_liquidity: liquidity_to_mint,
+        PreviewSwapInfo {
+            amount: maximum_amount_to_input,
+            reserve_depleted: !reserve_remains,
         }
     }
 
     #[storage(read, write)]
-    fn preview_swap_with_maximum(amount: u64) -> PreviewInfo {
-        require(storage.other_asset.is_some(), InitError::NotInitialized);
+    fn preview_swap_with_minimum(exact_input_amount: u64) -> PreviewSwapInfo {
+        require(storage.pair.is_some(), InitError::NotInitialized);
 
-        let asset_to_preview = msg_asset_id();
-        let other_asset = storage.other_asset.unwrap();
+        let asset_to_sell = msg_asset_id();
+        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
 
-        require(asset_to_preview.into() == base_asset || asset_to_preview == other_asset, InputError::SentInvalidAsset);
+        require(asset_to_sell == asset_a_id || asset_to_sell == asset_b_id, InputError::SentInvalidAsset);
 
-        let base_asset_reserve = storage.reserves.get(~ContractId::from(base_asset));
-        let other_asset_reserve = storage.reserves.get(other_asset);
-        let mut amount_to_sell = 0;
-        let mut liquidity_remains = false;
-        if (asset_to_preview.into() == base_asset) {
-            require(amount < other_asset_reserve, TransactionError::InsufficientReserve);
-            amount_to_sell = get_output_price(base_asset_reserve, liquidity_miner_fee, amount, other_asset_reserve);
-            liquidity_remains = amount_to_sell < base_asset_reserve;
+        let asset_a_in_reserve = storage.reserves.get(asset_a_id);
+        let asset_b_in_reserve = storage.reserves.get(asset_b_id);
+        let mut minimum_amount_of_output = 0;
+        let mut reserve_remains = false;
+        if (asset_to_sell == asset_a_id) {
+            minimum_amount_of_output = get_minimum_output_given_exact_input(exact_input_amount, asset_a_in_reserve, liquidity_miner_fee, asset_b_in_reserve);
+            reserve_remains = minimum_amount_of_output < asset_b_in_reserve;
         } else {
-            require(amount < base_asset_reserve, TransactionError::InsufficientReserve);
-            amount_to_sell = get_output_price(other_asset_reserve, liquidity_miner_fee, amount, base_asset_reserve);
-            liquidity_remains = amount_to_sell < other_asset_reserve;
+            minimum_amount_of_output = get_minimum_output_given_exact_input(exact_input_amount, asset_b_in_reserve, liquidity_miner_fee, asset_a_in_reserve);
+            reserve_remains = minimum_amount_of_output < asset_a_in_reserve;
         }
-        PreviewInfo {
-            amount: amount_to_sell,
-            has_liquidity: liquidity_remains,
+        PreviewSwapInfo {
+            amount: minimum_amount_of_output,
+            reserve_depleted: !reserve_remains,
         }
     }
 
     #[storage(read, write)]
-    fn preview_swap_with_minimum(amount: u64) -> PreviewInfo {
-        require(storage.other_asset.is_some(), InitError::NotInitialized);
+    fn remove_liquidity(deadline: u64, min_asset_a: u64, min_asset_b: u64, ) -> RemoveLiquidityInfo {
+        require(storage.pair.is_some(), InitError::NotInitialized);
 
-        let asset_to_preview = msg_asset_id();
-        let other_asset = storage.other_asset.unwrap();
+        let total_liquidity = storage.liquidity_pool_supply;
+        require(total_liquidity > 0, TransactionError::InsufficientLiquidity);
 
-        require(asset_to_preview.into() == base_asset || asset_to_preview == other_asset, InputError::SentInvalidAsset);
-
-        let base_asset_reserve = storage.reserves.get(~ContractId::from(base_asset));
-        let other_asset_reserve = storage.reserves.get(other_asset);
-        let mut amount_to_sell = 0;
-        let mut liquidity_remains = false;
-        if (asset_to_preview.into() == base_asset) {
-            amount_to_sell = get_input_price(amount, base_asset_reserve, liquidity_miner_fee, other_asset_reserve);
-            liquidity_remains = amount_to_sell < other_asset_reserve;
-        } else {
-            amount_to_sell = get_input_price(amount, other_asset_reserve, liquidity_miner_fee, base_asset_reserve);
-            liquidity_remains = amount_to_sell < base_asset_reserve;
-        }
-        PreviewInfo {
-            amount: amount_to_sell,
-            has_liquidity: liquidity_remains,
-        }
-    }
-
-    #[storage(read, write)]
-    fn remove_liquidity(
-        deadline: u64,
-        min_base_asset: u64,
-        min_other_asset: u64,
-    ) -> RemoveLiquidityInfo {
-        require(storage.other_asset.is_some(), InitError::NotInitialized);
-
-        let other_asset = storage.other_asset.unwrap();
+        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
 
         require(msg_asset_id() == contract_id(), InputError::SentInvalidAsset);
-        require(min_base_asset > 0 && min_other_asset > 0, TransactionError::CannotSatisfyConstraint);
+        require(min_asset_a > 0 && min_asset_b > 0, TransactionError::CannotSatisfyConstraint);
         require(deadline > height(), TransactionError::DeadlinePassed);
 
         let amount = msg_amount();
 
         require(amount > 0, InputError::SentInvalidAmount);
 
-        let total_liquidity = storage.total_liquidity;
-        require(total_liquidity > 0, TransactionError::InsufficientLiquidity);
-
         let sender = msg_sender().unwrap();
-        let base_asset_reserve = storage.reserves.get(~ContractId::from(base_asset));
-        let other_asset_reserve = storage.reserves.get(other_asset);
-        let base_asset_amount_to_remove = mutiply_div(amount, base_asset_reserve, total_liquidity);
-        let other_asset_amount_to_remove = mutiply_div(amount, other_asset_reserve, total_liquidity);
+        let asset_a_in_reserve = storage.reserves.get(asset_a_id);
+        let asset_b_in_reserve = storage.reserves.get(asset_b_id);
+        let asset_a_amount_to_remove = multiply_div(amount, asset_a_in_reserve, total_liquidity);
+        let asset_b_amount_to_remove = multiply_div(amount, asset_b_in_reserve, total_liquidity);
 
-        require((base_asset_amount_to_remove >= min_base_asset) && (other_asset_amount_to_remove >= min_other_asset), TransactionError::CannotSatisfyConstraint);
+        require((asset_a_amount_to_remove >= min_asset_a) && (asset_b_amount_to_remove >= min_asset_b), TransactionError::CannotSatisfyConstraint);
 
         burn(amount);
-        storage.total_liquidity = total_liquidity - amount;
-        // Remove fund from reserves
-        storage.reserves.insert(other_asset, other_asset_reserve - other_asset_amount_to_remove);
-        storage.reserves.insert(~ContractId::from(base_asset), base_asset_reserve - base_asset_amount_to_remove);
-        // Send assets back
-        transfer(base_asset_amount_to_remove, ~ContractId::from(base_asset), sender);
-        transfer(other_asset_amount_to_remove, other_asset, sender);
+        storage.liquidity_pool_supply = total_liquidity - amount;
+        storage.reserves.insert(asset_b_id, asset_b_in_reserve - asset_b_amount_to_remove);
+        storage.reserves.insert(asset_a_id, asset_a_in_reserve - asset_a_amount_to_remove);
+        transfer(asset_a_amount_to_remove, asset_a_id, sender);
+        transfer(asset_b_amount_to_remove, asset_b_id, sender);
         RemoveLiquidityInfo {
-            base_asset_amount: base_asset_amount_to_remove,
-            other_asset_amount: other_asset_amount_to_remove,
+            asset_a_amount: asset_a_amount_to_remove,
+            asset_b_amount: asset_b_amount_to_remove,
+            liquidity: amount,
         }
     }
 
     #[storage(read, write)]
-    fn swap_with_maximum(amount: u64, deadline: u64) -> u64 {
-        require(storage.other_asset.is_some(), InitError::NotInitialized);
+    fn swap_with_maximum(deadline: u64, exact_output_amount: u64) -> u64 {
+        require(storage.pair.is_some(), InitError::NotInitialized);
 
-        let other_asset = storage.other_asset.unwrap();
-        let swap_asset_id = msg_asset_id();
+        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
+        let asset_to_sell = msg_asset_id();
 
-        require(swap_asset_id.into() == base_asset || swap_asset_id == other_asset, InputError::SentInvalidAsset);
-        require(amount > 0, InputError::SentInvalidAmount);
+        require(asset_to_sell == asset_a_id || asset_to_sell == asset_b_id, InputError::SentInvalidAsset);
+        require(exact_output_amount > 0, InputError::SentInvalidAmount);
         require(deadline > height(), TransactionError::DeadlinePassed);
 
-        let forwarded_amount = msg_amount();
-
-        require(forwarded_amount > 0, InputError::SentInvalidAmount);
+        let input_amount = msg_amount();
+        require(input_amount > 0, InputError::SentInvalidAmount);
 
         let sender = msg_sender().unwrap();
-        let base_asset_reserve = storage.reserves.get(~ContractId::from(base_asset));
-        let other_asset_reserve = storage.reserves.get(other_asset);
+        let asset_a_in_reserve = storage.reserves.get(asset_a_id);
+        let asset_b_in_reserve = storage.reserves.get(asset_b_id);
         let mut sold = 0;
-        if (swap_asset_id.into() == base_asset) {
-            let base_asset_sold = get_output_price(base_asset_reserve, liquidity_miner_fee, amount, other_asset_reserve);
+        if (asset_to_sell == asset_a_id) {
+            let asset_a_sold = get_maximum_input_for_exact_output(asset_a_in_reserve, liquidity_miner_fee, exact_output_amount, asset_b_in_reserve);
 
-            require(forwarded_amount >= base_asset_sold, TransactionError::InsufficientReserve);
+            require(input_amount >= asset_a_sold, TransactionError::InsufficientReserve);
 
-            let refund = forwarded_amount - base_asset_sold;
+            let refund = input_amount - asset_a_sold;
             if refund > 0 {
-                transfer(refund, ~ContractId::from(base_asset), sender);
+                transfer(refund, asset_a_id, sender);
             };
-            transfer(amount, other_asset, sender);
-            sold = base_asset_sold;
-            // Update reserves
-            storage.reserves.insert(~ContractId::from(base_asset), base_asset_reserve + base_asset_sold);
-            storage.reserves.insert(other_asset, other_asset_reserve - amount);
+            transfer(exact_output_amount, asset_b_id, sender);
+            sold = asset_a_sold;
+            storage.reserves.insert(asset_a_id, asset_a_in_reserve + asset_a_sold);
+            storage.reserves.insert(asset_b_id, asset_b_in_reserve - exact_output_amount);
         } else {
-            let other_asset_sold = get_output_price(other_asset_reserve, liquidity_miner_fee, amount, base_asset_reserve);
+            let asset_b_sold = get_maximum_input_for_exact_output(asset_b_in_reserve, liquidity_miner_fee, exact_output_amount, asset_a_in_reserve);
 
-            require(forwarded_amount >= other_asset_sold, TransactionError::InsufficientReserve);
+            require(input_amount >= asset_b_sold, TransactionError::InsufficientReserve);
 
-            let refund = forwarded_amount - other_asset_sold;
+            let refund = input_amount - asset_b_sold;
             if refund > 0 {
-                transfer(refund, other_asset, sender);
+                transfer(refund, asset_b_id, sender);
             };
-            transfer(amount, ~ContractId::from(base_asset), sender);
-            sold = other_asset_sold;
-            // Update reserves
-            storage.reserves.insert(~ContractId::from(base_asset), base_asset_reserve - amount);
-            storage.reserves.insert(other_asset, other_asset_reserve + other_asset_sold);
+            transfer(exact_output_amount, asset_a_id, sender);
+            sold = asset_b_sold;
+            storage.reserves.insert(asset_a_id, asset_a_in_reserve - exact_output_amount);
+            storage.reserves.insert(asset_b_id, asset_b_in_reserve + asset_b_sold);
         };
         sold
     }
 
     #[storage(read, write)]
-    fn swap_with_minimum(deadline: u64, min: u64) -> u64 {
-        require(storage.other_asset.is_some(), InitError::NotInitialized);
+    fn swap_with_minimum(deadline: u64, exact_input_amount: u64) -> u64 {
+        require(storage.pair.is_some(), InitError::NotInitialized);
 
-        let other_asset = storage.other_asset.unwrap();
-        let swap_asset_id = msg_asset_id();
+        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
+        let asset_to_sell = msg_asset_id();
 
-        require(swap_asset_id.into() == base_asset || swap_asset_id == other_asset, InputError::SentInvalidAsset);
-        require(min > 0, TransactionError::CannotSatisfyConstraint);
+        require(asset_to_sell == asset_a_id || asset_to_sell == asset_b_id, InputError::SentInvalidAsset);
+        require(exact_input_amount > 0, TransactionError::CannotSatisfyConstraint);
         require(deadline >= height(), TransactionError::DeadlinePassed);
 
-        let forwarded_amount = msg_amount();
+        let output_amount = msg_amount();
 
-        require(forwarded_amount > 0, InputError::SentInvalidAmount);
+        require(output_amount > 0, InputError::SentInvalidAmount);
 
         let sender = msg_sender().unwrap();
-        let base_asset_reserve = storage.reserves.get(~ContractId::from(base_asset));
-        let other_asset_reserve = storage.reserves.get(other_asset);
+        let asset_a_in_reserve = storage.reserves.get(asset_a_id);
+        let asset_b_in_reserve = storage.reserves.get(asset_b_id);
         let mut bought = 0;
-        if (swap_asset_id.into() == base_asset) {
-            let other_asset_bought = get_input_price(forwarded_amount, base_asset_reserve, liquidity_miner_fee, other_asset_reserve);
+        if (asset_to_sell == asset_a_id) {
+            let asset_b_bought = get_minimum_output_given_exact_input(output_amount, asset_a_in_reserve, liquidity_miner_fee, asset_b_in_reserve);
 
-            require(other_asset_bought >= min, TransactionError::CannotSatisfyConstraint);
+            require(asset_b_bought >= exact_input_amount, TransactionError::CannotSatisfyConstraint);
 
-            transfer(other_asset_bought, other_asset, sender);
-            bought = other_asset_bought;
-            // Update reserves
-            storage.reserves.insert(~ContractId::from(base_asset), base_asset_reserve + forwarded_amount);
-            storage.reserves.insert(other_asset, other_asset_reserve - other_asset_bought);
+            transfer(asset_b_bought, asset_b_id, sender);
+            bought = asset_b_bought;
+            storage.reserves.insert(asset_a_id, asset_a_in_reserve + output_amount);
+            storage.reserves.insert(asset_b_id, asset_b_in_reserve - asset_b_bought);
         } else {
-            let base_asset_bought = get_input_price(forwarded_amount, other_asset_reserve, liquidity_miner_fee, base_asset_reserve);
+            let asset_a_bought = get_minimum_output_given_exact_input(output_amount, asset_b_in_reserve, liquidity_miner_fee, asset_a_in_reserve);
 
-            require(base_asset_bought >= min, TransactionError::CannotSatisfyConstraint);
+            require(asset_a_bought >= exact_input_amount, TransactionError::CannotSatisfyConstraint);
 
-            transfer(base_asset_bought, ~ContractId::from(base_asset), sender);
-            bought = base_asset_bought;
-            // Update reserves
-            storage.reserves.insert(~ContractId::from(base_asset), base_asset_reserve - base_asset_bought);
-            storage.reserves.insert(other_asset, other_asset_reserve + bought);
+            transfer(asset_a_bought, asset_a_id, sender);
+            bought = asset_a_bought;
+            storage.reserves.insert(asset_a_id, asset_a_in_reserve - asset_a_bought);
+            storage.reserves.insert(asset_b_id, asset_b_in_reserve + bought);
         };
         bought
     }
 
     #[storage(read, write)]
     fn withdraw(amount: u64, asset: ContractId) {
-        require(storage.other_asset.is_some(), InitError::NotInitialized);
-        require(asset.into() == base_asset || asset == storage.other_asset.unwrap(), InputError::SentInvalidAsset);
+        require(storage.pair.is_some(), InitError::NotInitialized);
+
+        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
+
+        require(asset == asset_a_id || asset == asset_b_id, InputError::SentInvalidAsset);
 
         let sender = msg_sender().unwrap();
         let deposited_amount = storage.deposits.get((sender, asset));
@@ -415,5 +353,65 @@ impl Exchange for Contract {
         let new_amount = deposited_amount - amount;
         storage.deposits.insert((sender, asset), new_amount);
         transfer(amount, asset, sender)
+    }
+
+    #[storage(read)]
+    fn balance(asset: ContractId) -> u64 {
+        require(storage.pair.is_some(), InitError::NotInitialized);
+        require(asset == storage.pair.unwrap().0 || asset == storage.pair.unwrap().1, InputError::SentInvalidAsset);
+
+        let sender = msg_sender().unwrap();
+        storage.deposits.get((sender, asset))
+    }
+
+    #[storage(read)]
+    fn pool_info() -> PoolInfo {
+        require(storage.pair.is_some(), InitError::NotInitialized);
+
+        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
+        PoolInfo {
+            asset_a_id: asset_a_id,
+            asset_b_id: asset_b_id,
+            asset_a_reserve: storage.reserves.get(asset_a_id),
+            asset_b_reserve: storage.reserves.get(asset_b_id),
+            liquidity: storage.liquidity_pool_supply,
+        }
+    }
+
+    #[storage(read)]
+    fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo {
+        require(storage.pair.is_some(), InitError::NotInitialized);
+
+        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
+
+        require(asset == asset_a_id || asset == asset_b_id, InputError::SentInvalidAsset);
+
+        let total_liquidity = storage.liquidity_pool_supply;
+        let asset_a_in_reserve = storage.reserves.get(asset_a_id);
+        let asset_b_in_reserve = storage.reserves.get(asset_b_id);
+        let current_asset_a_amount = if asset == asset_a_id {
+            amount
+        } else {
+            require(asset_b_in_reserve != 0, TransactionError::InsufficientReserve);
+
+            multiply_div(amount, asset_a_in_reserve, asset_b_in_reserve)
+        };
+        let mut liquidity_to_mint = 0;
+        let mut other_asset_amount_to_add = 0;
+
+        if total_liquidity > 0 {
+            other_asset_amount_to_add = if asset == asset_a_id {
+                multiply_div(current_asset_a_amount, asset_b_in_reserve, asset_a_in_reserve)
+            } else {
+                current_asset_a_amount
+            };
+            liquidity_to_mint = multiply_div(current_asset_a_amount, total_liquidity, asset_a_in_reserve);
+        } else {
+            liquidity_to_mint = current_asset_a_amount;
+        }
+        PreviewAddLiquidityInfo {
+            other_asset_amount_to_add: other_asset_amount_to_add,
+            liquidity_asset_amount_to_receive: liquidity_to_mint,
+        }
     }
 }

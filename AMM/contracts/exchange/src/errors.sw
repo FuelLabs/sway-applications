@@ -3,6 +3,7 @@ library errors;
 pub enum InitError {
     CannotReinitialize: (),
     NotInitialized: (),
+    IdenticalAssets: (),
 }
 
 pub enum InputError {

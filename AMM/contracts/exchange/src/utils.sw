@@ -3,35 +3,19 @@ library utils;
 use core::num::*;
 use std::{chain::auth::{AuthError, msg_sender}, prelude::*, result::Result, u128::U128};
 
-// Calculate 0.3% fee
-pub fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
+fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
     let fee = (amount / liquidity_miner_fee);
     amount - fee
 }
 
-pub fn div_mutiply(a: u64, b: u64, c: u64) -> u64 {
+pub fn div_multiply(a: u64, b: u64, c: u64) -> u64 {
     let calculation = (~U128::from(0, a) / ~U128::from(0, b));
     let result_wrapped = (calculation * ~U128::from(0, c)).as_u64();
     result_wrapped.unwrap()
 }
 
-/// Pricing function for converting between base asset and other asset
+/// Returns the maximum required amount of the input asset to get exactly ` output_amount ` of the output asset
 pub fn get_maximum_input_for_exact_output(
-    input_amount: u64,
-    input_reserve: u64,
-    liquidity_miner_fee: u64,
-    output_reserve: u64,
-) -> u64 {
-    assert(input_reserve > 0 && output_reserve > 0);
-    let input_amount_with_fee = calculate_amount_with_fee(input_amount, liquidity_miner_fee);
-    let numerator = ~U128::from(0, input_amount_with_fee) * ~U128::from(0, output_reserve);
-    let denominator = ~U128::from(0, input_reserve) + ~U128::from(0, input_amount_with_fee);
-    let result_wrapped = (numerator / denominator).as_u64();
-    result_wrapped.unwrap()
-}
-
-/// Pricing function for converting between base asset and other asset
-pub fn get_minimum_output_given_exact_input(
     input_reserve: u64,
     liquidity_miner_fee: u64,
     output_amount: u64,
@@ -48,7 +32,22 @@ pub fn get_minimum_output_given_exact_input(
     }
 }
 
-pub fn mutiply_div(a: u64, b: u64, c: u64) -> u64 {
+/// Given exactly ` input_amount ` of the input asset, returns the minimum resulting amount of the output asset
+pub fn get_minimum_output_given_exact_input(
+    input_amount: u64,
+    input_reserve: u64,
+    liquidity_miner_fee: u64,
+    output_reserve: u64,
+) -> u64 {
+    assert(input_reserve > 0 && output_reserve > 0);
+    let input_amount_with_fee = calculate_amount_with_fee(input_amount, liquidity_miner_fee);
+    let numerator = ~U128::from(0, input_amount_with_fee) * ~U128::from(0, output_reserve);
+    let denominator = ~U128::from(0, input_reserve) + ~U128::from(0, input_amount_with_fee);
+    let result_wrapped = (numerator / denominator).as_u64();
+    result_wrapped.unwrap()
+}
+
+pub fn multiply_div(a: u64, b: u64, c: u64) -> u64 {
     let calculation = (~U128::from(0, a) * ~U128::from(0, b));
     let result_wrapped = (calculation / ~U128::from(0, c)).as_u64();
     result_wrapped.unwrap()
