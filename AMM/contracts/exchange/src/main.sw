@@ -1,13 +1,18 @@
 contract;
 
-dep data_structures;
 dep errors;
-dep interface;
 dep utils;
 
-use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewInfo, RemoveLiquidityInfo};
 use errors::{InitError, InputError, TransactionError};
-use interface::Exchange;
+use libraries::{
+    data_structures::{
+        PoolInfo,
+        PreviewAddLiquidityInfo,
+        PreviewSwapInfo,
+        RemoveLiquidityInfo,
+    },
+    Exchange,
+};
 use std::{
     block::height,
     chain::auth::{
@@ -15,17 +20,14 @@ use std::{
         msg_sender,
     },
     context::{
-        call_frames::*,
+        call_frames::{
+            contract_id,
+            msg_asset_id,
+        },
         msg_amount,
     },
-    contract_id::ContractId,
-    identity::Identity,
-    option::Option,
-    result::Result,
-    revert::{
-        require,
-        revert,
-    },
+    logging::log,
+    prelude::*,
     storage::StorageMap,
     token::{
         burn,
@@ -33,7 +35,12 @@ use std::{
         transfer,
     },
 };
-use utils::{calculate_amount_with_fee, div_mutiply, get_input_price, get_output_price, mutiply_div};
+use utils::{
+    div_multiply,
+    get_maximum_input_for_exact_output,
+    get_minimum_output_given_exact_input,
+    multiply_div,
+};
 
 storage {
     /// Asset that is on the other side of the pool

@@ -2,7 +2,7 @@ library interface;
 
 dep data_structures;
 
-use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewInfo, RemoveLiquidityInfo};
+use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewSwapInfo, RemoveLiquidityInfo};
 use std::contract_id::ContractId;
 
 abi AMM {
@@ -94,7 +94,7 @@ abi Exchange {
     /// 
     /// * When the reserve of the asset with provided ` msg_asset_id ` is insufficient
     #[storage(read, write)]
-    fn preview_swap_with_maximum(amount: u64) -> PreviewInfo;
+    fn preview_swap_with_maximum(amount: u64) -> PreviewSwapInfo;
 
     /// Get the minimum amount of coins that will be received for a ` swap_with_minimum `.
     /// 
@@ -102,7 +102,7 @@ abi Exchange {
     /// 
     /// - ` amount ` - amount of assets supplied
     #[storage(read, write)]
-    fn preview_swap_with_minimum(amount: u64) -> PreviewInfo;
+    fn preview_swap_with_minimum(amount: u64) -> PreviewSwapInfo;
 
     /// Burn assets to transfer base asset and other asset at current ratio to the sender.
     /// 

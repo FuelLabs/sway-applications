@@ -1,19 +1,7 @@
 library utils;
 
 use core::num::*;
-use std::{
-    chain::auth::{
-        AuthError,
-        msg_sender,
-    },
-    prelude::*,
-    result::Result,
-    storage::{
-        get,
-        store,
-    },
-    u128::U128,
-};
+use std::{chain::auth::{AuthError, msg_sender}, prelude::*, result::Result, u128::U128};
 
 // Calculate 0.3% fee
 pub fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
@@ -28,7 +16,7 @@ pub fn div_mutiply(a: u64, b: u64, c: u64) -> u64 {
 }
 
 /// Pricing function for converting between base asset and other asset
-pub fn get_input_price(
+pub fn get_maximum_input_for_exact_output(
     input_amount: u64,
     input_reserve: u64,
     liquidity_miner_fee: u64,
@@ -43,7 +31,7 @@ pub fn get_input_price(
 }
 
 /// Pricing function for converting between base asset and other asset
-pub fn get_output_price(
+pub fn get_minimum_output_given_exact_input(
     input_reserve: u64,
     liquidity_miner_fee: u64,
     output_amount: u64,

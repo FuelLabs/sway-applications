@@ -5,8 +5,8 @@ license = "Apache-2.0"
 name = "exchange"
 
 [constants]
-base_asset = { type = "b256", value = "0x0000000000000000000000000000000000000000000000000000000000000000" }
 liquidity_miner_fee = { type = "u64", value = "333" }
 minimum_liquidity = { type = "u64", value = "1" }
 
 [dependencies]
+libraries = { path = "../../libraries" }
