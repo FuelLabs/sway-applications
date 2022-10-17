@@ -28,7 +28,8 @@ abi AMM {
 }
 
 abi Exchange {
-    /// Mint base asset and other asset at current ratio and add to liquidity pool.
+    /// Mint liquidity pool asset at current ratio (that is calculated from deposit amounts in the contract)
+    /// and transfer to the sender. Move previously deposited assets of correspoding amounts to contract reserves.
     /// 
     /// # Arguments
     /// 
@@ -37,139 +38,164 @@ abi Exchange {
     /// 
     /// # Reverts
     /// 
-    /// * When the associated ` msg_amount ` with function call is not 0
-    /// * When the deadline has passed, i.e.: deadline is greater than current block height
-    /// * When the associated ` msg_asset_id ` is not of either base asset or the other asset
-    /// * If the sender does not have base asset balance in contract
-    /// * When total liquidity exists but ` min_liquidity ` is 0
-    /// * When the calculated mint amount is lesser than ` min_liquidity `
-    /// * In the case of liquidity pool being empty, when sender base asset balance is lesser than ` MINIMUM_LIQUIDITY `
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the current block height is not less than `deadline`
+    /// * When the ` msg_amount ` with function call is not 0
+    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When the sender's asset A deposit amount is 0
+    /// * When the contract already has some liquidity and ` min_liquidity ` is 0
+    /// * When the contract already has some liquidity and the liquidity to mint is less than ` min_liquidity `
+    /// * When the contract has no liquidity and the sender's asset A deposit amount is less than ` minimum_liquidity ` (that is a config-time parameter)
     #[storage(read, write)]
     fn add_liquidity(deadline: u64, min_liquidity: u64) -> u64;
-
-    /// Get current balance of given asset on the contract.
+    /// Initialize contract by specifying the asset pair that makes up the pool.
     /// 
     /// # Arguments
     /// 
-    /// - ` asset ` - identifier of the asset to get balance of
-    #[storage(read)]
-    fn balance(asset: ContractId) -> u64;
-
-    /// Initialize contract by specifying the asset on the other side of the contract.
-    /// 
-    /// # Arguments
-    /// 
-    /// - ` asset ` - identifier of other asset
-    #[storage(read, write)]
-    fn constructor(asset: ContractId);
-
-    /// Deposit coins for later adding to the liquidity pool.
+    /// - ` pair ` - unique identifiers of the asset pair, i.e., asset A and asset B
     /// 
     /// # Reverts
     /// 
-    /// * When the ` msg_asset_id ` does not identify either one of the assets in the pool
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the passed pair describes identical assets
+    #[storage(read, write)]
+    fn constructor(pair: (ContractId, ContractId));
+    /// Deposit asset to later add to the liquidity pool or withdraw.
+    /// 
+    /// # Reverts
+    /// 
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the ` msg_asset_id ` does not identify asset A or asset B
     #[storage(read, write)]
     fn deposit();
-
-    /// Get information on the liquidity pool on contract.
-    #[storage(read)]
-    fn pool_info() -> PoolInfo;
-
-    /// Preview "add liquidity" information.
+    /// Get the preview info of a ` swap_with_maximum `, that consists of the maximum amount of
+    /// input asset to forward to get ` exact_output_amount ` amount of other asset and
+    /// whether the input asset reserves are sufficient for the swap or not.
     /// 
     /// # Arguments
     /// 
-    /// - ` amount ` - amount of liquidity to add
-    /// - ` asset ` - identifier of the asset to add
-    #[storage(read)]
-    fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo;
-
-    /// Get required amount of coins for a ` swap_with_maximum `.
-    /// 
-    /// # Arguments
-    /// 
-    /// - ` amount ` - amount of assets supplied
+    /// - ` exact_output_amount ` - the desired amount of other asset to receive after swap
     /// 
     /// # Reverts
     /// 
-    /// * When the reserve of the asset with provided ` msg_asset_id ` is insufficient
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When the ` amount ` is less than the reserve amount of the other asset
     #[storage(read, write)]
-    fn preview_swap_with_maximum(amount: u64) -> PreviewSwapInfo;
-
-    /// Get the minimum amount of coins that will be received for a ` swap_with_minimum `.
+    fn preview_swap_with_maximum(exact_output_amount: u64) -> PreviewSwapInfo;
+    /// Get the preview info of a ` swap_with_minimum `, that consists of the amount of
+    /// output asset to receive by forwarding ` exact_input_amount` of input asset and whether the
+    /// output asset reserves are sufficient for the swap or not.
     /// 
     /// # Arguments
     /// 
-    /// - ` amount ` - amount of assets supplied
+    /// - ` exact_input_amount ` - the amount of other asset to swap
+    /// 
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the ` msg_asset_id ` does not identify asset A or asset B
     #[storage(read, write)]
-    fn preview_swap_with_minimum(amount: u64) -> PreviewSwapInfo;
-
-    /// Burn assets to transfer base asset and other asset at current ratio to the sender.
+    fn preview_swap_with_minimum(exact_input_amount: u64) -> PreviewSwapInfo;
+    /// Burn liquidity pool asset at current ratio and transfer asset A and asset B to the sender.
     /// 
     /// # Arguments
     /// 
     /// - ` deadline ` - limit on block height for operation
-    /// - ` min_base_asset ` - minimum amount of base asset to calculate amount to transfer
-    /// - ` min_other_asset ` - minimum amount of other asset to calculate amount to transfer
+    /// - ` min_asset_a ` - minimum amount of asset A to receive after burn
+    /// - ` min_asset_b ` - minimum amount of asset B to receive after burn
     /// 
     /// # Reverts
     /// 
-    /// * When the associated ` msg_amount ` with function call is 0
-    /// * When the associated ` msg_asset_id ` does not match ` contract_id `
-    /// * When the deadline has passed, i.e.: deadline is greater than current block height
-    /// * When the associated ` min_base_asset ` is 0
-    /// * When the associated ` min_other_asset ` is 0
-    /// * When the total liquidity in the pool is 0
-    /// * When the calculated base asset amount to transfer is lesser than ` min_base_asset `
-    /// * When the calculated other asset amount to transfer is lesser than ` min_other_asset `
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When there are no liquidity pool assets to burn
+    /// * When the ` msg_asset_id ` does not identify the liquidity pool asset
+    /// * When ` min_asset_a ` or ` min_asset_b ` is 0
+    /// * When the current block height is not less than ` deadline `
+    /// * When the ` msg_amount ` with function call is 0
+    /// * When the minimum amounts for asset A and asset B to receive after burn cannot be satisfied
     #[storage(read, write)]
-    fn remove_liquidity(deadline: u64, min_base_asset: u64, min_other_asset: u64) -> RemoveLiquidityInfo;
-
-    /// Swap base asset <-> other asset and transfer to the sender.
-    /// 
-    /// # Arguments
-    /// 
-    /// - ` amount ` - maximum amount of coins to swap
-    /// - ` deadline ` - limit on block height for operation
-    /// 
-    /// # Reverts
-    /// 
-    /// * When the deadline has passed, i.e.: deadline is greater than current block height
-    /// * When the passed ` amount ` is 0
-    /// * When the associated ` msg_amount ` with function call is 0
-    /// * When the associated ` msg_asset_id ` is not of either base asset or the other asset
-    /// * When the passed ` amount ` is insufficient for swap
-    #[storage(read, write)]
-    fn swap_with_maximum(amount: u64, deadline: u64) -> u64;
-
-    /// Swap base asset <-> other asset and transfer to the sender.
+    fn remove_liquidity(deadline: u64, min_asset_a: u64, min_asset_b: u64) -> RemoveLiquidityInfo;
+    /// Swap the forwarded amount of forwarded asset for ` exact_output_amount ` of other asset and
+    /// transfer any extra forwarded amount of forwarded asset and output asset to sender.
     /// 
     /// # Arguments
     /// 
     /// - ` deadline ` - limit on block height for operation
-    /// - ` min ` - minimum amount of coins of output
+    /// - ` exact_output_amount ` - the exact amount of output asset to receive
     /// 
     /// # Reverts
     /// 
-    /// * When the deadline has passed, i.e.: deadline is greater than current block height
-    /// * When the passed ` min ` is 0
-    /// * When the associated ` msg_amount ` with function call is 0
-    /// * When the associated ` msg_asset_id ` is not of either base asset or the other asset
-    /// * When the resulting amount is lesser than the provided minimum
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When ` exact_output_amount ` is 0
+    /// * When the current block height is not less than ` deadline `
+    /// * When the ` msg_amount ` with function call is 0
+    /// * When the forwarded amount is insufficient for swap
     #[storage(read, write)]
-    fn swap_with_minimum(deadline: u64, min: u64) -> u64;
-
+    fn swap_with_maximum(deadline: u64, exact_output_amount: u64) -> u64;
+    /// Swap ` exact_input_amount ` of forwarded asset for minimum forwarded amount of other asset
+    /// and transfer output asset to sender.
+    /// 
+    /// # Arguments
+    /// 
+    /// - ` deadline ` - limit on block height for operation
+    /// - ` exact_input_amount ` - the exact amount of input asset to sell
+    /// 
+    /// # Reverts
+    /// 
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When ` min ` is 0
+    /// * When the current block height is not less than `deadline`
+    /// * When the ` msg_amount ` with function call is 0
+    /// * When the forwarded amount is excessive for swap
+    #[storage(read, write)]
+    fn swap_with_minimum(deadline: u64, exact_input_amount: u64) -> u64;
     /// Withdraw coins that have not been added to a liquidity pool yet.
     /// 
     /// # Arguments
     /// 
-    /// - ` amount ` - amount of coins to withdraw
-    /// - ` asset ` - identifier of asset to withdraw
+    /// - ` amount ` - the amount of coins to withdraw
+    /// - ` asset ` - identifier of the asset to withdraw
     /// 
     /// # Reverts
     /// 
-    /// * When the ` asset ` is not of either base asset or the other asset
-    /// * If the sender does not have ` amount ` of asset in contract storage
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When the deposited amount by the sender stored in the contract is insufficient
     #[storage(read, write)]
     fn withdraw(amount: u64, asset: ContractId);
+    /// Get current balance of the sender for a given asset on the contract.
+    /// 
+    /// # Arguments
+    /// 
+    /// - ` asset ` - identifier of the asset to get balance of
+    /// 
+    /// # Reverts
+    /// 
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    #[storage(read)]
+    fn balance(asset: ContractId) -> u64;
+    /// Get the pool info of the exchange contract, i.e., asset A and B identifiers, asset A and B amounts
+    /// and liquidity pool asset supply amount.
+    /// 
+    /// # Reverts
+    /// 
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    #[storage(read)]
+    fn pool_info() -> PoolInfo;
+    /// Get the preview info of adding liquidity, that consists of the he amount of other asset
+    /// to input given the current ratio and the amount of liquidity pool asset that will be received.
+    /// 
+    /// # Arguments
+    /// 
+    /// - ` amount ` - amount of an asset to add
+    /// - ` asset ` - identifier of the asset to add
+    /// 
+    /// # Reverts
+    /// 
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When the contract has no liquidity and the function is called for asset B
+    #[storage(read)]
+    fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo;
 }
