@@ -67,17 +67,11 @@ impl Exchange for Contract {
 
         let sender = msg_sender().unwrap();
         let total_liquidity = storage.liquidity_pool_supply;
-        let asset_a_in_deposit = storage.deposits.get((
-            sender,
-            asset_a_id,
-        ));
+        let asset_a_in_deposit = storage.deposits.get((sender, asset_a_id, ));
 
         require(asset_a_in_deposit > 0, TransactionError::InsufficientDeposit);
 
-        let asset_b_in_deposit = storage.deposits.get((
-            sender,
-            asset_b_id,
-        ));
+        let asset_b_in_deposit = storage.deposits.get((sender, asset_b_id, ));
         let asset_a_in_reserve = storage.reserves.get(asset_a_id);
         let asset_b_in_reserve = storage.reserves.get(asset_b_id);
         let mut minted = 0;
@@ -116,14 +110,8 @@ impl Exchange for Contract {
             transfer(initial_liquidity, contract_id(), sender);
             minted = initial_liquidity;
         };
-        storage.deposits.insert((
-            sender,
-            asset_b_id,
-        ), 0);
-        storage.deposits.insert((
-            sender,
-            asset_a_id,
-        ), 0);
+        storage.deposits.insert((sender, asset_b_id, ), 0);
+        storage.deposits.insert((sender, asset_a_id, ), 0);
         minted
     }
 
@@ -144,14 +132,8 @@ impl Exchange for Contract {
         require(deposit_asset == storage.pair.unwrap().0 || deposit_asset == storage.pair.unwrap().1, InputError::SentInvalidAsset);
 
         let sender = msg_sender().unwrap();
-        let new_deposit_amount = storage.deposits.get((
-            sender,
-            deposit_asset,
-        )) + msg_amount();
-        storage.deposits.insert((
-            sender,
-            deposit_asset,
-        ), new_deposit_amount);
+        let new_deposit_amount = storage.deposits.get((sender, deposit_asset, )) + msg_amount();
+        storage.deposits.insert((sender, deposit_asset, ), new_deposit_amount);
     }
 
     #[storage(read, write)]
