@@ -1,11 +1,14 @@
-use fuels::{
-    contract::contract::CallResponse,
-    prelude::*,
-    tx::{AssetId, ContractId},
-};
+use fuels::{contract::contract::CallResponse, prelude::*};
 use std::str::FromStr;
 
 abigen!(Exchange, "out/debug/exchange-abi.json");
+
+pub struct MetaExchange {
+    pub asset_a_id: ContractId,
+    pub asset_b_id: ContractId,
+    pub contract: Exchange,
+    pub liquidity_pool_id: ContractId,
+}
 
 pub mod abi_calls {
     use super::*;
@@ -18,6 +21,7 @@ pub mod abi_calls {
         liquidity: u64,
     ) -> CallResponse<u64> {
         contract
+            .methods()
             .add_liquidity(deadline, liquidity)
             .call_params(call_params)
             .append_variable_outputs(2)
@@ -27,16 +31,20 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn balance(contract: &Exchange, asset: ContractId) -> u64 {
-        contract.balance(asset).simulate().await.unwrap().value
+    pub async fn balance(contract: &Exchange, asset: ContractId) -> CallResponse<u64> {
+        contract.methods().balance(asset).call().await.unwrap()
     }
 
-    pub async fn constructor(contract: &Exchange, asset: ContractId) -> CallResponse<()> {
-        contract.constructor(asset).call().await.unwrap()
+    pub async fn constructor(
+        contract: &Exchange,
+        pair: (ContractId, ContractId),
+    ) -> CallResponse<()> {
+        contract.methods().constructor(pair).call().await.unwrap()
     }
 
     pub async fn deposit(contract: &Exchange, call_params: CallParameters) -> CallResponse<()> {
         contract
+            .methods()
             .deposit()
             .call_params(call_params)
             .call()
@@ -44,8 +52,8 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn pool_info(contract: &Exchange) -> PoolInfo {
-        contract.pool_info().simulate().await.unwrap().value
+    pub async fn pool_info(contract: &Exchange) -> CallResponse<PoolInfo> {
+        contract.methods().pool_info().call().await.unwrap()
     }
 
     pub async fn preview_add_liquidity(
@@ -54,43 +62,43 @@ pub mod abi_calls {
         tx_params: TxParameters,
         amount: u64,
         asset: AssetId,
-    ) -> PreviewAddLiquidityInfo {
+    ) -> CallResponse<PreviewAddLiquidityInfo> {
         contract
+            .methods()
             .preview_add_liquidity(amount, ContractId::new(*asset))
             .call_params(call_params)
             .tx_params(tx_params)
-            .simulate()
+            .call()
             .await
             .unwrap()
-            .value
     }
 
     pub async fn preview_swap_with_maximum(
         contract: &Exchange,
         call_params: CallParameters,
-        amount: u64,
-    ) -> PreviewInfo {
+        exact_output_amount: u64,
+    ) -> CallResponse<PreviewSwapInfo> {
         contract
-            .preview_swap_with_maximum(amount)
+            .methods()
+            .preview_swap_with_maximum(exact_output_amount)
             .call_params(call_params)
-            .simulate()
+            .call()
             .await
             .unwrap()
-            .value
     }
 
     pub async fn preview_swap_with_minimum(
         contract: &Exchange,
         call_params: CallParameters,
-        amount: u64,
-    ) -> PreviewInfo {
+        exact_input_amount: u64,
+    ) -> CallResponse<PreviewSwapInfo> {
         contract
-            .preview_swap_with_minimum(amount)
+            .methods()
+            .preview_swap_with_minimum(exact_input_amount)
             .call_params(call_params)
-            .simulate()
+            .call()
             .await
             .unwrap()
-            .value
     }
 
     pub async fn remove_liquidity(
@@ -100,8 +108,9 @@ pub mod abi_calls {
         deadline: u64,
         base: u64,
         other: u64,
-    ) -> RemoveLiquidityInfo {
+    ) -> CallResponse<RemoveLiquidityInfo> {
         contract
+            .methods()
             .remove_liquidity(deadline, base, other)
             .call_params(call_params)
             .tx_params(tx_params)
@@ -109,19 +118,19 @@ pub mod abi_calls {
             .call()
             .await
             .unwrap()
-            .value
     }
 
     pub async fn swap_with_maximum(
         contract: &Exchange,
         call_params: CallParameters,
-        amount: u64,
         deadline: u64,
+        exact_output_amount: u64,
     ) -> CallResponse<u64> {
         contract
-            .swap_with_maximum(amount, deadline)
+            .methods()
+            .swap_with_maximum(deadline, exact_output_amount)
             .call_params(call_params)
-            .append_variable_outputs(1)
+            .append_variable_outputs(2)
             .call()
             .await
             .unwrap()
@@ -131,12 +140,13 @@ pub mod abi_calls {
         contract: &Exchange,
         call_params: CallParameters,
         deadline: u64,
-        amount: u64,
+        exact_input_amount: u64,
     ) -> CallResponse<u64> {
         contract
-            .swap_with_minimum(deadline, amount)
+            .methods()
+            .swap_with_minimum(deadline, exact_input_amount)
             .call_params(call_params)
-            .append_variable_outputs(1)
+            .append_variable_outputs(2)
             .call()
             .await
             .unwrap()
@@ -144,6 +154,7 @@ pub mod abi_calls {
 
     pub async fn withdraw(contract: &Exchange, amount: u64, asset: ContractId) -> CallResponse<()> {
         contract
+            .methods()
             .withdraw(amount, asset)
             .append_variable_outputs(1)
             .call()
@@ -158,65 +169,97 @@ pub mod test_helpers {
 
     pub async fn deposit_and_add_liquidity(
         exchange_instance: &Exchange,
-        base_asset_amount: u64,
-        other_asset_amount: u64,
-        other_asset_id: AssetId,
+        asset_a_id: AssetId,
+        asset_a_amount: u64,
+        asset_b_id: AssetId,
+        asset_b_amount: u64,
+        deadline: u64,
+        min_liquidity: u64,
     ) -> u64 {
-        // Deposit some base asset
-        let call_params = CallParameters::new(Some(base_asset_amount), None, None);
-        deposit(exchange_instance, call_params).await;
+        deposit_but_do_not_add_liquidity(
+            &exchange_instance,
+            asset_a_id,
+            asset_a_amount,
+            asset_b_id,
+            asset_b_amount,
+        )
+        .await;
 
-        // Deposit some other asset
-        let call_params =
-            CallParameters::new(Some(other_asset_amount), Some(other_asset_id.clone()), None);
-        deposit(exchange_instance, call_params).await;
+        let added = add_liquidity(
+            exchange_instance,
+            CallParameters::new(Some(0), Some(asset_b_id), Some(100_000_000)),
+            TxParameters {
+                gas_price: 0,
+                gas_limit: 100_000_000,
+                maturity: 0,
+            },
+            deadline,
+            min_liquidity,
+        )
+        .await;
 
-        // Add liquidity for the second time. Keeping the proportion 1:2
-        // It should return the same amount of LP as the amount of base asset deposited
-        let call_params =
-            CallParameters::new(Some(0), Some(other_asset_id.clone()), Some(100_000_000));
-        let tx_params = TxParameters {
-            gas_price: 0,
-            gas_limit: 100_000_000,
-            maturity: 0,
-        };
-        let result = add_liquidity(exchange_instance, call_params, tx_params, 1000, 1).await;
-
-        result.value
+        added.value
     }
 
-    pub async fn setup() -> (Exchange, WalletUnlocked, AssetId, AssetId, AssetId, AssetId) {
+    pub async fn deposit_but_do_not_add_liquidity(
+        exchange_instance: &Exchange,
+        asset_a_id: AssetId,
+        asset_a_amount: u64,
+        asset_b_id: AssetId,
+        asset_b_amount: u64,
+    ) {
+        deposit(
+            exchange_instance,
+            CallParameters::new(Some(asset_a_amount), Some(asset_a_id), None),
+        )
+        .await;
+
+        deposit(
+            exchange_instance,
+            CallParameters::new(Some(asset_b_amount), Some(asset_b_id), None),
+        )
+        .await;
+    }
+
+    pub async fn setup() -> (
+        Exchange,
+        WalletUnlocked,
+        ContractId,
+        ContractId,
+        ContractId,
+        ContractId,
+    ) {
         let mut wallet = WalletUnlocked::new_random(None);
 
-        let base_asset_id =
+        let asset_a_id =
             AssetId::from_str("0x0000000000000000000000000000000000000000000000000000000000000000")
                 .unwrap();
-        let other_asset_id =
+        let asset_b_id =
             AssetId::from_str("0x0000000000000000000000000000000000000000000000000000000000000001")
                 .unwrap();
-        let invalid_asset_id =
+        let asset_c_id =
             AssetId::from_str("0x0000000000000000000000000000000000000000000000000000000000000002")
                 .unwrap();
 
-        let asset_base = AssetConfig {
-            id: base_asset_id,
+        let asset_a = AssetConfig {
+            id: asset_a_id,
             num_coins: 10,
             coin_amount: 100000,
         };
 
-        let asset_other = AssetConfig {
-            id: other_asset_id,
+        let asset_b = AssetConfig {
+            id: asset_b_id,
             num_coins: 10,
             coin_amount: 100000,
         };
 
-        let asset_invalid = AssetConfig {
-            id: invalid_asset_id,
+        let asset_c = AssetConfig {
+            id: asset_c_id,
             num_coins: 1,
             coin_amount: 10,
         };
 
-        let assets = vec![asset_base, asset_other, asset_invalid];
+        let assets = vec![asset_a, asset_b, asset_c];
         let coins = setup_custom_assets_coins(wallet.address(), &assets);
         let (provider, _socket_addr) = setup_test_provider(coins, vec![], None).await;
         wallet.set_provider(provider);
@@ -230,40 +273,38 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let exchange_instance =
-            ExchangeBuilder::new(exchange_contract_id.to_string(), wallet.clone()).build();
+        let exchange_instance = Exchange::new(exchange_contract_id.to_string(), wallet.clone());
 
         let liquidity_pool_asset_id = AssetId::from(*exchange_contract_id.hash());
 
         (
             exchange_instance,
             wallet,
-            liquidity_pool_asset_id,
-            base_asset_id,
-            other_asset_id,
-            invalid_asset_id,
+            ContractId::new(*liquidity_pool_asset_id),
+            ContractId::new(*asset_a_id),
+            ContractId::new(*asset_b_id),
+            ContractId::new(*asset_c_id),
         )
     }
 
-    pub async fn setup_and_initialize(
-    ) -> (Exchange, WalletUnlocked, AssetId, AssetId, AssetId, AssetId) {
+    pub async fn setup_and_initialize() -> (MetaExchange, WalletUnlocked, ContractId) {
         let (
             exchange_instance,
             wallet,
             liquidity_pool_asset_id,
-            base_asset_id,
-            other_asset_id,
-            invalid_asset_id,
+            asset_a_id,
+            asset_b_id,
+            asset_c_id,
         ) = setup().await;
-        constructor(&exchange_instance, ContractId::new(*other_asset_id)).await;
+        constructor(&exchange_instance, (asset_a_id, asset_b_id)).await;
 
-        (
-            exchange_instance,
-            wallet,
-            liquidity_pool_asset_id,
-            base_asset_id,
-            other_asset_id,
-            invalid_asset_id,
-        )
+        let exchange = MetaExchange {
+            asset_a_id: asset_a_id,
+            asset_b_id: asset_b_id,
+            contract: exchange_instance,
+            liquidity_pool_id: liquidity_pool_asset_id,
+        };
+
+        (exchange, wallet, asset_c_id)
     }
 }

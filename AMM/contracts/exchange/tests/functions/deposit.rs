@@ -2,49 +2,75 @@ use crate::utils::{
     abi_calls::{balance, deposit},
     test_helpers::{setup, setup_and_initialize},
 };
-use fuels::{prelude::*, tx::ContractId};
+use fuels::prelude::*;
 
 mod success {
     use super::*;
 
     #[tokio::test]
-    async fn can_deposit_base_asset() {
-        let (
-            exchange_instance,
-            _wallet,
-            _pool_asset_id,
-            base_asset_id,
-            _other_asset_id,
-            _invalid_asset_id,
-        ) = setup_and_initialize().await;
-        let base_amount = 100;
-        let call_params = CallParameters::new(Some(base_amount), Some(base_asset_id), None);
+    async fn deposits() {
+        let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
+        let asset_a_asset_id = AssetId::new(*exchange.asset_a_id);
 
-        deposit(&exchange_instance, call_params).await;
+        let wallet_initial_balance = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
+        let contract_initial_balance = balance(&exchange.contract, exchange.asset_a_id).await.value;
+        assert_eq!(contract_initial_balance, 0);
 
-        let balance = balance(&exchange_instance, ContractId::from(*base_asset_id)).await;
+        let deposit_amount = 100;
+        deposit(
+            &exchange.contract,
+            CallParameters::new(Some(deposit_amount), Some(asset_a_asset_id), None),
+        )
+        .await;
 
-        assert_eq!(balance, base_amount);
+        let final_contract_balance = balance(&exchange.contract, exchange.asset_a_id).await.value;
+        assert_eq!(final_contract_balance, deposit_amount);
+
+        let wallet_final_balance = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
+        assert_eq!(
+            wallet_final_balance,
+            wallet_initial_balance - deposit_amount
+        );
     }
 
     #[tokio::test]
-    async fn can_deposit_other_asset() {
-        let (
-            exchange_instance,
-            _wallet,
-            _pool_asset_id,
-            _base_asset_id,
-            other_asset_id,
-            _invalid_asset_id,
-        ) = setup_and_initialize().await;
-        let other_amount = 100;
-        let call_params = CallParameters::new(Some(other_amount), Some(other_asset_id), None);
+    async fn deposits_more_than_once() {
+        let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
+        let asset_a_asset_id = AssetId::new(*exchange.asset_a_id);
 
-        deposit(&exchange_instance, call_params).await;
+        let wallet_initial_balance = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
+        let contract_initial_balance = balance(&exchange.contract, exchange.asset_a_id).await.value;
+        assert_eq!(contract_initial_balance, 0);
 
-        let balance = balance(&exchange_instance, ContractId::from(*other_asset_id)).await;
+        let first_deposit_amount = 100;
+        deposit(
+            &exchange.contract,
+            CallParameters::new(Some(first_deposit_amount), Some(asset_a_asset_id), None),
+        )
+        .await;
 
-        assert_eq!(balance, other_amount);
+        let contract_intermediate_balance =
+            balance(&exchange.contract, exchange.asset_a_id).await.value;
+        assert_eq!(contract_intermediate_balance, first_deposit_amount);
+
+        let second_deposit_amount = 200;
+        deposit(
+            &exchange.contract,
+            CallParameters::new(Some(second_deposit_amount), Some(asset_a_asset_id), None),
+        )
+        .await;
+
+        let contract_final_balance = balance(&exchange.contract, exchange.asset_a_id).await.value;
+        assert_eq!(
+            contract_final_balance,
+            contract_intermediate_balance + second_deposit_amount
+        );
+
+        let wallet_final_balance = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
+        assert_eq!(
+            wallet_final_balance,
+            wallet_initial_balance - first_deposit_amount - second_deposit_amount
+        );
     }
 }
 
@@ -53,37 +79,28 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn when_not_initialized() {
+    async fn when_unitialized() {
         // call setup instead of setup_and_initialize
-        let (
-            exchange_instance,
-            _wallet,
-            _pool_asset_id,
-            base_asset_id,
-            _other_asset_id,
-            _invalid_asset_id,
-        ) = setup().await;
-        let amount = 100;
-
-        let call_params = CallParameters::new(Some(amount), Some(base_asset_id), None);
-        deposit(&exchange_instance, call_params).await;
+        let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
+            setup().await;
+        let deposit_amount = 100;
+        deposit(
+            &exchange_instance,
+            CallParameters::new(Some(deposit_amount), Some(AssetId::new(*asset_a_id)), None),
+        )
+        .await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn when_asset_invalid() {
-        let (
-            exchange_instance,
-            _wallet,
-            _pool_asset_id,
-            _base_asset_id,
-            _other_asset_id,
-            invalid_asset_id,
-        ) = setup_and_initialize().await;
-        let amount = 1;
-
+    async fn when_msg_asset_id_is_invalid() {
+        let (exchange, _wallet, asset_c_id) = setup_and_initialize().await;
+        let deposit_amount = 1;
         // send invalid asset id
-        let call_params = CallParameters::new(Some(amount), Some(invalid_asset_id), None);
-        deposit(&exchange_instance, call_params).await;
+        deposit(
+            &exchange.contract,
+            CallParameters::new(Some(deposit_amount), Some(AssetId::new(*asset_c_id)), None),
+        )
+        .await;
     }
 }

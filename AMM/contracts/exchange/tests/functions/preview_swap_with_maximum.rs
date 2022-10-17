@@ -1,6 +1,6 @@
 use crate::utils::{
     abi_calls::preview_swap_with_maximum,
-    test_helpers::{deposit_and_add_liquidity, setup_and_initialize},
+    test_helpers::{deposit_and_add_liquidity, setup, setup_and_initialize},
 };
 use fuels::prelude::*;
 
@@ -8,62 +8,245 @@ mod success {
     use super::*;
 
     #[tokio::test]
-    async fn can_preview_swap_maximum_base_for_other() {
-        let (
-            exchange_instance,
-            _wallet,
-            _pool_asset_id,
-            _base_asset_id,
-            other_asset_id,
-            _invalid_asset_id,
-        ) = setup_and_initialize().await;
-
+    async fn previews_partial_swap_of_a() {
+        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 200;
         let swap_amount = 10;
-        let base_deposit_amount = 100;
-        let other_deposit_amount = 200;
 
         deposit_and_add_liquidity(
-            &exchange_instance,
-            base_deposit_amount,
-            other_deposit_amount,
-            other_asset_id,
+            &exchange.contract,
+            AssetId::new(*exchange.asset_a_id),
+            deposit_amount_a,
+            AssetId::new(*exchange.asset_b_id),
+            deposit_amount_b,
+            1000,
+            2,
         )
         .await;
 
-        let amount_expected =
-            preview_swap_with_maximum(&exchange_instance, CallParameters::default(), swap_amount)
-                .await;
+        let preview_swap_info = preview_swap_with_maximum(
+            &exchange.contract,
+            CallParameters::new(None, Some(AssetId::new(*exchange.asset_a_id)), None),
+            swap_amount,
+        )
+        .await
+        .value;
 
-        assert!(amount_expected.has_liquidity);
+        // hardcoded calculation for liquidity miner fee of 333
+        let expected_amount = ((deposit_amount_a * swap_amount) / (deposit_amount_b - swap_amount)
+            * (1 - (1 / 333)))
+            + 1;
+        let expected_reserve_depleted = !(expected_amount < deposit_amount_a);
+
+        assert_eq!(preview_swap_info.amount, expected_amount);
+        assert_eq!(
+            preview_swap_info.reserve_depleted,
+            expected_reserve_depleted
+        );
     }
 
     #[tokio::test]
-    async fn can_preview_swap_maximum_other_for_base() {
-        let (
-            exchange_instance,
-            _wallet,
-            _pool_asset_id,
-            _base_asset_id,
-            other_asset_id,
-            _invalid_asset_id,
-        ) = setup_and_initialize().await;
-
+    async fn previews_partial_swap_of_b() {
+        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 200;
         let swap_amount = 10;
-        let base_deposit_amount = 100;
-        let other_deposit_amount = 200;
 
         deposit_and_add_liquidity(
-            &exchange_instance,
-            base_deposit_amount,
-            other_deposit_amount,
-            other_asset_id,
+            &exchange.contract,
+            AssetId::new(*exchange.asset_a_id),
+            deposit_amount_a,
+            AssetId::new(*exchange.asset_b_id),
+            deposit_amount_b,
+            1000,
+            2,
         )
         .await;
 
-        let call_params = CallParameters::new(None, Some(other_asset_id.clone()), None);
-        let amount_expected =
-            preview_swap_with_maximum(&exchange_instance, call_params, swap_amount).await;
+        let preview_swap_info = preview_swap_with_maximum(
+            &exchange.contract,
+            CallParameters::new(None, Some(AssetId::new(*exchange.asset_b_id)), None),
+            swap_amount,
+        )
+        .await
+        .value;
 
-        assert!(amount_expected.has_liquidity);
+        // hardcoded calculation for liquidity miner fee of 333
+        let expected_amount = ((deposit_amount_b * swap_amount) / (deposit_amount_a - swap_amount)
+            * (1 - (1 / 333)))
+            + 1;
+        let expected_reserve_depleted = !(expected_amount < deposit_amount_b);
+
+        assert_eq!(preview_swap_info.amount, expected_amount);
+        assert_eq!(
+            preview_swap_info.reserve_depleted,
+            expected_reserve_depleted
+        );
+    }
+
+    #[tokio::test]
+    async fn previews_maximum_swap_of_a() {
+        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 200;
+        let swap_amount = deposit_amount_b - 1;
+
+        deposit_and_add_liquidity(
+            &exchange.contract,
+            AssetId::new(*exchange.asset_a_id),
+            deposit_amount_a,
+            AssetId::new(*exchange.asset_b_id),
+            deposit_amount_b,
+            1000,
+            2,
+        )
+        .await;
+
+        let preview_swap_info = preview_swap_with_maximum(
+            &exchange.contract,
+            CallParameters::new(None, Some(AssetId::new(*exchange.asset_a_id)), None),
+            swap_amount,
+        )
+        .await
+        .value;
+
+        // hardcoded calculation for liquidity miner fee of 333
+        let expected_amount = ((deposit_amount_a * swap_amount) / (deposit_amount_b - swap_amount)
+            * (1 - (1 / 333)))
+            + 1;
+        let expected_reserve_depleted = !(expected_amount < deposit_amount_a);
+
+        assert_eq!(preview_swap_info.amount, expected_amount);
+        assert_eq!(
+            preview_swap_info.reserve_depleted,
+            expected_reserve_depleted
+        );
+    }
+
+    #[tokio::test]
+    async fn previews_maximum_swap_of_b() {
+        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 200;
+        let swap_amount = deposit_amount_a - 1;
+
+        deposit_and_add_liquidity(
+            &exchange.contract,
+            AssetId::new(*exchange.asset_a_id),
+            deposit_amount_a,
+            AssetId::new(*exchange.asset_b_id),
+            deposit_amount_b,
+            1000,
+            2,
+        )
+        .await;
+
+        let preview_swap_info = preview_swap_with_maximum(
+            &exchange.contract,
+            CallParameters::new(None, Some(AssetId::new(*exchange.asset_b_id)), None),
+            swap_amount,
+        )
+        .await
+        .value;
+
+        // hardcoded calculation for liquidity miner fee of 333
+        let expected_amount = ((deposit_amount_b * swap_amount) / (deposit_amount_a - swap_amount)
+            * (1 - (1 / 333)))
+            + 1;
+        let expected_reserve_depleted = !(expected_amount < deposit_amount_b);
+
+        assert_eq!(preview_swap_info.amount, expected_amount);
+        assert_eq!(
+            preview_swap_info.reserve_depleted,
+            expected_reserve_depleted
+        );
+    }
+}
+
+mod revert {
+    use super::*;
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn when_unitialized() {
+        // call setup instead of setup_and_initialize
+        let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
+            setup().await;
+
+        preview_swap_with_maximum(
+            &exchange_instance,
+            CallParameters::new(None, Some(AssetId::new(*asset_a_id)), None),
+            10,
+        )
+        .await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn when_msg_asset_id_is_invalid() {
+        let (exchange, _wallet, asset_c_id) = setup_and_initialize().await;
+
+        preview_swap_with_maximum(
+            &exchange.contract,
+            // sending invalid asset
+            CallParameters::new(None, Some(AssetId::new(*asset_c_id)), None),
+            10,
+        )
+        .await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn when_a_amount_is_not_less_than_b_reserve() {
+        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 200;
+        let swap_amount = deposit_amount_b;
+
+        deposit_and_add_liquidity(
+            &exchange.contract,
+            AssetId::new(*exchange.asset_a_id),
+            deposit_amount_a,
+            AssetId::new(*exchange.asset_b_id),
+            deposit_amount_b,
+            1000,
+            2,
+        )
+        .await;
+
+        preview_swap_with_maximum(
+            &exchange.contract,
+            CallParameters::new(None, Some(AssetId::new(*exchange.asset_a_id)), None),
+            swap_amount,
+        )
+        .await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
+    async fn when_b_amount_is_not_less_than_a_reserve() {
+        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 200;
+        let swap_amount = deposit_amount_a;
+
+        deposit_and_add_liquidity(
+            &exchange.contract,
+            AssetId::new(*exchange.asset_a_id),
+            deposit_amount_a,
+            AssetId::new(*exchange.asset_b_id),
+            deposit_amount_b,
+            1000,
+            2,
+        )
+        .await;
+
+        preview_swap_with_maximum(
+            &exchange.contract,
+            CallParameters::new(None, Some(AssetId::new(*exchange.asset_b_id)), None),
+            swap_amount,
+        )
+        .await;
     }
 }
