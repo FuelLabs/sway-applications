@@ -1,4 +1,4 @@
-use fuels::{signers::{WalletUnlocked, fuel_crypto::SecretKey}, prelude::{Provider, Bech32Address}, client::FuelClient};
+use fuels::{signers::{WalletUnlocked, fuel_crypto::SecretKey}, prelude::{Provider, Bech32Address, Bech32ContractId}, client::FuelClient, tx::ContractId};
 use reqwest;
 use dotenv::dotenv;
 use serde::Deserialize;
@@ -12,7 +12,7 @@ use std::str::FromStr;
 
 #[derive(Deserialize)]
 struct USDPrice {
-    eth_usd: f64,
+    USD: f64,
 }
 
 #[tokio::main]
@@ -22,7 +22,9 @@ async fn main() {
     env::set_current_dir(env_path).unwrap();
     dotenv().ok();
     let api_url = env::var("API_URL").expect("API_URL must be set.");
-    let oracle_id = env::var("ORACLE_CONTRACT_ID").expect("ORACLE_CONTRACT_ID must be set.");
+    let oracle_id_string = env::var("ORACLE_CONTRACT_ID").expect("ORACLE_CONTRACT_ID must be set.");
+    let oracle_id = ContractId::from_str(&oracle_id_string).unwrap();
+    let bech32_oracle_id = Bech32ContractId::from(oracle_id);
     let wallet_secret = env::var("WALLET_SECRET").expect("WALLET_SECRET must be set.");
     let provider = env::var("FUEL_PROVIDER_URL").expect("FUEL_PROVIDER_URL must be set.");
     let wallet = WalletUnlocked::new_from_private_key(
@@ -31,7 +33,7 @@ async fn main() {
     );
     let client = reqwest::Client::new();
     let mut interval = time::interval(Duration::from_millis(10000));
-    let oracle = Oracle::new(oracle_id, wallet);
+    let oracle = Oracle::new(bech32_oracle_id.to_string(), wallet);
     interval.tick().await;
     let mut i = 0;
     while i < 2 {
@@ -44,7 +46,7 @@ async fn main() {
                                     .await
                                     .unwrap();
         // TODO avoid hardcoding the 1e9 decimal precision
-        let usd_price = (response.eth_usd * 1e9) as u64;
+        let usd_price = (response.USD * 1e9) as u64;
         set_price(&oracle, usd_price).await;
         println!("{:?}", usd_price);
         i += 1;
