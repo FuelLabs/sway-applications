@@ -64,13 +64,13 @@ impl StakingRewards for Contract {
 
     #[storage(read, write)]
     fn exit() {
-        _withdraw(storage.balances.get(msg_sender().unwrap()));
+        let sender = msg_sender().unwrap();
+        let amount = storage.balances.get(sender);
+        _withdraw(amount);
         log(WithdrawnEvent {
             user: sender,
             amount,
-        });
-
-        let sender = msg_sender().unwrap();
+        });        
         _update_reward(sender);
 
         let reward = storage.rewards.get(sender);
@@ -250,9 +250,9 @@ impl StakingRewards for Contract {
 
     #[storage(read, write)]
     fn withdraw(amount: u64) {
-        _withdraw(amount)
+        _withdraw(amount);
         log(WithdrawnEvent {
-            user: sender,
+            user: msg_sender().unwrap(),
             amount,
         });
     }
