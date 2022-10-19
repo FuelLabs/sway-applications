@@ -7,6 +7,9 @@ use crate::utils::{
 };
 use fuels::prelude::{AssetId, CallParameters, Identity, TxParameters};
 
+// TODO: Test sending mismatching asset structs
+// TODO: Create mutliple test
+
 mod success {
 
     use super::*;
@@ -698,6 +701,4 @@ mod revert {
         )
         .await;
     }
-
-    // TODO: Test sending mismatching asset structs
 }

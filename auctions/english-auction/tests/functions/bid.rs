@@ -7,6 +7,8 @@ use crate::utils::{
 };
 use fuels::prelude::{AssetId, CallParameters, Identity, TxParameters};
 
+// TODO: Bid multiple test
+
 mod success {
 
     use super::*;

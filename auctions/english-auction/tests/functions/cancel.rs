@@ -6,6 +6,8 @@ use crate::utils::{
 };
 use fuels::prelude::Identity;
 
+// TODO: Cancel multiple test
+
 mod success {
 
     use super::*;
