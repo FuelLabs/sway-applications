@@ -2,10 +2,11 @@ import { Card } from "@fuel-ui/react";
 
 import { DECIMAL_PLACES } from "../../../config";
 import type { EscrowInfoOutput } from "../../../types/contracts/EscrowAbi";
+import type { EscrowInfoWorkaround } from "../hooks/useEscrows";
 import { formatValue } from "../utils/helpers";
 
 interface EscrowInfoProps {
-  escrows: EscrowInfoOutput[];
+  escrows: EscrowInfoWorkaround[];
 }
 
 export function EscrowInfo({ escrows }: EscrowInfoProps) {

@@ -50,7 +50,7 @@ abi Escrow {
     /// * When the caller is setting the buyer or themselves as the arbiter
     /// * When the amount of any asset required for deposit is set to 0
     #[storage(read, write)]
-    fn create_escrow(arbiter: Arbiter, assets: [Asset; 2], buyer: Identity, deadline: u64);
+    fn create_escrow(arbiter: Arbiter, assets: Vec<Asset>, buyer: Identity, deadline: u64, );
 
     /// Accepts a deposit from the buyer for any of the assets specified in the escrow
     ///
@@ -90,7 +90,7 @@ abi Escrow {
     fn dispute(identifier: u64);
 
     #[storage(read)]
-    fn escrows(identifier: u64) -> EscrowInfo;
+    fn escrows(identifier: u64) -> (EscrowInfo, Vec<Asset>);
 
     /// Allows the seller to propose a new arbiter and/or change the arbiter fee
     ///

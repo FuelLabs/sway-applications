@@ -1,8 +1,13 @@
+import { VecOutput, EscrowInfoOutput } from '@/types/contracts/EscrowAbi';
 import type { BigNumberish } from 'fuels';
 import { useQuery } from 'react-query';
 
 import { useContract } from './useContract';
 import { useWallet } from './useWallet';
+
+export type EscrowInfoWorkaround = EscrowInfoOutput & {
+  assets: VecOutput,
+}
 
 export function useEscrows(queryString: string, escrowIds: BigNumberish[] | null | undefined) {
   const contract = useContract();
@@ -23,6 +28,7 @@ export function useEscrows(queryString: string, escrowIds: BigNumberish[] | null
   );
 
   return escrows?.map((escrow) => {
-    return escrow.value;
+    const temp: EscrowInfoWorkaround = { ...escrow.value[0], assets: escrow.value[1] }
+    return temp;
   });
 }

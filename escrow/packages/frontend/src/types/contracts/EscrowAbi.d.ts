@@ -35,9 +35,13 @@ export type ArbiterOutput = {
   fee_amount: BN;
 };
 
-export type AssetInput = { amount: BigNumberish; id: ContractIdInput };
+export type RawVecInput = { ptr: BigNumberish; cap: BigNumberish };
 
-export type AssetOutput = { amount: BN; id: ContractIdOutput };
+export type RawVecOutput = { ptr: BN; cap: BN };
+
+export type VecInput = { buf: RawVecInput; len: BigNumberish };
+
+export type VecOutput = { buf: RawVecOutput; len: BN };
 
 export type BuyerInput = {
   address: IdentityInput;
@@ -57,20 +61,22 @@ export type SellerOutput = { address: IdentityOutput };
 
 export type EscrowInfoInput = {
   arbiter: ArbiterInput;
-  assets: [any, any];
+  asset_count: BigNumberish;
   buyer: BuyerInput;
   deadline: BigNumberish;
   disputed: boolean;
+  first_asset_index: BigNumberish;
   seller: SellerInput;
   state: StateInput;
 };
 
 export type EscrowInfoOutput = {
   arbiter: ArbiterOutput;
-  assets: [any, any];
+  asset_count: BN;
   buyer: BuyerOutput;
   deadline: BN;
   disputed: boolean;
+  first_asset_index: BN;
   seller: SellerOutput;
   state: StateOutput;
 };
@@ -122,7 +128,7 @@ interface EscrowAbiInterface extends Interface {
   encodeFunctionData(functionFragment: 'buyer_escrows', values: [IdentityInput]): Uint8Array;
   encodeFunctionData(
     functionFragment: 'create_escrow',
-    values: [ArbiterInput, [any, any], IdentityInput, BigNumberish]
+    values: [ArbiterInput, VecInput, IdentityInput, BigNumberish]
   ): Uint8Array;
   encodeFunctionData(functionFragment: 'deposit', values: [BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'dispute', values: [BigNumberish]): Uint8Array;
@@ -170,7 +176,7 @@ export class EscrowAbi extends Contract {
     buyer_escrows: InvokeFunction<[buyer: IdentityInput], [any]>;
 
     create_escrow: InvokeFunction<
-      [arbiter: ArbiterInput, assets: [any, any], buyer: IdentityInput, deadline: BigNumberish],
+      [arbiter: ArbiterInput, assets: VecInput, buyer: IdentityInput, deadline: BigNumberish],
       void
     >;
 
@@ -178,7 +184,7 @@ export class EscrowAbi extends Contract {
 
     dispute: InvokeFunction<[identifier: BigNumberish], void>;
 
-    escrows: InvokeFunction<[identifier: BigNumberish], EscrowInfoOutput>;
+    escrows: InvokeFunction<[identifier: BigNumberish], [EscrowInfoOutput, VecOutput]>;
 
     propose_arbiter: InvokeFunction<[arbiter: ArbiterInput, identifier: BigNumberish], void>;
 
