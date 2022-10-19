@@ -234,7 +234,7 @@ impl EnglishAuction for Contract {
 
         // Cannot withdraw if the auction is still on going
         require(auction.state == State::Closed || height() >= auction.end_block, AccessError::AuctionIsNotClosed);
-
+        
         // If time has run out set the contract state to closed
         if (height() >= auction.end_block
             && auction.state == State::Open)
@@ -243,20 +243,22 @@ impl EnglishAuction for Contract {
             storage.auctions.insert(auction_id, Option::Some(auction));
         }
 
+        
         // Set some variables we will need
         let sender = msg_sender().unwrap();
         let bidder: Option<Identity> = auction.highest_bidder;
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
 
+        
         // Make sure the sender still has something to withdraw
         require(sender_deposit.is_some(), UserError::UserHasAlreadyWithdrawn);
         storage.deposits.insert((sender, auction_id), Option::None());
         let mut withdrawn_asset = sender_deposit.unwrap();
 
+        
         // Go ahead and withdraw
-        if ((bidder.is_some()
-            && sender == bidder.unwrap())
-            || sender == auction.seller)
+        if ((bidder.is_some() && sender == bidder.unwrap())
+            || (bidder.is_none() && sender == auction.seller))
         {
             // The buyer is withdrawing or the seller is withdrawing and no one placed a bid
             transfer_asset(auction.sell_asset, sender);

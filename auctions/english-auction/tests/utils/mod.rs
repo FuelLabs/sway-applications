@@ -154,14 +154,27 @@ pub mod english_auction_abi_calls {
             .value
     }
 
-    pub async fn withdraw(auction_id: u64, contract: &EnglishAuction) -> CallResponse<()> {
-        contract
-            .methods()
-            .withdraw(auction_id)
-            .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
+    pub async fn withdraw(auction_id: u64, contract: &EnglishAuction, withdrawing_asset: Asset) -> CallResponse<()> {
+        match withdrawing_asset {
+            Asset::NFTAsset(withdrawing_asset) => {
+                contract
+                    .methods()
+                    .withdraw(auction_id)
+                    .set_contracts(&[withdrawing_asset.contract_id.into()])
+                    .call()
+                    .await
+                    .unwrap()
+            },
+            Asset::TokenAsset(withdrawing_asset) => {
+                contract
+                    .methods()
+                    .withdraw(auction_id)
+                    .append_variable_outputs(1)
+                    .call()
+                    .await
+                    .unwrap()
+            }
+        }
     }
 
     pub async fn total_auctions(contract: &EnglishAuction) -> u64 {
