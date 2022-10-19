@@ -23,7 +23,7 @@ struct OracleNode {
 }
 
 impl OracleNode {
-    fn new(seconds: u64) -> Self {
+    pub fn new(seconds: u64) -> Self {
         let mut env_path = env::current_dir().unwrap();
         env_path.push(std::path::Path::new("node"));
         env::set_current_dir(env_path).unwrap();
@@ -50,7 +50,7 @@ impl OracleNode {
         }
     }
 
-    async fn run(&self) {
+    pub async fn run(&self) {
         let mut i = 0;
         while i < 2 {
             let response = self.get_price().await;
