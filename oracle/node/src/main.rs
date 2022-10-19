@@ -4,4 +4,4 @@ mod oracle_node;
 async fn main() {
     let oracle_node = oracle_node::OracleNode::new(10);
     oracle_node.run().await;
-}   
+}
