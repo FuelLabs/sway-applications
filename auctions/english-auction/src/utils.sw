@@ -119,6 +119,7 @@ pub fn validate_asset(bid_asset: Asset, recieved_asset: Asset) {
         },
         Asset::TokenAsset(asset) => {
             require(msg_amount() == asset.amount, InputError::IncorrectAmountProvided);
+            require(msg_asset_id() == asset.contract_id, InputError::IncorrectAssetProvided);
         }
     }
 }

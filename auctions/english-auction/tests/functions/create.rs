@@ -315,7 +315,7 @@ mod revert {
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -340,7 +340,7 @@ mod revert {
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -365,7 +365,7 @@ mod revert {
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             0,
@@ -390,7 +390,7 @@ mod revert {
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 1).await;
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -415,7 +415,7 @@ mod revert {
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -599,7 +599,7 @@ mod revert {
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -644,7 +644,7 @@ mod revert {
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -687,7 +687,7 @@ mod revert {
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -698,4 +698,6 @@ mod revert {
         )
         .await;
     }
+
+    // TODO: Test sending mismatching asset structs
 }

@@ -79,31 +79,32 @@ impl EnglishAuction for Contract {
             }
         };
 
-        // Make sure this is greater than initial bid and this bid plus the previously placed bids are more than the current bid
-        require(total_bid.amount() >= auction.initial_price, InputError::InitialPriceNotMet);
-        require(total_bid.amount() > auction.bid_asset.amount(), InputError::IncorrectAmountProvided);
-
-        // Check to see if we've reached the reserve price if there is one
-        let reserve: Option<u64> = auction.reserve_price;
-        if (reserve.is_some()) {
-            // The bid cannot be greater than the reserve price
-            require(reserve.unwrap() >= total_bid.amount(), InputError::IncorrectAmountProvided);
-            if (reserve.unwrap() == total_bid.amount()) {
-                // The reserve price was met
-                auction.state = State::Closed;
-            }
-        }
-
-        // Finally, make the bid
-        // Transfer any NFTs to this contract
         match total_bid {
             Asset::NFTAsset(nft_asset) => {
                 // We need to transfer ownership to the auction contract if they are
                 // bidding an NFT and close the auction due to only allowing one NFT bid
                 transfer_nft(nft_asset, sender, Identity::ContractId(contract_id()));
                 auction.state = State::Closed;
+            },
+            Asset::TokenAsset(token_asset) => {
+                // Make sure this is greater than initial bid and this bid plus the previously placed bids are more than the current bid
+                require(token_asset.amount >= auction.initial_price, InputError::InitialPriceNotMet);
+                require(token_asset.amount > auction.bid_asset.amount(), InputError::IncorrectAmountProvided);
+                
+                // Check to see if we've reached the reserve price if there is one
+                let reserve: Option<u64> = auction.reserve_price;
+                match reserve {
+                    Option::Some(reserve) => {
+                        // The bid cannot be greater than the reserve price
+                        require(reserve >= token_asset.amount, InputError::IncorrectAmountProvided);
+                        if reserve == token_asset.amount {
+                            // The reserve price was met
+                            auction.state = State::Closed;
+                        }
+                    },
+                    _ => {}
+                }
             }
-            _ => {}
         }
 
         // Update the auction's information
@@ -157,7 +158,15 @@ impl EnglishAuction for Contract {
         require(reserve_price.is_none() || (reserve_price.is_some() && reserve_price.unwrap() >= initial_price && reserve_price.unwrap() != 0), InitError::ReserveLessThanInitialPrice);
         // The auction must last for some time
         require(duration != 0, InitError::AuctionDurationNotProvided);
-        require(bid_asset.amount() == 0, InitError::BidAssetAmountNotZero);
+
+        match bid_asset {
+            Asset::TokenAsset(asset) => {
+                require(asset.amount == 0, InitError::BidAssetAmountNotZero);
+            },
+            Asset::NFTAsset(asset) => {
+                require(asset.token_id == 0, InitError::BidAssetAmountNotZero);
+            }
+        }
 
         // Ensure that the `sell_asset` struct and what was sent in the transaction match
         match sell_asset {

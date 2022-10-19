@@ -31,9 +31,10 @@ abi EnglishAuction {
     /// * When the asset provided does not match the asset accepted for the auction.
     /// * When the bidder does not own the NFT that is being bid.
     /// * When the auction contract does not have permission to transfer the NFT to it's ownership.
-    /// * When the amount stated in the `bid_asset` struct does not match the transaction's `msg_amount`.
+    /// * When the amount provided the the struct do not match.
+    /// * When the asset provided and struct do not match.
     /// * When the bidder is the auction's `seller`.
-    /// * When the amount stated in the `bid_asset` struct is less than the initial price.
+    /// * When the bid amount is less than the initial price.
     /// * When the total of previous bids plus this bid are not greater than the current bid amount.
     /// * When the total of previous bids plus this bid is greater than the reserve price.
     #[storage(read, write)]
