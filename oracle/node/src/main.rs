@@ -2,7 +2,7 @@ use fuels::{signers::{WalletUnlocked, fuel_crypto::SecretKey}, prelude::{Provide
 use reqwest;
 use dotenv::dotenv;
 use serde::Deserialize;
-use tokio::time::{ self, Duration };
+use tokio::time::{ self, Duration, sleep };
 use std::env;
 use utils::{
     abi_calls::set_price,
@@ -17,6 +17,20 @@ struct USDPrice {
 
 #[tokio::main]
 async fn main() {
+    let (oracle, client, api_url, duration) = initialize_node();
+    let mut i = 0;
+    while i < 2 {
+        let response = get_price(&client, &api_url).await;
+        // TODO avoid hardcoding the 1e9 decimal precision
+        let usd_price = (response.USD * 1e9) as u64;
+        set_price(&oracle, usd_price).await;
+        println!("{:?}", usd_price);
+        i += 1;
+        sleep(duration).await;
+    }
+}
+
+fn initialize_node() -> (Oracle, reqwest::Client, String, Duration) {
     let mut env_path = env::current_dir().unwrap();
     env_path.push(std::path::Path::new("node"));
     env::set_current_dir(env_path).unwrap();
@@ -32,24 +46,18 @@ async fn main() {
         Option::Some(Provider::new(FuelClient::new(provider).unwrap()))
     );
     let client = reqwest::Client::new();
-    let mut interval = time::interval(Duration::from_millis(10000));
+    let duration = time::Duration::from_secs(10);
     let oracle = Oracle::new(bech32_oracle_id.to_string(), wallet);
-    interval.tick().await;
-    let mut i = 0;
-    while i < 2 {
-        let response = client
-                                    .get(api_url.clone())
-                                    .send()
-                                    .await
-                                    .unwrap()
-                                    .json::<USDPrice>()
-                                    .await
-                                    .unwrap();
-        // TODO avoid hardcoding the 1e9 decimal precision
-        let usd_price = (response.USD * 1e9) as u64;
-        set_price(&oracle, usd_price).await;
-        println!("{:?}", usd_price);
-        i += 1;
-        interval.tick().await;
-    }
+    (oracle, client, api_url, duration)
+}
+
+async fn get_price(client: &reqwest::Client, api_url: &String) -> USDPrice {
+    client
+        .get(api_url.clone())
+        .send()
+        .await
+        .unwrap()
+        .json::<USDPrice>()
+        .await
+        .unwrap()
 }
