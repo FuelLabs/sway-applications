@@ -53,9 +53,7 @@ impl OracleNode {
     pub async fn run(&self) {
         let mut i = 0;
         while i < 2 {
-            let response = self.get_price().await;
-            // TODO avoid hardcoding the 1e9 decimal precision
-            let usd_price = (response.USD * 1e9) as u64;
+            let usd_price = self.get_price().await;
             set_price(&self.oracle, usd_price).await;
             println!("{:?}", usd_price);
             i += 1;
@@ -63,15 +61,17 @@ impl OracleNode {
         }
     }
 
-    async fn get_price(&self) -> USDPrice {
-        self.client
+    async fn get_price(&self) -> u64 {
+        let response = self.client
             .get(&self.api_url)
             .send()
             .await
             .unwrap()
             .json::<USDPrice>()
             .await
-            .unwrap()
+            .unwrap();
+        // TODO avoid hardcoding the 1e9 decimal precision
+        (response.USD * 1e9) as u64
     }
 }
 
