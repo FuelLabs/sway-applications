@@ -20,6 +20,7 @@ struct OracleNode {
     client: reqwest::Client,
     duration: time::Duration,
     oracle: Oracle,
+    running: bool,
 }
 
 impl OracleNode {
@@ -46,17 +47,15 @@ impl OracleNode {
             api_url,
             client,
             duration,
-            oracle
+            oracle,
+            running: true,
         }
     }
 
     pub async fn run(&self) {
-        let mut i = 0;
-        while i < 2 {
+        while self.running {
             let usd_price = self.get_price().await;
             set_price(&self.oracle, usd_price).await;
-            println!("{:?}", usd_price);
-            i += 1;
             sleep(self.duration).await;
         }
     }
