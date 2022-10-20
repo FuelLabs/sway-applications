@@ -296,8 +296,6 @@ mod success {
         assert_eq!(auction.state, State::Closed());
     }
 
-    // TODO: Enable test once Options have been implemented into NFT
-    #[ignore]
     #[tokio::test]
     async fn places_nft_bid_on_nft_asset_with_approval_for_all() {
         let (
@@ -643,10 +641,10 @@ mod revert {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
     }
-
+ 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn when_asset_type_and_struct_mismatch() {
+    async fn when_sender_is_the_seller() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
@@ -657,7 +655,7 @@ mod revert {
         let bid_asset = token_asset(buy_token_contract_id, initial_price).await;
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
-        mint_and_send_to_address(reserve_price, &seller.asset, buyer1.wallet.address().into())
+        mint_and_send_to_address(reserve_price, &buyer1.asset, seller.wallet.address().into())
             .await;
 
         let auction_id = create(
@@ -671,22 +669,7 @@ mod revert {
         )
         .await;
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None);
-        let call_params = CallParameters::new(
-            Some(initial_price),
-            Some(AssetId::from(*sell_token_contract_id)),
-            None,
-        );
-
-        buyer1
-            .auction
-            .methods()
-            .bid(auction_id, bid_asset.clone())
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap();
+        bid(auction_id, bid_asset.clone(), &seller.auction).await;
     }
 
     #[tokio::test]
@@ -758,6 +741,51 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
+    async fn when_asset_type_and_struct_mismatch() {
+        let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
+            setup().await;
+        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+
+        let seller_identity = Identity::Address(seller.wallet.address().into());
+        let sell_asset = token_asset(sell_token_contract_id, sell_amount).await;
+        let buy_asset = token_asset(buy_token_contract_id, 0).await;
+        let bid_asset = token_asset(buy_token_contract_id, initial_price).await;
+
+        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
+        mint_and_send_to_address(reserve_price, &seller.asset, buyer1.wallet.address().into())
+            .await;
+
+        let auction_id = create(
+            buy_asset.clone(),
+            &seller.auction,
+            duration,
+            initial_price,
+            Some(reserve_price),
+            seller_identity.clone(),
+            sell_asset.clone(),
+        )
+        .await;
+
+        let tx_params = TxParameters::new(None, Some(1_000_000), None);
+        let call_params = CallParameters::new(
+            Some(initial_price),
+            Some(AssetId::from(*sell_token_contract_id)),
+            None,
+        );
+
+        buyer1
+            .auction
+            .methods()
+            .bid(auction_id, bid_asset.clone())
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .call()
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(42)")]
     async fn when_asset_amount_and_struct_mismatch() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -799,36 +827,6 @@ mod revert {
             .call()
             .await
             .unwrap();
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
-    async fn when_sender_is_the_seller() {
-        let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
-            setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
-
-        let seller_identity = Identity::Address(seller.wallet.address().into());
-        let sell_asset = token_asset(sell_token_contract_id, sell_amount).await;
-        let buy_asset = token_asset(buy_token_contract_id, 0).await;
-        let bid_asset = token_asset(buy_token_contract_id, initial_price).await;
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
-        mint_and_send_to_address(reserve_price, &buyer1.asset, seller.wallet.address().into())
-            .await;
-
-        let auction_id = create(
-            buy_asset.clone(),
-            &seller.auction,
-            duration,
-            initial_price,
-            Some(reserve_price),
-            seller_identity.clone(),
-            sell_asset.clone(),
-        )
-        .await;
-
-        bid(auction_id, bid_asset.clone(), &seller.auction).await;
     }
 
     #[tokio::test]

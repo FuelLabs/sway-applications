@@ -144,8 +144,6 @@ mod success {
         assert_eq!(auction.state, State::Open());
     }
 
-    // TODO: Enable test once Options have been implemented into NFT
-    #[ignore]
     #[tokio::test]
     async fn creates_new_nft_auction_with_approval_for_all() {
         let (
