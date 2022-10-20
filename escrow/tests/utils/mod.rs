@@ -21,6 +21,7 @@ pub mod abi_calls {
 
     pub async fn accept_arbiter(contract: &Escrow, identifier: u64) -> CallResponse<()> {
         contract
+            .methods()
             .accept_arbiter(identifier)
             .append_variable_outputs(1)
             .call()
@@ -42,6 +43,7 @@ pub mod abi_calls {
             CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(100_000));
 
         contract
+            .methods()
             .create_escrow(
                 arbiter.clone(),
                 assets,
@@ -66,6 +68,7 @@ pub mod abi_calls {
             CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(100_000));
 
         contract
+            .methods()
             .deposit(identifier)
             .tx_params(tx_params)
             .call_params(call_params)
@@ -75,7 +78,7 @@ pub mod abi_calls {
     }
 
     pub async fn dispute(contract: &Escrow, identifier: u64) -> CallResponse<()> {
-        contract.dispute(identifier).call().await.unwrap()
+        contract.methods().dispute(identifier).call().await.unwrap()
     }
 
     pub async fn propose_arbiter(
@@ -91,6 +94,7 @@ pub mod abi_calls {
         );
 
         contract
+            .methods()
             .propose_arbiter(arbiter, identifier)
             .tx_params(tx_params)
             .call_params(call_params)
@@ -107,6 +111,7 @@ pub mod abi_calls {
         user: &Bech32Address,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .resolve_dispute(identifier, payment_amount, Identity::Address(user.into()))
             .append_variable_outputs(4)
             .call()
@@ -116,6 +121,7 @@ pub mod abi_calls {
 
     pub async fn return_deposit(contract: &Escrow, identifier: u64) -> CallResponse<()> {
         contract
+            .methods()
             .return_deposit(identifier)
             .append_variable_outputs(3)
             .call()
@@ -125,6 +131,7 @@ pub mod abi_calls {
 
     pub async fn take_payment(contract: &Escrow, identifier: u64) -> CallResponse<()> {
         contract
+            .methods()
             .take_payment(identifier)
             .append_variable_outputs(3)
             .call()
@@ -134,6 +141,7 @@ pub mod abi_calls {
 
     pub async fn transfer_to_seller(contract: &Escrow, identifier: u64) -> CallResponse<()> {
         contract
+            .methods()
             .transfer_to_seller(identifier)
             .append_variable_outputs(3)
             .call()
@@ -143,6 +151,7 @@ pub mod abi_calls {
 
     pub async fn withdraw_collateral(contract: &Escrow, identifier: u64) -> CallResponse<()> {
         contract
+            .methods()
             .withdraw_collateral(identifier)
             .append_variable_outputs(2)
             .call()
@@ -197,12 +206,13 @@ pub mod test_helpers {
 
         (
             asset_id.clone().into(),
-            MyAssetBuilder::new(asset_id.to_string(), wallet.clone()).build(),
+            MyAsset::new(asset_id.to_string(), wallet.clone()),
         )
     }
 
     pub async fn mint(address: &Bech32Address, amount: u64, contract: &MyAsset) {
         contract
+            .methods()
             .mint_and_send_to_address(amount, address.into())
             .append_variable_outputs(1)
             .call()
@@ -250,20 +260,20 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let asset = MyAssetBuilder::new(asset_id.to_string(), deployer_wallet.clone()).build();
+        let asset = MyAsset::new(asset_id.to_string(), deployer_wallet.clone());
 
         let arbiter = User {
-            contract: EscrowBuilder::new(escrow_id.to_string(), arbiter_wallet.clone()).build(),
+            contract: Escrow::new(escrow_id.to_string(), arbiter_wallet.clone()),
             wallet: arbiter_wallet,
         };
 
         let buyer = User {
-            contract: EscrowBuilder::new(escrow_id.to_string(), buyer_wallet.clone()).build(),
+            contract: Escrow::new(escrow_id.to_string(), buyer_wallet.clone()),
             wallet: buyer_wallet,
         };
 
         let seller = User {
-            contract: EscrowBuilder::new(escrow_id.to_string(), seller_wallet.clone()).build(),
+            contract: Escrow::new(escrow_id.to_string(), seller_wallet.clone()),
             wallet: seller_wallet,
         };
 

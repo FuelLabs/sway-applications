@@ -24,8 +24,9 @@ mod revert {
     async fn when_not_owner() {
         let (user, wallets) = setup().await;
         user.oracle
-            ._with_wallet(wallets[1].clone())
+            .with_wallet(wallets[1].clone())
             .unwrap()
+            .methods()
             .set_price(1000)
             .call()
             .await

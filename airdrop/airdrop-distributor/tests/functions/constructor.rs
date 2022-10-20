@@ -2,6 +2,7 @@ use crate::utils::{
     airdrop_distributor_abi_calls::{airdrop_constructor, end_block, merkle_root},
     test_helpers::{defaults, setup},
 };
+use fuels::core::types::Bits256;
 
 mod success {
 
@@ -13,7 +14,7 @@ mod success {
         let (_, _, _, _, _, _, _, _, claim_time) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
         let provider = deploy_wallet.wallet.get_provider().unwrap();
-        let root = [1u8; 32];
+        let root = Bits256([1u8; 32]);
 
         assert_eq!(end_block(&deploy_wallet.airdrop_distributor).await, 0);
 
@@ -43,7 +44,7 @@ mod revert {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
         let (_, _, _, _, _, _, _, _, claim_time) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
-        let root = [1u8; 32];
+        let root = Bits256([1u8; 32]);
 
         airdrop_constructor(
             asset.asset_id,
