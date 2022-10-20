@@ -154,26 +154,26 @@ pub mod english_auction_abi_calls {
             .value
     }
 
-    pub async fn withdraw(auction_id: u64, contract: &EnglishAuction, withdrawing_asset: Asset) -> CallResponse<()> {
+    pub async fn withdraw(
+        auction_id: u64,
+        contract: &EnglishAuction,
+        withdrawing_asset: Asset,
+    ) -> CallResponse<()> {
         match withdrawing_asset {
-            Asset::NFTAsset(withdrawing_asset) => {
-                contract
-                    .methods()
-                    .withdraw(auction_id)
-                    .set_contracts(&[withdrawing_asset.contract_id.into()])
-                    .call()
-                    .await
-                    .unwrap()
-            },
-            Asset::TokenAsset(_withdrawing_asset) => {
-                contract
-                    .methods()
-                    .withdraw(auction_id)
-                    .append_variable_outputs(1)
-                    .call()
-                    .await
-                    .unwrap()
-            }
+            Asset::NFTAsset(withdrawing_asset) => contract
+                .methods()
+                .withdraw(auction_id)
+                .set_contracts(&[withdrawing_asset.contract_id.into()])
+                .call()
+                .await
+                .unwrap(),
+            Asset::TokenAsset(_withdrawing_asset) => contract
+                .methods()
+                .withdraw(auction_id)
+                .append_variable_outputs(1)
+                .call()
+                .await
+                .unwrap(),
         }
     }
 
@@ -247,15 +247,6 @@ pub mod test_helpers {
 
     use super::*;
 
-    pub async fn defaults_token() -> (u64, u64, u64, u64) {
-        let sell_amount = 10;
-        let initial_price = 1;
-        let reserve_price = 10;
-        let duration = 10;
-
-        (sell_amount, initial_price, reserve_price, duration)
-    }
-
     pub async fn defaults_nft() -> (u64, u64, u64, u64, bool) {
         let sell_count = 1;
         let inital_count = 1;
@@ -270,6 +261,15 @@ pub mod test_helpers {
             duration,
             access_control,
         )
+    }
+
+    pub async fn defaults_token() -> (u64, u64, u64, u64) {
+        let sell_amount = 10;
+        let initial_price = 1;
+        let reserve_price = 10;
+        let duration = 10;
+
+        (sell_amount, initial_price, reserve_price, duration)
     }
 
     pub async fn nft_asset(contract_id: ContractId, token_id: u64) -> Asset {

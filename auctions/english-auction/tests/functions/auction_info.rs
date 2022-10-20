@@ -11,15 +11,9 @@ mod success {
     use super::*;
 
     #[tokio::test]
-    async fn returns_none() {
-        let (_, seller, _, _, _, _, _, _, _) = setup().await;
-
-        assert!(auction_info(0, &seller.auction).await.is_none());
-    }
-
-    #[tokio::test]
     async fn returns_auction_info() {
-        let (deployer, seller, buyer1, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) = setup().await;
+        let (deployer, seller, buyer1, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
+            setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
@@ -30,7 +24,8 @@ mod success {
         let provider = deployer.wallet.get_provider().unwrap();
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
-        mint_and_send_to_address(reserve_price, &buyer1.asset, buyer1.wallet.address().into()).await;
+        mint_and_send_to_address(reserve_price, &buyer1.asset, buyer1.wallet.address().into())
+            .await;
 
         let auction = auction_info(0, &seller.auction).await;
         assert!(auction.is_none());
@@ -64,12 +59,13 @@ mod success {
 
         let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.bid_asset, bid_asset);        
+        assert_eq!(auction.bid_asset, bid_asset);
     }
 
     #[tokio::test]
     async fn returns_multiple_auction_info() {
-        let (deployer, seller, buyer1, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) = setup().await;
+        let (deployer, seller, buyer1, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
+            setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
@@ -77,8 +73,18 @@ mod success {
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
         let provider = deployer.wallet.get_provider().unwrap();
 
-        mint_and_send_to_address(sell_amount * 2, &seller.asset, seller.wallet.address().into()).await;
-        mint_and_send_to_address(reserve_price * 2, &buyer1.asset, buyer1.wallet.address().into()).await;
+        mint_and_send_to_address(
+            sell_amount * 2,
+            &seller.asset,
+            seller.wallet.address().into(),
+        )
+        .await;
+        mint_and_send_to_address(
+            reserve_price * 2,
+            &buyer1.asset,
+            buyer1.wallet.address().into(),
+        )
+        .await;
 
         let auction1 = auction_info(0, &seller.auction).await;
         let auction2 = auction_info(1, &seller.auction).await;
@@ -147,6 +153,13 @@ mod success {
         assert_eq!(auction2.reserve_price.unwrap(), reserve_price);
         assert_eq!(auction2.sell_asset, sell_asset);
         assert_eq!(auction2.seller, seller_identity);
-        assert_eq!(auction2.state, State::Open());     
+        assert_eq!(auction2.state, State::Open());
+    }
+
+    #[tokio::test]
+    async fn returns_none() {
+        let (_, seller, _, _, _, _, _, _, _) = setup().await;
+
+        assert!(auction_info(0, &seller.auction).await.is_none());
     }
 }
