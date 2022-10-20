@@ -25,8 +25,7 @@ pub struct OracleNode {
 
 impl OracleNode {
     pub fn new(seconds: u64) -> Self {
-        let mut env_path = env::current_dir().unwrap();
-        env_path.push(std::path::Path::new("node"));
+        let env_path = env::current_dir().unwrap();
         env::set_current_dir(env_path).unwrap();
         dotenv().ok();
         let api_url = env::var("API_URL").expect("API_URL must be set.");
