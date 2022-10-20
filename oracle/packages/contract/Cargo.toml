@@ -1,0 +1,16 @@
+[project]
+name = "contract"
+version = "0.0.0"
+authors = ["Fuel Labs <contact@fuel.sh>"]
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+utils = { path = "../utils" }
+fuels = { version = "0.25", features = ["fuel-core-lib"] }
+tokio = { version = "1.12", features = ["full"] }
+
+[[test]]
+harness = true
+name = "integration_tests"
+path = "tests/harness.rs"

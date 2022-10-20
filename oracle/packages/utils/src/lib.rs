@@ -1,6 +1,6 @@
 use fuels::{contract::contract::CallResponse, prelude::*, signers::wallet::Wallet};
 
-abigen!(Oracle, "contract/out/debug/oracle-abi.json");
+abigen!(Oracle, "packages/contract/out/debug/oracle-abi.json");
 
 pub struct Metadata {
     pub oracle: Oracle,
