@@ -53,12 +53,12 @@ impl EnglishAuction for Contract {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), InputError::AuctionDoesNotExist);
+        
         let mut auction = auction.unwrap();
-
         let sender = msg_sender().unwrap();
+        require(sender != auction.seller, UserError::BidderIsSeller);
         require(auction.state == State::Open && height() <= auction.end_block, AccessError::AuctionIsNotOpen);
         require(bid_asset == auction.bid_asset, InputError::IncorrectAssetProvided);
-        require(sender != auction.seller, UserError::BidderIsSeller);
 
         // Combine the user's previous deposits and the current bid for the
         // total bid the user has made
@@ -119,8 +119,8 @@ impl EnglishAuction for Contract {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), InputError::AuctionDoesNotExist);
-        let mut auction = auction.unwrap();
 
+        let mut auction = auction.unwrap();
         require(auction.state == State::Open && height() <= auction.end_block, AccessError::AuctionIsNotOpen);
         require(msg_sender().unwrap() == auction.seller, AccessError::SenderIsNotSeller);
 
@@ -210,9 +210,9 @@ impl EnglishAuction for Contract {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), InputError::AuctionDoesNotExist);
-        let mut auction = auction.unwrap();
-
+        
         // Cannot withdraw if the auction is still on going
+        let mut auction = auction.unwrap();
         require(auction.state == State::Closed || height() >= auction.end_block, AccessError::AuctionIsNotClosed);
         if (height() >= auction.end_block
             && auction.state == State::Open)
