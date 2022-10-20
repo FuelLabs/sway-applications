@@ -29,14 +29,13 @@ abi EnglishAuction {
     /// * When the auction has closed.
     /// * When the bidding period for the auction has passed.
     /// * When the asset provided does not match the asset accepted for the auction.
-    /// * When the bidder does not own the NFT that is being bid.
-    /// * When the auction contract does not have permission to transfer the NFT to it's ownership.
-    /// * When the amount provided the the struct do not match.
-    /// * When the asset provided and struct do not match.
     /// * When the bidder is the auction's `seller`.
+    /// * When transfering of the NFT asset to the contract failed.
+    /// * When the asset amount provided and the struct do not match.
+    /// * When the asset provided and struct do not match.
     /// * When the bid amount is less than the initial price.
-    /// * When the total of previous bids plus this bid are not greater than the current bid amount.
-    /// * When the total of previous bids plus this bid is greater than the reserve price.
+    /// * When the bidder's total bids are not greater than the current bid amount.
+    /// * When the bidder's total bids are greater than the reserve price.
     #[storage(read, write)]
     fn bid(auction_id: u64, bid_asset: Asset);
 
@@ -75,12 +74,12 @@ abi EnglishAuction {
     ///
     /// * When the `reserve_price` is less than `initial_price` if a `reserve_price` is set.
     /// * When the `duration` of the auction is set to zero.
+    /// * When the `bid_asset` amount is not zero.
     /// * When the inital price for tokens is set to zero.
     /// * When the transaction's token amount is not the amount specified in the `sell_asset` struct.
     /// * When the transaction's token is not the same as the specified in the `sell_asset` struct.
-    /// * When setting the quantity of NFTs to accept is not one.
-    /// * When the sender is not the owner of the NFT's provided.
-    /// * When the auction contract is not approved to transfer the NFT's provided.
+    /// * When setting the initial quantity of NFTs to accept is not one.
+    /// * When transfering of the NFT asset to the contract failed.
     #[storage(read, write)]
     fn create(bid_asset: Asset, duration: u64, inital_price: u64, reserve_price: Option<u64>, seller: Identity, sell_asset: Asset) -> u64;
 
@@ -120,8 +119,6 @@ abi EnglishAuction {
 }
 
 abi NFT {
-    fn approved(token_id: u64) -> Identity;
-    fn is_approved_for_all(operator: Identity, owner: Identity) -> bool;
     fn owner_of(token_id: u64) -> Identity;
     fn transfer_from(from: Identity, to: Identity, token_id: u64);
 }

@@ -4,56 +4,10 @@ dep data_structures;
 dep errors;
 dep interface;
 
-use data_structures::{Asset, NFTAsset, TokenAsset};
-use errors::{AccessError, InputError};
+use data_structures::{Asset, NFTAsset};
+use errors::AccessError;
 use interface::NFT;
-use std::{
-    chain::auth::{
-        AuthError,
-        msg_sender,
-    },
-    context::{
-        call_frames::{
-            contract_id,
-            msg_asset_id,
-        },
-        msg_amount,
-    },
-    token::transfer,
-};
-
-/// Returns true if the `to` `Identity` is approved to transfer the token.
-///
-/// # Arguments
-///
-/// * `asset` - The struct which contains the NFT data.
-/// * `from` - The owner the NFTs.
-/// * `to` - The user which the NFTs should be transfered to.
-pub fn approved_for_nft_transfer(asset: NFTAsset, from: Identity, to: Identity) -> bool {
-    let nft_contract = asset.contract_id;
-    let nft_abi = abi(NFT, nft_contract.value);
-
-    let approved_for_all: bool = nft_abi.is_approved_for_all(to, from);
-    let approved_for_token: Identity = nft_abi.approved(asset.token_id);
-
-    // The to `Identity` either needs to be approved for all or approved for this token id
-    approved_for_all || to == approved_for_token
-}
-
-/// Returns true if the `owner` `Identity` owns the NFT token.
-///
-/// # Arguments
-///
-/// * `asset` - The struct which contains the NFT data.
-/// * `owner` - The user which should be checked for ownership.
-pub fn owns_nft(asset: NFTAsset, owner: Identity) -> bool {
-    let nft_contract = asset.contract_id;
-    let nft_abi = abi(NFT, nft_contract.value);
-
-    let token_owner = nft_abi.owner_of(asset.token_id);
-
-    owner == token_owner
-}
+use std::{context::call_frames::contract_id, token::transfer};
 
 /// Transfers assets out of the auction contract to the specified user.
 ///
@@ -91,35 +45,4 @@ pub fn transfer_nft(asset: NFTAsset, from: Identity, to: Identity) {
 
     let owner = nft_abi.owner_of(asset.token_id);
     require(owner == to, AccessError::NFTTransferNotApproved);
-}
-
-/// Ensures the assets provided match, NFTs must be permissioned for transfer, and token
-/// amounts match.
-//
-/// # Arguments
-///
-/// * `bid_asset` - The struct containing information on the asset is accepted for bids.
-/// * `recieved_asset` - The struct containing information on the asset that was bid.
-///
-/// # Reverts
-///
-/// * When the asset types are different.
-/// * When the sender does not own the NFT tokens to be transfered.
-/// * When the auction contract is not permissioned to transfer the NFT tokens.
-/// * When the transaction's token amount does not match the amount specified in the struct.
-pub fn validate_asset(bid_asset: Asset, recieved_asset: Asset) {
-    let sender = msg_sender().unwrap();
-
-    require(bid_asset == recieved_asset, InputError::IncorrectAssetProvided);
-
-    match recieved_asset {
-        Asset::NFTAsset(asset) => {
-            require(owns_nft(asset, sender), AccessError::NFTTransferNotApproved);
-            require(approved_for_nft_transfer(asset, sender, Identity::ContractId(contract_id())), AccessError::NFTTransferNotApproved);
-        },
-        Asset::TokenAsset(asset) => {
-            require(msg_amount() == asset.amount, InputError::IncorrectAmountProvided);
-            require(msg_asset_id() == asset.contract_id, InputError::IncorrectAssetProvided);
-        }
-    }
 }

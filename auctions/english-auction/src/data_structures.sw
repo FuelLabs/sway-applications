@@ -13,6 +13,7 @@ impl Asset {
     pub fn amount(self) -> u64 {
         match self {
             Asset::NFTAsset(nft_asset) => {
+                // TODO: This should return the number of tokens when StorageVec in structs is supported
                 1
             },
             Asset::TokenAsset(token_asset) => {
@@ -49,6 +50,7 @@ impl core::ops::Add for Asset {
                 Asset::TokenAsset(token)
             },
             _ => {
+                // TODO: This should include NFTAsset once StorageVec in structs is supported
                 revert(0);
             },
         }
@@ -67,6 +69,48 @@ impl core::ops::Eq for Asset {
                 Asset::TokenAsset(token_asset2),
             ) => {
                 token_asset1.contract_id == token_asset2.contract_id
+            },
+            _ => {
+                revert(0);
+            },
+        }
+    }
+}
+
+impl core::ops::Ord for Asset {
+    fn gt(self, other: Self) -> bool {
+        match (self, other) {
+            (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
+                // TODO: Add support once StorageVec in structs are supported
+                revert(0);
+            },
+            (
+
+                Asset::TokenAsset(token_asset1),
+                Asset::TokenAsset(token_asset2),
+            ) => {
+                require(token_asset1.contract_id == token_asset2.contract_id, AssetError::AssetsAreNotTheSame);
+                token_asset1.amount > token_asset2.amount
+            },
+            _ => {
+                revert(0);
+            },
+        }
+    }
+
+    fn lt(self, other: Self) -> bool {
+        match (self, other) {
+            (Asset::NFTAsset(nft_asset1), Asset::NFTAsset(nft_asset2)) => {
+                // TODO: Add support once StorageVec in structs are supported
+                revert(0);
+            },
+            (
+
+                Asset::TokenAsset(token_asset1),
+                Asset::TokenAsset(token_asset2),
+            ) => {
+                require(token_asset1.contract_id == token_asset2.contract_id, AssetError::AssetsAreNotTheSame);
+                token_asset1.amount < token_asset2.amount
             },
             _ => {
                 revert(0);
