@@ -4,7 +4,7 @@ PROJECT=$1
 
 if [ $PROJECT = 'airdrop/airdrop-distributor' ]; then
     forc build --path $PROJECT
-    forc build --path $PROJECT/tests/artifacts/asset
+    forc build --path $PROJECT/../simple-asset/
 elif [ $PROJECT = 'airdrop/simple-asset' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'dao-voting' ]; then
@@ -13,7 +13,7 @@ elif [ $PROJECT = 'dao-voting' ]; then
 if [ $PROJECT = 'auctions/english-auction' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/asset
-    forc build --path $PROJECT/../../NFT
+    forc build --path $PROJECT/../../NFT/
 elif [ $PROJECT = 'escrow' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/asset
