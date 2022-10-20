@@ -53,7 +53,7 @@ impl EnglishAuction for Contract {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), InputError::AuctionDoesNotExist);
-        
+
         let mut auction = auction.unwrap();
         let sender = msg_sender().unwrap();
         require(sender != auction.seller, UserError::BidderIsSeller);
@@ -210,6 +210,7 @@ impl EnglishAuction for Contract {
         // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), InputError::AuctionDoesNotExist);
+
         
         // Cannot withdraw if the auction is still on going
         let mut auction = auction.unwrap();
