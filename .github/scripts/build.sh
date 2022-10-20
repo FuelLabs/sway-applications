@@ -10,7 +10,7 @@ elif [ $PROJECT = 'airdrop/simple-asset' ]; then
 elif [ $PROJECT = 'dao-voting' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/gov_token
-if [ $PROJECT = 'auctions/english-auction' ]; then
+elif [ $PROJECT = 'auctions/english-auction' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/asset
     forc build --path $PROJECT/../../NFT/
