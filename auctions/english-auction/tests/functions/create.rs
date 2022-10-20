@@ -7,9 +7,6 @@ use crate::utils::{
 };
 use fuels::prelude::{AssetId, CallParameters, Identity, TxParameters};
 
-// TODO: Test sending mismatching asset structs
-// TODO: Create mutliple test
-
 mod success {
 
     use super::*;
@@ -298,6 +295,72 @@ mod success {
         assert_eq!(auction.sell_asset, sell_asset);
         assert_eq!(auction.seller, seller_identity);
         assert_eq!(auction.state, State::Open());
+    }
+
+    #[tokio::test]
+    async fn creates_multiple_auctions() {
+        let (deployer, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
+            setup().await;
+        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+
+        mint_and_send_to_address(sell_amount * 2, &seller.asset, seller.wallet.address().into()).await;
+
+        let seller_identity = Identity::Address(seller.wallet.address().into());
+        let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
+        let buy_asset = token_asset(buy_asset_contract_id, 0).await;
+        let provider = deployer.wallet.get_provider().unwrap();
+        let auction = auction_info(0, &seller.auction).await;
+        assert!(auction.is_none());
+
+        let auction_id1 = create(
+            buy_asset.clone(),
+            &seller.auction,
+            duration,
+            initial_price,
+            Some(reserve_price),
+            seller_identity.clone(),
+            sell_asset.clone(),
+        )
+        .await;
+
+        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let auction1 = auction_info(auction_id1, &seller.auction).await;
+        assert!(auction1.is_some());
+        let auction1 = auction1.unwrap();
+
+        assert_eq!(auction1.bid_asset, buy_asset);
+        assert_eq!(auction1.highest_bidder, None);
+        assert_eq!(auction1.end_block, total_duration);
+        assert_eq!(auction1.initial_price, initial_price);
+        assert_eq!(auction1.reserve_price.unwrap(), reserve_price);
+        assert_eq!(auction1.sell_asset, sell_asset);
+        assert_eq!(auction1.seller, seller_identity);
+        assert_eq!(auction1.state, State::Open());
+
+        let auction_id2 = create(
+            buy_asset.clone(),
+            &seller.auction,
+            duration,
+            initial_price,
+            Some(reserve_price),
+            seller_identity.clone(),
+            sell_asset.clone(),
+        )
+        .await;
+
+        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let auction2 = auction_info(auction_id2, &seller.auction).await;
+        assert!(auction2.is_some());
+        let auction2 = auction2.unwrap();
+
+        assert_eq!(auction2.bid_asset, buy_asset);
+        assert_eq!(auction2.highest_bidder, None);
+        assert_eq!(auction2.end_block, total_duration);
+        assert_eq!(auction2.initial_price, initial_price);
+        assert_eq!(auction2.reserve_price.unwrap(), reserve_price);
+        assert_eq!(auction2.sell_asset, sell_asset);
+        assert_eq!(auction2.seller, seller_identity);
+        assert_eq!(auction2.state, State::Open());
     }
 }
 
