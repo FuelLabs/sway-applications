@@ -2,7 +2,7 @@ use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{auction_info, create},
     englishauction_mod::{Asset, State},
-    nft_abi_calls::{approve, constructor, mint},
+    nft_abi_calls::{approve, constructor, mint, set_approval_for_all},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
 use fuels::prelude::{AssetId, CallParameters, Identity, TxParameters};
@@ -506,6 +506,7 @@ mod revert {
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
 
+        // TODO: Remove match case
         match sell_asset {
             Asset::TokenAsset(sell_asset) => {
                 let tx_params = TxParameters::new(None, Some(1_000_000), None);
@@ -554,6 +555,7 @@ mod revert {
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
 
+        // TODO: Remove match case
         match sell_asset {
             Asset::TokenAsset(sell_asset) => {
                 let tx_params = TxParameters::new(None, Some(1_000_000), None);
@@ -587,7 +589,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_token_asset_sent_not_correct_type() {
-        let (_, seller, buyer1, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
+        let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
 
@@ -602,6 +604,7 @@ mod revert {
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
 
+        // TODO: Remove match case
         match sell_asset {
             Asset::TokenAsset(sell_asset) => {
                 let tx_params = TxParameters::new(None, Some(1_000_000), None);
@@ -636,7 +639,7 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_initial_nft_price_not_one() {
         let (
-            deployer,
+            _,
             seller,
             _,
             _,
@@ -646,7 +649,7 @@ mod revert {
             _,
             buy_nft_contract_id,
         ) = setup().await;
-        let (sell_count, initial_count, reserve_count, duration, access_control) =
+        let (sell_count, _, reserve_count, duration, access_control) =
             defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
@@ -681,7 +684,7 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_sender_does_not_own_nft() {
         let (
-            deployer,
+            _,
             seller,
             _,
             _,
@@ -726,11 +729,11 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_auction_not_approved_for_transfer() {
         let (
-            deployer,
+            _,
             seller,
             _,
             _,
-            auction_contract_id,
+            _,
             _,
             sell_nft_contract_id,
             _,

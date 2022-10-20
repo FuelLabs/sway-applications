@@ -169,7 +169,7 @@ mod revert {
         )
         .await;
 
-        provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1).await;
 
         cancel(auction_id, &seller.auction).await;
     }

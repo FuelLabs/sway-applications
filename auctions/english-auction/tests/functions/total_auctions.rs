@@ -1,11 +1,10 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{bid, create, total_auctions},
-    englishauction_mod::{Auction, Asset, State},
+    english_auction_abi_calls::{create, total_auctions},
     nft_abi_calls::{approve, constructor, mint},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
-use fuels::prelude::{AssetId, CallParameters, Identity, TxParameters};
+use fuels::prelude::Identity;
 
 mod success {
 
@@ -25,7 +24,7 @@ mod success {
 
         assert_eq!(0, total_auctions(&seller.auction).await);
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -53,7 +52,7 @@ mod success {
 
         assert_eq!(0, total_auctions(&seller.auction).await);
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -66,7 +65,7 @@ mod success {
 
         assert_eq!(1, total_auctions(&seller.auction).await);
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -79,7 +78,7 @@ mod success {
 
         assert_eq!(2, total_auctions(&seller.auction).await);
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -108,7 +107,7 @@ mod success {
 
         assert_eq!(0, total_auctions(&seller.auction).await);
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -121,7 +120,7 @@ mod success {
 
         assert_eq!(1, total_auctions(&seller.auction).await);
 
-        provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1).await;
 
         assert_eq!(1, total_auctions(&seller.auction).await);
     }
@@ -152,7 +151,7 @@ mod success {
 
         assert_eq!(0, total_auctions(&seller.auction).await);
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -165,7 +164,7 @@ mod success {
 
         assert_eq!(1, total_auctions(&seller.auction).await);
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,
@@ -178,7 +177,7 @@ mod success {
 
         assert_eq!(2, total_auctions(&seller.auction).await);
 
-        let auction_id = create(
+        create(
             buy_asset.clone(),
             &seller.auction,
             duration,

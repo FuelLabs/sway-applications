@@ -106,7 +106,7 @@ pub mod english_auction_abi_calls {
                         seller,
                         Asset::NFTAsset(sell_asset.clone()),
                     )
-                    .set_contracts(&[sell_asset.contract_id.into()])
+                    .set_contracts(&[sell_asset.contract_id.into(), sell_asset.contract_id.into()])
                     .call()
                     .await
                     .unwrap()
@@ -165,7 +165,7 @@ pub mod english_auction_abi_calls {
                     .await
                     .unwrap()
             },
-            Asset::TokenAsset(withdrawing_asset) => {
+            Asset::TokenAsset(_withdrawing_asset) => {
                 contract
                     .methods()
                     .withdraw(auction_id)
@@ -199,16 +199,6 @@ pub mod nft_abi_calls {
             .call()
             .await
             .unwrap()
-    }
-
-    pub async fn balance_of(contract: &Nft, wallet: Identity) -> u64 {
-        contract
-            .methods()
-            .balance_of(wallet)
-            .call()
-            .await
-            .unwrap()
-            .value
     }
 
     pub async fn constructor(

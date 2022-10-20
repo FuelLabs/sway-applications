@@ -1,11 +1,10 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{auction_info, bid, create, deposit},
-    englishauction_mod::{Auction, Asset, State},
-    nft_abi_calls::{approve, constructor, mint},
-    test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
+    english_auction_abi_calls::{auction_info, bid, create},
+    englishauction_mod::State,
+    test_helpers::{defaults_token, setup, token_asset},
 };
-use fuels::prelude::{AssetId, CallParameters, Identity, TxParameters};
+use fuels::prelude::Identity;
 
 mod success {
 
@@ -13,7 +12,7 @@ mod success {
 
     #[tokio::test]
     async fn returns_none() {
-        let (_, seller, buyer1, _, auction_contract_id, _, sell_nft_contract_id, _, buy_nft_contract_id) = setup().await;
+        let (_, seller, _, _, _, _, _, _, _) = setup().await;
 
         assert!(auction_info(0, &seller.auction).await.is_none());
     }
@@ -74,10 +73,8 @@ mod success {
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-        let bid_asset = token_asset(buy_asset_contract_id, initial_price).await;
         let provider = deployer.wallet.get_provider().unwrap();
 
         mint_and_send_to_address(sell_amount * 2, &seller.asset, seller.wallet.address().into()).await;

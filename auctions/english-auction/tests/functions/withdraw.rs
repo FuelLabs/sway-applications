@@ -1,11 +1,10 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{auction_info, bid, create, deposit, withdraw},
-    englishauction_mod::{Auction, Asset, State},
+    english_auction_abi_calls::{bid, create, deposit, withdraw},
     nft_abi_calls::{approve, constructor, mint, owner_of},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
-use fuels::prelude::{AssetId, CallParameters, Identity, TxParameters};
+use fuels::prelude::{AssetId, Identity};
 
 mod success {
 
@@ -56,12 +55,10 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, buyer1_identity.clone()).await.unwrap(), bid_asset);
 
         withdraw(auction_id, &buyer1.auction, sell_asset).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, buyer1_identity.clone()).await, None);
         assert_eq!(owner_of(&seller.nft, 0).await, buyer1_identity);
     }
@@ -111,12 +108,10 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, seller_identity.clone()).await.unwrap(), sell_asset);
 
         withdraw(auction_id, &seller.auction, bid_asset).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, seller_identity.clone()).await, None);
         assert_eq!(owner_of(&buyer1.nft, 0).await, seller_identity);
     }
@@ -148,12 +143,10 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, buyer1_identity.clone()).await.unwrap(), bid_asset);
 
         withdraw(auction_id, &buyer1.auction, sell_asset).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, buyer1_identity.clone()).await, None);
         assert_eq!(buyer1.wallet.get_asset_balance(&AssetId::new(*sell_token_contract_id)).await.unwrap(), sell_amount);
     }
@@ -164,7 +157,6 @@ mod success {
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let sell_asset = token_asset(sell_token_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_token_contract_id, 0).await;
         let bid_asset = token_asset(buy_token_contract_id, reserve_price).await;
@@ -185,12 +177,10 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, seller_identity.clone()).await.unwrap(), sell_asset);
 
         withdraw(auction_id, &seller.auction, buy_asset).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, seller_identity.clone()).await, None);
         assert_eq!(seller.wallet.get_asset_balance(&AssetId::new(*buy_token_contract_id)).await.unwrap(), reserve_price);
     }
@@ -225,12 +215,10 @@ mod success {
         bid(auction_id, bid1_asset.clone(), &buyer1.auction).await;
         bid(auction_id, bid2_asset.clone(), &buyer2.auction).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &buyer1.auction, buyer1_identity.clone()).await.unwrap(), bid1_asset);
 
         withdraw(auction_id, &buyer1.auction, bid1_asset).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, buyer1_identity.clone()).await, None);
         assert_eq!(buyer1.wallet.get_asset_balance(&AssetId::new(*buy_token_contract_id)).await.unwrap(), reserve_price);
     }
@@ -238,14 +226,12 @@ mod success {
     
     #[tokio::test]
     async fn seller_withdrawls_no_bids() {
-        let (deployer, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) = setup().await;
+        let (deployer, seller, _, _, _, sell_token_contract_id, _, buy_token_contract_id, _) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let sell_asset = token_asset(sell_token_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_token_contract_id, 0).await;
-        let bid_asset = token_asset(buy_token_contract_id, reserve_price).await;
         let provider = deployer.wallet.get_provider().unwrap();
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
@@ -261,14 +247,12 @@ mod success {
         )
         .await;
 
-        provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, seller_identity.clone()).await.unwrap(), sell_asset);
 
         withdraw(auction_id, &seller.auction, sell_asset).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, seller_identity.clone()).await, None);
         assert_eq!(seller.wallet.get_asset_balance(&AssetId::new(*sell_token_contract_id)).await.unwrap(), sell_amount);
     }
@@ -301,14 +285,12 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, buyer1_identity.clone()).await.unwrap(), bid_asset);
 
         withdraw(auction_id, &buyer1.auction, sell_asset).await;
 
-        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id, &seller.auction, buyer1_identity.clone()).await, None);
         assert_eq!(buyer1.wallet.get_asset_balance(&AssetId::new(*sell_token_contract_id)).await.unwrap(), sell_amount);
     }
@@ -352,23 +334,17 @@ mod success {
         bid(auction_id1, bid_asset.clone(), &buyer1.auction).await;
         bid(auction_id2, bid_asset.clone(), &buyer1.auction).await;
 
-        let auction1 = auction_info(auction_id1, &seller.auction).await.unwrap();
-        let auction2 = auction_info(auction_id2, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id1, &seller.auction, buyer1_identity.clone()).await.unwrap(), bid_asset);
         assert_eq!(deposit(auction_id2, &seller.auction, buyer1_identity.clone()).await.unwrap(), bid_asset);
 
         withdraw(auction_id1, &buyer1.auction, sell_asset.clone()).await;
 
-        let auction1 = auction_info(auction_id1, &seller.auction).await.unwrap();
-        let auction2 = auction_info(auction_id2, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id1, &seller.auction, buyer1_identity.clone()).await, None);
         assert_eq!(deposit(auction_id2, &seller.auction, buyer1_identity.clone()).await.unwrap(), bid_asset);
         assert_eq!(buyer1.wallet.get_asset_balance(&AssetId::new(*sell_token_contract_id)).await.unwrap(), sell_amount);
 
         withdraw(auction_id2, &buyer1.auction, sell_asset.clone()).await;
 
-        let auction1 = auction_info(auction_id1, &seller.auction).await.unwrap();
-        let auction2 = auction_info(auction_id2, &seller.auction).await.unwrap();
         assert_eq!(deposit(auction_id1, &seller.auction, buyer1_identity.clone()).await, None);
         assert_eq!(deposit(auction_id2, &seller.auction, buyer1_identity.clone()).await, None);
         assert_eq!(buyer1.wallet.get_asset_balance(&AssetId::new(*sell_token_contract_id)).await.unwrap(), sell_amount * 2);
@@ -396,7 +372,6 @@ mod revert {
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let sell_asset = token_asset(sell_token_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_token_contract_id, 0).await;
         let bid_asset = token_asset(buy_token_contract_id, initial_price).await;
@@ -427,7 +402,6 @@ mod revert {
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let sell_asset = token_asset(sell_token_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_token_contract_id, 0).await;
         let bid_asset = token_asset(buy_token_contract_id, reserve_price).await;
@@ -459,7 +433,6 @@ mod revert {
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let sell_asset = token_asset(sell_token_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_token_contract_id, 0).await;
         let bid_asset = token_asset(buy_token_contract_id, reserve_price).await;
