@@ -121,7 +121,7 @@ abi EnglishAuction {
 
 abi NFT {
     fn approved(token_id: u64) -> Identity;
-    fn is_approved_for_all(owner: Identity, operator: Identity) -> bool;
+    fn is_approved_for_all(operator: Identity, owner: Identity) -> bool;
     fn owner_of(token_id: u64) -> Identity;
     fn transfer_from(from: Identity, to: Identity, token_id: u64);
 }

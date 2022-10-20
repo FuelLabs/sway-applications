@@ -33,8 +33,8 @@ pub fn approved_for_nft_transfer(asset: NFTAsset, from: Identity, to: Identity) 
     let nft_contract = asset.contract_id;
     let nft_abi = abi(NFT, nft_contract.value);
 
-    let approved_for_all = nft_abi.is_approved_for_all(from, to);
-    let approved_for_token = nft_abi.approved(asset.token_id);
+    let approved_for_all: bool = nft_abi.is_approved_for_all(to, from);
+    let approved_for_token: Identity = nft_abi.approved(asset.token_id);
 
     // The to `Identity` either needs to be approved for all or approved for this token id
     approved_for_all || to == approved_for_token

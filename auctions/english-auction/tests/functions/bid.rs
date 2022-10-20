@@ -68,6 +68,65 @@ mod success {
         assert_eq!(auction.state, State::Closed());
     }
 
+    // TODO: Enable test once Options have been implemented into NFT
+    #[ignore]
+    #[tokio::test]
+    async fn places_nft_bid_on_nft_asset_with_approval_for_all() {
+        let (_, seller, buyer1, _, auction_contract_id, _, sell_nft_contract_id, _, buy_nft_contract_id) = 
+            setup().await;
+        let (sell_count, initial_count, reserve_count, duration, access_control) =
+            defaults_nft().await;
+
+        let seller_identity = Identity::Address(seller.wallet.address().into());
+        let auction_identity = Identity::ContractId(auction_contract_id.into());
+        let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
+        let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
+        let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
+        let bid_asset = nft_asset(buy_nft_contract_id, 0).await;
+
+        constructor(
+            access_control,
+            &seller.nft,
+            seller_identity.clone(),
+            sell_count,
+        )
+        .await;
+        mint(sell_count, &seller.nft, seller_identity.clone()).await;
+        set_approval_for_all(true, &seller.nft, auction_identity.clone()).await;
+        constructor(
+            access_control,
+            &buyer1.nft,
+            buyer1_identity.clone(),
+            reserve_count,
+        )
+        .await;
+        mint(reserve_count, &buyer1.nft, buyer1_identity.clone()).await;
+        set_approval_for_all(true, &buyer1.nft, auction_identity.clone()).await;
+
+        let auction_id = create(
+            buy_asset.clone(),
+            &seller.auction,
+            duration,
+            initial_count,
+            Some(reserve_count),
+            seller_identity.clone(),
+            sell_asset.clone(),
+        )
+        .await;
+
+        let buyer1_deposit = deposit(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
+        assert!(buyer1_deposit.is_none());
+
+        bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
+
+        let buyer1_deposit: Asset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone()).await.unwrap();
+        let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
+        assert_eq!(buyer1_deposit, bid_asset);
+        assert_eq!(auction.bid_asset, bid_asset);
+        assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
+        assert_eq!(auction.state, State::Closed());
+    }
+
     #[tokio::test]
     async fn places_nft_bid_on_token_asset() {
         let (_, seller, buyer1, _, auction_contract_id, sell_token_contract_id, _, _, buy_nft_contract_id) = 
