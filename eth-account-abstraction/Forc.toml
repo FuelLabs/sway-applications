@@ -7,9 +7,8 @@ name = "eth-account-abstraction"
 [dependencies]
 
 [constants]
-#An example public key, derived from the example private key:
+#Example private key:
 #5f70feeff1f229e4a95e1056e8b4d80d0b24b565674860cc213bdb07127ce1b1
-#Full example public key: 
+#Example public key: 
 #2f34bc0df4db0ec391792cedb05768832b49b1aa3a2dd8c30054d1af00f67d00b74b7acbbf3087c8e0b1a4c343db50aa471d21f278ff5ce09f07795d541fb47e
-config_spender_h = { type = "b256", value = "0x2f34bc0df4db0ec391792cedb05768832b49b1aa3a2dd8c30054d1af00f67d00" }
-config_spender_l = { type = "b256", value = "0xb74b7acbbf3087c8e0b1a4c343db50aa471d21f278ff5ce09f07795d541fb47e" }
+config_spender = { type = "b256", value = "0x3574b2c7835f53f4a33d688200ab6e4c15303b48ccd2b778732b8d4cadea8d12"}#placeholder

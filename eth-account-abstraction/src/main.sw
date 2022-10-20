@@ -2,21 +2,22 @@ predicate;
 
 use std::{
     b512::B512,
-    constants::ZERO_B256,
-    ecr::ec_recover,
     inputs::input_predicate_data,
-    
+    vm::evm::{
+        evm_address::EvmAddress,
+        ecr::ec_recover_evm_address,
+    },
 };
 
 fn main() -> bool {
-    //Public key of a known EVM account
-    let spender_pub_key = ~B512::from(config_spender_h, config_spender_l);
+    let spender_address = ~EvmAddress::from(config_spender);
 
     let signature: B512 = input_predicate_data(0);
+    let predicate_root: b256 = input_predicate_data(1);
 
-    let pub_key_result = ec_recover(signature, ZERO_B256);//placeholder tx_hash
-    require(pub_key_result.is_ok(), "Unable to recover public key");
-    let pub_key = pub_key_result.unwrap();
+    let evm_address_result = ec_recover_evm_address(signature, predicate_root);
+    require(evm_address_result.is_ok(), "Unable to recover address");
+    let evm_address = evm_address_result.unwrap();
 
-    pub_key == spender_pub_key
+    spender_address == evm_address
 }

@@ -7,6 +7,15 @@ license = "Apache-2.0"
 
 [dependencies]
 fuels = { version = "0.25", features = ["fuel-core-lib"] }
+anyhow = "1.0.39"
+fuel-crypto = "0.6"
+fuel-tx = "0.18"
+fuel-types = { version = "0.5", default-features = false }
+fuel-vm = "0.15"
+hex = "0.4"
+secp256k1 = { version = "0.20", features = ["recovery"] }
+sha3 = "0.10"
+tracing = "0.1"
 
 [[test]]
 harness = true
