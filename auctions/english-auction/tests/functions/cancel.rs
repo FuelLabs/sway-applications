@@ -10,7 +10,6 @@ mod success {
 
     use super::*;
 
-
     #[tokio::test]
     async fn cancels_auction_after_bid() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =

@@ -501,7 +501,7 @@ mod revert {
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
-        
+
         create(
             buy_asset.clone(),
             &seller.auction,
@@ -655,12 +655,7 @@ mod revert {
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
 
-        mint_and_send_to_address(
-            sell_amount,
-            &seller.asset,
-            seller.wallet.address().into(),
-        )
-        .await;
+        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params = CallParameters::new(
@@ -698,12 +693,7 @@ mod revert {
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
 
-        mint_and_send_to_address(
-            sell_amount,
-            &buyer1.asset,
-            seller.wallet.address().into(),
-        )
-        .await;
+        mint_and_send_to_address(sell_amount, &buyer1.asset, seller.wallet.address().into()).await;
 
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params = CallParameters::new(

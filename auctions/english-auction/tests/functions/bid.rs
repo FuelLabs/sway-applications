@@ -641,7 +641,7 @@ mod revert {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
     }
- 
+
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_sender_is_the_seller() {
