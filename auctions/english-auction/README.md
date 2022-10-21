@@ -7,13 +7,65 @@
 
 ## Overview
 
+An english auction is an auction in the most traditional sense and the most well known of auction types; a seller places an asset for auction with a initial price and a reserve price, and then bidders will begin to bid until the bidding period has ended or the reserve has been met. The English Auction application implements this idea in a decentralized manner without the need for a 3rd party and with strong settlement assurances. 
+
+The English Auction application has been designed to support different combinations of native assets and NFTs, allowing for users to sell either native assets or NFTs as well as bid with either native assets or NFTs. 
+
+> **Note** This application currently only supports selling and bidding of a single NFT.
+
+More information can be found in the [specification](./SPECIFICATION.md).
+
+### Current state of the application
+
+Information on the current state of the application can be found in the [Application Progress](../APPLICATION_PROGRESS.md#decentralized-apps) file.
 
 ## Repository Structure
 
+The project consists of a smart contract and a user interface which the user can interact with.
+
+```
+english-auction/
+├── contract/
+|    └── src/main.sw
+|    └── tests/harness.rs
+├── frontend/
+|    └── Directories & files
+├── README.md
+└── SPECIFICATION.md
+```
 
 ## Running the project
 
+### User Interface
 
-## Contributing
+TODO: UI does not currently exist
 
-Check [CONTRIBUTING.md](../CONTRIBUTING.md) for more info!
+### Tests
+
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/english-auction/<you are here>`
+
+There are three commands required to run the tests
+
+1. Build the native token asset used for selling and bidding in the auction
+   
+   ```bash
+   forc build --path tests/artifacts/asset
+   ```
+
+1. Build the NFT asset used for selling and bidding in the auction
+   
+   ```bash
+   forc build --path ../../NFT/
+   ```
+
+3. Run the tests
+
+   ```bash
+   forc test
+   ```
+
+## Specification
+
+The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the english-auction.
+
+Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
