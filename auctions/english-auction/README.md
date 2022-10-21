@@ -11,7 +11,7 @@ An english auction is an auction in the most traditional sense and the most well
 
 The English Auction application has been designed to support different combinations of native assets and NFTs, allowing for users to sell either native assets or NFTs as well as bid with either native assets or NFTs. 
 
-> **Note** This application currently only supports selling and bidding of a single NFT.
+> **Note** This application currently only supports selling and bidding of a single NFT. Support for this functionality can be tracked [here](https://github.com/FuelLabs/sway/issues/2465).
 
 More information can be found in the [specification](./SPECIFICATION.md).
 
