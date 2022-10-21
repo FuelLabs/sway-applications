@@ -212,8 +212,7 @@ impl EnglishAuction for Contract {
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), InputError::AuctionDoesNotExist);
 
-        
-        // Cannot withdraw if the auction is still on going
+                // Cannot withdraw if the auction is still on going
         let mut auction = auction.unwrap();
         require(auction.state == State::Closed || height() >= auction.end_block, AccessError::AuctionIsNotClosed);
         if (height() >= auction.end_block

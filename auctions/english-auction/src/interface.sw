@@ -50,7 +50,7 @@ abi EnglishAuction {
     #[storage(read, write)]
     fn cancel(auction_id: u64);
 
-    /// Starts an auction with a seller, selling asset, accepted bid asset, initial price, a 
+    /// Starts an auction with a seller, selling asset, accepted bid asset, initial price, a
     /// possible reserve price, and duration of the auction.
     ///
     /// This function will return the the newly created auction's ID number which must be used to
@@ -87,7 +87,7 @@ abi EnglishAuction {
     #[storage(read)]
     fn deposit(auction_id: u64, identity: Identity) -> Option<Asset>;
 
-    /// Allows users to withdraw their owed assets if the auction's bid period has ended, the 
+    /// Allows users to withdraw their owed assets if the auction's bid period has ended, the
     /// reserve has been met, or the auction has been canceled.
     ///
     /// # Arguments
