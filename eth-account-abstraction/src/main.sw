@@ -1,7 +1,9 @@
 predicate;
 
 use std::{
-    b512::B512,
+    b512::B512, 
+    constants::ZERO_B256, 
+    ecr::ec_recover_address, 
     inputs::input_predicate_data,
     vm::evm::{
         evm_address::EvmAddress,
@@ -9,15 +11,27 @@ use std::{
     },
 };
 
+fn recover_and_match(signature: B512, expected_address: b256) -> u64 {
+    if let Result::Ok(address) = ec_recover_address(signature, ZERO_B256)
+    // if let Result::Ok(address) = ec_recover_evm_address(signature, ZERO_B256)
+    {
+        if address.value == expected_address {
+            return 1;
+        }
+    }
+    0
+}
+
 fn main() -> bool {
-    let spender_address = ~EvmAddress::from(config_spender);
+    let signature: [B512; 1] = input_predicate_data(0);
 
-    let signature: B512 = input_predicate_data(0);
-    let predicate_root: b256 = input_predicate_data(1);
+    let spender_address = [
+        0xd58573593432a30a800f97ad32f877425c223a9e427ab557aab5d5bb89156db0,//fuel address
+    ];
 
-    let evm_address_result = ec_recover_evm_address(signature, predicate_root);
-    require(evm_address_result.is_ok(), "Unable to recover address");
-    let evm_address = evm_address_result.unwrap();
+    let mut matched_addresses = 0;
 
-    spender_address == evm_address
+    matched_addresses = recover_and_match(signature[0], spender_address[0]);
+
+    matched_addresses > 0
 }
