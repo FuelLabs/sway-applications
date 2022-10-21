@@ -143,7 +143,7 @@ impl EnglishAuction for Contract {
         sell_asset: Asset,
     ) -> u64 {
         // Either there is no reserve price or the reserve must be greater than the initial price
-        require(reserve_price.is_none() || (reserve_price.is_some() && reserve_price.unwrap() > initial_price), InitError::ReserveLessThanInitialPrice);
+        require(reserve_price.is_none() || (reserve_price.is_some() && reserve_price.unwrap() >= initial_price), InitError::ReserveLessThanInitialPrice);
         require(duration != 0, InitError::AuctionDurationNotProvided);
 
         // TODO: This will be combined once StorageVec is supported in structs
@@ -152,7 +152,7 @@ impl EnglishAuction for Contract {
                 require(asset.amount == 0, InitError::BidAssetAmountNotZero);
             },
             Asset::NFTAsset(asset) => {
-                require(asset.token_id == 0, InitError::BidAssetAmountNotZero);
+                //require(asset.token_id == 0, InitError::BidAssetAmountNotZero);
             }
         }
 
