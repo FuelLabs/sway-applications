@@ -152,7 +152,7 @@ impl EnglishAuction for Contract {
                 require(asset.amount == 0, InitError::BidAssetAmountNotZero);
             },
             Asset::NFTAsset(asset) => {
-                //require(asset.token_id == 0, InitError::BidAssetAmountNotZero);
+                require(asset.token_id == 0, InitError::BidAssetAmountNotZero);
             }
         }
 
