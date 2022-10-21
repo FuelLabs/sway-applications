@@ -30,13 +30,13 @@ use utils::{transfer_asset, transfer_nft};
 
 storage {
     /// Stores the auction information based on auction ID.
-    /// Map(auction_id => auction)
+    /// Map(auction id => auction)
     auctions: StorageMap<u64, Option<Auction>> = StorageMap {}, 
     
     // TODO: Move deposits into the Auction struct when StorageMaps are
     //       supported inside structs
     /// Stores the deposits made based on the user and auction ID.
-    /// Map((user, auction_id) => deposit)
+    /// Map((user, auction id) => deposit)
     deposits: StorageMap<(Identity, u64), Option<Asset>> = StorageMap {},
     /// The total number of auctions that have ever been created.
     total_auctions: u64 = 0,
@@ -50,7 +50,6 @@ impl EnglishAuction for Contract {
 
     #[storage(read, write)]
     fn bid(auction_id: u64, bid_asset: Asset) {
-        // Make sure this auction exists
         let auction: Option<Auction> = storage.auctions.get(auction_id);
         require(auction.is_some(), InputError::AuctionDoesNotExist);
 
@@ -61,7 +60,7 @@ impl EnglishAuction for Contract {
         require(bid_asset == auction.bid_asset, InputError::IncorrectAssetProvided);
 
         // Combine the user's previous deposits and the current bid for the
-        // total bid the user has made
+        // total deposits to the auction the user has made
         let sender_deposit: Option<Asset> = storage.deposits.get((sender, auction_id));
         let total_bid = match sender_deposit {
             Option::Some(Asset) => {
@@ -81,7 +80,8 @@ impl EnglishAuction for Contract {
             Asset::TokenAsset(token_asset) => {
                 require(bid_asset.amount() == msg_amount(), InputError::IncorrectAmountProvided);
                 require(bid_asset.contract_id() == msg_asset_id(), InputError::IncorrectAssetProvided);
-                // Ensure this bid is greater than initial bid and this bid plus the previously placed bids is more than the current bid
+                // Ensure this bid is greater than initial bid and the total deposits are greater 
+                // than the current winnning bid
                 // TODO: Move this outside the match statement once StorageVec is supported in structs
                 require(token_asset.amount >= auction.initial_price, InputError::InitialPriceNotMet);
                 require(token_asset.amount > auction.bid_asset.amount(), InputError::IncorrectAmountProvided);
@@ -94,6 +94,7 @@ impl EnglishAuction for Contract {
             Option::Some(reserve) => {
                 // The bid cannot be greater than the reserve price
                 require(reserve >= total_bid.amount(), InputError::IncorrectAmountProvided);
+
                 if reserve == total_bid.amount() {
                     auction.state = State::Closed;
                 }
@@ -142,7 +143,7 @@ impl EnglishAuction for Contract {
         sell_asset: Asset,
     ) -> u64 {
         // Either there is no reserve price or the reserve must be greater than the initial price
-        require(reserve_price.is_none() || (reserve_price.is_some() && reserve_price.unwrap() >= initial_price && reserve_price.unwrap() != 0), InitError::ReserveLessThanInitialPrice);
+        require(reserve_price.is_none() || (reserve_price.is_some() && reserve_price.unwrap() > initial_price), InitError::ReserveLessThanInitialPrice);
         require(duration != 0, InitError::AuctionDurationNotProvided);
 
         // TODO: This will be combined once StorageVec is supported in structs
@@ -231,21 +232,23 @@ impl EnglishAuction for Contract {
         storage.deposits.insert((sender, auction_id), Option::None());
         let mut withdrawn_asset = sender_deposit.unwrap();
 
-        // Go ahead and withdraw
+        // 1. If the sender is the winning bidder, they will withdraw the selling asset.
+        // 2. If the sender's bids failed to win the auction, their total deposits will be withdrawn.
+        // 3. If the sender is the seller and no bids have been made or the auction has been canceled, 
+        //    they will withdraw the selling asset.
+        // 4. If the sender is the seller and a bid has been made, they will withdraw the winning 
+        //    bidder's total deposits.
         if ((bidder.is_some()
             && sender == bidder.unwrap())
             || (bidder.is_none()
             && sender == auction.seller))
         {
-            // The buyer is withdrawing or the seller is withdrawing and no one placed a bid
             transfer_asset(auction.sell_asset, sender);
             withdrawn_asset = auction.sell_asset;
         } else if (sender == auction.seller) {
-            // The seller is withdrawing and there was a winning bidder
             transfer_asset(auction.bid_asset, sender);
             withdrawn_asset = auction.bid_asset;
         } else {
-            // Anyone with a failed bid is withdrawing
             transfer_asset(sender_deposit.unwrap(), sender);
         };
 
