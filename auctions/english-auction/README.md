@@ -1,5 +1,8 @@
 <p align="center">
-    <img src="./.docs/english_auction-logo.png" height="120">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/english-auction_dark.png">
+        <img alt="light theme" src=".docs/english-auction_light.png">
+    </picture>
 </p>
 
 ## Overview
