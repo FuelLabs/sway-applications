@@ -19,7 +19,7 @@ elif [ $PROJECT = 'fundraiser' ]; then
 elif [ $PROJECT = 'multisig-wallet' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'name-registry' ]; then
-    forc build --generate-logged-types --path $PROJECT
+    forc build --path $PROJECT
 elif [ $PROJECT = 'NFT' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'oracle' ]; then
