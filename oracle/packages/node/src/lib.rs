@@ -9,6 +9,7 @@ use utils::{
     Oracle,
 };
 use std::str::FromStr;
+use std::thread;
 
 #[derive(Deserialize)]
 struct USDPrice {
@@ -18,9 +19,11 @@ struct USDPrice {
 pub struct OracleNode {
     api_url: String,
     client: reqwest::Client,
-    duration: time::Duration,
-    oracle: Oracle,
+    pub duration: time::Duration,
+    pub oracle: Oracle,
     running: bool,
+    transmitter: std::sync::Arc<tokio::sync::mpsc::Sender<u64>>,
+    pub receiver: tokio::sync::mpsc::Receiver<u64>,
 }
 
 impl OracleNode {
@@ -41,22 +44,29 @@ impl OracleNode {
         let client = reqwest::Client::new();
         let duration = time::Duration::from_secs(seconds);
         let oracle = Oracle::new(bech32_oracle_id.to_string(), wallet);
-
+        let (transmitter, receiver) = tokio::sync::mpsc::channel(100);
         Self {
             api_url,
             client,
             duration,
             oracle,
             running: true,
+            transmitter: std::sync::Arc::new(transmitter),
+            receiver,
         }
     }
 
     pub async fn run(&self) {
-        while self.running {
-            let usd_price = self.get_price().await;
-            set_price(&self.oracle, usd_price).await;
-            sleep(self.duration).await;
-        }
+        let transmitter = std::sync::Arc::clone(&self.transmitter);
+        tokio::spawn(async move {
+            while self.running {
+                let usd_price = self.get_price().await;
+                println!("{usd_price}");
+                set_price(&self.oracle, usd_price).await;
+                transmitter.send(usd_price).await.unwrap();
+                sleep(self.duration);
+            }
+        });
     }
 
     pub async fn get_price(&self) -> u64 {
