@@ -1,5 +1,7 @@
 predicate;
 
+dep utils;
+
 use std::{
     b512::B512, 
     constants::ZERO_B256, 
