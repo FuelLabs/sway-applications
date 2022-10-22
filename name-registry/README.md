@@ -39,11 +39,12 @@ In order to run the tests make sure that you are in the root of this project i.e
 
 Run the tests
    ```bash
-   forc test
+   forc build
+   cargo test
    ```
 
 ## Specification
 
-The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the fundraiser.
+The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the name-registry.
 
 Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!

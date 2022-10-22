@@ -6,6 +6,7 @@ name = "name-registry"
 
 # This is the amount of units of the asset to charge per 100 seconds of registration duration for every name/entry
 [constants]
-price_per_hundred = { type = "u64", value = "1" }
+PRICE_PER_HUNDRED = { type = "u64", value = "1" }
+ASSET_B256 = { type = "b256", value = "0x0000000000000000000000000000000000000000000000000000000000000000"}
 
 [dependencies]
