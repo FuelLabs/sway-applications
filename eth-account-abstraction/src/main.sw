@@ -27,11 +27,13 @@ fn main() -> bool {
 
     let spender_address = [
         0xd58573593432a30a800f97ad32f877425c223a9e427ab557aab5d5bb89156db0,//fuel address
+        // ~EvmAddress::from(0x44c646ac0426710470343f1cdb4aa29ef306fc8d28025b838ccd3feecaedb333)//evm address
     ];
 
     let mut matched_addresses = 0;
 
     matched_addresses = recover_and_match(signature[0], spender_address[0]);
+    // matched_addresses = recover_and_match(signature[0], spender_address[0].value);
 
     matched_addresses > 0
 }

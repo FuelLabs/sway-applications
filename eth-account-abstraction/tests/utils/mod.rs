@@ -5,7 +5,7 @@ use fuels::signers::fuel_crypto::SecretKey;
 pub async fn test_predicate_spend_with_parameters() {
     //Setup wallets
     let secret_key1: SecretKey =
-            "0x862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301"
+            "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301"
                 .parse()
                 .unwrap();
     let mut wallet = WalletUnlocked::new_from_private_key(secret_key1, None);
