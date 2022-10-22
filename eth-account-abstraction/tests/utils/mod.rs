@@ -2,10 +2,11 @@ use fuels::contract::predicate::Predicate;
 use fuels::prelude::*;
 use fuels::signers::fuel_crypto::SecretKey;
 
-pub async fn test_predicate_spend_with_parameters() {
+pub async fn test_predicate_spend_with_parameters(private_key: &str) {
     //Setup wallets
     let secret_key1: SecretKey =
-            "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301"
+            // "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301"
+            private_key
                 .parse()
                 .unwrap();
     let mut wallet = WalletUnlocked::new_from_private_key(secret_key1, None);
