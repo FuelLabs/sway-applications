@@ -5,8 +5,8 @@ license = "Apache-2.0"
 name = "exchange"
 
 [constants]
-liquidity_miner_fee = { type = "u64", value = "333" }
-minimum_liquidity = { type = "u64", value = "1" }
+LIQUIDITY_MINER_FEE = { type = "u64", value = "333" }
+MINIMUM_LIQUIDITY = { type = "u64", value = "100" }
 
 [dependencies]
 libraries = { path = "../../libraries" }

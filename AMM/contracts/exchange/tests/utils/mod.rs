@@ -17,22 +17,18 @@ pub mod abi_calls {
         contract: &Exchange,
         call_params: CallParameters,
         tx_params: TxParameters,
+        desired_liquidity: u64,
         deadline: u64,
-        liquidity: u64,
     ) -> CallResponse<u64> {
         contract
             .methods()
-            .add_liquidity(deadline, liquidity)
+            .add_liquidity(desired_liquidity, deadline)
             .call_params(call_params)
             .append_variable_outputs(2)
             .tx_params(tx_params)
             .call()
             .await
             .unwrap()
-    }
-
-    pub async fn balance(contract: &Exchange, asset: ContractId) -> CallResponse<u64> {
-        contract.methods().balance(asset).call().await.unwrap()
     }
 
     pub async fn constructor(
@@ -50,6 +46,97 @@ pub mod abi_calls {
             .call()
             .await
             .unwrap()
+    }
+
+    pub async fn preview_swap_with_exact_input(
+        contract: &Exchange,
+        exact_input: u64,
+        input_asset: ContractId,
+    ) -> CallResponse<PreviewSwapInfo> {
+        contract
+            .methods()
+            .preview_swap_with_exact_input(exact_input, input_asset)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn preview_swap_with_exact_output(
+        contract: &Exchange,
+        exact_output: u64,
+        output_asset: ContractId,
+    ) -> CallResponse<PreviewSwapInfo> {
+        contract
+            .methods()
+            .preview_swap_with_exact_output(exact_output, output_asset)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn remove_liquidity(
+        contract: &Exchange,
+        call_params: CallParameters,
+        tx_params: TxParameters,
+        min_asset_a: u64,
+        min_asset_b: u64,
+        deadline: u64,
+    ) -> CallResponse<RemoveLiquidityInfo> {
+        contract
+            .methods()
+            .remove_liquidity(min_asset_a, min_asset_b, deadline)
+            .call_params(call_params)
+            .tx_params(tx_params)
+            .append_variable_outputs(2)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn swap_with_exact_input(
+        contract: &Exchange,
+        call_params: CallParameters,
+        min_output: Option<u64>,
+        deadline: u64,
+    ) -> CallResponse<u64> {
+        contract
+            .methods()
+            .swap_with_exact_input(min_output, deadline)
+            .call_params(call_params)
+            .append_variable_outputs(2)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn swap_with_exact_output(
+        contract: &Exchange,
+        call_params: CallParameters,
+        output: u64,
+        deadline: u64,
+    ) -> CallResponse<u64> {
+        contract
+            .methods()
+            .swap_with_exact_output(output, deadline)
+            .call_params(call_params)
+            .append_variable_outputs(2)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn withdraw(contract: &Exchange, amount: u64, asset: ContractId) -> CallResponse<()> {
+        contract
+            .methods()
+            .withdraw(amount, asset)
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn balance(contract: &Exchange, asset: ContractId) -> CallResponse<u64> {
+        contract.methods().balance(asset).call().await.unwrap()
     }
 
     pub async fn pool_info(contract: &Exchange) -> CallResponse<PoolInfo> {
@@ -72,95 +159,6 @@ pub mod abi_calls {
             .await
             .unwrap()
     }
-
-    pub async fn preview_swap_with_maximum(
-        contract: &Exchange,
-        call_params: CallParameters,
-        exact_output_amount: u64,
-    ) -> CallResponse<PreviewSwapInfo> {
-        contract
-            .methods()
-            .preview_swap_with_maximum(exact_output_amount)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn preview_swap_with_minimum(
-        contract: &Exchange,
-        call_params: CallParameters,
-        exact_input_amount: u64,
-    ) -> CallResponse<PreviewSwapInfo> {
-        contract
-            .methods()
-            .preview_swap_with_minimum(exact_input_amount)
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn remove_liquidity(
-        contract: &Exchange,
-        call_params: CallParameters,
-        tx_params: TxParameters,
-        deadline: u64,
-        base: u64,
-        other: u64,
-    ) -> CallResponse<RemoveLiquidityInfo> {
-        contract
-            .methods()
-            .remove_liquidity(deadline, base, other)
-            .call_params(call_params)
-            .tx_params(tx_params)
-            .append_variable_outputs(2)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn swap_with_maximum(
-        contract: &Exchange,
-        call_params: CallParameters,
-        deadline: u64,
-        exact_output_amount: u64,
-    ) -> CallResponse<u64> {
-        contract
-            .methods()
-            .swap_with_maximum(deadline, exact_output_amount)
-            .call_params(call_params)
-            .append_variable_outputs(2)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn swap_with_minimum(
-        contract: &Exchange,
-        call_params: CallParameters,
-        deadline: u64,
-        exact_input_amount: u64,
-    ) -> CallResponse<u64> {
-        contract
-            .methods()
-            .swap_with_minimum(deadline, exact_input_amount)
-            .call_params(call_params)
-            .append_variable_outputs(2)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn withdraw(contract: &Exchange, amount: u64, asset: ContractId) -> CallResponse<()> {
-        contract
-            .methods()
-            .withdraw(amount, asset)
-            .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
-    }
 }
 
 pub mod test_helpers {
@@ -173,8 +171,8 @@ pub mod test_helpers {
         asset_a_amount: u64,
         asset_b_id: AssetId,
         asset_b_amount: u64,
+        desired_liquidity: u64,
         deadline: u64,
-        min_liquidity: u64,
     ) -> u64 {
         deposit_but_do_not_add_liquidity(
             &exchange_instance,
@@ -187,14 +185,14 @@ pub mod test_helpers {
 
         let added = add_liquidity(
             exchange_instance,
-            CallParameters::new(Some(0), Some(asset_b_id), Some(100_000_000)),
+            CallParameters::new(Some(0), Some(asset_b_id), Some(10_000_000)),
             TxParameters {
                 gas_price: 0,
                 gas_limit: 100_000_000,
                 maturity: 0,
             },
+            desired_liquidity,
             deadline,
-            min_liquidity,
         )
         .await;
 

@@ -1,5 +1,5 @@
 [project]
-authors = ["Bikem"]
+authors = ["Fuel Labs <contact@fuel.sh>"]
 entry = "interfaces.sw"
 license = "Apache-2.0"
 name = "libraries"

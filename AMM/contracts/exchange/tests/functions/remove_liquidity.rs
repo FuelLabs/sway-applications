@@ -12,16 +12,17 @@ mod success {
         let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
 
         let deposit_amount_a = 100;
-        let deposit_amount_b = 200;
+        let deposit_amount_b = 400;
+        let initial_liquidity = 200;
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
-            100,
+            deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
-            200,
+            deposit_amount_b,
+            initial_liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -48,16 +49,16 @@ mod success {
             CallParameters::new(
                 Some(liquidity_to_remove),
                 Some(AssetId::new(*exchange.liquidity_pool_id)),
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
-            1000,
             a_to_remove,
             b_to_remove / 2,
+            1000,
         )
         .await
         .value;
@@ -111,16 +112,17 @@ mod success {
         let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
 
         let deposit_amount_a = 100;
-        let deposit_amount_b = 200;
+        let deposit_amount_b = 400;
+        let initial_liquidity = 200;
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
-            100,
+            deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
-            200,
+            deposit_amount_b,
+            initial_liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -147,16 +149,16 @@ mod success {
             CallParameters::new(
                 Some(liquidity_to_remove),
                 Some(AssetId::new(*exchange.liquidity_pool_id)),
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
-            1000,
             a_to_remove,
             b_to_remove / 2,
+            1000,
         )
         .await
         .value;
@@ -210,16 +212,17 @@ mod success {
         let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
 
         let deposit_amount_a = 100;
-        let deposit_amount_b = 200;
+        let deposit_amount_b = 400;
+        let initial_liquidity = 200;
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
-            100,
+            deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
-            200,
+            deposit_amount_b,
+            initial_liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -246,16 +249,16 @@ mod success {
             CallParameters::new(
                 Some(liquidity_to_remove),
                 Some(AssetId::new(*exchange.liquidity_pool_id)),
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
-            1000,
             a_to_remove / 2,
             b_to_remove,
+            1000,
         )
         .await
         .value;
@@ -309,16 +312,17 @@ mod success {
         let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
 
         let deposit_amount_a = 100;
-        let deposit_amount_b = 200;
+        let deposit_amount_b = 400;
+        let initial_liquidity = 200;
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
-            100,
+            deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
-            200,
+            deposit_amount_b,
+            initial_liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -345,16 +349,16 @@ mod success {
             CallParameters::new(
                 Some(liquidity_to_remove),
                 Some(AssetId::new(*exchange.liquidity_pool_id)),
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
-            1000,
             a_to_remove,
             b_to_remove,
+            1000,
         )
         .await
         .value;
@@ -423,16 +427,16 @@ mod revert {
                 // Normally, this also causes Revert(42),
                 // but this test condition (not initialized contract) reverts before that.
                 None,
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
+            1,
+            1,
             1000,
-            1,
-            1,
         )
         .await;
     }
@@ -441,15 +445,18 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_msg_asset_id_is_not_liquidity_pool_asset_id() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 400;
+        let initial_liquidity = 200;
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
-            100,
+            deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
-            200,
+            deposit_amount_b,
+            initial_liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -459,16 +466,16 @@ mod revert {
                 Some(added_liquidity),
                 // sending an asset other than pool asset
                 Some(AssetId::new(*exchange.asset_a_id)),
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
+            1,
+            1,
             1000,
-            1,
-            1,
         )
         .await;
     }
@@ -477,15 +484,18 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_minimum_a_amount_is_zero() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 400;
+        let initial_liquidity = 200;
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
-            100,
+            deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
-            200,
+            deposit_amount_b,
+            initial_liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -494,17 +504,17 @@ mod revert {
             CallParameters::new(
                 Some(added_liquidity),
                 Some(AssetId::new(*exchange.liquidity_pool_id)),
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
-            1000,
             // passing 0 as min_asset_a
             0,
             1,
+            1000,
         )
         .await;
     }
@@ -513,15 +523,18 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_minimum_b_amount_is_zero() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 400;
+        let initial_liquidity = 200;
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
-            100,
+            deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
-            200,
+            deposit_amount_b,
+            initial_liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -530,17 +543,17 @@ mod revert {
             CallParameters::new(
                 Some(added_liquidity),
                 Some(AssetId::new(*exchange.liquidity_pool_id)),
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
-            1000,
             1,
             // passing 0 as min_asset_b
             0,
+            1000,
         )
         .await;
     }
@@ -549,15 +562,18 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_deadline_has_passed() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 400;
+        let initial_liquidity = 200;
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
-            100,
+            deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
-            200,
+            deposit_amount_b,
+            initial_liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -566,17 +582,17 @@ mod revert {
             CallParameters::new(
                 Some(added_liquidity),
                 Some(AssetId::new(*exchange.liquidity_pool_id)),
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
+            1,
+            1,
             // passing 0 as deadline
             0,
-            1,
-            1,
         )
         .await;
     }
@@ -585,15 +601,18 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_msg_amount_is_zero() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 400;
+        let initial_liquidity = 200;
 
         deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
-            100,
+            deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
-            200,
+            deposit_amount_b,
+            initial_liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -603,16 +622,16 @@ mod revert {
                 // sending 0 msg_amount
                 Some(0),
                 Some(AssetId::new(*exchange.liquidity_pool_id)),
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
+            1,
+            1,
             1000,
-            1,
-            1,
         )
         .await;
     }
@@ -636,16 +655,16 @@ mod revert {
                 // Normally, this also causes Revert(42),
                 // but this test condition (zero liquidity) reverts before that.
                 None,
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
+            1,
+            1,
             1000,
-            1,
-            1,
         )
         .await;
     }
@@ -654,15 +673,18 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_a_reserve_is_insufficient() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 400;
+        let initial_liquidity = 200;
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
-            100,
+            deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
-            200,
+            deposit_amount_b,
+            initial_liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -676,17 +698,17 @@ mod revert {
             CallParameters::new(
                 Some(added_liquidity),
                 Some(AssetId::new(*exchange.liquidity_pool_id)),
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
-            1000,
             // setting min_asset_a to be higher than what can be removed
             asset_a_amount_to_remove + 10,
             1,
+            1000,
         )
         .await;
     }
@@ -695,15 +717,18 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_b_reserve_is_insufficient() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let deposit_amount_a = 100;
+        let deposit_amount_b = 400;
+        let initial_liquidity = 200;
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
-            100,
+            deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
-            200,
+            deposit_amount_b,
+            initial_liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -717,17 +742,17 @@ mod revert {
             CallParameters::new(
                 Some(added_liquidity),
                 Some(AssetId::new(*exchange.liquidity_pool_id)),
-                Some(100_000_000),
+                Some(10_000_000),
             ),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 100_000_000,
+                gas_limit: 10_000_000,
                 maturity: 0,
             },
-            1000,
             1,
             // setting min_asset_b to be higher than what can be removed
             asset_b_amount_to_remove + 10,
+            1000,
         )
         .await;
     }

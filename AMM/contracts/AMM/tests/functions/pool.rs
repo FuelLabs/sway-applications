@@ -1,6 +1,6 @@
 use crate::utils::{
     amm_abi_calls::{add_pool, pool},
-    test_helpers::{deploy_exchange_contract, setup},
+    test_helpers::{deploy_and_construct_exchange_contract, setup_and_initialize},
 };
 
 mod success {
@@ -8,9 +8,10 @@ mod success {
 
     #[tokio::test]
     async fn gets_some() {
-        let (wallet, amm_instance, assets) = setup().await;
+        let (wallet, amm_instance, assets) = setup_and_initialize().await;
         let pair = (assets[0], assets[1]);
-        let exchange_contract_id = deploy_exchange_contract(&wallet, pair).await;
+        let exchange_contract_id =
+            deploy_and_construct_exchange_contract(&wallet, pair, None).await;
         add_pool(&amm_instance, pair, exchange_contract_id).await;
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
@@ -23,9 +24,10 @@ mod success {
 
     #[tokio::test]
     async fn gets_none() {
-        let (wallet, amm_instance, assets) = setup().await;
+        let (wallet, amm_instance, assets) = setup_and_initialize().await;
         let pair = (assets[0], assets[1]);
-        let exchange_contract_id = deploy_exchange_contract(&wallet, pair).await;
+        let exchange_contract_id =
+            deploy_and_construct_exchange_contract(&wallet, pair, None).await;
         add_pool(&amm_instance, pair, exchange_contract_id).await;
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
