@@ -1,13 +1,19 @@
 library utils;
 
-dep data_structures;
+dep data_structures/auction_asset;
+dep data_structures/auction;
+dep data_structures/nft_asset;
+dep data_structures/token_asset;
 dep errors;
 dep interface;
 
-use data_structures::{Asset, NFTAsset};
+use auction_asset::AuctionAsset;
+use auction::Auction;
 use errors::AccessError;
 use interface::NFT;
+use nft_asset::NFTAsset;
 use std::{context::call_frames::contract_id, token::transfer};
+use token_asset::TokenAsset;
 
 /// Transfers assets out of the auction contract to the specified user.
 ///
@@ -15,12 +21,12 @@ use std::{context::call_frames::contract_id, token::transfer};
 ///
 /// * `asset` - The asset that is to be transfered.
 /// * `to` - The user which will recieve the asset.
-pub fn transfer_asset(asset: Asset, to: Identity) {
+pub fn transfer_asset(asset: AuctionAsset, to: Identity) {
     match asset {
-        Asset::NFTAsset(asset) => {
+        AuctionAsset::NFTAsset(asset) => {
             transfer_nft(asset, Identity::ContractId(contract_id()), to)
         },
-        Asset::TokenAsset(asset) => {
+        AuctionAsset::TokenAsset(asset) => {
             transfer(asset.amount, asset.contract_id, to)
         },
     }
@@ -38,8 +44,7 @@ pub fn transfer_asset(asset: Asset, to: Identity) {
 ///
 /// * The NFT transfer failed.
 pub fn transfer_nft(asset: NFTAsset, from: Identity, to: Identity) {
-    let nft_contract = asset.contract_id;
-    let nft_abi = abi(NFT, nft_contract.value);
+    let nft_abi = abi(NFT, asset.contract_id.value);
 
     nft_abi.transfer_from(from, to, asset.token_id);
 

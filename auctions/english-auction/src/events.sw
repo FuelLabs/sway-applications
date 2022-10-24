@@ -1,8 +1,10 @@
 library events;
 
-dep data_structures;
+dep data_structures/auction_asset;
+dep data_structures/auction;
 
-use data_structures::{Asset, Auction};
+use auction_asset::AuctionAsset;
+use auction::Auction;
 
 pub struct CancelAuctionEvent {
     auction_id: u64,
@@ -10,8 +12,8 @@ pub struct CancelAuctionEvent {
 
 pub struct CreateAuctionEvent {
     auction_id: u64,
-    bid_asset: Asset,
-    sell_asset: Asset,
+    bid_asset: AuctionAsset,
+    sell_asset: AuctionAsset,
 }
 
 pub struct BidEvent {
@@ -21,7 +23,7 @@ pub struct BidEvent {
 }
 
 pub struct WithdrawEvent {
-    asset: Asset,
+    asset: AuctionAsset,
     auction_id: u64,
     identity: Identity,
 }

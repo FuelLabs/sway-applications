@@ -1,8 +1,10 @@
 library interface;
 
-dep data_structures;
+dep data_structures/auction_asset;
+dep data_structures/auction;
 
-use data_structures::{Asset, Auction};
+use auction_asset::AuctionAsset;
+use auction::Auction;
 
 abi EnglishAuction {
     /// Returns the auction struct for the corresponding auction id.
@@ -13,7 +15,7 @@ abi EnglishAuction {
     #[storage(read)]
     fn auction_info(auction_id: u64) -> Option<Auction>;
 
-    /// Places a bid on the auction specified.
+    /// Places a bid on the specified auction.
     ///
     /// # Arguments
     ///
@@ -34,7 +36,7 @@ abi EnglishAuction {
     /// * When the bidder's total deposits are not greater than the current bid.
     /// * When the bidder's total deposits are greater than the reserve price.
     #[storage(read, write)]
-    fn bid(auction_id: u64, bid_asset: Asset);
+    fn bid(auction_id: u64, bid_asset: AuctionAsset);
 
     /// Cancels the specified auction.
     ///
@@ -76,7 +78,7 @@ abi EnglishAuction {
     /// * When the `initial_price` for NFTs is not one.
     /// * When transfering of the NFT asset to the contract failed.
     #[storage(read, write)]
-    fn create(bid_asset: Asset, duration: u64, inital_price: u64, reserve_price: Option<u64>, seller: Identity, sell_asset: Asset) -> u64;
+    fn create(bid_asset: AuctionAsset, duration: u64, inital_price: u64, reserve_price: Option<u64>, seller: Identity, sell_asset: AuctionAsset) -> u64;
 
     /// Returns the balance of the user's deposits for the specified auction.
     ///
@@ -85,10 +87,17 @@ abi EnglishAuction {
     /// * `identity` - The user which has deposited assets.
     /// * `auction_id` - The id number of the auction.
     #[storage(read)]
-    fn deposit(auction_id: u64, identity: Identity) -> Option<Asset>;
+    fn deposit(auction_id: u64, identity: Identity) -> Option<AuctionAsset>;
 
     /// Allows users to withdraw their owed assets if the auction's bid period has ended, the
     /// reserve has been met, or the auction has been canceled.
+    ///
+    /// 1. If the sender is the winning bidder, they will withdraw the selling asset.
+    /// 2. If the sender's bids failed to win the auction, their total deposits will be withdrawn.
+    /// 3. If the sender is the seller and no bids have been made or the auction has been canceled,
+    ///    they will withdraw the selling asset.
+    /// 4. If the sender is the seller and a bid has been made, they will withdraw the winning
+    ///    bidder's total deposits.
     ///
     /// # Arguments
     ///
