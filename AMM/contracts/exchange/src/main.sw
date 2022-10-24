@@ -131,11 +131,11 @@ impl Exchange for Contract {
 
         let deposit_asset = msg_asset_id();
 
-        require(deposit_asset == storage.pair.unwrap().0 || deposit_asset == storage.pair.unwrap().1, InputError::SentInvalidAsset);
+        require(deposit_asset == storage.pair.unwrap().0 || deposit_asset == storage.pair.unwrap().1, InputError::InvalidAsset);
 
         let sender = msg_sender().unwrap();
-        let new_deposit_amount = storage.deposits.get((sender, deposit_asset, )) + msg_amount();
-        storage.deposits.insert((sender, deposit_asset, ), new_deposit_amount);
+        let new_deposit_amount = storage.deposits.get((sender, deposit_asset)) + msg_amount();
+        storage.deposits.insert((sender, deposit_asset), new_deposit_amount);
     }
 
     #[storage(read, write)]
@@ -301,12 +301,12 @@ impl Exchange for Contract {
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
 
-        require(asset == asset_a_id || asset == asset_b_id, InputError::SentInvalidAsset);
+        require(asset == asset_a_id || asset == asset_b_id, InputError::InvalidAsset);
 
         let sender = msg_sender().unwrap();
         let deposited_amount = storage.deposits.get((sender, asset));
 
-        require(deposited_amount >= amount, TransactionError::InsufficientDeposit);
+        require(deposited_amount >= amount, TransactionError::DesiredAmountTooHigh(amount));
 
         let new_amount = deposited_amount - amount;
         storage.deposits.insert((sender, asset), new_amount);
@@ -316,7 +316,7 @@ impl Exchange for Contract {
     #[storage(read)]
     fn balance(asset: ContractId) -> u64 {
         require(storage.pair.is_some(), InitError::NotInitialized);
-        require(asset == storage.pair.unwrap().0 || asset == storage.pair.unwrap().1, InputError::SentInvalidAsset);
+        require(asset == storage.pair.unwrap().0 || asset == storage.pair.unwrap().1, InputError::InvalidAsset);
 
         let sender = msg_sender().unwrap();
         storage.deposits.get((sender, asset))
