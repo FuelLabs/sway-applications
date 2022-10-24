@@ -41,26 +41,25 @@ abi AMM {
 }
 
 abi Exchange {
-    /// Mint liquidity pool asset at current ratio (that is calculated from deposit amounts in the contract)
-    /// and transfer to the sender. Move previously deposited assets of correspoding amounts to contract reserves.
+    /// Mint liquidity pool asset at current ratio and transfer to the sender. 
+    /// When liquidity is added for the first time, all deposited amounts are used to determine the ratio.
+    /// When adding further liquidity, extra amounts of deposits are refunded.
     /// 
     /// # Arguments
     /// 
+    /// - ` desired_liquidity ` - minimum amount of liquidity to add
     /// - ` deadline ` - limit on block height for operation
-    /// - ` min_liquidity ` - minimum amount of liquidity to add
     /// 
     /// # Reverts
     /// 
     /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
     /// * When the current block height is not less than `deadline`
     /// * When the ` msg_amount ` with function call is not 0
-    /// * When the ` msg_asset_id ` does not identify asset A or asset B
-    /// * When the sender's asset A deposit amount is 0
-    /// * When the contract already has some liquidity and ` min_liquidity ` is 0
-    /// * When the contract already has some liquidity and the liquidity to mint is less than ` min_liquidity `
-    /// * When the contract has no liquidity and the sender's asset A deposit amount is less than ` minimum_liquidity ` (that is a config-time parameter)
+    /// * When the ` desired_liquidity ` is less than ` MINIMUM_LIQUIDITY `
+    /// * When asset A or B deposits are 0
+    /// When calculated liquidity to add is less than ` desired liquidity `
     #[storage(read, write)]
-    fn add_liquidity(deadline: u64, min_liquidity: u64) -> u64;
+    fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64;
     /// Initialize contract by specifying the asset pair that makes up the pool.
     /// 
     /// # Arguments
@@ -128,7 +127,7 @@ abi Exchange {
     /// * When the ` msg_amount ` with function call is 0
     /// * When the minimum amounts for asset A and asset B to receive after burn cannot be satisfied
     #[storage(read, write)]
-    fn remove_liquidity(deadline: u64, min_asset_a: u64, min_asset_b: u64) -> RemoveLiquidityInfo;
+    fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo;
     /// Swap forwarded amount of forwarded asset for other asset and transfer to sender.
     /// 
     /// # Arguments
@@ -196,7 +195,7 @@ abi Exchange {
     /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
     #[storage(read)]
     fn pool_info() -> PoolInfo;
-    /// Get the preview info of adding liquidity, that consists of the he amount of other asset
+    /// Get the preview info of adding liquidity, that consists of the amount of other asset
     /// to input given the current ratio and the amount of liquidity pool asset that will be received.
     /// 
     /// # Arguments
@@ -207,8 +206,6 @@ abi Exchange {
     /// # Reverts
     /// 
     /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
-    /// * When the ` msg_asset_id ` does not identify asset A or asset B
-    /// * When the contract has no liquidity and the function is called for asset B
     #[storage(read)]
     fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo;
 }
