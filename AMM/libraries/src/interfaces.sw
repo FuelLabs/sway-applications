@@ -6,6 +6,17 @@ use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewSwapInfo, Remove
 use std::contract_id::ContractId;
 
 abi AMM {
+    /// Initialize the AMM by setting the valid exchange contract bytecode root.
+    ///
+    /// # Arguments
+    /// 
+    /// - ` exchange_contract_id` - factory exchange contract identifier
+    ///
+    /// # Reverts 
+    ///
+    /// * When the AMM has already been initialized
+    #[storage(read, write)]
+    fn initialize(exchange_contract_id: ContractId);
     /// Add an (asset pair, exchange contract ID) mapping to the storage.
     /// 
     /// # Arguments
@@ -15,8 +26,10 @@ abi AMM {
     /// 
     /// # Reverts
     /// 
+    /// * When the AMM contract has not been initialized
+    /// * When the bytecode root of ` pool ` does not match the bytecode root of the factory exchange contract
     /// * When the pool info of the exchange contract with the given address does not consist of the given asset pair
-    #[storage(write)]
+    #[storage(read, write)]
     fn add_pool(asset_pair: (ContractId, ContractId), pool: ContractId);
     /// For the given asset pair, get the exchange contract, i.e., the pool that consists of the asset pair.
     /// 
