@@ -29,7 +29,8 @@ mod success {
         assert_eq!(initial_pool_info.liquidity, 0);
 
         let deposit_amount_a = 100;
-        let deposit_amount_b = 200;
+        let deposit_amount_b = 400;
+        let liquidity = 200;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -37,8 +38,8 @@ mod success {
             deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
+            liquidity,
             1000,
-            2,
         )
         .await;
 
@@ -47,7 +48,10 @@ mod success {
         assert_eq!(pool_info.asset_a_reserve, deposit_amount_a);
         assert_eq!(pool_info.asset_b_id, exchange.asset_b_id);
         assert_eq!(pool_info.asset_b_reserve, deposit_amount_b);
-        assert_eq!(pool_info.liquidity, deposit_amount_a);
+        assert_eq!(
+            pool_info.liquidity * pool_info.liquidity,
+            deposit_amount_a * deposit_amount_b
+        );
     }
 }
 
