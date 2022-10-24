@@ -15,6 +15,8 @@ pub enum SwapError {
     PairExchangeNotRegistered: (ContractId, ContractId),
 }
 
+// It is assumed that the path validity is checked while running this script such that consecutive assets have a valid exchange contract.
+// Use `cargo test -- --nocapture` to inspect the logs.
 fn main(
     amm_contract_address: ContractId,
     asset_0_id: ContractId,
