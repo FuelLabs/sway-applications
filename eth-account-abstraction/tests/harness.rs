@@ -13,3 +13,13 @@ async fn valid_spender() {
 async fn invalid_spender() {
     utils::test_predicate_spend_with_parameters(INVALID_SPENDER_PK).await;
 }
+
+
+
+
+
+
+#[tokio::test]
+async fn run_ecr_script() {
+    utils::test_ecr_script(VALID_SPENDER_PK).await;
+}
