@@ -11,40 +11,58 @@ use std::{
     u128::U128,
 };
 
-fn main(
-    amm_contract_address: b256,
-    exchange_contract_1_address: b256,
-    exchange_contract_2_address: b256,
-    base_asset_id: b256,
-    asset_1_id: b256,
-    asset_2_id: b256,
-    swap_amount: u64,
-) -> (u64, u64) {
-    let exchange_contract_1_caller = abi(Exchange, exchange_contract_1_address);
-    let exchange_contract_2_caller = abi(Exchange, exchange_contract_2_address);
-    let preview_1_to_base = exchange_contract_1_caller.preview_swap_with_maximum {
-        gas: 1_000_000,
-        coins: 0,
-        asset_id: asset_1_id,
-    }(swap_amount);
-    let preview_1_to_base_amount = preview_1_to_base.amount;
-    let preview_base_to_2 = exchange_contract_2_caller.preview_swap_with_maximum {
-        gas: 1_000_000,
-        coins: 0,
-        asset_id: base_asset_id,
-    }(preview_1_to_base_amount);
-    let preview_base_to_2_amount = preview_base_to_2.amount;
-    let swap_1_to_base = exchange_contract_1_caller.swap_with_maximum {
-        gas: 10_000_000,
-        coins: preview_1_to_base_amount,
-        asset_id: asset_1_id,
-    }(1000, swap_amount);
-    log(swap_1_to_base);
-    let swap_base_to_2 = exchange_contract_2_caller.swap_with_maximum {
-        gas: 10_000_000,
-        coins: preview_base_to_2_amount,
-        asset_id: base_asset_id,
-    }(1000, swap_1_to_base);
-    log(swap_base_to_2);
-    (swap_1_to_base, swap_base_to_2, )
+pub enum SwapError {
+    PairExchangeNotRegistered: (ContractId, ContractId),
 }
+
+fn main(
+    amm_contract_address: ContractId,
+    asset_0_id: ContractId,
+    asset_1_id: ContractId,
+    asset_2_id: ContractId,
+    input_amount: u64,
+) -> () {
+    let amm_contract = abi(AMM, amm_contract_address.into());
+    let mut swap_amount = input_amount;
+    let asset_pair_0 = (asset_0_id, asset_1_id);
+    let exchange_contract_id = amm_contract.pool(asset_pair_0);
+    require(exchange_contract_id.is_some(), SwapError::PairExchangeNotRegistered(asset_pair_0));
+    let exchange_contract = abi(Exchange, exchange_contract_id.unwrap().into());
+    swap_amount = exchange_contract.swap_with_exact_input {
+        gas: 10_000_000,
+        coins: swap_amount,
+        asset_id: asset_0_id.into(),
+    }(Option::None(), 1000);
+    let asset_pair_1 = (asset_1_id, asset_2_id);
+    let exchange_contract_id = amm_contract.pool(asset_pair_1);
+    require(exchange_contract_id.is_some(), SwapError::PairExchangeNotRegistered(asset_pair_1));
+    let exchange_contract = abi(Exchange, exchange_contract_id.unwrap().into());
+    swap_amount = exchange_contract.swap_with_exact_input {
+        gas: 10_000_000,
+        coins: swap_amount,
+        asset_id: asset_1_id.into(),
+    }(Option::None(), 1000);
+}
+
+// will be replaced with this once vector args are supported
+// fn main(
+//     amm_contract_address: ContractId,
+//     path: Vec<ContractId>,
+//     input_amount: u64,
+// ) -> () {
+//     let amm_contract = abi(AMM, amm_contract_address.into()); 
+//     let mut swap_amount = input_amount;
+//     let mut i = 0;
+//     while i <  path.len() - 1 {
+//         let asset_pair = (path.get(i).unwrap(), path.get(i+1).unwrap());
+//         let exchange_contract_id = amm_contract.pool(asset_pair);
+//         require(exchange_contract_id.is_some(), SwapError::PairExchangeNotRegistered(asset_pair));
+//         let exchange_contract = abi(Exchange, exchange_contract_id.unwrap().into());
+//         swap_amount = exchange_contract.swap_with_exact_input {
+//             gas: 10_000_000,
+//             coins: swap_amount,
+//             asset_id: asset_pair.0.into(),
+//         }(Option::None(), 1000);
+//         i += 1;
+//     }
+// }
