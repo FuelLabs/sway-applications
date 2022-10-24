@@ -16,10 +16,10 @@ pub fn div_multiply(a: u64, b: u64, c: u64) -> u64 {
 
 /// Returns the maximum required amount of the input asset to get exactly ` output_amount ` of the output asset
 pub fn get_maximum_input_for_exact_output(
-    input_reserve: u64,
-    liquidity_miner_fee: u64,
     output_amount: u64,
+    input_reserve: u64,
     output_reserve: u64,
+    liquidity_miner_fee: u64,
 ) -> u64 {
     assert(input_reserve > 0 && output_reserve > 0);
     let numerator = ~U128::from(0, input_reserve) * ~U128::from(0, output_amount);
@@ -36,8 +36,8 @@ pub fn get_maximum_input_for_exact_output(
 pub fn get_minimum_output_given_exact_input(
     input_amount: u64,
     input_reserve: u64,
-    liquidity_miner_fee: u64,
     output_reserve: u64,
+    liquidity_miner_fee: u64,
 ) -> u64 {
     assert(input_reserve > 0 && output_reserve > 0);
     let input_amount_with_fee = calculate_amount_with_fee(input_amount, liquidity_miner_fee);

@@ -81,33 +81,35 @@ abi Exchange {
     /// * When the ` msg_asset_id ` does not identify asset A or asset B
     #[storage(read, write)]
     fn deposit();
-    /// Get the preview info of a ` swap_with_maximum `, that consists of the maximum amount of
-    /// input asset to forward to get ` exact_output_amount ` amount of other asset and
-    /// whether the input asset reserves are sufficient for the swap or not.
-    /// 
-    /// # Arguments
-    /// 
-    /// - ` exact_output_amount ` - the desired amount of other asset to receive after swap
-    /// 
-    /// # Reverts
-    /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
-    /// * When the ` msg_asset_id ` does not identify asset A or asset B
-    /// * When the ` amount ` is less than the reserve amount of the other asset
-    #[storage(read, write)]
-    fn preview_swap_with_maximum(exact_output_amount: u64) -> PreviewSwapInfo;
-    /// Get the preview info of a ` swap_with_minimum `, that consists of the amount of
-    /// output asset to receive by forwarding ` exact_input_amount` of input asset and whether the
+    /// Get the preview info of a ` swap_with_exact_input `, that consists of a minimum amount of
+    /// output asset to receive by swapping ` exact_input` of input asset and whether the
     /// output asset reserves are sufficient for the swap or not.
     /// 
     /// # Arguments
     /// 
-    /// - ` exact_input_amount ` - the amount of other asset to swap
+    /// - ` exact_input ` - the amount to input
+    /// - ` input_asset ` - the identifier of the asset to input
     /// 
     /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
     /// * When the ` msg_asset_id ` does not identify asset A or asset B
     #[storage(read, write)]
-    fn preview_swap_with_minimum(exact_input_amount: u64) -> PreviewSwapInfo;
+    fn preview_swap_with_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo;
+    /// Get the preview info of a ` swap_with_exact_output `, that consists of the maximum amount of
+    /// input asset to forward to get ` exact_output ` amount of other asset and
+    /// whether the input asset reserves are sufficient for the swap or not.
+    /// 
+    /// # Arguments
+    /// 
+    /// - ` exact_output ` - the desired amount of other asset to receive after swap
+    /// - ` output_asset ` - the identifier of the asset to output
+    ///
+    /// # Reverts
+    /// 
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When the ` exact_output ` is less than the reserve amount of the output asset
+    #[storage(read, write)]
+    fn preview_swap_with_exact_output(exact_output: u64, output_asset: ContractId) -> PreviewSwapInfo;
     /// Burn liquidity pool asset at current ratio and transfer asset A and asset B to the sender.
     /// 
     /// # Arguments
@@ -127,42 +129,40 @@ abi Exchange {
     /// * When the minimum amounts for asset A and asset B to receive after burn cannot be satisfied
     #[storage(read, write)]
     fn remove_liquidity(deadline: u64, min_asset_a: u64, min_asset_b: u64) -> RemoveLiquidityInfo;
+    /// Swap forwarded amount of forwarded asset for other asset and transfer to sender.
+    /// 
+    /// # Arguments
+    /// 
+    /// - ` min_output ` - minimum output required (to protect against excessive slippage)
+    /// - ` deadline ` - limit on block height for operation
+    /// 
+    /// # Reverts
+    /// 
+    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When the current block height is not less than `deadline`
+    /// * When the ` msg_amount ` with function call is 0
+    /// * When ` min_output ` is provided and is lower than the output amount
+    #[storage(read, write)]
+    fn swap_with_exact_input(min_output: Option<u64>, deadline: u64) -> u64;
     /// Swap the forwarded amount of forwarded asset for ` exact_output_amount ` of other asset and
     /// transfer any extra forwarded amount of forwarded asset and output asset to sender.
     /// 
     /// # Arguments
     /// 
+    /// - ` output ` - the exact output amount to receive
     /// - ` deadline ` - limit on block height for operation
-    /// - ` exact_output_amount ` - the exact amount of output asset to receive
     /// 
     /// # Reverts
     /// 
     /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
     /// * When the ` msg_asset_id ` does not identify asset A or asset B
-    /// * When ` exact_output_amount ` is 0
+    /// * When ` output ` is 0
     /// * When the current block height is not less than ` deadline `
     /// * When the ` msg_amount ` with function call is 0
-    /// * When the forwarded amount is insufficient for swap
+    /// * When the ` msg_amount ` is insufficient for swap
     #[storage(read, write)]
-    fn swap_with_maximum(deadline: u64, exact_output_amount: u64) -> u64;
-    /// Swap ` exact_input_amount ` of forwarded asset for minimum forwarded amount of other asset
-    /// and transfer output asset to sender.
-    /// 
-    /// # Arguments
-    /// 
-    /// - ` deadline ` - limit on block height for operation
-    /// - ` exact_input_amount ` - the exact amount of input asset to sell
-    /// 
-    /// # Reverts
-    /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
-    /// * When the ` msg_asset_id ` does not identify asset A or asset B
-    /// * When ` min ` is 0
-    /// * When the current block height is not less than `deadline`
-    /// * When the ` msg_amount ` with function call is 0
-    /// * When the forwarded amount is excessive for swap
-    #[storage(read, write)]
-    fn swap_with_minimum(deadline: u64, exact_input_amount: u64) -> u64;
+    fn swap_with_exact_output(output: u64, deadline: u64) -> u64;
     /// Withdraw coins that have not been added to a liquidity pool yet.
     /// 
     /// # Arguments

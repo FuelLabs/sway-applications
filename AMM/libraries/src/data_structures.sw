@@ -27,8 +27,8 @@ pub struct PreviewAddLiquidityInfo {
 pub struct PreviewSwapInfo {
     /// The amount of other asset to either input or output for a given swap
     amount: u64,
-    /// Whether the reserve of the queried asset is depleted after the swap
-    reserve_depleted: bool,
+    /// Whether the output reserve is sufficient for swap
+    output_reserve_sufficient: bool,
 }
 
 pub struct RemoveLiquidityInfo {

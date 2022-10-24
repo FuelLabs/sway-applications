@@ -2,19 +2,22 @@ library errors;
 
 pub enum InitError {
     CannotReinitialize: (),
-    NotInitialized: (),
     IdenticalAssets: (),
+    NotInitialized: (),
 }
 
 pub enum InputError {
-    SentInvalidAmount: (),
-    SentInvalidAsset: (),
+    AmountCannotBeZero: (),
+    AmountMustBeZero: (),
+    AmountTooLow: u64,
+    DeadlinePassed: (),
+    InvalidAsset: (),
 }
 
 pub enum TransactionError {
-    CannotSatisfyConstraint: (),
-    DeadlinePassed: (),
-    InsufficientDeposit: (),
+    DepositCannotBeZero: (),
+    DesiredAmountTooHigh: u64,
     InsufficientLiquidity: (),
-    InsufficientReserve: (),
+    LiquidityCannotBeZero: (),
+    ProvidedAmountTooLow: u64,
 }
