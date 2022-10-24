@@ -1,13 +1,26 @@
-use fuels::contract::predicate::Predicate;
-use fuels::prelude::*;
-use fuels::signers::fuel_crypto::SecretKey;
-use fuels::tx::{AssetId, Transaction};
-use fuels::contract::script::Script;
+use fuel_crypto::{
+    Signature,
+    PublicKey,
+};
+
+use fuel_types::Bytes32;
+
+use fuels::{
+    contract::{
+        predicate::Predicate,
+        script::Script,
+    },
+    prelude::*,
+    signers::fuel_crypto::SecretKey,
+    tx::{
+        AssetId, Receipt, Transaction
+    },
+};
+
 
 pub async fn test_predicate_spend_with_parameters(private_key: &str) {
     //Setup wallets
     let secret_key1: SecretKey =
-            // "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301"
             private_key
                 .parse()
                 .unwrap();
@@ -104,17 +117,14 @@ pub async fn test_predicate_spend_with_parameters(private_key: &str) {
 
 
 
-
 //Runs ecr_script.sw (as main.sw) for debugging
 pub async fn test_ecr_script(private_key: &str) {
     //Setup wallets
     let secret_key1: SecretKey =
-            // "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301"
             private_key
                 .parse()
                 .unwrap();
     let mut wallet = WalletUnlocked::new_from_private_key(secret_key1, None);
-    let receiver = WalletUnlocked::new_random(None);
     let all_coins = [&wallet]
         .iter()
         .flat_map(|wallet| {
@@ -149,15 +159,51 @@ pub async fn test_ecr_script(private_key: &str) {
     .flatten()
     .collect();
 
-    let path_to_script_binary = "out/debug/eth-account-abstraction.bin";
-    let script_binary = std::fs::read(path_to_script_binary).unwrap();
+    let path_to_bin = "out/debug/eth-account-abstraction.bin";
 
+    //run script
+    let receipts = run_compiled_script(path_to_bin, None, script_data).await.unwrap();
+
+    //gather return data
+    let return_data = receipts[0].data().unwrap();
+
+    let returned_signature = unsafe { Signature::from_slice_unchecked(&return_data[..64]) };
+    let recovered_public_key = unsafe { PublicKey::from_slice_unchecked(&return_data[64..128]) };
+    let recovered_fuel_address = unsafe { Bytes32::from_slice_unchecked(&return_data[128..160]) };
+    let recovered_evm_address = unsafe { Bytes32::from_slice_unchecked(&return_data[160..]) };
+
+    //Display for comparison
+    println!("----------------------------");
+    println!("SDK signature:          {:?}", wallet.sign_message(&data_to_sign).await.unwrap());
+    println!("returned signature:     {:?}", returned_signature);
+    println!("recovered public key:   {:?}", recovered_public_key);
+    println!("recovered fuel address: {:?}", recovered_fuel_address);
+    println!("recovered EVM address:  {:?}", recovered_evm_address);
+    println!("----------------------------");
+}
+
+//custom run_compiled_script; with input data
+pub async fn run_compiled_script(
+    binary_filepath: &str,
+    provider: Option<Provider>,
+    script_data: Vec<u8>,
+) -> Result<Vec<Receipt>, Error> {
+    let script_binary = std::fs::read(binary_filepath)?;
+    let server = FuelService::new_node(Config::local_node()).await.unwrap();
+    let provider = provider.unwrap_or(Provider::connect(server.bound_address.to_string()).await?);
+
+    let script = build_script(script_binary, script_data);
+
+    script.call(&provider).await
+}
+
+fn build_script(script_binary: Vec<u8>, script_data: Vec<u8>) -> Script {
     let tx = Transaction::Script {
         gas_price: 0,
         gas_limit: 100_000_000,
         maturity: 0,
         receipts_root: Default::default(),
-        script: script_binary,
+        script: script_binary, // Pass the compiled script into the tx
         script_data: script_data,
         inputs: vec![],
         outputs: vec![],
@@ -165,23 +211,5 @@ pub async fn test_ecr_script(private_key: &str) {
         metadata: None,
     };
 
-    let receipts = Script::new(tx).call(&provider).await.unwrap();
-
-    let returned_signature = receipts[0].data().unwrap();
-    let recovered_public_key = receipts[1].data().unwrap();
-    let recovered_fuel_address = receipts[2].data().unwrap();
-    let recovered_evm_address = receipts[3].data().unwrap();
-
-    //Display for comparison
-    println!("----------------------------");
-    println!("SDK signature: {:?}", wallet.sign_message(&data_to_sign).await.unwrap());
-
-    println!("returned signature: {:?}", returned_signature);
-
-    println!("recovered public key: {:?}", recovered_public_key);
-
-    println!("recovered fuel address: {:?}", recovered_fuel_address);
-
-    println!("recovered EVM address: {:?}", recovered_evm_address);
-    println!("----------------------------");
+    Script::new(tx)
 }
