@@ -34,15 +34,15 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 #### `bid()`
 
 1. Allows a user to bid upon an auction if
-    1. The auction is open for bids(not passed the deadline, cancelled or reserve has not been met)
-    2. The accepted asset type for the auction has been provided
-    3. The bid is meets the initial price for the auction or is greater than the last bid
+    1. The auction is open for bids (not passed the deadline, cancelled or reserve has not been met)
+    2. The users bids with an accepted asset
+    3. The bid meets the initial price for the auction or is greater than the last bid
     4. The reserve has not been exceeded
 
 #### `cancel()`
 
 1. Allows a user to cancel an auction they have created if
-    1. The auction is open for bids(not passed the deadline or reserve has not been met)
+    1. The auction is open for bids (not passed the deadline or reserve has not been met)
 
 #### `create()`
 
@@ -56,10 +56,10 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 #### `withdraw()`
 
 1. Allows a user to withdraw their owed assests for an auction if:
-    1. The auction is closed(passed the deadline, cancelled or reserve has been met)
-    2. They are the seller
+    1. The auction is closed (passed the deadline, cancelled or reserve has been met)
+    2. They are the seller or
     3. They have placed a bid and won the auction
-    4. They have an outstanding deposit
+    4. They have an outstanding balance
 
 ### English Auction State Checks
 
@@ -69,7 +69,7 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 #### `deposit()`
 
-1. Returns the total deposits owed to a user for a specific auction
+1. Returns the total deposits a user has made for a specific auction
 
 #### `total_auctions()`
 

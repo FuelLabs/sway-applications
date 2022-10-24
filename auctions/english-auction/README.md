@@ -7,9 +7,9 @@
 
 ## Overview
 
-An english auction is an auction in the most traditional sense and the most well known of auction types; a seller places an asset for auction with a initial price and a reserve price, and then bidders will begin to bid until the bidding period has ended or the reserve has been met. The English Auction application implements this idea in a decentralized manner without the need for a 3rd party and with strong settlement assurances. 
+An english auction is an auction is where a seller places an asset on auction with a initial price and a reserve price. Bidders then begin bidding until the bidding period has ended or the reserve has been met. The English Auction application implements this idea in a decentralized manner without the need for a 3rd party and with strong settlement assurances. 
 
-The English Auction application has been designed to support different combinations of native assets and NFTs, allowing for users to sell either native assets or NFTs as well as bid with either native assets or NFTs. 
+The application has been designed to utilize native assets and NFTs enabling users to auction off native assets / NFTs and place bids using native assets / NFTs. 
 
 > **Note** This application currently only supports selling and bidding of a single NFT. Support for this functionality can be tracked [here](https://github.com/FuelLabs/sway/issues/2465).
 
