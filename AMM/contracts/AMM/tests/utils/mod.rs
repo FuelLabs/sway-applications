@@ -21,6 +21,15 @@ pub mod exchange_abi_calls {
 pub mod amm_abi_calls {
     use super::*;
 
+    pub async fn initialize(contract: &AMM, exchange_contract_id: ContractId) -> CallResponse<()> {
+        contract
+            .methods()
+            .initialize(exchange_contract_id)
+            .call()
+            .await
+            .unwrap()
+    }
+
     pub async fn add_pool(
         contract: &AMM,
         asset_pair: (ContractId, ContractId),
@@ -46,20 +55,50 @@ pub mod amm_abi_calls {
     }
 }
 
+pub mod paths {
+    pub const AMM_CONTRACT_BINARY_PATH: &str = "out/debug/amm.bin";
+    pub const AMM_CONTRACT_STORAGE_PATH: &str = "out/debug/amm-storage_slots.json";
+    pub const INVALID_EXCHANGE_CONTRACT_BINARY_PATH: &str = "../exchange/tests/artifacts/invalid_exchange_contract/out/debug/invalid_exchange_contract.bin";
+    pub const VALID_EXCHANGE_CONTRACT_BINARY_PATH: &str = "../exchange/out/debug/exchange.bin";
+}
+
 pub mod test_helpers {
     use super::*;
 
+    use amm_abi_calls::initialize;
     use exchange_abi_calls::constructor;
+    use paths::{
+        AMM_CONTRACT_BINARY_PATH, AMM_CONTRACT_STORAGE_PATH, INVALID_EXCHANGE_CONTRACT_BINARY_PATH,
+        VALID_EXCHANGE_CONTRACT_BINARY_PATH,
+    };
 
-    pub async fn deploy_exchange_contract(
+    pub async fn initialize_amm_contract(wallet: &WalletUnlocked, amm_instance: &AMM) {
+        let exchange_contract_id = Contract::deploy(
+            VALID_EXCHANGE_CONTRACT_BINARY_PATH,
+            &wallet,
+            TxParameters::default(),
+            StorageConfiguration::default(),
+        )
+        .await
+        .unwrap();
+
+        initialize(amm_instance, exchange_contract_id.into()).await;
+    }
+
+    pub async fn deploy_and_construct_exchange_contract(
         wallet: &WalletUnlocked,
         asset_pair: (ContractId, ContractId),
+        valid: Option<bool>,
     ) -> ContractId {
         let mut rng = rand::thread_rng();
         let salt: [u8; 32] = rng.gen();
 
         let exchange_contract_id = Contract::deploy_with_parameters(
-            "../exchange/out/debug/exchange.bin",
+            if valid.unwrap_or(true) {
+                VALID_EXCHANGE_CONTRACT_BINARY_PATH
+            } else {
+                INVALID_EXCHANGE_CONTRACT_BINARY_PATH
+            },
             &wallet,
             TxParameters::default(),
             StorageConfiguration::default(),
@@ -69,31 +108,32 @@ pub mod test_helpers {
         .unwrap();
 
         let exchange_instance = Exchange::new(exchange_contract_id.to_string(), wallet.clone());
-
         constructor(&exchange_instance, asset_pair).await;
-
         ContractId::new(*exchange_contract_id.hash())
+    }
+
+    pub async fn setup_and_initialize() -> (WalletUnlocked, AMM, Vec<ContractId>) {
+        let (wallet, amm_instance, assets) = setup().await;
+
+        initialize_amm_contract(&wallet, &amm_instance).await;
+
+        (wallet, amm_instance, assets)
     }
 
     pub async fn setup() -> (WalletUnlocked, AMM, Vec<ContractId>) {
         let wallet = launch_provider_and_get_wallet().await;
 
         let amm_contract_id = Contract::deploy(
-            "out/debug/amm.bin",
+            AMM_CONTRACT_BINARY_PATH,
             &wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "out/debug/amm-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(AMM_CONTRACT_STORAGE_PATH.to_string())),
         )
         .await
         .unwrap();
         let amm_instance = AMM::new(amm_contract_id.to_string(), wallet.clone());
 
-        let base_asset_id = ContractId::from_str(
-            "0x0000000000000000000000000000000000000000000000000000000000000000",
-        )
-        .unwrap();
+        let base_asset_id = ContractId::zeroed();
         let asset_id_1 = ContractId::from_str(
             "0x562a05877b940cc69d7a9a71000a0cfdd79e93f783f198de893165278712a480",
         )
