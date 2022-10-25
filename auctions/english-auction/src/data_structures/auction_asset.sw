@@ -37,15 +37,24 @@ impl Asset for AuctionAsset {
     }
 }
 
+// Formatting error here as described by: https://github.com/FuelLabs/sway/issues/3131
 impl core::ops::Add for AuctionAsset {
     fn add(self, other: Self) -> Self {
         match (self, other) {
-            (AuctionAsset::TokenAsset(a1), AuctionAsset::TokenAsset(a2)) => {
-                AuctionAsset::TokenAsset(a1 + a2)
-            },
-            (AuctionAsset::NFTAsset(a1), AuctionAsset::NFTAsset(a2)) => {
-                AuctionAsset::NFTAsset(a1 + a2)
+            (
+
+                AuctionAsset::NFTAsset(nft_asset1),
+                AuctionAsset::NFTAsset(nft_asset2),
+            ) => {
+                AuctionAsset::NFTAsset(nft_asset1 + nft_asset2)
             }
+            (
+
+                AuctionAsset::TokenAsset(token_asset1),
+                AuctionAsset::TokenAsset(token_asset2),
+            ) => {
+                AuctionAsset::TokenAsset(token_asset1 + token_asset2)
+            },
             _ => {
                 revert(0);
             },
@@ -53,14 +62,23 @@ impl core::ops::Add for AuctionAsset {
     }
 }
 
+// Formatting error here as described by: https://github.com/FuelLabs/sway/issues/3131
 impl core::ops::Eq for AuctionAsset {
     fn eq(self, other: Self) -> bool {
         match (self, other) {
-            (AuctionAsset::NFTAsset(a1), AuctionAsset::NFTAsset(a2), ) => {
-                a1 == a2
+            (
+
+                AuctionAsset::NFTAsset(nft_asset1),
+                AuctionAsset::NFTAsset(nft_asset2),
+            ) => {
+                nft_asset1 == nft_asset2
             },
-            (AuctionAsset::TokenAsset(a1), AuctionAsset::TokenAsset(a2), ) => {
-                a1 == a2
+            (
+
+                AuctionAsset::TokenAsset(token_asset1),
+                AuctionAsset::TokenAsset(token_asset2),
+            ) => {
+                token_asset1 == token_asset2
             },
             _ => {
                 false
@@ -69,14 +87,23 @@ impl core::ops::Eq for AuctionAsset {
     }
 }
 
+// Formatting error here as described by: https://github.com/FuelLabs/sway/issues/3131
 impl core::ops::Ord for AuctionAsset {
     fn gt(self, other: Self) -> bool {
         match (self, other) {
-            (AuctionAsset::NFTAsset(a1), AuctionAsset::NFTAsset(a2), ) => {
-                a1 > a2
+            (
+
+                AuctionAsset::NFTAsset(nft_asset1),
+                AuctionAsset::NFTAsset(nft_asset2),
+            ) => {
+                nft_asset1 > nft_asset2
             },
-            (AuctionAsset::TokenAsset(a1), AuctionAsset::TokenAsset(a2), ) => {
-                a1 > a2
+            (
+
+                AuctionAsset::TokenAsset(token_asset1),
+                AuctionAsset::TokenAsset(token_asset2),
+            ) => {
+                token_asset1 > token_asset2
             },
             _ => {
                 revert(0);
@@ -86,11 +113,19 @@ impl core::ops::Ord for AuctionAsset {
 
     fn lt(self, other: Self) -> bool {
         match (self, other) {
-            (AuctionAsset::NFTAsset(a1), AuctionAsset::NFTAsset(a2), ) => {
-                a1 < a2
+            (
+
+                AuctionAsset::NFTAsset(nft_asset1),
+                AuctionAsset::NFTAsset(nft_asset2),
+            ) => {
+                nft_asset1 < nft_asset2
             },
-            (AuctionAsset::TokenAsset(a1), AuctionAsset::TokenAsset(a2), ) => {
-                a1 < a2
+            (
+
+                AuctionAsset::TokenAsset(token_asset1),
+                AuctionAsset::TokenAsset(token_asset2),
+            ) => {
+                token_asset1 < token_asset2
             },
             _ => {
                 revert(0);
