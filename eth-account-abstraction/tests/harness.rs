@@ -23,11 +23,12 @@ const INVALID_SPENDER_PK: &str = "37fa81c84ccd547c30c176b118d5cb892bdb113e8e8014
 //     utils::test_ecr_script(VALID_SPENDER_PK).await;
 // }
 
-
-
-
+// #[tokio::test]
+// async fn check_address_hashing() {
+//     utils::test_addresses(VALID_SPENDER_PK).await;
+// }
 
 #[tokio::test]
-async fn check_address_hashing() {
-    utils::test_addresses(VALID_SPENDER_PK).await;
+async fn check_ec_recover() {
+    utils::test_ecr(VALID_SPENDER_PK).await;
 }

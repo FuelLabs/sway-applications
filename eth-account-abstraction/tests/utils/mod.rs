@@ -268,3 +268,51 @@ pub async fn test_addresses(private_key: &str) {
     println!("recovered EVM address:  {:?}", recovered_evm_address);
     println!("----------------------------");
 }
+
+pub async fn test_ecr(private_key: &str) {
+    //Setup wallets
+    let secret_key1: SecretKey =
+            private_key
+                .parse()
+                .unwrap();
+    let mut wallet = WalletUnlocked::new_from_private_key(secret_key1, None);
+    let all_coins = [&wallet]
+        .iter()
+        .flat_map(|wallet| {
+            setup_single_asset_coins(wallet.address(), AssetId::default(), 10, 1_000_000)
+        })
+        .collect::<Vec<_>>();
+
+    //Setup provider
+    let (provider, _) = setup_test_provider(
+        all_coins,
+        vec![],
+        Some(Config {
+            predicates: true,
+            utxo_validation: true,
+            ..Config::local_node()
+        }),
+    )
+    .await;
+    [&mut wallet]
+        .iter_mut()
+        .for_each(|wallet| wallet.set_provider(provider.clone()));
+
+    //prep script
+    let path_to_bin = "out/debug/eth-account-abstraction.bin";
+
+    //run script
+    let receipts = run_compiled_script(path_to_bin, None, vec![]).await.unwrap();
+
+    //gather return data
+    let return_data = receipts[0].data().unwrap();
+
+    let returned_signature = unsafe { Signature::from_slice_unchecked(&return_data[..64]) };
+    let recovered_public_key = unsafe { PublicKey::from_slice_unchecked(&return_data[64..128]) };
+
+    //Display for comparison
+    println!("----------------------------");
+    println!("returned signature:     {:?}", returned_signature);
+    println!("recovered public key:   {:?}", recovered_public_key);
+    println!("----------------------------");
+}
