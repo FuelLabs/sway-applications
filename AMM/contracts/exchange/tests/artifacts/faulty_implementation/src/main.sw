@@ -74,9 +74,14 @@ impl Exchange for Contract {
 
     #[storage(read)]
     fn pool_info() -> PoolInfo {
+        let pair = if storage.pair.is_some() {
+            storage.pair.unwrap()
+        } else {
+            (BASE_ASSET_ID, BASE_ASSET_ID)
+        };
         PoolInfo {
-            asset_a_id: BASE_ASSET_ID,
-            asset_b_id: BASE_ASSET_ID,
+            asset_a_id: pair.0,
+            asset_b_id: pair.1,
             asset_a_reserve: 0,
             asset_b_reserve: 0,
             liquidity: 0,

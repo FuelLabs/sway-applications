@@ -1,9 +1,18 @@
 contract;
 
 dep errors;
+dep events;
 dep utils;
 
 use errors::{InitError, InputError, TransactionError};
+use events::{
+    AddLiquidityEvent,
+    DefineAssetPairEvent,
+    DepositEvent,
+    RemoveLiquidityEvent,
+    SwapEvent,
+    WithdrawEvent,
+};
 use libraries::{
     data_structures::{
         PoolInfo,
@@ -69,21 +78,22 @@ impl Exchange for Contract {
         let asset_b_in_deposit = storage.deposits.get((sender, asset_b_id));
         let asset_a_in_reserve = storage.reserves.get(asset_a_id);
         let asset_b_in_reserve = storage.reserves.get(asset_b_id);
+        let mut added_a = 0;
+        let mut added_b = 0;
         let mut liquidity_to_add = 0;
-        let mut minted = 0;
         require(asset_a_in_deposit != 0, TransactionError::DepositCannotBeZero);
         require(asset_b_in_deposit != 0, TransactionError::DepositCannotBeZero);
         if asset_a_in_reserve == 0 && asset_b_in_reserve == 0 {
             liquidity_to_add = (asset_a_in_deposit * asset_b_in_deposit).sqrt();
             require(desired_liquidity <= liquidity_to_add, TransactionError::DesiredAmountTooHigh(desired_liquidity));
-            storage.reserves.insert(asset_a_id, asset_a_in_deposit);
-            storage.reserves.insert(asset_b_id, asset_b_in_deposit);
+            added_a = asset_a_in_deposit;
+            added_b = asset_b_in_deposit;
+            storage.reserves.insert(asset_a_id, added_a);
+            storage.reserves.insert(asset_b_id, added_b);
             mint(liquidity_to_add);
             storage.liquidity_pool_supply = liquidity_to_add;
             transfer(liquidity_to_add, contract_id(), sender);
         } else {
-            let mut added_a = 0;
-            let mut added_b = 0;
             let b_to_attempt = multiply_div(asset_a_in_deposit, asset_b_in_reserve, asset_a_in_reserve);
             if b_to_attempt <= asset_b_in_deposit {
                 liquidity_to_add = multiply_div(b_to_attempt, total_liquidity, asset_b_in_reserve);
@@ -114,6 +124,11 @@ impl Exchange for Contract {
         }
         storage.deposits.insert((sender, asset_a_id), 0);
         storage.deposits.insert((sender, asset_b_id), 0);
+        log(AddLiquidityEvent {
+            a: added_a,
+            b: added_b,
+            liquidity: liquidity_to_add,
+        });
         liquidity_to_add
     }
 
@@ -123,6 +138,7 @@ impl Exchange for Contract {
         require(pair.0 != pair.1, InitError::IdenticalAssets);
 
         storage.pair = Option::Some(pair);
+        log(DefineAssetPairEvent { pair });
     }
 
     #[storage(read, write)]
@@ -134,8 +150,14 @@ impl Exchange for Contract {
         require(deposit_asset == storage.pair.unwrap().0 || deposit_asset == storage.pair.unwrap().1, InputError::InvalidAsset);
 
         let sender = msg_sender().unwrap();
-        let new_deposit_amount = storage.deposits.get((sender, deposit_asset)) + msg_amount();
+        let amount = msg_amount();
+        let new_deposit_amount = storage.deposits.get((sender, deposit_asset)) + amount;
         storage.deposits.insert((sender, deposit_asset), new_deposit_amount);
+        log(DepositEvent {
+            asset: deposit_asset,
+            amount,
+            balance: new_deposit_amount,
+        });
     }
 
     #[storage(read, write)]
@@ -217,6 +239,11 @@ impl Exchange for Contract {
         storage.reserves.insert(asset_a_id, asset_a_in_reserve - asset_a_amount_to_remove);
         transfer(asset_a_amount_to_remove, asset_a_id, sender);
         transfer(asset_b_amount_to_remove, asset_b_id, sender);
+        log(RemoveLiquidityEvent {
+            amount_a: asset_a_amount_to_remove,
+            amount_b: asset_b_amount_to_remove,
+            liquidity: amount,
+        });
         RemoveLiquidityInfo {
             asset_a_amount: asset_a_amount_to_remove,
             asset_b_amount: asset_b_amount_to_remove,
@@ -253,6 +280,12 @@ impl Exchange for Contract {
         transfer(bought, output_asset, sender);
         storage.reserves.insert(input_asset, input_asset_in_reserve + exact_input);
         storage.reserves.insert(output_asset, output_asset_in_reserve - bought);
+        log(SwapEvent {
+            input: input_asset,
+            output: output_asset,
+            sold: exact_input,
+            bought,
+        });
         bought
     }
 
@@ -292,6 +325,12 @@ impl Exchange for Contract {
         transfer(output, output_asset, sender);
         storage.reserves.insert(input_asset, input_asset_in_reserve + sold);
         storage.reserves.insert(output_asset, output_asset_in_reserve - output);
+        log(SwapEvent {
+            input: input_asset,
+            output: output_asset,
+            sold,
+            bought: output,
+        });
         sold
     }
 
@@ -310,7 +349,12 @@ impl Exchange for Contract {
 
         let new_amount = deposited_amount - amount;
         storage.deposits.insert((sender, asset), new_amount);
-        transfer(amount, asset, sender)
+        transfer(amount, asset, sender);
+        log(WithdrawEvent {
+            asset,
+            amount,
+            balance: new_amount,
+        });
     }
 
     #[storage(read)]
