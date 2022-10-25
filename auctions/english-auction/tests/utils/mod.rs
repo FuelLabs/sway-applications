@@ -250,7 +250,7 @@ pub mod test_helpers {
     pub async fn create_auction_copy(
         bid_asset: AuctionAsset,
         highest_bidder: Option<Identity>,
-        end_block: u64, 
+        end_block: u64,
         initial_price: u64,
         reserve_price: Option<u64>,
         sell_asset: AuctionAsset,

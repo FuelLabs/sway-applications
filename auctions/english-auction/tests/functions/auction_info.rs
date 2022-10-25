@@ -46,15 +46,16 @@ mod success {
         assert!(auction.is_some());
 
         let auction_copy = create_auction_copy(
-            buy_asset.clone(), 
-            None, 
-            total_duration, 
-            initial_price, 
+            buy_asset.clone(),
+            None,
+            total_duration,
+            initial_price,
             Some(reserve_price),
             sell_asset,
             seller_identity,
-            State::Open()
-        ).await;
+            State::Open(),
+        )
+        .await;
         assert_eq!(auction.unwrap(), auction_copy);
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
@@ -111,15 +112,16 @@ mod success {
         assert!(auction2.is_none());
 
         let auction1_copy = create_auction_copy(
-            buy_asset.clone(), 
-            None, 
-            total_duration1, 
-            initial_price, 
+            buy_asset.clone(),
+            None,
+            total_duration1,
+            initial_price,
             Some(reserve_price),
             sell_asset.clone(),
             seller_identity.clone(),
-            State::Open()
-        ).await;
+            State::Open(),
+        )
+        .await;
         assert_eq!(auction1.unwrap(), auction1_copy);
 
         let auction2_id = create(
@@ -141,15 +143,16 @@ mod success {
         assert_eq!(auction1.unwrap(), auction1_copy);
 
         let auction2_copy = create_auction_copy(
-            buy_asset.clone(), 
-            None, 
-            total_duration2, 
-            initial_price, 
+            buy_asset.clone(),
+            None,
+            total_duration2,
+            initial_price,
             Some(reserve_price),
             sell_asset,
             seller_identity.clone(),
-            State::Open()
-        ).await;
+            State::Open(),
+        )
+        .await;
         assert_eq!(auction2.unwrap(), auction2_copy);
     }
 
