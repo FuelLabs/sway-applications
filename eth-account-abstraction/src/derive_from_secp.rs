@@ -31,16 +31,21 @@ pub fn derive_from_secp() -> Result<()> {
     let address = Hasher::hash(&public[..]);
     let evm_pubkeyhash = keccak_hash(&public[..]);
 
-    let message = b"The gift of words is the gift of deception and illusion.";
-    let e = Hasher::hash(&message[..]);
-    let sig = crypto::secp256k1_sign_compact_recoverable(secret.as_ref(), e.as_ref())
+    // let message = b"The gift of words is the gift of deception and illusion.";
+    // let e = Hasher::hash(&message[..]);
+
+
+
+    let data_to_sign: [u8; 32] = [0; 32];
+
+    let sig = crypto::secp256k1_sign_compact_recoverable(secret.as_ref(), data_to_sign.as_ref())
         .expect("Failed to generate signature");
 
     println!("Secret Key: {:?}", secret);
     println!("Public Key: {:?}", public);
     println!("Fuel Address (sha2-256): {:?}", address);
     println!("EVM pubkey hash (keccak256): {:?}", evm_pubkeyhash);
-    println!("Message Hash: {:?}", e);
+    // println!("Message Hash: {:?}", e);
     println!("Signature: {:?}", sig);
 
     Ok(())
