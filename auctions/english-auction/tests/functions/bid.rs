@@ -1,7 +1,7 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{auction_info, bid, create, deposit},
-    englishauction_mod::{Asset, Auction, State},
+    englishauction_mod::{AuctionAsset, Auction, State},
     nft_abi_calls::{approve, constructor, mint, set_approval_for_all},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
@@ -47,7 +47,7 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit: Asset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit: AuctionAsset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
@@ -61,7 +61,7 @@ mod success {
 
         bid(auction_id, bid2_asset.clone(), &buyer2.auction).await;
 
-        let buyer2_deposit: Asset = deposit(auction_id, &buyer2.auction, buyer2_identity.clone())
+        let buyer2_deposit: AuctionAsset = deposit(auction_id, &buyer2.auction, buyer2_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
@@ -107,7 +107,7 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit: Asset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit: AuctionAsset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
@@ -121,7 +121,7 @@ mod success {
 
         bid(auction_id, bid2_asset.clone(), &buyer2.auction).await;
 
-        let buyer2_deposit: Asset = deposit(auction_id, &buyer2.auction, buyer2_identity.clone())
+        let buyer2_deposit: AuctionAsset = deposit(auction_id, &buyer2.auction, buyer2_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
@@ -163,7 +163,7 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit: Asset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit: AuctionAsset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
@@ -207,7 +207,7 @@ mod success {
 
         bid(auction_id, bid1_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit: Asset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit: AuctionAsset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
@@ -218,7 +218,7 @@ mod success {
 
         bid(auction_id, bid2_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit: Asset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit: AuctionAsset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
@@ -286,7 +286,7 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit: Asset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit: AuctionAsset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
@@ -354,7 +354,7 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit: Asset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit: AuctionAsset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
@@ -414,7 +414,7 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit: Asset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit: AuctionAsset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
@@ -475,7 +475,7 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit: Asset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit: AuctionAsset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
@@ -517,7 +517,7 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit: Asset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit: AuctionAsset = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();

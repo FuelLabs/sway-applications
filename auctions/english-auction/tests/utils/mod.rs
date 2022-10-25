@@ -50,18 +50,18 @@ pub mod english_auction_abi_calls {
 
     pub async fn bid(
         auction_id: u64,
-        bid_asset: Asset,
+        bid_asset: AuctionAsset,
         contract: &EnglishAuction,
     ) -> CallResponse<()> {
         match bid_asset {
-            Asset::NFTAsset(bid_asset) => contract
+            AuctionAsset::NFTAsset(bid_asset) => contract
                 .methods()
-                .bid(auction_id, Asset::NFTAsset(bid_asset.clone()))
+                .bid(auction_id, AuctionAsset::NFTAsset(bid_asset.clone()))
                 .set_contracts(&[bid_asset.contract_id.into()])
                 .call()
                 .await
                 .unwrap(),
-            Asset::TokenAsset(bid_asset) => {
+            AuctionAsset::TokenAsset(bid_asset) => {
                 let tx_params = TxParameters::new(None, Some(1_000_000), None);
                 let call_params = CallParameters::new(
                     Some(bid_asset.amount),
@@ -71,7 +71,7 @@ pub mod english_auction_abi_calls {
 
                 contract
                     .methods()
-                    .bid(auction_id, Asset::TokenAsset(bid_asset.clone()))
+                    .bid(auction_id, AuctionAsset::TokenAsset(bid_asset.clone()))
                     .tx_params(tx_params)
                     .call_params(call_params)
                     .call()
@@ -86,16 +86,16 @@ pub mod english_auction_abi_calls {
     }
 
     pub async fn create(
-        bid_asset: Asset,
+        bid_asset: AuctionAsset,
         contract: &EnglishAuction,
         duration: u64,
         initial_price: u64,
         reserve_price: Option<u64>,
         seller: Identity,
-        sell_asset: Asset,
+        sell_asset: AuctionAsset,
     ) -> u64 {
         match sell_asset {
-            Asset::NFTAsset(sell_asset) => {
+            AuctionAsset::NFTAsset(sell_asset) => {
                 contract
                     .methods()
                     .create(
@@ -104,7 +104,7 @@ pub mod english_auction_abi_calls {
                         initial_price,
                         reserve_price,
                         seller,
-                        Asset::NFTAsset(sell_asset.clone()),
+                        AuctionAsset::NFTAsset(sell_asset.clone()),
                     )
                     .set_contracts(&[sell_asset.contract_id.into(), sell_asset.contract_id.into()])
                     .call()
@@ -112,7 +112,7 @@ pub mod english_auction_abi_calls {
                     .unwrap()
                     .value
             }
-            Asset::TokenAsset(sell_asset) => {
+            AuctionAsset::TokenAsset(sell_asset) => {
                 let tx_params = TxParameters::new(None, Some(1_000_000), None);
                 let call_params = CallParameters::new(
                     Some(sell_asset.amount),
@@ -128,7 +128,7 @@ pub mod english_auction_abi_calls {
                         initial_price,
                         reserve_price,
                         seller,
-                        Asset::TokenAsset(sell_asset.clone()),
+                        AuctionAsset::TokenAsset(sell_asset.clone()),
                     )
                     .tx_params(tx_params)
                     .call_params(call_params)
@@ -144,7 +144,7 @@ pub mod english_auction_abi_calls {
         auction_id: u64,
         contract: &EnglishAuction,
         identity: Identity,
-    ) -> Option<Asset> {
+    ) -> Option<AuctionAsset> {
         contract
             .methods()
             .deposit(auction_id, identity)
@@ -157,17 +157,17 @@ pub mod english_auction_abi_calls {
     pub async fn withdraw(
         auction_id: u64,
         contract: &EnglishAuction,
-        withdrawing_asset: Asset,
+        withdrawing_asset: AuctionAsset,
     ) -> CallResponse<()> {
         match withdrawing_asset {
-            Asset::NFTAsset(withdrawing_asset) => contract
+            AuctionAsset::NFTAsset(withdrawing_asset) => contract
                 .methods()
                 .withdraw(auction_id)
                 .set_contracts(&[withdrawing_asset.contract_id.into()])
                 .call()
                 .await
                 .unwrap(),
-            Asset::TokenAsset(_withdrawing_asset) => contract
+            AuctionAsset::TokenAsset(_withdrawing_asset) => contract
                 .methods()
                 .withdraw(auction_id)
                 .append_variable_outputs(1)
@@ -272,13 +272,13 @@ pub mod test_helpers {
         (sell_amount, initial_price, reserve_price, duration)
     }
 
-    pub async fn nft_asset(contract_id: ContractId, token_id: u64) -> Asset {
+    pub async fn nft_asset(contract_id: ContractId, token_id: u64) -> AuctionAsset {
         let token = NFTAsset {
             contract_id,
             token_id,
         };
 
-        Asset::NFTAsset(token)
+        AuctionAsset::NFTAsset(token)
     }
 
     pub async fn setup() -> (
@@ -409,12 +409,12 @@ pub mod test_helpers {
         )
     }
 
-    pub async fn token_asset(contract_id: ContractId, amount: u64) -> Asset {
+    pub async fn token_asset(contract_id: ContractId, amount: u64) -> AuctionAsset {
         let token = TokenAsset {
             contract_id,
             amount,
         };
 
-        Asset::TokenAsset(token)
+        AuctionAsset::TokenAsset(token)
     }
 }
