@@ -19,6 +19,20 @@ More information can be found in the [specification](./SPECIFICATION.md).
 
 Information on the current state of the application can be found in the [Application Progress](../APPLICATION_PROGRESS.md#decentralized-apps) file.
 
+### Known Issues
+
+#### Bidding One NFT
+
+`StorageVec` in structs are currently not supported and therefore only a single NFT may be bid at this time. The progress on this issue can be found [here](https://github.com/FuelLabs/sway/issues/2465).
+
+#### Dependency Ordering
+
+There is an known issue with the ordering of dependencies. The progress on this issue can be found [here](https://github.com/FuelLabs/sway/issues/3131).
+
+#### Formatting
+
+There is a known bug with the formatter where an additional empty line is added to match statements. The progress on this issue can be found [here](https://github.com/FuelLabs/sway/issues/3131).
+
 ## Repository Structure
 
 The project consists of a smart contract and a user interface which the user can interact with.
