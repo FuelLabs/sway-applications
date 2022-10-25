@@ -2,7 +2,7 @@ use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{auction_info, bid, create},
     englishauction_mod::State,
-    test_helpers::{defaults_token, setup, token_asset},
+    test_helpers::{create_auction_copy, defaults_token, setup, token_asset},
 };
 use fuels::prelude::Identity;
 
@@ -45,15 +45,17 @@ mod success {
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
-        let auction = auction.unwrap();
-        assert_eq!(auction.bid_asset, buy_asset);
-        assert_eq!(auction.highest_bidder, None);
-        assert_eq!(auction.end_block, total_duration);
-        assert_eq!(auction.initial_price, initial_price);
-        assert_eq!(auction.reserve_price.unwrap(), reserve_price);
-        assert_eq!(auction.sell_asset, sell_asset);
-        assert_eq!(auction.seller, seller_identity);
-        assert_eq!(auction.state, State::Open());
+        let auction_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration, 
+            initial_price, 
+            Some(reserve_price),
+            sell_asset,
+            seller_identity,
+            State::Open()
+        ).await;
+        assert_eq!(auction.unwrap(), auction_copy);
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
@@ -108,15 +110,17 @@ mod success {
         assert!(auction1.is_some());
         assert!(auction2.is_none());
 
-        let auction1 = auction1.unwrap();
-        assert_eq!(auction1.bid_asset, buy_asset);
-        assert_eq!(auction1.highest_bidder, None);
-        assert_eq!(auction1.end_block, total_duration1);
-        assert_eq!(auction1.initial_price, initial_price);
-        assert_eq!(auction1.reserve_price.unwrap(), reserve_price);
-        assert_eq!(auction1.sell_asset, sell_asset);
-        assert_eq!(auction1.seller, seller_identity);
-        assert_eq!(auction1.state, State::Open());
+        let auction1_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration1, 
+            initial_price, 
+            Some(reserve_price),
+            sell_asset.clone(),
+            seller_identity.clone(),
+            State::Open()
+        ).await;
+        assert_eq!(auction1.unwrap(), auction1_copy);
 
         let auction2_id = create(
             buy_asset.clone(),
@@ -134,26 +138,19 @@ mod success {
         let auction2 = auction_info(auction2_id, &seller.auction).await;
         assert!(auction1.is_some());
         assert!(auction2.is_some());
+        assert_eq!(auction1.unwrap(), auction1_copy);
 
-        let auction1 = auction1.unwrap();
-        assert_eq!(auction1.bid_asset, buy_asset);
-        assert_eq!(auction1.highest_bidder, None);
-        assert_eq!(auction1.end_block, total_duration1);
-        assert_eq!(auction1.initial_price, initial_price);
-        assert_eq!(auction1.reserve_price.unwrap(), reserve_price);
-        assert_eq!(auction1.sell_asset, sell_asset);
-        assert_eq!(auction1.seller, seller_identity);
-        assert_eq!(auction1.state, State::Open());
-
-        let auction2 = auction2.unwrap();
-        assert_eq!(auction2.bid_asset, buy_asset);
-        assert_eq!(auction2.highest_bidder, None);
-        assert_eq!(auction2.end_block, total_duration2);
-        assert_eq!(auction2.initial_price, initial_price);
-        assert_eq!(auction2.reserve_price.unwrap(), reserve_price);
-        assert_eq!(auction2.sell_asset, sell_asset);
-        assert_eq!(auction2.seller, seller_identity);
-        assert_eq!(auction2.state, State::Open());
+        let auction2_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration2, 
+            initial_price, 
+            Some(reserve_price),
+            sell_asset,
+            seller_identity.clone(),
+            State::Open()
+        ).await;
+        assert_eq!(auction2.unwrap(), auction2_copy);
     }
 
     #[tokio::test]

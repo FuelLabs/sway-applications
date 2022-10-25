@@ -247,6 +247,28 @@ pub mod test_helpers {
 
     use super::*;
 
+    pub async fn create_auction_copy(
+        bid_asset: AuctionAsset,
+        highest_bidder: Option<Identity>,
+        end_block: u64, 
+        initial_price: u64,
+        reserve_price: Option<u64>,
+        sell_asset: AuctionAsset,
+        seller: Identity,
+        state: State,
+    ) -> Auction {
+        Auction {
+            bid_asset,
+            highest_bidder,
+            end_block,
+            initial_price,
+            reserve_price,
+            sell_asset,
+            seller,
+            state,
+        }
+    }
+
     pub async fn defaults_nft() -> (u64, u64, u64, u64, bool) {
         let sell_count = 1;
         let inital_count = 1;

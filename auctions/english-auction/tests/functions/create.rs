@@ -3,7 +3,7 @@ use crate::utils::{
     english_auction_abi_calls::{auction_info, create},
     englishauction_mod::State,
     nft_abi_calls::{approve, constructor, mint, set_approval_for_all},
-    test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
+    test_helpers::{create_auction_copy, defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
 use fuels::prelude::{AssetId, CallParameters, Identity, TxParameters};
 
@@ -47,15 +47,17 @@ mod success {
         let auction1 = auction_info(auction_id1, &seller.auction).await;
         assert!(auction1.is_some());
 
-        let auction1 = auction1.unwrap();
-        assert_eq!(auction1.bid_asset, buy_asset);
-        assert_eq!(auction1.highest_bidder, None);
-        assert_eq!(auction1.end_block, total_duration);
-        assert_eq!(auction1.initial_price, initial_price);
-        assert_eq!(auction1.reserve_price.unwrap(), reserve_price);
-        assert_eq!(auction1.sell_asset, sell_asset);
-        assert_eq!(auction1.seller, seller_identity);
-        assert_eq!(auction1.state, State::Open());
+        let auction1_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration, 
+            initial_price, 
+            Some(reserve_price),
+            sell_asset.clone(),
+            seller_identity.clone(),
+            State::Open()
+        ).await;
+        assert_eq!(auction1.unwrap(), auction1_copy);
 
         let auction_id2 = create(
             buy_asset.clone(),
@@ -72,15 +74,17 @@ mod success {
         let auction2 = auction_info(auction_id2, &seller.auction).await;
         assert!(auction2.is_some());
 
-        let auction2 = auction2.unwrap();
-        assert_eq!(auction2.bid_asset, buy_asset);
-        assert_eq!(auction2.highest_bidder, None);
-        assert_eq!(auction2.end_block, total_duration);
-        assert_eq!(auction2.initial_price, initial_price);
-        assert_eq!(auction2.reserve_price.unwrap(), reserve_price);
-        assert_eq!(auction2.sell_asset, sell_asset);
-        assert_eq!(auction2.seller, seller_identity);
-        assert_eq!(auction2.state, State::Open());
+        let auction2_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration, 
+            initial_price, 
+            Some(reserve_price),
+            sell_asset.clone(),
+            seller_identity.clone(),
+            State::Open()
+        ).await;
+        assert_eq!(auction2.unwrap(), auction2_copy);
     }
 
     #[tokio::test]
@@ -133,15 +137,17 @@ mod success {
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
-        let auction = auction.unwrap();
-        assert_eq!(auction.bid_asset, buy_asset);
-        assert_eq!(auction.highest_bidder, None);
-        assert_eq!(auction.end_block, total_duration);
-        assert_eq!(auction.initial_price, initial_count);
-        assert_eq!(auction.reserve_price.unwrap(), reserve_count);
-        assert_eq!(auction.sell_asset, sell_asset);
-        assert_eq!(auction.seller, seller_identity);
-        assert_eq!(auction.state, State::Open());
+        let auction_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration, 
+            initial_count, 
+            Some(reserve_count),
+            sell_asset,
+            seller_identity,
+            State::Open()
+        ).await;
+        assert_eq!(auction.unwrap(), auction_copy);
     }
 
     #[tokio::test]
@@ -194,15 +200,17 @@ mod success {
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
-        let auction = auction.unwrap();
-        assert_eq!(auction.bid_asset, buy_asset);
-        assert_eq!(auction.highest_bidder, None);
-        assert_eq!(auction.end_block, total_duration);
-        assert_eq!(auction.initial_price, initial_count);
-        assert_eq!(auction.reserve_price.unwrap(), reserve_count);
-        assert_eq!(auction.sell_asset, sell_asset);
-        assert_eq!(auction.seller, seller_identity);
-        assert_eq!(auction.state, State::Open());
+        let auction_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration, 
+            initial_count, 
+            Some(reserve_count),
+            sell_asset,
+            seller_identity,
+            State::Open()
+        ).await;
+        assert_eq!(auction.unwrap(), auction_copy);
     }
 
     #[tokio::test]
@@ -255,15 +263,17 @@ mod success {
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
-        let auction = auction.unwrap();
-        assert_eq!(auction.bid_asset, buy_asset);
-        assert_eq!(auction.highest_bidder, None);
-        assert_eq!(auction.end_block, total_duration);
-        assert_eq!(auction.initial_price, initial_count);
-        assert_eq!(auction.reserve_price.unwrap(), reserve_count);
-        assert_eq!(auction.sell_asset, sell_asset);
-        assert_eq!(auction.seller, seller_identity);
-        assert_eq!(auction.state, State::Open());
+        let auction_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration, 
+            initial_count, 
+            Some(reserve_count),
+            sell_asset,
+            seller_identity,
+            State::Open()
+        ).await;
+        assert_eq!(auction.unwrap(), auction_copy);
     }
 
     #[tokio::test]
@@ -297,15 +307,17 @@ mod success {
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
-        let auction = auction.unwrap();
-        assert_eq!(auction.bid_asset, buy_asset);
-        assert_eq!(auction.highest_bidder, None);
-        assert_eq!(auction.end_block, total_duration);
-        assert_eq!(auction.initial_price, initial_price);
-        assert_eq!(auction.reserve_price.unwrap(), reserve_price);
-        assert_eq!(auction.sell_asset, sell_asset);
-        assert_eq!(auction.seller, seller_identity);
-        assert_eq!(auction.state, State::Open());
+        let auction_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration, 
+            initial_price, 
+            Some(reserve_price),
+            sell_asset,
+            seller_identity,
+            State::Open()
+        ).await;
+        assert_eq!(auction.unwrap(), auction_copy);
     }
 
     #[tokio::test]
@@ -339,15 +351,17 @@ mod success {
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
-        let auction = auction.unwrap();
-        assert_eq!(auction.bid_asset, buy_asset);
-        assert_eq!(auction.highest_bidder, None);
-        assert_eq!(auction.end_block, total_duration);
-        assert_eq!(auction.initial_price, initial_price);
-        assert_eq!(auction.reserve_price.unwrap(), reserve_price);
-        assert_eq!(auction.sell_asset, sell_asset);
-        assert_eq!(auction.seller, seller_identity);
-        assert_eq!(auction.state, State::Open());
+        let auction_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration, 
+            initial_price, 
+            Some(reserve_price),
+            sell_asset,
+            seller_identity,
+            State::Open()
+        ).await;
+        assert_eq!(auction.unwrap(), auction_copy);
     }
 
     #[tokio::test]
@@ -381,15 +395,17 @@ mod success {
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
-        let auction = auction.unwrap();
-        assert_eq!(auction.bid_asset, buy_asset);
-        assert_eq!(auction.highest_bidder, None);
-        assert_eq!(auction.end_block, total_duration);
-        assert_eq!(auction.initial_price, initial_price);
-        assert_eq!(auction.reserve_price, None);
-        assert_eq!(auction.sell_asset, sell_asset);
-        assert_eq!(auction.seller, seller_identity);
-        assert_eq!(auction.state, State::Open());
+        let auction_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration, 
+            initial_price, 
+            None,
+            sell_asset,
+            seller_identity,
+            State::Open()
+        ).await;
+        assert_eq!(auction.unwrap(), auction_copy);
     }
 
     #[tokio::test]
@@ -423,15 +439,17 @@ mod success {
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
-        let auction = auction.unwrap();
-        assert_eq!(auction.bid_asset, buy_asset);
-        assert_eq!(auction.highest_bidder, None);
-        assert_eq!(auction.end_block, total_duration);
-        assert_eq!(auction.initial_price, initial_price);
-        assert_eq!(auction.reserve_price.unwrap(), initial_price);
-        assert_eq!(auction.sell_asset, sell_asset);
-        assert_eq!(auction.seller, seller_identity);
-        assert_eq!(auction.state, State::Open());
+        let auction_copy = create_auction_copy(
+            buy_asset.clone(), 
+            None, 
+            total_duration, 
+            initial_price, 
+            Some(initial_price),
+            sell_asset,
+            seller_identity,
+            State::Open()
+        ).await;
+        assert_eq!(auction.unwrap(), auction_copy);
     }
 }
 
