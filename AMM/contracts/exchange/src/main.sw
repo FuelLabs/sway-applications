@@ -24,10 +24,7 @@ use libraries::{
 };
 use std::{
     block::height,
-    chain::auth::{
-        AuthError,
-        msg_sender,
-    },
+    chain::auth::msg_sender,
     context::{
         call_frames::{
             contract_id,
@@ -175,10 +172,10 @@ impl Exchange for Contract {
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
         let min_output = get_minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
-        let output_reserve_sufficient = min_output <= output_asset_in_reserve;
+        let sufficient_reserve = min_output <= output_asset_in_reserve;
         PreviewSwapInfo {
             amount: min_output,
-            sufficient_reserve: output_reserve_sufficient,
+            sufficient_reserve,
         }
     }
 
@@ -199,10 +196,10 @@ impl Exchange for Contract {
         let output_asset_in_reserve = storage.reserves.get(output_asset);
         require(exact_output <= output_asset_in_reserve, TransactionError::DesiredAmountTooHigh(exact_output));
         let max_input = get_maximum_input_for_exact_output(exact_output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
-        let output_reserve_sufficient = exact_output <= output_asset_in_reserve;
+        let sufficient_reserve = exact_output <= output_asset_in_reserve;
         PreviewSwapInfo {
             amount: max_input,
-            sufficient_reserve: output_reserve_sufficient,
+            sufficient_reserve,
         }
     }
 

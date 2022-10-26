@@ -15,9 +15,9 @@ pub struct DefineAssetPairEvent {
 }
 
 pub struct DepositEvent {
-    /// Deposited asset
+    /// Deposited asset that is either asset A or asset B
     asset: ContractId,
-    /// Deposited amount
+    /// Deposited amount of the asset that may be withdrawn of used to add liquidity
     amount: u64,
     /// New deposit balance of asset in contract
     balance: u64,

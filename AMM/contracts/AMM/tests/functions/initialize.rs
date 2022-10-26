@@ -29,7 +29,7 @@ mod revert {
             deploy_and_construct_exchange_contract(&wallet, (assets[0], assets[1]), None, None)
                 .await;
 
-        initialize(&amm_instance, exchange_contract_id).await;
+        // already initialized
         initialize(&amm_instance, exchange_contract_id).await;
     }
 }

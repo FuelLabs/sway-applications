@@ -1,7 +1,7 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
 use std::str::FromStr;
 
-abigen!(AMM, "out/debug/amm-abi.json");
+abigen!(AMM, "out/debug/AMM-abi.json");
 abigen!(Exchange, "../exchange/out/debug/exchange-abi.json");
 
 pub mod exchange_abi_calls {
