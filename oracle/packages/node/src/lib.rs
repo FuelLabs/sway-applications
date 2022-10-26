@@ -1,4 +1,4 @@
-use fuels::{signers::{WalletUnlocked, fuel_crypto::SecretKey}, prelude::{Provider, Bech32ContractId}, client::FuelClient, tx::ContractId};
+use fuels::{signers::{WalletUnlocked, fuel_crypto::SecretKey}, prelude::{Provider, Bech32ContractId}, client::FuelClient, tx::{ContractId, Receipt}};
 use reqwest;
 use dotenv::dotenv;
 use serde::Deserialize;
@@ -9,7 +9,7 @@ use utils::{
     Oracle,
 };
 use std::str::FromStr;
-use std::thread;
+use futures::executor::block_on;
 
 #[derive(Deserialize)]
 struct USDPrice {
@@ -22,7 +22,7 @@ pub struct OracleNode {
     pub duration: time::Duration,
     pub oracle: Oracle,
     running: bool,
-    transmitter: std::sync::Arc<tokio::sync::mpsc::Sender<u64>>,
+    transmitter: tokio::sync::mpsc::Sender<u64>,
     pub receiver: tokio::sync::mpsc::Receiver<u64>,
 }
 
@@ -51,21 +51,29 @@ impl OracleNode {
             duration,
             oracle,
             running: true,
-            transmitter: std::sync::Arc::new(transmitter),
+            transmitter,
             receiver,
         }
     }
 
     pub async fn run(&self) {
-        let transmitter = std::sync::Arc::clone(&self.transmitter);
-        tokio::spawn(async move {
-            while self.running {
-                let usd_price = self.get_price().await;
-                println!("{usd_price}");
-                set_price(&self.oracle, usd_price).await;
-                transmitter.send(usd_price).await.unwrap();
-                sleep(self.duration);
-            }
+        //let transmitter = std::sync::Arc::clone(&self.transmitter);
+        //let thread_self = self.clone();
+        tokio::task::spawn_blocking(move || loop {
+            let usd_price = block_on(self.get_price());
+            println!("{usd_price}");
+            let send_me = block_on(self.oracle.methods().set_price(usd_price).call())
+                .map(|response| response.receipts)
+                .map(|receipts: Vec<Receipt>| {
+                    receipts
+                        .into_iter()
+                        .filter(|receipt| {
+                            matches!(receipt, Receipt::Log { .. } | Receipt::LogData { .. })
+                        })
+                        .collect::<Vec<_>>()
+                });
+            block_on(self.transmitter.send(usd_price)).unwrap();
+            block_on(sleep(self.duration));
         });
     }
 
