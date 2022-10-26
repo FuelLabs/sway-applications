@@ -43,7 +43,6 @@ sway-applications/
 |    └── P-1 Directories & files
 ├── Project-2
 |    └── P-2 Directories & files
-├── CONTRIBUTING.md
 ├── LICENSE
 └── README.md
 ```
