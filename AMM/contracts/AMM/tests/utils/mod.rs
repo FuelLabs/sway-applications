@@ -13,7 +13,6 @@ pub mod exchange_abi_calls {
         pair: (ContractId, ContractId),
     ) -> CallResponse<()> {
         let receipt = contract.methods().constructor(pair).call().await;
-        dbg!(&receipt);
         receipt.unwrap()
     }
 }

@@ -37,9 +37,9 @@ pub struct SwapEvent {
     input: ContractId,
     /// Identifier of output asset
     output: ContractId,
-    /// Sold input asset amount
+    /// Amount of the input asset that was sold
     sold: u64,
-    /// Bought output asset amount
+    /// Amount of the output asset that was bought
     bought: u64,
 }
 
