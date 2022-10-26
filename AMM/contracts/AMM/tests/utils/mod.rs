@@ -54,8 +54,8 @@ pub mod amm_abi_calls {
 }
 
 pub mod paths {
-    pub const AMM_CONTRACT_BINARY_PATH: &str = "out/debug/amm.bin";
-    pub const AMM_CONTRACT_STORAGE_PATH: &str = "out/debug/amm-storage_slots.json";
+    pub const AMM_CONTRACT_BINARY_PATH: &str = "out/debug/AMM.bin";
+    pub const AMM_CONTRACT_STORAGE_PATH: &str = "out/debug/AMM-storage_slots.json";
     pub const INVALID_EXCHANGE_CONTRACT_BINARY_PATH: &str =
         "../exchange/tests/artifacts/faulty_implementation/out/debug/faulty_implementation.bin";
     pub const VALID_EXCHANGE_CONTRACT_BINARY_PATH: &str = "../exchange/out/debug/exchange.bin";

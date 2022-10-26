@@ -161,9 +161,14 @@ pub mod abi_calls {
     }
 }
 
+pub mod paths {
+    pub const EXCHANGE_CONTRACT_BINARY_PATH: &str = "out/debug/exchange.bin";
+}
+
 pub mod test_helpers {
     use super::*;
     use abi_calls::{add_liquidity, constructor, deposit};
+    use paths::EXCHANGE_CONTRACT_BINARY_PATH;
 
     pub async fn deposit_and_add_liquidity(
         exchange_instance: &Exchange,
@@ -263,7 +268,7 @@ pub mod test_helpers {
         wallet.set_provider(provider);
 
         let exchange_contract_id = Contract::deploy(
-            "out/debug/exchange.bin",
+            EXCHANGE_CONTRACT_BINARY_PATH,
             &wallet,
             TxParameters::default(),
             StorageConfiguration::default(),
