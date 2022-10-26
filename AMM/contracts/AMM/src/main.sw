@@ -19,9 +19,9 @@ storage {
 
 impl AMM for Contract {
     #[storage(read, write)]
-    fn initialize(exchange_contract_id: ContractId) {
+    fn initialize(exchange_id: ContractId) {
         require(storage.exchange_bytecode_root.is_none(), InitError::AlreadyInitialized);
-        let root = bytecode_root(exchange_contract_id);
+        let root = bytecode_root(exchange_id);
         storage.exchange_bytecode_root = Option::Some(root);
         log(DefineValidExchangeEvent { root });
     }
@@ -32,7 +32,7 @@ impl AMM for Contract {
         require(storage.exchange_bytecode_root.unwrap() == bytecode_root(pool), InitError::ExchangeContractBytecodeRootInvalid);
         let exchange_contract = abi(Exchange, pool.into());
         let pool_info = exchange_contract.pool_info();
-        require(pool_info.asset_a_id == asset_pair.0 && pool_info.asset_b_id == asset_pair.1, InitError::ExchangeContractDoesNotMatchPair);
+        require(pool_info.asset_a == asset_pair.0 && pool_info.asset_b == asset_pair.1, InitError::ExchangeContractDoesNotMatchPair);
         let ordered_asset_pair = if asset_pair.0.into() < asset_pair.1.into() {
             asset_pair
         } else {

@@ -15,7 +15,7 @@ abi AMM {
     ///
     /// * When the AMM has already been initialized
     #[storage(read, write)]
-    fn initialize(exchange_contract_id: ContractId);
+    fn initialize(exchange_id: ContractId);
 
     /// Add an (asset pair, exchange contract ID) mapping to the storage.
     /// 

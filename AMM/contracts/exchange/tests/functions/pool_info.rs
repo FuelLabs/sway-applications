@@ -11,9 +11,9 @@ mod success {
     async fn returns_empty_pool_info() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
         let pool_info = pool_info(&exchange.contract).await.value;
-        assert_eq!(pool_info.asset_a_id, exchange.asset_a_id);
+        assert_eq!(pool_info.asset_a, exchange.asset_a_id);
         assert_eq!(pool_info.asset_a_reserve, 0);
-        assert_eq!(pool_info.asset_b_id, exchange.asset_b_id);
+        assert_eq!(pool_info.asset_b, exchange.asset_b_id);
         assert_eq!(pool_info.asset_b_reserve, 0);
         assert_eq!(pool_info.liquidity, 0);
     }
@@ -22,9 +22,9 @@ mod success {
     async fn returns_non_empty_pool_info() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
         let initial_pool_info = pool_info(&exchange.contract).await.value;
-        assert_eq!(initial_pool_info.asset_a_id, exchange.asset_a_id);
+        assert_eq!(initial_pool_info.asset_a, exchange.asset_a_id);
         assert_eq!(initial_pool_info.asset_a_reserve, 0);
-        assert_eq!(initial_pool_info.asset_b_id, exchange.asset_b_id);
+        assert_eq!(initial_pool_info.asset_b, exchange.asset_b_id);
         assert_eq!(initial_pool_info.asset_b_reserve, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
 
@@ -44,9 +44,9 @@ mod success {
         .await;
 
         let pool_info = pool_info(&exchange.contract).await.value;
-        assert_eq!(pool_info.asset_a_id, exchange.asset_a_id);
+        assert_eq!(pool_info.asset_a, exchange.asset_a_id);
         assert_eq!(pool_info.asset_a_reserve, deposit_amount_a);
-        assert_eq!(pool_info.asset_b_id, exchange.asset_b_id);
+        assert_eq!(pool_info.asset_b, exchange.asset_b_id);
         assert_eq!(pool_info.asset_b_reserve, deposit_amount_b);
         assert_eq!(
             pool_info.liquidity * pool_info.liquidity,

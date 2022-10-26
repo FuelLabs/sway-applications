@@ -2,9 +2,9 @@ library events;
 
 pub struct AddLiquidityEvent {
     /// Amount of asset A added to reserves
-    a: u64,
+    asset_a: u64,
     /// Amount of asset B added to reserves
-    b: u64,
+    asset_b: u64,
     /// Amount of liquidity pool assets minted and transferred to sender
     liquidity: u64,
 }

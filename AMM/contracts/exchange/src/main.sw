@@ -124,8 +124,8 @@ impl Exchange for Contract {
         storage.deposits.insert((sender, asset_a_id), 0);
         storage.deposits.insert((sender, asset_b_id), 0);
         log(AddLiquidityEvent {
-            a: added_a,
-            b: added_b,
+            asset_a: added_a,
+            asset_b: added_b,
             liquidity: liquidity_to_add,
         });
         liquidity_to_add
@@ -178,7 +178,7 @@ impl Exchange for Contract {
         let output_reserve_sufficient = min_output <= output_asset_in_reserve;
         PreviewSwapInfo {
             amount: min_output,
-            output_reserve_sufficient: output_reserve_sufficient,
+            sufficient_reserve: output_reserve_sufficient,
         }
     }
 
@@ -202,7 +202,7 @@ impl Exchange for Contract {
         let output_reserve_sufficient = exact_output <= output_asset_in_reserve;
         PreviewSwapInfo {
             amount: max_input,
-            output_reserve_sufficient: output_reserve_sufficient,
+            sufficient_reserve: output_reserve_sufficient,
         }
     }
 
@@ -371,8 +371,8 @@ impl Exchange for Contract {
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
         PoolInfo {
-            asset_a_id: asset_a_id,
-            asset_b_id: asset_b_id,
+            asset_a: asset_a_id,
+            asset_b: asset_b_id,
             asset_a_reserve: storage.reserves.get(asset_a_id),
             asset_b_reserve: storage.reserves.get(asset_b_id),
             liquidity: storage.liquidity_pool_supply,

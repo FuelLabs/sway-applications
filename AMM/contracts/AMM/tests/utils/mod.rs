@@ -20,10 +20,10 @@ pub mod exchange_abi_calls {
 pub mod amm_abi_calls {
     use super::*;
 
-    pub async fn initialize(contract: &AMM, exchange_contract_id: ContractId) -> CallResponse<()> {
+    pub async fn initialize(contract: &AMM, exchange_id: ContractId) -> CallResponse<()> {
         contract
             .methods()
-            .initialize(exchange_contract_id)
+            .initialize(exchange_id)
             .call()
             .await
             .unwrap()

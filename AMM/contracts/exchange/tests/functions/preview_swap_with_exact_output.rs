@@ -36,12 +36,12 @@ mod success {
             / (deposit_amount_b - output_amount)
             * (1 - (1 / 333)))
             + 1;
-        let expected_output_reserve_sufficient = output_amount < deposit_amount_b;
+        let expected_sufficient_reserve = output_amount < deposit_amount_b;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
-            preview_swap_info.output_reserve_sufficient,
-            expected_output_reserve_sufficient
+            preview_swap_info.sufficient_reserve,
+            expected_sufficient_reserve
         );
     }
 
@@ -74,12 +74,12 @@ mod success {
             / (deposit_amount_a - output_amount)
             * (1 - (1 / 333)))
             + 1;
-        let expected_output_reserve_sufficient = output_amount <= deposit_amount_a;
+        let expected_sufficient_reserve = output_amount <= deposit_amount_a;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
-            preview_swap_info.output_reserve_sufficient,
-            expected_output_reserve_sufficient
+            preview_swap_info.sufficient_reserve,
+            expected_sufficient_reserve
         );
     }
 
@@ -112,12 +112,12 @@ mod success {
             / (deposit_amount_b - output_amount)
             * (1 - (1 / 333)))
             + 1;
-        let expected_output_reserve_sufficient = output_amount < deposit_amount_b;
+        let expected_sufficient_reserve = output_amount < deposit_amount_b;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
-            preview_swap_info.output_reserve_sufficient,
-            expected_output_reserve_sufficient
+            preview_swap_info.sufficient_reserve,
+            expected_sufficient_reserve
         );
     }
 
@@ -150,12 +150,12 @@ mod success {
             / (deposit_amount_a - output_amount)
             * (1 - (1 / 333)))
             + 1;
-        let expected_output_reserve_sufficient = output_amount < deposit_amount_a;
+        let expected_sufficient_reserve = output_amount < deposit_amount_a;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
-            preview_swap_info.output_reserve_sufficient,
-            expected_output_reserve_sufficient
+            preview_swap_info.sufficient_reserve,
+            expected_sufficient_reserve
         );
     }
 }

@@ -2,9 +2,9 @@ library data_structures;
 
 pub struct PoolInfo {
     /// Unique identifier that makes up one side of the liquidity pool in an exchange contract
-    asset_a_id: ContractId,
+    asset_a: ContractId,
     /// Unique identifier that makes up the other side of the liquidity pool in an exchange contract
-    asset_b_id: ContractId,
+    asset_b: ContractId,
     /// The amount of asset a reserve in the exchange contract
     asset_a_reserve: u64,
     /// The amount of asset b reserve in the exchange contract
@@ -26,7 +26,7 @@ pub struct PreviewSwapInfo {
     /// The amount of other asset to either input or output for a given swap
     amount: u64,
     /// Whether the output reserve is sufficient for swap
-    output_reserve_sufficient: bool,
+    sufficient_reserve: bool,
 }
 
 pub struct RemoveLiquidityInfo {

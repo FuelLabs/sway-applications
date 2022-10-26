@@ -34,12 +34,12 @@ mod success {
         // hardcoded calculation for liquidity miner fee of 333
         let expected_min_output_amount = (input_amount * (1 - (1 / 333)) * deposit_amount_b)
             / (deposit_amount_a + (input_amount * (1 - (1 / 333))));
-        let expected_output_reserve_sufficient = expected_min_output_amount <= deposit_amount_b;
+        let expected_sufficient_reserve = expected_min_output_amount <= deposit_amount_b;
 
         assert_eq!(preview_swap_info.amount, expected_min_output_amount);
         assert_eq!(
-            preview_swap_info.output_reserve_sufficient,
-            expected_output_reserve_sufficient
+            preview_swap_info.sufficient_reserve,
+            expected_sufficient_reserve
         );
     }
 
@@ -70,12 +70,12 @@ mod success {
         // hardcoded calculation for liquidity miner fee of 333
         let expected_min_output_amount = (input_amount * (1 - (1 / 333)) * deposit_amount_a)
             / (deposit_amount_b + (input_amount * (1 - (1 / 333))));
-        let expected_output_reserve_sufficient = expected_min_output_amount <= deposit_amount_a;
+        let expected_sufficient_reserve = expected_min_output_amount <= deposit_amount_a;
 
         assert_eq!(preview_swap_info.amount, expected_min_output_amount);
         assert_eq!(
-            preview_swap_info.output_reserve_sufficient,
-            expected_output_reserve_sufficient
+            preview_swap_info.sufficient_reserve,
+            expected_sufficient_reserve
         );
     }
 }
