@@ -2,9 +2,11 @@ use fuels::{
     prelude::*,
     signers::fuel_crypto::{
         SecretKey,
+        Signature,
         Message,
     }
 };
+use fuel_vm::crypto;
 use std::str::FromStr;
 
 pub async fn compare_pk_strings() {
@@ -17,7 +19,10 @@ pub async fn compare_pk_strings() {
 
     let message: [u8; 32] = [0; 32];
 
-    let sig = wallet.sign_message(&message).await.unwrap();
+    // let sig = wallet.sign_message(&message).await.unwrap();
+    let sig = crypto::secp256k1_sign_compact_recoverable(secret.as_ref(), message.as_ref())
+        .expect("Failed to generate signature");
+    let sig = unsafe { Signature::from_bytes_unchecked(*sig) };
 
     let message = Message::new(message);
 
@@ -38,7 +43,10 @@ pub async fn compare_pk_strings() {
 
     let message: [u8; 32] = [0; 32];
 
-    let sig = wallet.sign_message(&message).await.unwrap();
+    // let sig = wallet.sign_message(&message).await.unwrap();
+    let sig = crypto::secp256k1_sign_compact_recoverable(secret.as_ref(), message.as_ref())
+        .expect("Failed to generate signature");
+    let sig = unsafe { Signature::from_bytes_unchecked(*sig) };
 
     let message = Message::new(message);
 
