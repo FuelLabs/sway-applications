@@ -9,7 +9,7 @@ use libraries::{
     },
     Exchange,
 };
-use std::{constants::BASE_ASSET_ID, prelude::*};
+use std::constants::BASE_ASSET_ID;
 
 storage {
     pair: Option<(ContractId, ContractId)> = Option::None(),

@@ -1,7 +1,5 @@
 library data_structures;
 
-use std::contract_id::ContractId;
-
 pub struct PoolInfo {
     /// Unique identifier that makes up one side of the liquidity pool in an exchange contract
     asset_a_id: ContractId,

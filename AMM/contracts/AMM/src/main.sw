@@ -7,7 +7,7 @@ dep utils;
 use errors::InitError;
 use events::{DefineValidExchangeEvent, RegisterPoolEvent};
 use libraries::{AMM, Exchange};
-use std::{constants::BASE_ASSET_ID, contract_id::ContractId, logging::log, storage::StorageMap};
+use std::{constants::BASE_ASSET_ID, logging::log, storage::StorageMap};
 use utils::bytecode_root;
 
 storage {

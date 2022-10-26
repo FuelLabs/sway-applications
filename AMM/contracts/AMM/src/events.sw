@@ -1,7 +1,5 @@
 library events;
 
-use std::contract_id::ContractId;
-
 pub struct DefineValidExchangeEvent {
     /// The bytecode root of the valid exchange contract implementation
     root: b256,

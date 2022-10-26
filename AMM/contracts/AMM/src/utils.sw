@@ -1,6 +1,6 @@
 library utils;
 
-use std::{constants::ZERO_B256, contract_id::ContractId, mem::addr_of};
+use std::{constants::ZERO_B256, mem::addr_of};
 
 // will remove once this function becomes a part of std-lib
 pub fn bytecode_root(contract_id: ContractId) -> b256 {

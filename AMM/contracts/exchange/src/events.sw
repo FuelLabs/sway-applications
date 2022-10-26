@@ -1,7 +1,5 @@
 library events;
 
-use std::contract_id::ContractId;
-
 pub struct AddLiquidityEvent {
     /// Amount of asset A added to reserves
     a: u64,

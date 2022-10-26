@@ -3,7 +3,6 @@ library interface;
 dep data_structures;
 
 use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewSwapInfo, RemoveLiquidityInfo};
-use std::contract_id::ContractId;
 
 abi AMM {
     /// Initialize the AMM by setting the valid exchange contract bytecode root.
