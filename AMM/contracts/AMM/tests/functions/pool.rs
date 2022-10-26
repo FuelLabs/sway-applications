@@ -11,7 +11,7 @@ mod success {
         let (wallet, amm_instance, assets) = setup_and_initialize().await;
         let pair = (assets[0], assets[1]);
         let exchange_contract_id =
-            deploy_and_construct_exchange_contract(&wallet, pair, None).await;
+            deploy_and_construct_exchange_contract(&wallet, pair, None, None).await;
         add_pool(&amm_instance, pair, exchange_contract_id).await;
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
@@ -27,7 +27,7 @@ mod success {
         let (wallet, amm_instance, assets) = setup_and_initialize().await;
         let pair = (assets[0], assets[1]);
         let exchange_contract_id =
-            deploy_and_construct_exchange_contract(&wallet, pair, None).await;
+            deploy_and_construct_exchange_contract(&wallet, pair, None, None).await;
         add_pool(&amm_instance, pair, exchange_contract_id).await;
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;

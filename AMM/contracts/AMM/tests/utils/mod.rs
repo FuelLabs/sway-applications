@@ -1,5 +1,4 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
-use rand::prelude::Rng;
 use std::str::FromStr;
 
 abigen!(AMM, "out/debug/amm-abi.json");
@@ -89,9 +88,9 @@ pub mod test_helpers {
         wallet: &WalletUnlocked,
         asset_pair: (ContractId, ContractId),
         valid: Option<bool>,
+        index_for_salt: Option<u8>,
     ) -> ContractId {
-        let mut rng = rand::thread_rng();
-        let salt: [u8; 32] = rng.gen();
+        let salt = [index_for_salt.unwrap_or(0u8); 32];
 
         let exchange_contract_id = Contract::deploy_with_parameters(
             if valid.unwrap_or(true) {
