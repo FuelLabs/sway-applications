@@ -51,6 +51,7 @@ sway-applications/
 
 - [Airdrop](./airdrop/) is a token distribution program where users are able to claim tokens given a valid merkle proof.
 - [Decentralized Autonomous Organization (DAO)](./dao-voting) is an organization where users get to vote on governance proposals using governance tokens.
+- [English Auction](./auctions/english-auction/) is an auction where users bid up the price of an asset until the bidding period has ended or a reserve has been met.
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
 - [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal.
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction.
