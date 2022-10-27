@@ -7,31 +7,11 @@
 
 ## Overview
 
-An english auction is an auction is where a seller places an asset on auction with a initial price and a reserve price. Bidders then begin bidding until the bidding period has ended or the reserve has been met. The English Auction application implements this idea in a decentralized manner without the need for a 3rd party and with strong settlement assurances. 
+An English Auction is where a seller auctions off an asset with a initial price and a reserve price. Users will then begin bidding on the asset until the bidding period has ended or the reserve has been met. Upon completion, users will withdraw either their original deposits or their newly purchased assets depending on the outcome.
 
-The application has been designed to utilize native assets and NFTs enabling users to auction off native assets / NFTs and place bids using native assets / NFTs. 
-
-> **Note** This application currently only supports selling and bidding of a single NFT. Support for this functionality can be tracked [here](https://github.com/FuelLabs/sway/issues/2465).
+The English Auction application implements this idea in a decentralized manner without the need for a 3rd party and with strong settlement assurances. The application has been designed to utilize native assets and NFTs enabling users to auction off native assets / NFTs and place bids using native assets / NFTs. 
 
 More information can be found in the [specification](./SPECIFICATION.md).
-
-### Current state of the application
-
-Information on the current state of the application can be found in the [Application Progress](../APPLICATION_PROGRESS.md#decentralized-apps) file.
-
-### Known Issues
-
-#### Bidding One NFT
-
-`StorageVec` in structs are currently not supported and therefore only a single NFT may be bid at this time. The progress on this issue can be found [here](https://github.com/FuelLabs/sway/issues/2465).
-
-#### Dependency Ordering
-
-There is an known issue with the ordering of dependencies. The progress on this issue can be found [here](https://github.com/FuelLabs/sway/issues/3131).
-
-#### Formatting
-
-There is a known bug with the formatter where an additional empty line is added to match statements. The progress on this issue can be found [here](https://github.com/FuelLabs/sway/issues/3131).
 
 ## Repository Structure
 

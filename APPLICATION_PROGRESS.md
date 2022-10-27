@@ -134,12 +134,9 @@ The information in this section is split into subsections in order to conceptual
 <details>
 <summary>English Auction</summary>
 
-<h3>Contracts ✅</h3>
+<h3>Contracts ❌</h3>
 
-- Feature complete for UI integration
   - Needs [support for StorageVec](https://github.com/FuelLabs/sway/issues/2465) in structs so that mutliple NFTs may be bid
-  - Needs [formatting bug](https://github.com/FuelLabs/sway/issues/3131) resolved for match arms
-  - Needs [ordering of dependencies](https://github.com/FuelLabs/sway/issues/3131) resolved for alphabetical ordering
 
 <h3>User Interface</h3>
 
