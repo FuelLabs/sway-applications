@@ -1,5 +1,4 @@
 use fuels::{contract::contract::CallResponse, prelude::*, tx::ContractId, tx::Salt};
-use rand::prelude::{Rng, SeedableRng, StdRng};
 
 // Load abi from json
 abigen!(EnglishAuction, "out/debug/english-auction-abi.json");
@@ -57,7 +56,7 @@ pub mod english_auction_abi_calls {
             AuctionAsset::NFTAsset(bid_asset) => contract
                 .methods()
                 .bid(auction_id, AuctionAsset::NFTAsset(bid_asset.clone()))
-                .set_contracts(&[bid_asset.contract_id.into()])
+                .set_contracts(&[bid_asset.asset_id.into()])
                 .call()
                 .await
                 .unwrap(),
@@ -65,7 +64,7 @@ pub mod english_auction_abi_calls {
                 let tx_params = TxParameters::new(None, Some(1_000_000), None);
                 let call_params = CallParameters::new(
                     Some(bid_asset.amount),
-                    Some(AssetId::from(*bid_asset.contract_id)),
+                    Some(AssetId::from(*bid_asset.asset_id)),
                     None,
                 );
 
@@ -106,7 +105,7 @@ pub mod english_auction_abi_calls {
                         seller,
                         AuctionAsset::NFTAsset(sell_asset.clone()),
                     )
-                    .set_contracts(&[sell_asset.contract_id.into(), sell_asset.contract_id.into()])
+                    .set_contracts(&[sell_asset.asset_id.into(), sell_asset.asset_id.into()])
                     .call()
                     .await
                     .unwrap()
@@ -116,7 +115,7 @@ pub mod english_auction_abi_calls {
                 let tx_params = TxParameters::new(None, Some(1_000_000), None);
                 let call_params = CallParameters::new(
                     Some(sell_asset.amount),
-                    Some(AssetId::from(*sell_asset.contract_id)),
+                    Some(AssetId::from(*sell_asset.asset_id)),
                     None,
                 );
 
@@ -140,14 +139,14 @@ pub mod english_auction_abi_calls {
         }
     }
 
-    pub async fn deposit(
+    pub async fn deposit_balance(
         auction_id: u64,
         contract: &EnglishAuction,
         identity: Identity,
     ) -> Option<AuctionAsset> {
         contract
             .methods()
-            .deposit(auction_id, identity)
+            .deposit_balance(auction_id, identity)
             .call()
             .await
             .unwrap()
@@ -163,7 +162,7 @@ pub mod english_auction_abi_calls {
             AuctionAsset::NFTAsset(withdrawing_asset) => contract
                 .methods()
                 .withdraw(auction_id)
-                .set_contracts(&[withdrawing_asset.contract_id.into()])
+                .set_contracts(&[withdrawing_asset.asset_id.into()])
                 .call()
                 .await
                 .unwrap(),
@@ -243,9 +242,22 @@ pub mod nft_abi_calls {
     }
 }
 
+pub mod paths {
+    pub const ENGLISH_AUCTION_BINARY_PATH: &str = "./out/debug/english-auction.bin";
+    pub const ENGLISH_AUCTION_CONTRACT_STORAGE_PATH: &str =
+        "./out/debug/english-auction-storage_slots.json";
+    pub const NATIVE_ASSET_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
+    pub const NFT_BINARY_PATH: &str = "../../NFT/out/debug/NFT.bin";
+    pub const NFT_CONTRACT_STORAGE_PATH: &str = "../../NFT/out/debug/NFT-storage_slots.json";
+}
+
 pub mod test_helpers {
 
     use super::*;
+    use paths::{
+        ENGLISH_AUCTION_BINARY_PATH, ENGLISH_AUCTION_CONTRACT_STORAGE_PATH,
+        NATIVE_ASSET_BINARY_PATH, NFT_BINARY_PATH, NFT_CONTRACT_STORAGE_PATH,
+    };
 
     pub async fn create_auction_copy(
         bid_asset: AuctionAsset,
@@ -294,11 +306,8 @@ pub mod test_helpers {
         (sell_amount, initial_price, reserve_price, duration)
     }
 
-    pub async fn nft_asset(contract_id: ContractId, token_id: u64) -> AuctionAsset {
-        let token = NFTAsset {
-            contract_id,
-            token_id,
-        };
+    pub async fn nft_asset(asset_id: ContractId, token_id: u64) -> AuctionAsset {
+        let token = NFTAsset { asset_id, token_id };
 
         AuctionAsset::NFTAsset(token)
     }
@@ -334,18 +343,18 @@ pub mod test_helpers {
         let wallet4 = wallets.pop().unwrap();
 
         let auction_id = Contract::deploy(
-            "./out/debug/english-auction.bin",
+            ENGLISH_AUCTION_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                "./out/debug/english-auction-storage_slots.json".to_string(),
+                ENGLISH_AUCTION_CONTRACT_STORAGE_PATH.to_string(),
             )),
         )
         .await
         .unwrap();
 
         let sell_asset_id = Contract::deploy(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            NATIVE_ASSET_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
             StorageConfiguration::default(),
@@ -354,12 +363,10 @@ pub mod test_helpers {
         .unwrap();
 
         let sell_nft_id = Contract::deploy(
-            "../../NFT/out/debug/NFT.bin",
+            NFT_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "../../NFT/out/debug/NFT-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(NFT_CONTRACT_STORAGE_PATH.to_string())),
         )
         .await
         .unwrap();
@@ -378,28 +385,22 @@ pub mod test_helpers {
             wallet: wallet2.clone(),
         };
 
-        let rng = &mut StdRng::seed_from_u64(2322u64);
-        let salt: [u8; 32] = rng.gen();
         let buy_asset_id = Contract::deploy_with_parameters(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            NATIVE_ASSET_BINARY_PATH,
             &wallet3,
             TxParameters::default(),
             StorageConfiguration::default(),
-            Salt::from(salt),
+            Salt::from([1u8; 32]),
         )
         .await
         .unwrap();
 
-        let rng = &mut StdRng::seed_from_u64(2322u64);
-        let salt: [u8; 32] = rng.gen();
         let buy_nft_id = Contract::deploy_with_parameters(
-            "../../NFT/out/debug/NFT.bin",
+            NFT_BINARY_PATH,
             &wallet3,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "../../NFT/out/debug/NFT-storage_slots.json".to_string(),
-            )),
-            Salt::from(salt),
+            StorageConfiguration::with_storage_path(Some(NFT_CONTRACT_STORAGE_PATH.to_string())),
+            Salt::from([2u8; 32]),
         )
         .await
         .unwrap();
@@ -431,11 +432,8 @@ pub mod test_helpers {
         )
     }
 
-    pub async fn token_asset(contract_id: ContractId, amount: u64) -> AuctionAsset {
-        let token = TokenAsset {
-            contract_id,
-            amount,
-        };
+    pub async fn token_asset(asset_id: ContractId, amount: u64) -> AuctionAsset {
+        let token = TokenAsset { asset_id, amount };
 
         AuctionAsset::TokenAsset(token)
     }

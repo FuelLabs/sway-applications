@@ -1,6 +1,6 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{bid, create, deposit, withdraw},
+    english_auction_abi_calls::{bid, create, deposit_balance, withdraw},
     nft_abi_calls::{approve, constructor, mint, owner_of},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
@@ -43,7 +43,7 @@ mod success {
         let _result = provider.produce_blocks(duration + 1).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, buyer1_identity.clone())
+            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone())
                 .await
                 .unwrap(),
             bid_asset
@@ -52,7 +52,7 @@ mod success {
         withdraw(auction_id, &buyer1.auction, sell_asset).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone()).await,
             None
         );
         assert_eq!(
@@ -121,7 +121,7 @@ mod success {
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, buyer1_identity.clone())
+            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone())
                 .await
                 .unwrap(),
             bid_asset
@@ -130,7 +130,7 @@ mod success {
         withdraw(auction_id, &buyer1.auction, sell_asset).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone()).await,
             None
         );
         assert_eq!(owner_of(&seller.nft, 0).await, buyer1_identity);
@@ -166,7 +166,7 @@ mod success {
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, buyer1_identity.clone())
+            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone())
                 .await
                 .unwrap(),
             bid_asset
@@ -175,7 +175,7 @@ mod success {
         withdraw(auction_id, &buyer1.auction, sell_asset).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone()).await,
             None
         );
         assert_eq!(
@@ -222,7 +222,7 @@ mod success {
         bid(auction_id, bid2_asset.clone(), &buyer2.auction).await;
 
         assert_eq!(
-            deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
                 .await
                 .unwrap(),
             bid1_asset
@@ -231,7 +231,7 @@ mod success {
         withdraw(auction_id, &buyer1.auction, bid1_asset).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, buyer1_identity.clone()).await,
             None
         );
         assert_eq!(
@@ -300,7 +300,7 @@ mod success {
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, seller_identity.clone())
+            deposit_balance(auction_id, &seller.auction, seller_identity.clone())
                 .await
                 .unwrap(),
             sell_asset
@@ -309,7 +309,7 @@ mod success {
         withdraw(auction_id, &seller.auction, bid_asset).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, seller_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, seller_identity.clone()).await,
             None
         );
         assert_eq!(owner_of(&buyer1.nft, 0).await, seller_identity);
@@ -342,7 +342,7 @@ mod success {
         let _result = provider.produce_blocks(duration + 1).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, seller_identity.clone())
+            deposit_balance(auction_id, &seller.auction, seller_identity.clone())
                 .await
                 .unwrap(),
             sell_asset
@@ -351,7 +351,7 @@ mod success {
         withdraw(auction_id, &seller.auction, sell_asset).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, seller_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, seller_identity.clone()).await,
             None
         );
         assert_eq!(
@@ -393,7 +393,7 @@ mod success {
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, seller_identity.clone())
+            deposit_balance(auction_id, &seller.auction, seller_identity.clone())
                 .await
                 .unwrap(),
             sell_asset
@@ -402,7 +402,7 @@ mod success {
         withdraw(auction_id, &seller.auction, buy_asset).await;
 
         assert_eq!(
-            deposit(auction_id, &seller.auction, seller_identity.clone()).await,
+            deposit_balance(auction_id, &seller.auction, seller_identity.clone()).await,
             None
         );
         assert_eq!(
@@ -466,13 +466,13 @@ mod success {
         bid(auction_id2, bid_asset.clone(), &buyer1.auction).await;
 
         assert_eq!(
-            deposit(auction_id1, &seller.auction, buyer1_identity.clone())
+            deposit_balance(auction_id1, &seller.auction, buyer1_identity.clone())
                 .await
                 .unwrap(),
             bid_asset
         );
         assert_eq!(
-            deposit(auction_id2, &seller.auction, buyer1_identity.clone())
+            deposit_balance(auction_id2, &seller.auction, buyer1_identity.clone())
                 .await
                 .unwrap(),
             bid_asset
@@ -481,11 +481,11 @@ mod success {
         withdraw(auction_id1, &buyer1.auction, sell_asset.clone()).await;
 
         assert_eq!(
-            deposit(auction_id1, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id1, &seller.auction, buyer1_identity.clone()).await,
             None
         );
         assert_eq!(
-            deposit(auction_id2, &seller.auction, buyer1_identity.clone())
+            deposit_balance(auction_id2, &seller.auction, buyer1_identity.clone())
                 .await
                 .unwrap(),
             bid_asset
@@ -502,11 +502,11 @@ mod success {
         withdraw(auction_id2, &buyer1.auction, sell_asset.clone()).await;
 
         assert_eq!(
-            deposit(auction_id1, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id1, &seller.auction, buyer1_identity.clone()).await,
             None
         );
         assert_eq!(
-            deposit(auction_id2, &seller.auction, buyer1_identity.clone()).await,
+            deposit_balance(auction_id2, &seller.auction, buyer1_identity.clone()).await,
             None
         );
         assert_eq!(
@@ -601,7 +601,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn when_sender_did_not_deposit() {
+    async fn when_sender_did_not_deposit_balance() {
         let (_, seller, buyer1, buyer2, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;

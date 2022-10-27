@@ -1,6 +1,6 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{bid, create, deposit},
+    english_auction_abi_calls::{bid, create, deposit_balance},
     nft_abi_calls::{approve, constructor, mint},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
@@ -58,34 +58,40 @@ mod success {
         )
         .await;
 
-        let buyer1_deposit1 = deposit(auction_id1, &buyer1.auction, buyer1_identity.clone()).await;
-        let buyer1_deposit2 = deposit(auction_id2, &buyer1.auction, buyer1_identity.clone()).await;
+        let buyer1_deposit1 =
+            deposit_balance(auction_id1, &buyer1.auction, buyer1_identity.clone()).await;
+        let buyer1_deposit2 =
+            deposit_balance(auction_id2, &buyer1.auction, buyer1_identity.clone()).await;
         assert!(buyer1_deposit1.is_none());
         assert!(buyer1_deposit2.is_none());
 
         bid(auction_id1, bid1_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit1 = deposit(auction_id1, &buyer1.auction, buyer1_identity.clone())
-            .await
-            .unwrap();
-        let buyer1_deposit2 = deposit(auction_id2, &buyer1.auction, buyer1_identity.clone()).await;
+        let buyer1_deposit1 =
+            deposit_balance(auction_id1, &buyer1.auction, buyer1_identity.clone())
+                .await
+                .unwrap();
+        let buyer1_deposit2 =
+            deposit_balance(auction_id2, &buyer1.auction, buyer1_identity.clone()).await;
         assert_eq!(buyer1_deposit1, bid1_asset);
         assert!(buyer1_deposit2.is_none());
 
         bid(auction_id2, bid2_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit1 = deposit(auction_id1, &buyer1.auction, buyer1_identity.clone())
-            .await
-            .unwrap();
-        let buyer1_deposit2 = deposit(auction_id2, &buyer1.auction, buyer1_identity.clone())
-            .await
-            .unwrap();
+        let buyer1_deposit1 =
+            deposit_balance(auction_id1, &buyer1.auction, buyer1_identity.clone())
+                .await
+                .unwrap();
+        let buyer1_deposit2 =
+            deposit_balance(auction_id2, &buyer1.auction, buyer1_identity.clone())
+                .await
+                .unwrap();
         assert_eq!(buyer1_deposit1, bid1_asset);
         assert_eq!(buyer1_deposit2, bid2_asset);
     }
 
     #[tokio::test]
-    async fn returns_nft_deposit() {
+    async fn returns_nft_deposit_balance() {
         let (
             _,
             seller,
@@ -137,19 +143,20 @@ mod success {
         )
         .await;
 
-        let buyer1_deposit = deposit(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
+        let buyer1_deposit =
+            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
         assert!(buyer1_deposit.is_none());
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         assert_eq!(buyer1_deposit, bid_asset);
     }
 
     #[tokio::test]
-    async fn returns_token_deposit() {
+    async fn returns_token_deposit_balance() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
@@ -175,12 +182,13 @@ mod success {
         )
         .await;
 
-        let buyer1_deposit = deposit(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
+        let buyer1_deposit =
+            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
         assert!(buyer1_deposit.is_none());
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let buyer1_deposit = deposit(auction_id, &buyer1.auction, buyer1_identity.clone())
+        let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         assert_eq!(buyer1_deposit, bid_asset);
