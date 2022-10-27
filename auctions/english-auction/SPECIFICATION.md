@@ -8,9 +8,9 @@ Table of Contents
             - [`create()`](#create)
             - [`withdraw()`](#withdraw)
         - [English Auction State Checks](#english-auction-state-checks)
-            - [`auction_info()`](#auction_info)
-            - [`deposit()`](#deposit)
-            - [`total_auctions()`](#total_auctions)
+            - [`auction_info()`](#auction-info)
+            - [`deposit_balance()`](#deposit-balance)
+            - [`total_auctions()`](#total-auctions)
 - [Sequence Diagram](#sequence-diagram)
 
 # Overview
