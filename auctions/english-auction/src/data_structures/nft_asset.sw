@@ -7,15 +7,15 @@ use traits::Asset;
 
 pub struct NFTAsset {
     /// The `ContractId` of the NFT that the struct is representing.
-    contract_id: ContractId,
+    asset_id: ContractId,
     /// The token id of the NFT that the struct is representing.
     token_id: u64,
 }
 
 impl NFTAsset {
-    fn new(contract_id: ContractId, token_id: u64) -> Self {
+    fn new(asset_id: ContractId, token_id: u64) -> Self {
         NFTAsset {
-            contract_id,
+            asset_id,
             token_id,
         }
     }
@@ -31,8 +31,8 @@ impl Asset for NFTAsset {
         1
     }
 
-    fn contract_id(self) -> ContractId {
-        self.contract_id
+    fn asset_id(self) -> ContractId {
+        self.asset_id
     }
 }
 
@@ -45,7 +45,7 @@ impl core::ops::Add for NFTAsset {
 
 impl core::ops::Eq for NFTAsset {
     fn eq(self, other: Self) -> bool {
-        self.contract_id() == other.contract_id()
+        self.asset_id() == other.asset_id()
     }
 }
 

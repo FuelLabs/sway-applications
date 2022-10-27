@@ -25,13 +25,13 @@ impl Asset for AuctionAsset {
         }
     }
 
-    fn contract_id(self) -> ContractId {
+    fn asset_id(self) -> ContractId {
         match self {
             AuctionAsset::NFTAsset(nft_asset) => {
-                nft_asset.contract_id()
+                nft_asset.asset_id()
             },
             AuctionAsset::TokenAsset(token_asset) => {
-                token_asset.contract_id()
+                token_asset.asset_id()
             },
         }
     }

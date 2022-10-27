@@ -9,19 +9,19 @@ dep utils;
 // TODO: Move these into alphabetical order once https://github.com/FuelLabs/sway/issues/409 is resolved
 dep data_structures/auction_asset;
 dep data_structures/auction;
+dep data_structures/token_asset;
+dep data_structures/nft_asset;
 
 use auction_asset::AuctionAsset;
 use auction::Auction;
 use errors::{AccessError, InitError, InputError, UserError};
 use events::{BidEvent, CancelAuctionEvent, CreateAuctionEvent, WithdrawEvent};
 use interface::{EnglishAuction, NFT};
+use nft_asset::NFTAsset;
 use state::State;
 use std::{
     block::height,
-    chain::auth::{
-        AuthError,
-        msg_sender,
-    },
+    chain::auth::msg_sender,
     context::{
         call_frames::{
             contract_id,
@@ -32,6 +32,7 @@ use std::{
     logging::log,
     storage::StorageMap,
 };
+use token_asset::TokenAsset;
 use utils::{transfer_asset, transfer_nft};
 
 storage {
@@ -85,12 +86,12 @@ impl EnglishAuction for Contract {
             },
             AuctionAsset::TokenAsset(token_asset) => {
                 require(bid_asset.amount() == msg_amount(), InputError::IncorrectAmountProvided);
-                require(bid_asset.contract_id() == msg_asset_id(), InputError::IncorrectAssetProvided);
+                require(bid_asset.asset_id() == msg_asset_id(), InputError::IncorrectAssetProvided);
                 // Ensure this bid is greater than initial bid and the total deposits are greater 
                 // than the current winnning bid
                 // TODO: Move this outside the match statement once StorageVec is supported in structs
-                require(token_asset.amount >= auction.initial_price, InputError::InitialPriceNotMet);
-                require(token_asset.amount > auction.bid_asset.amount(), InputError::IncorrectAmountProvided);
+                require(token_asset.amount() >= auction.initial_price, InputError::InitialPriceNotMet);
+                require(token_asset.amount() > auction.bid_asset.amount(), InputError::IncorrectAmountProvided);
             }
         }
 
@@ -113,7 +114,7 @@ impl EnglishAuction for Contract {
         log(BidEvent {
             amount: auction.bid_asset.amount(),
             auction_id: auction_id,
-            identity: sender,
+            user: sender,
         });
     }
 
@@ -151,10 +152,10 @@ impl EnglishAuction for Contract {
         // TODO: This will be combined once StorageVec is supported in structs
         match bid_asset {
             AuctionAsset::TokenAsset(asset) => {
-                require(asset.amount == 0, InitError::BidAssetAmountNotZero);
+                require(asset.amount() == 0, InitError::BidAssetAmountNotZero);
             },
             AuctionAsset::NFTAsset(asset) => {
-                require(asset.token_id == 0, InitError::BidAssetAmountNotZero);
+                require(asset.token_id() == 0, InitError::BidAssetAmountNotZero);
             }
         }
 
@@ -164,8 +165,8 @@ impl EnglishAuction for Contract {
                 // Selling tokens
                 // TODO: Move this outside the match statement when StorageVec in structs is supported
                 require(initial_price != 0, InitError::InitialPriceCannotBeZero);
-                require(msg_amount() == asset.amount, InputError::IncorrectAmountProvided);
-                require(msg_asset_id() == asset.contract_id, InputError::IncorrectAssetProvided);
+                require(msg_amount() == asset.amount(), InputError::IncorrectAmountProvided);
+                require(msg_asset_id() == asset.asset_id(), InputError::IncorrectAssetProvided);
             },
             AuctionAsset::NFTAsset(asset) => {
                 // Selling NFTs
@@ -195,7 +196,7 @@ impl EnglishAuction for Contract {
     }
 
     #[storage(read)]
-    fn deposit(auction_id: u64, identity: Identity) -> Option<AuctionAsset> {
+    fn deposit_balance(auction_id: u64, identity: Identity) -> Option<AuctionAsset> {
         storage.deposits.get((identity, auction_id))
     }
 
@@ -242,7 +243,7 @@ impl EnglishAuction for Contract {
         log(WithdrawEvent {
             asset: withdrawn_asset,
             auction_id,
-            identity: sender,
+            user: sender,
         });
     }
 

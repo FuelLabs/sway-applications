@@ -27,7 +27,7 @@ pub fn transfer_asset(asset: AuctionAsset, to: Identity) {
             transfer_nft(asset, Identity::ContractId(contract_id()), to)
         },
         AuctionAsset::TokenAsset(asset) => {
-            transfer(asset.amount, asset.contract_id, to)
+            transfer(asset.amount(), asset.asset_id(), to)
         },
     }
 }
@@ -44,10 +44,10 @@ pub fn transfer_asset(asset: AuctionAsset, to: Identity) {
 ///
 /// * The NFT transfer failed.
 pub fn transfer_nft(asset: NFTAsset, from: Identity, to: Identity) {
-    let nft_abi = abi(NFT, asset.contract_id.value);
+    let nft_abi = abi(NFT, asset.asset_id().value);
 
-    nft_abi.transfer_from(from, to, asset.token_id);
+    nft_abi.transfer_from(from, to, asset.token_id());
 
-    let owner = nft_abi.owner_of(asset.token_id);
+    let owner = nft_abi.owner_of(asset.token_id());
     require(owner == to, AccessError::NFTTransferNotApproved);
 }
