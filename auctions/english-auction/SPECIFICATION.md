@@ -34,7 +34,7 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 #### `bid()`
 
 1. Allows a user to bid upon an auction if
-    1. The auction has not passed the deadline, been cancelled, and reserve has not been met
+    1. The auction has not passed the deadline, not been cancelled, and reserve has not been met
     2. The users bids with an accepted asset
     3. The bid meets the initial price for the asset or is greater than the last bid
     4. The user's total bid is either below or meets the reserve
