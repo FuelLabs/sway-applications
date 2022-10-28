@@ -131,7 +131,7 @@ impl Exchange for Contract {
     #[storage(read, write)]
     fn constructor(pair: (ContractId, ContractId)) {
         require(storage.pair.is_none(), InitError::CannotReinitialize);
-        require(pair.0 != pair.1, InitError::IdenticalAssets);
+        require(pair.0 != pair.1, InitError::PoolAssetsCannotBeIdentical);
 
         storage.pair = Option::Some(pair);
         log(DefineAssetPairEvent { pair });
