@@ -18,24 +18,16 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let expected_liquidity = 200;
+        let deadline = 1000;
 
         let initial_pool_info = pool_info(&exchange.contract).await.value;
-        assert_eq!(initial_pool_info.asset_a_reserve, 0);
-        assert_eq!(initial_pool_info.asset_b_reserve, 0);
-        assert_eq!(initial_pool_info.liquidity, 0);
-
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_a_id).await.value,
-            0
-        );
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_b_id).await.value,
-            0
-        );
-
         let wallet_initial_balance_a = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
         let wallet_initial_balance_b = wallet.get_asset_balance(&asset_b_asset_id).await.unwrap();
         let wallet_initial_balance_lp = wallet.get_asset_balance(&lp_asset_id).await.unwrap();
+        let balance_a_in_contract_before_deposit =
+            balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let balance_b_in_contract_before_deposit =
+            balance(&exchange.contract, exchange.asset_b_id).await.value;
 
         deposit_but_do_not_add_liquidity(
             &exchange.contract,
@@ -45,43 +37,45 @@ mod success {
             deposit_amount_b,
         )
         .await;
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_a_id).await.value,
-            deposit_amount_a
-        );
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_b_id).await.value,
-            deposit_amount_b
-        );
+
+        let balance_a_in_contract_after_deposit =
+            balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let balance_b_in_contract_after_deposit =
+            balance(&exchange.contract, exchange.asset_b_id).await.value;
 
         let added_liquidity = add_liquidity(
             &exchange.contract,
             CallParameters::default(),
             TxParameters::default(),
             expected_liquidity,
-            1000,
+            deadline,
         )
         .await
         .value;
-        assert_eq!(added_liquidity, expected_liquidity);
 
         let final_pool_info = pool_info(&exchange.contract).await.value;
-        assert_eq!(final_pool_info.asset_a_reserve, deposit_amount_a);
-        assert_eq!(final_pool_info.asset_b_reserve, deposit_amount_b);
-        assert_eq!(final_pool_info.liquidity, added_liquidity);
-
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_a_id).await.value,
-            0
-        );
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_b_id).await.value,
-            0
-        );
+        let balance_a_in_contract_after_adding_liquidity =
+            balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let balance_b_in_contract_after_adding_liquidity =
+            balance(&exchange.contract, exchange.asset_b_id).await.value;
 
         let wallet_final_balance_a = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
         let wallet_final_balance_b = wallet.get_asset_balance(&asset_b_asset_id).await.unwrap();
         let wallet_final_balance_lp = wallet.get_asset_balance(&lp_asset_id).await.unwrap();
+
+        assert_eq!(initial_pool_info.asset_a_reserve, 0);
+        assert_eq!(initial_pool_info.asset_b_reserve, 0);
+        assert_eq!(initial_pool_info.liquidity, 0);
+        assert_eq!(balance_a_in_contract_before_deposit, 0);
+        assert_eq!(balance_b_in_contract_before_deposit, 0);
+        assert_eq!(balance_a_in_contract_after_deposit, deposit_amount_a);
+        assert_eq!(balance_b_in_contract_after_deposit, deposit_amount_b);
+        assert_eq!(added_liquidity, expected_liquidity);
+        assert_eq!(final_pool_info.asset_a_reserve, deposit_amount_a);
+        assert_eq!(final_pool_info.asset_b_reserve, deposit_amount_b);
+        assert_eq!(final_pool_info.liquidity, added_liquidity);
+        assert_eq!(balance_a_in_contract_after_adding_liquidity, 0);
+        assert_eq!(balance_b_in_contract_after_adding_liquidity, 0);
         assert_eq!(
             wallet_final_balance_a,
             wallet_initial_balance_a - deposit_amount_a
@@ -105,21 +99,16 @@ mod success {
         let initial_deposit_amount_a = 100;
         let initial_deposit_amount_b = 400;
         let initial_liquidity = 200;
+        let deadline = 1000;
+        let deposit_amount_a = initial_deposit_amount_a;
+        let deposit_amount_b = initial_deposit_amount_b * 2;
+        let expected_liquidity = initial_liquidity;
 
         let initial_pool_info = pool_info(&exchange.contract).await.value;
-        assert_eq!(initial_pool_info.asset_a_reserve, 0);
-        assert_eq!(initial_pool_info.asset_b_reserve, 0);
-        assert_eq!(initial_pool_info.liquidity, 0);
-
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_a_id).await.value,
-            0
-        );
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_b_id).await.value,
-            0
-        );
-
+        let balance_a_in_contract_before_deposit =
+            balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let balance_b_in_contract_before_deposit =
+            balance(&exchange.contract, exchange.asset_b_id).await.value;
         let wallet_initial_balance_a = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
         let wallet_initial_balance_b = wallet.get_asset_balance(&asset_b_asset_id).await.unwrap();
         let wallet_initial_balance_lp = wallet.get_asset_balance(&lp_asset_id).await.unwrap();
@@ -131,48 +120,49 @@ mod success {
             asset_b_asset_id,
             initial_deposit_amount_b,
             initial_liquidity,
-            1000,
+            deadline,
         )
         .await;
 
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_a_id).await.value,
-            0
-        );
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_b_id).await.value,
-            0
-        );
+        let balance_a_in_contract_after_adding_liquidity_for_the_first_time =
+            balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let balance_b_in_contract_after_adding_liquidity_for_the_first_time =
+            balance(&exchange.contract, exchange.asset_b_id).await.value;
 
-        let deposit_amount_a = initial_deposit_amount_a;
-        let deposit_amount_b = initial_deposit_amount_b * 2;
-        let expected_liquidity = initial_liquidity;
-        deposit_but_do_not_add_liquidity(
+        let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             asset_a_asset_id,
             deposit_amount_a,
             asset_b_asset_id,
             deposit_amount_b,
+            expected_liquidity,
+            deadline,
         )
         .await;
-        let added_liquidity = add_liquidity(
-            &exchange.contract,
-            CallParameters::new(None, None, Some(10_000_000)),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
-            expected_liquidity,
-            1000,
-        )
-        .await
-        .value;
-        dbg!(added_liquidity);
 
-        assert_eq!(added_liquidity, expected_liquidity);
-
+        let balance_a_in_contract_after_adding_liquidity_for_the_second_time =
+            balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let balance_b_in_contract_after_adding_liquidity_for_the_second_time =
+            balance(&exchange.contract, exchange.asset_b_id).await.value;
         let final_pool_info = pool_info(&exchange.contract).await.value;
+        let wallet_final_balance_a = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
+        let wallet_final_balance_b = wallet.get_asset_balance(&asset_b_asset_id).await.unwrap();
+        let wallet_final_balance_lp = wallet.get_asset_balance(&lp_asset_id).await.unwrap();
+
+        assert_eq!(initial_pool_info.asset_a_reserve, 0);
+        assert_eq!(initial_pool_info.asset_b_reserve, 0);
+        assert_eq!(initial_pool_info.liquidity, 0);
+        assert_eq!(balance_a_in_contract_before_deposit, 0);
+        assert_eq!(balance_b_in_contract_before_deposit, 0);
+        assert_eq!(
+            balance_a_in_contract_after_adding_liquidity_for_the_first_time,
+            0
+        );
+        assert_eq!(
+            balance_b_in_contract_after_adding_liquidity_for_the_first_time,
+            0
+        );
+        assert_eq!(added_liquidity, expected_liquidity);
         assert_eq!(
             final_pool_info.asset_a_reserve,
             initial_deposit_amount_a + deposit_amount_a
@@ -185,19 +175,14 @@ mod success {
             final_pool_info.liquidity,
             initial_liquidity + added_liquidity
         );
-
         assert_eq!(
-            balance(&exchange.contract, exchange.asset_a_id).await.value,
+            balance_a_in_contract_after_adding_liquidity_for_the_second_time,
             0
         );
         assert_eq!(
-            balance(&exchange.contract, exchange.asset_b_id).await.value,
+            balance_b_in_contract_after_adding_liquidity_for_the_second_time,
             0
         );
-
-        let wallet_final_balance_a = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
-        let wallet_final_balance_b = wallet.get_asset_balance(&asset_b_asset_id).await.unwrap();
-        let wallet_final_balance_lp = wallet.get_asset_balance(&lp_asset_id).await.unwrap();
         assert_eq!(
             wallet_final_balance_a,
             wallet_initial_balance_a - (initial_deposit_amount_a + deposit_amount_a)
@@ -221,21 +206,16 @@ mod success {
         let initial_deposit_amount_a = 100;
         let initial_deposit_amount_b = 400;
         let initial_liquidity = 200;
+        let deadline = 1000;
+        let deposit_amount_a = initial_deposit_amount_a * 2;
+        let deposit_amount_b = initial_deposit_amount_b;
+        let expected_liquidity = initial_liquidity;
 
         let initial_pool_info = pool_info(&exchange.contract).await.value;
-        assert_eq!(initial_pool_info.asset_a_reserve, 0);
-        assert_eq!(initial_pool_info.asset_b_reserve, 0);
-        assert_eq!(initial_pool_info.liquidity, 0);
-
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_a_id).await.value,
-            0
-        );
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_b_id).await.value,
-            0
-        );
-
+        let balance_a_in_contract_before_deposit =
+            balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let balance_b_in_contract_before_deposit =
+            balance(&exchange.contract, exchange.asset_b_id).await.value;
         let wallet_initial_balance_a = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
         let wallet_initial_balance_b = wallet.get_asset_balance(&asset_b_asset_id).await.unwrap();
         let wallet_initial_balance_lp = wallet.get_asset_balance(&lp_asset_id).await.unwrap();
@@ -247,48 +227,49 @@ mod success {
             asset_b_asset_id,
             initial_deposit_amount_b,
             initial_liquidity,
-            1000,
+            deadline,
         )
         .await;
 
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_a_id).await.value,
-            0
-        );
-        assert_eq!(
-            balance(&exchange.contract, exchange.asset_b_id).await.value,
-            0
-        );
+        let balance_a_in_contract_after_adding_liquidity_for_the_first_time =
+            balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let balance_b_in_contract_after_adding_liquidity_for_the_first_time =
+            balance(&exchange.contract, exchange.asset_b_id).await.value;
 
-        let deposit_amount_a = initial_deposit_amount_a * 2;
-        let deposit_amount_b = initial_deposit_amount_b;
-        let expected_liquidity = initial_liquidity;
-        deposit_but_do_not_add_liquidity(
+        let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
             asset_a_asset_id,
             deposit_amount_a,
             asset_b_asset_id,
             deposit_amount_b,
+            expected_liquidity,
+            deadline,
         )
         .await;
-        let added_liquidity = add_liquidity(
-            &exchange.contract,
-            CallParameters::new(None, None, Some(10_000_000)),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
-            expected_liquidity,
-            1000,
-        )
-        .await
-        .value;
-        dbg!(added_liquidity);
 
-        assert_eq!(added_liquidity, expected_liquidity);
-
+        let balance_a_in_contract_after_adding_liquidity_for_the_second_time =
+            balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let balance_b_in_contract_after_adding_liquidity_for_the_second_time =
+            balance(&exchange.contract, exchange.asset_b_id).await.value;
         let final_pool_info = pool_info(&exchange.contract).await.value;
+        let wallet_final_balance_a = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
+        let wallet_final_balance_b = wallet.get_asset_balance(&asset_b_asset_id).await.unwrap();
+        let wallet_final_balance_lp = wallet.get_asset_balance(&lp_asset_id).await.unwrap();
+
+        assert_eq!(initial_pool_info.asset_a_reserve, 0);
+        assert_eq!(initial_pool_info.asset_b_reserve, 0);
+        assert_eq!(initial_pool_info.liquidity, 0);
+        assert_eq!(balance_a_in_contract_before_deposit, 0);
+        assert_eq!(balance_b_in_contract_before_deposit, 0);
+        assert_eq!(
+            balance_a_in_contract_after_adding_liquidity_for_the_first_time,
+            0
+        );
+        assert_eq!(
+            balance_b_in_contract_after_adding_liquidity_for_the_first_time,
+            0
+        );
+        assert_eq!(added_liquidity, expected_liquidity);
         assert_eq!(
             final_pool_info.asset_a_reserve,
             initial_deposit_amount_a + (deposit_amount_a / 2)
@@ -301,19 +282,14 @@ mod success {
             final_pool_info.liquidity,
             initial_liquidity + added_liquidity
         );
-
         assert_eq!(
-            balance(&exchange.contract, exchange.asset_a_id).await.value,
+            balance_a_in_contract_after_adding_liquidity_for_the_second_time,
             0
         );
         assert_eq!(
-            balance(&exchange.contract, exchange.asset_b_id).await.value,
+            balance_b_in_contract_after_adding_liquidity_for_the_second_time,
             0
         );
-
-        let wallet_final_balance_a = wallet.get_asset_balance(&asset_a_asset_id).await.unwrap();
-        let wallet_final_balance_b = wallet.get_asset_balance(&asset_b_asset_id).await.unwrap();
-        let wallet_final_balance_lp = wallet.get_asset_balance(&lp_asset_id).await.unwrap();
         assert_eq!(
             wallet_final_balance_a,
             wallet_initial_balance_a - (initial_deposit_amount_a + (deposit_amount_a / 2))
@@ -338,12 +314,15 @@ mod revert {
         // call setup instead of setup_and_initialize
         let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;
+        let min_liquidity = 200;
+        let deadline = 1000;
+
         add_liquidity(
             &exchange_instance,
             CallParameters::default(),
             TxParameters::default(),
-            200,
-            1000,
+            min_liquidity,
+            deadline,
         )
         .await;
     }
@@ -412,18 +391,12 @@ mod revert {
         // min_liquidity is less than minimum_liquidity
         let min_liquidity = 0;
 
-        deposit_but_do_not_add_liquidity(
+        deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
             deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
-        )
-        .await;
-        add_liquidity(
-            &exchange.contract,
-            CallParameters::default(),
-            TxParameters::default(),
             min_liquidity,
             deadline,
         )
@@ -440,18 +413,12 @@ mod revert {
         let deadline = 1000;
         let min_liquidity = 0;
 
-        deposit_but_do_not_add_liquidity(
+        deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
             deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
-        )
-        .await;
-        add_liquidity(
-            &exchange.contract,
-            CallParameters::default(),
-            TxParameters::default(),
             min_liquidity,
             deadline,
         )
@@ -468,18 +435,12 @@ mod revert {
         let deadline = 1000;
         let min_liquidity = 0;
 
-        deposit_but_do_not_add_liquidity(
+        deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
             deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
-        )
-        .await;
-        add_liquidity(
-            &exchange.contract,
-            CallParameters::default(),
-            TxParameters::default(),
             min_liquidity,
             deadline,
         )
@@ -496,18 +457,12 @@ mod revert {
         // min_liquidity is more than 200
         let min_liquidity = 300;
 
-        deposit_but_do_not_add_liquidity(
+        deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
             deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
-        )
-        .await;
-        add_liquidity(
-            &exchange.contract,
-            CallParameters::default(),
-            TxParameters::default(),
             min_liquidity,
             deadline,
         )
@@ -522,6 +477,10 @@ mod revert {
         let initial_deposit_amount_b = 400;
         let deadline = 1000;
         let initial_liquidity = 200;
+        let deposit_amount_a = initial_deposit_amount_a;
+        let deposit_amount_b = initial_deposit_amount_b * 2;
+        // min_liquidity is more than 200
+        let min_liquidity = initial_liquidity * 2;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -533,28 +492,12 @@ mod revert {
             deadline,
         )
         .await;
-
-        let deposit_amount_a = initial_deposit_amount_a;
-        let deposit_amount_b = initial_deposit_amount_b * 2;
-        // min_liquidity is more than 200
-        let min_liquidity = initial_liquidity * 2;
-
-        deposit_but_do_not_add_liquidity(
+        deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
             deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
-        )
-        .await;
-        add_liquidity(
-            &exchange.contract,
-            CallParameters::new(None, None, Some(10_000_000)),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             min_liquidity,
             deadline,
         )
@@ -569,6 +512,10 @@ mod revert {
         let initial_deposit_amount_b = 400;
         let deadline = 1000;
         let initial_liquidity = 200;
+        let deposit_amount_a = initial_deposit_amount_a * 2;
+        let deposit_amount_b = initial_deposit_amount_b;
+        // min_liquidity is more than 200
+        let min_liquidity = initial_liquidity * 2;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -580,28 +527,12 @@ mod revert {
             deadline,
         )
         .await;
-
-        let deposit_amount_a = initial_deposit_amount_a * 2;
-        let deposit_amount_b = initial_deposit_amount_b;
-        // min_liquidity is more than 200
-        let min_liquidity = initial_liquidity * 2;
-
-        deposit_but_do_not_add_liquidity(
+        deposit_and_add_liquidity(
             &exchange.contract,
             AssetId::new(*exchange.asset_a_id),
             deposit_amount_a,
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
-        )
-        .await;
-        add_liquidity(
-            &exchange.contract,
-            CallParameters::new(None, None, Some(10_000_000)),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             min_liquidity,
             deadline,
         )

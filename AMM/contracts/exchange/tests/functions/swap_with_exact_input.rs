@@ -13,6 +13,7 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let input_amount = 10;
 
         deposit_and_add_liquidity(
@@ -22,7 +23,7 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -50,12 +51,10 @@ mod success {
                 None,
             ),
             Some(min_output),
-            1000,
+            deadline,
         )
         .await
         .value;
-
-        assert_eq!(output_amount >= min_output, true);
 
         let wallet_final_balance_a = wallet
             .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
@@ -67,6 +66,7 @@ mod success {
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
 
+        assert_eq!(output_amount >= min_output, true);
         assert_eq!(
             wallet_final_balance_a,
             wallet_initial_balance_a - input_amount
@@ -91,6 +91,7 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let input_amount = 10;
 
         deposit_and_add_liquidity(
@@ -100,7 +101,7 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -128,12 +129,10 @@ mod success {
                 None,
             ),
             Some(min_output),
-            1000,
+            deadline,
         )
         .await
         .value;
-
-        assert_eq!(output_amount >= min_output, true);
 
         let wallet_final_balance_a = wallet
             .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
@@ -145,6 +144,7 @@ mod success {
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
 
+        assert_eq!(output_amount >= min_output, true);
         assert_eq!(
             wallet_final_balance_b,
             wallet_initial_balance_b - input_amount
@@ -169,6 +169,7 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let input_amount = 10;
 
         deposit_and_add_liquidity(
@@ -178,7 +179,7 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -200,7 +201,7 @@ mod success {
                 None,
             ),
             None,
-            1000,
+            deadline,
         )
         .await
         .value;
@@ -243,12 +244,13 @@ mod revert {
         // call setup instead of setup_and_initialize
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;
+        let deadline = 1000;
 
         swap_with_exact_input(
             &exchange_instance,
             CallParameters::new(Some(1), Some(AssetId::new(*asset_a_id)), None),
             None,
-            1000,
+            deadline,
         )
         .await;
     }
@@ -260,6 +262,7 @@ mod revert {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -268,7 +271,7 @@ mod revert {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -277,7 +280,7 @@ mod revert {
             // sending invalid asset
             CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), None),
             None,
-            1000,
+            deadline,
         )
         .await;
     }
@@ -289,6 +292,7 @@ mod revert {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -297,7 +301,7 @@ mod revert {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -318,6 +322,7 @@ mod revert {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -326,7 +331,7 @@ mod revert {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -335,7 +340,7 @@ mod revert {
             // forwarding 0 as msg_amount
             CallParameters::new(Some(0), Some(AssetId::new(*exchange.asset_a_id)), None),
             None,
-            1000,
+            deadline,
         )
         .await;
     }
@@ -347,6 +352,7 @@ mod revert {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let input_amount = 10;
 
         deposit_and_add_liquidity(
@@ -356,7 +362,7 @@ mod revert {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -365,8 +371,6 @@ mod revert {
                 .await
                 .value
                 .amount;
-        // setting min too high
-        let min_output = preview_amount + 1;
 
         swap_with_exact_input(
             &exchange.contract,
@@ -375,8 +379,9 @@ mod revert {
                 Some(AssetId::new(*exchange.asset_a_id)),
                 None,
             ),
-            Some(min_output),
-            1000,
+            // setting min too high
+            Some(preview_amount + 1),
+            deadline,
         )
         .await;
     }

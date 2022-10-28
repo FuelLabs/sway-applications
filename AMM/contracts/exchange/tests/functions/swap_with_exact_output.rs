@@ -13,6 +13,7 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let output_amount = 10;
 
         deposit_and_add_liquidity(
@@ -22,7 +23,7 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -50,12 +51,10 @@ mod success {
                 None,
             ),
             output_amount,
-            1000,
+            deadline,
         )
         .await
         .value;
-
-        assert_eq!(input_amount <= max_input, true);
 
         let wallet_final_balance_a = wallet
             .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
@@ -67,6 +66,7 @@ mod success {
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
 
+        assert_eq!(input_amount <= max_input, true);
         assert_eq!(
             wallet_final_balance_a,
             wallet_initial_balance_a - input_amount
@@ -91,7 +91,9 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let output_amount = 10;
+        let forward_extra = 100;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -100,7 +102,7 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -119,7 +121,6 @@ mod success {
                 .await
                 .value
                 .amount;
-        let forward_extra = 100;
         let forward_amount = max_input + forward_extra;
 
         let input_amount = swap_with_exact_output(
@@ -130,12 +131,10 @@ mod success {
                 None,
             ),
             output_amount,
-            1000,
+            deadline,
         )
         .await
         .value;
-
-        assert_eq!(input_amount <= max_input, true);
 
         let wallet_final_balance_a = wallet
             .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
@@ -147,6 +146,7 @@ mod success {
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
 
+        assert_eq!(input_amount <= max_input, true);
         assert_eq!(
             wallet_final_balance_a,
             wallet_initial_balance_a - input_amount
@@ -171,6 +171,7 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let output_amount = 10;
 
         deposit_and_add_liquidity(
@@ -180,7 +181,7 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -208,12 +209,10 @@ mod success {
                 None,
             ),
             output_amount,
-            1000,
+            deadline,
         )
         .await
         .value;
-
-        assert_eq!(input_amount <= max_input, true);
 
         let wallet_final_balance_a = wallet
             .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
@@ -225,6 +224,7 @@ mod success {
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
 
+        assert_eq!(input_amount <= max_input, true);
         assert_eq!(
             wallet_final_balance_b,
             wallet_initial_balance_b - input_amount
@@ -249,7 +249,9 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let output_amount = 10;
+        let forward_extra = 100;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -258,7 +260,7 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -277,7 +279,6 @@ mod success {
                 .await
                 .value
                 .amount;
-        let forward_extra = 100;
         let forward_amount = max_input + forward_extra;
 
         let input_amount = swap_with_exact_output(
@@ -288,12 +289,10 @@ mod success {
                 None,
             ),
             output_amount,
-            1000,
+            deadline,
         )
         .await
         .value;
-
-        assert_eq!(input_amount <= max_input, true);
 
         let wallet_final_balance_a = wallet
             .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
@@ -305,6 +304,7 @@ mod success {
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
 
+        assert_eq!(input_amount <= max_input, true);
         assert_eq!(
             wallet_final_balance_b,
             wallet_initial_balance_b - input_amount
@@ -333,12 +333,14 @@ mod revert {
         // call setup instead of setup_and_initialize
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;
+        let output_amount = 10;
+        let deadline = 1000;
 
         swap_with_exact_output(
             &exchange_instance,
             CallParameters::new(Some(1), Some(AssetId::new(*asset_a_id)), None),
-            10,
-            1000,
+            output_amount,
+            deadline,
         )
         .await;
     }
@@ -350,6 +352,8 @@ mod revert {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
+        let output_amount = 10;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -358,7 +362,7 @@ mod revert {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -366,8 +370,8 @@ mod revert {
             &exchange.contract,
             // sending invalid asset
             CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), None),
-            10,
-            1000,
+            output_amount,
+            deadline,
         )
         .await;
     }
@@ -379,6 +383,7 @@ mod revert {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -387,7 +392,7 @@ mod revert {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -396,7 +401,7 @@ mod revert {
             CallParameters::new(Some(1), Some(AssetId::new(*exchange.asset_a_id)), None),
             // passing 0 amount
             0,
-            1000,
+            deadline,
         )
         .await;
     }
@@ -408,6 +413,8 @@ mod revert {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
+        let output_amount = 10;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -416,14 +423,14 @@ mod revert {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
         swap_with_exact_output(
             &exchange.contract,
             CallParameters::new(Some(1), Some(AssetId::new(*exchange.asset_a_id)), None),
-            10,
+            output_amount,
             // passing 0 deadline
             0,
         )
@@ -437,6 +444,8 @@ mod revert {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
+        let output_amount = 10;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -445,7 +454,7 @@ mod revert {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -453,8 +462,8 @@ mod revert {
             &exchange.contract,
             // forwarding 0 as msg_amount
             CallParameters::new(Some(0), Some(AssetId::new(*exchange.asset_a_id)), None),
-            10,
-            1000,
+            output_amount,
+            deadline,
         )
         .await;
     }
@@ -466,6 +475,7 @@ mod revert {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let output_amount = 10;
 
         deposit_and_add_liquidity(
@@ -475,7 +485,7 @@ mod revert {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -495,7 +505,7 @@ mod revert {
                 None,
             ),
             output_amount,
-            1000,
+            deadline,
         )
         .await;
     }
@@ -507,6 +517,7 @@ mod revert {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let output_amount = 10;
 
         deposit_and_add_liquidity(
@@ -516,7 +527,7 @@ mod revert {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -536,7 +547,7 @@ mod revert {
                 None,
             ),
             output_amount,
-            1000,
+            deadline,
         )
         .await;
     }

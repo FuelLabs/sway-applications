@@ -12,8 +12,8 @@ mod success {
             setup().await;
 
         constructor(&exchange_instance, (asset_a_id, asset_b_id)).await;
-
         let pool_info = pool_info(&exchange_instance).await.value;
+
         assert_eq!(pool_info.asset_a, asset_a_id);
         assert_eq!(pool_info.asset_b, asset_b_id);
     }
