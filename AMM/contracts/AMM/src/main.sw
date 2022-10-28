@@ -30,9 +30,13 @@ impl AMM for Contract {
     fn add_pool(asset_pair: (ContractId, ContractId), pool: ContractId) {
         require(storage.exchange_bytecode_root.is_some(), InitError::BytecodeRootNotSet);
         require(storage.exchange_bytecode_root.unwrap() == bytecode_root(pool), InitError::BytecodeRootDoesNotMatch);
+
         let exchange_contract = abi(Exchange, pool.into());
         let pool_info = exchange_contract.pool_info();
-        require(pool_info.asset_a == asset_pair.0 && pool_info.asset_b == asset_pair.1, InitError::PairDoesNotDefinePool);
+        let pair_matches_exchange_pair = (pool_info.asset_a == asset_pair.0 && pool_info.asset_b == asset_pair.1) || (pool_info.asset_a == asset_pair.1 && pool_info.asset_b == asset_pair.0);
+
+        require(pair_matches_exchange_pair, InitError::PairDoesNotDefinePool);
+
         let ordered_asset_pair = if asset_pair.0.into() < asset_pair.1.into() {
             asset_pair
         } else {

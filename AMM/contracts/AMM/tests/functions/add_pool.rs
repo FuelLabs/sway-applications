@@ -26,6 +26,26 @@ mod success {
     }
 
     #[tokio::test]
+    async fn adds_when_pair_unordered() {
+        let (wallet, amm_instance, assets) = setup_and_initialize().await;
+        let pair = (assets[0], assets[1]);
+
+        let exchange_contract_id =
+            deploy_and_construct_exchange_contract(&wallet, pair, None, None).await;
+
+        // add by providing the pair in the reverse order
+        add_pool(&amm_instance, (pair.1, pair.0), exchange_contract_id).await;
+
+        let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
+
+        assert_ne!(exchange_contract_id_in_storage, None);
+        assert_eq!(
+            exchange_contract_id_in_storage.unwrap(),
+            exchange_contract_id
+        );
+    }
+
+    #[tokio::test]
     async fn adds_more_than_once() {
         let (wallet, amm_instance, assets) = setup_and_initialize().await;
         let pair_1 = (assets[0], assets[1]);
