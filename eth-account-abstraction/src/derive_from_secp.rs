@@ -33,9 +33,6 @@ pub fn derive_from_secp() -> Result<()> {
 
     // let message = b"The gift of words is the gift of deception and illusion.";
     // let e = Hasher::hash(&message[..]);
-
-
-
     let data_to_sign: [u8; 32] = [0; 32];
 
     let sig = crypto::secp256k1_sign_compact_recoverable(secret.as_ref(), data_to_sign.as_ref())
