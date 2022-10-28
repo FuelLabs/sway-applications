@@ -28,8 +28,8 @@ fn main() -> bool {
     let signature: [B512; 1] = input_predicate_data(0);
 
     let spender_address = [
-        // 0xd58573593432a30a800f97ad32f877425c223a9e427ab557aab5d5bb89156db0,//fuel address
-        0x000000000000000000000000f2ec609af07cc6eec88e29a170299dd5de7e51e6//evm address
+        // 0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1,//fuel address
+        // 0x000000000000000000000000db4aa29ef306fc8d28025b838ccd3feecaedb333//evm address
     ];
 
     let mut matched_addresses = 0;
