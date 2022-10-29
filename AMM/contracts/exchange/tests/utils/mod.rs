@@ -189,7 +189,7 @@ pub mod test_helpers {
 
         let added = add_liquidity(
             exchange_instance,
-            CallParameters::new(Some(0), Some(asset_b_id), Some(10_000_000)),
+            CallParameters::new(Some(0), None, Some(10_000_000)),
             TxParameters {
                 gas_price: 0,
                 gas_limit: 100_000_000,
