@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{pool_info, preview_add_liquidity},
+    abi_calls::preview_add_liquidity,
     test_helpers::{deposit_and_add_liquidity, setup, setup_and_initialize},
 };
 use fuels::prelude::*;
@@ -10,7 +10,6 @@ mod success {
     #[tokio::test]
     async fn previews_adding_a_when_liquidity_is_zero() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-
         let amount_a = 100;
         let expected_b_to_add = amount_a;
         let expected_liquidity_asset_amount_to_receive_squared = amount_a * expected_b_to_add;
@@ -35,7 +34,6 @@ mod success {
     #[tokio::test]
     async fn previews_adding_b_when_liquidity_is_zero() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-
         let amount_b = 100;
         let expected_a_to_add = amount_b;
         let expected_liquidity_asset_amount_to_receive_squared = amount_b * expected_a_to_add;
@@ -63,6 +61,11 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let initial_liquidity = 200;
+        let deadline = 1000;
+        let preview_amount_a = 100;
+        let expected_b_to_add = preview_amount_a * deposit_amount_b / deposit_amount_a;
+        let expected_liquidity_asset_amount_to_receive =
+            preview_amount_a * initial_liquidity / deposit_amount_a;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -71,15 +74,9 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             initial_liquidity,
-            1000,
+            deadline,
         )
         .await;
-
-        let liquidity = pool_info(&exchange.contract).await.value.liquidity;
-
-        let amount_a = 100;
-        let expected_b_to_add = amount_a * deposit_amount_b / deposit_amount_a;
-        let expected_liquidity_asset_amount_to_receive = amount_a * liquidity / deposit_amount_a;
 
         let preview = preview_add_liquidity(
             &exchange.contract,
@@ -89,7 +86,7 @@ mod success {
                 gas_limit: 10_000_000,
                 maturity: 0,
             },
-            amount_a,
+            preview_amount_a,
             AssetId::new(*exchange.asset_a_id),
         )
         .await
@@ -108,6 +105,11 @@ mod success {
         let deposit_amount_a = 400;
         let deposit_amount_b = 100;
         let initial_liquidity = 200;
+        let deadline = 1000;
+        let preview_amount_a = 100;
+        let expected_b_to_add = preview_amount_a * deposit_amount_b / deposit_amount_a;
+        let expected_liquidity_asset_amount_to_receive =
+            expected_b_to_add * initial_liquidity / deposit_amount_b;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -116,16 +118,9 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             initial_liquidity,
-            1000,
+            deadline,
         )
         .await;
-
-        let liquidity = pool_info(&exchange.contract).await.value.liquidity;
-
-        let amount_a = 100;
-        let expected_b_to_add = amount_a * deposit_amount_b / deposit_amount_a;
-        let expected_liquidity_asset_amount_to_receive =
-            expected_b_to_add * liquidity / deposit_amount_b;
 
         let preview = preview_add_liquidity(
             &exchange.contract,
@@ -135,7 +130,7 @@ mod success {
                 gas_limit: 10_000_000,
                 maturity: 0,
             },
-            amount_a,
+            preview_amount_a,
             AssetId::new(*exchange.asset_a_id),
         )
         .await
@@ -154,6 +149,11 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let initial_liquidity = 200;
+        let deadline = 1000;
+        let preview_amount_b = 100;
+        let expected_a_to_add = preview_amount_b * deposit_amount_a / deposit_amount_b;
+        let expected_liquidity_asset_amount_to_receive =
+            expected_a_to_add * initial_liquidity / deposit_amount_a;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -162,16 +162,9 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             initial_liquidity,
-            1000,
+            deadline,
         )
         .await;
-
-        let liquidity = pool_info(&exchange.contract).await.value.liquidity;
-
-        let amount_b = 100;
-        let expected_a_to_add = amount_b * deposit_amount_a / deposit_amount_b;
-        let expected_liquidity_asset_amount_to_receive =
-            expected_a_to_add * liquidity / deposit_amount_a;
 
         let preview = preview_add_liquidity(
             &exchange.contract,
@@ -181,7 +174,7 @@ mod success {
                 gas_limit: 10_000_000,
                 maturity: 0,
             },
-            amount_b,
+            preview_amount_b,
             AssetId::new(*exchange.asset_b_id),
         )
         .await
@@ -200,6 +193,11 @@ mod success {
         let deposit_amount_a = 400;
         let deposit_amount_b = 100;
         let initial_liquidity = 200;
+        let deadline = 1000;
+        let preview_amount_b = 100;
+        let expected_a_to_add = preview_amount_b * deposit_amount_a / deposit_amount_b;
+        let expected_liquidity_asset_amount_to_receive =
+            preview_amount_b * initial_liquidity / deposit_amount_b;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -208,15 +206,9 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             initial_liquidity,
-            1000,
+            deadline,
         )
         .await;
-
-        let liquidity = pool_info(&exchange.contract).await.value.liquidity;
-
-        let amount_b = 100;
-        let expected_a_to_add = amount_b * deposit_amount_a / deposit_amount_b;
-        let expected_liquidity_asset_amount_to_receive = amount_b * liquidity / deposit_amount_b;
 
         let preview = preview_add_liquidity(
             &exchange.contract,
@@ -226,7 +218,7 @@ mod success {
                 gas_limit: 10_000_000,
                 maturity: 0,
             },
-            amount_b,
+            preview_amount_b,
             AssetId::new(*exchange.asset_b_id),
         )
         .await

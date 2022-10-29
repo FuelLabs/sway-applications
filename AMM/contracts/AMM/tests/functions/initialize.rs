@@ -10,10 +10,13 @@ mod success {
     #[tokio::test]
     async fn initializes() {
         let (wallet, amm_instance, assets) = setup().await;
+
         let exchange_contract_id =
-            deploy_and_construct_exchange_contract(&wallet, (assets[0], assets[1]), None).await;
+            deploy_and_construct_exchange_contract(&wallet, (assets[0], assets[1]), None, None)
+                .await;
+
         initialize(&amm_instance, exchange_contract_id).await;
-        // no way to compute the bytecode using the SDK for now
+        // TODO: no way to compute the bytecode using the SDK for now
     }
 }
 
@@ -24,10 +27,12 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_already_initialized() {
         let (wallet, amm_instance, assets) = setup_and_initialize().await;
-        let exchange_contract_id =
-            deploy_and_construct_exchange_contract(&wallet, (assets[0], assets[1]), None).await;
 
-        initialize(&amm_instance, exchange_contract_id).await;
+        let exchange_contract_id =
+            deploy_and_construct_exchange_contract(&wallet, (assets[0], assets[1]), None, None)
+                .await;
+
+        // already initialized
         initialize(&amm_instance, exchange_contract_id).await;
     }
 }

@@ -1,12 +1,10 @@
 library events;
 
-use std::contract_id::ContractId;
-
 pub struct AddLiquidityEvent {
     /// Amount of asset A added to reserves
-    a: u64,
+    asset_a: u64,
     /// Amount of asset B added to reserves
-    b: u64,
+    asset_b: u64,
     /// Amount of liquidity pool assets minted and transferred to sender
     liquidity: u64,
 }
@@ -17,9 +15,9 @@ pub struct DefineAssetPairEvent {
 }
 
 pub struct DepositEvent {
-    /// Deposited asset
+    /// Deposited asset that is either asset A or asset B
     asset: ContractId,
-    /// Deposited amount
+    /// Deposited amount of the asset that may be withdrawn of used to add liquidity
     amount: u64,
     /// New deposit balance of asset in contract
     balance: u64,
@@ -39,9 +37,9 @@ pub struct SwapEvent {
     input: ContractId,
     /// Identifier of output asset
     output: ContractId,
-    /// Sold input asset amount
+    /// Amount of the input asset that was sold
     sold: u64,
-    /// Bought output asset amount
+    /// Amount of the output asset that was bought
     bought: u64,
 }
 

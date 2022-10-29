@@ -13,7 +13,12 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let input_amount = 10;
+        // hardcoded calculation for liquidity miner fee of 333
+        let expected_min_output_amount = (input_amount * (1 - (1 / 333)) * deposit_amount_b)
+            / (deposit_amount_a + (input_amount * (1 - (1 / 333))));
+        let expected_sufficient_reserve = expected_min_output_amount <= deposit_amount_b;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -22,7 +27,7 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -31,15 +36,10 @@ mod success {
                 .await
                 .value;
 
-        // hardcoded calculation for liquidity miner fee of 333
-        let expected_min_output_amount = (input_amount * (1 - (1 / 333)) * deposit_amount_b)
-            / (deposit_amount_a + (input_amount * (1 - (1 / 333))));
-        let expected_output_reserve_sufficient = expected_min_output_amount <= deposit_amount_b;
-
         assert_eq!(preview_swap_info.amount, expected_min_output_amount);
         assert_eq!(
-            preview_swap_info.output_reserve_sufficient,
-            expected_output_reserve_sufficient
+            preview_swap_info.sufficient_reserve,
+            expected_sufficient_reserve
         );
     }
 
@@ -49,7 +49,12 @@ mod success {
         let deposit_amount_a = 100;
         let deposit_amount_b = 400;
         let liquidity = 200;
+        let deadline = 1000;
         let input_amount = 10;
+        // hardcoded calculation for liquidity miner fee of 333
+        let expected_min_output_amount = (input_amount * (1 - (1 / 333)) * deposit_amount_a)
+            / (deposit_amount_b + (input_amount * (1 - (1 / 333))));
+        let expected_sufficient_reserve = expected_min_output_amount <= deposit_amount_a;
 
         deposit_and_add_liquidity(
             &exchange.contract,
@@ -58,7 +63,7 @@ mod success {
             AssetId::new(*exchange.asset_b_id),
             deposit_amount_b,
             liquidity,
-            1000,
+            deadline,
         )
         .await;
 
@@ -67,15 +72,10 @@ mod success {
                 .await
                 .value;
 
-        // hardcoded calculation for liquidity miner fee of 333
-        let expected_min_output_amount = (input_amount * (1 - (1 / 333)) * deposit_amount_a)
-            / (deposit_amount_b + (input_amount * (1 - (1 / 333))));
-        let expected_output_reserve_sufficient = expected_min_output_amount <= deposit_amount_a;
-
         assert_eq!(preview_swap_info.amount, expected_min_output_amount);
         assert_eq!(
-            preview_swap_info.output_reserve_sufficient,
-            expected_output_reserve_sufficient
+            preview_swap_info.sufficient_reserve,
+            expected_sufficient_reserve
         );
     }
 }

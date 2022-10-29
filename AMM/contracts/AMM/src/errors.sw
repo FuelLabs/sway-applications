@@ -1,8 +1,8 @@
 library errors;
 
 pub enum InitError {
-    AlreadyInitialized: (),
-    ExchangeContractBytecodeRootInvalid: (),
-    ExchangeContractDoesNotMatchPair: (),
-    NotInitialized: (),
+    BytecodeRootAlreadySet: (),
+    BytecodeRootDoesNotMatch: (),
+    BytecodeRootNotSet: (),
+    PairDoesNotDefinePool: (),
 }

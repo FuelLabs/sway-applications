@@ -1,8 +1,9 @@
 library utils;
 
-use std::{constants::ZERO_B256, contract_id::ContractId, mem::addr_of};
+use std::{constants::ZERO_B256, mem::addr_of};
 
-// will remove once this function becomes a part of std-lib
+// this is now part of std-lib in `forc 0.28`. will remove once forc version is bumped
+// https://github.com/FuelLabs/sway/pull/3082/
 pub fn bytecode_root(contract_id: ContractId) -> b256 {
     let root: b256 = ZERO_B256;
 

@@ -24,10 +24,7 @@ use libraries::{
 };
 use std::{
     block::height,
-    chain::auth::{
-        AuthError,
-        msg_sender,
-    },
+    chain::auth::msg_sender,
     context::{
         call_frames::{
             contract_id,
@@ -37,7 +34,6 @@ use std::{
     },
     logging::log,
     math::*,
-    prelude::*,
     storage::StorageMap,
     token::{
         burn,
@@ -70,8 +66,8 @@ impl Exchange for Contract {
         require(deadline > height(), InputError::DeadlinePassed);
         require(msg_amount() == 0, InputError::AmountMustBeZero);
         require(MINIMUM_LIQUIDITY <= desired_liquidity, InputError::AmountTooLow(desired_liquidity));
-        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
 
+        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
         let sender = msg_sender().unwrap();
         let total_liquidity = storage.liquidity_pool_supply;
         let asset_a_in_deposit = storage.deposits.get((sender, asset_a_id));
@@ -80,39 +76,56 @@ impl Exchange for Contract {
         let asset_b_in_reserve = storage.reserves.get(asset_b_id);
         let mut added_a = 0;
         let mut added_b = 0;
-        let mut liquidity_to_add = 0;
+        let mut added_liquidity = 0;
+
+        // checking this because this will either result in a math error or adding no liquidity at all
         require(asset_a_in_deposit != 0, TransactionError::DepositCannotBeZero);
         require(asset_b_in_deposit != 0, TransactionError::DepositCannotBeZero);
+
+        // adding liquidity for the first time
+        // use up all the deposited amounts of assets to determine the ratio
         if asset_a_in_reserve == 0 && asset_b_in_reserve == 0 {
-            liquidity_to_add = (asset_a_in_deposit * asset_b_in_deposit).sqrt();
-            require(desired_liquidity <= liquidity_to_add, TransactionError::DesiredAmountTooHigh(desired_liquidity));
+            added_liquidity = (asset_a_in_deposit * asset_b_in_deposit).sqrt();
+            require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
             added_a = asset_a_in_deposit;
             added_b = asset_b_in_deposit;
+
+            // add amounts to reserves
             storage.reserves.insert(asset_a_id, added_a);
             storage.reserves.insert(asset_b_id, added_b);
-            mint(liquidity_to_add);
-            storage.liquidity_pool_supply = liquidity_to_add;
-            transfer(liquidity_to_add, contract_id(), sender);
-        } else {
+
+            // mint liquidity pool asset and transfer to sender
+            mint(added_liquidity);
+            storage.liquidity_pool_supply = added_liquidity;
+            transfer(added_liquidity, contract_id(), sender);
+        } else { // adding further liquidity based on current ratio
+            // attempt to add liquidity by using up the deposited asset A amount
             let b_to_attempt = multiply_div(asset_a_in_deposit, asset_b_in_reserve, asset_a_in_reserve);
+
+            // continue adding based on asset A if deposited asset B amount is sufficient
             if b_to_attempt <= asset_b_in_deposit {
-                liquidity_to_add = multiply_div(b_to_attempt, total_liquidity, asset_b_in_reserve);
-                require(desired_liquidity <= liquidity_to_add, TransactionError::DesiredAmountTooHigh(desired_liquidity));
+                added_liquidity = multiply_div(b_to_attempt, total_liquidity, asset_b_in_reserve);
+                require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
                 added_a = asset_a_in_deposit;
                 added_b = b_to_attempt;
-            } else {
+            } else { // attempt to add liquidity by using up the deposited asset B amount
                 let a_to_attempt = multiply_div(asset_b_in_deposit, asset_a_in_reserve, asset_b_in_reserve);
-                liquidity_to_add = multiply_div(a_to_attempt, total_liquidity, asset_a_in_reserve);
-                require(desired_liquidity <= liquidity_to_add, TransactionError::DesiredAmountTooHigh(desired_liquidity));
+                added_liquidity = multiply_div(a_to_attempt, total_liquidity, asset_a_in_reserve);
+                require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
                 added_a = a_to_attempt;
                 added_b = asset_b_in_deposit;
             }
+
+            // add new asset amounts to reserves
             storage.reserves.insert(asset_a_id, asset_a_in_reserve + added_a);
             storage.reserves.insert(asset_b_id, asset_b_in_reserve + added_b);
-            mint(liquidity_to_add);
-            storage.liquidity_pool_supply = total_liquidity + liquidity_to_add;
-            transfer(liquidity_to_add, contract_id(), sender);
 
+            // mint liquidity pool asset and transfer to sender
+            mint(added_liquidity);
+            storage.liquidity_pool_supply = total_liquidity + added_liquidity;
+            transfer(added_liquidity, contract_id(), sender);
+
+            // transfer remaining deposit amounts back to the sender
             let refund_a = asset_a_in_deposit - added_a;
             if refund_a > 0 {
                 transfer(refund_a, asset_a_id, sender);
@@ -122,20 +135,21 @@ impl Exchange for Contract {
                 transfer(refund_b, asset_b_id, sender);
             }
         }
+
         storage.deposits.insert((sender, asset_a_id), 0);
         storage.deposits.insert((sender, asset_b_id), 0);
         log(AddLiquidityEvent {
-            a: added_a,
-            b: added_b,
-            liquidity: liquidity_to_add,
+            asset_a: added_a,
+            asset_b: added_b,
+            liquidity: added_liquidity,
         });
-        liquidity_to_add
+        added_liquidity
     }
 
     #[storage(read, write)]
     fn constructor(pair: (ContractId, ContractId)) {
         require(storage.pair.is_none(), InitError::CannotReinitialize);
-        require(pair.0 != pair.1, InitError::IdenticalAssets);
+        require(pair.0 != pair.1, InitError::PoolAssetsCannotBeIdentical);
 
         storage.pair = Option::Some(pair);
         log(DefineAssetPairEvent { pair });
@@ -176,10 +190,10 @@ impl Exchange for Contract {
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
         let min_output = get_minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
-        let output_reserve_sufficient = min_output <= output_asset_in_reserve;
+        let sufficient_reserve = min_output <= output_asset_in_reserve;
         PreviewSwapInfo {
             amount: min_output,
-            output_reserve_sufficient: output_reserve_sufficient,
+            sufficient_reserve,
         }
     }
 
@@ -200,10 +214,10 @@ impl Exchange for Contract {
         let output_asset_in_reserve = storage.reserves.get(output_asset);
         require(exact_output <= output_asset_in_reserve, TransactionError::DesiredAmountTooHigh(exact_output));
         let max_input = get_maximum_input_for_exact_output(exact_output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
-        let output_reserve_sufficient = exact_output <= output_asset_in_reserve;
+        let sufficient_reserve = exact_output <= output_asset_in_reserve;
         PreviewSwapInfo {
             amount: max_input,
-            output_reserve_sufficient: output_reserve_sufficient,
+            sufficient_reserve,
         }
     }
 
@@ -372,8 +386,8 @@ impl Exchange for Contract {
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
         PoolInfo {
-            asset_a_id: asset_a_id,
-            asset_b_id: asset_b_id,
+            asset_a: asset_a_id,
+            asset_b: asset_b_id,
             asset_a_reserve: storage.reserves.get(asset_a_id),
             asset_b_reserve: storage.reserves.get(asset_b_id),
             liquidity: storage.liquidity_pool_supply,
@@ -385,7 +399,6 @@ impl Exchange for Contract {
         require(storage.pair.is_some(), InitError::NotInitialized);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
-
         let total_liquidity = storage.liquidity_pool_supply;
         let asset_a_in_reserve = storage.reserves.get(asset_a_id);
         let asset_b_in_reserve = storage.reserves.get(asset_b_id);

@@ -1,8 +1,6 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
-use rand::prelude::Rng;
-use std::str::FromStr;
 
-abigen!(AMM, "out/debug/amm-abi.json");
+abigen!(AMM, "out/debug/AMM-abi.json");
 abigen!(Exchange, "../exchange/out/debug/exchange-abi.json");
 
 pub mod exchange_abi_calls {
@@ -13,7 +11,6 @@ pub mod exchange_abi_calls {
         pair: (ContractId, ContractId),
     ) -> CallResponse<()> {
         let receipt = contract.methods().constructor(pair).call().await;
-        dbg!(&receipt);
         receipt.unwrap()
     }
 }
@@ -21,10 +18,10 @@ pub mod exchange_abi_calls {
 pub mod amm_abi_calls {
     use super::*;
 
-    pub async fn initialize(contract: &AMM, exchange_contract_id: ContractId) -> CallResponse<()> {
+    pub async fn initialize(contract: &AMM, exchange_id: ContractId) -> CallResponse<()> {
         contract
             .methods()
-            .initialize(exchange_contract_id)
+            .initialize(exchange_id)
             .call()
             .await
             .unwrap()
@@ -56,10 +53,10 @@ pub mod amm_abi_calls {
 }
 
 pub mod paths {
-    pub const AMM_CONTRACT_BINARY_PATH: &str = "out/debug/amm.bin";
-    pub const AMM_CONTRACT_STORAGE_PATH: &str = "out/debug/amm-storage_slots.json";
+    pub const AMM_CONTRACT_BINARY_PATH: &str = "out/debug/AMM.bin";
+    pub const AMM_CONTRACT_STORAGE_PATH: &str = "out/debug/AMM-storage_slots.json";
     pub const INVALID_EXCHANGE_CONTRACT_BINARY_PATH: &str =
-        "../exchange/tests/artifacts/faulty_implementation/out/debug/faulty_implementation.bin";
+        "../exchange/tests/artifacts/malicious_implementation/out/debug/malicious_implementation.bin";
     pub const VALID_EXCHANGE_CONTRACT_BINARY_PATH: &str = "../exchange/out/debug/exchange.bin";
 }
 
@@ -90,9 +87,9 @@ pub mod test_helpers {
         wallet: &WalletUnlocked,
         asset_pair: (ContractId, ContractId),
         valid: Option<bool>,
+        index_for_salt: Option<u8>,
     ) -> ContractId {
-        let mut rng = rand::thread_rng();
-        let salt: [u8; 32] = rng.gen();
+        let salt = [index_for_salt.unwrap_or(0u8); 32];
 
         let exchange_contract_id = Contract::deploy_with_parameters(
             if valid.unwrap_or(true) {
@@ -114,16 +111,33 @@ pub mod test_helpers {
     }
 
     pub async fn setup_and_initialize() -> (WalletUnlocked, AMM, Vec<ContractId>) {
-        let (wallet, amm_instance, assets) = setup().await;
+        let (wallet, amm_instance, asset_ids) = setup().await;
 
         initialize_amm_contract(&wallet, &amm_instance).await;
 
-        (wallet, amm_instance, assets)
+        (wallet, amm_instance, asset_ids)
     }
 
     pub async fn setup() -> (WalletUnlocked, AMM, Vec<ContractId>) {
-        let wallet = launch_provider_and_get_wallet().await;
+        // setup wallet and provider
+        let mut wallet = WalletUnlocked::new_random(None);
+        let num_assets = 3;
+        let coins_per_asset = 1;
+        let amount_per_coin = 1_000_000;
+        let (coins, asset_ids) = setup_multiple_assets_coins(
+            wallet.address(),
+            num_assets,
+            coins_per_asset,
+            amount_per_coin,
+        );
+        let asset_ids_as_contract_ids = asset_ids
+            .into_iter()
+            .map(|asset_id| ContractId::new(*asset_id))
+            .collect();
+        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None).await;
+        wallet.set_provider(provider);
 
+        // setup AMM contract
         let amm_contract_id = Contract::deploy(
             AMM_CONTRACT_BINARY_PATH,
             &wallet,
@@ -134,19 +148,6 @@ pub mod test_helpers {
         .unwrap();
         let amm_instance = AMM::new(amm_contract_id.to_string(), wallet.clone());
 
-        let base_asset_id = ContractId::zeroed();
-        let asset_id_1 = ContractId::from_str(
-            "0x562a05877b940cc69d7a9a71000a0cfdd79e93f783f198de893165278712a480",
-        )
-        .unwrap();
-        let asset_id_2 = ContractId::from_str(
-            "0x716c345b96f3c17234c73881c40df43d3d492b902a01a062c12e92eeae0284e9",
-        )
-        .unwrap();
-        (
-            wallet,
-            amm_instance,
-            vec![base_asset_id, asset_id_1, asset_id_2],
-        )
+        (wallet, amm_instance, asset_ids_as_contract_ids)
     }
 }

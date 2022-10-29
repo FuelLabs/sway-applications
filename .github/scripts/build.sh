@@ -9,10 +9,14 @@ elif [ $PROJECT = 'airdrop/simple-asset' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'AMM/contracts/AMM' ]; then
     forc build --path $PROJECT/../exchange/
-    forc build --path $PROJECT/../exchange/tests/artifacts/faulty_implementation/
+    forc build --path $PROJECT/../exchange/tests/artifacts/malicious_implementation/
     forc build --path $PROJECT
 elif [ $PROJECT = 'AMM/contracts/exchange' ]; then
     forc build --path $PROJECT
+elif [ $PROJECT = 'auctions/english-auction' ]; then
+    forc build --path $PROJECT
+    forc build --path $PROJECT/tests/artifacts/asset
+    forc build --path $PROJECT/../../NFT/
 elif [ $PROJECT = 'dao-voting' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/gov_token

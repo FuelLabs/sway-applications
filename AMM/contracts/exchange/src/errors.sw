@@ -2,8 +2,8 @@ library errors;
 
 pub enum InitError {
     CannotReinitialize: (),
-    IdenticalAssets: (),
     NotInitialized: (),
+    PoolAssetsCannotBeIdentical: (),
 }
 
 pub enum InputError {

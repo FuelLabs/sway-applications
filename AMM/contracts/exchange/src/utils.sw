@@ -1,7 +1,7 @@
 library utils;
 
 use core::num::*;
-use std::{chain::auth::{AuthError, msg_sender}, prelude::*, result::Result, u128::U128};
+use std::{chain::auth::{AuthError, msg_sender}, u128::U128};
 
 fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
     let fee = (amount / liquidity_miner_fee);

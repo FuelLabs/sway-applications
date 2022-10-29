@@ -9,7 +9,7 @@ use libraries::{
     },
     Exchange,
 };
-use std::{constants::BASE_ASSET_ID, prelude::*};
+use std::constants::BASE_ASSET_ID;
 
 storage {
     pair: Option<(ContractId, ContractId)> = Option::None(),
@@ -33,7 +33,7 @@ impl Exchange for Contract {
     fn preview_swap_with_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo {
         PreviewSwapInfo {
             amount: 0,
-            output_reserve_sufficient: false,
+            sufficient_reserve: false,
         }
     }
 
@@ -41,7 +41,7 @@ impl Exchange for Contract {
     fn preview_swap_with_exact_output(exact_output: u64, input_asset: ContractId) -> PreviewSwapInfo {
         PreviewSwapInfo {
             amount: 0,
-            output_reserve_sufficient: false,
+            sufficient_reserve: false,
         }
     }
 
@@ -80,8 +80,8 @@ impl Exchange for Contract {
             (BASE_ASSET_ID, BASE_ASSET_ID)
         };
         PoolInfo {
-            asset_a_id: pair.0,
-            asset_b_id: pair.1,
+            asset_a: pair.0,
+            asset_b: pair.1,
             asset_a_reserve: 0,
             asset_b_reserve: 0,
             liquidity: 0,

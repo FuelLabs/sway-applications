@@ -2,12 +2,11 @@
 authors = ["Fuel Labs <contact@fuel.sh>"]
 edition = "2021"
 license = "Apache-2.0"
-name = "tests"
+name = "AMM"
 version = "0.0.0"
 
 [dependencies]
 fuels = { version = "0.25", features = ["fuel-core-lib"] }
-rand = "0.8.5"
 tokio = { version = "1.21.0", features = ["rt", "macros"] }
 
 [[test]]

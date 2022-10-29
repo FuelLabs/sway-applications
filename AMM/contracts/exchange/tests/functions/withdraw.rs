@@ -12,6 +12,7 @@ mod success {
         let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
         let deposit_amount = 100;
         let asset = exchange.asset_a_id;
+        let withdraw_amount = deposit_amount;
 
         deposit(
             &exchange.contract,
@@ -25,7 +26,6 @@ mod success {
             .await
             .unwrap();
 
-        let withdraw_amount = deposit_amount;
         withdraw(&exchange.contract, deposit_amount, asset).await;
 
         let final_contract_balance = balance(&exchange.contract, asset).await.value;
@@ -49,6 +49,7 @@ mod success {
         let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
         let deposit_amount = 100;
         let asset = exchange.asset_a_id;
+        let withdraw_amount = 50;
 
         deposit(
             &exchange.contract,
@@ -66,7 +67,6 @@ mod success {
             .await
             .unwrap();
 
-        let withdraw_amount = 50;
         withdraw(&exchange.contract, withdraw_amount, exchange.asset_a_id).await;
 
         let final_contract_balance = balance(&exchange.contract, asset).await.value;
@@ -104,6 +104,7 @@ mod revert {
     async fn on_invalid_asset() {
         let (exchange, _wallet, asset_c_id) = setup_and_initialize().await;
         let deposit_amount = 100;
+
         deposit(
             &exchange.contract,
             CallParameters::new(
@@ -113,6 +114,7 @@ mod revert {
             ),
         )
         .await;
+
         // sending invalid asset
         withdraw(&exchange.contract, 0, asset_c_id).await;
     }
@@ -122,6 +124,7 @@ mod revert {
     async fn on_withdraw_more_than_deposited() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
         let deposit_amount = 100;
+
         deposit(
             &exchange.contract,
             CallParameters::new(
@@ -131,6 +134,7 @@ mod revert {
             ),
         )
         .await;
+
         // attempting to withdraw more than deposit amount
         withdraw(&exchange.contract, deposit_amount + 1, exchange.asset_a_id).await;
     }

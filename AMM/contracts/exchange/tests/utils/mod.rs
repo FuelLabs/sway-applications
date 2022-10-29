@@ -1,5 +1,4 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
-use std::str::FromStr;
 
 abigen!(Exchange, "out/debug/exchange-abi.json");
 
@@ -161,9 +160,14 @@ pub mod abi_calls {
     }
 }
 
+pub mod paths {
+    pub const EXCHANGE_CONTRACT_BINARY_PATH: &str = "out/debug/exchange.bin";
+}
+
 pub mod test_helpers {
     use super::*;
     use abi_calls::{add_liquidity, constructor, deposit};
+    use paths::EXCHANGE_CONTRACT_BINARY_PATH;
 
     pub async fn deposit_and_add_liquidity(
         exchange_instance: &Exchange,
@@ -227,50 +231,29 @@ pub mod test_helpers {
         ContractId,
         ContractId,
     ) {
+        // setup wallet and provider
         let mut wallet = WalletUnlocked::new_random(None);
-
-        let asset_a_id =
-            AssetId::from_str("0x0000000000000000000000000000000000000000000000000000000000000000")
-                .unwrap();
-        let asset_b_id =
-            AssetId::from_str("0x0000000000000000000000000000000000000000000000000000000000000001")
-                .unwrap();
-        let asset_c_id =
-            AssetId::from_str("0x0000000000000000000000000000000000000000000000000000000000000002")
-                .unwrap();
-
-        let asset_a = AssetConfig {
-            id: asset_a_id,
-            num_coins: 10,
-            coin_amount: 100000,
-        };
-
-        let asset_b = AssetConfig {
-            id: asset_b_id,
-            num_coins: 10,
-            coin_amount: 100000,
-        };
-
-        let asset_c = AssetConfig {
-            id: asset_c_id,
-            num_coins: 1,
-            coin_amount: 10,
-        };
-
-        let assets = vec![asset_a, asset_b, asset_c];
-        let coins = setup_custom_assets_coins(wallet.address(), &assets);
-        let (provider, _socket_addr) = setup_test_provider(coins, vec![], None).await;
+        let num_assets = 3;
+        let coins_per_asset = 10;
+        let amount_per_coin = 1_000_000;
+        let (coins, asset_ids) = setup_multiple_assets_coins(
+            wallet.address(),
+            num_assets,
+            coins_per_asset,
+            amount_per_coin,
+        );
+        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None).await;
         wallet.set_provider(provider);
 
+        // setup exchange contract
         let exchange_contract_id = Contract::deploy(
-            "out/debug/exchange.bin",
+            EXCHANGE_CONTRACT_BINARY_PATH,
             &wallet,
             TxParameters::default(),
             StorageConfiguration::default(),
         )
         .await
         .unwrap();
-
         let exchange_instance = Exchange::new(exchange_contract_id.to_string(), wallet.clone());
 
         let liquidity_pool_asset_id = AssetId::from(*exchange_contract_id.hash());
@@ -279,9 +262,9 @@ pub mod test_helpers {
             exchange_instance,
             wallet,
             ContractId::new(*liquidity_pool_asset_id),
-            ContractId::new(*asset_a_id),
-            ContractId::new(*asset_b_id),
-            ContractId::new(*asset_c_id),
+            ContractId::new(*asset_ids[0]),
+            ContractId::new(*asset_ids[1]),
+            ContractId::new(*asset_ids[2]),
         )
     }
 
