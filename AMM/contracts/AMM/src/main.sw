@@ -44,7 +44,7 @@ impl AMM for Contract {
         };
         storage.pools.insert(ordered_asset_pair, pool);
         log(RegisterPoolEvent {
-            pair: ordered_asset_pair,
+            asset_pair: ordered_asset_pair,
             pool,
         });
     }

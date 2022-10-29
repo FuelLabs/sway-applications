@@ -2,7 +2,7 @@ library events;
 
 pub struct RegisterPoolEvent {
     /// The pair of asset identifiers that make up the pool
-    pair: (ContractId, ContractId),
+    asset_pair: (ContractId, ContractId),
     /// The exchange contract identifier that manages the pool which also identifies the pool asset
     pool: ContractId,
 }
