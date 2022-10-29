@@ -140,7 +140,7 @@ pub mod test_helpers {
         deposit(exchange_instance, call_params).await;
 
         let call_params =
-            CallParameters::new(Some(0), Some(other_asset_id.clone()), Some(100_000_000));
+            CallParameters::new(Some(0), None, Some(10_000_000));
         let tx_params = TxParameters {
             gas_price: 0,
             gas_limit: 100_000_000,
