@@ -9,7 +9,7 @@ elif [ $PROJECT = 'airdrop/simple-asset' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'AMM/contracts/AMM' ]; then
     forc build --path $PROJECT/../exchange/
-    forc build --path $PROJECT/../exchange/tests/artifacts/faulty_implementation/
+    forc build --path $PROJECT/../exchange/tests/artifacts/malicious_implementation/
     forc build --path $PROJECT
 elif [ $PROJECT = 'AMM/contracts/exchange' ]; then
     forc build --path $PROJECT
