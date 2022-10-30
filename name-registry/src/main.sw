@@ -127,7 +127,7 @@ impl NameRegistry for Contract {
 
     #[storage(read)]
     fn expiry(name: str[8]) -> Result<u64, RegistrationValidityError> {
-        let res = match storage.names.get(name) {
+        match storage.names.get(name) {
             Option::Some(record) => {
                 match timestamp() < record.expiry {
                     true => {
@@ -141,13 +141,12 @@ impl NameRegistry for Contract {
             Option::None => {
                 Result::Err(RegistrationValidityError::NameNotRegistered)
             }
-        };
-        res
+        }
     }
 
     #[storage(read)]
     fn identity(name: str[8]) -> Result<Identity, RegistrationValidityError> {
-        let res = match storage.names.get(name) {
+        match storage.names.get(name) {
             Option::Some(record) => {
                 match timestamp() < record.expiry {
                     true => {
@@ -161,13 +160,12 @@ impl NameRegistry for Contract {
             Option::None => {
                 Result::Err(RegistrationValidityError::NameNotRegistered)
             }
-        };
-        res
+        }
     }
 
     #[storage(read)]
     fn owner(name: str[8]) -> Result<Identity, RegistrationValidityError> {
-        let res = match storage.names.get(name) {
+        match storage.names.get(name) {
             Option::Some(record) => {
                 match timestamp() < record.expiry {
                     true => {
@@ -181,7 +179,6 @@ impl NameRegistry for Contract {
             Option::None => {
                 Result::Err(RegistrationValidityError::NameNotRegistered)
             }
-        };
-        res
+        }
     }
 }
