@@ -43,6 +43,7 @@ mod revert {
         get_contract_instance,
     };
     use fuels::prelude::*;
+    
     #[tokio::test]
     #[should_panic]
     async fn cant_extend_insufficient_payment() {

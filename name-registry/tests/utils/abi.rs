@@ -1,10 +1,10 @@
 use core::fmt::Debug;
 use fuels::{
     client::types::TransactionStatus,
-    contract::contract::{CallResponse, ContractCallHandler},
+    contract::contract::{CallResponse, ContractCallHandler}, prelude::*,
 };
 
-use crate::utils::*;
+use crate::utils::{NameRegistry, RegistrationValidityError};
 
 async fn get_timestamp_and_call<T>(handler: ContractCallHandler<T>) -> (CallResponse<T>, u64)
 where
