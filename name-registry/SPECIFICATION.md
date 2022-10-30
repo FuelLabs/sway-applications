@@ -24,24 +24,25 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 A user can register a name for themselves
 
-1. If the name is not already registered
-2. If the payment is sufficient for the duration
-3. If the payment is in the correct asset
+1. If the name is available for registration (ie unregistered or expired)
+2. If the payment is in the correct asset
+3. If the payment is sufficient for the duration
 
 ### `extend()`
 
 Any user can extend the registration duration of a given name
 
-1. If the payment is sufficient for the duration
+1. If the given name is already registered
 2. If the payment is in the correct asset
+3. If the payment is sufficient for the duration
 
 ### `set_identity()`
 
-The owner of the name can change the identity to which the name resolves
+Allows the owner to change the resolving identity
 
 ### `set_owner()`
 
-The owner of the name can change the owner of the name
+Allows the owner to transfer ownership of the registered name
 
 ## Information that is presented to users
 
