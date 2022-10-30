@@ -1,5 +1,9 @@
 library interface;
 
+dep errors;
+
+use errors::RegistrationValidityError;
+
 abi NameRegistry {
     /// Extends the duration of ownership for the name
     ///
@@ -71,7 +75,7 @@ abi NameRegistry {
     ///
     /// * If the name is not registered
     #[storage(read)]
-    fn expiry(name: str[8]) -> u64;
+    fn expiry(name: str[8]) -> Result<u64, RegistrationValidityError>;
 
     /// Returns the identity which the name resolves to
     ///
@@ -83,7 +87,7 @@ abi NameRegistry {
     ///
     /// * If the name is not registered
     #[storage(read)]
-    fn identity(name: str[8]) -> Identity;
+    fn identity(name: str[8]) -> Result<Identity, RegistrationValidityError>;
 
     /// Returns the owner of the name
     ///
@@ -95,5 +99,5 @@ abi NameRegistry {
     ///
     /// * If the name is not registered
     #[storage(read)]
-    fn owner(name: str[8]) -> Identity;
+    fn owner(name: str[8]) -> Result<Identity, RegistrationValidityError>;
 }

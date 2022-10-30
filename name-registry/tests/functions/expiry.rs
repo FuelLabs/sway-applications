@@ -20,8 +20,8 @@ mod success {
         let new_expiry_response = expiry(&instance, &name).await;
 
         assert_eq!(
-            previous_expiry_response.0.value + 5000,
-            new_expiry_response.0.value
+            previous_expiry_response.0.value.unwrap() + 5000,
+            new_expiry_response.0.value.unwrap()
         );
     }
 }
@@ -30,12 +30,13 @@ mod revert {
     use crate::utils::{abi::expiry, get_contract_instance};
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "`Result::unwrap()` on an `Err` value")]
     async fn cant_get_expiry() {
         let (instance, _id, _wallet, _wallet2) = get_contract_instance().await;
 
         let name = String::from("SwaySway");
 
-        let _expiry = expiry(&instance, &name).await;
+        let expiry = expiry(&instance, &name).await;
+        expiry.0.value.unwrap();
     }
 }

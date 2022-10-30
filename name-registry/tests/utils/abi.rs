@@ -46,7 +46,7 @@ pub async fn extend(
     .await
 }
 
-pub async fn expiry(instance: &NameRegistry, name: &String) -> (CallResponse<u64>, u64) {
+pub async fn expiry(instance: &NameRegistry, name: &String) -> (CallResponse<Result<u64, RegistrationValidityError>>, u64) {
     get_timestamp_and_call(
         instance
             .methods()
@@ -55,7 +55,7 @@ pub async fn expiry(instance: &NameRegistry, name: &String) -> (CallResponse<u64
     .await
 }
 
-pub async fn identity(instance: &NameRegistry, name: &String) -> (CallResponse<Identity>, u64) {
+pub async fn identity(instance: &NameRegistry, name: &String) -> (CallResponse<Result<Identity, RegistrationValidityError>>, u64) {
     get_timestamp_and_call(
         instance
             .methods()
@@ -64,7 +64,7 @@ pub async fn identity(instance: &NameRegistry, name: &String) -> (CallResponse<I
     .await
 }
 
-pub async fn owner(instance: &NameRegistry, name: &String) -> (CallResponse<Identity>, u64) {
+pub async fn owner(instance: &NameRegistry, name: &String) -> (CallResponse<Result<Identity, RegistrationValidityError>>, u64) {
     get_timestamp_and_call(
         instance
             .methods()

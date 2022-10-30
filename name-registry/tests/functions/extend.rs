@@ -25,7 +25,7 @@ mod success {
 
         let new_expiry = expiry(&instance, &name).await;
 
-        assert_eq!(previous_expiry.0.value + 5000, new_expiry.0.value);
+        assert_eq!(previous_expiry.0.value.unwrap() + 5000, new_expiry.0.value.unwrap());
         assert_eq!(
             log,
             vec![RegistrationExtendedEvent {

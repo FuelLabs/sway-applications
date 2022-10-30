@@ -1,15 +1,15 @@
 library errors;
 
-pub enum AssetErrors {
+pub enum AssetError {
     InsufficientPayment: (),
     IncorrectAssetSent: (),
 }
 
-pub enum AuthorisationErrors {
+pub enum AuthorisationError {
     SenderNotOwner: (),
 }
 
-pub enum ValidityErrors {
+pub enum RegistrationValidityError {
     NameNotRegistered: (),
     NameExpired: (),
     NameNotExpired: (),

@@ -6,7 +6,7 @@ dep events;
 dep interface;
 
 use data_structures::Record;
-use errors::{AssetErrors, AuthorisationErrors, ValidityErrors};
+use errors::{AssetError, AuthorisationError, RegistrationValidityError};
 use events::{
     IdentityChangedEvent,
     NameRegisteredEvent,
@@ -17,7 +17,6 @@ use interface::NameRegistry;
 use std::{
     block::timestamp,
     chain::auth::msg_sender,
-    constants::BASE_ASSET_ID,
     context::call_frames::msg_asset_id,
     context::msg_amount,
     logging::log,
@@ -29,29 +28,25 @@ storage {
     names: StorageMap<str[8], Option<Record>> = StorageMap {},
 }
 
-const ASSET_ID = ~Address::from(ASSET_B256);
+const ASSET_ID = ~ContractId::from(ASSET_B256);
 
 // TODO: Change the static 8 length str with a dynamic string when possible
 impl NameRegistry for Contract {
     #[storage(read, write)]
     fn extend(name: str[8], duration: u64) {
-        require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
-        require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetErrors::InsufficientPayment);
-        require(msg_asset_id() == BASE_ASSET_ID, AssetErrors::IncorrectAssetSent);
+        require(storage.names.get(name).is_some(), RegistrationValidityError::NameNotRegistered);        
+        require(msg_asset_id() == ASSET_ID, AssetError::IncorrectAssetSent);
+        require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetError::InsufficientPayment);
 
-        let previous_record = storage.names.get(name).unwrap();
-        let new_record = Record {
-            expiry: previous_record.expiry + duration,
-            identity: previous_record.identity,
-            owner: previous_record.owner,
-        };
+        let mut record = storage.names.get(name).unwrap();
+        record.expiry = record.expiry + duration;
 
-        storage.names.insert(name, Option::Some(new_record));
+        storage.names.insert(name, Option::Some(record));
 
         log(RegistrationExtendedEvent {
             duration,
             name,
-            new_expiry: new_record.expiry,
+            new_expiry: record.expiry,
         });
     }
 
@@ -64,12 +59,12 @@ impl NameRegistry for Contract {
     ) {
         if storage.names.get(name).is_some() {
             let record = storage.names.get(name).unwrap();
-            require(timestamp() > record.expiry, ValidityErrors::NameNotExpired);
+            require(timestamp() > record.expiry, RegistrationValidityError::NameNotExpired);
         }
 
-        require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetErrors::InsufficientPayment);
-        require(msg_asset_id() == BASE_ASSET_ID, AssetErrors::IncorrectAssetSent);
-
+        require(msg_asset_id() == ASSET_ID, AssetError::IncorrectAssetSent);
+        require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetError::InsufficientPayment);
+        
         let record = Record {
             expiry: timestamp() + duration,
             identity,
@@ -88,10 +83,10 @@ impl NameRegistry for Contract {
 
     #[storage(read, write)]
     fn set_identity(name: str[8], identity: Identity) {
-        require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
+        require(storage.names.get(name).is_some(), RegistrationValidityError::NameNotRegistered);
         let previous_record = storage.names.get(name).unwrap();
-        require(timestamp() < previous_record.expiry, ValidityErrors::NameExpired);
-        require(previous_record.owner == msg_sender().unwrap(), AuthorisationErrors::SenderNotOwner);
+        require(timestamp() < previous_record.expiry, RegistrationValidityError::NameExpired);
+        require(previous_record.owner == msg_sender().unwrap(), AuthorisationError::SenderNotOwner);
 
         let new_record = Record {
             expiry: previous_record.expiry,
@@ -109,16 +104,16 @@ impl NameRegistry for Contract {
     }
 
     #[storage(read, write)]
-    fn set_owner(name: str[8], new_owner: Identity) {
-        require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
+    fn set_owner(name: str[8], owner: Identity) {
+        require(storage.names.get(name).is_some(), RegistrationValidityError::NameNotRegistered);
         let previous_record = storage.names.get(name).unwrap();
-        require(timestamp() < previous_record.expiry, ValidityErrors::NameExpired);
-        require(previous_record.owner == msg_sender().unwrap(), AuthorisationErrors::SenderNotOwner);
+        require(timestamp() < previous_record.expiry, RegistrationValidityError::NameExpired);
+        require(previous_record.owner == msg_sender().unwrap(), AuthorisationError::SenderNotOwner);
 
         let new_record = Record {
             expiry: previous_record.expiry,
             identity: previous_record.identity,
-            owner: new_owner,
+            owner,
         };
 
         storage.names.insert(name, Option::Some(new_record));
@@ -131,26 +126,62 @@ impl NameRegistry for Contract {
     }
 
     #[storage(read)]
-    fn expiry(name: str[8]) -> u64 {
-        require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
-        let record = storage.names.get(name).unwrap();
-        require(timestamp() < record.expiry, ValidityErrors::NameExpired);
-        record.expiry
+    fn expiry(name: str[8]) -> Result<u64, RegistrationValidityError> {
+        let res = match storage.names.get(name) {
+            Option::Some(record) => {
+                match timestamp() < record.expiry {
+                    true => {
+                        Result::Ok(record.expiry)
+                    },
+                    false => {
+                        Result::Err(RegistrationValidityError::NameExpired)
+                    }
+                }
+            },
+            Option::None => {
+                Result::Err(RegistrationValidityError::NameNotRegistered)
+            }
+        };
+        res
     }
 
     #[storage(read)]
-    fn identity(name: str[8]) -> Identity {
-        require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
-        let record = storage.names.get(name).unwrap();
-        require(timestamp() < record.expiry, ValidityErrors::NameExpired);
-        record.identity
+    fn identity(name: str[8]) -> Result<Identity, RegistrationValidityError> {
+        let res = match storage.names.get(name) {
+            Option::Some(record) => {
+                match timestamp() < record.expiry {
+                    true => {
+                        Result::Ok(record.identity)
+                    },
+                    false => {
+                        Result::Err(RegistrationValidityError::NameExpired)
+                    }
+                }
+            },
+            Option::None => {
+                Result::Err(RegistrationValidityError::NameNotRegistered)
+            }
+        };
+        res
     }
 
     #[storage(read)]
-    fn owner(name: str[8]) -> Identity {
-        require(storage.names.get(name).is_some(), ValidityErrors::NameNotRegistered);
-        let record = storage.names.get(name).unwrap();
-        require(timestamp() < record.expiry, ValidityErrors::NameExpired);
-        record.owner
+    fn owner(name: str[8]) -> Result<Identity, RegistrationValidityError> {
+        let res = match storage.names.get(name) {
+            Option::Some(record) => {
+                match timestamp() < record.expiry {
+                    true => {
+                        Result::Ok(record.owner)
+                    },
+                    false => {
+                        Result::Err(RegistrationValidityError::NameExpired)
+                    }
+                }
+            },
+            Option::None => {
+                Result::Err(RegistrationValidityError::NameNotRegistered)
+            }
+        };
+        res
     }
 }

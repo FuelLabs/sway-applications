@@ -18,7 +18,7 @@ mod success {
         let previous_owner = owner(&instance, &name).await;
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
 
-        assert_eq!(previous_owner.0.value, wallet_identity);
+        assert_eq!(previous_owner.0.value.unwrap(), wallet_identity);
 
         let wallet2 = WalletUnlocked::new_random(None);
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
@@ -27,7 +27,7 @@ mod success {
 
         let new_owner = owner(&instance, &name).await;
 
-        assert_eq!(new_owner.0.value, wallet_identity2);
+        assert_eq!(new_owner.0.value.unwrap(), wallet_identity2);
     }
 }
 
@@ -35,12 +35,13 @@ mod revert {
     use crate::utils::{abi::owner, get_contract_instance};
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "`Result::unwrap()` on an `Err` value")]
     async fn cant_get_owner() {
         let (instance, _id, _wallet, _wallet2) = get_contract_instance().await;
 
         let name = String::from("SwaySway");
 
-        let _expiry = owner(&instance, &name).await;
+        let owner = owner(&instance, &name).await;
+        owner.0.value.unwrap();
     }
 }
