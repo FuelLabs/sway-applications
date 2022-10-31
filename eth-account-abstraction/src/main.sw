@@ -1,47 +1,27 @@
 script;
 
 use std::{
-    address::Address,
     b512::B512, 
-    constants::ZERO_B256, 
-    ecr::{
-        ec_recover,
-        ec_recover_address,
-    },
-    hash::{
-        keccak256,
-        sha256,
-    },
-    inputs::input_predicate_data,
+    constants::ZERO_B256,
     vm::evm::{
         evm_address::EvmAddress,
         ecr::ec_recover_evm_address,
     },
 };
 
-fn main(signature: B512) -> (B512, B512, b256, b256) {
+// Recover the EVM address from the input signature and check if it matched 
+// the target address
+fn main(signature: B512) -> bool {
     let message_hash = ZERO_B256;
 
-    //pK
-    let public_key_result = ec_recover(signature, message_hash);
-    require(public_key_result.is_ok(),"ec recover failed");
-    let public_key = public_key_result.unwrap();
+    let target_address = ~EvmAddress::from(
+        0x44c646ac0426710470343f1cdb4aa29ef306fc8d28025b838ccd3feecaedb333
+    );
 
-    //fuel address
-    let fuel_address_result = ec_recover_address(signature, message_hash);
-    require(fuel_address_result.is_ok(),"ec recover address failed");
-    let fuel_address = fuel_address_result.unwrap();
-
-    //evm address
+    //recover evm address from signature
     let evm_address_result = ec_recover_evm_address(signature, message_hash);
     require(evm_address_result.is_ok(),"ec recover evm address failed");
     let evm_address = evm_address_result.unwrap();
 
-    //return
-    (
-        signature,
-        public_key,
-        fuel_address.value,
-        evm_address.value,
-    )
+    evm_address == target_address
 }
