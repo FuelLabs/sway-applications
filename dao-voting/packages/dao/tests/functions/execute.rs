@@ -9,7 +9,7 @@ use fuels::{
 
 abigen!(
     Governor,
-    "../governor_contract/out/debug/governor_contract-abi.json"
+    "packages/governor_contract/out/debug/governor_contract-abi.json"
 );
 
 mod success {
@@ -45,14 +45,13 @@ mod success {
         .await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
-        execute(&user.dao_voting, governor_id, 0).await;
+        execute(&user.dao_voting, Bech32ContractId::from(governor_id), 0).await;
 
-        let governor = GovernorBuilder::new(
+        let governor = Governor::new(
             Bech32ContractId::from(governor_id).to_string(),
             deployer.wallet.clone(),
-        )
-        .build();
-        let (var1, var2) = governor.vars().call().await.unwrap().value;
+        );
+        let (var1, var2) = governor.methods().vars().call().await.unwrap().value;
         assert_eq!(var1, 42);
         assert_eq!(var2, true);
     }
@@ -66,7 +65,7 @@ mod revert {
     async fn on_invalid_proposal_id() {
         let (_gov_token, _gov_token_id, _deployer, user, _asset_amount, governor_id) =
             setup().await;
-        execute(&user.dao_voting, governor_id, 0).await;
+        execute(&user.dao_voting, Bech32ContractId::from(governor_id), 0).await;
     }
 
     #[tokio::test]
@@ -100,8 +99,8 @@ mod revert {
         .await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
-        execute(&user.dao_voting, governor_id, 0).await;
-        execute(&user.dao_voting, governor_id, 0).await;
+        execute(&user.dao_voting, Bech32ContractId::from(governor_id), 0).await;
+        execute(&user.dao_voting, Bech32ContractId::from(governor_id), 0).await;
     }
 
     #[tokio::test]
@@ -135,7 +134,7 @@ mod revert {
         .await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
-        execute(&user.dao_voting, governor_id, 0).await;
+        execute(&user.dao_voting, Bech32ContractId::from(governor_id), 0).await;
     }
 
     #[tokio::test]
@@ -169,7 +168,7 @@ mod revert {
         .await;
         vote(&user.dao_voting, false, 0, asset_amount / 2).await;
 
-        execute(&user.dao_voting, governor_id, 0).await;
+        execute(&user.dao_voting, Bech32ContractId::from(governor_id), 0).await;
     }
 
     // TODO add test for reverting on a failed proposal call

@@ -74,7 +74,3 @@ As the simple-asset project has been compiled with the previous command, there i
 The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the airdrop.
 
 Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
-
-## Contributing
-
-Check [CONTRIBUTING.md](../CONTRIBUTING.md) for more info!

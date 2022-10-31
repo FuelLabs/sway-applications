@@ -144,10 +144,7 @@ impl DaoVoting for Contract {
 
         require(vote_amount <= user_balance, UserError::InsufficientBalance);
 
-        let mut votes = storage.votes.get((
-            user,
-            proposal_id,
-        ));
+        let mut votes = storage.votes.get((user, proposal_id, ));
         if approve {
             proposal.yes_votes += vote_amount;
             votes.yes_votes += vote_amount;
@@ -157,10 +154,7 @@ impl DaoVoting for Contract {
         };
 
         storage.balances.insert(user, user_balance - vote_amount);
-        storage.votes.insert((
-            user,
-            proposal_id,
-        ), votes);
+        storage.votes.insert((user, proposal_id, ), votes);
         storage.proposals.insert(proposal_id, proposal);
 
         log(VoteEvent {
@@ -210,15 +204,9 @@ impl DaoVoting for Contract {
         require(proposal.deadline < height(), ProposalError::ProposalStillActive);
 
         let user: Identity = msg_sender().unwrap();
-        let votes = storage.votes.get((
-            user,
-            proposal_id,
-        ));
+        let votes = storage.votes.get((user, proposal_id, ));
 
-        storage.votes.insert((
-            user,
-            proposal_id,
-        ), Votes {
+        storage.votes.insert((user, proposal_id, ), Votes {
             no_votes: 0,
             yes_votes: 0,
         });
@@ -246,10 +234,7 @@ impl DaoVoting for Contract {
     #[storage(read)]
     fn user_votes(proposal_id: u64, user: Identity) -> Votes {
         validate_id(proposal_id, storage.proposal_count);
-        storage.votes.get((
-            user,
-            proposal_id,
-        ))
+        storage.votes.get((user, proposal_id, ))
     }
 
     #[storage(read)]

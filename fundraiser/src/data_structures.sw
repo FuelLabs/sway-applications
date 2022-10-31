@@ -1,16 +1,13 @@
 library data_structures;
 
-use std::{
-    contract_id::ContractId,
-    identity::Identity,
-};
+use std::{contract_id::ContractId, identity::Identity};
 
 /// Used to track the total amount pledged to an asset
 pub struct AssetInfo {
     /// The amount that is currently pledged
     amount: u64,
-    /// Given that an asset can be set in a campaign and never pledge to we this field to handle
-    /// control flow
+    /// Given that an asset can be set in a campaign and never pledged to,
+    /// we need this field to handle control flow
     exists: bool,
 }
 

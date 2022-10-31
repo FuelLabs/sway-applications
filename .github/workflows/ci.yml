@@ -13,9 +13,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CARGO_TERM_COLOR: always
   REGISTRY: ghcr.io
   RUST_VERSION: 1.63.0
+  FORC_VERSION: 0.25.2
+  CORE_VERSION: 0.10.1
   PATH_TO_SCRIPTS: .github/scripts
 
 jobs:
@@ -39,7 +40,7 @@ jobs:
 
     strategy:
       matrix:
-        project: ["airdrop/airdrop-distributor", "airdrop/simple-asset", "dao-voting/dao", "dao-voting/governor_abi", "dao-voting/governor_contract", "escrow", "fundraiser", "multisig-wallet", "NFT", "oracle"]
+        project: ["airdrop/airdrop-distributor", "airdrop/simple-asset", "auctions/english-auction", "dao-voting/dao", "dao-voting/governor_abi, "dao-voting/governor_contract", "escrow", "fundraiser", "multisig-wallet", "NFT", "oracle"]
 
     steps:
       - name: Checkout repository
@@ -72,7 +73,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.2.0
         with:
           name: my-toolchain
-          components: forc@0.24.1, fuel-core@0.10.1
+          components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
 
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
@@ -89,3 +90,53 @@ jobs:
         run: |
           cd ${{ matrix.project }}
           forc test
+
+  contributing-book:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        project: [
+          ".docs/contributing-book/src/code/bad_documentation", 
+          ".docs/contributing-book/src/code/connect_four",
+          ".docs/contributing-book/src/code/style_guide",
+        ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ env.RUST_VERSION }}
+          override: true
+
+      - name: Init cache
+        uses: Swatinem/rust-cache@v1
+
+      - name: Install a modern linker (mold)
+        uses: rui314/setup-mold@v1
+
+      - name: Force Rust to use mold globally for compilation
+        run: |
+          touch ~/.cargo/config.toml
+          echo "[target.x86_64-unknown-linux-gnu]" > ~/.cargo/config.toml
+          echo 'linker = "clang"' >> ~/.cargo/config.toml
+          echo 'rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/mold"]' >> ~/.cargo/config.toml
+
+      - name: Install rustfmt
+        run: rustup component add rustfmt
+
+      - name: Install Fuel toolchain
+        uses: FuelLabs/action-fuel-toolchain@v0.2.0
+        with:
+          name: my-toolchain
+          components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
+
+      - name: Check Sway formatting
+        run: forc fmt --path ${{ matrix.project }} --check
+
+      - name: Build Sway
+        run: forc build --path ${{ matrix.project }}

@@ -1,8 +1,9 @@
 use crate::utils::{
     abi_calls::{constructor, create_proposal, proposal},
     test_helpers::{proposal_transaction, setup},
-    Identity, ProposalInfo,
+    ProposalInfo,
 };
+use fuels::prelude::Identity;
 
 mod success {
     use super::*;

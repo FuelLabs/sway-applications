@@ -1,9 +1,12 @@
 use crate::utils::{
     abi_calls::{constructor, create_proposal, deposit, proposal, user_balance, user_votes, vote},
     test_helpers::{mint, proposal_transaction, setup},
-    Identity, ProposalInfo, Votes,
+    ProposalInfo, Votes,
 };
-use fuels::{prelude::CallParameters, tx::AssetId};
+use fuels::{
+    prelude::{CallParameters, Identity},
+    tx::AssetId,
+};
 
 mod success {
     use super::*;
