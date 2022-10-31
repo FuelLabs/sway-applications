@@ -7,4 +7,6 @@ pub struct Game {
     PlayerOne: Address,
     PlayerTwo: Address,
     winner: Option<Address>,
+    player_turn: u64,
+    move_counter: u64,
 }
