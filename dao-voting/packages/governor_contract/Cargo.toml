@@ -1,5 +1,5 @@
 [project]
-name = "dao-voting"
+name = "governor"
 version = "0.0.0"
 authors = ["Fuel Labs <contact@fuel.sh>"]
 edition = "2021"
