@@ -1,5 +1,5 @@
 [project]
-name = "swap_route"
+name = "swap_with_exact_input_along_route"
 version = "0.1.0"
 authors = ["Bikem"]
 edition = "2021"
