@@ -1,19 +1,19 @@
 mod success {
     use crate::utils::{
         abi::{owner, register, set_owner},
-        get_contract_instance, string_to_ascii, OwnerChangedEvent,
+        setup, string_to_ascii, OwnerChangedEvent, REGISTER_DURATION
     };
     use fuels::prelude::*;
 
     #[tokio::test]
     async fn can_set_owner() {
-        let (instance, _id, wallet, _wallet2) = get_contract_instance().await;
+        let (instance, _id, wallet, _wallet2) = setup().await;
 
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
 
         let name = String::from("SwaySway");
 
-        register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
+        register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
 
         let previous_owner = owner(&instance, &name).await;
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
@@ -46,20 +46,20 @@ mod success {
 mod revert {
     use crate::utils::{
         abi::{register, set_owner},
-        get_contract_instance,
+        setup, REGISTER_DURATION
     };
     use fuels::prelude::*;
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn cant_set_owner() {
-        let (instance, _id, wallet, wallet2) = get_contract_instance().await;
+        let (instance, _id, wallet, wallet2) = setup().await;
 
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
 
         let name = String::from("SwaySway");
 
-        register(&instance, &name, 5000, &wallet_identity, &wallet_identity).await;
+        register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
 
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 

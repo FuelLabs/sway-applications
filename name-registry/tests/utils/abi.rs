@@ -1,7 +1,8 @@
 use core::fmt::Debug;
 use fuels::{
     client::types::TransactionStatus,
-    contract::contract::{CallResponse, ContractCallHandler}, prelude::*,
+    contract::contract::{CallResponse, ContractCallHandler},
+    prelude::*,
 };
 
 use crate::utils::{NameRegistry, RegistrationValidityError};
@@ -46,7 +47,10 @@ pub async fn extend(
     .await
 }
 
-pub async fn expiry(instance: &NameRegistry, name: &String) -> (CallResponse<Result<u64, RegistrationValidityError>>, u64) {
+pub async fn expiry(
+    instance: &NameRegistry,
+    name: &String,
+) -> (CallResponse<Result<u64, RegistrationValidityError>>, u64) {
     get_timestamp_and_call(
         instance
             .methods()
@@ -55,7 +59,13 @@ pub async fn expiry(instance: &NameRegistry, name: &String) -> (CallResponse<Res
     .await
 }
 
-pub async fn identity(instance: &NameRegistry, name: &String) -> (CallResponse<Result<Identity, RegistrationValidityError>>, u64) {
+pub async fn identity(
+    instance: &NameRegistry,
+    name: &String,
+) -> (
+    CallResponse<Result<Identity, RegistrationValidityError>>,
+    u64,
+) {
     get_timestamp_and_call(
         instance
             .methods()
@@ -64,7 +74,13 @@ pub async fn identity(instance: &NameRegistry, name: &String) -> (CallResponse<R
     .await
 }
 
-pub async fn owner(instance: &NameRegistry, name: &String) -> (CallResponse<Result<Identity, RegistrationValidityError>>, u64) {
+pub async fn owner(
+    instance: &NameRegistry,
+    name: &String,
+) -> (
+    CallResponse<Result<Identity, RegistrationValidityError>>,
+    u64,
+) {
     get_timestamp_and_call(
         instance
             .methods()

@@ -5,7 +5,10 @@ use fuels::{prelude::*, tx::ContractId};
 // Load abi from json
 abigen!(NameRegistry, "out/debug/name-registry-abi.json");
 
-pub async fn get_contract_instance() -> (NameRegistry, ContractId, WalletUnlocked, WalletUnlocked) {
+pub const REGISTER_DURATION: u64 = 10000;
+pub const EXTEND_DURATION: u64 = 5000;
+
+pub async fn setup() -> (NameRegistry, ContractId, WalletUnlocked, WalletUnlocked) {
     // Launch a local network and deploy the contract
     let mut wallets = launch_custom_provider_and_get_wallets(
         WalletsConfig::new(
