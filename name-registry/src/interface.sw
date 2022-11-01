@@ -33,7 +33,7 @@ abi NameRegistry {
     ///
     /// # Reverts
     ///
-    /// * If the name is registered or if it has not expired
+    /// * If the name is in the registry and it has not expired
     /// * If the payment is insufficient to cover the cost for the duration
     /// * If the incorrect asset is sent
     #[storage(read, write)]
