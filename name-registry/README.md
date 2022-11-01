@@ -7,9 +7,14 @@
 
 ## Overview
 
-This is a name registry app built in Sway, which allows users to use simple names instead of long addresses to recieve or send payments, making it easy to send money without copy pasting addresses. Anyone can register a name for the price of 1 unit of any asset per 100 seconds. The name will resolve to any Identity that the owner sets.
+The name registry application allows users to use human readable names instead of addresses to send and receive payments, making it easier to transfer cryptocurrency. 
 
-In this implementation the price is paid in the base asset on the Fuel network. More information can be found in the [specification](./SPECIFICATION.md).
+A name can be registered for the price of 1 unit of any asset per 100 seconds and it resolves to any Identity the owner sets.
+In this implementation the price is paid in the base asset on the Fuel network.
+
+Both the asset and the price per 100 seconds are configuration time constants so can be easily changed to different values.
+
+More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Project Structure
 
