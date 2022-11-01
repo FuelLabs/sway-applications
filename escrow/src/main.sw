@@ -118,7 +118,7 @@ impl Escrow for Contract {
             index += 1;
         }
 
-        let escrow = EscrowInfo::new(arbiter, assets.len(), buyer, deadline, storage.assets.len() - assets.len(), msg_sender().unwrap());
+        let escrow = ~EscrowInfo::new(arbiter, assets.len(), buyer, deadline, storage.assets.len() - assets.len(), msg_sender().unwrap());
 
         storage.escrows.insert(storage.escrow_count, escrow);
 

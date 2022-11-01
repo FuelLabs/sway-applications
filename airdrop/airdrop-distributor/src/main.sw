@@ -54,7 +54,7 @@ impl AirdropDistributor for Contract {
         require(verify_proof(key, leaf, storage.merkle_root.unwrap(), num_leaves, proof), VerificationError::MerkleProofFailed);
 
         // Mint asset
-        storage.claims.insert(to, ClaimData::new(amount, true));
+        storage.claims.insert(to, ~ClaimData::new(amount, true));
         mint_to(amount, storage.asset.unwrap(), to);
 
         log(ClaimEvent { to, amount });

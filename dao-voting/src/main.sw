@@ -88,7 +88,7 @@ impl DaoVoting for Contract {
         require(0 < acceptance_percentage && acceptance_percentage <= 100, CreationError::InvalidAcceptancePercentage);
 
         let author = msg_sender().unwrap();
-        let proposal = ProposalInfo::new(acceptance_percentage, author, duration, proposal_transaction);
+        let proposal = ~ProposalInfo::new(acceptance_percentage, author, duration, proposal_transaction);
         storage.proposals.insert(storage.proposal_count, proposal);
         storage.proposal_count += 1;
 

@@ -28,7 +28,7 @@ storage {
 // TODO treat owner as an identity once https://github.com/FuelLabs/sway/issues/2647 is fixed
 impl Oracle for Contract {
     fn owner() -> Identity {
-        Identity::Address(Address::from(owner))
+        Identity::Address(~Address::from(owner))
     }
 
     #[storage(read)]
@@ -38,7 +38,7 @@ impl Oracle for Contract {
 
     #[storage(write)]
     fn set_price(price: u64) {
-        require(msg_sender().unwrap() == Identity::Address(Address::from(owner)), AccessError::NotOwner);
+        require(msg_sender().unwrap() == Identity::Address(~Address::from(owner)), AccessError::NotOwner);
 
         storage.price = price;
 

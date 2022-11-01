@@ -178,7 +178,7 @@ impl EnglishAuction for Contract {
         }
 
         // Setup auction
-        let auction = Auction::new(bid_asset, height() + duration, initial_price, reserve_price, sell_asset, seller);
+        let auction = ~Auction::new(bid_asset, height() + duration, initial_price, reserve_price, sell_asset, seller);
 
         // Store the auction information
         let total_auctions = storage.total_auctions;

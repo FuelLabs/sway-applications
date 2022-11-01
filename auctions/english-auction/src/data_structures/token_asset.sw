@@ -34,7 +34,7 @@ impl Asset for TokenAsset {
 impl core::ops::Add for TokenAsset {
     fn add(self, other: Self) -> Self {
         require(self.asset_id() == other.asset_id(), AssetError::AssetsAreNotTheSame);
-        TokenAsset::new(self.amount() + other.amount(), self.asset_id())
+        ~TokenAsset::new(self.amount() + other.amount(), self.asset_id())
     }
 }
 
