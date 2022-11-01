@@ -167,7 +167,7 @@ impl NFT for Contract {
         let mut index = tokens_minted;
         while index < total_mint {
             // Create the TokenMetaData for this new token
-            storage.meta_data.insert(index, ~TokenMetaData::new());
+            storage.meta_data.insert(index, TokenMetaData::new());
             storage.owners.insert(index, Option::Some(to));
             index += 1;
         }
