@@ -338,16 +338,18 @@ A user should be able to see the campaigns that they have pledged towards
 <details>
 <summary>Name Registry</summary>
 
-<h3>Contracts</h3>
+<h3>Contracts ✅</h3>
 
-<h3>User Interface</h3>
+<h3>User Interface ❌</h3>
+  - UI does not exist
 
-<h3>Tests</h3>
+<h3>Tests ✅</h3>
 
-- <h3>Rust</h3>
-- <h3>Typescript</h3>
+- <h3>Rust ✅</h3>
+- <h3>Typescript ❌</h3>
+  - Tests are only in Rust
 
-<h3>Documentation</h3>
+<h3>Documentation ✅</h3>
 
 </details>
 
