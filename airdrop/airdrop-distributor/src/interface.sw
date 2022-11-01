@@ -26,7 +26,7 @@ abi AirdropDistributor {
     /// * When the `to` `Identity` has already claimed.
     /// * When the merkle proof verification failed.
     #[storage(read, write)]
-    fn claim(amount: u64, key: u64, num_leaves: u64, proof: [b256; 2], to: Identity, );
+    fn claim(amount: u64, key: u64, num_leaves: u64, proof: [b256; 2], to: Identity);
 
     /// Returns the claim data stored on the given identity
     ///
