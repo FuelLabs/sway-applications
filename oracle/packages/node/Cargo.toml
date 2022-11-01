@@ -13,6 +13,9 @@ serde = { version = "1.0", features = ["derive"] }
 reqwest = "0.11.12"
 dotenv = "0.15.0"
 futures = "0.3"
+async-trait = "0.1.58"
+anyhow = "1.0.66"
+itertools = "0.10.5"
 
 [[test]]
 harness = true
