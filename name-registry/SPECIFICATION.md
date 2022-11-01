@@ -2,7 +2,14 @@ Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
   - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
+    - [`register()`](#register)
+    - [`extend()`](#extend)
+    - [`set_identity()`](#set_identity)
+    - [`set_owner()`](#set_owner)
   - [Information that is presented to users](#information-that-is-presented-to-users)
+    - [`expiry()`](#expiry)
+    - [`identity()`](#identity)
+    - [`owner()`](#owner)
 
 # Overview
 
