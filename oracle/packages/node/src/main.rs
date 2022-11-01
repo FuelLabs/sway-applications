@@ -1,3 +1,4 @@
+use dotenv::dotenv;
 use fuels::client::FuelClient;
 use fuels::prelude::{Bech32ContractId, ContractId, Provider, WalletUnlocked};
 use fuels::signers::fuel_crypto::SecretKey;
@@ -9,6 +10,10 @@ use utils::Oracle;
 
 #[tokio::main]
 async fn main() {
+    let root_env_path = env::current_dir().unwrap();
+    let env_path = root_env_path.join("packages").join("node");
+    env::set_current_dir(env_path).unwrap();
+    dotenv().ok();
     let client = reqwest::Client::new();
     let api_url_str = env::var("API_URL").expect("API_URL must be set.");
     let api_url = api_url_str
@@ -28,9 +33,10 @@ async fn main() {
         .unwrap();
     let unlocked = WalletUnlocked::new_from_private_key(key, Some(provider));
     let oracle = Oracle::new(id.to_string(), unlocked);
-    let (_handle, _receipts_receiver) = spawn_oracle_updater_job(
+    let (handle, _receipts_receiver) = spawn_oracle_updater_job(
         oracle,
         Duration::from_secs(10),
         NetworkPriceProvider::new(client, api_url),
     );
+    handle.await.unwrap();
 }
