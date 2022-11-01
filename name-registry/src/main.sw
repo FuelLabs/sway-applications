@@ -28,7 +28,7 @@ storage {
     names: StorageMap<str[8], Option<Record>> = StorageMap {},
 }
 
-const ASSET_ID = ContractId::from(ASSET_B256);
+const ASSET_ID = ~ContractId::from(ASSET_B256);
 
 // TODO: Change the static 8 length str with a dynamic string when possible
 impl NameRegistry for Contract {
