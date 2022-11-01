@@ -7,8 +7,6 @@ use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::Mutex;
 
-mod get_price;
-mod new;
 mod run;
 
 struct Invocation {

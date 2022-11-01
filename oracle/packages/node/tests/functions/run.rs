@@ -1,22 +1,11 @@
-use std::thread;
-
 #[cfg(test)]
 mod success {
     use crate::functions::{HardcodedPriceProvider, LoggingPriceUpdater};
-    use fuels::client::FuelClient;
-    use fuels::prelude::{Bech32ContractId, ContractId, Provider, WalletUnlocked};
-    use fuels::signers::fuel_crypto::SecretKey;
     use fuels::tx::Receipt;
     use itertools::Itertools;
     use node::spawn_oracle_updater_job;
     use std::borrow::Borrow;
-    use std::env;
-    use std::str::FromStr;
-    use std::sync::Arc;
-    use std::thread::{self, sleep};
     use std::time::Duration;
-    use tokio::sync::mpsc;
-    use utils::Oracle;
 
     #[tokio::test]
     async fn price_is_polled_and_propagated_to_updater() {
@@ -26,7 +15,7 @@ mod success {
         let the_price = 101u64;
         let period = Duration::from_millis(500);
 
-        let (handle, mut receipts_receiver) = spawn_oracle_updater_job(
+        let (_handle, mut _receipts_receiver) = spawn_oracle_updater_job(
             price_updater,
             period,
             HardcodedPriceProvider { price: the_price },
@@ -48,7 +37,7 @@ mod success {
         let invocations = price_updater.invocations();
 
         let period = Duration::from_millis(500);
-        let (handle, mut receipts_receiver) = spawn_oracle_updater_job(
+        let (_handle, mut _receipts_receiver) = spawn_oracle_updater_job(
             price_updater,
             period,
             HardcodedPriceProvider { price: 10 }
@@ -84,7 +73,7 @@ mod success {
         }];
         price_updater.receipts = receipts_from_price_updater.clone();
 
-        let (handle, mut receipts_receiver) = spawn_oracle_updater_job(
+        let (_handle, mut receipts_receiver) = spawn_oracle_updater_job(
             price_updater,
             Duration::from_millis(500),
             HardcodedPriceProvider { price: 101 },

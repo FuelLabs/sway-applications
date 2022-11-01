@@ -1,30 +1,18 @@
 use async_trait::async_trait;
-use dotenv::dotenv;
 use fuels::{
-    client::FuelClient,
-    prelude::{Bech32ContractId, Provider},
-    signers::{fuel_crypto::SecretKey, WalletUnlocked},
-    tx::{ContractId, Receipt},
+    tx::{Receipt},
 };
 use futures::executor::block_on;
-use itertools::Itertools;
 use reqwest;
 use reqwest::{Client, Url};
 use serde::Deserialize;
-use std::{borrow::BorrowMut, any};
-use std::env;
-use std::str::FromStr;
-use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::mpsc::Receiver;
-use tokio::sync::Mutex;
 use tokio::task::JoinHandle;
-use tokio::time::{self, sleep};
-use utils::{
-    abi_calls::set_price,
-    Oracle,
-};
+use tokio::time::{sleep};
 
+// We must allow non_snake_case because the JSON field we are deserializing is spelled that way
+#[allow(non_snake_case)]
 #[derive(Deserialize)]
 struct USDPrice {
     USD: f64,

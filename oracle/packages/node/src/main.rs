@@ -28,7 +28,7 @@ async fn main() {
         .unwrap();
     let unlocked = WalletUnlocked::new_from_private_key(key, Some(provider));
     let oracle = Oracle::new(id.to_string(), unlocked);
-    let (handle, receipts_receiver) = spawn_oracle_updater_job(
+    let (_handle, _receipts_receiver) = spawn_oracle_updater_job(
         oracle,
         Duration::from_secs(10),
         NetworkPriceProvider::new(client, api_url),
