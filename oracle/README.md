@@ -35,6 +35,24 @@ oracle/
 
 TODO: need UI for this to be relevant
 
+### Node
+In order to run the Oracle node make sure you ar in the root of this project i.e `/path/to/oracle/<you are here>`
+
+Then start a local fuel-core instance
+```bash
+fuel-core run --chain packages/node/.chainConfig.json
+```
+
+Then deploy an instance of the Oracle contract
+```bash
+forc deploy --path packages/contract --url localhost:4000 --unsigned
+```
+
+Finally start the Oracle node
+```bash
+cargo run
+```
+
 ### Tests
 In order to run the tests make sure you are in the root of this project i.e. `/path/to/oracle/<you are here>`
 
