@@ -6,7 +6,7 @@ use fuels::{prelude::*, tx::ContractId};
 abigen!(NameRegistry, "out/debug/name-registry-abi.json");
 
 pub const REGISTER_DURATION: u64 = 10000;
-pub const EXTEND_DURATION: u64 = 5000;
+pub const EXTEND_DURATION: u64 = 2500;
 
 pub async fn setup() -> (NameRegistry, ContractId, WalletUnlocked, WalletUnlocked) {
     // Launch a local network and deploy the contract
