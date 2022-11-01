@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{identity, register, set_identity},
-        setup, REGISTER_DURATION
+        setup, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 
@@ -12,8 +12,14 @@ mod success {
         let name = String::from("SwaySway");
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
-        
-        register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
+        register(
+            &instance,
+            &name,
+            REGISTER_DURATION,
+            &wallet_identity,
+            &wallet_identity,
+        )
+        .await;
 
         let previous_identity = identity(&instance, &name).await;
 
@@ -35,7 +41,6 @@ mod revert {
     async fn cant_get_identity() {
         let (instance, _id, _wallet, _wallet2) = setup().await;
         let name = String::from("SwaySway");
-
 
         let identity = identity(&instance, &name).await;
         identity.0.value.unwrap();

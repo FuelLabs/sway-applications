@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{expiry, extend, register},
-        setup, REGISTER_DURATION, EXTEND_DURATION,
+        setup, EXTEND_DURATION, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 
@@ -11,8 +11,14 @@ mod success {
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
         let name = String::from("SwaySway");
 
-
-        register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
+        register(
+            &instance,
+            &name,
+            REGISTER_DURATION,
+            &wallet_identity,
+            &wallet_identity,
+        )
+        .await;
         let previous_expiry_response = expiry(&instance, &name).await;
 
         extend(&instance, &name, EXTEND_DURATION).await;
@@ -35,7 +41,6 @@ mod revert {
         let (instance, _id, _wallet, _wallet2) = setup().await;
         let name = String::from("SwaySway");
 
-        
         let expiry = expiry(&instance, &name).await;
         expiry.0.value.unwrap();
     }

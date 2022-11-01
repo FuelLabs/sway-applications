@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{owner, register, set_owner},
-        setup, string_to_ascii, OwnerChangedEvent, REGISTER_DURATION
+        setup, string_to_ascii, OwnerChangedEvent, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 
@@ -12,8 +12,14 @@ mod success {
         let name = String::from("SwaySway");
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
-
-        register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
+        register(
+            &instance,
+            &name,
+            REGISTER_DURATION,
+            &wallet_identity,
+            &wallet_identity,
+        )
+        .await;
 
         let previous_owner = owner(&instance, &name).await;
 
@@ -42,7 +48,7 @@ mod success {
 mod revert {
     use crate::utils::{
         abi::{register, set_owner},
-        setup, REGISTER_DURATION
+        setup, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 
@@ -54,8 +60,14 @@ mod revert {
         let name = String::from("SwaySway");
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
-        
-        register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
+        register(
+            &instance,
+            &name,
+            REGISTER_DURATION,
+            &wallet_identity,
+            &wallet_identity,
+        )
+        .await;
 
         set_owner(
             &instance.with_wallet(wallet2).unwrap(),

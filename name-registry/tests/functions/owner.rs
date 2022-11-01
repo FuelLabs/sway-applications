@@ -12,8 +12,14 @@ mod success {
         let name = String::from("SwaySway");
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
-
-        register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
+        register(
+            &instance,
+            &name,
+            REGISTER_DURATION,
+            &wallet_identity,
+            &wallet_identity,
+        )
+        .await;
 
         let previous_owner = owner(&instance, &name).await;
 
@@ -36,7 +42,6 @@ mod revert {
         let (instance, _id, _wallet, _wallet2) = setup().await;
         let name = String::from("SwaySway");
 
-        
         let owner = owner(&instance, &name).await;
         owner.0.value.unwrap();
     }

@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::register, setup, string_to_ascii, NameRegisteredEvent, REGISTER_DURATION,
-    }; 
+    };
     use fuels::prelude::*;
 
     #[tokio::test]
@@ -10,8 +10,14 @@ mod success {
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
         let name = String::from("SwaySway");
 
-
-        let response = register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
+        let response = register(
+            &instance,
+            &name,
+            REGISTER_DURATION,
+            &wallet_identity,
+            &wallet_identity,
+        )
+        .await;
         let log = instance
             .logs_with_type::<NameRegisteredEvent>(&response.0.receipts)
             .unwrap();
@@ -29,7 +35,7 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::{abi::register, setup, REGISTER_DURATION,};
+    use crate::utils::{abi::register, setup, REGISTER_DURATION};
     use fuels::prelude::*;
 
     #[tokio::test]
@@ -39,9 +45,22 @@ mod revert {
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
         let name = String::from("SwaySway");
 
-
-        register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
-        register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
+        register(
+            &instance,
+            &name,
+            REGISTER_DURATION,
+            &wallet_identity,
+            &wallet_identity,
+        )
+        .await;
+        register(
+            &instance,
+            &name,
+            REGISTER_DURATION,
+            &wallet_identity,
+            &wallet_identity,
+        )
+        .await;
     }
 
     #[tokio::test]
@@ -51,7 +70,6 @@ mod revert {
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
         let name = String::from("SwaySway");
 
-        
         register(
             &instance,
             &name,

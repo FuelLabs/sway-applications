@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{expiry, extend, register},
-        setup, string_to_ascii, RegistrationExtendedEvent, REGISTER_DURATION, EXTEND_DURATION,
+        setup, string_to_ascii, RegistrationExtendedEvent, EXTEND_DURATION, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 
@@ -11,9 +11,14 @@ mod success {
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
         let name = String::from("SwaySway");
 
-
-        let (_, register_time) =
-            register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
+        let (_, register_time) = register(
+            &instance,
+            &name,
+            REGISTER_DURATION,
+            &wallet_identity,
+            &wallet_identity,
+        )
+        .await;
 
         let previous_expiry = expiry(&instance, &name).await;
 
@@ -42,7 +47,7 @@ mod success {
 mod revert {
     use crate::utils::{
         abi::{extend, register},
-        setup, REGISTER_DURATION, EXTEND_DURATION,
+        setup, EXTEND_DURATION, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 
@@ -53,8 +58,14 @@ mod revert {
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
         let name = String::from("SwaySway");
 
-
-        register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
+        register(
+            &instance,
+            &name,
+            REGISTER_DURATION,
+            &wallet_identity,
+            &wallet_identity,
+        )
+        .await;
 
         extend(&instance, &name, u64::MAX).await;
     }
@@ -65,7 +76,6 @@ mod revert {
         let (instance, _id, _wallet, _wallet2) = setup().await;
         let name = String::from("SwaySway");
 
-        
         extend(&instance, &name, EXTEND_DURATION).await;
     }
 }
