@@ -7,5 +7,4 @@
 resolver = "2"
 members = [
     "packages/dao",
-    "packages/governor_contract",
 ]

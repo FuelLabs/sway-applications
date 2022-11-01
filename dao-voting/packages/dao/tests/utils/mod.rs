@@ -143,7 +143,7 @@ pub mod test_helpers {
             .value
     }
 
-    pub fn proposal_transaction(asset_id: ContractId, var1: u64, var2: bool) -> Proposal {
+    pub fn proposal_transaction(_asset_id: ContractId, var1: u64, var2: bool) -> Proposal {
         // let call_data = CallData {
         //     id: asset_id,
         //     function_selector: 0,
