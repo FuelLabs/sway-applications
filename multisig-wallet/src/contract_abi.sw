@@ -14,7 +14,7 @@ abi MultiSignatureWallet {
     fn execute_transaction(to: Identity, value: u64, data: b256, signatures: [B512; 25]);
 
     #[storage(read, write)]
-    fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures: [B512; 25]);
+    fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures: [B512; 25], );
 
     #[storage(read)]
     fn is_owner(owner: Address) -> bool;
