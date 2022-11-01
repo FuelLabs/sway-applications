@@ -7,10 +7,9 @@ mod success {
     #[tokio::test]
     async fn can_register() {
         let (instance, _id, wallet, _wallet2) = setup().await;
-
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
-
         let name = String::from("SwaySway");
+
 
         let response = register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
         let log = instance
@@ -37,10 +36,9 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn cant_repeat_register() {
         let (instance, _id, wallet, _wallet2) = setup().await;
-
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
-
         let name = String::from("SwaySway");
+
 
         register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
         register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
@@ -50,11 +48,10 @@ mod revert {
     #[should_panic]
     async fn cant_register_infinite() {
         let (instance, _id, wallet, _wallet2) = setup().await;
-
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
-
         let name = String::from("SwaySway");
 
+        
         register(
             &instance,
             &name,

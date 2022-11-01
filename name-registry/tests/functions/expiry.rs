@@ -8,9 +8,9 @@ mod success {
     #[tokio::test]
     async fn can_get_expiry() {
         let (instance, _id, wallet, _wallet2) = setup().await;
-
         let wallet_identity = Identity::Address(Address::from(wallet.address()));
         let name = String::from("SwaySway");
+
 
         register(&instance, &name, REGISTER_DURATION, &wallet_identity, &wallet_identity).await;
         let previous_expiry_response = expiry(&instance, &name).await;
@@ -33,9 +33,9 @@ mod revert {
     #[should_panic(expected = "`Result::unwrap()` on an `Err` value")]
     async fn cant_get_expiry() {
         let (instance, _id, _wallet, _wallet2) = setup().await;
-
         let name = String::from("SwaySway");
 
+        
         let expiry = expiry(&instance, &name).await;
         expiry.0.value.unwrap();
     }
