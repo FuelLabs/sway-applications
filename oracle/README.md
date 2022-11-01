@@ -17,12 +17,13 @@ The project consists of an oracle smart contract and an oracle node which intera
 
 ```
 oracle/
-├── contract/
-|    └── src/main.sw
-|    └── tests/harness.rs
+├── packages/
+|    └── contract/
+|       └── src/main.sw
+|       └── tests/harness.rs
+|    └── node/
+|       └── Directories & files
 ├── frontend/
-|    └── Directories & files
-├── node/
 |    └── Directories & files
 └── README.md
 └── SPECIFICATION.md
@@ -40,7 +41,7 @@ In order to run the tests make sure you are in the root of this project i.e. `/p
 Run the tests with the following command.
 
 ```bash
-forc test
+cargo test
 ```
 
 ## Specification
