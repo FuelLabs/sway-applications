@@ -87,7 +87,8 @@ jobs:
       - name: Run Forc tests
         run: |
           cd ${{ matrix.project }}
-          forc test
+          forc build
+          cargo test
   contributing-book:
     runs-on: ubuntu-latest
 
