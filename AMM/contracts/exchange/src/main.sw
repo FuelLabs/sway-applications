@@ -128,7 +128,7 @@ impl Exchange for Contract {
             // transfer remaining deposit amounts back to the sender
             let refund_a = asset_a_in_deposit - added_a;
             let refund_b = asset_b_in_deposit - added_b;
-            
+
             if refund_a > 0 {
                 transfer(refund_a, asset_a_id, sender);
             }
@@ -146,7 +146,7 @@ impl Exchange for Contract {
             asset_b: added_b,
             liquidity: added_liquidity,
         });
-        
+
         added_liquidity
     }
 
@@ -399,7 +399,7 @@ impl Exchange for Contract {
         require(storage.pair.is_some(), InitError::NotInitialized);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
-        
+
         PoolInfo {
             asset_a: asset_a_id,
             asset_b: asset_b_id,
