@@ -10,7 +10,9 @@ use tokio::sync::Mutex;
 mod run;
 
 struct Invocation {
+    // Used to ensure the polled price is correct
     price: u64,
+    // Used to ensure the polling delay is correct
     time: Instant
 }
 
@@ -46,6 +48,7 @@ impl PriceUpdater for LoggingPriceUpdater {
 
 #[derive(Clone)]
 struct HardcodedPriceProvider {
+    // Hardcoded price to provide for testing
     price: u64,
 }
 

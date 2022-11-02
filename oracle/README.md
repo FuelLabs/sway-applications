@@ -38,6 +38,8 @@ TODO: need UI for this to be relevant
 ### Node
 In order to run the Oracle node make sure you ar in the root of this project i.e `/path/to/oracle/<you are here>`
 
+Copy the `.env.example` file into a new file called `.env`.  Then insert your api key into the `API_URL`
+
 Then start a local fuel-core instance
 ```bash
 fuel-core run --chain packages/node/.chainConfig.json

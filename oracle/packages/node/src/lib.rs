@@ -11,6 +11,7 @@ use tokio::sync::mpsc::Receiver;
 use tokio::task::JoinHandle;
 use tokio::time::{sleep};
 
+// Deicmal precision of the asset we are pushing prices to
 const DECIMAL_PRECISION: f64 = 1e9;
 
 // Used to deserialize the USD price of ETH from an api endpoint
@@ -76,7 +77,7 @@ impl NetworkPriceProvider {
 
 #[async_trait]
 impl PriceProvider for NetworkPriceProvider {
-    /// Gets the latest price from an api endpoint
+    /// Get the latest price from an api endpoint
     /// and return it as an u64
     async fn get_price(&self) -> anyhow::Result<u64> {
         let response = self
