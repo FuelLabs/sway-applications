@@ -40,11 +40,7 @@ jobs:
 
     strategy:
       matrix:
-<<<<<<< HEAD
-        project: ["airdrop/airdrop-distributor", "airdrop/simple-asset", "dao-voting", "escrow", "fundraiser", "multisig-wallet", "NFT", "oracle/packages/contract"]
-=======
-        project: ["airdrop/airdrop-distributor", "airdrop/simple-asset", "auctions/english-auction", "dao-voting", "escrow", "fundraiser", "multisig-wallet", "NFT", "oracle/contract"]
->>>>>>> 76e6f7fc9279d07b84fa310634f19794dd9650f8
+        project: ["airdrop/airdrop-distributor", "airdrop/simple-asset", "auctions/english-auction", "dao-voting", "escrow", "fundraiser", "multisig-wallet", "NFT", "oracle/packages/contract"]
 
     steps:
       - name: Checkout repository
