@@ -110,15 +110,15 @@ pub mod test_helpers {
         ContractId::new(*exchange_contract_id.hash())
     }
 
-    pub async fn setup_and_initialize() -> (WalletUnlocked, AMM, Vec<ContractId>) {
-        let (wallet, amm_instance, asset_ids) = setup().await;
+    pub async fn setup_and_initialize() -> (WalletUnlocked, AMM, Vec<(ContractId, ContractId)>) {
+        let (wallet, amm_instance, asset_pairs) = setup().await;
 
         initialize_amm_contract(&wallet, &amm_instance).await;
 
-        (wallet, amm_instance, asset_ids)
+        (wallet, amm_instance, asset_pairs)
     }
 
-    pub async fn setup() -> (WalletUnlocked, AMM, Vec<ContractId>) {
+    pub async fn setup() -> (WalletUnlocked, AMM, Vec<(ContractId, ContractId)>) {
         // setup wallet and provider
         let mut wallet = WalletUnlocked::new_random(None);
         let num_assets = 3;
@@ -130,10 +130,6 @@ pub mod test_helpers {
             coins_per_asset,
             amount_per_coin,
         );
-        let asset_ids_as_contract_ids = asset_ids
-            .into_iter()
-            .map(|asset_id| ContractId::new(*asset_id))
-            .collect();
         let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None).await;
         wallet.set_provider(provider);
 
@@ -148,6 +144,18 @@ pub mod test_helpers {
         .unwrap();
         let amm_instance = AMM::new(amm_contract_id.to_string(), wallet.clone());
 
-        (wallet, amm_instance, asset_ids_as_contract_ids)
+        // setup two asset pairs that will be used in tests
+        let asset_pairs = vec![
+            (
+                ContractId::new(*asset_ids[0]),
+                ContractId::new(*asset_ids[1]),
+            ),
+            (
+                ContractId::new(*asset_ids[1]),
+                ContractId::new(*asset_ids[2]),
+            ),
+        ];
+
+        (wallet, amm_instance, asset_pairs)
     }
 }

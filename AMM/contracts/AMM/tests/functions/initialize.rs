@@ -9,10 +9,10 @@ mod success {
     #[ignore]
     #[tokio::test]
     async fn initializes() {
-        let (wallet, amm_instance, assets) = setup().await;
+        let (wallet, amm_instance, asset_pairs) = setup().await;
 
         let exchange_contract_id =
-            deploy_and_construct_exchange_contract(&wallet, (assets[0], assets[1]), None, None)
+            deploy_and_construct_exchange_contract(&wallet, asset_pairs[0], None, None)
                 .await;
 
         initialize(&amm_instance, exchange_contract_id).await;
@@ -26,10 +26,10 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_already_initialized() {
-        let (wallet, amm_instance, assets) = setup_and_initialize().await;
+        let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
 
         let exchange_contract_id =
-            deploy_and_construct_exchange_contract(&wallet, (assets[0], assets[1]), None, None)
+            deploy_and_construct_exchange_contract(&wallet, asset_pairs[0], None, None)
                 .await;
 
         // already initialized

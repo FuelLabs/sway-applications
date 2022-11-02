@@ -8,8 +8,8 @@ mod success {
 
     #[tokio::test]
     async fn gets_some() {
-        let (wallet, amm_instance, assets) = setup_and_initialize().await;
-        let pair = (assets[0], assets[1]);
+        let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
+        let pair = asset_pairs[0];
 
         let exchange_contract_id =
             deploy_and_construct_exchange_contract(&wallet, pair, None, None).await;
@@ -27,9 +27,9 @@ mod success {
 
     #[tokio::test]
     async fn gets_none() {
-        let (wallet, amm_instance, assets) = setup_and_initialize().await;
-        let pair = (assets[0], assets[1]);
-        let another_pair = (assets[1], assets[2]);
+        let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
+        let pair = asset_pairs[0];
+        let another_pair = asset_pairs[1];
 
         let exchange_contract_id =
             deploy_and_construct_exchange_contract(&wallet, pair, None, None).await;
