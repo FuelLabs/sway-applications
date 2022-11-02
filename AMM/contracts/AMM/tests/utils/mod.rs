@@ -55,9 +55,9 @@ pub mod amm_abi_calls {
 pub mod paths {
     pub const AMM_CONTRACT_BINARY_PATH: &str = "out/debug/AMM.bin";
     pub const AMM_CONTRACT_STORAGE_PATH: &str = "out/debug/AMM-storage_slots.json";
-    pub const INVALID_EXCHANGE_CONTRACT_BINARY_PATH: &str =
+    pub const EXCHANGE_CONTRACT_BINARY_PATH: &str = "../exchange/out/debug/exchange.bin";
+    pub const MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH: &str =
         "../exchange/tests/artifacts/malicious_implementation/out/debug/malicious_implementation.bin";
-    pub const VALID_EXCHANGE_CONTRACT_BINARY_PATH: &str = "../exchange/out/debug/exchange.bin";
 }
 
 pub mod test_helpers {
@@ -66,13 +66,13 @@ pub mod test_helpers {
     use amm_abi_calls::initialize;
     use exchange_abi_calls::constructor;
     use paths::{
-        AMM_CONTRACT_BINARY_PATH, AMM_CONTRACT_STORAGE_PATH, INVALID_EXCHANGE_CONTRACT_BINARY_PATH,
-        VALID_EXCHANGE_CONTRACT_BINARY_PATH,
+        AMM_CONTRACT_BINARY_PATH, AMM_CONTRACT_STORAGE_PATH, EXCHANGE_CONTRACT_BINARY_PATH,
+        MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH,
     };
 
     pub async fn initialize_amm_contract(wallet: &WalletUnlocked, amm_instance: &AMM) {
         let exchange_contract_id = Contract::deploy(
-            VALID_EXCHANGE_CONTRACT_BINARY_PATH,
+            EXCHANGE_CONTRACT_BINARY_PATH,
             &wallet,
             TxParameters::default(),
             StorageConfiguration::default(),
@@ -86,16 +86,16 @@ pub mod test_helpers {
     pub async fn deploy_and_construct_exchange_contract(
         wallet: &WalletUnlocked,
         asset_pair: (ContractId, ContractId),
-        valid: Option<bool>,
+        malicious: Option<bool>,
         index_for_salt: Option<u8>,
     ) -> ContractId {
         let salt = [index_for_salt.unwrap_or(0u8); 32];
 
         let exchange_contract_id = Contract::deploy_with_parameters(
-            if valid.unwrap_or(true) {
-                VALID_EXCHANGE_CONTRACT_BINARY_PATH
+            if !malicious.unwrap_or(false) {
+                EXCHANGE_CONTRACT_BINARY_PATH
             } else {
-                INVALID_EXCHANGE_CONTRACT_BINARY_PATH
+                MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH
             },
             &wallet,
             TxParameters::default(),

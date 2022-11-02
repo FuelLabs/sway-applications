@@ -97,7 +97,7 @@ mod revert {
         let pair = asset_pairs[0];
 
         let invalid_exchange_contract_id =
-            deploy_and_construct_exchange_contract(&wallet, pair, Option::Some(false), None).await;
+            deploy_and_construct_exchange_contract(&wallet, pair, Option::Some(true), None).await;
 
         add_pool(&amm_instance, pair, invalid_exchange_contract_id).await;
     }
