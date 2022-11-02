@@ -6,7 +6,6 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-utils = { path = "../utils" }
 fuels = { version = "0.25", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
@@ -16,6 +15,7 @@ futures = "0.3"
 async-trait = "0.1.58"
 anyhow = "1.0.66"
 itertools = "0.10.5"
+utils = { path = "../utils" }
 
 [[test]]
 harness = true
