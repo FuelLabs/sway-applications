@@ -20,6 +20,7 @@ async fn main() {
     handle.await.unwrap();
 }
 
+/// Iniitialize and return objects for use in main
 fn setup() -> (Oracle, reqwest::Client, Url) {
     let root_env_path = env::current_dir().unwrap();
     let env_path = root_env_path.join("packages").join("node");

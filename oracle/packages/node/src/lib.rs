@@ -46,9 +46,13 @@ pub fn spawn_oracle_updater_job(
         block_on(sender.send(log_receipts)).unwrap();
         block_on(sleep(period));
     });
+    // Return the thread handle and channel receiver
+    // This allows us to control the thread
+    // and receive the log receipts from outside the thread
     (handle, receiver)
 }
 
+/// Fetches the latest price info to provide to the oracle contract
 #[async_trait]
 pub trait PriceProvider {
     async fn get_price(&self) -> anyhow::Result<u64>;
@@ -56,7 +60,9 @@ pub trait PriceProvider {
 
 #[derive(Clone)]
 pub struct NetworkPriceProvider {
+    // Makes network requests to fetch price info
     client: Client,
+    // Url endpoint to make requests on
     url: Url,
 }
 
@@ -83,6 +89,7 @@ impl PriceProvider for NetworkPriceProvider {
     }
 }
 
+/// Updates the oracle contract with the specified price
 pub trait PriceUpdater {
     fn set_price(&self, price: u64) -> anyhow::Result<Vec<Receipt>>;
 }
