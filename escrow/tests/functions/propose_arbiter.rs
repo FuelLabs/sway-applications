@@ -515,6 +515,7 @@ mod revert {
 
         seller
             .contract
+            .methods()
             .propose_arbiter(arbiter_obj, 0)
             .tx_params(tx_params)
             .call_params(call_params)
@@ -589,6 +590,7 @@ mod revert {
 
         seller
             .contract
+            .methods()
             .propose_arbiter(arbiter_obj_unequal, 0)
             .tx_params(tx_params)
             .call_params(call_params)

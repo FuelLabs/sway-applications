@@ -62,13 +62,9 @@ The information in this section is split into subsections in order to conceptual
 ---
 
 <details>
-<summary>Auctions</summary>
+<summary>Blind Auction</summary>
 
 <h3>Contracts</h3>
-
-- Blind Auction
-- Dutch Auction
-- English Auction
 
 <h3>User Interface</h3>
 
@@ -118,12 +114,53 @@ The information in this section is split into subsections in order to conceptual
 ---
 
 <details>
+<summary>Dutch Auction</summary>
+
+<h3>Contracts</h3>
+
+<h3>User Interface</h3>
+
+<h3>Tests</h3>
+
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
+
+<h3>Documentation</h3>
+
+</details>
+
+---
+
+<details>
+<summary>English Auction</summary>
+
+<h3>Contracts ❌</h3>
+
+  - Needs [support for StorageVec](https://github.com/FuelLabs/sway/issues/2465) in structs so that mutliple NFTs may be bid
+
+<h3>User Interface</h3>
+
+<h3>Tests</h3>
+
+- <h3>Rust ✅</h3>
+- <h3>Typescript</h3>
+
+<h3>Documentation</h3>
+
+- Readme ✅
+  - Once UI is added it needs to be documented
+- Specification ✅
+
+</details>
+
+---
+
+<details>
 <summary>Escrow</summary>
 
 <h3>Contracts ✅</h3>
 
 - Feature complete for UI integration
-  - Needs vec support in SDK so that array can be changed to vec
 - Needs some getters so that contracts can interact
 
 <h3>User Interface</h3>
@@ -133,14 +170,12 @@ The information in this section is split into subsections in order to conceptual
 - <h3>Rust ❌</h3>
 
   - SDK has block manipulation so tests can continue to be written
-  - Requires vec from SDK
 
 - <h3>Typescript</h3>
 
 <h3>Documentation ✅</h3>
 
 - Readme ❌
-  - Need to remove "current state of app" since this document covers that content
   - Once UI is added it needs to be documented
 - Specification ✅
 

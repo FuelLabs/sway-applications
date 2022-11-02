@@ -6,7 +6,7 @@ use std::{contract_id::ContractId, identity::Identity};
 use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
 
 abi Fundraiser {
-    /// Returns the number of unique assets that have added across all campaigns
+    /// Returns the number of unique assets that have been pledged across all campaigns
     #[storage(read)]
     fn asset_count() -> u64;
 

@@ -194,10 +194,14 @@ impl Fundraiser for Contract {
 
         // Create an internal representation of a campaign
         let campaign_info = CampaignInfo {
-            asset, author: user,
-            beneficiary, cancelled: false,
+            asset, 
+            author: user,
+            beneficiary, 
+            cancelled: false,
             claimed: false,
-            deadline, target_amount, total_pledge: 0,
+            deadline, 
+            target_amount, 
+            total_pledge: 0,
         };
 
         // Keep track of new assets
