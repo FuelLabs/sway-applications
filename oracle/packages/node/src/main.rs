@@ -51,6 +51,6 @@ fn setup() -> (Oracle, reqwest::Client, Url) {
 
     let unlocked = WalletUnlocked::new_from_private_key(key, Some(provider));
     let oracle = Oracle::new(id.to_string(), unlocked);
-    
+
     (oracle, client, api_url)
 }

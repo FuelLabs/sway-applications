@@ -1,7 +1,5 @@
 use async_trait::async_trait;
-use fuels::{
-    tx::{Receipt},
-};
+use fuels::tx::Receipt;
 use futures::executor::block_on;
 use reqwest;
 use reqwest::{Client, Url};
@@ -9,7 +7,7 @@ use serde::Deserialize;
 use std::time::Duration;
 use tokio::sync::mpsc::Receiver;
 use tokio::task::JoinHandle;
-use tokio::time::{sleep};
+use tokio::time::sleep;
 
 // Deicmal precision of the asset we are pushing prices to
 const DECIMAL_PRECISION: f64 = 1e9;
@@ -23,7 +21,7 @@ struct USDPrice {
 }
 
 /// Spawns a thread to periodically fetch the price of an asset and update the oracle smart contract with that price
-/// 
+///
 /// # Arguments
 /// - `price_updater` - updates the oracle contract with new prices
 /// - `period` - duration to wait before fetching and updating the price for the oracle

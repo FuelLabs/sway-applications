@@ -37,11 +37,8 @@ mod success {
         let invocations = price_updater.invocations();
 
         let period = Duration::from_millis(500);
-        let (_handle, mut _receipts_receiver) = spawn_oracle_updater_job(
-            price_updater,
-            period,
-            HardcodedPriceProvider { price: 10 }
-        );
+        let (_handle, mut _receipts_receiver) =
+            spawn_oracle_updater_job(price_updater, period, HardcodedPriceProvider { price: 10 });
 
         tokio::time::sleep(period * 3).await;
 
@@ -53,8 +50,7 @@ mod success {
             .tuple_windows()
             .all(|(previous_invocation, current_invocation)| {
                 current_invocation.time - previous_invocation.time >= period
-            })
-        );
+            }));
     }
 
     #[tokio::test]

@@ -13,7 +13,7 @@ struct Invocation {
     // Used to ensure the polled price is correct
     price: u64,
     // Used to ensure the polling delay is correct
-    time: Instant
+    time: Instant,
 }
 
 struct LoggingPriceUpdater {

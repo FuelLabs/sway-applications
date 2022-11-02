@@ -1,5 +1,5 @@
-use utils::{abi_calls::owner, test_helpers::setup};
 use fuels::{prelude::Identity, tx::Address};
+use utils::{abi_calls::owner, test_helpers::setup};
 
 mod success {
     use super::*;
