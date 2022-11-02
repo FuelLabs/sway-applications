@@ -11,6 +11,7 @@ use tokio::sync::mpsc::Receiver;
 use tokio::task::JoinHandle;
 use tokio::time::{sleep};
 
+// Used to deserialize the USD price of ETH from an api endpoint
 // We must allow non_snake_case because the JSON field we are deserializing is spelled that way
 #[allow(non_snake_case)]
 #[derive(Deserialize)]
@@ -18,14 +19,22 @@ struct USDPrice {
     USD: f64,
 }
 
+/// Spawns a thread to periodically fetch the price of an asset and update the oracle smart contract with that price
+/// 
+/// # Arguments
+/// - `price_updater` - updates the oracle contract with new prices
+/// - `period` - duration to wait before fetching and updating the price for the oracle
+/// - `price_fetcher` - fetches the latest price for an asset
 pub fn spawn_oracle_updater_job(
     price_updater: impl PriceUpdater + Send + 'static,
     period: Duration,
     price_fetcher: impl PriceProvider + Send + 'static,
 ) -> (JoinHandle<()>, Receiver<anyhow::Result<Vec<Receipt>>>) {
+    // Variables to send log receipts out of the thread
     let (sender, receiver) = tokio::sync::mpsc::channel(100);
     let handle = tokio::task::spawn_blocking(move || loop {
         let usd_price = block_on(price_fetcher.get_price()).unwrap();
+        // Update the oracle with the latest price and get the log receipts
         let log_receipts = price_updater.set_price(usd_price).map(|receipts| {
             receipts
                 .into_iter()
@@ -33,6 +42,7 @@ pub fn spawn_oracle_updater_job(
                 .collect()
         });
 
+        // Send log receipts out of the thread
         block_on(sender.send(log_receipts)).unwrap();
         block_on(sleep(period));
     });
@@ -58,6 +68,8 @@ impl NetworkPriceProvider {
 
 #[async_trait]
 impl PriceProvider for NetworkPriceProvider {
+    /// Gets the latest price from an api endpoint
+    /// and return it as an u64
     async fn get_price(&self) -> anyhow::Result<u64> {
         let response = self
             .client
@@ -76,6 +88,7 @@ pub trait PriceUpdater {
 }
 
 impl PriceUpdater for utils::Oracle {
+    /// Set the price for the oracle contract and return the log receipts
     fn set_price(&self, price: u64) -> anyhow::Result<Vec<Receipt>> {
         let methods = self.methods();
         Ok(block_on(methods.set_price(price).call())?.receipts)
