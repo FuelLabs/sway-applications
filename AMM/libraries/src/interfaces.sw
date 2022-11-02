@@ -5,11 +5,11 @@ dep data_structures;
 use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewSwapInfo, RemoveLiquidityInfo};
 
 abi AMM {
-    /// Initialize the AMM by setting the valid exchange contract bytecode root.
+    /// Initialize the AMM by specifying the exchange contract bytecode root, for security. 
     ///
     /// # Arguments
     /// 
-    /// - `exchange_contract_id` - factory exchange contract
+    /// - `exchange_contract_id` - bytecode root of the intended implementation of the exchange ABI
     ///
     /// # Reverts 
     ///
@@ -27,7 +27,7 @@ abi AMM {
     /// # Reverts
     /// 
     /// * When the AMM contract has not been initialized
-    /// * When the bytecode root of `pool` does not match the bytecode root of the factory exchange contract
+    /// * When the bytecode root of `pool` does not match the bytecode root of the intended exchange contract
     /// * When the pool info of the exchange contract with the given address does not consist of the given asset pair
     #[storage(read, write)]
     fn add_pool(asset_pair: (ContractId, ContractId), pool: ContractId);
