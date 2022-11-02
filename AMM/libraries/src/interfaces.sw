@@ -215,8 +215,10 @@ abi Exchange {
     #[storage(read)]
     fn pool_info() -> PoolInfo;
 
-    /// Get the preview info of adding liquidity, that consists of the amount of other asset
-    /// to input given the current ratio and the amount of liquidity pool asset that will be received.
+    /// Get the preview info of adding liquidity.
+    /// The preview info consists of:
+    /// - Other asset amount to input for desired liquidity,
+    /// - Liquidity pool asset amount to be received.
     /// 
     /// # Arguments
     /// 
