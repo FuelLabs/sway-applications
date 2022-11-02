@@ -7,7 +7,7 @@ use std::{contract_id::ContractId, identity::Identity};
 use data_structures::{Proposal, ProposalInfo, Votes};
 
 abi DaoVoting {
-    /// Initialize the dao with the governance token, voting parameters, and the proposal.
+    /// Initialize the dao with the governance token.
     ///
     /// # Arguments
     ///

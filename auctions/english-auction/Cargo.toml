@@ -1,5 +1,5 @@
 [project]
-name = "escrow"
+name = "english-auction"
 version = "0.0.0"
 authors = ["Fuel Labs <contact@fuel.sh>"]
 edition = "2021"
