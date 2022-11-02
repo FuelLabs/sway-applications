@@ -11,6 +11,8 @@ use tokio::sync::mpsc::Receiver;
 use tokio::task::JoinHandle;
 use tokio::time::{sleep};
 
+const DECIMAL_PRECISION: f64 = 1e9;
+
 // Used to deserialize the USD price of ETH from an api endpoint
 // We must allow non_snake_case because the JSON field we are deserializing is spelled that way
 #[allow(non_snake_case)]
@@ -84,8 +86,7 @@ impl PriceProvider for NetworkPriceProvider {
             .await?
             .json::<USDPrice>()
             .await?;
-        // TODO avoid hardcoding 1e9 decimal precision
-        Ok((response.USD * 1e9) as u64)
+        Ok((response.USD * DECIMAL_PRECISION) as u64)
     }
 }
 
