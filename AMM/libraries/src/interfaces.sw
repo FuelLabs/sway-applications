@@ -85,9 +85,10 @@ abi Exchange {
     #[storage(read, write)]
     fn deposit();
 
-    /// Get the preview info of a ` swap_with_exact_input `, that consists of a minimum amount of
-    /// output asset to receive by swapping ` exact_input` of input asset and whether the
-    /// output asset reserves are sufficient for the swap or not.
+    /// Get the preview info of a `swap_with_exact_input`.
+    /// The preview info while swapping `exact_input` of input asset consists of:
+    /// - The minimum amount of output asset to receive,
+    /// - Whether the output asset reserves are sufficient for the swap or not.
     /// 
     /// # Arguments
     /// 
@@ -99,9 +100,10 @@ abi Exchange {
     #[storage(read, write)]
     fn preview_swap_with_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo;
 
-    /// Get the preview info of a ` swap_with_exact_output `, that consists of the maximum amount of
-    /// input asset to forward to get ` exact_output ` amount of other asset and
-    /// whether the input asset reserves are sufficient for the swap or not.
+    /// Get the preview info of a `swap_with_exact_output`.
+    /// The preview info while swapping to get `exact_output` amount of output asset consists of:
+    /// - The maximum amount of input asset to forward,
+    /// - Whether the input asset reserves are sufficient for the swap or not.
     /// 
     /// # Arguments
     /// 
@@ -153,8 +155,8 @@ abi Exchange {
     #[storage(read, write)]
     fn swap_with_exact_input(min_output: Option<u64>, deadline: u64) -> u64;
 
-    /// Swap the forwarded amount of forwarded asset for ` exact_output_amount ` of other asset and
-    /// transfer any extra forwarded amount of forwarded asset and output asset to sender.
+    /// Swap forwarded asset for `exact_output_amount` of other asset and transfer to sender.
+    /// Refund any extra input amount.
     /// 
     /// # Arguments
     /// 
@@ -199,8 +201,13 @@ abi Exchange {
     #[storage(read)]
     fn balance(asset: ContractId) -> u64;
 
-    /// Get the pool info of the exchange contract, i.e., asset A and B identifiers, asset A and B amounts
-    /// and liquidity pool asset supply amount.
+    /// Get the pool info of the exchange contract.
+    /// The pool info consists of:
+    /// - Identifier of asset A,
+    /// - Identifier of asset B,
+    /// - Asset A amount in reserves,
+    /// - Asset B amount in reserves,
+    /// - Liquidity pool asset supply amount.
     /// 
     /// # Reverts
     /// 
