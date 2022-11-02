@@ -15,10 +15,10 @@ pub struct DefineAssetPairEvent {
 }
 
 pub struct DepositEvent {
-    /// Deposited asset that is either asset A or asset B
-    asset: ContractId,
     /// Deposited amount of the asset that may be withdrawn of used to add liquidity
     amount: u64,
+    /// Deposited asset that is either asset A or asset B
+    asset: ContractId,
     /// New deposit balance of asset in contract
     balance: u64,
 }
@@ -33,21 +33,21 @@ pub struct RemoveLiquidityEvent {
 }
 
 pub struct SwapEvent {
+    /// Amount of the output asset that was bought
+    bought: u64,
     /// Identifier of input asset
     input: ContractId,
     /// Identifier of output asset
     output: ContractId,
     /// Amount of the input asset that was sold
     sold: u64,
-    /// Amount of the output asset that was bought
-    bought: u64,
 }
 
 pub struct WithdrawEvent {
-    /// Identifier of withdrawn asset
-    asset: ContractId,
     /// Amount of withdrawal
     amount: u64,
+    /// Identifier of withdrawn asset
+    asset: ContractId,
     /// Remaining deposit balance of asset in contract
     balance: u64,
 }

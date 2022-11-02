@@ -1,7 +1,7 @@
 library utils;
 
 use core::num::*;
-use std::{chain::auth::{AuthError, msg_sender}, u128::U128};
+use std::u128::U128;
 
 fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
     let fee = (amount / liquidity_miner_fee);
@@ -25,6 +25,7 @@ pub fn get_maximum_input_for_exact_output(
     let numerator = ~U128::from(0, input_reserve) * ~U128::from(0, output_amount);
     let denominator = ~U128::from(0, calculate_amount_with_fee(output_reserve - output_amount, liquidity_miner_fee));
     let result_wrapped = (numerator / denominator).as_u64();
+
     if denominator > numerator {
         ~u64::max()
     } else {

@@ -9,7 +9,7 @@ abi AMM {
     ///
     /// # Arguments
     /// 
-    /// - ` exchange_contract_id` - factory exchange contract identifier
+    /// - `exchange_contract_id` - factory exchange contract
     ///
     /// # Reverts 
     ///
@@ -21,13 +21,13 @@ abi AMM {
     /// 
     /// # Arguments
     /// 
-    /// - ` asset_pair ` - tuple of identifiers of the pair of assets that make up the pool
-    /// - ` pool ` - identifier of exchange contract that defines the pool of the given pair
+    /// - `asset_pair` - pair of assets that make up the pool
+    /// - `pool` - exchange contract that defines the pool for a given `asset_pair`
     /// 
     /// # Reverts
     /// 
     /// * When the AMM contract has not been initialized
-    /// * When the bytecode root of ` pool ` does not match the bytecode root of the factory exchange contract
+    /// * When the bytecode root of `pool` does not match the bytecode root of the factory exchange contract
     /// * When the pool info of the exchange contract with the given address does not consist of the given asset pair
     #[storage(read, write)]
     fn add_pool(asset_pair: (ContractId, ContractId), pool: ContractId);
@@ -36,7 +36,7 @@ abi AMM {
     /// 
     /// # Arguments
     /// 
-    /// - ` asset_pair ` - tuple of identifiers of the pair of assets that make up the pool
+    /// - `asset_pair` - pair of assets that make up the pool
     #[storage(read)]
     fn pool(asset_pair: (ContractId, ContractId)) -> Option<ContractId>;
 }
@@ -49,17 +49,17 @@ abi Exchange {
     /// 
     /// # Arguments
     /// 
-    /// - ` desired_liquidity ` - minimum amount of liquidity to add
-    /// - ` deadline ` - limit on block height for operation
+    /// - `desired_liquidity` - minimum amount of liquidity to add
+    /// - `deadline` - limit on block height for operation
     /// 
     /// # Reverts
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     /// * When the current block height is not less than `deadline`
-    /// * When the ` msg_amount ` with function call is not 0
-    /// * When the ` desired_liquidity ` is less than ` MINIMUM_LIQUIDITY `
+    /// * When the `msg_amount` with function call is not 0
+    /// * When the `desired_liquidity` is less than `MINIMUM_LIQUIDITY`
     /// * When asset A or B deposits are 0
-    /// When calculated liquidity to add is less than ` desired liquidity `
+    /// * When calculated liquidity to add is less than `desired liquidity`
     #[storage(read, write)]
     fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64;
 
@@ -67,11 +67,11 @@ abi Exchange {
     /// 
     /// # Arguments
     /// 
-    /// - ` pair ` - unique identifiers of the asset pair, i.e., asset A and asset B
+    /// - `pair` - unique identifiers of the asset pair, i.e., asset A and asset B
     /// 
     /// # Reverts
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     /// * When the passed pair describes identical assets
     #[storage(read, write)]
     fn constructor(pair: (ContractId, ContractId));
@@ -80,8 +80,8 @@ abi Exchange {
     /// 
     /// # Reverts
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
-    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
+    /// * When the `msg_asset_id` does not identify asset A or asset B
     #[storage(read, write)]
     fn deposit();
 
@@ -91,11 +91,11 @@ abi Exchange {
     /// 
     /// # Arguments
     /// 
-    /// - ` exact_input ` - the amount to input
-    /// - ` input_asset ` - the identifier of the asset to input
+    /// - `exact_input` - the amount to input
+    /// - `input_asset` - asset to input
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
-    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
+    /// * When the `msg_asset_id` does not identify asset A or asset B
     #[storage(read, write)]
     fn preview_swap_with_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo;
 
@@ -105,14 +105,14 @@ abi Exchange {
     /// 
     /// # Arguments
     /// 
-    /// - ` exact_output ` - the desired amount of other asset to receive after swap
-    /// - ` output_asset ` - the identifier of the asset to output
+    /// - `exact_output` - the desired amount of other asset to receive after swap
+    /// - `output_asset` - asset to output
     ///
     /// # Reverts
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
-    /// * When the ` msg_asset_id ` does not identify asset A or asset B
-    /// * When the ` exact_output ` is less than the reserve amount of the output asset
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
+    /// * When the `msg_asset_id` does not identify asset A or asset B
+    /// * When the `exact_output` is less than the reserve amount of the output asset
     #[storage(read, write)]
     fn preview_swap_with_exact_output(exact_output: u64, output_asset: ContractId) -> PreviewSwapInfo;
 
@@ -120,18 +120,18 @@ abi Exchange {
     /// 
     /// # Arguments
     /// 
-    /// - ` deadline ` - limit on block height for operation
-    /// - ` min_asset_a ` - minimum amount of asset A to receive after burn
-    /// - ` min_asset_b ` - minimum amount of asset B to receive after burn
+    /// - `deadline` - limit on block height for operation
+    /// - `min_asset_a` - minimum amount of asset A to receive after burn
+    /// - `min_asset_b` - minimum amount of asset B to receive after burn
     /// 
     /// # Reverts
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     /// * When there are no liquidity pool assets to burn
-    /// * When the ` msg_asset_id ` does not identify the liquidity pool asset
-    /// * When ` min_asset_a ` or ` min_asset_b ` is 0
-    /// * When the current block height is not less than ` deadline `
-    /// * When the ` msg_amount ` with function call is 0
+    /// * When the `msg_asset_id` does not identify the liquidity pool asset
+    /// * When `min_asset_a` or `min_asset_b` is 0
+    /// * When the current block height is not less than `deadline`
+    /// * When the `msg_amount` with function call is 0
     /// * When the minimum amounts for asset A and asset B to receive after burn cannot be satisfied
     #[storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo;
@@ -140,16 +140,16 @@ abi Exchange {
     /// 
     /// # Arguments
     /// 
-    /// - ` min_output ` - minimum output required (to protect against excessive slippage)
-    /// - ` deadline ` - limit on block height for operation
+    /// - `min_output` - minimum output required (to protect against excessive slippage)
+    /// - `deadline` - limit on block height for operation
     /// 
     /// # Reverts
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
-    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
+    /// * When the `msg_asset_id` does not identify asset A or asset B
     /// * When the current block height is not less than `deadline`
-    /// * When the ` msg_amount ` with function call is 0
-    /// * When ` min_output ` is provided and is lower than the output amount
+    /// * When the `msg_amount` with function call is 0
+    /// * When `min_output` is provided and is lower than the output amount
     #[storage(read, write)]
     fn swap_with_exact_input(min_output: Option<u64>, deadline: u64) -> u64;
 
@@ -158,17 +158,17 @@ abi Exchange {
     /// 
     /// # Arguments
     /// 
-    /// - ` output ` - the exact output amount to receive
-    /// - ` deadline ` - limit on block height for operation
+    /// - `output` - the exact output amount to receive
+    /// - `deadline` - limit on block height for operation
     /// 
     /// # Reverts
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
-    /// * When the ` msg_asset_id ` does not identify asset A or asset B
-    /// * When ` output ` is 0
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
+    /// * When the `msg_asset_id` does not identify asset A or asset B
+    /// * When `output` is 0
     /// * When the current block height is not less than ` deadline `
-    /// * When the ` msg_amount ` with function call is 0
-    /// * When the ` msg_amount ` is insufficient for swap
+    /// * When the `msg_amount` with function call is 0
+    /// * When the `msg_amount` is insufficient for swap
     #[storage(read, write)]
     fn swap_with_exact_output(output: u64, deadline: u64) -> u64;
 
@@ -176,13 +176,13 @@ abi Exchange {
     /// 
     /// # Arguments
     /// 
-    /// - ` amount ` - the amount of coins to withdraw
-    /// - ` asset ` - identifier of the asset to withdraw
+    /// - `amount` - the amount of coins to withdraw
+    /// - `asset` - asset to withdraw
     /// 
     /// # Reverts
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
-    /// * When the ` msg_asset_id ` does not identify asset A or asset B
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
+    /// * When the `msg_asset_id` does not identify asset A or asset B
     /// * When the deposited amount by the sender stored in the contract is insufficient
     #[storage(read, write)]
     fn withdraw(amount: u64, asset: ContractId);
@@ -191,11 +191,11 @@ abi Exchange {
     /// 
     /// # Arguments
     /// 
-    /// - ` asset ` - identifier of the asset to get balance of
+    /// - `asset` - asset to get balance of
     /// 
     /// # Reverts
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     #[storage(read)]
     fn balance(asset: ContractId) -> u64;
 
@@ -204,7 +204,7 @@ abi Exchange {
     /// 
     /// # Reverts
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     #[storage(read)]
     fn pool_info() -> PoolInfo;
 
@@ -213,12 +213,12 @@ abi Exchange {
     /// 
     /// # Arguments
     /// 
-    /// - ` amount ` - amount of an asset to add
-    /// - ` asset ` - identifier of the asset to add
+    /// - `amount` - amount of an asset to add
+    /// - `asset` - asset to add
     /// 
     /// # Reverts
     /// 
-    /// * When the contract has not been initialized, i.e., asset pair in storage is ` None `
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     #[storage(read)]
     fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo;
 }
