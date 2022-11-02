@@ -86,7 +86,7 @@ The information in this section is split into subsections in order to conceptual
 
 - Replace constructor with manifest instantiation?
 - Need to possibly handle overflowing upon calculating votes inside `execute`
-- Outdated way to call an arbitrary contract, WIP in Sway repo
+- Executes proposals based on abi known at compile would like to call an arbitrary contract, but WIP in Sway repo
 - Can instantiate with approval of 1 - exploitable
 - Extend to use multiple consensus mechansims instead of a simple yes:no ratio
 - Not alphabetically ordered

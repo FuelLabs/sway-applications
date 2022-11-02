@@ -11,11 +11,6 @@ A decentralized autonomous organization (DAO) is akin to an on-chain government 
 
 More information can be found in the [specification](./SPECIFICATION.md).
 
-### Current state of the application
-
-- The smart contract is mostly complete for the basic implementation. There are some issues that need to be worked out but a UI can be started
-- The user interface does not currently exist
-
 ## Project Structure
 
 The project consists of a smart contract and a user interface which the user can interact with.
@@ -24,9 +19,10 @@ The project consists of a smart contract and a user interface which the user can
 
 ```
 dao-voting/
-├── contract/
-|    └── src/main.sw
-|    └── tests/harness.rs
+├── packages/
+|    └──contract/
+|       └── src/main.sw
+|       └── tests/harness.rs
 ├── frontend/
 |    └── Directories & files
 ├── README.md
@@ -48,13 +44,13 @@ There are two commands required to run the tests
 1. Build the asset used for depositing into the dao-voting
    
    ```bash
-   forc build --path tests/artifacts/gov_token 
+   forc build --path packages/contract/tests/artifacts/gov_token 
    ```
 
 2. Run the tests
 
    ```bash
-   forc test
+   cargo test
    ```
 
 ## Specification
