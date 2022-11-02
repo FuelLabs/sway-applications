@@ -13,6 +13,8 @@ elif [ $PROJECT = 'AMM/contracts/AMM' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'AMM/contracts/exchange' ]; then
     forc build --path $PROJECT
+elif [ $PROJECT = 'AMM/libraries' ]; then
+    forc build --path $PROJECT
 elif [ $PROJECT = 'auctions/english-auction' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/asset
