@@ -11,12 +11,12 @@ elif [ $PROJECT = 'auctions/english-auction' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/asset
     forc build --path $PROJECT/../../NFT/
-elif [ $PROJECT = 'dao-voting/dao' ]; then
+elif [ $PROJECT = 'dao-voting/packages/dao' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/gov_token
-elif [ $PROJECT = 'dao-voting/governor_abi' ]; then
+elif [ $PROJECT = 'dao-voting/packages/governor_abi' ]; then
     forc build --path $PROJECT
-elif [ $PROJECT = 'dao-voting/governor_contract' ]; then
+elif [ $PROJECT = 'dao-voting/packages/governor_contract' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'escrow' ]; then
     forc build --path $PROJECT
