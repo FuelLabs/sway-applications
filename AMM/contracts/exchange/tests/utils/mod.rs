@@ -3,10 +3,13 @@ use fuels::{contract::contract::CallResponse, prelude::*};
 abigen!(Exchange, "out/debug/exchange-abi.json");
 
 pub struct MetaExchange {
-    pub asset_a_id: ContractId,
-    pub asset_b_id: ContractId,
+    pub asset_a_asset_id: AssetId,
+    pub asset_b_asset_id: AssetId,
+    pub asset_a_contract_id: ContractId,
+    pub asset_b_contract_id: ContractId,
     pub contract: Exchange,
-    pub liquidity_pool_id: ContractId,
+    pub liquidity_pool_asset_id: AssetId,
+    pub liquidity_pool_contract_id: ContractId,
 }
 
 pub mod abi_calls {
@@ -280,10 +283,13 @@ pub mod test_helpers {
         constructor(&exchange_instance, (asset_a_id, asset_b_id)).await;
 
         let exchange = MetaExchange {
-            asset_a_id: asset_a_id,
-            asset_b_id: asset_b_id,
+            asset_a_asset_id: AssetId::new(*asset_a_id),
+            asset_b_asset_id: AssetId::new(*asset_b_id),
+            asset_a_contract_id: asset_a_id,
+            asset_b_contract_id: asset_b_id,
             contract: exchange_instance,
-            liquidity_pool_id: liquidity_pool_asset_id,
+            liquidity_pool_asset_id: AssetId::new(*liquidity_pool_asset_id),
+            liquidity_pool_contract_id: liquidity_pool_asset_id,
         };
 
         (exchange, wallet, asset_c_id)

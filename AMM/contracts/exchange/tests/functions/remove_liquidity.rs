@@ -23,9 +23,9 @@ mod success {
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -33,15 +33,15 @@ mod success {
         .await;
 
         let wallet_initial_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_initial_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let wallet_initial_balance_lp = wallet
-            .get_asset_balance(&AssetId::new(*exchange.liquidity_pool_id))
+            .get_asset_balance(&exchange.liquidity_pool_asset_id)
             .await
             .unwrap();
         let initial_pool_info = pool_info(&exchange.contract).await.value;
@@ -50,7 +50,7 @@ mod success {
             &exchange.contract,
             CallParameters::new(
                 Some(liquidity_to_remove),
-                Some(AssetId::new(*exchange.liquidity_pool_id)),
+                Some(exchange.liquidity_pool_asset_id),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -66,15 +66,15 @@ mod success {
         .value;
 
         let wallet_final_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_final_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let wallet_final_balance_lp = wallet
-            .get_asset_balance(&AssetId::new(*exchange.liquidity_pool_id))
+            .get_asset_balance(&exchange.liquidity_pool_asset_id)
             .await
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
@@ -125,9 +125,9 @@ mod success {
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -135,15 +135,15 @@ mod success {
         .await;
 
         let wallet_initial_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_initial_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let wallet_initial_balance_lp = wallet
-            .get_asset_balance(&AssetId::new(*exchange.liquidity_pool_id))
+            .get_asset_balance(&exchange.liquidity_pool_asset_id)
             .await
             .unwrap();
         let initial_pool_info = pool_info(&exchange.contract).await.value;
@@ -152,7 +152,7 @@ mod success {
             &exchange.contract,
             CallParameters::new(
                 Some(liquidity_to_remove),
-                Some(AssetId::new(*exchange.liquidity_pool_id)),
+                Some(exchange.liquidity_pool_asset_id),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -168,15 +168,15 @@ mod success {
         .value;
 
         let wallet_final_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_final_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let wallet_final_balance_lp = wallet
-            .get_asset_balance(&AssetId::new(*exchange.liquidity_pool_id))
+            .get_asset_balance(&exchange.liquidity_pool_asset_id)
             .await
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
@@ -227,9 +227,9 @@ mod success {
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -237,15 +237,15 @@ mod success {
         .await;
 
         let wallet_initial_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_initial_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let wallet_initial_balance_lp = wallet
-            .get_asset_balance(&AssetId::new(*exchange.liquidity_pool_id))
+            .get_asset_balance(&exchange.liquidity_pool_asset_id)
             .await
             .unwrap();
         let initial_pool_info = pool_info(&exchange.contract).await.value;
@@ -254,7 +254,7 @@ mod success {
             &exchange.contract,
             CallParameters::new(
                 Some(liquidity_to_remove),
-                Some(AssetId::new(*exchange.liquidity_pool_id)),
+                Some(exchange.liquidity_pool_asset_id),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -270,15 +270,15 @@ mod success {
         .value;
 
         let wallet_final_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_final_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let wallet_final_balance_lp = wallet
-            .get_asset_balance(&AssetId::new(*exchange.liquidity_pool_id))
+            .get_asset_balance(&exchange.liquidity_pool_asset_id)
             .await
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
@@ -329,9 +329,9 @@ mod success {
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -339,15 +339,15 @@ mod success {
         .await;
 
         let wallet_initial_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_initial_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let wallet_initial_balance_lp = wallet
-            .get_asset_balance(&AssetId::new(*exchange.liquidity_pool_id))
+            .get_asset_balance(&exchange.liquidity_pool_asset_id)
             .await
             .unwrap();
         let initial_pool_info = pool_info(&exchange.contract).await.value;
@@ -356,7 +356,7 @@ mod success {
             &exchange.contract,
             CallParameters::new(
                 Some(liquidity_to_remove),
-                Some(AssetId::new(*exchange.liquidity_pool_id)),
+                Some(exchange.liquidity_pool_asset_id),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -372,15 +372,15 @@ mod success {
         .value;
 
         let wallet_final_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_final_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let wallet_final_balance_lp = wallet
-            .get_asset_balance(&AssetId::new(*exchange.liquidity_pool_id))
+            .get_asset_balance(&exchange.liquidity_pool_asset_id)
             .await
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
@@ -465,9 +465,9 @@ mod revert {
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -479,7 +479,7 @@ mod revert {
             CallParameters::new(
                 Some(added_liquidity),
                 // sending an asset other than pool asset
-                Some(AssetId::new(*exchange.asset_a_id)),
+                Some(exchange.asset_a_asset_id),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -506,9 +506,9 @@ mod revert {
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -519,7 +519,7 @@ mod revert {
             &exchange.contract,
             CallParameters::new(
                 Some(added_liquidity),
-                Some(AssetId::new(*exchange.liquidity_pool_id)),
+                Some(exchange.liquidity_pool_asset_id),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -547,9 +547,9 @@ mod revert {
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -560,7 +560,7 @@ mod revert {
             &exchange.contract,
             CallParameters::new(
                 Some(added_liquidity),
-                Some(AssetId::new(*exchange.liquidity_pool_id)),
+                Some(exchange.liquidity_pool_asset_id),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -589,9 +589,9 @@ mod revert {
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -602,7 +602,7 @@ mod revert {
             &exchange.contract,
             CallParameters::new(
                 Some(added_liquidity),
-                Some(AssetId::new(*exchange.liquidity_pool_id)),
+                Some(exchange.liquidity_pool_asset_id),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -631,9 +631,9 @@ mod revert {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -645,7 +645,7 @@ mod revert {
             CallParameters::new(
                 // sending 0 msg_amount
                 Some(0),
-                Some(AssetId::new(*exchange.liquidity_pool_id)),
+                Some(exchange.liquidity_pool_asset_id),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -674,7 +674,7 @@ mod revert {
             &exchange.contract,
             CallParameters::new(
                 Some(1),
-                // Sending `None` instead of `Some(AssetId::new(*exchange.liquidity_pool_id))`
+                // Sending `None` instead of `Some(exchange.liquidity_pool_asset_id)`
                 // because liquidity pool asset does not exist yet.
                 // Normally, this also causes Revert(42),
                 // but this test condition (zero liquidity) reverts before that.
@@ -705,9 +705,9 @@ mod revert {
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -723,7 +723,7 @@ mod revert {
             &exchange.contract,
             CallParameters::new(
                 Some(added_liquidity),
-                Some(AssetId::new(*exchange.liquidity_pool_id)),
+                Some(exchange.liquidity_pool_asset_id),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -751,9 +751,9 @@ mod revert {
 
         let added_liquidity = deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -769,7 +769,7 @@ mod revert {
             &exchange.contract,
             CallParameters::new(
                 Some(added_liquidity),
-                Some(AssetId::new(*exchange.liquidity_pool_id)),
+                Some(exchange.liquidity_pool_asset_id),
                 Some(10_000_000),
             ),
             TxParameters {

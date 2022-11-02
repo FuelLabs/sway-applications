@@ -19,7 +19,7 @@ mod success {
             CallParameters::default(),
             TxParameters::default(),
             amount_a,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
         )
         .await
         .value;
@@ -43,7 +43,7 @@ mod success {
             CallParameters::default(),
             TxParameters::default(),
             amount_b,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_a_asset_id,
         )
         .await
         .value;
@@ -69,9 +69,9 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -87,7 +87,7 @@ mod success {
                 maturity: 0,
             },
             preview_amount_a,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
         )
         .await
         .value;
@@ -113,9 +113,9 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -131,7 +131,7 @@ mod success {
                 maturity: 0,
             },
             preview_amount_a,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
         )
         .await
         .value;
@@ -157,9 +157,9 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -175,7 +175,7 @@ mod success {
                 maturity: 0,
             },
             preview_amount_b,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
         )
         .await
         .value;
@@ -201,9 +201,9 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             initial_liquidity,
             deadline,
@@ -219,7 +219,7 @@ mod success {
                 maturity: 0,
             },
             preview_amount_b,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
         )
         .await
         .value;

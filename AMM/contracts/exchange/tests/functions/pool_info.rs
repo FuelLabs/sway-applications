@@ -2,7 +2,6 @@ use crate::utils::{
     abi_calls::pool_info,
     test_helpers::{deposit_and_add_liquidity, setup, setup_and_initialize},
 };
-use fuels::prelude::*;
 
 mod success {
     use super::*;
@@ -12,9 +11,9 @@ mod success {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
         let pool_info = pool_info(&exchange.contract).await.value;
 
-        assert_eq!(pool_info.asset_a, exchange.asset_a_id);
+        assert_eq!(pool_info.asset_a, exchange.asset_a_contract_id);
         assert_eq!(pool_info.asset_a_reserve, 0);
-        assert_eq!(pool_info.asset_b, exchange.asset_b_id);
+        assert_eq!(pool_info.asset_b, exchange.asset_b_contract_id);
         assert_eq!(pool_info.asset_b_reserve, 0);
         assert_eq!(pool_info.liquidity, 0);
     }
@@ -31,9 +30,9 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
@@ -42,14 +41,14 @@ mod success {
 
         let final_pool_info = pool_info(&exchange.contract).await.value;
 
-        assert_eq!(initial_pool_info.asset_a, exchange.asset_a_id);
+        assert_eq!(initial_pool_info.asset_a, exchange.asset_a_contract_id);
         assert_eq!(initial_pool_info.asset_a_reserve, 0);
-        assert_eq!(initial_pool_info.asset_b, exchange.asset_b_id);
+        assert_eq!(initial_pool_info.asset_b, exchange.asset_b_contract_id);
         assert_eq!(initial_pool_info.asset_b_reserve, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
-        assert_eq!(final_pool_info.asset_a, exchange.asset_a_id);
+        assert_eq!(final_pool_info.asset_a, exchange.asset_a_contract_id);
         assert_eq!(final_pool_info.asset_a_reserve, deposit_amount_a);
-        assert_eq!(final_pool_info.asset_b, exchange.asset_b_id);
+        assert_eq!(final_pool_info.asset_b, exchange.asset_b_contract_id);
         assert_eq!(final_pool_info.asset_b_reserve, deposit_amount_b);
         assert_eq!(
             final_pool_info.liquidity * final_pool_info.liquidity,

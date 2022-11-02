@@ -18,9 +18,9 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
@@ -28,28 +28,27 @@ mod success {
         .await;
 
         let wallet_initial_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_initial_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let initial_pool_info = pool_info(&exchange.contract).await.value;
 
-        let min_output =
-            preview_swap_with_exact_input(&exchange.contract, input_amount, exchange.asset_a_id)
-                .await
-                .value
-                .amount;
+        let min_output = preview_swap_with_exact_input(
+            &exchange.contract,
+            input_amount,
+            exchange.asset_a_contract_id,
+        )
+        .await
+        .value
+        .amount;
 
         let output_amount = swap_with_exact_input(
             &exchange.contract,
-            CallParameters::new(
-                Some(input_amount),
-                Some(AssetId::new(*exchange.asset_a_id)),
-                None,
-            ),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_a_asset_id), None),
             Some(min_output),
             deadline,
         )
@@ -57,11 +56,11 @@ mod success {
         .value;
 
         let wallet_final_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_final_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
@@ -96,9 +95,9 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
@@ -106,28 +105,27 @@ mod success {
         .await;
 
         let wallet_initial_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_initial_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let initial_pool_info = pool_info(&exchange.contract).await.value;
 
-        let min_output =
-            preview_swap_with_exact_input(&exchange.contract, input_amount, exchange.asset_b_id)
-                .await
-                .value
-                .amount;
+        let min_output = preview_swap_with_exact_input(
+            &exchange.contract,
+            input_amount,
+            exchange.asset_b_contract_id,
+        )
+        .await
+        .value
+        .amount;
 
         let output_amount = swap_with_exact_input(
             &exchange.contract,
-            CallParameters::new(
-                Some(input_amount),
-                Some(AssetId::new(*exchange.asset_b_id)),
-                None,
-            ),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_b_asset_id), None),
             Some(min_output),
             deadline,
         )
@@ -135,11 +133,11 @@ mod success {
         .value;
 
         let wallet_final_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_final_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
@@ -174,9 +172,9 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
@@ -184,22 +182,18 @@ mod success {
         .await;
 
         let wallet_initial_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_initial_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let initial_pool_info = pool_info(&exchange.contract).await.value;
 
         let output_amount = swap_with_exact_input(
             &exchange.contract,
-            CallParameters::new(
-                Some(input_amount),
-                Some(AssetId::new(*exchange.asset_a_id)),
-                None,
-            ),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_a_asset_id), None),
             None,
             deadline,
         )
@@ -207,11 +201,11 @@ mod success {
         .value;
 
         let wallet_final_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
         let wallet_final_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
+            .get_asset_balance(&exchange.asset_b_asset_id)
             .await
             .unwrap();
         let final_pool_info = pool_info(&exchange.contract).await.value;
@@ -266,9 +260,9 @@ mod revert {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
@@ -296,9 +290,9 @@ mod revert {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
@@ -307,7 +301,7 @@ mod revert {
 
         swap_with_exact_input(
             &exchange.contract,
-            CallParameters::new(Some(1), Some(AssetId::new(*exchange.asset_a_id)), None),
+            CallParameters::new(Some(1), Some(exchange.asset_a_asset_id), None),
             None,
             // passing 0 deadline
             0,
@@ -326,9 +320,9 @@ mod revert {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
@@ -338,7 +332,7 @@ mod revert {
         swap_with_exact_input(
             &exchange.contract,
             // forwarding 0 as msg_amount
-            CallParameters::new(Some(0), Some(AssetId::new(*exchange.asset_a_id)), None),
+            CallParameters::new(Some(0), Some(exchange.asset_a_asset_id), None),
             None,
             deadline,
         )
@@ -357,28 +351,27 @@ mod revert {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
         )
         .await;
 
-        let preview_amount =
-            preview_swap_with_exact_input(&exchange.contract, input_amount, exchange.asset_a_id)
-                .await
-                .value
-                .amount;
+        let preview_amount = preview_swap_with_exact_input(
+            &exchange.contract,
+            input_amount,
+            exchange.asset_a_contract_id,
+        )
+        .await
+        .value
+        .amount;
 
         swap_with_exact_input(
             &exchange.contract,
-            CallParameters::new(
-                Some(input_amount),
-                Some(AssetId::new(*exchange.asset_a_id)),
-                None,
-            ),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_a_asset_id), None),
             // setting min too high
             Some(preview_amount + 1),
             deadline,

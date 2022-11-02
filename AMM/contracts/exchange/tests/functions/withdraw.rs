@@ -8,29 +8,37 @@ mod success {
     use super::*;
 
     #[tokio::test]
-    async fn withdraws_entire_deposit() {
+    async fn withdraws_entire_deposit_of_asset_a() {
         let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
         let deposit_amount = 100;
-        let asset = exchange.asset_a_id;
         let withdraw_amount = deposit_amount;
 
         deposit(
             &exchange.contract,
-            CallParameters::new(Some(deposit_amount), Some(AssetId::new(*asset)), None),
+            CallParameters::new(Some(deposit_amount), Some(exchange.asset_a_asset_id), None),
         )
         .await;
 
-        let initial_contract_balance = balance(&exchange.contract, asset).await.value;
+        let initial_contract_balance = balance(&exchange.contract, exchange.asset_a_contract_id)
+            .await
+            .value;
         let initial_wallet_balance = wallet
-            .get_asset_balance(&AssetId::new(*asset))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
 
-        withdraw(&exchange.contract, deposit_amount, asset).await;
+        withdraw(
+            &exchange.contract,
+            deposit_amount,
+            exchange.asset_a_contract_id,
+        )
+        .await;
 
-        let final_contract_balance = balance(&exchange.contract, asset).await.value;
+        let final_contract_balance = balance(&exchange.contract, exchange.asset_a_contract_id)
+            .await
+            .value;
         let final_wallet_balance = wallet
-            .get_asset_balance(&AssetId::new(*asset))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
 
@@ -45,33 +53,37 @@ mod success {
     }
 
     #[tokio::test]
-    async fn withdraws_partially() {
+    async fn withdraws_asset_a_partially() {
         let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
         let deposit_amount = 100;
-        let asset = exchange.asset_a_id;
         let withdraw_amount = 50;
 
         deposit(
             &exchange.contract,
-            CallParameters::new(
-                Some(deposit_amount),
-                Some(AssetId::new(*exchange.asset_a_id)),
-                None,
-            ),
+            CallParameters::new(Some(deposit_amount), Some(exchange.asset_a_asset_id), None),
         )
         .await;
 
-        let initial_contract_balance = balance(&exchange.contract, asset).await.value;
+        let initial_contract_balance = balance(&exchange.contract, exchange.asset_a_contract_id)
+            .await
+            .value;
         let initial_wallet_balance = wallet
-            .get_asset_balance(&AssetId::new(*asset))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
 
-        withdraw(&exchange.contract, withdraw_amount, exchange.asset_a_id).await;
+        withdraw(
+            &exchange.contract,
+            withdraw_amount,
+            exchange.asset_a_contract_id,
+        )
+        .await;
 
-        let final_contract_balance = balance(&exchange.contract, asset).await.value;
+        let final_contract_balance = balance(&exchange.contract, exchange.asset_a_contract_id)
+            .await
+            .value;
         let final_wallet_balance = wallet
-            .get_asset_balance(&AssetId::new(*asset))
+            .get_asset_balance(&exchange.asset_a_asset_id)
             .await
             .unwrap();
 
@@ -107,11 +119,7 @@ mod revert {
 
         deposit(
             &exchange.contract,
-            CallParameters::new(
-                Some(deposit_amount),
-                Some(AssetId::new(*exchange.asset_a_id)),
-                None,
-            ),
+            CallParameters::new(Some(deposit_amount), Some(exchange.asset_a_asset_id), None),
         )
         .await;
 
@@ -127,15 +135,16 @@ mod revert {
 
         deposit(
             &exchange.contract,
-            CallParameters::new(
-                Some(deposit_amount),
-                Some(AssetId::new(*exchange.asset_a_id)),
-                None,
-            ),
+            CallParameters::new(Some(deposit_amount), Some(exchange.asset_a_asset_id), None),
         )
         .await;
 
         // attempting to withdraw more than deposit amount
-        withdraw(&exchange.contract, deposit_amount + 1, exchange.asset_a_id).await;
+        withdraw(
+            &exchange.contract,
+            deposit_amount + 1,
+            exchange.asset_a_contract_id,
+        )
+        .await;
     }
 }

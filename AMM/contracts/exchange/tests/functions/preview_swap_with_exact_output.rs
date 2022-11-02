@@ -2,7 +2,6 @@ use crate::utils::{
     abi_calls::preview_swap_with_exact_output,
     test_helpers::{deposit_and_add_liquidity, setup, setup_and_initialize},
 };
-use fuels::prelude::*;
 
 mod success {
     use super::*;
@@ -24,19 +23,22 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
         )
         .await;
 
-        let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_b_id)
-                .await
-                .value;
+        let preview_swap_info = preview_swap_with_exact_output(
+            &exchange.contract,
+            output_amount,
+            exchange.asset_b_contract_id,
+        )
+        .await
+        .value;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
@@ -62,19 +64,22 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
         )
         .await;
 
-        let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_a_id)
-                .await
-                .value;
+        let preview_swap_info = preview_swap_with_exact_output(
+            &exchange.contract,
+            output_amount,
+            exchange.asset_a_contract_id,
+        )
+        .await
+        .value;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
@@ -100,19 +105,22 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
         )
         .await;
 
-        let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_b_id)
-                .await
-                .value;
+        let preview_swap_info = preview_swap_with_exact_output(
+            &exchange.contract,
+            output_amount,
+            exchange.asset_b_contract_id,
+        )
+        .await
+        .value;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
@@ -138,19 +146,22 @@ mod success {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
         )
         .await;
 
-        let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_a_id)
-                .await
-                .value;
+        let preview_swap_info = preview_swap_with_exact_output(
+            &exchange.contract,
+            output_amount,
+            exchange.asset_a_contract_id,
+        )
+        .await
+        .value;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
@@ -199,17 +210,21 @@ mod revert {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
         )
         .await;
 
-        preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_b_id)
-            .await;
+        preview_swap_with_exact_output(
+            &exchange.contract,
+            output_amount,
+            exchange.asset_b_contract_id,
+        )
+        .await;
     }
 
     #[tokio::test]
@@ -224,16 +239,20 @@ mod revert {
 
         deposit_and_add_liquidity(
             &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
+            exchange.asset_a_asset_id,
             deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
+            exchange.asset_b_asset_id,
             deposit_amount_b,
             liquidity,
             deadline,
         )
         .await;
 
-        preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_a_id)
-            .await;
+        preview_swap_with_exact_output(
+            &exchange.contract,
+            output_amount,
+            exchange.asset_a_contract_id,
+        )
+        .await;
     }
 }

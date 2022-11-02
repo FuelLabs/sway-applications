@@ -11,7 +11,9 @@ mod success {
     async fn returns_zero() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
 
-        let balance = balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let balance = balance(&exchange.contract, exchange.asset_a_contract_id)
+            .await
+            .value;
 
         assert_eq!(balance, 0);
     }
@@ -19,19 +21,19 @@ mod success {
     #[tokio::test]
     async fn returns_non_zero() {
         let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let initial_balance = balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let initial_balance = balance(&exchange.contract, exchange.asset_a_contract_id)
+            .await
+            .value;
         let deposit_amount = 10;
 
         deposit(
             &exchange.contract,
-            CallParameters::new(
-                Some(deposit_amount),
-                Some(AssetId::new(*exchange.asset_a_id)),
-                None,
-            ),
+            CallParameters::new(Some(deposit_amount), Some(exchange.asset_a_asset_id), None),
         )
         .await;
-        let balance = balance(&exchange.contract, exchange.asset_a_id).await.value;
+        let balance = balance(&exchange.contract, exchange.asset_a_contract_id)
+            .await
+            .value;
 
         assert_eq!(initial_balance, 0);
         assert_eq!(balance, deposit_amount);
