@@ -400,7 +400,7 @@ Will move from Apps repo to Libs repo soon
 
 <h3>Oracle Node</h3>
 
-- Feature complete, but could most likely be improved once event monitoring is added to
+- Feature complete, but it could be improved to resemble something closer to chainlink once event monitoring is supported.
 the sdk
 
 <h3>Tests</h3>
