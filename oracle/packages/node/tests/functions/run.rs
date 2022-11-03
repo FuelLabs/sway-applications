@@ -1,4 +1,3 @@
-#[cfg(test)]
 mod success {
     use crate::functions::{HardcodedPriceProvider, LoggingPriceUpdater};
     use fuels::tx::Receipt;
