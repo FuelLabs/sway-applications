@@ -7,13 +7,14 @@ mod success {
     use super::*;
 
     #[tokio::test]
-    async fn adds() {
+    async fn adds_when_asset_pair_is_in_same_order() {
         let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
         let pair = asset_pairs[0];
 
         let exchange_contract_id =
             deploy_and_construct_exchange_contract(&wallet, pair, None, None).await;
 
+        // adding pair to the AMM contract in the same order as the constructed exchange contract
         add_pool(&amm_instance, pair, exchange_contract_id).await;
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
@@ -26,14 +27,14 @@ mod success {
     }
 
     #[tokio::test]
-    async fn adds_when_pair_unordered() {
+    async fn adds_when_asset_pair_is_in_reverse_order() {
         let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
         let pair = asset_pairs[0];
 
         let exchange_contract_id =
             deploy_and_construct_exchange_contract(&wallet, pair, None, None).await;
 
-        // add by providing the pair in the reverse order
+        // adding pair to the AMM contract in the reverse order as the constructed exchange contract
         add_pool(&amm_instance, (pair.1, pair.0), exchange_contract_id).await;
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
