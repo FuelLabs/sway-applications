@@ -55,6 +55,7 @@ sway-applications/
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
 - [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal.
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction.
+- [Name-Registry](./name-registry/) is a program that allows users to own human readable names for easy transfer of cryptocurrencies and tokens
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
 
@@ -67,7 +68,7 @@ If you wish to run any of the projects then clone this repository and go through
 Any instructions related to running a specific project should be found within the README.md of that project.
 
 > **Note**
-> All projects currently use `forc 0.25.2`, and `fuel-core 0.10.1`.
+> All projects currently use `forc 0.26.0`, and `fuel-core 0.10.1`.
 
 ## Contributing
 
