@@ -78,7 +78,7 @@ The project can be started by executing the following steps:
     forc-deploy --path packages/contract --url localhost:4000 --unsigned
     ```
 
-This will allow the node to interact with the oracle contract deployed to our local `fuel-core` instance.
+    This will allow the node to interact with the oracle contract deployed to our local `fuel-core` instance.
 
 6. Start the Oracle node
 
