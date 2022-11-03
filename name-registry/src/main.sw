@@ -130,17 +130,11 @@ impl NameRegistry for Contract {
         match storage.names.get(name) {
             Option::Some(record) => {
                 match timestamp() < record.expiry {
-                    true => {
-                        Result::Ok(record.expiry)
-                    },
-                    false => {
-                        Result::Err(RegistrationValidityError::NameExpired)
-                    }
+                    true => Result::Ok(record.expiry),
+                    false => Result::Err(RegistrationValidityError::NameExpired),
                 }
             },
-            Option::None => {
-                Result::Err(RegistrationValidityError::NameNotRegistered)
-            }
+            Option::None => Result::Err(RegistrationValidityError::NameNotRegistered),
         }
     }
 
@@ -149,17 +143,11 @@ impl NameRegistry for Contract {
         match storage.names.get(name) {
             Option::Some(record) => {
                 match timestamp() < record.expiry {
-                    true => {
-                        Result::Ok(record.identity)
-                    },
-                    false => {
-                        Result::Err(RegistrationValidityError::NameExpired)
-                    }
+                    true => Result::Ok(record.identity),
+                    false => Result::Err(RegistrationValidityError::NameExpired),
                 }
             },
-            Option::None => {
-                Result::Err(RegistrationValidityError::NameNotRegistered)
-            }
+            Option::None => Result::Err(RegistrationValidityError::NameNotRegistered),
         }
     }
 
@@ -168,17 +156,11 @@ impl NameRegistry for Contract {
         match storage.names.get(name) {
             Option::Some(record) => {
                 match timestamp() < record.expiry {
-                    true => {
-                        Result::Ok(record.owner)
-                    },
-                    false => {
-                        Result::Err(RegistrationValidityError::NameExpired)
-                    }
+                    true => Result::Ok(record.owner),
+                    false => Result::Err(RegistrationValidityError::NameExpired),
                 }
             },
-            Option::None => {
-                Result::Err(RegistrationValidityError::NameNotRegistered)
-            }
+            Option::None => Result::Err(RegistrationValidityError::NameNotRegistered),
         }
     }
 }
