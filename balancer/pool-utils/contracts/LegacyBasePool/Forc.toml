@@ -1,0 +1,15 @@
+[project]
+authors = ["Kunal"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "LegacyBasePool"
+
+[dependencies]
+WordCodec = {path = "../../../sway-utils/contracts/helpers/WordCodec"}
+FixedPoint = {path = "../../../sway-utils/contracts/math/FixedPoint"}
+InputHelpers = {path = "../../../sway-utils/contracts/helpers/InputHelpers"}
+PoolTokens = {path = "../../../vault/contracts/PoolTokens"}
+TemporarilyPausable = {path = "../../../sway-utils/contracts/helpers/TemporarilyPausable"}
+BalancerPoolToken = {path = "../../../pool-utils/contracts/BalancerPoolToken"}
+Authentication = {path = "../../../sway-utils/contracts/helpers/Authentication"}
+PoolRegistry = {path = "../../../vault/contracts/PoolRegistry"}

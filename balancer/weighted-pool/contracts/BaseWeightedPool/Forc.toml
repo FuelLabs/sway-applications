@@ -1,0 +1,14 @@
+[project]
+authors = ["ankit"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "BaseWeightedPool"
+
+[dependencies]
+FixedPoint = { path = "../../../sway-utils/contracts/math/FixedPoint" }
+InputHelpers = { path = "../../../sway-utils/contracts/helpers/InputHelpers" }
+WeightedMath = { path = "../WeightedMath" }
+math = {path = "../../../sway-utils/contracts/math/math"}
+
+InvariantGrowthProtocolFees = {path = "../InvariantGrowthProtocolFees"}
+WeightedMath = {path = "../WeightedMath"}

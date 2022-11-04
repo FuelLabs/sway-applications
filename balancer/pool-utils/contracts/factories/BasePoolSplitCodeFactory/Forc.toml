@@ -1,0 +1,8 @@
+[project]
+authors = ["Sahil Tembhare"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "BasePoolSplitCodeFactory"
+
+[dependencies]
+BalancerErrors = { path = "../../../../sway-utils/contracts/helpers/BalancerErrors" }

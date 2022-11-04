@@ -1,0 +1,10 @@
+[project]
+authors = ["shreyansh jain"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "TimelockAuthorizer"
+
+[dependencies]
+BalancerErrors = { path = "../../../../sway-utils/contracts/helpers/BalancerErrors" }
+# Authentication = { path = "../../../../sway-utils/contracts/helpers/Authentication" }
+InputHelpers = { path = "../../../../sway-utils/contracts/helpers/InputHelpers" }

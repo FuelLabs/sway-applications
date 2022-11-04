@@ -1,0 +1,11 @@
+[project]
+authors = ["chappie"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "Swaps"
+
+[dependencies]
+InputHelpers = { path = "../../../sway-utils/contracts/helpers/InputHelpers"}
+BalanceAllocation = {path = "../balances/BalanceAllocation"}
+AssetHelpers = {path = "../AssetHelpers"}
+math = {path = "../../../sway-utils/contracts/math/math" }

@@ -1,0 +1,11 @@
+library errors;
+
+pub enum Error {
+    INVALID_POOL_ID: (),
+    CALLER_NOT_POOL: (),
+    CANNOT_USE_ETH_SENTINEL: (),
+    INSUFFICIENT_INTERNAL_BALANCE: (),
+    USER_DOESNT_ALLOW_RELAYER: (),
+    INSUFFICIENT_ETH: (),
+    INVALID_ETH_INTERNAL_BALANCE: (),
+}

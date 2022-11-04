@@ -1,0 +1,9 @@
+[project]
+authors = ["Kunal"]
+entry = "lib.sw"
+license = "Apache-2.0"
+name = "LinearMath"
+
+[dependencies]
+FixedPoint = {path= "../../../sway-utils/contracts/math/FixedPoint"}
+math = {path= "../../../sway-utils/contracts/math/math"}

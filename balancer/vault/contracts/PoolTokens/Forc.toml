@@ -1,0 +1,10 @@
+[project]
+authors = ["Kunal"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "PoolTokens"
+
+[dependencies]
+BalanceAllocation = { path = "../balances/BalanceAllocation" }
+BalancerErrors = { path = "../../../sway-utils/contracts/helpers/BalancerErrors" }
+InputHelpers = { path = "../../../sway-utils/contracts/helpers/InputHelpers" }

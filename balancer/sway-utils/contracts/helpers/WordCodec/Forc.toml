@@ -1,0 +1,9 @@
+[project]
+authors = ["Kunal"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "WordCodec"
+
+[dependencies]
+BalancerErrors = { path = "../BalancerErrors" }
+math = { path = "../../math/math" }

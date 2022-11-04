@@ -1,0 +1,8 @@
+[project]
+authors = ["Sahil Tembhare"]
+entry = "lib.sw"
+license = "Apache-2.0"
+name = "BalanceAllocation"
+
+[dependencies]
+BalancerErrors = { path = "../../../../sway-utils/contracts/helpers/BalancerErrors" }

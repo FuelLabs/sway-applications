@@ -1,0 +1,9 @@
+[project]
+authors = ["chappie"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "ProtocolFeesCollector"
+
+[dependencies]
+InputHelpers = {path = "../../../sway-utils/contracts/helpers/InputHelpers"}
+FixedPoint = {path = "../../../sway-utils/contracts/math/FixedPoint"}

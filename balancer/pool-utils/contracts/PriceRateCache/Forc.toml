@@ -1,0 +1,9 @@
+[project]
+authors = ["Kunal"]
+entry = "lib.sw"
+license = "Apache-2.0"
+name = "PriceRateCache"
+
+[dependencies]
+WordCodec = {path= "../../../sway-utils/contracts/helpers/WordCodec"}
+BalancerErrors = {path= "../../../sway-utils/contracts/helpers/BalancerErrors"}
