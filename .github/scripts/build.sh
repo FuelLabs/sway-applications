@@ -24,8 +24,8 @@ elif [ $PROJECT = 'multisig-wallet' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'NFT' ]; then
     forc build --path $PROJECT
-elif [ $PROJECT = 'oracle/packages/contract' ]; then
-    forc build --path $PROJECT
+elif [ $PROJECT = 'oracle/packages' ]; then
+    forc build --path $PROJECT/contract
 else
     echo "project name did not match"
     exit 1
