@@ -1,18 +1,23 @@
 library utils;
-
 dep errors;
 dep data_structures;
 dep ops;
 
-use errors::PoolError;
+use errors::Error;
 use data_structures::{
-    AbiEncode,
+    abi_encode,
+    FUEL,
+    MASK,
+    ONE,
     PoolSpecialization,
     SwapKind,
     SwapRequest,
     UserBalanceOp,
     UserBalanceOpKind,
+    WFUEL,
 };
+
+use ops::{binary_or, compose, get_word_from_b256, lsh, lsh_u64};
 
 use std::{
     address::Address,
@@ -20,7 +25,6 @@ use std::{
         AuthError,
         msg_sender,
     },
-    constants::ZERO_B256,
     context::{
         call_frames::contract_id,
         msg_amount,
@@ -28,8 +32,9 @@ use std::{
     contract_id::ContractId,
     hash::keccak256,
     identity::Identity,
+    math::*,
     option::Option,
-    result::Result,
+    result::*,
     revert::{
         require,
         revert,
@@ -41,10 +46,10 @@ use std::{
     vec::Vec,
 };
 
-use ops::{binary_or, compose, get_word_from_b256, lsh, lsh_u64};
-
 pub fn mul_up(a: u64, b: u64) -> u64 {
     let product = a * b;
+    require(a == 0 || product / a == b, Error::MUL_OVERFLOW);
+
     if product == 0 {
         0
     } else {
@@ -53,13 +58,14 @@ pub fn mul_up(a: u64, b: u64) -> u64 {
         // To avoid intermediate overflow in the addition, we distribute the division and get:
         // div_up(x, y) := (x - 1) / y + 1
         // Note that this requires x != 0, which we already tested for.
-        let res: u64 = (product - 1) + 1;
+        let res: u64 = ((product - 1) / ONE) + 1;
         res
     }
 }
 
 // Returns true if `asset` is the sentinel value that represents FUEL.
 pub fn is_eth(asset: ContractId) -> bool {
+    let asset = ~ContractId::from(FUEL);
     return (asset == ~ContractId::from(FUEL));
 }
 
@@ -87,12 +93,30 @@ pub fn translate_to_ierc20_second(asset: Vec<ContractId>) -> Vec<ContractId> {
 // (supplied by the caller), and the 'calculated' amount (returned by the Pool in response to the swap request).
 // Given the two swap tokens and the swap kind, returns which one is the 'given' token (the token whose
 // amount is supplied by the caller).
-pub fn token_given(kind: SwapKind, token_in: ContractId, token_out: ContractId) -> ContractId {
-    if let SwapKind::GivenIn = kind {
-        return token_in;
+pub fn token_given(kind: SwapKind, tokenIn: ContractId, tokenOut: ContractId, ) -> ContractId {
+    if let SwapKind::GIVEN_IN = kind {
+        return tokenIn;
     } else {
-        return token_out;
+        return tokenOut;
     }
+}
+
+// Returns the specialization setting of a Pool.
+// Due to how Pool IDs are created, this is done with no storage accesses and costs little gas.
+pub fn get_pool_specialization(poolId: b256) -> PoolSpecialization {
+    // 10 byte logical shift left to remove the nonce, followed by a 2 byte mask to remove the address.
+    let value = get_word_from_b256((poolId >> (10 * 8)), 32) & (2.pow(2 * 8) - 1);
+
+    // Casting a value into an enum results in a runtime check that reverts unless the value is within the enum's
+    // range. Passing an invalid Pool ID to this function would then result in an obscure revert with no reason
+    // string: we instead perform the check ourselves to help in error diagnosis.
+    // There are three Pool specialization settings: general, minimal swap info and two tokens, which correspond to
+    // values 0, 1 and 2.
+    require(value < 3, Error::INVALID_POOL_ID);
+
+    // Because we have checked that `value` is within the enum range, we can upoolIdse assembly to skip the runtime check.
+    let _value = PoolSpecialization::GENERAL;
+    _value
 }
 
 // Same as `_translateToIERC20(IAsset)`, but for an entire array.
@@ -108,11 +132,11 @@ pub fn translate_to_ierc20_array(asset: Vec<ContractId>) -> Vec<ContractId> {
 
 // Given the two swap tokens and the swap kind, returns which one is the 'calculated' token (the token whose
 // amount is calculated by the Pool).
-pub fn token_calculated(kind: SwapKind, token_in: ContractId, token_out: ContractId) -> ContractId {
-    if let SwapKind::GivenIn = kind {
-        return token_out;
+pub fn token_calculated(kind: SwapKind, tokenIn: ContractId, tokenOut: ContractId) -> ContractId {
+    if let SwapKind::GIVEN_IN = kind {
+        return tokenOut;
     } else {
-        return token_in;
+        return tokenIn;
     }
 }
 
@@ -126,7 +150,7 @@ pub fn sort_two_tokens(token_x: ContractId, token_y: ContractId) -> (ContractId,
 }
 
 pub fn get_two_token_pair_hash(token_a: ContractId, token_b: ContractId) -> b256 {
-    let tmp = AbiEncode {
+    let tmp = abi_encode {
         token_a: token_a,
         token_b: token_b,
     };
@@ -146,17 +170,29 @@ pub fn vec_contains(vec: Vec<ContractId>, search: ContractId) -> bool {
     return false;
 }
 
-/// Returns excess ETH back to the contract caller, assuming `amount_used` has been spent. Reverts
-/// if the caller sent less ETH than `amount_used`.
+pub fn vec_contains1(vec: Vec<b256>, search: b256) -> bool {
+    let mut count = 0;
+    while count < vec.len() {
+        if vec.get(count).unwrap() == search {
+            return true;
+        }
+        count = count + 1;
+    }
+
+    return false;
+}
+
+/// Returns excess ETH back to the contract caller, assuming `amountUsed` has been spent. Reverts
+/// if the caller sent less ETH than `amountUsed`.
 /// 
 /// Because the caller might not know exactly how much ETH a Vault action will require, they may send extra.
 /// Note that this excess value is returned *to the contract caller* (msg.sender). If caller and e.g. swap sender are
 /// not the same (because the caller is a relayer for the sender), then it is up to the caller to manage this
 /// returned ETH.
-pub fn handle_remaining_eth(amount_used: u64) {
-    require(msg_amount() >= amount_used, PoolError::InsufficientEth);
+pub fn handle_remaining_eth(amountUsed: u64) {
+    require(msg_amount() >= amountUsed, Error::INSUFFICIENT_ETH);
 
-    let excess: u64 = msg_amount() - amount_used;
+    let excess: u64 = msg_amount() - amountUsed;
     if (excess > 0) {
         let sender = match msg_sender().unwrap() {
             Identity::Address(address) => address,
@@ -168,49 +204,64 @@ pub fn handle_remaining_eth(amount_used: u64) {
 }
 
 // Returns an ordered pair (amountIn, amountOut) given the 'given' and 'calculated' amounts, and the swap kind.
-pub fn get_amounts(kind: SwapKind, amount_given: u64, amount_calculated: u64) -> (u64, u64) {
-    if let SwapKind::GivenIn = kind {
+pub fn get_amounts(kind: SwapKind, amountGiven: u64, amountCalculated: u64, ) -> (u64, u64) {
+    if let SwapKind::GIVEN_IN = kind {
         return (
-            amount_given,
-            amount_calculated,
+            amountGiven,
+            amountCalculated,
         );
     } else {
         // SwapKind::GIVEN_OUT
         return (
-            amount_calculated,
-            amount_given,
+            amountCalculated,
+            amountGiven,
         );
     }
+}
+
+// Returns the address of a Pool's contract.
+// Due to how Pool IDs are created, this is done with no storage accesses and costs little gas.
+pub fn get_pool_address(poolId: b256) -> ContractId {
+    // 12 byte logical shift left to remove the nonce and specialization setting. We don't need to mask,
+    // since the logical shift already sets the upper bits to zero.
+    // todo
+    // address(uint256(poolId) >> (12 * 8));
+    return ~ContractId::from(poolId);
 }
 
 // Casts an array of uint256 to int256, setting the sign of the result according to the `positive` flag,
 // without checking whether the values fit in the signed 256 bit range.
 pub fn unsafe_cast_to_int256(values: Vec<u64>, positive: bool) -> Vec<u64> {
-    let mut signed_values = ~Vec::new();
+    let mut signedValues = ~Vec::new();
     let mut count = 0;
     while count < values.len() {
         if positive {
-            // signed_values.push(-values.get(count).unwrap());
-            signed_values.push(values.get(count).unwrap());
+            // signedValues.push(-values.get(count).unwrap());
+            signedValues.push(values.get(count).unwrap());
         } else {
-            signed_values.push(values.get(count).unwrap());
+            signedValues.push(values.get(count).unwrap());
         }
         count = count + 1;
     }
-    return signed_values;
+    return signedValues;
 }
 
 /// Destructures a User Balance operation, validating that the contract caller is allowed to perform it.
 pub fn validate_user_balance_op(
     op: UserBalanceOp,
-    checked_caller_is_relayer: bool,
+    checkedCallerIsRelayer: bool,
 ) -> (UserBalanceOpKind, ContractId, u64, Address, Address, bool) {
-    let mut tmp = checked_caller_is_relayer;
+    let mut tmp = checkedCallerIsRelayer;
     // The only argument we need to validate is `sender`, which can only be either the contract caller, or a
     // relayer approved by `sender`.
-    let address = match msg_sender().unwrap() {
-        Identity::Address(address) => address,
-        _ => revert(0),
+    let address: Result<Identity, AuthError> = msg_sender();
+    let address: Address = match address.unwrap() {
+        Identity::Address(addr) => {
+            addr
+        },
+        _ => {
+            revert(0);
+        },
     };
 
     let sender = op.sender;
@@ -245,20 +296,22 @@ pub fn to_pool_id(
 ) -> b256 {
     let pool: b256 = pool.into();
     let mut specialization_value = 0;
-    if let PoolSpecialization::MinimalSwapInfo = specialization
+    if let PoolSpecialization::MINIMAL_SWAP_INFO = specialization
     {
         specialization_value = 1;
-    } else if let PoolSpecialization::TwoToken = specialization {
+    } else if let PoolSpecialization::TWO_TOKEN = specialization {
         specialization_value = 2;
     }
 
-    let mut serialized: b256 = ZERO_B256;
-    serialized = binary_or(serialized, compose(nonce, 0, 0, 0));
-    serialized = binary_or(serialized, lsh(compose(specialization_value, 0, 0, 0), 80));
+    let mut serialized: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
+    serialized = binary_or(serialized, compose(nonce, 0, 0, 0, ));
+    serialized = binary_or(serialized, lsh(compose(specialization_value, 0, 0, 0, ), 80));
     serialized = binary_or(serialized, lsh(pool, 96));
 
     return serialized;
 }
+
+// ! BalanceAllocation
 pub fn last_change_block(balance: b256) -> u64 {
     // let mask: u64 = 2**(32) - 1;
     return ((get_word_from_b256(balance, 0) >> 224) & MASK);
@@ -387,7 +440,7 @@ fn to_balance(_cash: u64, _managed: u64, _block_number: u64) -> b256 {
     let _total: u64 = _cash + _managed;
 
     // mask here -> let mask: u64 = 2**112;
-    require(_total >= _cash && _total < MASK, PoolError::BalanceTotalOverflow);
+    require(_total >= _cash && _total < MASK, Error::BALANCE_TOTAL_OVERFLOW);
 
     return pack(_cash, _managed, _block_number);
 }

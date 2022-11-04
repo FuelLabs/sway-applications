@@ -9,10 +9,16 @@ dep events;
 use interface::WeightedPool;
 use errors::Error;
 use data_structures::{
+    DEFAULT_MINIMUM_BPT,
     ExitKind,
     JoinKind,
+    MIN_SWAP_FEE_PERCENTAGE,
+    TOTAL_SUPPLY,
+    TOTAL_TOKENS,
+    UNHANDLED_EXIT_KIND,
     UserData,
     RequestKind,
+    UNHANDLED_JOIN_KIND,
 };
 
 use utils::{
@@ -32,7 +38,7 @@ use utils::{
     join_all_tokens_in_for_exact_bptout,
 };
 
-use events::EventSwapFeePercentageChanged;
+use events::SwapFeePercentageChanged;
 
 use std::{
     address::Address,
@@ -43,137 +49,106 @@ use std::{
     hash::keccak256,
     identity::Identity,
     logging::log,
+    math::*,
     option::Option,
     reentrancy::is_reentrant,
-    result::Result,
+    result::*,
     revert::{require, revert},
     storage::{StorageMap, get, store},
     token::{burn, force_transfer_to_contract, mint, transfer_to_output},
     vec::Vec,
 };
 
+// use vault::vault;
+
 storage {
-    // Invariant of last join or exit pool
     last_post_join_exit_invariant: u64 = 10,
-    // contracr ID of the vault
+    misc_data: b256 = 0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b,
     vault_contract_id: ContractId = ContractId {
         value: 0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b,
     },
-    // swap fee in percentage
     swap_fee_percentage: u64 = 0,
 }
 
 impl WeightedPool for Contract {
     // Vault hook for adding liquidity to a pool (including the first time, "initializing" the pool).
     // This fn can only be called from the Vault, from `joinPool`.
-    #[storage(read, write)]fn on_join_pool(pool_id: b256, sender: ContractId, recipient: ContractId, balances: Vec<u64>, last_change_block: u64, protocol_swap_fee_percentage: u64, user_data: UserData) -> (Vec<u64>, Vec<u64>) {
-        let scaling_factors_vec = scaling_factors();
+    #[storage(read, write)]fn on_join_pool(poolId: b256, sender: b256, recipient: b256, balances_array: [u64; 2], lastChangeBlock: u64, protocolSwapFeePercentage: u64, userData: UserData) { //-> (Vec<u64>, Vec<u64>) {
+        let recipient = ~ContractId::from(recipient);
+        let sender = ~ContractId::from(sender);
 
-        // on_initialize_pool exist BaseWeightedPool cotract
+        let mut balances = ~Vec::new();
+        let mut count = 0;
+        while count < 2{
+            balances.push(balances_array[count]);
+            count = count + 1;
+        }
+
+        // _scaling_factors function exist in BaseWeightedPool contract
+        let scalingFactors = scaling_factors();
+
+        // if (totalSupply() == 0) {
+        // _onInitializePool exist BaseWeightedPool cotract
         if TOTAL_SUPPLY == 0 {
-            let(bpt_amount_out, amounts_in) = on_initialize_pool(scaling_factors_vec, user_data);
+            let(bptAmountOut, amountsIn) = on_initialize_pool(scalingFactors, userData);
 
             // On initialization, we lock _get_minimum_bpt() by minting it for the zero address. This BPT acts as a
             // minimum as it will never be burned, which reduces potential issues with rounding, and also prevents the
             // Pool from ever being fully drained.
-            require(bpt_amount_out >= DEFAULT_MINIMUM_BPT, Error::MinimumBpt);
-            // todo:- while minting the tokens contract is paniciing
-            // todo:- token need to be on node, working with dummy data
+            require(bptAmountOut >= DEFAULT_MINIMUM_BPT, Error::MINIMUM_BPT);
+            // todo while minting the tokens contract is paniciing
             // mint_pool_tokens(~ContractId::from(ZERO_B256), DEFAULT_MINIMUM_BPT);
-            // mint_pool_tokens(recipient, bpt_amount_out - DEFAULT_MINIMUM_BPT);
+            // mint_pool_tokens(recipient, bptAmountOut - DEFAULT_MINIMUM_BPT);
 
-            // SCRIPT_TESTING
-            // temporarily changing the code here to make the script run succesfully
-            // downscale_down_array() does not take vecs whose elements are 0
-            // so making amounts_out and scaling_factors_vec non zero
-            // original code start --
-            // // amounts_in are amounts entering the Pool, so we round up.
-            // let amounts_in = downscale_up_array(amounts_in, scaling_factors_vec);
-            // original code end --
-            
-            // changed code start --
-            let mut amounts_in_tmp = ~Vec::with_capacity(amounts_in.len());
-            let mut scaling_factors_tmp = ~Vec::with_capacity(scaling_factors_vec.len());
+            // amountsIn are amounts entering the Pool, so we round up.
+            let amountsIn = downscale_up_array(amountsIn, scalingFactors);
 
-            let mut count = 0;
-
-            while count < amounts_in.len() {
-                amounts_in_tmp.insert(count, 10);
-                scaling_factors_tmp.insert(count, 10);
-
-                count += 1;
-            }
-
-            let amounts_in = downscale_up_array(amounts_in_tmp, scaling_factors_tmp);
-            // changed code end --
-
-            return (amounts_in, ~Vec::with_capacity(balances.len()));
+            // return (amountsIn, ~Vec::with_capacity(balances.len()));
         } else {
-            let balances = upscale_array(balances, scaling_factors_vec);
+            let balances = upscale_array(balances, scalingFactors);
             // _on_join_pool function exist in BaseWightedPool
-            let(bpt_amount_out, amounts_in) = on_join_pool_private(sender, balances, protocol_swap_fee_percentage, scaling_factors_vec, user_data);
+            let(bptAmountOut, amountsIn) = on_join_pool_private(sender, balances, protocolSwapFeePercentage, scalingFactors, userData);
 
             // Note we no longer use `balances` after calling `_on_join_pool`, which may mutate it.
 
-            // mint_pool_tokens(recipient, bpt_amount_out);
+            // mint_pool_tokens(recipient, bptAmountOut);
 
-            // amounts_in are amounts entering the Pool, so we round up.
-            let amounts_in = downscale_up_array(amounts_in, scaling_factors_vec);
+            // amountsIn are amounts entering the Pool, so we round up.
+            let amountsIn = downscale_up_array(amountsIn, scalingFactors);
 
             // This Pool ignores the `dueProtocolFees` return value, so we simply return a zeroed-out array.
-            return (amounts_in, ~Vec::with_capacity(balances.len()));
+            // return (amountsIn, ~Vec::with_capacity(balances.len()));
         }
     }
 
     // Vault hook for removing liquidity from a pool.
     // This fn can only be called from the Vault, from `exitPool`.
-    #[storage(read, write)]fn on_exit_pool(pool_id: b256, sender: ContractId, recipient: ContractId, balances: Vec<u64>, last_change_block: u64, protocol_swap_fee_percentage: u64, user_data: UserData) -> (Vec<u64>, Vec<u64>) {
-        let scaling_factors_vec = scaling_factors();
-        let balances = upscale_array(balances, scaling_factors_vec);
+    #[storage(read, write)]fn on_exit_pool(poolId: b256, sender: ContractId, recipient: ContractId, balances: Vec<u64>, lastChangeBlock: u64, protocolSwapFeePercentage: u64, userData: UserData) -> (Vec<u64>, Vec<u64>) {
+        let scalingFactors = scaling_factors();
+        let balances = upscale_array(balances, scalingFactors);
 
-        let(bpt_amount_in, amounts_out) = on_exit_pool_private(sender, balances, protocol_swap_fee_percentage, scaling_factors_vec, user_data);
+        let(bptAmountIn, amountsOut) = on_exit_pool_private(sender, balances, protocolSwapFeePercentage, scalingFactors, userData);
 
         // Note we no longer use `balances` after calling `_on_exit_pool`, which may mutate it.
-        burn_pool_tokens(sender, bpt_amount_in);
+        burn_pool_tokens(sender, bptAmountIn);
 
-        // SCRIPT_TESTING
-        // temporarily changing the code here to make the script run succesfully
-        // downscale_down_array() does not take vecs whose elements are 0
-        // so making amounts_out and scaling_factors_vec non zero
-        // original code start --
-        // amounts_out are amounts exiting the Pool, so we round down.
-        // let amounts_out = downscale_down_array(amounts_out, scaling_factors_vec);
-        // original code end --
-        
-        // changed code start --
-        let mut amounts_out_tmp = ~Vec::with_capacity(amounts_out.len());
-        let mut scaling_factors_tmp = ~Vec::with_capacity(scaling_factors_vec.len());
-
-        let mut count = 0;
-
-        while count < amounts_out.len() {
-            amounts_out_tmp.insert(count, 10);
-            scaling_factors_tmp.insert(count, 10);
-
-            count += 1;
-        }
-
-        let amounts_out = downscale_down_array(amounts_out_tmp, scaling_factors_tmp);
-        // changed code end --
+        // amountsOut are amounts exiting the Pool, so we round down.
+        let amountsOut = downscale_down_array(amountsOut, scalingFactors);
 
         // This Pool ignores the `dueProtocolFees` return value, so we simply return a zeroed-out array.
-        (amounts_out, ~Vec::with_capacity(balances.len()))
+        (amountsOut, ~Vec::with_capacity(balances.len()))
     }
 
     // Set the swap fee percentage.
     // This is a permissioned fn, and disabled if the pool is paused. The swap fee must be within the
-    // bounds set by MIN_SWAP_FEE_PERCENTAGE/MAX_SWAP_FEE_PERCENTAGE. Emits the EventSwapFeePercentageChanged event.
-    #[storage(read, write)]fn set_swap_fee_percentage(swap_fee_percentage: u64) {
-        require(swap_fee_percentage >= MIN_SWAP_FEE_PERCENTAGE, Error::MinSwapFeePercentage);
-        require(swap_fee_percentage <= MAX_SWAP_FEE_PERCENTAGE, Error::MaxSwapFeePercentage);
+    // bounds set by MIN_SWAP_FEE_PERCENTAGE/MAX_SWAP_FEE_PERCENTAGE. Emits the SwapFeePercentageChanged event.
+    #[storage(read, write)]fn set_swap_fee_percentage(swapFeePercentage: u64) {
+        require(swapFeePercentage >= MIN_SWAP_FEE_PERCENTAGE, Error::MIN_SWAP_FEE_PERCENTAGE);
+        require(swapFeePercentage <= MIN_SWAP_FEE_PERCENTAGE, Error::MAX_SWAP_FEE_PERCENTAGE);
 
-        log(EventSwapFeePercentageChanged {
-            swap_fee_percentage: swap_fee_percentage
+        // storage.misc_data.insertUint(swapFeePercentage, SWAP_FEE_PERCENTAGE_OFFSET, 64);
+        log(SwapFeePercentageChanged {
+            swapFeePercentage: swapFeePercentage
         }
         );
     }
@@ -188,41 +163,41 @@ impl WeightedPool for Contract {
     //
     // Like `IVault.queryBatchSwap`, this fn is not view due to internal implementation details: the caller must
     // explicitly use eth_call instead of eth_sendTransaction.
-    #[storage(read, write)]fn query_join(pool_id: b256, sender: ContractId, recipient: ContractId, balances: Vec<u64>, last_change_block: u64, protocol_swap_fee_percentage: u64, user_data: UserData) -> (u64, Vec<u64>) {
-        require(balances.len() == TOTAL_TOKENS, Error::InputLengthMismatch);
+    #[storage(read, write)]fn query_join(poolId: b256, sender: ContractId, recipient: ContractId, balances: Vec<u64>, lastChangeBlock: u64, protocolSwapFeePercentage: u64, userData: UserData) -> (u64, Vec<u64>) {
+        require(balances.len() == TOTAL_TOKENS, Error::INPUT_LENGTH_MISMATCH);
 
-        let scaling_factors_vec = scaling_factors();
-        let balances = upscale_array(balances, scaling_factors_vec);
+        let scalingFactors = scaling_factors();
+        let balances = upscale_array(balances, scalingFactors);
 
-        let(bpt_out, amounts_in) = on_join_pool_private(sender, balances, protocol_swap_fee_percentage, scaling_factors_vec, user_data);
+        let(bptOut, amountsIn) = on_join_pool_private(sender, balances, protocolSwapFeePercentage, scalingFactors, userData);
 
         // if (msg.sender != address(this)) {
         //     query_action(
-        //         pool_id,
+        //         poolId,
         //         sender,
         //         recipient,
         //         balances,
-        //         last_change_block,
-        //         protocol_swap_fee_percentage,
-        //         user_data,
+        //         lastChangeBlock,
+        //         protocolSwapFeePercentage,
+        //         userData,
         //     );
         // }
         // else {
-        //     scaling_factors_vec = scaling_factors();
-        //     let balances = upscale_array(balances, scaling_factors_vec);
+        //     scalingFactors = scaling_factors();
+        //     let balances = upscale_array(balances, scalingFactors);
 
         //     let(bptAmount, tokenAmounts) = on_join_pool(
-        //         pool_id,
+        //         poolId,
         //         sender,
         //         recipient,
         //         balances,
-        //         last_change_block,
-        //         protocol_swap_fee_percentage,
-        //         scaling_factors_vec,
-        //         user_data
+        //         lastChangeBlock,
+        //         protocolSwapFeePercentage,
+        //         scalingFactors,
+        //         userData
         //     );
 
-        //     downscale_up_array(tokenAmounts, scaling_factors_vec);
+        //     downscale_up_array(tokenAmounts, scalingFactors);
 
         //     // solhint-disable-next-line no-inline-assembly
         //     assembly {
@@ -250,7 +225,7 @@ impl WeightedPool for Contract {
 
         // The `return` opcode is executed directly inside `_queryAction`, so execution never reaches this statement,
         // and we don't need to return anything here - it just silences compiler warnings.
-        return(bpt_out, amounts_in);
+        return(bptOut, amountsIn);
     }
 
     // "Dry run" `on_exit_pool`.
@@ -262,41 +237,41 @@ impl WeightedPool for Contract {
     //
     // Like `IVault.queryBatchSwap`, this fn is not view due to internal implementation details: the caller must
     // explicitly use eth_call instead of eth_sendTransaction.
-    #[storage(read, write)]fn query_exit(pool_id: b256, sender: ContractId, recipient: ContractId, balances: Vec<u64>, last_change_block: u64, protocol_swap_fee_percentage: u64, user_data: UserData) -> (u64, Vec<u64>) {
-        require(balances.len() == TOTAL_TOKENS, Error::InputLengthMismatch);
+    #[storage(read, write)]fn query_exit(poolId: b256, sender: ContractId, recipient: ContractId, balances: Vec<u64>, lastChangeBlock: u64, protocolSwapFeePercentage: u64, userData: UserData) -> (u64, Vec<u64>) {
+        require(balances.len() == TOTAL_TOKENS, Error::INPUT_LENGTH_MISMATCH);
 
-        let scaling_factors_vec = scaling_factors();
-        let balances = upscale_array(balances, scaling_factors_vec);
+        let scalingFactors = scaling_factors();
+        let balances = upscale_array(balances, scalingFactors);
 
-        let(bpt_in, amounts_out) = on_exit_pool_private(sender, balances, protocol_swap_fee_percentage, scaling_factors_vec, user_data);
+        let(bptIn, amountsOut) = on_exit_pool_private(sender, balances, protocolSwapFeePercentage, scalingFactors, userData);
 
         // if (msg.sender != address(this)) {
         //     query_action(
-        //         pool_id,
+        //         poolId,
         //         sender,
         //         recipient,
         //         balances,
-        //         last_change_block,
-        //         protocol_swap_fee_percentage,
-        //         user_data,
+        //         lastChangeBlock,
+        //         protocolSwapFeePercentage,
+        //         userData,
         //     );
         // }
         // else {
-        //     scaling_factors_vec: Vec<u64> = scaling_factors();
-        //     let balances = upscale_array(balances, scaling_factors_vec);
+        //     scalingFactors: Vec<u64> = scaling_factors();
+        //     let balances = upscale_array(balances, scalingFactors);
 
         //     (bptAmount: u64, uint256[] memory tokenAmounts) = on_exit_pool(
-        //         pool_id,
+        //         poolId,
         //         sender,
         //         recipient,
         //         balances,
-        //         last_change_block,
-        //         protocol_swap_fee_percentage,
-        //         scaling_factors_vec,
-        //         user_data
+        //         lastChangeBlock,
+        //         protocolSwapFeePercentage,
+        //         scalingFactors,
+        //         userData
         //     );
 
-        //     downscale_down_array(tokenAmounts, scaling_factors_vec);
+        //     downscale_down_array(tokenAmounts, scalingFactors);
 
         //     // solhint-disable-next-line no-inline-assembly
         //     assembly {
@@ -324,25 +299,17 @@ impl WeightedPool for Contract {
 
         // The `return` opcode is executed directly inside `_queryAction`, so execution never reaches this statement,
         // and we don't need to return anything here - it just silences compiler warnings.
-        return(bpt_in, amounts_out);
+        return(bptIn, amountsOut);
     }
 
-    // Transfer coins to a target contract.
+    /// Transfer coins to a target contract.
     fn force_transfer_coins(coins: u64, asset_id: ContractId, target: ContractId) {
-        // SCRIPT_TESTING
-        // commented original code
-        // because these function calls was thwroing error
-        // todo: need a token on the pool
-        // force_transfer_to_contract(coins, asset_id, target);
+        force_transfer_to_contract(coins, asset_id, target);
     }
 
-    // Transfer coins to a transaction output to be spent later.
+    /// Transfer coins to a transaction output to be spent later.
     fn transfer_coins_to_output(coins: u64, asset_id: ContractId, recipient: Address) {
-        // SCRIPT_TESTING
-        // commented original code
-        // because these function calls was thwroing error
-        // todo: need a token in the pool
-        // transfer_to_output(coins, asset_id, recipient);
+        transfer_to_output(coins, asset_id, recipient);
     }
 
     fn get_normalized_weights() -> Vec<u64> {
@@ -353,9 +320,9 @@ impl WeightedPool for Contract {
         return storage.vault_contract_id;
     }
 
-    #[storage(read)]fn get_swap_fee_percentage() -> u64 {
-        return storage.swap_fee_percentage;
-    }
+    // #[storage(read)]fn get_swap_fee_percentage() -> u64 {
+    //     return storage.swap_fee_percentage;
+    // }
 }
 
 #[storage(read)]fn get_swap_fee_percentage() -> u64 {
@@ -364,207 +331,208 @@ impl WeightedPool for Contract {
 
 fn mint_pool_tokens(recipient: ContractId, amount: u64, ) {
     mint(amount);
-    // SCRIPT_TESTING
-    // commented original code
-    // because this function calls was thwroing error
-    // todo: need a token in the pool
-    // force_transfer_to_contract(amount, contract_id(), recipient);
+    force_transfer_to_contract(amount, contract_id(), recipient);
 }
 
-fn burn_pool_tokens(sender: ContractId, bpt_amount_in: u64) {
-    // SCRIPT_TESTING
-    // commented original code
-    // because these function calls was thwroing error
-    // todo: need the tokens in the pool
-    // force_transfer_to_contract(bpt_amount_in, sender, contract_id());
-    // burn(bpt_amount_in);
+fn burn_pool_tokens(sender: ContractId, bptAmountIn: u64) {
+    force_transfer_to_contract(bptAmountIn, sender, contract_id());
+    burn(bptAmountIn);
 }
 
 // Exit
-#[storage(read, write)]fn on_exit_pool_private(sender: ContractId, balances: Vec<u64>, protocol_swap_fee_percentage: u64, scaling_factors_vec: Vec<u64>, user_data: UserData) -> (u64, Vec<u64>) {
+#[storage(read, write)]fn on_exit_pool_private(sender: ContractId, balances: Vec<u64>, protocolSwapFeePercentage: u64, scalingFactors: Vec<u64>, userData: UserData) -> (u64, Vec<u64>) {
     // Exits are not disabled by default while the contract is paused, as some of them remain available to allow LPs
     // to safely exit the Pool in case of an emergency. Other exit kinds are disabled on a case-by-case basis in
     // their handlers.
 
-    let normalized_weights = get_normalized_weights_private();
-    before_join_exit(balances, normalized_weights, protocol_swap_fee_percentage);
-    let (bpt_amount_in, amounts_out) = do_exit( /* sender,*/balances, normalized_weights, scaling_factors_vec, user_data);
-    after_join_exit(false, balances, amounts_out, normalized_weights);
+    let normalizedWeights = get_normalized_weights_private();
+    before_join_exit(balances, normalizedWeights, protocolSwapFeePercentage);
+    let(bptAmountIn, amountsOut) = do_exit( // sender,
+    balances, normalizedWeights, scalingFactors, userData);
+    after_join_exit(false, balances, amountsOut, normalizedWeights);
 
-    return (bpt_amount_in, amounts_out);
+    (bptAmountIn, amountsOut)
 }
 
 // Dispatch code which decodes the provided userdata to perform the specified exit type.
 // Inheriting contracts may override this fn to add additional exit types or extra conditions to allow
 // or disallow exit under certain circumstances.
-#[storage(read)]fn do_exit(balances: Vec<u64>, normalized_weights: Vec<u64>, scaling_factors_vec: Vec<u64>, user_data: UserData) -> (u64, Vec<u64>) {
+#[storage(read)]fn do_exit(balances: Vec<u64>, normalizedWeights: Vec<u64>, scalingFactors: Vec<u64>, userData: UserData) -> (u64, Vec<u64>) {
     let mut res = (0, ~Vec::new());
     // todo abi.decode change exit kind 
-    if let RequestKind::ExactToken = user_data.kind {
-        res = exit_exact_bptin_for_token_out(balances, normalized_weights, user_data);
-    } else if let RequestKind::ExactTokensOut = user_data.kind {
-        res = exit_exact_bptin_for_tokens_out(balances, user_data);
-    } else if let RequestKind::InForExactTokensOut = user_data.kind {
-        res = exit_bptin_for_exact_tokens_out(balances, normalized_weights, scaling_factors_vec, user_data);
+    if let RequestKind::EXACT_TOKEN = userData.kind {
+        res = exit_exact_bptin_for_token_out(balances, normalizedWeights, userData);
+    } else if let RequestKind::EXACT_TOKENS_OUT = userData.kind {
+        res = exit_exact_bptin_for_tokens_out(balances, userData);
+    } else if let RequestKind::IN_FOR_EXACT_TOKENS_OUT = userData.kind {
+        res = exit_bptin_for_exact_tokens_out(balances, normalizedWeights, scalingFactors, userData);
     } else {
         revert(UNHANDLED_EXIT_KIND);
     }
-    return res;
+    res
 }
 
 #[storage(read)]
-fn exit_bptin_for_exact_tokens_out(balances: Vec<u64>, normalized_weights: Vec<u64>, scaling_factors_vec: Vec<u64>, user_data: UserData) -> (u64, Vec<u64>) {
+fn exit_bptin_for_exact_tokens_out(balances: Vec<u64>, normalizedWeights: Vec<u64>, scalingFactors: Vec<u64>, userData: UserData) -> (u64, Vec<u64>) {
     // This exit fn is disabled if the contract is paused.
 
-    let amounts_out = user_data.amounts_in_out;
-    let max_bpt_amount_in = user_data.max_min_bpt_amount;
-    require(amounts_out.len() == balances.len(), Error::InputLengthMismatch);
-    upscale_array(amounts_out, scaling_factors_vec);
+    let amountsOut = userData.amountsInOut;
+    let maxBPTAmountIn = userData.maxMinBPTAmount;
+    require(amountsOut.len() == balances.len(), Error::INPUT_LENGTH_MISMATCH);
+    upscale_array(amountsOut, scalingFactors);
 
     // todo: abi.decodes
     // This is an exceptional situation in which the fee is charged on a token out instead of a token in.
-    let bpt_amount_in = calc_bpt_in_given_exact_tokens_out(
+    let bptAmountIn = calc_bpt_in_given_exact_tokens_out(
         balances,
-        normalized_weights,
-        amounts_out,
+        normalizedWeights,
+        amountsOut,
         TOTAL_SUPPLY,
         get_swap_fee_percentage()
     );
-    require(bpt_amount_in <= max_bpt_amount_in, Error::BptInMaxAmount);
+    require(bptAmountIn <= maxBPTAmountIn, Error::BPT_IN_MAX_AMOUNT);
 
-    return (bpt_amount_in, amounts_out);
+    (bptAmountIn, amountsOut)
+    // (0, ~Vec::new())
 }
 
-fn exit_exact_bptin_for_tokens_out(balances: Vec<u64>, user_data: UserData) -> (u64, Vec<u64>) {
+fn exit_exact_bptin_for_tokens_out(balances: Vec<u64>, userData: UserData) -> (u64, Vec<u64>) {
     // This exit fn is the only one that is not disabled if the contract is paused: it remains unrestricted
     // in an attempt to provide users with a mechanism to retrieve their tokens in case of an emergency.
     // This particular exit fn is the only one that remains available because it is the simplest one, and
     // therefore the one with the lowest likelihood of
 
     // todo abi.decode
-    let bpt_amount_in = user_data.amount;
-    // Note that there is no minimum amount_out parameter: this is handled by `IVault.exitPool`.
+    let bptAmountIn = userData.amount;
+    // Note that there is no minimum amountOut parameter: this is handled by `IVault.exitPool`.
 
-    let amounts_out = calc_tokens_out_given_exact_bpt_in(balances, bpt_amount_in, TOTAL_SUPPLY);
-    return (bpt_amount_in, amounts_out);
+    let amountsOut = calc_tokens_out_given_exact_bpt_in(balances, bptAmountIn, TOTAL_SUPPLY);
+    (bptAmountIn, amountsOut)
+    // (0, ~Vec::new())
 }
 
 #[storage(read)]
-fn exit_exact_bptin_for_token_out(balances: Vec<u64>, normalized_weights: Vec<u64>, user_data: UserData) -> (u64, Vec<u64>) {
+fn exit_exact_bptin_for_token_out(balances: Vec<u64>, normalizedWeights: Vec<u64>, userData: UserData) -> (u64, Vec<u64>) {
     // This exit fn is disabled if the contract is paused.
+
     // todo abi.decode
-    let bpt_amount_in = user_data.amount;
-    let token_index = user_data.max_min_bpt_amount;
-    // Note that there is no minimum amount_out parameter: this is handled by `IVault.exitPool`.
+    let bptAmountIn = userData.amount;
+    let tokenIndex = userData.maxMinBPTAmount;
+    // Note that there is no minimum amountOut parameter: this is handled by `IVault.exitPool`.
 
-    require(token_index < balances.len(), Error::OutOfBounds);
+    require(tokenIndex < balances.len(), Error::OUT_OF_BOUNDS);
 
-    let amount_out = calc_token_out_given_exact_bpt_in(
-        balances.get(token_index).unwrap(),
-        normalized_weights.get(token_index).unwrap(),
-        bpt_amount_in,
+    let amountOut = calc_token_out_given_exact_bpt_in(
+        balances.get(tokenIndex).unwrap(),
+        normalizedWeights.get(tokenIndex).unwrap(),
+        bptAmountIn,
         TOTAL_SUPPLY,
         get_swap_fee_percentage()
     );
 
     // This is an exceptional situation in which the fee is charged on a token out instead of a token in.
-    // We exit in a single token, so we initialize amounts_out with zeros
-    let mut amounts_out = ~Vec::new();
+    // We exit in a single token, so we initialize amountsOut with zeros
+    let mut amountsOut = ~Vec::new();
     let mut count = 0;
     while count < balances.len() {
-        if count == token_index {
+        if count == tokenIndex {
             // And then assign the result to the selected token
-            amounts_out.push(amount_out);
+            amountsOut.push(amountOut);
         }
         else {
-            amounts_out.push(0);
+            amountsOut.push(0);
         }
-        count += 1;
     }
 
-    return (bpt_amount_in, amounts_out);
+    (bptAmountIn, amountsOut)
+    // (0, ~Vec::new())
 }
 
 // Join
-#[storage(read, write)]fn on_join_pool_private(sender: ContractId, balances: Vec<u64>, protocol_swap_fee_percentage: u64, scaling_factors_vec: Vec<u64>, user_data: UserData) -> (u64, Vec<u64>) {
+#[storage(read, write)]fn on_join_pool_private(sender: ContractId, balances: Vec<u64>, protocolSwapFeePercentage: u64, scalingFactors: Vec<u64>, userData: UserData) -> (u64, Vec<u64>) {
     // All joins are disabled while the contract is paused.
 
-    let normalized_weights = get_normalized_weights_private();
+    let normalizedWeights = get_normalized_weights_private();
 
-    before_join_exit(balances, normalized_weights, protocol_swap_fee_percentage);
-    let(bpt_amount_out, amounts_in) = do_join(balances, normalized_weights, scaling_factors_vec, user_data);
-    after_join_exit(true, balances, amounts_in, normalized_weights);
+    before_join_exit(balances, normalizedWeights, protocolSwapFeePercentage);
+    let(bptAmountOut, amountsIn) = do_join(balances, normalizedWeights, scalingFactors, userData);
+    after_join_exit(true, balances, amountsIn, normalizedWeights);
 
-    (bpt_amount_out, amounts_in)
+    (bptAmountOut, amountsIn)
 }
 
-#[storage(read)]fn join_exact_tokens_in_for_bptout(balances: Vec<u64>, normalized_weights: Vec<u64>, scaling_factors_vec: Vec<u64>, user_data: UserData) -> (u64, Vec<u64>) {
+#[storage(read)]fn join_exact_tokens_in_for_bptout(balances: Vec<u64>, normalizedWeights: Vec<u64>, scalingFactors: Vec<u64>, userData: UserData) -> (u64, Vec<u64>) {
     // todo abi.decode
-    // let(amounts_in, min_bpt_amount_out) = user_data.exactTokensInForBptOut();
-    let amounts_in = user_data.amounts_in_out;
-    let min_bpt_amount_out = user_data.max_min_bpt_amount;
+    // let(amountsIn, minBPTAmountOut) = userData.exactTokensInForBptOut();
+    let amountsIn = userData.amountsInOut;
+    let minBPTAmountOut = userData.maxMinBPTAmount;
     // ensure_input_length_match(balances.len(), balances.len());
-    require(balances.len() == amounts_in.len(), Error::InputLengthMismatch);
+    require(balances.len() == amountsIn.len(), Error::INPUT_LENGTH_MISMATCH);
 
-    upscale_array(amounts_in, scaling_factors_vec);
-    let bpt_amount_out = calc_bpt_out_given_exact_tokens_in(balances, normalized_weights, amounts_in, TOTAL_SUPPLY, get_swap_fee_percentage());
+    upscale_array(amountsIn, scalingFactors);
 
-    require(bpt_amount_out >= min_bpt_amount_out, Error::BptOutMinAmount);
+    // let x = abi(vault, storage.vault_contract_id);
+    // let swap_fee_percentage = x.get_swap_fee_percentage();
+    let bptAmountOut = calc_bpt_out_given_exact_tokens_in(balances, normalizedWeights, amountsIn, TOTAL_SUPPLY, get_swap_fee_percentage());
 
-    (bpt_amount_out, amounts_in)
+    require(bptAmountOut >= minBPTAmountOut, Error::BPT_OUT_MIN_AMOUNT);
+
+    (bptAmountOut, amountsIn)
 }
 
 // Dispatch code which decodes the provided userdata to perform the specified join type.
 // Inheriting contracts may override this pub fn to add additional join types or extra conditions to allow
 // or disallow joins under certain circumstances.
-#[storage(read)]fn do_join(balances: Vec<u64>, normalized_weights: Vec<u64>, scaling_factors_vec: Vec<u64>, user_data: UserData) -> (u64, Vec<u64>) {
+#[storage(read)]fn do_join(balances: Vec<u64>, normalizedWeights: Vec<u64>, scalingFactors: Vec<u64>, userData: UserData) -> (u64, Vec<u64>) {
     // todo abi.decode
-    // let kind = user_data.joinKind();
+    // let kind = userData.joinKind();
     let mut res = (0, ~Vec::new());
 
-    if let RequestKind::ExactToken = user_data.kind {
-        res = join_exact_tokens_in_for_bptout(balances, normalized_weights, scaling_factors_vec, user_data)
-    } else if let RequestKind::ExactTokensOut = user_data.kind {
-        res = join_token_in_for_exact_bptout(balances, normalized_weights, user_data)
-    } else if let RequestKind::InForExactTokensOut = user_data.kind {
-        res = join_all_tokens_in_for_exact_bptout(balances, user_data)
+    if let RequestKind::EXACT_TOKEN = userData.kind {
+        res = join_exact_tokens_in_for_bptout(balances, normalizedWeights, scalingFactors, userData)
+    } else if let RequestKind::EXACT_TOKENS_OUT = userData.kind {
+        res = join_token_in_for_exact_bptout(balances, normalizedWeights, userData)
+    } else if let RequestKind::IN_FOR_EXACT_TOKENS_OUT = userData.kind {
+        res = join_all_tokens_in_for_exact_bptout(balances, userData)
     } else {
         revert(UNHANDLED_JOIN_KIND);
     }
+    // (0, ~Vec::new())
     res
 }
 
-#[storage(read)]fn join_token_in_for_exact_bptout(balances: Vec<u64>, normalized_weights: Vec<u64>, user_data: UserData) -> (u64, Vec<u64>) {
+#[storage(read)]fn join_token_in_for_exact_bptout(balances: Vec<u64>, normalizedWeights: Vec<u64>, userData: UserData) -> (u64, Vec<u64>) {
     // todo abi.decode
-    let bpt_amount_out = user_data.amount;
-    let token_index = user_data.max_min_bpt_amount;
-    // let(bpt_amount_out, token_index) = user_data.tokenInForExactBptOut();
+    let bptAmountOut = userData.amount;
+    let tokenIndex = userData.maxMinBPTAmount;
+    // let(bptAmountOut, tokenIndex) = userData.tokenInForExactBptOut();
 
-    // Note that there is no maximum amount_in parameter: this is handled by `IVault.joinPool`.
+    // Note that there is no maximum amountIn parameter: this is handled by `IVault.joinPool`.
 
-    require(token_index < balances.len(), Error::OutOfBounds);
+    require(tokenIndex < balances.len(), Error::OUT_OF_BOUNDS);
 
+    // let x = abi(vault, storage.vault_contract_id);
+    // let swap_fee_percentage = x.get_swap_fee_percentage();
     let swap_fee_percentage = 10;
-    let amount_in = calc_token_in_given_exact_bpt_out(balances.get(token_index).unwrap(), normalized_weights.get(token_index).unwrap(), bpt_amount_out, TOTAL_SUPPLY, get_swap_fee_percentage());
+    let amountIn = calc_token_in_given_exact_bpt_out(balances.get(tokenIndex).unwrap(), normalizedWeights.get(tokenIndex).unwrap(), bptAmountOut, TOTAL_SUPPLY, get_swap_fee_percentage());
 
-    // We join in a single token, so we initialize amounts_in with zeros
+    // We join in a single token, so we initialize amountsIn with zeros
 
-    let mut amounts_in: Vec<u64> = ~Vec::new();
+    let mut amountsIn: Vec<u64> = ~Vec::new();
     let mut count = 0;
     while count < balances.len() {
-        if count == token_index {
+        if count == tokenIndex {
             // And then assign the result to the selected token
-            amounts_in.push(amount_in);
+            amountsIn.push(amountIn);
         } else {
-            amounts_in.push(0);
+            amountsIn.push(0);
         }
-        count += 1;
     }
 
-    return(bpt_amount_out, amounts_in);
+    return(bptAmountOut, amountsIn);
 }
 
-#[storage(read)]fn before_join_exit(pre_balances: Vec<u64>, normalized_weights: Vec<u64>, protocol_swap_fee_percentage: u64) {
+#[storage(read)]fn before_join_exit(preBalances: Vec<u64>, normalizedWeights: Vec<u64>, protocolSwapFeePercentage: u64) {
     // Before joins and exits, we measure the growth of the invariant compared to the invariant after the last join
     // or exit, which will have been caused by swap fees, and use it to mint BPT as protocol fees. This dilutes all
     // LPs, which means that new LPs will join the pool debt-free, and exiting LPs will pay any amounts due
@@ -574,64 +542,64 @@ fn exit_exact_bptin_for_token_out(balances: Vec<u64>, normalized_weights: Vec<u6
     // paused (to avoid complex computation during emergency withdrawals).
     let is_not_paused: bool = true;
     // import this function from TemporarilyPausable contract
-    if ((protocol_swap_fee_percentage == 0) || !is_not_paused) {
+    if ((protocolSwapFeePercentage == 0) || !is_not_paused) {
         return;
     }
 
-    let pre_join_exit_invariant = calculate_invariant(normalized_weights, pre_balances);
+    let preJoinExitInvariant = calculate_invariant(normalizedWeights, preBalances);
 
-    let to_mint = calc_due_protocol_swap_fee_bpt_amount(TOTAL_SUPPLY, storage.last_post_join_exit_invariant, pre_join_exit_invariant, protocol_swap_fee_percentage);
+    let toMint = calc_due_protocol_swap_fee_bpt_amount(TOTAL_SUPPLY, storage.last_post_join_exit_invariant, preJoinExitInvariant, protocolSwapFeePercentage);
 
     // call this function from BasePool contract
-    // payProtocolFees(to_mint);
-    mint_pool_tokens(storage.vault_contract_id, to_mint);
+    // payProtocolFees(toMint);
+    mint_pool_tokens(storage.vault_contract_id, toMint);
 }
 
-#[storage(write)]fn on_initialize_pool(scaling_factors_vec: Vec<u64>, user_data: UserData // user_data: JoinKind,
+#[storage(write)]fn on_initialize_pool(scalingFactors: Vec<u64>, userData: UserData // userData: JoinKind,
 ) -> (u64, Vec<u64>) {
     // It would be strange for the Pool to be paused before it is initialized, but for consistency we prevent
     // initialization in this case.
 
     // todo: abi.decode
     let mut flag = false;
-    if let RequestKind::Init = user_data.kind {
+    if let RequestKind::INIT = userData.kind {
         flag = true;
     }
-    require(flag, Error::Uninitialized);
+    require(flag, Error::UNINITIALIZED);
 
     // todo: abi.decode
-    let amounts_in = user_data.amounts_in_out;
-    require(amounts_in.len() == scaling_factors_vec.len(), Error::InputLengthMismatch);
-    upscale_array(amounts_in, scaling_factors_vec);
+    let amountsIn = userData.amountsInOut;
+    require(amountsIn.len() == scalingFactors.len(), Error::INPUT_LENGTH_MISMATCH);
+    upscale_array(amountsIn, scalingFactors);
 
-    let normalized_weights: Vec<u64> = get_normalized_weights_private();
-    let invariant_after_join = calculate_invariant(normalized_weights, amounts_in);
+    let normalizedWeights: Vec<u64> = get_normalized_weights_private();
+    let invariantAfterJoin = calculate_invariant(normalizedWeights, amountsIn);
 
     // Set the initial BPT to the value of the invariant times the number of tokens. This makes BPT supply more
     // consistent in Pools with similar compositions but different number of tokens.
-    let bpt_amount_out = invariant_after_join * amounts_in.len();
+    let bptAmountOut = invariantAfterJoin * amountsIn.len();
 
-    after_join_exit(true, ~Vec::with_capacity(amounts_in.len()), amounts_in, normalized_weights);
-    (bpt_amount_out, amounts_in)
+    after_join_exit(true, ~Vec::with_capacity(amountsIn.len()), amountsIn, normalizedWeights);
+    (bptAmountOut, amountsIn)
 }
 
-#[storage(write)]fn after_join_exit(is_join: bool, pre_balances: Vec<u64>, balance_deltas: Vec<u64>, normalized_weights: Vec<u64>) {
+#[storage(write)]fn after_join_exit(isJoin: bool, preBalances: Vec<u64>, balanceDeltas: Vec<u64>, normalizedWeights: Vec<u64>) {
     // After all joins and exits we store the post join/exit invariant in order to compute growth due to swap fees
     // in the next one.
-    let mut balances = ~Vec::new();
-    // Compute the post balances by adding or removing the deltas. Note that we're allowed to mutate pre_balances.
+    // let mut tmp = preBalances;
+    let mut tmp = ~Vec::new();
+    // Compute the post balances by adding or removing the deltas. Note that we're allowed to mutate preBalances.
     let mut count = 0;
-    while count < pre_balances.len() {
+    while count < preBalances.len() {
         // Cannot optimize calls with a fn selector: there are 2- and 3-argument versions of SafeMath.sub
-        if is_join {
-            balances.push(pre_balances.get(count).unwrap() + balance_deltas.get(count).unwrap());
+        if isJoin {
+            tmp.push(preBalances.get(count).unwrap() + balanceDeltas.get(count).unwrap());
         } else {
-            balances.push(pre_balances.get(count).unwrap() - balance_deltas.get(count).unwrap());
+            tmp.push(preBalances.get(count).unwrap() - balanceDeltas.get(count).unwrap());
         }
-        count += 1;
     }
 
-    let postJoinExitInvariant = calculate_invariant(normalized_weights, balances);
+    // let postJoinExitInvariant = calculate_invariant(normalizedWeights, tmp);
 
-    storage.last_post_join_exit_invariant = postJoinExitInvariant;
+    // storage.last_post_join_exit_invariant = postJoinExitInvariant;
 }

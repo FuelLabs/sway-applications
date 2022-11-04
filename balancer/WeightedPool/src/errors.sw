@@ -1,22 +1,20 @@
 library errors;
 
 pub enum Error {
-    InvalidToken: (),
-    Uninitialized: (),
-    InputLengthMismatch: (),
-    ZeroInvariant: (),
-    MaxPowRelativeError: (),
-    MulOverflow: (),
-    MinimumBpt: (),
-    ZeroDivision: (),
-    DivInternal: (),
-    BptOutMinAmount: (),
-    OutOfBounds: (),
-    MaxOutBptForTokenIn: (),
-    MinSwapFeePercentage: (),
-    MaxSwapFeePercentage: (),
-    BptInMaxAmount: (),
-    MinBptInForTokenOut: (),
+    INVALID_TOKEN: (),
+    UNINITIALIZED: (),
+    INPUT_LENGTH_MISMATCH: (),
+    ZERO_INVARIANT: (),
+    MAX_POW_RELATIVE_ERROR: (),
+    MUL_OVERFLOW: (),
+    MINIMUM_BPT: (),
+    ZERO_DIVISION: (),
+    DIV_INTERNAL: (),
+    BPT_OUT_MIN_AMOUNT: (),
+    OUT_OF_BOUNDS: (),
+    MAX_OUT_BPT_FOR_TOKEN_IN: (),
+    MIN_SWAP_FEE_PERCENTAGE: (),
+    MAX_SWAP_FEE_PERCENTAGE: (),
+    BPT_IN_MAX_AMOUNT: (),
+    MIN_BPT_IN_FOR_TOKEN_OUT: (),
 }
-
-
