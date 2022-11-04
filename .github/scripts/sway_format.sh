@@ -10,7 +10,7 @@ elif [ $PROJECT = 'airdrop/simple-asset' ]; then
 elif [ $PROJECT = 'auctions/english-auction' ]; then
     forc fmt --path $PROJECT --check
     forc fmt --path $PROJECT/tests/artifacts/asset --check
-    forc fnt --path $PROJECT/../../NFT/ --check
+    forc fmt --path $PROJECT/../../NFT/ --check
 elif [ $PROJECT = 'dao-voting' ]; then
     forc fmt --path $PROJECT --check
     forc fmt --path $PROJECT/tests/artifacts/gov_token --check
