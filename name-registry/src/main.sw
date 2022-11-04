@@ -23,12 +23,12 @@ use std::{
     storage::StorageMap,
 };
 
+const ASSET_ID = ~ContractId::from(ASSET_B256);
+
 storage {
     /// A mapping of names to an option of records, with a none representing an unregistered name
     names: StorageMap<str[8], Option<Record>> = StorageMap {},
 }
-
-const ASSET_ID = ~ContractId::from(ASSET_B256);
 
 // TODO: Change the static 8 length str with a dynamic string when possible
 impl NameRegistry for Contract {
