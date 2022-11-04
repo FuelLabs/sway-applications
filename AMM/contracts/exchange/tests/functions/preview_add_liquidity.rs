@@ -1,6 +1,10 @@
 use crate::utils::{
     abi_calls::preview_add_liquidity,
-    test_helpers::{deposit_and_add_liquidity, setup, setup_and_initialize},
+    test_helpers::{
+        deposit_and_add_liquidity, setup, setup_and_initialize,
+        setup_initialize_deposit_and_add_liquidity,
+    },
+    MetaAmounts,
 };
 use fuels::prelude::*;
 
@@ -9,17 +13,17 @@ mod success {
 
     #[tokio::test]
     async fn previews_adding_a_when_liquidity_is_zero() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let amount_a = 100;
-        let expected_b_to_add = amount_a;
-        let expected_liquidity_asset_amount_to_receive_squared = amount_a * expected_b_to_add;
+        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let expected_b_to_add = amounts.amount_a;
+        let expected_liquidity_asset_amount_to_receive_squared =
+            amounts.amount_a * expected_b_to_add;
 
         let preview = preview_add_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::default(),
             TxParameters::default(),
-            amount_a,
-            exchange.asset_a_asset_id,
+            amounts.amount_a,
+            exchange.asset_a,
         )
         .await
         .value;
@@ -33,17 +37,17 @@ mod success {
 
     #[tokio::test]
     async fn previews_adding_b_when_liquidity_is_zero() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let amount_b = 100;
-        let expected_a_to_add = amount_b;
-        let expected_liquidity_asset_amount_to_receive_squared = amount_b * expected_a_to_add;
+        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let expected_a_to_add = amounts.amount_b;
+        let expected_liquidity_asset_amount_to_receive_squared =
+            amounts.amount_b * expected_a_to_add;
 
         let preview = preview_add_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::default(),
             TxParameters::default(),
-            amount_b,
-            exchange.asset_a_asset_id,
+            amounts.amount_b,
+            exchange.asset_a,
         )
         .await
         .value;
@@ -57,29 +61,16 @@ mod success {
 
     #[tokio::test]
     async fn previews_adding_a_when_liquidity_is_not_zero_based_on_a() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
-        let deadline = 1000;
-        let preview_amount_a = 100;
-        let expected_b_to_add = preview_amount_a * deposit_amount_b / deposit_amount_a;
-        let expected_liquidity_asset_amount_to_receive =
-            preview_amount_a * initial_liquidity / deposit_amount_a;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
+        let preview_amount_a = 100;
+        let expected_b_to_add = preview_amount_a * amounts.amount_b / amounts.amount_a;
+        let expected_liquidity_asset_amount_to_receive =
+            preview_amount_a * amounts.liquidity / amounts.amount_a;
 
         let preview = preview_add_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::default(),
             TxParameters {
                 gas_price: 0,
@@ -87,7 +78,7 @@ mod success {
                 maturity: 0,
             },
             preview_amount_a,
-            exchange.asset_a_asset_id,
+            exchange.asset_a,
         )
         .await
         .value;
@@ -101,29 +92,24 @@ mod success {
 
     #[tokio::test]
     async fn previews_adding_a_when_liquidity_is_not_zero_based_on_b() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 400;
-        let deposit_amount_b = 100;
-        let initial_liquidity = 200;
-        let deadline = 1000;
-        let preview_amount_a = 100;
-        let expected_b_to_add = preview_amount_a * deposit_amount_b / deposit_amount_a;
-        let expected_liquidity_asset_amount_to_receive =
-            expected_b_to_add * initial_liquidity / deposit_amount_b;
+        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
+        let override_amounts = MetaAmounts {
+            amount_a: 400,
+            amount_b: 100,
+            deadline: amounts.deadline,
+            liquidity: amounts.liquidity,
+        };
+        let preview_amount_a = 100;
+        let expected_b_to_add =
+            preview_amount_a * override_amounts.amount_b / override_amounts.amount_a;
+        let expected_liquidity_asset_amount_to_receive =
+            expected_b_to_add * override_amounts.liquidity / override_amounts.amount_b;
+
+        deposit_and_add_liquidity(&override_amounts, &exchange).await;
 
         let preview = preview_add_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::default(),
             TxParameters {
                 gas_price: 0,
@@ -131,7 +117,7 @@ mod success {
                 maturity: 0,
             },
             preview_amount_a,
-            exchange.asset_a_asset_id,
+            exchange.asset_a,
         )
         .await
         .value;
@@ -145,29 +131,24 @@ mod success {
 
     #[tokio::test]
     async fn previews_adding_b_when_liquidity_is_not_zero_based_on_a() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
-        let deadline = 1000;
-        let preview_amount_b = 100;
-        let expected_a_to_add = preview_amount_b * deposit_amount_a / deposit_amount_b;
-        let expected_liquidity_asset_amount_to_receive =
-            expected_a_to_add * initial_liquidity / deposit_amount_a;
+        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
+        let override_amounts = MetaAmounts {
+            amount_a: 400,
+            amount_b: 100,
+            deadline: amounts.deadline,
+            liquidity: amounts.liquidity,
+        };
+        let preview_amount_b = 100;
+        let expected_a_to_add =
+            preview_amount_b * override_amounts.amount_a / override_amounts.amount_b;
+        let expected_liquidity_asset_amount_to_receive =
+            expected_a_to_add * override_amounts.liquidity / override_amounts.amount_a;
+
+        deposit_and_add_liquidity(&override_amounts, &exchange).await;
 
         let preview = preview_add_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::default(),
             TxParameters {
                 gas_price: 0,
@@ -175,7 +156,7 @@ mod success {
                 maturity: 0,
             },
             preview_amount_b,
-            exchange.asset_b_asset_id,
+            exchange.asset_b,
         )
         .await
         .value;
@@ -189,29 +170,24 @@ mod success {
 
     #[tokio::test]
     async fn previews_adding_b_when_liquidity_is_not_zero_based_on_b() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 400;
-        let deposit_amount_b = 100;
-        let initial_liquidity = 200;
-        let deadline = 1000;
-        let preview_amount_b = 100;
-        let expected_a_to_add = preview_amount_b * deposit_amount_a / deposit_amount_b;
-        let expected_liquidity_asset_amount_to_receive =
-            preview_amount_b * initial_liquidity / deposit_amount_b;
+        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
+        let override_amounts = MetaAmounts {
+            amount_a: 400,
+            amount_b: 100,
+            deadline: amounts.deadline,
+            liquidity: amounts.liquidity,
+        };
+        let preview_amount_b = 100;
+        let expected_a_to_add =
+            preview_amount_b * override_amounts.amount_a / override_amounts.amount_b;
+        let expected_liquidity_asset_amount_to_receive =
+            preview_amount_b * override_amounts.liquidity / override_amounts.amount_b;
+
+        deposit_and_add_liquidity(&override_amounts, &exchange).await;
 
         let preview = preview_add_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::default(),
             TxParameters {
                 gas_price: 0,
@@ -219,7 +195,7 @@ mod success {
                 maturity: 0,
             },
             preview_amount_b,
-            exchange.asset_b_asset_id,
+            exchange.asset_b,
         )
         .await
         .value;

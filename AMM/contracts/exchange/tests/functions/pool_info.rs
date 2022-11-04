@@ -2,57 +2,51 @@ use crate::utils::{
     abi_calls::pool_info,
     test_helpers::{deposit_and_add_liquidity, setup, setup_and_initialize},
 };
+use fuels::prelude::*;
 
 mod success {
     use super::*;
 
     #[tokio::test]
     async fn returns_empty_pool_info() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let pool_info = pool_info(&exchange.contract).await.value;
+        let (exchange, _wallet, _amounts, _asset_c_id) = setup_and_initialize().await;
+        let pool_info = pool_info(&exchange.instance).await.value;
 
-        assert_eq!(pool_info.asset_a, exchange.asset_a_contract_id);
+        assert_eq!(pool_info.asset_a, ContractId::new(*exchange.asset_a));
         assert_eq!(pool_info.asset_a_reserve, 0);
-        assert_eq!(pool_info.asset_b, exchange.asset_b_contract_id);
+        assert_eq!(pool_info.asset_b, ContractId::new(*exchange.asset_b));
         assert_eq!(pool_info.asset_b_reserve, 0);
         assert_eq!(pool_info.liquidity, 0);
     }
 
     #[tokio::test]
     async fn returns_non_empty_pool_info() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        let initial_pool_info = pool_info(&exchange.contract).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await.value;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
+        deposit_and_add_liquidity(&amounts, &exchange).await;
 
-        let final_pool_info = pool_info(&exchange.contract).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await.value;
 
-        assert_eq!(initial_pool_info.asset_a, exchange.asset_a_contract_id);
+        assert_eq!(
+            initial_pool_info.asset_a,
+            ContractId::new(*exchange.asset_a)
+        );
         assert_eq!(initial_pool_info.asset_a_reserve, 0);
-        assert_eq!(initial_pool_info.asset_b, exchange.asset_b_contract_id);
+        assert_eq!(
+            initial_pool_info.asset_b,
+            ContractId::new(*exchange.asset_b)
+        );
         assert_eq!(initial_pool_info.asset_b_reserve, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
-        assert_eq!(final_pool_info.asset_a, exchange.asset_a_contract_id);
-        assert_eq!(final_pool_info.asset_a_reserve, deposit_amount_a);
-        assert_eq!(final_pool_info.asset_b, exchange.asset_b_contract_id);
-        assert_eq!(final_pool_info.asset_b_reserve, deposit_amount_b);
+        assert_eq!(final_pool_info.asset_a, ContractId::new(*exchange.asset_a));
+        assert_eq!(final_pool_info.asset_a_reserve, amounts.amount_a);
+        assert_eq!(final_pool_info.asset_b, ContractId::new(*exchange.asset_b));
+        assert_eq!(final_pool_info.asset_b_reserve, amounts.amount_b);
         assert_eq!(
             final_pool_info.liquidity * final_pool_info.liquidity,
-            deposit_amount_a * deposit_amount_b
+            amounts.amount_a * amounts.amount_b
         );
     }
 }

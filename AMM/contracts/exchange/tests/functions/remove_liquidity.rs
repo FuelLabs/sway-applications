@@ -1,6 +1,8 @@
 use crate::utils::{
     abi_calls::{pool_info, remove_liquidity},
-    test_helpers::{deposit_and_add_liquidity, setup, setup_and_initialize},
+    test_helpers::{
+        setup, setup_and_initialize, setup_initialize_deposit_and_add_liquidity, wallet_balances,
+    },
 };
 use fuels::prelude::*;
 
@@ -9,48 +11,24 @@ mod success {
 
     #[tokio::test]
     async fn removes_all_liquidity_passing_exact_a_and_b_values() {
-        let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
-        let deadline = 1000;
-        let liquidity_to_remove = initial_liquidity;
-        let a_to_remove = deposit_amount_a;
-        let b_to_remove = deposit_amount_b;
-        let expected_liquidity_removed = initial_liquidity;
-        let expected_a_removed = deposit_amount_a;
-        let expected_b_removed = deposit_amount_b;
+        let (exchange, wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
-        let added_liquidity = deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
+        let liquidity_to_remove = amounts.liquidity;
+        let a_to_remove = amounts.amount_a;
+        let b_to_remove = amounts.amount_b;
+        let expected_liquidity_removed = amounts.liquidity;
+        let expected_a_removed = amounts.amount_a;
+        let expected_b_removed = amounts.amount_b;
 
-        let wallet_initial_balance_a = wallet
-            .get_asset_balance(&exchange.asset_a_asset_id)
-            .await
-            .unwrap();
-        let wallet_initial_balance_b = wallet
-            .get_asset_balance(&exchange.asset_b_asset_id)
-            .await
-            .unwrap();
-        let wallet_initial_balance_lp = wallet
-            .get_asset_balance(&exchange.liquidity_pool_asset_id)
-            .await
-            .unwrap();
-        let initial_pool_info = pool_info(&exchange.contract).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let remove_liquidity_info = remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
                 Some(liquidity_to_remove),
-                Some(exchange.liquidity_pool_asset_id),
+                Some(exchange.liquidity_pool_asset),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -60,40 +38,28 @@ mod success {
             },
             a_to_remove,
             b_to_remove,
-            deadline,
+            amounts.deadline,
         )
         .await
         .value;
 
-        let wallet_final_balance_a = wallet
-            .get_asset_balance(&exchange.asset_a_asset_id)
-            .await
-            .unwrap();
-        let wallet_final_balance_b = wallet
-            .get_asset_balance(&exchange.asset_b_asset_id)
-            .await
-            .unwrap();
-        let wallet_final_balance_lp = wallet
-            .get_asset_balance(&exchange.liquidity_pool_asset_id)
-            .await
-            .unwrap();
-        let final_pool_info = pool_info(&exchange.contract).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(added_liquidity, initial_liquidity);
         assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
         assert_eq!(remove_liquidity_info.asset_b_amount, expected_b_removed);
         assert_eq!(remove_liquidity_info.liquidity, expected_liquidity_removed);
         assert_eq!(
-            wallet_final_balance_a,
-            wallet_initial_balance_a + expected_a_removed
+            final_wallet_balances.asset_a,
+            initial_wallet_balances.asset_a + expected_a_removed
         );
         assert_eq!(
-            wallet_final_balance_b,
-            wallet_initial_balance_b + expected_b_removed
+            final_wallet_balances.asset_b,
+            initial_wallet_balances.asset_b + expected_b_removed
         );
         assert_eq!(
-            wallet_final_balance_lp,
-            wallet_initial_balance_lp - expected_liquidity_removed
+            final_wallet_balances.liquidity_pool_asset,
+            initial_wallet_balances.liquidity_pool_asset - expected_liquidity_removed
         );
         assert_eq!(
             final_pool_info.asset_a_reserve,
@@ -111,48 +77,24 @@ mod success {
 
     #[tokio::test]
     async fn removes_all_liquidity_passing_exact_a_but_not_exact_b_values() {
-        let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
-        let deadline = 1000;
-        let liquidity_to_remove = initial_liquidity;
-        let a_to_remove = deposit_amount_a;
-        let b_to_remove = deposit_amount_b / 2;
-        let expected_liquidity_removed = initial_liquidity;
-        let expected_a_removed = deposit_amount_a;
-        let expected_b_removed = deposit_amount_b;
+        let (exchange, wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
-        let added_liquidity = deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
+        let liquidity_to_remove = amounts.liquidity;
+        let a_to_remove = amounts.amount_a;
+        let b_to_remove = amounts.amount_b / 2;
+        let expected_liquidity_removed = amounts.liquidity;
+        let expected_a_removed = amounts.amount_a;
+        let expected_b_removed = amounts.amount_b;
 
-        let wallet_initial_balance_a = wallet
-            .get_asset_balance(&exchange.asset_a_asset_id)
-            .await
-            .unwrap();
-        let wallet_initial_balance_b = wallet
-            .get_asset_balance(&exchange.asset_b_asset_id)
-            .await
-            .unwrap();
-        let wallet_initial_balance_lp = wallet
-            .get_asset_balance(&exchange.liquidity_pool_asset_id)
-            .await
-            .unwrap();
-        let initial_pool_info = pool_info(&exchange.contract).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let remove_liquidity_info = remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
                 Some(liquidity_to_remove),
-                Some(exchange.liquidity_pool_asset_id),
+                Some(exchange.liquidity_pool_asset),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -162,40 +104,28 @@ mod success {
             },
             a_to_remove,
             b_to_remove,
-            deadline,
+            amounts.deadline,
         )
         .await
         .value;
 
-        let wallet_final_balance_a = wallet
-            .get_asset_balance(&exchange.asset_a_asset_id)
-            .await
-            .unwrap();
-        let wallet_final_balance_b = wallet
-            .get_asset_balance(&exchange.asset_b_asset_id)
-            .await
-            .unwrap();
-        let wallet_final_balance_lp = wallet
-            .get_asset_balance(&exchange.liquidity_pool_asset_id)
-            .await
-            .unwrap();
-        let final_pool_info = pool_info(&exchange.contract).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(added_liquidity, initial_liquidity);
         assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
         assert_eq!(remove_liquidity_info.asset_b_amount, expected_b_removed);
         assert_eq!(remove_liquidity_info.liquidity, expected_liquidity_removed);
         assert_eq!(
-            wallet_final_balance_a,
-            wallet_initial_balance_a + expected_a_removed
+            final_wallet_balances.asset_a,
+            initial_wallet_balances.asset_a + expected_a_removed
         );
         assert_eq!(
-            wallet_final_balance_b,
-            wallet_initial_balance_b + expected_b_removed
+            final_wallet_balances.asset_b,
+            initial_wallet_balances.asset_b + expected_b_removed
         );
         assert_eq!(
-            wallet_final_balance_lp,
-            wallet_initial_balance_lp - expected_liquidity_removed
+            final_wallet_balances.liquidity_pool_asset,
+            initial_wallet_balances.liquidity_pool_asset - expected_liquidity_removed
         );
         assert_eq!(
             final_pool_info.asset_a_reserve,
@@ -213,48 +143,24 @@ mod success {
 
     #[tokio::test]
     async fn removes_all_liquidity_passing_exact_b_but_not_exact_a_values() {
-        let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
-        let deadline = 1000;
-        let liquidity_to_remove = initial_liquidity;
-        let a_to_remove = deposit_amount_a / 2;
-        let b_to_remove = deposit_amount_b;
-        let expected_liquidity_removed = initial_liquidity;
-        let expected_a_removed = deposit_amount_a;
-        let expected_b_removed = deposit_amount_b;
+        let (exchange, wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
-        let added_liquidity = deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
+        let liquidity_to_remove = amounts.liquidity;
+        let a_to_remove = amounts.amount_a / 2;
+        let b_to_remove = amounts.amount_b;
+        let expected_liquidity_removed = amounts.liquidity;
+        let expected_a_removed = amounts.amount_a;
+        let expected_b_removed = amounts.amount_b;
 
-        let wallet_initial_balance_a = wallet
-            .get_asset_balance(&exchange.asset_a_asset_id)
-            .await
-            .unwrap();
-        let wallet_initial_balance_b = wallet
-            .get_asset_balance(&exchange.asset_b_asset_id)
-            .await
-            .unwrap();
-        let wallet_initial_balance_lp = wallet
-            .get_asset_balance(&exchange.liquidity_pool_asset_id)
-            .await
-            .unwrap();
-        let initial_pool_info = pool_info(&exchange.contract).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let remove_liquidity_info = remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
                 Some(liquidity_to_remove),
-                Some(exchange.liquidity_pool_asset_id),
+                Some(exchange.liquidity_pool_asset),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -264,40 +170,28 @@ mod success {
             },
             a_to_remove,
             b_to_remove,
-            deadline,
+            amounts.deadline,
         )
         .await
         .value;
 
-        let wallet_final_balance_a = wallet
-            .get_asset_balance(&exchange.asset_a_asset_id)
-            .await
-            .unwrap();
-        let wallet_final_balance_b = wallet
-            .get_asset_balance(&exchange.asset_b_asset_id)
-            .await
-            .unwrap();
-        let wallet_final_balance_lp = wallet
-            .get_asset_balance(&exchange.liquidity_pool_asset_id)
-            .await
-            .unwrap();
-        let final_pool_info = pool_info(&exchange.contract).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(added_liquidity, initial_liquidity);
         assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
         assert_eq!(remove_liquidity_info.asset_b_amount, expected_b_removed);
         assert_eq!(remove_liquidity_info.liquidity, expected_liquidity_removed);
         assert_eq!(
-            wallet_final_balance_a,
-            wallet_initial_balance_a + expected_a_removed
+            final_wallet_balances.asset_a,
+            initial_wallet_balances.asset_a + expected_a_removed
         );
         assert_eq!(
-            wallet_final_balance_b,
-            wallet_initial_balance_b + expected_b_removed
+            final_wallet_balances.asset_b,
+            initial_wallet_balances.asset_b + expected_b_removed
         );
         assert_eq!(
-            wallet_final_balance_lp,
-            wallet_initial_balance_lp - expected_liquidity_removed
+            final_wallet_balances.liquidity_pool_asset,
+            initial_wallet_balances.liquidity_pool_asset - expected_liquidity_removed
         );
         assert_eq!(
             final_pool_info.asset_a_reserve,
@@ -315,48 +209,24 @@ mod success {
 
     #[tokio::test]
     async fn removes_partial_liquidity() {
-        let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
-        let deadline = 1000;
-        let liquidity_to_remove = initial_liquidity / 2;
-        let a_to_remove = deposit_amount_a / 2;
-        let b_to_remove = deposit_amount_b / 2;
-        let expected_liquidity_removed = initial_liquidity / 2;
-        let expected_a_removed = deposit_amount_a / 2;
-        let expected_b_removed = deposit_amount_b / 2;
+        let (exchange, wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
-        let added_liquidity = deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
+        let liquidity_to_remove = amounts.liquidity / 2;
+        let a_to_remove = amounts.amount_a / 2;
+        let b_to_remove = amounts.amount_b / 2;
+        let expected_liquidity_removed = amounts.liquidity / 2;
+        let expected_a_removed = amounts.amount_a / 2;
+        let expected_b_removed = amounts.amount_b / 2;
 
-        let wallet_initial_balance_a = wallet
-            .get_asset_balance(&exchange.asset_a_asset_id)
-            .await
-            .unwrap();
-        let wallet_initial_balance_b = wallet
-            .get_asset_balance(&exchange.asset_b_asset_id)
-            .await
-            .unwrap();
-        let wallet_initial_balance_lp = wallet
-            .get_asset_balance(&exchange.liquidity_pool_asset_id)
-            .await
-            .unwrap();
-        let initial_pool_info = pool_info(&exchange.contract).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let remove_liquidity_info = remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
                 Some(liquidity_to_remove),
-                Some(exchange.liquidity_pool_asset_id),
+                Some(exchange.liquidity_pool_asset),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -366,40 +236,28 @@ mod success {
             },
             a_to_remove,
             b_to_remove,
-            deadline,
+            amounts.deadline,
         )
         .await
         .value;
 
-        let wallet_final_balance_a = wallet
-            .get_asset_balance(&exchange.asset_a_asset_id)
-            .await
-            .unwrap();
-        let wallet_final_balance_b = wallet
-            .get_asset_balance(&exchange.asset_b_asset_id)
-            .await
-            .unwrap();
-        let wallet_final_balance_lp = wallet
-            .get_asset_balance(&exchange.liquidity_pool_asset_id)
-            .await
-            .unwrap();
-        let final_pool_info = pool_info(&exchange.contract).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(added_liquidity, initial_liquidity);
         assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
         assert_eq!(remove_liquidity_info.asset_b_amount, expected_b_removed);
         assert_eq!(remove_liquidity_info.liquidity, expected_liquidity_removed);
         assert_eq!(
-            wallet_final_balance_a,
-            wallet_initial_balance_a + expected_a_removed
+            final_wallet_balances.asset_a,
+            initial_wallet_balances.asset_a + expected_a_removed
         );
         assert_eq!(
-            wallet_final_balance_b,
-            wallet_initial_balance_b + expected_b_removed
+            final_wallet_balances.asset_b,
+            initial_wallet_balances.asset_b + expected_b_removed
         );
         assert_eq!(
-            wallet_final_balance_lp,
-            wallet_initial_balance_lp - expected_liquidity_removed
+            final_wallet_balances.liquidity_pool_asset,
+            initial_wallet_balances.liquidity_pool_asset - expected_liquidity_removed
         );
         assert_eq!(
             final_pool_info.asset_a_reserve,
@@ -455,31 +313,18 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_msg_asset_id_is_not_liquidity_pool_asset_id() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let a_to_remove = 1;
         let b_to_remove = 1;
-        let deadline = 1000;
-
-        let added_liquidity = deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
 
         remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
-                Some(added_liquidity),
+                Some(amounts.liquidity),
                 // sending an asset other than pool asset
-                Some(exchange.asset_a_asset_id),
+                Some(exchange.asset_a),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -489,7 +334,7 @@ mod revert {
             },
             a_to_remove,
             b_to_remove,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }
@@ -497,29 +342,16 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_minimum_a_amount_is_zero() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
-        let b_to_remove = 1;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
-        let added_liquidity = deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
+        let b_to_remove = 1;
 
         remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
-                Some(added_liquidity),
-                Some(exchange.liquidity_pool_asset_id),
+                Some(amounts.liquidity),
+                Some(exchange.liquidity_pool_asset),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -530,7 +362,7 @@ mod revert {
             // passing 0 as min_asset_a
             0,
             b_to_remove,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }
@@ -538,29 +370,16 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_minimum_b_amount_is_zero() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
-        let a_to_remove = 1;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
-        let added_liquidity = deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
+        let a_to_remove = 1;
 
         remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
-                Some(added_liquidity),
-                Some(exchange.liquidity_pool_asset_id),
+                Some(amounts.liquidity),
+                Some(exchange.liquidity_pool_asset),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -571,7 +390,7 @@ mod revert {
             a_to_remove,
             // passing 0 as min_asset_b
             0,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }
@@ -579,30 +398,17 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_deadline_has_passed() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let a_to_remove = 1;
         let b_to_remove = 1;
 
-        let added_liquidity = deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
-
         remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
-                Some(added_liquidity),
-                Some(exchange.liquidity_pool_asset_id),
+                Some(amounts.liquidity),
+                Some(exchange.liquidity_pool_asset),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -621,31 +427,18 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_msg_amount_is_zero() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let a_to_remove = 1;
         let b_to_remove = 1;
-        let deadline = 1000;
-
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
 
         remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
                 // sending 0 msg_amount
                 Some(0),
-                Some(exchange.liquidity_pool_asset_id),
+                Some(exchange.liquidity_pool_asset),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -655,7 +448,7 @@ mod revert {
             },
             a_to_remove,
             b_to_remove,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }
@@ -663,18 +456,16 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_liquidity_is_zero() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        // not adding liquidity to contract before attempting to remove
+        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
         let a_to_remove = 1;
         let b_to_remove = 1;
-        let deadline = 1000;
-
-        // not adding liquidity to contract before attempting to remove
 
         remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
                 Some(1),
-                // Sending `None` instead of `Some(exchange.liquidity_pool_asset_id)`
+                // Sending `None` instead of `Some(exchange.liquidity_pool_asset)`
                 // because liquidity pool asset does not exist yet.
                 // Normally, this also causes Revert(42),
                 // but this test condition (zero liquidity) reverts before that.
@@ -688,7 +479,7 @@ mod revert {
             },
             a_to_remove,
             b_to_remove,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }
@@ -696,34 +487,21 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_a_reserve_is_insufficient() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let b_to_remove = 1;
-        let deadline = 1000;
 
-        let added_liquidity = deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
-
-        let pool_info = pool_info(&exchange.contract).await.value;
+        let pool_info = pool_info(&exchange.instance).await.value;
         let asset_a_reserve = pool_info.asset_a_reserve;
         let liquidity = pool_info.liquidity;
-        let asset_a_amount_to_remove = (added_liquidity * asset_a_reserve) / liquidity;
+        let asset_a_amount_to_remove = (amounts.liquidity * asset_a_reserve) / liquidity;
 
         remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
-                Some(added_liquidity),
-                Some(exchange.liquidity_pool_asset_id),
+                Some(amounts.liquidity),
+                Some(exchange.liquidity_pool_asset),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -734,7 +512,7 @@ mod revert {
             // setting min_asset_a to be higher than what can be removed
             asset_a_amount_to_remove + 10,
             b_to_remove,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }
@@ -742,34 +520,21 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_b_reserve_is_insufficient() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let initial_liquidity = 200;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let a_to_remove = 1;
-        let deadline = 1000;
 
-        let added_liquidity = deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            initial_liquidity,
-            deadline,
-        )
-        .await;
-
-        let pool_info = pool_info(&exchange.contract).await.value;
+        let pool_info = pool_info(&exchange.instance).await.value;
         let asset_b_reserve = pool_info.asset_b_reserve;
         let liquidity = pool_info.liquidity;
-        let asset_b_amount_to_remove = (added_liquidity * asset_b_reserve) / liquidity;
+        let asset_b_amount_to_remove = (amounts.liquidity * asset_b_reserve) / liquidity;
 
         remove_liquidity(
-            &exchange.contract,
+            &exchange.instance,
             CallParameters::new(
-                Some(added_liquidity),
-                Some(exchange.liquidity_pool_asset_id),
+                Some(amounts.liquidity),
+                Some(exchange.liquidity_pool_asset),
                 Some(10_000_000),
             ),
             TxParameters {
@@ -780,7 +545,7 @@ mod revert {
             a_to_remove,
             // setting min_asset_b to be higher than what can be removed
             asset_b_amount_to_remove + 10,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }

@@ -1,6 +1,6 @@
 use crate::utils::{
     abi_calls::preview_swap_with_exact_input,
-    test_helpers::{deposit_and_add_liquidity, setup, setup_and_initialize},
+    test_helpers::{setup, setup_initialize_deposit_and_add_liquidity},
 };
 
 mod success {
@@ -8,35 +8,19 @@ mod success {
 
     #[tokio::test]
     async fn previews_partial_swap_of_a() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
         let input_amount = 10;
+
         // hardcoded calculation for liquidity miner fee of 333
-        let expected_min_output_amount = (input_amount * (1 - (1 / 333)) * deposit_amount_b)
-            / (deposit_amount_a + (input_amount * (1 - (1 / 333))));
-        let expected_sufficient_reserve = expected_min_output_amount <= deposit_amount_b;
+        let expected_min_output_amount = (input_amount * (1 - (1 / 333)) * amounts.amount_b)
+            / (amounts.amount_a + (input_amount * (1 - (1 / 333))));
+        let expected_sufficient_reserve = expected_min_output_amount <= amounts.amount_b;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
-
-        let preview_swap_info = preview_swap_with_exact_input(
-            &exchange.contract,
-            input_amount,
-            exchange.asset_a_contract_id,
-        )
-        .await
-        .value;
+        let preview_swap_info =
+            preview_swap_with_exact_input(&exchange.instance, input_amount, exchange.asset_a)
+                .await
+                .value;
 
         assert_eq!(preview_swap_info.amount, expected_min_output_amount);
         assert_eq!(
@@ -47,35 +31,19 @@ mod success {
 
     #[tokio::test]
     async fn previews_partial_swap_of_b() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
         let input_amount = 10;
+
         // hardcoded calculation for liquidity miner fee of 333
-        let expected_min_output_amount = (input_amount * (1 - (1 / 333)) * deposit_amount_a)
-            / (deposit_amount_b + (input_amount * (1 - (1 / 333))));
-        let expected_sufficient_reserve = expected_min_output_amount <= deposit_amount_a;
+        let expected_min_output_amount = (input_amount * (1 - (1 / 333)) * amounts.amount_a)
+            / (amounts.amount_b + (input_amount * (1 - (1 / 333))));
+        let expected_sufficient_reserve = expected_min_output_amount <= amounts.amount_a;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            exchange.asset_a_asset_id,
-            deposit_amount_a,
-            exchange.asset_b_asset_id,
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
-
-        let preview_swap_info = preview_swap_with_exact_input(
-            &exchange.contract,
-            input_amount,
-            exchange.asset_b_contract_id,
-        )
-        .await
-        .value;
+        let preview_swap_info =
+            preview_swap_with_exact_input(&exchange.instance, input_amount, exchange.asset_b)
+                .await
+                .value;
 
         assert_eq!(preview_swap_info.amount, expected_min_output_amount);
         assert_eq!(
@@ -101,10 +69,11 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_msg_asset_id_is_invalid() {
-        let (exchange, _wallet, asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, _amounts, asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
         preview_swap_with_exact_input(
-            &exchange.contract,
+            &exchange.instance,
             10,
             // sending invalid asset
             asset_c_id,

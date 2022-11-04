@@ -9,31 +9,25 @@ mod success {
 
     #[tokio::test]
     async fn returns_zero() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, _amounts, _asset_c_id) = setup_and_initialize().await;
 
-        let balance = balance(&exchange.contract, exchange.asset_a_contract_id)
-            .await
-            .value;
+        let balance = balance(&exchange.instance, exchange.asset_a).await.value;
 
         assert_eq!(balance, 0);
     }
 
     #[tokio::test]
     async fn returns_non_zero() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let initial_balance = balance(&exchange.contract, exchange.asset_a_contract_id)
-            .await
-            .value;
+        let (exchange, _wallet, _amounts, _asset_c_id) = setup_and_initialize().await;
+        let initial_balance = balance(&exchange.instance, exchange.asset_a).await.value;
         let deposit_amount = 10;
 
         deposit(
-            &exchange.contract,
-            CallParameters::new(Some(deposit_amount), Some(exchange.asset_a_asset_id), None),
+            &exchange.instance,
+            CallParameters::new(Some(deposit_amount), Some(exchange.asset_a), None),
         )
         .await;
-        let balance = balance(&exchange.contract, exchange.asset_a_contract_id)
-            .await
-            .value;
+        let balance = balance(&exchange.instance, exchange.asset_a).await.value;
 
         assert_eq!(initial_balance, 0);
         assert_eq!(balance, deposit_amount);
@@ -56,9 +50,9 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_msg_asset_id_is_invalid() {
-        let (exchange, _wallet, asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, _amounts, asset_c_id) = setup_and_initialize().await;
 
         // send invalid asset id
-        balance(&exchange.contract, asset_c_id).await;
+        balance(&exchange.instance, asset_c_id).await;
     }
 }
