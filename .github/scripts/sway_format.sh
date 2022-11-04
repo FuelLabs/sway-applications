@@ -24,8 +24,8 @@ elif [ $PROJECT = 'multisig-wallet' ]; then
     forc fmt --path $PROJECT --check
 elif [ $PROJECT = 'NFT' ]; then
     forc fmt --path $PROJECT --check
-elif [ $PROJECT = 'oracle/packages' ]; then
-    forc fmt --path $PROJECT/contract --check
+elif [ $PROJECT = 'oracle' ]; then
+    forc fmt --path $PROJECT/packages/contract --check
 else
     echo "project name did not match"
     exit 1
