@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{expiry, extend, register},
-        setup, EXTEND_DURATION, REGISTER_DURATION, Account
+        setup, Account, EXTEND_DURATION, REGISTER_DURATION,
     };
 
     #[tokio::test]

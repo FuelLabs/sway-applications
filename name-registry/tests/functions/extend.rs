@@ -1,7 +1,8 @@
 mod success {
     use crate::utils::{
         abi::{expiry, extend, register},
-        setup, string_to_ascii, RegistrationExtendedEvent, EXTEND_DURATION, REGISTER_DURATION, Account
+        setup, string_to_ascii, Account, RegistrationExtendedEvent, EXTEND_DURATION,
+        REGISTER_DURATION,
     };
 
     #[tokio::test]
@@ -45,7 +46,7 @@ mod success {
 mod revert {
     use crate::utils::{
         abi::{extend, register},
-        setup, EXTEND_DURATION, REGISTER_DURATION, Account
+        setup, Account, EXTEND_DURATION, REGISTER_DURATION,
     };
 
     #[tokio::test]

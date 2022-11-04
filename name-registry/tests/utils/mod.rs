@@ -57,5 +57,5 @@ impl Account {
 
     pub fn identity(&self) -> Identity {
         Identity::Address(Address::from(self.wallet.address()))
-    } 
+    }
 }

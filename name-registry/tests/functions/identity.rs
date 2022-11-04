@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{identity, register, set_identity},
-        setup, REGISTER_DURATION, Account
+        setup, Account, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 

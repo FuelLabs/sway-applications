@@ -48,7 +48,7 @@ mod success {
 mod revert {
     use crate::utils::{
         abi::{register, set_owner},
-        setup, REGISTER_DURATION, Account,
+        setup, Account, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 

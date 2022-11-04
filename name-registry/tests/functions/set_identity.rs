@@ -1,7 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{identity, register, set_identity},
-        setup, string_to_ascii, IdentityChangedEvent, REGISTER_DURATION, Account
+        setup, string_to_ascii, Account, IdentityChangedEvent, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 
@@ -47,7 +47,7 @@ mod success {
 mod revert {
     use crate::utils::{
         abi::{register, set_identity},
-        setup, REGISTER_DURATION, Account,
+        setup, Account, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 

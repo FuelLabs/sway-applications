@@ -1,6 +1,6 @@
 mod success {
     use crate::utils::{
-        abi::register, setup, string_to_ascii, NameRegisteredEvent, REGISTER_DURATION, Account
+        abi::register, setup, string_to_ascii, Account, NameRegisteredEvent, REGISTER_DURATION,
     };
 
     #[tokio::test]
@@ -33,7 +33,7 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::{abi::register, setup, REGISTER_DURATION, Account};
+    use crate::utils::{abi::register, setup, Account, REGISTER_DURATION};
     use fuels::prelude::*;
 
     #[tokio::test]
