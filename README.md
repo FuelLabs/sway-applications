@@ -9,8 +9,8 @@
     <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
         <img src="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml/badge.svg" />
     </a>
-    <a href="https://crates.io/crates/forc" alt="forc">
-        <img src="https://img.shields.io/crates/v/forc?color=orange&label=forc" />
+    <a href="https://crates.io/crates/forc/0.25.2" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.25.2-orange" />
     </a>
     <a href="./LICENSE" alt="forc">
         <img src="https://img.shields.io/github/license/FuelLabs/sway-applications" />
@@ -55,7 +55,7 @@ sway-applications/
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
 - [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal.
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction.
-- [Name-Registry](./name-registry/) is a program that allows users to own human readable names for easy transfer of cryptocurrencies and tokens
+- [Name-Registry](./name-registry/) allows users to perform transactions with human readable names instead of addresses
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
 
