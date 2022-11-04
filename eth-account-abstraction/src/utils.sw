@@ -19,26 +19,26 @@ pub fn eth_prefix(msg_hash: b256) -> b256 {
 }
 
 //Creates an EIP-191 compliant transaction hash, of the version:
-//0x45 personal sign.
-pub fn eip_191_hash(
-    msg_hash: b256
+//0x45, personal sign.
+//It takes a data_to_sign to represent the <data to sign> in the following EIP-191 format:
+//0x19 <1 byte version> <version specific data> <data to sign>
+pub fn eip_191_format(
+    data_to_sign: b256
 ) -> b256 {
     let initial_byte= 0x19u8;
     let version_byte= 0x45u8;
     keccak256((
         initial_byte,
         version_byte,
-        msg_hash
+        data_to_sign
     ))
 }
 
 //Recovers an EVM address from a signature over signed_data that was:
 //EIP-191 compliant, 
 //and received an Ethereum signed message prefix.
-//It takes a msg_hash to represent the <data to sign> in the following EIP-191 format:
-//0x19 <1 byte version> <version specific data> <data to sign>
 pub fn ec_recover_evm_address (signature: B512, msg_hash: b256) -> Result<EvmAddress, EcRecoverError> {
-    let tx_hash = eip_191_hash(msg_hash);
+    let tx_hash = eip_191_format(msg_hash);
     let tx_hash = eth_prefix(tx_hash);
 
     let pub_key_result = ec_recover(signature, tx_hash);
@@ -50,7 +50,7 @@ pub fn ec_recover_evm_address (signature: B512, msg_hash: b256) -> Result<EvmAdd
                 (pub_key.bytes)[0],
                 (pub_key.bytes)[1],
             ));
-            Result::Ok(~EvmAddress::from(pubkey_hash))
+            Result::Ok(EvmAddress::from(pubkey_hash))
         }
     }
 }

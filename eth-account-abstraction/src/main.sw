@@ -1,5 +1,7 @@
 script;
 
+dep utils;
+
 use std::{
     b512::B512, 
     vm::evm::{
