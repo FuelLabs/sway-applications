@@ -1,14 +1,13 @@
 mod success {
     use crate::utils::{
         abi::{owner, register, set_owner},
-        setup, Account, REGISTER_DURATION,
+        setup, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 
     #[tokio::test]
     async fn can_get_owner() {
-        let (instance, _id, wallet, wallet2) = setup().await;
-        let acc1 = Account::new(wallet);
+        let (instance, acc1, wallet2) = setup().await;
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
         register(
@@ -38,10 +37,8 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "`Result::unwrap()` on an `Err` value")]
     async fn cant_get_owner() {
-        let (instance, _id, _wallet, _wallet2) = setup().await;
-        let name = String::from("SwaySway");
-
-        let owner = owner(&instance, &name).await;
+        let (instance, acc, _wallet2) = setup().await;
+        let owner = owner(&instance, &acc.name).await;
         owner.0.value.unwrap();
     }
 }

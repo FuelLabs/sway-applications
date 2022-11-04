@@ -1,12 +1,11 @@
 mod success {
     use crate::utils::{
-        abi::register, setup, string_to_ascii, Account, NameRegisteredEvent, REGISTER_DURATION,
+        abi::register, setup, string_to_ascii, NameRegisteredEvent, REGISTER_DURATION,
     };
 
     #[tokio::test]
     async fn can_register() {
-        let (instance, _id, wallet, _wallet2) = setup().await;
-        let acc = Account::new(wallet);
+        let (instance, acc, _wallet2) = setup().await;
 
         let response = register(
             &instance,
@@ -33,30 +32,27 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::{abi::register, setup, Account, REGISTER_DURATION};
-    use fuels::prelude::*;
+    use crate::utils::{abi::register, setup, REGISTER_DURATION};
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn cant_repeat_register() {
-        let (instance, _id, wallet, _wallet2) = setup().await;
-        let wallet_identity = Identity::Address(Address::from(wallet.address()));
-        let name = String::from("SwaySway");
+        let (instance, acc, _wallet2) = setup().await;
 
         register(
             &instance,
-            &name,
+            &acc.name,
             REGISTER_DURATION,
-            &wallet_identity,
-            &wallet_identity,
+            &acc.identity(),
+            &acc.identity(),
         )
         .await;
         register(
             &instance,
-            &name,
+            &acc.name,
             REGISTER_DURATION,
-            &wallet_identity,
-            &wallet_identity,
+            &acc.identity(),
+            &acc.identity(),
         )
         .await;
     }
@@ -64,8 +60,7 @@ mod revert {
     #[tokio::test]
     #[should_panic]
     async fn cant_register_max_duration() {
-        let (instance, _id, wallet, _wallet2) = setup().await;
-        let acc = Account::new(wallet);
+        let (instance, acc, _wallet2) = setup().await;
 
         register(
             &instance,

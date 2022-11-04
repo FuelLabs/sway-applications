@@ -1,14 +1,13 @@
 mod success {
     use crate::utils::{
         abi::{identity, register, set_identity},
-        setup, string_to_ascii, Account, IdentityChangedEvent, REGISTER_DURATION,
+        setup, string_to_ascii, IdentityChangedEvent, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 
     #[tokio::test]
     async fn can_set_identity() {
-        let (instance, _id, wallet, wallet2) = setup().await;
-        let acc1 = Account::new(wallet);
+        let (instance, acc1, wallet2) = setup().await;
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
         register(
@@ -47,15 +46,14 @@ mod success {
 mod revert {
     use crate::utils::{
         abi::{register, set_identity},
-        setup, Account, REGISTER_DURATION,
+        setup, REGISTER_DURATION,
     };
     use fuels::prelude::*;
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn cant_set_identity() {
-        let (instance, _id, wallet, wallet2) = setup().await;
-        let acc1 = Account::new(wallet);
+        let (instance, acc1, wallet2) = setup().await;
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
         register(

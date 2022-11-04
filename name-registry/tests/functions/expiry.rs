@@ -1,13 +1,12 @@
 mod success {
     use crate::utils::{
         abi::{expiry, extend, register},
-        setup, Account, EXTEND_DURATION, REGISTER_DURATION,
+        setup, EXTEND_DURATION, REGISTER_DURATION,
     };
 
     #[tokio::test]
     async fn can_get_expiry() {
-        let (instance, _id, wallet, _wallet2) = setup().await;
-        let acc = Account::new(wallet);
+        let (instance, acc, _wallet2) = setup().await;
 
         register(
             &instance,
@@ -36,10 +35,9 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "`Result::unwrap()` on an `Err` value")]
     async fn cant_get_expiry() {
-        let (instance, _id, _wallet, _wallet2) = setup().await;
-        let name = String::from("SwaySway");
+        let (instance, acc, _wallet2) = setup().await;
 
-        let expiry = expiry(&instance, &name).await;
+        let expiry = expiry(&instance, &acc.name).await;
         expiry.0.value.unwrap();
     }
 }

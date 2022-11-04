@@ -1,6 +1,6 @@
 pub mod abi;
 
-use fuels::{prelude::*, tx::ContractId};
+use fuels::{prelude::*};
 
 // Load abi from json
 abigen!(NameRegistry, "out/debug/name-registry-abi.json");
@@ -8,7 +8,7 @@ abigen!(NameRegistry, "out/debug/name-registry-abi.json");
 pub const REGISTER_DURATION: u64 = 10000;
 pub const EXTEND_DURATION: u64 = 2500;
 
-pub async fn setup() -> (NameRegistry, ContractId, WalletUnlocked, WalletUnlocked) {
+pub async fn setup() -> (NameRegistry, Account, WalletUnlocked) {
     // Launch a local network and deploy the contract
     let mut wallets = launch_custom_provider_and_get_wallets(
         WalletsConfig::new(
@@ -35,7 +35,7 @@ pub async fn setup() -> (NameRegistry, ContractId, WalletUnlocked, WalletUnlocke
 
     let instance = NameRegistry::new(id.to_string(), wallet.clone());
 
-    (instance, id.into(), wallet, wallet2)
+    (instance, Account::new(wallet), wallet2)
 }
 
 pub fn string_to_ascii(name: &String) -> SizedAsciiString<8> {
