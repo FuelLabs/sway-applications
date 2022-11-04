@@ -1,17 +1,16 @@
-use fuel_crypto::{
-    Signature,
-};
 use fuels::{
     contract::{
         script::Script,
     },
     prelude::*,
-    signers::fuel_crypto::SecretKey,
+    signers::fuel_crypto::{
+        Message,
+        SecretKey,
+    },
     tx::{
         AssetId, Receipt, Transaction
     },
 };
-use fuel_vm::crypto;
 
 pub async fn test_recover_and_match_address_with_parameters(private_key: &str) {
     //Setup wallets
@@ -45,16 +44,16 @@ pub async fn test_recover_and_match_address_with_parameters(private_key: &str) {
         .for_each(|wallet| wallet.set_provider(provider.clone()));
 
     //Create signature
-    let data_to_sign = [0; 32];
-    
-    let signature1 = crypto::secp256k1_sign_compact_recoverable(secret_key1.as_ref(), data_to_sign.as_ref())
-        .expect("Failed to generate signature");
-    
-    let signature1 = unsafe { Signature::from_bytes_unchecked(*signature1).to_vec() };
+    let data_to_sign = "Data to sign";
+
+    let signature1 = wallet.sign_message(data_to_sign).await.unwrap().to_vec();
+
+    let signed_message = Message::new(data_to_sign).to_vec();
 
     //prepare script and tx
     let script_data: Vec<u8> = [
         signature1,
+        signed_message,
     ]
     .into_iter()
     .flatten()
