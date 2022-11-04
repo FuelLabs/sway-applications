@@ -137,5 +137,3 @@ jobs:
 
       - name: Build Sway
         run: forc build --path ${{ matrix.project }}
-        
-        
