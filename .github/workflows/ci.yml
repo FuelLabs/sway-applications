@@ -76,7 +76,7 @@ jobs:
           components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
 
       - name: Check Sway formatting
-        run: forc fmt --path ${{ matrix.project }} --check
+        run: sh ${{ env.PATH_TO_SCRIPTS }}/sway_format.sh ${{ matrix.project }}
 
       - name: Check Rust formatting
         run: |
