@@ -1,0 +1,9 @@
+[project]
+authors = ["chappie"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "vault"
+
+[dependencies]
+# BalanceAllocation = { path = "../BalanceAllocation"}
+# math = { path = "../math"}

@@ -1,0 +1,24 @@
+#
+#
+# pattern:
+#
+#
+# file/directory    user or users
+# 
+
+
+liquidity-mining/   @shrey-ri
+
+pool-utils/contracts/  @ankitsaini9
+
+sway-utils/contracts/  @kunal171
+
+weighted-pool/contracts  @ankitsaini9 @kunal171
+
+vault/contracts/authorizer  @shrey-ri
+
+vault/contracts/balances    @sahil-ri
+
+vault/contracts     @kunal171 @ankitsaini9
+
+pool-utils/contracts/factories  @sahil-ri

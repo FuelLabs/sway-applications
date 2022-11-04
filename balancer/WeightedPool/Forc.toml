@@ -1,0 +1,91 @@
+[project]
+authors = ["chappie"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "WeightedPool"
+
+[constants]
+DEFAULT_MINIMUM_BPT = { type = "u64", value = "0" }
+FOUR = { type = "u64", value = "4" }
+INVALID_TOKEN = { type = "u64", value = "309" }
+MAX_INVARIANT_RATIO = { type = "u64", value = "3" }
+MAX_POW_RELATIVE_ERROR = { type = "u64", value = "10000" }
+MAX_SWAP_FEE_PERCENTAGE = { type = "u64", value = "100" }
+MIN_INVARIANT_RATIO = { type = "u64", value = "7" }
+MIN_SWAP_FEE_PERCENTAGE = { type = "u64", value = "10" }
+ONE = { type = "u64", value = "1" }
+TOTAL_SUPPLY = { type = "u64", value = "0" }
+TOTAL_TOKENS = { type = "u64", value = "2" }
+TWO = { type = "u64", value = "2" }
+UNHANDLED_EXIT_KIND = { type = "u64", value = "336" }
+UNHANDLED_JOIN_KIND = { type = "u64", value = "310" }
+
+# All token balances are normalized to behave as if the token had 18 decimals. We assume a token's decimals will
+# not change throughout its lifetime, and store the corresponding scaling factor for each at pub construction time.
+# These factors are always greater than or equal to one: tokens with more than 18 decimals are not supported.
+SCALING_FACTOR0 = { type = "u64", value = "10" }
+SCALING_FACTOR1 = { type = "u64", value = "10" }
+SCALING_FACTOR10 = { type = "u64", value = " 10" }
+SCALING_FACTOR11 = { type = "u64", value = " 10" }
+SCALING_FACTOR12 = { type = "u64", value = " 10" }
+SCALING_FACTOR13 = { type = "u64", value = " 10" }
+SCALING_FACTOR14 = { type = "u64", value = " 10" }
+SCALING_FACTOR15 = { type = "u64", value = " 10" }
+SCALING_FACTOR16 = { type = "u64", value = " 10" }
+SCALING_FACTOR17 = { type = "u64", value = " 10" }
+SCALING_FACTOR18 = { type = "u64", value = " 10" }
+SCALING_FACTOR19 = { type = "u64", value = " 10" }
+SCALING_FACTOR2 = { type = "u64", value = "10" }
+SCALING_FACTOR3 = { type = "u64", value = "10" }
+SCALING_FACTOR4 = { type = "u64", value = "10" }
+SCALING_FACTOR5 = { type = "u64", value = "10" }
+SCALING_FACTOR6 = { type = "u64", value = "10" }
+SCALING_FACTOR7 = { type = "u64", value = "10" }
+SCALING_FACTOR8 = { type = "u64", value = "10" }
+SCALING_FACTOR9 = { type = "u64", value = "10" }
+
+NORMALIZED_WEIGHT0 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT1 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT10 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT11 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT12 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT13 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT14 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT15 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT16 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT17 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT18 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT19 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT2 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT3 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT4 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT5 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT6 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT7 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT8 = { type = "u64", value = "10" }
+NORMALIZED_WEIGHT9 = { type = "u64", value = "10" }
+
+
+TOKEN0 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN1 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN10 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN11 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN12 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN13 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN14 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN15 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN16 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN17 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN18 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN19 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN2 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN3 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN4 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN5 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN6 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN7 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN8 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+TOKEN9 = { type = "b256", value = "0x9299da6c73e6dc03eeabcce242bb347de3f5f56cd1c70926d76526d7ed199b8b" }
+
+
+[dependencies]
