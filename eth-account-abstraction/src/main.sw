@@ -14,7 +14,7 @@ use std::{
 fn main(signature: B512) -> bool {
     let message_hash = ZERO_B256;
 
-    let target_address = ~EvmAddress::from(
+    let target_address = EvmAddress::from(
         0x44c646ac0426710470343f1cdb4aa29ef306fc8d28025b838ccd3feecaedb333
     );
 

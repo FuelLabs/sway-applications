@@ -34,7 +34,6 @@ pub async fn test_recover_and_match_address_with_parameters(private_key: &str) {
         all_coins,
         vec![],
         Some(Config {
-            predicates: true,
             utxo_validation: true,
             ..Config::local_node()
         }),
@@ -76,8 +75,8 @@ pub async fn test_recover_and_match_address_with_parameters(private_key: &str) {
 
 //custom run_compiled_script; with input data
 pub async fn run_compiled_script(
-    binary_filepath: &str,
-    provider: Option<Provider>,
+    binary_filepath: &str, 
+    provider: Option<Provider>, 
     script_data: Vec<u8>,
 ) -> Result<Vec<Receipt>, Error> {
     let script_binary = std::fs::read(binary_filepath)?;
@@ -92,18 +91,16 @@ pub async fn run_compiled_script(
 }
 
 fn build_script(script_binary: Vec<u8>, script_data: Vec<u8>) -> Script {
-    let tx = Transaction::Script {
-        gas_price: 0,
-        gas_limit: 100_000_000,
-        maturity: 0,
-        receipts_root: Default::default(),
-        script: script_binary, // Pass the compiled script into the tx
-        script_data: script_data,
-        inputs: vec![],
-        outputs: vec![],
-        witnesses: vec![vec![].into()],
-        metadata: None,
-    };
-
-    Script::new(tx)
+    let tx_params = TxParameters::default();
+    
+    Script::new(Transaction::script(
+        tx_params.gas_price,
+        tx_params.gas_limit,
+        tx_params.maturity,
+        script_binary,
+        script_data,
+        vec![],
+        vec![],
+        vec![],
+    ))
 }
