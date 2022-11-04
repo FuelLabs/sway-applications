@@ -63,7 +63,7 @@ The project can be started by executing the following steps:
 
     This spins up and configures the local `fuel-core` instance with the variables specified in [`.chainConfig.json`](./packages/node/.chainConfig.json).
 
-5. [Deploy the Oracle contract](#step-5).
+5. Deploy the Oracle contract.
 
     ```bash
     forc-deploy --path packages/contract --url localhost:4000 --unsigned
