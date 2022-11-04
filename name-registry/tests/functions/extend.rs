@@ -1,8 +1,7 @@
 mod success {
     use crate::utils::{
         abi::{expiry, extend, register},
-        setup, string_to_ascii, RegistrationExtendedEvent, EXTEND_DURATION,
-        REGISTER_DURATION,
+        setup, string_to_ascii, RegistrationExtendedEvent, EXTEND_DURATION, REGISTER_DURATION,
     };
 
     #[tokio::test]

@@ -1,6 +1,6 @@
 pub mod abi;
 
-use fuels::{prelude::*};
+use fuels::prelude::*;
 
 // Load abi from json
 abigen!(NameRegistry, "out/debug/name-registry-abi.json");
