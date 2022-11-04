@@ -37,7 +37,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "`Result::unwrap()` on an `Err` value")]
-    async fn cant_get_identity() {
+    async fn cant_get_identity_when_not_registered() {
         let (instance, _id, _wallet, _wallet2) = setup().await;
         let name = String::from("SwaySway");
 
