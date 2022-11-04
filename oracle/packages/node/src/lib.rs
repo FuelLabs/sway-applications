@@ -9,7 +9,7 @@ use tokio::sync::mpsc::Receiver;
 use tokio::task::JoinHandle;
 use tokio::time::sleep;
 
-// Deicmal precision of the asset we are pushing prices to
+// Decimal precision of the asset we are pushing prices to
 const DECIMAL_PRECISION: f64 = 1e9;
 
 // Used to deserialize the USD price of ETH from an api endpoint
