@@ -20,7 +20,7 @@ abi NameRegistry {
     #[storage(read, write)]
     fn extend(name: str[8], duration: u64);
 
-    /// Registers an entry into the registry for the given name.
+    /// Adds an entry into the registry for the given name.
     ///
     /// Assigns the name to the given owner, and resolves the name to the given identity when queried
     ///
