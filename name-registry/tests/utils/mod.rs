@@ -41,3 +41,21 @@ pub async fn setup() -> (NameRegistry, ContractId, WalletUnlocked, WalletUnlocke
 pub fn string_to_ascii(name: &String) -> SizedAsciiString<8> {
     SizedAsciiString::<8>::new(name.to_owned()).unwrap()
 }
+
+pub struct Account {
+    pub wallet: WalletUnlocked,
+    pub name: String,
+}
+
+impl Account {
+    pub fn new(wallet: WalletUnlocked) -> Self {
+        Self {
+            wallet,
+            name: String::from("SwaySway"),
+        }
+    }
+
+    pub fn identity(&self) -> Identity {
+        Identity::Address(Address::from(self.wallet.address()))
+    } 
+}

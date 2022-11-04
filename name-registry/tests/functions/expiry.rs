@@ -1,29 +1,27 @@
 mod success {
     use crate::utils::{
         abi::{expiry, extend, register},
-        setup, EXTEND_DURATION, REGISTER_DURATION,
+        setup, EXTEND_DURATION, REGISTER_DURATION, Account
     };
-    use fuels::prelude::*;
 
     #[tokio::test]
     async fn can_get_expiry() {
         let (instance, _id, wallet, _wallet2) = setup().await;
-        let wallet_identity = Identity::Address(Address::from(wallet.address()));
-        let name = String::from("SwaySway");
+        let acc = Account::new(wallet);
 
         register(
             &instance,
-            &name,
+            &acc.name,
             REGISTER_DURATION,
-            &wallet_identity,
-            &wallet_identity,
+            &acc.identity(),
+            &acc.identity(),
         )
         .await;
-        let previous_expiry_response = expiry(&instance, &name).await;
+        let previous_expiry_response = expiry(&instance, &acc.name).await;
 
-        extend(&instance, &name, EXTEND_DURATION).await;
+        extend(&instance, &acc.name, EXTEND_DURATION).await;
 
-        let new_expiry_response = expiry(&instance, &name).await;
+        let new_expiry_response = expiry(&instance, &acc.name).await;
 
         assert_eq!(
             previous_expiry_response.0.value.unwrap() + EXTEND_DURATION,

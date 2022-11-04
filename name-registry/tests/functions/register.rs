@@ -1,21 +1,19 @@
 mod success {
     use crate::utils::{
-        abi::register, setup, string_to_ascii, NameRegisteredEvent, REGISTER_DURATION,
+        abi::register, setup, string_to_ascii, NameRegisteredEvent, REGISTER_DURATION, Account
     };
-    use fuels::prelude::*;
 
     #[tokio::test]
     async fn can_register() {
         let (instance, _id, wallet, _wallet2) = setup().await;
-        let wallet_identity = Identity::Address(Address::from(wallet.address()));
-        let name = String::from("SwaySway");
+        let acc = Account::new(wallet);
 
         let response = register(
             &instance,
-            &name,
+            &acc.name,
             REGISTER_DURATION,
-            &wallet_identity,
-            &wallet_identity,
+            &acc.identity(),
+            &acc.identity(),
         )
         .await;
         let log = instance
@@ -26,16 +24,16 @@ mod success {
             log,
             vec![NameRegisteredEvent {
                 expiry: response.1 + REGISTER_DURATION,
-                name: string_to_ascii(&name),
-                owner: wallet_identity.clone(),
-                identity: wallet_identity
+                name: string_to_ascii(&acc.name),
+                owner: acc.identity().clone(),
+                identity: acc.identity()
             }]
         )
     }
 }
 
 mod revert {
-    use crate::utils::{abi::register, setup, REGISTER_DURATION};
+    use crate::utils::{abi::register, setup, REGISTER_DURATION, Account};
     use fuels::prelude::*;
 
     #[tokio::test]
@@ -65,17 +63,16 @@ mod revert {
 
     #[tokio::test]
     #[should_panic]
-    async fn cant_register_infinite() {
+    async fn cant_register_max_duration() {
         let (instance, _id, wallet, _wallet2) = setup().await;
-        let wallet_identity = Identity::Address(Address::from(wallet.address()));
-        let name = String::from("SwaySway");
+        let acc = Account::new(wallet);
 
         register(
             &instance,
-            &name,
+            &acc.name,
             u64::MAX,
-            &wallet_identity,
-            &wallet_identity,
+            &acc.identity(),
+            &acc.identity(),
         )
         .await;
     }

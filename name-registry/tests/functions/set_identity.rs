@@ -1,33 +1,32 @@
 mod success {
     use crate::utils::{
         abi::{identity, register, set_identity},
-        setup, string_to_ascii, IdentityChangedEvent, REGISTER_DURATION,
+        setup, string_to_ascii, IdentityChangedEvent, REGISTER_DURATION, Account
     };
     use fuels::prelude::*;
 
     #[tokio::test]
     async fn can_set_identity() {
         let (instance, _id, wallet, wallet2) = setup().await;
-        let wallet_identity = Identity::Address(Address::from(wallet.address()));
-        let name = String::from("SwaySway");
+        let acc1 = Account::new(wallet);
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
         register(
             &instance,
-            &name,
+            &acc1.name,
             REGISTER_DURATION,
-            &wallet_identity,
-            &wallet_identity,
+            &acc1.identity(),
+            &acc1.identity(),
         )
         .await;
 
-        let previous_identity = identity(&instance, &name).await;
+        let previous_identity = identity(&instance, &acc1.name).await;
 
-        assert_eq!(previous_identity.0.value.unwrap(), wallet_identity);
+        assert_eq!(previous_identity.0.value.unwrap(), acc1.identity(),);
 
-        let response = set_identity(&instance, &name, wallet_identity2.clone()).await;
+        let response = set_identity(&instance, &acc1.name, wallet_identity2.clone()).await;
 
-        let new_identity = identity(&instance, &name).await;
+        let new_identity = identity(&instance, &acc1.name).await;
 
         assert_eq!(new_identity.0.value.unwrap(), wallet_identity2);
 
@@ -37,9 +36,9 @@ mod success {
         assert_eq!(
             log,
             vec![IdentityChangedEvent {
-                name: string_to_ascii(&name),
+                name: string_to_ascii(&acc1.name),
                 new_identity: wallet_identity2,
-                previous_identity: wallet_identity
+                previous_identity: acc1.identity(),
             }]
         )
     }
@@ -48,7 +47,7 @@ mod success {
 mod revert {
     use crate::utils::{
         abi::{register, set_identity},
-        setup, REGISTER_DURATION,
+        setup, REGISTER_DURATION, Account,
     };
     use fuels::prelude::*;
 
@@ -56,22 +55,21 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn cant_set_identity() {
         let (instance, _id, wallet, wallet2) = setup().await;
-        let wallet_identity = Identity::Address(Address::from(wallet.address()));
-        let name = String::from("SwaySway");
+        let acc1 = Account::new(wallet);
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
         register(
             &instance,
-            &name,
+            &acc1.name,
             REGISTER_DURATION,
-            &wallet_identity,
-            &wallet_identity,
+            &acc1.identity(),
+            &acc1.identity(),
         )
         .await;
 
         set_identity(
             &instance.with_wallet(wallet2).unwrap(),
-            &name,
+            &acc1.name,
             wallet_identity2.clone(),
         )
         .await;

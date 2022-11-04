@@ -1,33 +1,31 @@
 mod success {
     use crate::utils::{
         abi::{expiry, extend, register},
-        setup, string_to_ascii, RegistrationExtendedEvent, EXTEND_DURATION, REGISTER_DURATION,
+        setup, string_to_ascii, RegistrationExtendedEvent, EXTEND_DURATION, REGISTER_DURATION, Account
     };
-    use fuels::prelude::*;
 
     #[tokio::test]
     async fn can_extend() {
         let (instance, _id, wallet, _wallet2) = setup().await;
-        let wallet_identity = Identity::Address(Address::from(wallet.address()));
-        let name = String::from("SwaySway");
+        let acc = Account::new(wallet);
 
         let (_, register_time) = register(
             &instance,
-            &name,
+            &acc.name,
             REGISTER_DURATION,
-            &wallet_identity,
-            &wallet_identity,
+            &acc.identity(),
+            &acc.identity(),
         )
         .await;
 
-        let previous_expiry = expiry(&instance, &name).await;
+        let previous_expiry = expiry(&instance, &acc.name).await;
 
-        let extend_response = extend(&instance, &name, EXTEND_DURATION).await;
+        let extend_response = extend(&instance, &acc.name, EXTEND_DURATION).await;
         let log = instance
             .logs_with_type::<RegistrationExtendedEvent>(&extend_response.0.receipts)
             .unwrap();
 
-        let new_expiry = expiry(&instance, &name).await;
+        let new_expiry = expiry(&instance, &acc.name).await;
 
         assert_eq!(
             previous_expiry.0.value.unwrap() + EXTEND_DURATION,
@@ -37,7 +35,7 @@ mod success {
             log,
             vec![RegistrationExtendedEvent {
                 duration: EXTEND_DURATION,
-                name: string_to_ascii(&name),
+                name: string_to_ascii(&acc.name),
                 new_expiry: register_time + REGISTER_DURATION + EXTEND_DURATION
             }]
         );
@@ -47,27 +45,25 @@ mod success {
 mod revert {
     use crate::utils::{
         abi::{extend, register},
-        setup, EXTEND_DURATION, REGISTER_DURATION,
+        setup, EXTEND_DURATION, REGISTER_DURATION, Account
     };
-    use fuels::prelude::*;
 
     #[tokio::test]
     #[should_panic]
     async fn cant_extend_insufficient_payment() {
         let (instance, _id, wallet, _wallet2) = setup().await;
-        let wallet_identity = Identity::Address(Address::from(wallet.address()));
-        let name = String::from("SwaySway");
+        let acc = Account::new(wallet);
 
         register(
             &instance,
-            &name,
+            &acc.name,
             REGISTER_DURATION,
-            &wallet_identity,
-            &wallet_identity,
+            &acc.identity(),
+            &acc.identity(),
         )
         .await;
 
-        extend(&instance, &name, u64::MAX).await;
+        extend(&instance, &acc.name, u64::MAX).await;
     }
 
     #[tokio::test]

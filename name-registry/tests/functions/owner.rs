@@ -1,33 +1,32 @@
 mod success {
     use crate::utils::{
         abi::{owner, register, set_owner},
-        setup, REGISTER_DURATION,
+        setup, REGISTER_DURATION, Account
     };
     use fuels::prelude::*;
 
     #[tokio::test]
     async fn can_get_owner() {
         let (instance, _id, wallet, wallet2) = setup().await;
-        let wallet_identity = Identity::Address(Address::from(wallet.address()));
-        let name = String::from("SwaySway");
+        let acc1 = Account::new(wallet);
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
         register(
             &instance,
-            &name,
+            &acc1.name,
             REGISTER_DURATION,
-            &wallet_identity,
-            &wallet_identity,
+            &acc1.identity(),
+            &acc1.identity(),
         )
         .await;
 
-        let previous_owner = owner(&instance, &name).await;
+        let previous_owner = owner(&instance, &acc1.name).await;
 
-        assert_eq!(previous_owner.0.value.unwrap(), wallet_identity);
+        assert_eq!(previous_owner.0.value.unwrap(), acc1.identity());
 
-        set_owner(&instance, &name, wallet_identity2.clone()).await;
+        set_owner(&instance, &acc1.name, wallet_identity2.clone()).await;
 
-        let new_owner = owner(&instance, &name).await;
+        let new_owner = owner(&instance, &acc1.name).await;
 
         assert_eq!(new_owner.0.value.unwrap(), wallet_identity2);
     }

@@ -48,7 +48,7 @@ mod success {
 mod revert {
     use crate::utils::{
         abi::{register, set_owner},
-        setup, REGISTER_DURATION,
+        setup, REGISTER_DURATION, Account,
     };
     use fuels::prelude::*;
 
@@ -56,22 +56,21 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn cant_set_owner() {
         let (instance, _id, wallet, wallet2) = setup().await;
-        let wallet_identity = Identity::Address(Address::from(wallet.address()));
-        let name = String::from("SwaySway");
+        let acc1 = Account::new(wallet);
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
 
         register(
             &instance,
-            &name,
+            &acc1.name,
             REGISTER_DURATION,
-            &wallet_identity,
-            &wallet_identity,
+            &acc1.identity(),
+            &acc1.identity(),
         )
         .await;
 
         set_owner(
             &instance.with_wallet(wallet2).unwrap(),
-            &name,
+            &acc1.name,
             wallet_identity2.clone(),
         )
         .await;
