@@ -8,8 +8,15 @@ use fuels::{
         SecretKey,
     },
     tx::{
-        AssetId, Receipt, Transaction
+        AssetId, 
+        Bytes32,
+        Receipt, 
+        Transaction,
     },
+};
+use sha3::{
+    Digest, 
+    Keccak256
 };
 
 pub async fn test_recover_and_match_address_with_parameters(private_key: &str) {
@@ -44,16 +51,26 @@ pub async fn test_recover_and_match_address_with_parameters(private_key: &str) {
         .for_each(|wallet| wallet.set_provider(provider.clone()));
 
     //Create signature
-    let data_to_sign = "Data to sign";
+    let message = "Data to sign";
 
-    let signature1 = wallet.sign_message(data_to_sign).await.unwrap().to_vec();
+    let message_hash = Message::new(message);
+    
+    //EIP-191 format
+    let initial_byte= 0x19u8;
+    let version_byte= 0x45u8;
+    
+    let mut eip_191_data: Vec<u8> = vec![initial_byte, version_byte];
+    eip_191_data.append(&mut message_hash.to_vec());
 
-    let signed_message = Message::new(data_to_sign).to_vec();
+    let eip_191_formatted_message = keccak_hash(&eip_191_data);
+    
+    //Sign
+    let signature = wallet.sign_message(eip_191_formatted_message).await.unwrap();
 
     //prepare script and tx
     let script_data: Vec<u8> = [
-        signature1,
-        signed_message,
+        signature.to_vec(),
+        message_hash.to_vec(),
     ]
     .into_iter()
     .flatten()
@@ -64,13 +81,18 @@ pub async fn test_recover_and_match_address_with_parameters(private_key: &str) {
     //run script
     let receipts = run_compiled_script(path_to_bin, None, script_data).await.unwrap();
 
-    let return_value = receipts[0].val().unwrap();
+    // let return_value = receipts[0].val().unwrap();
 
     //Script returns bool
     //1 == true
     //0 == false
-    assert_eq!(1, return_value);
+    // assert_eq!(1, return_value);
+
+    //Check inputs to eip-191 hash, in Rust vs Sway
+    println!("Rust Script : {:?}", eip_191_data);
+    println!("Sway script : {:?}", receipts[0].data().unwrap());
 }
+
 
 //custom run_compiled_script; with input data
 pub async fn run_compiled_script(
@@ -89,6 +111,7 @@ pub async fn run_compiled_script(
     script.call(&provider).await
 }
 
+
 fn build_script(script_binary: Vec<u8>, script_data: Vec<u8>) -> Script {
     let tx_params = TxParameters::default();
     
@@ -103,3 +126,22 @@ fn build_script(script_binary: Vec<u8>, script_data: Vec<u8>) -> Script {
         vec![],
     ))
 }
+
+
+// A keccak-256 method
+fn keccak_hash<B>(data: B) -> Bytes32
+where
+    B: AsRef<[u8]>,
+{
+    // create a Keccak256 object
+    let mut hasher = Keccak256::new();
+    // write input message
+    hasher.update(data);
+    <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
+}
+
+
+/*
+[0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
+[25, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
+*/
