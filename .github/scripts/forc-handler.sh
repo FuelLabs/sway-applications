@@ -8,7 +8,7 @@ if [ $PROJECT = 'airdrop/airdrop-distributor' ]; then
     forc $COMMAND --path $PROJECT $FLAGS
     forc $COMMAND --path $PROJECT/../simple-asset/ $FLAGS
 elif [ $PROJECT = 'airdrop/simple-asset' ]; then
-    forc $COMMAND --path $PROJECT FLAGS
+    forc $COMMAND --path $PROJECT $FLAGS
 elif [ $PROJECT = 'auctions/english-auction' ]; then
     forc $COMMAND --path $PROJECT $FLAGS
     forc $COMMAND --path $PROJECT/tests/artifacts/asset $FLAGS
