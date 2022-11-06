@@ -75,15 +75,15 @@ async fn calculate_earned_tokens() {
 
 #[tokio::test]
 async fn claim_reward() {
-    let (staking_contract, _id, wallet, _wallet2, _inittimestamp) = setup().await;
+    let (staking_contract, _id, wallet, _wallet2, inittimestamp) = setup().await;
 
     let balance_before = get_balance(&wallet, REWARDS_ASSET).await;
 
-    let expected_reward_per_token: u64 =
-        ((TIMESTAMP - INITIAL_TIMESTAMP) * 42 * ONE) / INITIAL_STAKE;
-    let expected_reward = expected_reward_per_token * INITIAL_STAKE / ONE;
+    let receipts = get_reward(&staking_contract).await;
 
-    let _receipts = get_reward(&staking_contract).await;
+    let expected_reward_per_token: u64 =
+    ((receipts.1 - inittimestamp) * 42 * ONE) / INITIAL_STAKE;
+    let expected_reward = expected_reward_per_token * INITIAL_STAKE / ONE;
 
     let balance_after = get_balance(&wallet, REWARDS_ASSET).await;
     assert_eq!(balance_after - balance_before, expected_reward);
