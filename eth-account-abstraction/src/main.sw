@@ -57,7 +57,7 @@ fn main(signature: B512, message_hash: b256) -> ( u64, u64, u64, u64, u64) {
     let initial_byte= 0x19u8;
     let version_byte= 0x45u8;
 
-    let packed_bytes = compose(initial_byte, version_byte, 0 ,0);
+    let packed_bytes = compose((initial_byte, version_byte, 0 ,0));
 
     let encoded_data = encode_data(packed_bytes, message_hash);
 
@@ -82,6 +82,7 @@ fn pack_bytes(bytes_array: [u8; 8]) -> u64 {
 }
 */
 
+/*
 /// Build a single b256 value from 4 64 bit words.
 fn compose(word_1: u64, word_2: u64, word_3: u64, word_4: u64) -> b256 {
     let res: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
@@ -110,6 +111,17 @@ fn get_word_from_b256(val: b256, offset: u64) -> u64 {
         lw res r2 i0;
         res: u64
     }
+}
+*/
+
+/// Build a single b256 value from a tuple of 4 u64 values.
+pub fn compose(words: (u64, u64, u64, u64)) -> b256 {
+    asm(r1: __addr_of(words)) { r1: b256 }
+}
+
+/// Get a tuple of 4 u64 values from a single b256 value.
+pub fn decompose(val: b256) -> (u64, u64, u64, u64) {
+    asm(r1: __addr_of(val)) { r1: (u64, u64, u64, u64) }
 }
 
 /// Encode the packed_bytes and message_hash into a Vec<u64>
