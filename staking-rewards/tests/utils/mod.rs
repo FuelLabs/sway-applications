@@ -66,7 +66,7 @@ pub async fn setup() -> (
     let staking_contract = StakingRewards::new(id.to_string(), wallet.clone());
 
     // Seed the contract with some reward tokens
-    let seed_amount = 100_000 * ONE;
+    let seed_amount = 100_000_000 * ONE;
     let _receipt = wallet
         .force_transfer_to_contract(&id, seed_amount, REWARDS_ASSET, TxParameters::default())
         .await

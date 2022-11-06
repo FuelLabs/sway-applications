@@ -40,12 +40,12 @@ storage {
     }),
     rewards_duration: u64 = 1000,
     rewards_token: ContractId = ContractId {
-        value: 0x0202020202020202020202020202020202020202020202020202020202020202,
+        value: rewards_token_b256,
     },
     reward_rate: u64 = 42,
     reward_per_token_stored: u64 = 0,
     staking_token: ContractId = ContractId {
-        value: 0x0101010101010101010101010101010101010101010101010101010101010101,
+        value: staking_token_b256,
     },
     total_supply: u64 = 0,
     user_reward_per_token_paid: StorageMap<Identity, u64> = StorageMap {},

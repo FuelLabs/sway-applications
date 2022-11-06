@@ -56,12 +56,13 @@ async fn can_get_balance_of() {
 
 #[tokio::test]
 async fn calculate_earned_tokens() {
-    let (staking_contract, _id, wallet, _wallet2, _inittimestamp) = setup().await;
+    let (staking_contract, _id, wallet, _wallet2, inittimestamp) = setup().await;
 
+    
+    let reward_per_token = reward_per_token(&staking_contract).await;
     // Total accrued per token is time_elapsed * rate / total_supply
     let expected_reward_per_token: u64 =
-        ((TIMESTAMP - INITIAL_TIMESTAMP) * 42 * ONE) / INITIAL_STAKE;
-    let reward_per_token = reward_per_token(&staking_contract).await;
+        ((reward_per_token.1 - inittimestamp) * 42 * ONE) / INITIAL_STAKE;
 
     assert_eq!(reward_per_token.0.value, expected_reward_per_token);
 
@@ -132,7 +133,7 @@ async fn can_get_last_time_reward_applicable() {
     let (staking_contract, _id, _wallet, _wallet2, _inittimestamp) = setup().await;
 
     let period_finish = period_finish(&staking_contract).await;
-    let expected = std::cmp::min(TIMESTAMP, period_finish.0.value);
+    let expected = std::cmp::min(period_finish.1, period_finish.0.value);
     let actual = last_time_reward_applicable(&staking_contract).await;
 
     assert_eq!(actual.0.value, expected);
@@ -237,11 +238,16 @@ async fn can_get_reward() {
 
     assert_eq!(reward.0.value, 0);
 
-    notify_reward_amount(&staking_contract, 5000).await;
+    set_rewards_duration(&staking_contract, 1).await;
+    notify_reward_amount(&staking_contract, 1000).await;
 
+    std::thread::sleep(std::time::Duration::new(2, 0));
+
+    // to update the rewards
+    let _ = stake(&staking_contract, 1).await;
     let reward = rewards(&staking_contract, wallet_identity.clone()).await;
 
-    assert_eq!(reward.0.value, 5160);
+    assert_eq!(reward.0.value, 1000);
 }
 
 #[tokio::test]
