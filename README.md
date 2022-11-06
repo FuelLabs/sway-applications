@@ -9,8 +9,8 @@
     <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
         <img src="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml/badge.svg" />
     </a>
-    <a href="https://crates.io/crates/forc" alt="forc">
-        <img src="https://img.shields.io/crates/v/forc?color=orange&label=forc" />
+    <a href="https://crates.io/crates/forc/0.25.2" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.25.2-orange" />
     </a>
     <a href="./LICENSE" alt="forc">
         <img src="https://img.shields.io/github/license/FuelLabs/sway-applications" />
@@ -43,7 +43,6 @@ sway-applications/
 |    └── P-1 Directories & files
 ├── Project-2
 |    └── P-2 Directories & files
-├── CONTRIBUTING.md
 ├── LICENSE
 └── README.md
 ```
@@ -51,10 +50,11 @@ sway-applications/
 ### Projects
 
 - [Airdrop](./airdrop/) is a token distribution program where users are able to claim tokens given a valid merkle proof.
-- [Decentralized Autonomous Organization (DAO)](./dao-voting) is an organization where users get to vote on governance proposals using governance tokens
-- [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
-- [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal
-- [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
+- [Decentralized Autonomous Organization (DAO)](./dao-voting) is an organization where users get to vote on governance proposals using governance tokens.
+- [English Auction](./auctions/english-auction/) is an auction where users bid up the price of an asset until the bidding period has ended or a reserve has been met.
+- [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
+- [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal.
+- [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction.
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
 

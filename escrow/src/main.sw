@@ -1,6 +1,5 @@
 contract;
 
-// TODO: commented-out code is there because the SDK does not support Vec yet so an array is used
 // Our library dependencies
 dep data_structures;
 dep errors;
