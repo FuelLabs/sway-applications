@@ -12,9 +12,6 @@ use utils::{
 
 // Until timestamp supported in Sways of each action must be specified. Contract is deployed at t=0
 const INITIAL_STAKE: u64 = 10 * ONE;
-const INITIAL_TIMESTAMP: u64 = 0;
-
-const TIMESTAMP: u64 = 123;
 
 #[tokio::test]
 async fn constructed() {
@@ -91,19 +88,19 @@ async fn claim_reward() {
 
 #[tokio::test]
 async fn exit_with_reward() {
-    let (staking_contract, _id, wallet, _wallet2, _inittimestamp) = setup().await;
-
-    let expected_reward_per_token: u64 =
-        ((TIMESTAMP - INITIAL_TIMESTAMP) * 42 * ONE) / INITIAL_STAKE;
-    let expected_reward = expected_reward_per_token * INITIAL_STAKE / ONE;
+    let (staking_contract, _id, wallet, _wallet2, inittimestamp) = setup().await;
 
     let staking_balance_before = get_balance(&wallet, STAKING_ASSET).await;
     let rewards_balance_before = get_balance(&wallet, REWARDS_ASSET).await;
 
-    let _receipts = exit(&staking_contract).await;
+    let receipts = exit(&staking_contract).await;
 
     let staking_balance_after = get_balance(&wallet, STAKING_ASSET).await;
     let rewards_balance_after = get_balance(&wallet, REWARDS_ASSET).await;
+
+    let expected_reward_per_token: u64 =
+        ((receipts.1 - inittimestamp) * 42 * ONE) / INITIAL_STAKE;
+    let expected_reward = expected_reward_per_token * INITIAL_STAKE / ONE;
 
     assert_eq!(
         rewards_balance_after - rewards_balance_before,
@@ -158,7 +155,7 @@ async fn can_notify_reward_amount() {
     let rewardafter = get_reward_for_duration(&staking_contract).await;
 
     assert_eq!(rewardbefore.0.value, 42000);
-    assert_eq!(rewardafter.0.value, 41000);
+    assert_eq!(rewardafter.0.value, 5000);
 }
 
 #[tokio::test]
