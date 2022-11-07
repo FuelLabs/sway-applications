@@ -87,6 +87,13 @@ pub fn decompose(val: b256) -> (u64, u64, u64, u64) {
 }
 
 /// Encode the packed_bytes and message_hash into a Vec<u64>
+/*
+Bitshifts:
+[0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
+Into:
+[25, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239, 0, 0, 0, 0, 0, 0]
+
+*/
 fn encode_data(packed_bytes: b256, message_hash: b256) -> Vec<u64> {
     let mut data = Vec::with_capacity(5);
     let (bytes_1, bytes_2, _bytes_3, _bytes_4) = decompose(packed_bytes);
