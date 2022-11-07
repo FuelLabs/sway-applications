@@ -24,12 +24,14 @@ Limitations:
 
 As such, this mechanism is most useful for OTC trades and atomic swaps.
 
-# Repository Structure
-
+# Project Structure
+The project consists of a predicate written in Sway (`/src/main.sw`) and tests using fuels-rs (`/tests/`)
 
 # Running the project
+In order to run the tests make sure that you are in the root of this project.
 
+Build the predicate:  
+`forc build`
 
-# Contributing
-
-Check [CONTRIBUTING.md](../CONTRIBUTING.md) for more info!
+Run the tests:  
+`cargo test`
