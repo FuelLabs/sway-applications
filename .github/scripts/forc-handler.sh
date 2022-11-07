@@ -2,7 +2,8 @@
 
 PROJECT=$1
 COMMAND=$2
-FLAGS=$3
+FLAGS=${@:3}
+echo $FLAGS
 
 if [ $PROJECT = 'airdrop/airdrop-distributor' ]; then
     forc $COMMAND --path $PROJECT $FLAGS
@@ -15,7 +16,7 @@ elif [ $PROJECT = 'auctions/english-auction' ]; then
     forc $COMMAND --path $PROJECT/../../NFT/ $FLAGS
 elif [ $PROJECT = 'dao-voting' ]; then
     forc $COMMAND --path $PROJECT $FLAGS
-    forc  $COMMAND --path $PROJECT/tests/artifacts/gov_token $FLAGS
+    forc $COMMAND --path $PROJECT/tests/artifacts/gov_token $FLAGS
 elif [ $PROJECT = 'escrow' ]; then
     forc $COMMAND --path $PROJECT $FLAGS
     forc $COMMAND --path $PROJECT/tests/artifacts/asset $FLAGS
