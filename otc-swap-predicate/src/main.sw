@@ -25,7 +25,7 @@ const GTF_OUTPUT_COIN_ASSET_ID = 0x204;
 fn main() -> bool {
     // Order conditions: These are set in Forc.toml
     // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `receiver`
-    // TO DO : Conversion to ContractId and Address types will be unnecessary once
+    // Conversion to ContractId and Address types will be unnecessary once
     // https://github.com/FuelLabs/sway/issues/2647 is fixed
     let ask_token: ContractId = ContractId {
         value: ask_token_config,
@@ -50,7 +50,6 @@ fn main() -> bool {
     // The output which pays the receiver must be in the first position (output_index = 0)
     let output_index = 0;
 
-    // TO DO : Replace the following with std-lib functions when available
     // Revert if output is not an Output::Coin
     match output_type(output_index) {
         Output::Coin => (),
