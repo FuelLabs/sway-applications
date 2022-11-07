@@ -50,7 +50,7 @@ sway-applications/
 ### Projects
 
 - [Airdrop](./airdrop/) is a token distribution program where users are able to claim tokens given a valid merkle proof.
-- [Automated Market Maker (AMM)](./AMM/) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines asset prices algorithmically.
+- [Automated Market Maker (AMM)](./AMM/) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines prices algorithmically while exchanging assets.
 - [Decentralized Autonomous Organization (DAO)](./dao-voting) is an organization where users get to vote on governance proposals using governance tokens.
 - [English Auction](./auctions/english-auction/) is an auction where users bid up the price of an asset until the bidding period has ended or a reserve has been met.
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
