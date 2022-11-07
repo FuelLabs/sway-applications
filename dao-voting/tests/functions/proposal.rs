@@ -1,8 +1,9 @@
 use crate::utils::{
     abi_calls::{constructor, create_proposal, proposal},
     test_helpers::{proposal_transaction, setup},
-    Identity, ProposalInfo,
+    ProposalInfo,
 };
+use fuels::prelude::Identity;
 
 mod success {
     use super::*;
@@ -34,8 +35,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_invalid_proposal_id() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_invalid_proposal_id() {
         let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
         proposal(&user.dao_voting, 0).await;
     }

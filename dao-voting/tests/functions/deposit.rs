@@ -1,7 +1,7 @@
 use crate::utils::{
     abi_calls::{balance, constructor, deposit, user_balance},
     test_helpers::{mint, setup},
-    GovTokenBuilder,
+    GovToken,
 };
 use fuels::{
     prelude::{CallParameters, Contract, StorageConfiguration, TxParameters},
@@ -54,8 +54,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_when_not_initialized() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn when_not_initialized() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
         mint(
@@ -74,24 +74,23 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_with_incorrect_asset() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn with_incorrect_asset() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
         let another_asset_id = Contract::deploy_with_parameters(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            "./tests/artifacts/gov_token/out/debug/gov_token.bin",
             &deployer.wallet,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/asset/out/debug/gov_token-storage_slots.json".to_string(),
+                "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json".to_string(),
             )),
             Salt::from([1u8; 32]),
         )
         .await
         .unwrap();
 
-        let another_asset =
-            GovTokenBuilder::new(another_asset_id.to_string(), deployer.wallet.clone()).build();
+        let another_asset = GovToken::new(another_asset_id.to_string(), deployer.wallet.clone());
         let id: ContractId = another_asset_id.into();
 
         mint(&another_asset, asset_amount, user.wallet.address()).await;
@@ -104,8 +103,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
-    async fn panics_on_zero_deposit() {
+    #[should_panic(expected = "Revert(42)")]
+    async fn on_zero_deposit() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
         mint(

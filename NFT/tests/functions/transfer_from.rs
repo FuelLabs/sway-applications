@@ -3,9 +3,8 @@ use crate::utils::{
         approve, balance_of, constructor, mint, owner_of, set_approval_for_all, transfer_from,
     },
     test_helpers::setup,
-    Identity,
 };
-use fuels::signers::Signer;
+use fuels::{prelude::Identity, signers::Signer};
 
 mod success {
 
@@ -151,7 +150,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_token_does_not_exist() {
+    async fn when_token_does_not_exist() {
         let (_deploy_wallet, owner1, owner2) = setup().await;
 
         let from = Identity::Address(owner1.wallet.address().into());
@@ -161,7 +160,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_sender_is_not_owner_or_approved() {
+    async fn when_sender_is_not_owner_or_approved() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;

@@ -13,11 +13,6 @@ The off-chain asset can be anything the user desires. For example, some currency
 
 For this application, the on-chain asset can be any native asset on the Fuel Network and the transaction is considered to be between a buyer and a seller. At the moment, and for the foreseeable future, there is another party (the arbiter) in case there is a dispute that the buyer and seller cannot resolve amongst themselves. More information can be found in the [specification](./SPECIFICATION.md).
 
-### Current state of the application
-
-- The smart contract is deemed to be feature complete for now
-- The user interface does not currently exist but is a work in progress therefore there is nothing for the user to interact with
-
 ## Project Structure
 
 The project consists of a smart contract and a user interface which the user can interact with.
@@ -64,7 +59,3 @@ There are two commands required to run the tests
 The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the escrow.
 
 Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
-
-## Contributing
-
-Check [CONTRIBUTING.md](../CONTRIBUTING.md) for more info!

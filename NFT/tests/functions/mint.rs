@@ -1,9 +1,8 @@
 use crate::utils::{
     abi_calls::{balance_of, constructor, max_supply, mint, owner_of, total_supply},
     test_helpers::setup,
-    Identity,
 };
-use fuels::signers::Signer;
+use fuels::{prelude::Identity, signers::Signer};
 
 mod success {
 
@@ -123,7 +122,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_no_token_supply_set() {
+    async fn when_no_token_supply_set() {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
         let minter = Identity::Address(owner1.wallet.address().into());
@@ -132,7 +131,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_minting_more_tokens_than_supply() {
+    async fn when_minting_more_tokens_than_supply() {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
         // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
@@ -150,7 +149,7 @@ mod reverts {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
-    async fn panics_when_minter_does_not_have_access() {
+    async fn when_minter_does_not_have_access() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
         let minter = Identity::Address(owner2.wallet.address().into());

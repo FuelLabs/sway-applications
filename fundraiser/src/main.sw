@@ -32,68 +32,89 @@ storage {
     /// Direct look-up for asset data if the user wants to check via a known ID
     asset_info: StorageMap<ContractId,
     AssetInfo> = StorageMap {
-    }, /// O(1) look-up to allow searching via asset_count
+    },
+    
+    /// O(1) look-up to allow searching via asset_count
     /// Map(1...asset_count => asset)
     asset_index: StorageMap<u64,
     ContractId> = StorageMap {
-    }, /// The total number of unique campaigns that a user has created
+    },
+    
+    /// The total number of unique campaigns that a user has created
     /// This should only be incremented
     /// Cancelling / Claiming should not affect this number
     user_campaign_count: StorageMap<Identity,
     u64> = StorageMap {
-    }, /// Campaigns that have been created by a user
-
+    },
+    
+    /// Campaigns that have been created by a user
     /// Map(Identity => Map(1...user_campaign_count => Campaign)
     campaign_history: StorageMap<(Identity,
     u64), Campaign> = StorageMap {
-    }, /// Data describing the content of a campaign
+    },
+    
+    /// Data describing the content of a campaign
     /// Map(Campaign ID => CampaignInfo)
     campaign_info: StorageMap<u64,
     CampaignInfo> = StorageMap {
-    }, /// The total number of unique campaigns that a user has pledged to
+    },
+    
+    /// The total number of unique campaigns that a user has pledged to
     /// This should only be incremented.
     /// Unpledging should not affect this number
     pledge_count: StorageMap<Identity,
     u64> = StorageMap {
-    }, /// Record of how much a user has pledged to a specific campaign
+    },
+    
+    /// Record of how much a user has pledged to a specific campaign
     /// Locked after the deadline
     /// Map(Identity => Map(1...pledge_count => Pledge))
     pledge_history: StorageMap<(Identity,
     u64), Pledge> = StorageMap {
-    }, /// O(1) look-up to prevent iterating over pledge_history
+    },
+    
+    /// O(1) look-up to prevent iterating over pledge_history
     /// Map(Identity => Map(Campaign ID => Pledge History Index))
     pledge_history_index: StorageMap<(Identity,
     u64), u64> = StorageMap {
-    }, /// The number of campaigns created by all users
+    },
+    
+    /// The number of campaigns created by all users
     total_campaigns: u64 = 0,
 }
 
 impl Fundraiser for Contract {
-    #[storage(read)]fn asset_count() -> u64 {
+    #[storage(read)]
+    fn asset_count() -> u64 {
         storage.asset_count
     }
 
-    #[storage(read)]fn asset_info_by_id(asset: ContractId) -> AssetInfo {
+    #[storage(read)]
+    fn asset_info_by_id(asset: ContractId) -> AssetInfo {
         storage.asset_info.get(asset)
     }
 
-    #[storage(read)]fn asset_info_by_count(index: u64) -> AssetInfo {
+    #[storage(read)]
+    fn asset_info_by_count(index: u64) -> AssetInfo {
         storage.asset_info.get(storage.asset_index.get(index))
     }
 
-    #[storage(read)]fn campaign(id: u64, user: Identity) -> Campaign {
+    #[storage(read)]
+    fn campaign(id: u64, user: Identity) -> Campaign {
         // Validate the ID to ensure that the user has created the campaign
         validate_id(id, storage.user_campaign_count.get(user));
         storage.campaign_history.get((user, id))
     }
 
-    #[storage(read)]fn campaign_info(id: u64) -> CampaignInfo {
+    #[storage(read)]
+    fn campaign_info(id: u64) -> CampaignInfo {
         // User cannot interact with a non-existent campaign
         validate_id(id, storage.total_campaigns);
         storage.campaign_info.get(id)
     }
 
-    #[storage(read, write)]fn cancel_campaign(id: u64) {
+    #[storage(read, write)]
+    fn cancel_campaign(id: u64) {
         // User cannot interact with a non-existent campaign
         validate_id(id, storage.total_campaigns);
 
@@ -106,7 +127,7 @@ impl Fundraiser for Contract {
         // The campaign can only be cancelled before it has reached its deadline (ended)
         require(height() < campaign_info.deadline, CampaignError::CampaignEnded);
 
-        // User cannot a campaign that has already been cancelled
+        // User cannot cancel a campaign that has already been cancelled
         // Given the logic below this is unnecessary aside from ignoring event spam
         require(!campaign_info.cancelled, CampaignError::CampaignHasBeenCancelled);
 
@@ -122,7 +143,8 @@ impl Fundraiser for Contract {
         });
     }
 
-    #[storage(read, write)]fn claim_pledges(id: u64) {
+    #[storage(read, write)]
+    fn claim_pledges(id: u64) {
         // User cannot interact with a non-existent campaign
         validate_id(id, storage.total_campaigns);
 
@@ -160,7 +182,8 @@ impl Fundraiser for Contract {
         });
     }
 
-    #[storage(read, write)]fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64) {
+    #[storage(read, write)]
+    fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64) {
         // Users cannot interact with a campaign that has already ended (is in the past)
         require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
 
@@ -171,10 +194,14 @@ impl Fundraiser for Contract {
 
         // Create an internal representation of a campaign
         let campaign_info = CampaignInfo {
-            asset, author: user,
-            beneficiary, cancelled: false,
+            asset, 
+            author: user,
+            beneficiary, 
+            cancelled: false,
             claimed: false,
-            deadline, target_amount, total_pledge: 0,
+            deadline, 
+            target_amount, 
+            total_pledge: 0,
         };
 
         // Keep track of new assets
@@ -214,7 +241,8 @@ impl Fundraiser for Contract {
         });
     }
 
-    #[storage(read, write)]fn pledge(id: u64) {
+    #[storage(read, write)]
+    fn pledge(id: u64) {
         // User cannot interact with a non-existent campaign
         validate_id(id, storage.total_campaigns);
 
@@ -290,21 +318,25 @@ impl Fundraiser for Contract {
         });
     }
 
-    #[storage(read)]fn pledged(pledge_history_index: u64, user: Identity) -> Pledge {
+    #[storage(read)]
+    fn pledged(pledge_history_index: u64, user: Identity) -> Pledge {
         // Validate the ID to ensure that the user has pledged
         validate_id(pledge_history_index, storage.pledge_count.get(user));
         storage.pledge_history.get((user, pledge_history_index))
     }
 
-    #[storage(read)]fn pledge_count(user: Identity) -> u64 {
+    #[storage(read)]
+    fn pledge_count(user: Identity) -> u64 {
         storage.pledge_count.get(user)
     }
 
-    #[storage(read)]fn total_campaigns() -> u64 {
+    #[storage(read)]
+    fn total_campaigns() -> u64 {
         storage.total_campaigns
     }
 
-    #[storage(read, write)]fn unpledge(id: u64, amount: u64) {
+    #[storage(read, write)]
+    fn unpledge(id: u64, amount: u64) {
         // User cannot interact with a non-existent campaign
         validate_id(id, storage.total_campaigns);
 
@@ -364,7 +396,8 @@ impl Fundraiser for Contract {
         });
     }
 
-    #[storage(read)]fn user_campaign_count(user: Identity) -> u64 {
+    #[storage(read)]
+    fn user_campaign_count(user: Identity) -> u64 {
         storage.user_campaign_count.get(user)
     }
 }

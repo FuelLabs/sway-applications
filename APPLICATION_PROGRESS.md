@@ -36,29 +36,35 @@ The information in this section is split into subsections in order to conceptual
 <details>
 <summary>Airdrop</summary>
 
-<h3>Contracts</h3>
+<h3>Contracts ✅</h3>
+
+- Feature complete for UI integration
+  - Needs vec support in SDK so that array can be changed to vec
 
 <h3>User Interface</h3>
 
 <h3>Tests</h3>
 
-- <h3>Rust</h3>
+- <h3>Rust ❌</h3>
+
+  - Tests currently integrate manual hashing due to compatiability with [Fuel-Merkle](https://github.com/FuelLabs/fuel-merkle).
+
 - <h3>Typescript</h3>
 
-<h3>Documentation</h3>
+<h3>Documentation ✅</h3>
+
+- Readme ✅
+  - Once UI is added it needs to be documented
+- Specification ✅
 
 </details>
 
 ---
 
 <details>
-<summary>Auctions</summary>
+<summary>Blind Auction</summary>
 
 <h3>Contracts</h3>
-
-- Blind Auction
-- Dutch Auction
-- English Auction
 
 <h3>User Interface</h3>
 
@@ -108,12 +114,53 @@ The information in this section is split into subsections in order to conceptual
 ---
 
 <details>
+<summary>Dutch Auction</summary>
+
+<h3>Contracts</h3>
+
+<h3>User Interface</h3>
+
+<h3>Tests</h3>
+
+- <h3>Rust</h3>
+- <h3>Typescript</h3>
+
+<h3>Documentation</h3>
+
+</details>
+
+---
+
+<details>
+<summary>English Auction</summary>
+
+<h3>Contracts ❌</h3>
+
+  - Needs [support for StorageVec](https://github.com/FuelLabs/sway/issues/2465) in structs so that mutliple NFTs may be bid
+
+<h3>User Interface</h3>
+
+<h3>Tests</h3>
+
+- <h3>Rust ✅</h3>
+- <h3>Typescript</h3>
+
+<h3>Documentation</h3>
+
+- Readme ✅
+  - Once UI is added it needs to be documented
+- Specification ✅
+
+</details>
+
+---
+
+<details>
 <summary>Escrow</summary>
 
 <h3>Contracts ✅</h3>
 
 - Feature complete for UI integration
-  - Needs vec support in SDK so that array can be changed to vec
 - Needs some getters so that contracts can interact
 
 <h3>User Interface</h3>
@@ -123,14 +170,12 @@ The information in this section is split into subsections in order to conceptual
 - <h3>Rust ❌</h3>
 
   - SDK has block manipulation so tests can continue to be written
-  - Requires vec from SDK
 
 - <h3>Typescript</h3>
 
 <h3>Documentation ✅</h3>
 
 - Readme ❌
-  - Need to remove "current state of app" since this document covers that content
   - Once UI is added it needs to be documented
 - Specification ✅
 
@@ -179,13 +224,40 @@ The information in this section is split into subsections in order to conceptual
 
 <h3>Contracts ❌</h3>
 
-- Campaigns do not have any descriptions / titles / context
-  - Should probably use a vec to store data that a human can use to distinguish between campaigns
-  - Cannot search for campaigns aside from by a number from 0...X where X is known
+- Discovery of campaigns
+  - Cannot search for campaign aside from by a number from 0...X where X is known
+  - Campaigns do not have any descriptions / titles / context
+    - Should probably use a vec to store data that a human can use to distinguish between campaigns
 - No easy way to retrieve campaigns by user
   - Must iterate from 0...X where X is known by another function call
 
-<h3>User Interface</h3>
+<h3>User Interface ❌</h3>
+
+<h4>Author</h4>
+
+An author should be able to see a history of the campaigns that they have created
+
+- This should be categorized into currently active and completed campaigns
+- An active campaign is one that has not reached its deadline nor has been cancelled by the author
+- The author should see 
+  - When the campaign ends / time until the deadline
+  - Which campaigns have been cancelled / claimed
+  - The state of the campaign i.e. whether the campaign has succeeded in reaching its goal
+    - Pending state is when the deadline has not been reached
+    - Successful state is when the deadline is reached and the goal has been reached
+    - Failed state is when the deadline is reached and the goal has not been reached
+    - Cancelled state is when the author has cancelled the campaign
+  - The amount pledged by all users and how much is needed to reach the goal
+  - Who the beneficiary is
+  - Which asset the campaign accepts
+
+<h4>User</h4>
+
+A user should be able to see the campaigns that they have pledged towards
+
+- This includes the amount that they have pledged
+- The campaigns should be categorized into active and completed campaigns
+- Only the user should be able to see how much they have pledged
 
 <h3>Tests</h3>
 
@@ -195,13 +267,11 @@ The information in this section is split into subsections in order to conceptual
 
 - <h3>Typescript</h3>
 
-<h3>Documentation ❌</h3>
+<h3>Documentation ✅</h3>
 
-- Readme ❌
-  - Need to remove "current state of app" since this document covers that content
+- Readme ✅
   - Once UI is added it needs to be documented
-- Specification ❌
-  - Need to simplify to make it look like the Escrow / DAO spec
+- Specification ✅
 
 </details>
 
@@ -322,16 +392,23 @@ Will move from Apps repo to Libs repo soon
 <details>
 <summary>Oracle</summary>
 
-<h3>Contracts</h3>
+<h3>Contracts ❌</h3>
+
+- Needs a sway fix for using non-primitive types as configuration time constants to represent the owner variable appropriately.
 
 <h3>User Interface</h3>
 
+<h3>Oracle Node</h3>
+
 <h3>Tests</h3>
 
-- <h3>Rust</h3>
+- <h3>Rust ✅</h3>
 - <h3>Typescript</h3>
 
-<h3>Documentation</h3>
+<h3>Documentation ✅</h3>
+
+- Readme ✅
+- Specification ✅
 
 </details>
 

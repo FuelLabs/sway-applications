@@ -50,8 +50,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
-    pub async fn panics_on_invalid_proposal_id() {
+    #[should_panic(expected = "Revert(42)")]
+    pub async fn on_invalid_proposal_id() {
         let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
         user_votes(&user.dao_voting, user.wallet.address(), 0).await;
     }
