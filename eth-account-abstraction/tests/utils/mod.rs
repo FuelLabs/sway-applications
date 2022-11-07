@@ -6,6 +6,7 @@ use fuels::{
     signers::fuel_crypto::{
         Message,
         SecretKey,
+        Signature,
     },
     tx::{
         AssetId, 
@@ -19,7 +20,7 @@ use sha3::{
     Keccak256
 };
 
-pub async fn test_recover_and_match_address_with_parameters(private_key: &str) {
+pub async fn test_recover_and_match_address_with_parameters(private_key: &str, eip_191_format: bool) {
     //Setup wallets
     let secret_key1: SecretKey =
             private_key
@@ -54,19 +55,9 @@ pub async fn test_recover_and_match_address_with_parameters(private_key: &str) {
     let message = "Data to sign";
 
     let message_hash = Message::new(message);
-    
-    //EIP-191 format
-    let initial_byte= 0x19u8;
-    let version_byte= 0x45u8;
-    
-    let mut eip_191_data: Vec<u8> = vec![initial_byte, version_byte];
-    eip_191_data.append(&mut message_hash.to_vec());
 
-    let eip_191_formatted_message = keccak_hash(&eip_191_data);
-    
-    //Sign
-    let signature = wallet.sign_message(eip_191_formatted_message).await.unwrap();
-
+    let signature = format_and_sign(wallet, message_hash, eip_191_format).await;
+      
     //prepare script and tx
     let script_data: Vec<u8> = [
         signature.to_vec(),
@@ -81,16 +72,18 @@ pub async fn test_recover_and_match_address_with_parameters(private_key: &str) {
     //run script
     let receipts = run_compiled_script(path_to_bin, None, script_data).await.unwrap();
 
-    // let return_value = receipts[0].val().unwrap();
+    let return_value = receipts[0].val().unwrap();
 
     //Script returns bool
+    println!("Sway script : {:?}", receipts[0]);
     //1 == true
     //0 == false
-    // assert_eq!(1, return_value);
+    assert_eq!(1, return_value);
+
 
     //Check inputs to eip-191 hash, in Rust vs Sway
-    println!("Rust Script : {:?}", eip_191_data);
-    println!("Sway script : {:?}", receipts[0].data().unwrap());
+    // println!("Rust Script : {:?}", eip_191_data);
+    // println!("Sway script : {:?}", receipts[0].data().unwrap());
 }
 
 
@@ -140,8 +133,26 @@ where
     <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
 }
 
-
-/*
-[0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
-[25, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
-*/
+async fn format_and_sign(wallet: WalletUnlocked, message_hash: Message, eip_191_format: bool) -> Signature {
+    if eip_191_format {
+        //EIP-191 format
+        /*
+        let initial_byte= 0x19u8;
+        let version_byte= 0x45u8;
+        
+        let mut eip_191_data: Vec<u8> = vec![initial_byte, version_byte];
+        eip_191_data.append(&mut message_hash.to_vec());
+        */
+        //TODO: replace with correct, unpadded `eip_191_data` from above
+        //once padding in Sway is resolved
+        let eip_191_data: Vec<u8> = vec![0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239];
+    
+        let eip_191_formatted_message = keccak_hash(&eip_191_data);
+        
+        //Sign
+        wallet.sign_message(eip_191_formatted_message).await.unwrap()
+    } else {
+        //Sign
+        wallet.sign_message(message_hash).await.unwrap()
+    }
+}

@@ -5,12 +5,17 @@ const INVALID_SIGNER_PK: &str = "37fa81c84ccd547c30c176b118d5cb892bdb113e8e80141
 
 #[tokio::test]
 async fn valid_signer() {
-    utils::test_recover_and_match_address_with_parameters(VALID_SIGNER_PK).await;
+    utils::test_recover_and_match_address_with_parameters(VALID_SIGNER_PK, true).await;
 }
 
-#[ignore]
 #[tokio::test]
 #[should_panic]
 async fn invalid_signer() {
-    utils::test_recover_and_match_address_with_parameters(INVALID_SIGNER_PK).await;
+    utils::test_recover_and_match_address_with_parameters(INVALID_SIGNER_PK, true).await;
+}
+
+#[tokio::test]
+#[should_panic]
+async fn not_eip_191_formatted() {
+    utils::test_recover_and_match_address_with_parameters(VALID_SIGNER_PK, false).await;
 }

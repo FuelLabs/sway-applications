@@ -15,10 +15,13 @@ use std::{
     },
 };
 
-/*
+
 // Recover the EVM address from the input signature and check if it matched 
 // the target address
-fn main(signature: B512, message_hash: b256) -> (u8, u8, b256) {
+fn main(signature: B512, message_hash: b256) -> 
+    //(u8, u8, b256) 
+    bool
+    {
     //EIP 191 format
     let eip_191_formatted_message = eip_191_format(message_hash);
 
@@ -34,6 +37,12 @@ fn main(signature: B512, message_hash: b256) -> (u8, u8, b256) {
     require(evm_address_result.is_ok(),"ec recover evm address failed");
     let evm_address = evm_address_result.unwrap();
 
+    
+    evm_address == target_address
+    
+
+    /*
+    //
     //Check inputs to hash, within eip_191_format
     let initial_byte= 0x19u8;
     let version_byte= 0x45u8;
@@ -42,18 +51,15 @@ fn main(signature: B512, message_hash: b256) -> (u8, u8, b256) {
         version_byte,
         message_hash
     );
+    */
 }
-*/
 
 /*
-Data passed into Keccak hash in eip-191 formmatting
-In rust, with Vec<u8>
-[25, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
-In sway, with (u8,u8.b256). u8s are padded to u64.
-[0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
+Rust Script : [25, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
+Sway script : [0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
 */
 
-fn main(signature: B512, message_hash: b256) -> ( u64, u64, u64, u64, u64) {
+fn bitshift_compare(signature: B512, message_hash: b256) -> ( u64, u64, u64, u64, u64) {
     let initial_byte= 0x19u8;
     let version_byte= 0x45u8;
 
@@ -69,50 +75,6 @@ fn main(signature: B512, message_hash: b256) -> ( u64, u64, u64, u64, u64) {
         encoded_data.get(4).unwrap(),
     );
 }
-
-/*
-fn pack_bytes(bytes_array: [u8; 8]) -> u64 {
-    let mut packed: u64 = 0;
-    let mut i = 1;
-    while i < 9 {
-        packed = packed + (bytes_array[i - 1] << (64 - (i * 8)));
-        i += 1;
-    };
-    packed
-}
-*/
-
-/*
-/// Build a single b256 value from 4 64 bit words.
-fn compose(word_1: u64, word_2: u64, word_3: u64, word_4: u64) -> b256 {
-    let res: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
-    asm(w1: word_1, w2: word_2, w3: word_3, w4: word_4, result: res) {
-        sw result w1 i0;
-        sw result w2 i1;
-        sw result w3 i2;
-        sw result w4 i3;
-        result: b256
-    }
-}
-
-/// Get 4 64 bit words from a single b256 value.
-fn decompose(val: b256) -> (u64, u64, u64, u64) {
-    let w1 = get_word_from_b256(val, 0);
-    let w2 = get_word_from_b256(val, 8);
-    let w3 = get_word_from_b256(val, 16);
-    let w4 = get_word_from_b256(val, 24);
-    (w1, w2, w3, w4)
-}
-
-/// Extract a single 64 bit word from a b256 value using the specified offset.
-fn get_word_from_b256(val: b256, offset: u64) -> u64 {
-    asm(r1: val, offset: offset, r2, res) {
-        add r2 r1 offset;
-        lw res r2 i0;
-        res: u64
-    }
-}
-*/
 
 /// Build a single b256 value from a tuple of 4 u64 values.
 pub fn compose(words: (u64, u64, u64, u64)) -> b256 {

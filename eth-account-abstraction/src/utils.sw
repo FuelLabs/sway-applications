@@ -34,10 +34,11 @@ pub fn eip_191_format(
     ))
 }
 
+/*
 //Recovers an EVM address from a signature over signed_data that was:
 //EIP-191 compliant, 
 //and received an Ethereum signed message prefix.
-pub fn ec_recover_evm_address (signature: B512, msg_hash: b256) -> Result<EvmAddress, EcRecoverError> {
+pub fn ecr_evm_address (signature: B512, msg_hash: b256) -> Result<EvmAddress, EcRecoverError> {
     let tx_hash = eip_191_format(msg_hash);
     let tx_hash = eth_prefix(tx_hash);
 
@@ -54,3 +55,4 @@ pub fn ec_recover_evm_address (signature: B512, msg_hash: b256) -> Result<EvmAdd
         }
     }
 }
+*/
