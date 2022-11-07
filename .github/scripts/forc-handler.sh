@@ -2,6 +2,7 @@
 
 PROJECT=$1
 COMMAND=$2
+echo $@
 FLAGS="${@:3}"
 
 if [ $PROJECT = 'airdrop/airdrop-distributor' ]; then
