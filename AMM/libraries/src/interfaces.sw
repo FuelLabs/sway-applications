@@ -86,6 +86,7 @@ abi Exchange {
     fn deposit();
 
     /// Get the preview info of a `swap_with_exact_input`.
+    ///
     /// The preview info while swapping `exact_input` of input asset consists of:
     /// - The minimum amount of output asset to receive,
     /// - Whether the output asset reserves are sufficient for the swap or not.
@@ -101,6 +102,7 @@ abi Exchange {
     fn preview_swap_with_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo;
 
     /// Get the preview info of a `swap_with_exact_output`.
+    ///
     /// The preview info while swapping to get `exact_output` amount of output asset consists of:
     /// - The maximum amount of input asset to forward,
     /// - Whether the input asset reserves are sufficient for the swap or not.
@@ -156,6 +158,7 @@ abi Exchange {
     fn swap_with_exact_input(min_output: Option<u64>, deadline: u64) -> u64;
 
     /// Swap forwarded asset for `exact_output_amount` of other asset and transfer to sender.
+    ///
     /// Refund any extra input amount.
     ///
     /// # Arguments
@@ -202,6 +205,7 @@ abi Exchange {
     fn balance(asset: ContractId) -> u64;
 
     /// Get the pool info of the exchange contract.
+    ///
     /// The pool info consists of:
     /// - Identifier of asset A,
     /// - Identifier of asset B,
@@ -216,6 +220,7 @@ abi Exchange {
     fn pool_info() -> PoolInfo;
 
     /// Get the preview info of adding liquidity.
+    ///
     /// The preview info consists of:
     /// - Other asset amount to input for desired liquidity,
     /// - Liquidity pool asset amount to be received.
