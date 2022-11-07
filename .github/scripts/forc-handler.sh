@@ -24,7 +24,7 @@ elif [ $PROJECT = 'fundraiser' ]; then
     forc $COMMAND --path $PROJECT/tests/artifacts/asset $FLAGS
 elif [ $PROJECT = 'multisig-wallet' ]; then
     forc $COMMAND --path $PROJECT $FLAGS
-elif [ $PROJECT = 'namae-registry' ]; then
+elif [ $PROJECT = 'name-registry' ]; then
     forc $COMMAND --path $PROJECT $FLAGS
 elif [ $PROJECT = 'NFT' ]; then
     forc $COMMAND --path $PROJECT $FLAGS
