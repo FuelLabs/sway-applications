@@ -7,22 +7,23 @@
 
 ## Overview
 
-An *automated market maker (AMM)* is a type of decentralized exchange protocol that determines asset prices algorithmically through a conservation function. Trades on an AMM take place between the user and the contract, rather than between two users. The liquidity pool of assets in an AMM is supplied by the users. Providing liquidity is incentivized via liquidity miner rewards. This application allows users to deposit assets that can be used to add liquidity or be withdrawn without adding liquidity, adding and removing liquidity and swapping assets.
+An *automated market maker (AMM)* is a type of decentralized exchange protocol that determines asset prices algorithmically through a conservation function. Trades on an AMM take place between the user and the contract, rather than between two users. The liquidity pool of assets in an AMM is supplied by the users. Providing liquidity is incentivized via liquidity miner rewards. 
 
-This application contains an AMM contract that has: 
-- Liquidity pools of two assets each,
-- The conservation function $price_{asset\ A} * price_{asset\ B} = total\ liquidity$, which means that swap operations keep the total liquidity constant,
-- Liquidity miner fee of $\frac1{333} \approx 3\%$.
+This application supports:
+- Depositing assets that can be
+    - Used to add liquidity
+    - Withdrawn without adding liquidity
+- Adding liquidity
+- Removing liquidity
+- Swapping assets
 
-    > **NOTE** This fee can be modified as desired per asset pair.
+The AMM and exchange contracts in this application is designed so that:
+- Liquidity pools consist of two assets each
+- The conservation function used to keep the total liquidity at a constant ratio when exchanging assets is
+    - $price_{asset\ A} * price_{asset\ B} = total\ liquidity$
+- Liquidity miner fee is $\frac1{333} \approx 3\%$
 
-### Current state of the application
-
-User interface is to be added.
-
-Functionality of this application is being enhanced with two Sway scripts (in progress) that allows:
-1) Swapping assets along a route,
-2) Depositing and adding liquidity atomically.
+	> **NOTE** The miner fee can be modified per asset pair
 
 ## Project Structure
 
@@ -36,7 +37,7 @@ AMM/
 |         ├── src/main.sw
 |         └── tests/harness.rs
 ├── libraries/
-|    └── src/interfaces.sw
+|    └── src/interface.sw
 └── README.md
 └── SPECIFICATION.md
 ```
@@ -49,31 +50,36 @@ TODO: UI is to be added.
 
 ### Tests
 
-To run the tests for either contract, you should first build the libraries if you have not already built the contracts. 
+To run the tests for either contract, firstly make sure that you are in the root of this application, i.e., `/path/to/AMM/<you are here>`.
 
-For this, make sure that you are in the root of this project, i.e., `/path/to/AMM/<you are here>`.
-
-Build the `libraries` project:
-```bash
-forc build --path libraries/
-```
-
-- In order to run the AMM contract tests, move to the root of the AMM contract, i.e., `/path/to/AMM/contracts/AMM/<you are here>`. Make sure that you have built the contract using the command `forc build`.
-
-    1. Build the contract used for testing against malicious implementations of the exchange contract:
+- In order to run the AMM contract tests, change directory to the root of the AMM contract project, i.e., `/path/to/AMM/contracts/AMM/<you are here>`:
+    ```bash
+    cd contracts/AMM
+    ```
+    1. Build the AMM contract:
+        ```bash
+        forc build
+        ```
+    2. Build the contract used for testing against malicious implementations of the exchange contract:
         ```bash
         forc build --path ../exchange/tests/artifacts/malicious_implementation/
+        ```
+    3. Run the tests:
+        ```bash
+        cargo test
+        ```
+- In order to run the exchange contract tests, change directory to the root of the exchange contract project, i.e., `/path/to/AMM/contracts/exchange/<you are here>` from the root of the AMM contract project:
+    ```bash
+    cd ../contracts/exchange
+    ```
+    1. Build the exchange contract:
+        ```bash
+        forc build
         ```
     2. Run the tests:
         ```bash
         cargo test
         ```
-- In order to run the exchange contract tests, move to the root of the exchange contract, i.e., `/path/to/AMM/contracts/exchange/<you are here>`. Make sure that you have built the contract using the command `forc build`. 
-
-    Run the tests:
-    ```bash
-    cargo test
-    ```
 
 ## Specification
 
