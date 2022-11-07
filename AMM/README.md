@@ -66,13 +66,13 @@ forc build --path libraries/
         ```
     2. Run the tests:
         ```bash
-        forc test
+        cargo test
         ```
 - In order to run the exchange contract tests, move to the root of the exchange contract, i.e., `/path/to/AMM/contracts/exchange/<you are here>`. Make sure that you have built the contract using the command `forc build`. 
 
     Run the tests:
     ```bash
-    forc test
+    cargo test
     ```
 
 ## Specification
