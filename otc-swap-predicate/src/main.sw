@@ -1,20 +1,16 @@
 predicate;
 
 use std::{
-    address::Address,
-    contract_id::ContractId,
     inputs::{
         input_count,
         input_owner,
     },
-    option::Option,
     outputs::{
         Output,
         output_amount,
         output_pointer,
         output_type,
     },
-    revert::revert,
 };
 
 // TO DO : Remove once __gtf getters implemented in std-lib
