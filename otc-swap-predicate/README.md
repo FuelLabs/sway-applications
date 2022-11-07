@@ -1,3 +1,10 @@
+<p align="center">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/otc-swap-predicate-logo-dark-theme.png">
+        <img alt="escrow logo" width="400px" src=".docs/otc-swap-predicate-logo-light-theme.png">
+    </picture>
+</p>
+
 # Overview
 
 ## Predicates in Fuel
