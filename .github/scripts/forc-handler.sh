@@ -2,7 +2,7 @@
 
 PROJECT=$1
 COMMAND=$2
-FLAGS=${@:3}
+FLAGS="${@:3}"
 
 if [ $PROJECT = 'airdrop/airdrop-distributor' ]; then
     forc $COMMAND --path $PROJECT $FLAGS
