@@ -23,6 +23,7 @@ use std::{
     storage::StorageMap,
 };
 
+// TODO: Replace the B256 config-time constant with a ContractId when possible
 const ASSET_ID = ~ContractId::from(ASSET_B256);
 
 storage {
