@@ -343,7 +343,7 @@ A user should be able to see the campaigns that they have pledged towards
 <h3>User Interface ❌</h3>
   - UI does not exist
 
-<h3>Tests ✅</h3>
+<h3>Tests</h3>
 
 - <h3>Rust ✅</h3>
 - <h3>Typescript ❌</h3>
