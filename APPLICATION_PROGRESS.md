@@ -346,8 +346,7 @@ A user should be able to see the campaigns that they have pledged towards
 <h3>Tests</h3>
 
 - <h3>Rust ✅</h3>
-- <h3>Typescript ❌</h3>
-  - Tests are only in Rust
+- <h3>Typescript</h3>
 
 <h3>Documentation ✅</h3>
 
