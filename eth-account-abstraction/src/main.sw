@@ -4,6 +4,7 @@ dep utils;
 
 use utils::{
     eip_191_format,
+    eth_prefix,
 };
 
 use std::{
@@ -15,18 +16,17 @@ use std::{
     },
 };
 
-
 // Recover the EVM address from the input signature and check if it matched 
 // the target address
-fn main(signature: B512, message_hash: b256) -> 
-    //(u8, u8, b256) 
-    bool
-    {
+fn main(signature: B512, message_hash: b256) -> bool {
     //EIP 191 format
     let eip_191_formatted_message = eip_191_format(message_hash);
 
-    //Sha hash
-    let recovery_message = sha256(eip_191_formatted_message);
+    //Eth-prefix
+    let eth_prefixed_message = eth_prefix(eip_191_formatted_message);
+
+    //Sha hash, to mimic SDK WalletUnlocked.sign_message inner hash
+    let recovery_message = sha256(eth_prefixed_message);
 
     let target_address = EvmAddress::from(
         0x44c646ac0426710470343f1cdb4aa29ef306fc8d28025b838ccd3feecaedb333
@@ -39,25 +39,8 @@ fn main(signature: B512, message_hash: b256) ->
 
     
     evm_address == target_address
-    
-
-    /*
-    //
-    //Check inputs to hash, within eip_191_format
-    let initial_byte= 0x19u8;
-    let version_byte= 0x45u8;
-    return (
-        initial_byte,
-        version_byte,
-        message_hash
-    );
-    */
 }
 
-/*
-Rust Script : [25, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
-Sway script : [0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
-*/
 
 fn bitshift_compare(signature: B512, message_hash: b256) -> ( u64, u64, u64, u64, u64) {
     let initial_byte= 0x19u8;
@@ -92,6 +75,8 @@ Bitshifts:
 [0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
 Into:
 [25, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239, 0, 0, 0, 0, 0, 0]
+Target:
+[25, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
 
 */
 fn encode_data(packed_bytes: b256, message_hash: b256) -> Vec<u64> {
@@ -123,8 +108,3 @@ fn encode_data(packed_bytes: b256, message_hash: b256) -> Vec<u64> {
 
     data
 }
-
-/*
-Rust Script : [25, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239]
-Sway script : [25, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239, 0, 0, 0, 0, 0, 0]
-*/
