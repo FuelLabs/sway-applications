@@ -21,11 +21,12 @@ fn main(
     let exchange_contract_id = amm_contract.pool(asset_pair_0);
     require(exchange_contract_id.is_some(), SwapError::PairExchangeNotRegistered(asset_pair_0));
     let exchange_contract = abi(Exchange, exchange_contract_id.unwrap().into());
+    let minimum_output: Option<u64> = Option::None();
     let mut output_amount = exchange_contract.swap_with_exact_input {
         gas: 10_000_000,
         coins: input_amount,
         asset_id: asset_0_id.into(),
-    }(Option::None(), 1000);
+    }(minimum_output, 1000);
     let asset_pair_1 = (asset_1_id, asset_2_id);
     let exchange_contract_id = amm_contract.pool(asset_pair_1);
     require(exchange_contract_id.is_some(), SwapError::PairExchangeNotRegistered(asset_pair_1));
@@ -34,6 +35,6 @@ fn main(
         gas: 10_000_000,
         coins: output_amount,
         asset_id: asset_1_id.into(),
-    }(Option::None(), 1000);
+    }(minimum_output, 1000);
     output_amount
 }

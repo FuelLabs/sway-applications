@@ -6,7 +6,7 @@ name = "swap_with_exact_input_along_route"
 version = "0.0.0"
 
 [dependencies]
-fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", branch = "iqdecay/feat-script-main-args", features = ["fuel-core-lib"] }
+fuels = { version = "0.30", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]
