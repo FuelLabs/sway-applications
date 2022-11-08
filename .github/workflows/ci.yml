@@ -15,7 +15,7 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   RUST_VERSION: 1.63.0
-  FORC_VERSION: 0.25.2
+  FORC_VERSION: 0.26.0
   CORE_VERSION: 0.10.1
   PATH_TO_SCRIPTS: .github/scripts
 
@@ -40,7 +40,7 @@ jobs:
 
     strategy:
       matrix:
-        project: ["airdrop/airdrop-distributor", "airdrop/simple-asset", "auctions/english-auction", "dao-voting", "escrow", "fundraiser", "multisig-wallet", "NFT", "oracle"]
+        project: ["airdrop/airdrop-distributor", "airdrop/simple-asset", "auctions/english-auction", "dao-voting", "escrow", "fundraiser", "multisig-wallet", "name-registry", "NFT", "oracle"]
 
     steps:
       - name: Checkout repository
@@ -65,7 +65,6 @@ jobs:
           echo "[target.x86_64-unknown-linux-gnu]" > ~/.cargo/config.toml
           echo 'linker = "clang"' >> ~/.cargo/config.toml
           echo 'rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/mold"]' >> ~/.cargo/config.toml
-
       - name: Install rustfmt
         run: rustup component add rustfmt
 
@@ -76,15 +75,14 @@ jobs:
           components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
 
       - name: Check Sway formatting
-        run: sh ${{ env.PATH_TO_SCRIPTS }}/sway_format.sh ${{ matrix.project }}
+        run: sh ${{ env.PATH_TO_SCRIPTS }}/forc-handler.sh ${{ matrix.project }} fmt --check
 
       - name: Check Rust formatting
         run: |
           cd ${{ matrix.project }}
           cargo fmt --verbose --check
-
       - name: Build Sway
-        run: sh ${{ env.PATH_TO_SCRIPTS }}/build.sh ${{ matrix.project }}
+        run: sh ${{ env.PATH_TO_SCRIPTS }}/forc-handler.sh ${{ matrix.project }} build
 
       - name: Run Forc tests
         run: |
@@ -125,7 +123,6 @@ jobs:
           echo "[target.x86_64-unknown-linux-gnu]" > ~/.cargo/config.toml
           echo 'linker = "clang"' >> ~/.cargo/config.toml
           echo 'rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/mold"]' >> ~/.cargo/config.toml
-
       - name: Install rustfmt
         run: rustup component add rustfmt
 
