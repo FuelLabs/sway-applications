@@ -30,6 +30,8 @@ elif [ $PROJECT = 'NFT' ]; then
     forc $COMMAND --path $PROJECT $FLAG
 elif [ $PROJECT = 'oracle' ]; then
     forc $COMMAND --path $PROJECT/packages/contract $FLAG
+elif [ $PROJECT = 'otc-swap-predicate' ]; then
+    forc $COMMAND --path $PROJECT $FLAG
 else
     echo "project name did not match"
     exit 1

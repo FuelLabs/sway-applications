@@ -58,6 +58,7 @@ sway-applications/
 - [Name-Registry](./name-registry/) allows users to perform transactions with human readable names instead of addresses
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
+- [OTC Swap Predicate](./otc-swap-predicate) is a predicate that can be used to propose and execute an atomic swap between two parties without requiring any on-chain state.
 
 To see an overview of the progress, and plans, for applications take a look at [APPLICATION_PROGRESS.md](./APPLICATION_PROGRESS.md).
 
