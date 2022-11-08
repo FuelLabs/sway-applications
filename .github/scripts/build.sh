@@ -8,10 +8,13 @@ if [ $PROJECT = 'airdrop/airdrop-distributor' ]; then
 elif [ $PROJECT = 'airdrop/simple-asset' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'AMM/contracts/AMM' ]; then
+    forc fmt --path $PROJECT/../../libraries/ --check
+    forc fmt --path $PROJECT/../exchange/tests/artifacts/malicious_implementation/ --check
     forc build --path $PROJECT/../exchange/
     forc build --path $PROJECT/../exchange/tests/artifacts/malicious_implementation/
     forc build --path $PROJECT
 elif [ $PROJECT = 'AMM/contracts/exchange' ]; then
+    forc fmt --path $PROJECT/../../libraries/ --check
     forc build --path $PROJECT
 elif [ $PROJECT = 'auctions/english-auction' ]; then
     forc build --path $PROJECT
@@ -27,6 +30,8 @@ elif [ $PROJECT = 'fundraiser' ]; then
     forc build --path $PROJECT
     forc build --path $PROJECT/tests/artifacts/asset
 elif [ $PROJECT = 'multisig-wallet' ]; then
+    forc build --path $PROJECT
+elif [ $PROJECT = 'name-registry' ]; then
     forc build --path $PROJECT
 elif [ $PROJECT = 'NFT' ]; then
     forc build --path $PROJECT

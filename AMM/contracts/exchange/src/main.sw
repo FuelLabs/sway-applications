@@ -127,10 +127,12 @@ impl Exchange for Contract {
 
             // transfer remaining deposit amounts back to the sender
             let refund_a = asset_a_in_deposit - added_a;
+            let refund_b = asset_b_in_deposit - added_b;
+
             if refund_a > 0 {
                 transfer(refund_a, asset_a_id, sender);
             }
-            let refund_b = asset_b_in_deposit - added_b;
+
             if refund_b > 0 {
                 transfer(refund_b, asset_b_id, sender);
             }
@@ -138,11 +140,13 @@ impl Exchange for Contract {
 
         storage.deposits.insert((sender, asset_a_id), 0);
         storage.deposits.insert((sender, asset_b_id), 0);
+
         log(AddLiquidityEvent {
             asset_a: added_a,
             asset_b: added_b,
             liquidity: added_liquidity,
         });
+
         added_liquidity
     }
 
@@ -167,6 +171,7 @@ impl Exchange for Contract {
         let amount = msg_amount();
         let new_deposit_amount = storage.deposits.get((sender, deposit_asset)) + amount;
         storage.deposits.insert((sender, deposit_asset), new_deposit_amount);
+
         log(DepositEvent {
             asset: deposit_asset,
             amount,
@@ -191,6 +196,7 @@ impl Exchange for Contract {
         let output_asset_in_reserve = storage.reserves.get(output_asset);
         let min_output = get_minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
         let sufficient_reserve = min_output <= output_asset_in_reserve;
+
         PreviewSwapInfo {
             amount: min_output,
             sufficient_reserve,
@@ -215,6 +221,7 @@ impl Exchange for Contract {
         require(exact_output <= output_asset_in_reserve, TransactionError::DesiredAmountTooHigh(exact_output));
         let max_input = get_maximum_input_for_exact_output(exact_output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
         let sufficient_reserve = exact_output <= output_asset_in_reserve;
+
         PreviewSwapInfo {
             amount: max_input,
             sufficient_reserve,
@@ -253,11 +260,13 @@ impl Exchange for Contract {
         storage.reserves.insert(asset_a_id, asset_a_in_reserve - asset_a_amount_to_remove);
         transfer(asset_a_amount_to_remove, asset_a_id, sender);
         transfer(asset_b_amount_to_remove, asset_b_id, sender);
+
         log(RemoveLiquidityEvent {
             amount_a: asset_a_amount_to_remove,
             amount_b: asset_b_amount_to_remove,
             liquidity: amount,
         });
+
         RemoveLiquidityInfo {
             asset_a_amount: asset_a_amount_to_remove,
             asset_b_amount: asset_b_amount_to_remove,
@@ -294,12 +303,14 @@ impl Exchange for Contract {
         transfer(bought, output_asset, sender);
         storage.reserves.insert(input_asset, input_asset_in_reserve + exact_input);
         storage.reserves.insert(output_asset, output_asset_in_reserve - bought);
+
         log(SwapEvent {
             input: input_asset,
             output: output_asset,
             sold: exact_input,
             bought,
         });
+
         bought
     }
 
@@ -339,12 +350,14 @@ impl Exchange for Contract {
         transfer(output, output_asset, sender);
         storage.reserves.insert(input_asset, input_asset_in_reserve + sold);
         storage.reserves.insert(output_asset, output_asset_in_reserve - output);
+
         log(SwapEvent {
             input: input_asset,
             output: output_asset,
             sold,
             bought: output,
         });
+
         sold
     }
 
@@ -364,6 +377,7 @@ impl Exchange for Contract {
         let new_amount = deposited_amount - amount;
         storage.deposits.insert((sender, asset), new_amount);
         transfer(amount, asset, sender);
+
         log(WithdrawEvent {
             asset,
             amount,
@@ -385,6 +399,7 @@ impl Exchange for Contract {
         require(storage.pair.is_some(), InitError::NotInitialized);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
+
         PoolInfo {
             asset_a: asset_a_id,
             asset_b: asset_b_id,
@@ -424,6 +439,7 @@ impl Exchange for Contract {
             let added_b = multiply_div(asset_a_in_deposit, asset_b_in_reserve, asset_a_in_reserve);
             liquidity_to_add = multiply_div(added_b, total_liquidity, asset_b_in_reserve);
         }
+
         PreviewAddLiquidityInfo {
             other_asset_amount_to_add: if asset == asset_a_id {
                 added_b

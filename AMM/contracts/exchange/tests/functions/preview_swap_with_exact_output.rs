@@ -1,40 +1,27 @@
 use crate::utils::{
     abi_calls::preview_swap_with_exact_output,
-    test_helpers::{deposit_and_add_liquidity, setup, setup_and_initialize},
+    test_helpers::{setup, setup_initialize_deposit_and_add_liquidity},
 };
-use fuels::prelude::*;
 
 mod success {
     use super::*;
 
     #[tokio::test]
     async fn previews_partial_swap_of_a() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let output_amount = 10;
+
         // hardcoded calculation for liquidity miner fee of 333
-        let expected_max_input_amount = ((deposit_amount_a * output_amount)
-            / (deposit_amount_b - output_amount)
+        let expected_max_input_amount = ((amounts.amount_a * output_amount)
+            / (amounts.amount_b - output_amount)
             * (1 - (1 / 333)))
             + 1;
-        let expected_sufficient_reserve = output_amount < deposit_amount_b;
-
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
+        let expected_sufficient_reserve = output_amount < amounts.amount_b;
 
         let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_b_id)
+            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_b)
                 .await
                 .value;
 
@@ -47,32 +34,20 @@ mod success {
 
     #[tokio::test]
     async fn previews_partial_swap_of_b() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let output_amount = 10;
+
         // hardcoded calculation for liquidity miner fee of 333
-        let expected_max_input_amount = ((deposit_amount_b * output_amount)
-            / (deposit_amount_a - output_amount)
+        let expected_max_input_amount = ((amounts.amount_b * output_amount)
+            / (amounts.amount_a - output_amount)
             * (1 - (1 / 333)))
             + 1;
-        let expected_sufficient_reserve = output_amount <= deposit_amount_a;
-
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
+        let expected_sufficient_reserve = output_amount <= amounts.amount_a;
 
         let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_a_id)
+            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_a)
                 .await
                 .value;
 
@@ -85,32 +60,20 @@ mod success {
 
     #[tokio::test]
     async fn previews_maximum_swap_of_a() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
-        let output_amount = deposit_amount_b - 1;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
+        let output_amount = amounts.amount_b - 1;
+
         // hardcoded calculation for liquidity miner fee of 333
-        let expected_max_input_amount = ((deposit_amount_a * output_amount)
-            / (deposit_amount_b - output_amount)
+        let expected_max_input_amount = ((amounts.amount_a * output_amount)
+            / (amounts.amount_b - output_amount)
             * (1 - (1 / 333)))
             + 1;
-        let expected_sufficient_reserve = output_amount < deposit_amount_b;
-
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
+        let expected_sufficient_reserve = output_amount < amounts.amount_b;
 
         let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_b_id)
+            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_b)
                 .await
                 .value;
 
@@ -123,32 +86,20 @@ mod success {
 
     #[tokio::test]
     async fn previews_maximum_swap_of_b() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
-        let output_amount = deposit_amount_a - 1;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
+        let output_amount = amounts.amount_a - 1;
+
         // hardcoded calculation for liquidity miner fee of 333
-        let expected_max_input_amount = ((deposit_amount_b * output_amount)
-            / (deposit_amount_a - output_amount)
+        let expected_max_input_amount = ((amounts.amount_b * output_amount)
+            / (amounts.amount_a - output_amount)
             * (1 - (1 / 333)))
             + 1;
-        let expected_sufficient_reserve = output_amount < deposit_amount_a;
-
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
+        let expected_sufficient_reserve = output_amount < amounts.amount_a;
 
         let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_a_id)
+            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_a)
                 .await
                 .value;
 
@@ -176,10 +127,11 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_msg_asset_id_is_invalid() {
-        let (exchange, _wallet, asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, _amounts, asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
         preview_swap_with_exact_output(
-            &exchange.contract,
+            &exchange.instance,
             10,
             // sending invalid asset
             asset_c_id,
@@ -190,50 +142,22 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_output_b_amount_is_greater_than_reserve() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
-        let output_amount = deposit_amount_b + 1;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
+        let output_amount = amounts.amount_b + 1;
 
-        preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_b_id)
-            .await;
+        preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_b).await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_output_a_amount_is_greater_than_reserve() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
-        let output_amount = deposit_amount_a + 1;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
+        let output_amount = amounts.amount_a + 1;
 
-        preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_a_id)
-            .await;
+        preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_a).await;
     }
 }

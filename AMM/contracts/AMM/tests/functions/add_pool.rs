@@ -7,13 +7,14 @@ mod success {
     use super::*;
 
     #[tokio::test]
-    async fn adds() {
-        let (wallet, amm_instance, assets) = setup_and_initialize().await;
-        let pair = (assets[0], assets[1]);
+    async fn adds_when_asset_pair_is_in_same_order() {
+        let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
+        let pair = asset_pairs[0];
 
         let exchange_contract_id =
             deploy_and_construct_exchange_contract(&wallet, pair, None, None).await;
 
+        // adding pair to the AMM contract in the same order as the constructed exchange contract
         add_pool(&amm_instance, pair, exchange_contract_id).await;
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
@@ -26,14 +27,14 @@ mod success {
     }
 
     #[tokio::test]
-    async fn adds_when_pair_unordered() {
-        let (wallet, amm_instance, assets) = setup_and_initialize().await;
-        let pair = (assets[0], assets[1]);
+    async fn adds_when_asset_pair_is_in_reverse_order() {
+        let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
+        let pair = asset_pairs[0];
 
         let exchange_contract_id =
             deploy_and_construct_exchange_contract(&wallet, pair, None, None).await;
 
-        // add by providing the pair in the reverse order
+        // adding pair to the AMM contract in the reverse order as the constructed exchange contract
         add_pool(&amm_instance, (pair.1, pair.0), exchange_contract_id).await;
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
@@ -47,9 +48,9 @@ mod success {
 
     #[tokio::test]
     async fn adds_more_than_once() {
-        let (wallet, amm_instance, assets) = setup_and_initialize().await;
-        let pair_1 = (assets[0], assets[1]);
-        let pair_2 = (assets[1], assets[2]);
+        let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
+        let pair_1 = asset_pairs[0];
+        let pair_2 = asset_pairs[1];
 
         let exchange_contract_id_1 =
             deploy_and_construct_exchange_contract(&wallet, pair_1, None, None).await;
@@ -81,8 +82,8 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_not_initialized() {
-        let (wallet, amm_instance, assets) = setup().await;
-        let pair = (assets[0], assets[1]);
+        let (wallet, amm_instance, asset_pairs) = setup().await;
+        let pair = asset_pairs[0];
 
         let exchange_contract_id =
             deploy_and_construct_exchange_contract(&wallet, pair, None, None).await;
@@ -93,11 +94,11 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_exchange_contract_byteroot_invalid() {
-        let (wallet, amm_instance, assets) = setup_and_initialize().await;
-        let pair = (assets[1], assets[2]);
+        let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
+        let pair = asset_pairs[0];
 
         let invalid_exchange_contract_id =
-            deploy_and_construct_exchange_contract(&wallet, pair, Option::Some(false), None).await;
+            deploy_and_construct_exchange_contract(&wallet, pair, Option::Some(true), None).await;
 
         add_pool(&amm_instance, pair, invalid_exchange_contract_id).await;
     }
@@ -105,9 +106,9 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_exchange_contract_does_not_match_pair() {
-        let (wallet, amm_instance, assets) = setup_and_initialize().await;
-        let pair = (assets[0], assets[1]);
-        let another_pair = (assets[1], assets[2]);
+        let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
+        let pair = asset_pairs[0];
+        let another_pair = asset_pairs[1];
 
         let _exchange_contract_id =
             deploy_and_construct_exchange_contract(&wallet, pair, None, None).await;

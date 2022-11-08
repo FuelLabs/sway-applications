@@ -1,6 +1,6 @@
 use crate::utils::{
     abi_calls::{pool_info, preview_swap_with_exact_output, swap_with_exact_output},
-    test_helpers::{deposit_and_add_liquidity, setup, setup_and_initialize},
+    test_helpers::{setup, setup_initialize_deposit_and_add_liquidity, wallet_balances},
 };
 use fuels::prelude::*;
 
@@ -9,71 +9,40 @@ mod success {
 
     #[tokio::test]
     async fn swaps_a_for_b_without_refund() {
-        let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let output_amount = 10;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
-
-        let wallet_initial_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
-            .await
-            .unwrap();
-        let wallet_initial_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
-            .await
-            .unwrap();
-        let initial_pool_info = pool_info(&exchange.contract).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let max_input =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_b_id)
+            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_b)
                 .await
                 .value
                 .amount;
 
         let input_amount = swap_with_exact_output(
-            &exchange.contract,
-            CallParameters::new(
-                Some(max_input),
-                Some(AssetId::new(*exchange.asset_a_id)),
-                None,
-            ),
+            &exchange.instance,
+            CallParameters::new(Some(max_input), Some(exchange.asset_a), None),
             output_amount,
-            deadline,
+            amounts.deadline,
         )
         .await
         .value;
 
-        let wallet_final_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
-            .await
-            .unwrap();
-        let wallet_final_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
-            .await
-            .unwrap();
-        let final_pool_info = pool_info(&exchange.contract).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
         assert_eq!(
-            wallet_final_balance_a,
-            wallet_initial_balance_a - input_amount
+            final_wallet_balances.asset_a,
+            initial_wallet_balances.asset_a - input_amount
         );
         assert_eq!(
-            wallet_final_balance_b,
-            wallet_initial_balance_b + output_amount
+            final_wallet_balances.asset_b,
+            initial_wallet_balances.asset_b + output_amount
         );
         assert_eq!(
             final_pool_info.asset_a_reserve,
@@ -87,73 +56,42 @@ mod success {
 
     #[tokio::test]
     async fn swaps_a_for_b_with_refund() {
-        let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let output_amount = 10;
         let forward_extra = 100;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
-
-        let wallet_initial_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
-            .await
-            .unwrap();
-        let wallet_initial_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
-            .await
-            .unwrap();
-        let initial_pool_info = pool_info(&exchange.contract).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let max_input =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_b_id)
+            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_b)
                 .await
                 .value
                 .amount;
         let forward_amount = max_input + forward_extra;
 
         let input_amount = swap_with_exact_output(
-            &exchange.contract,
-            CallParameters::new(
-                Some(forward_amount),
-                Some(AssetId::new(*exchange.asset_a_id)),
-                None,
-            ),
+            &exchange.instance,
+            CallParameters::new(Some(forward_amount), Some(exchange.asset_a), None),
             output_amount,
-            deadline,
+            amounts.deadline,
         )
         .await
         .value;
 
-        let wallet_final_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
-            .await
-            .unwrap();
-        let wallet_final_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
-            .await
-            .unwrap();
-        let final_pool_info = pool_info(&exchange.contract).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
         assert_eq!(
-            wallet_final_balance_a,
-            wallet_initial_balance_a - input_amount
+            final_wallet_balances.asset_a,
+            initial_wallet_balances.asset_a - input_amount
         );
         assert_eq!(
-            wallet_final_balance_b,
-            wallet_initial_balance_b + output_amount
+            final_wallet_balances.asset_b,
+            initial_wallet_balances.asset_b + output_amount
         );
         assert_eq!(
             final_pool_info.asset_a_reserve,
@@ -167,71 +105,40 @@ mod success {
 
     #[tokio::test]
     async fn swaps_b_for_a_without_refund() {
-        let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let output_amount = 10;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
-
-        let wallet_initial_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
-            .await
-            .unwrap();
-        let wallet_initial_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
-            .await
-            .unwrap();
-        let initial_pool_info = pool_info(&exchange.contract).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let max_input =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_a_id)
+            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_a)
                 .await
                 .value
                 .amount;
 
         let input_amount = swap_with_exact_output(
-            &exchange.contract,
-            CallParameters::new(
-                Some(max_input),
-                Some(AssetId::new(*exchange.asset_b_id)),
-                None,
-            ),
+            &exchange.instance,
+            CallParameters::new(Some(max_input), Some(exchange.asset_b), None),
             output_amount,
-            deadline,
+            amounts.deadline,
         )
         .await
         .value;
 
-        let wallet_final_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
-            .await
-            .unwrap();
-        let wallet_final_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
-            .await
-            .unwrap();
-        let final_pool_info = pool_info(&exchange.contract).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
         assert_eq!(
-            wallet_final_balance_b,
-            wallet_initial_balance_b - input_amount
+            final_wallet_balances.asset_b,
+            initial_wallet_balances.asset_b - input_amount
         );
         assert_eq!(
-            wallet_final_balance_a,
-            wallet_initial_balance_a + output_amount
+            final_wallet_balances.asset_a,
+            initial_wallet_balances.asset_a + output_amount
         );
         assert_eq!(
             final_pool_info.asset_b_reserve,
@@ -245,73 +152,42 @@ mod success {
 
     #[tokio::test]
     async fn swaps_b_for_a_with_refund() {
-        let (exchange, wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let output_amount = 10;
         let forward_extra = 100;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
-
-        let wallet_initial_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
-            .await
-            .unwrap();
-        let wallet_initial_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
-            .await
-            .unwrap();
-        let initial_pool_info = pool_info(&exchange.contract).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let max_input =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_a_id)
+            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_a)
                 .await
                 .value
                 .amount;
         let forward_amount = max_input + forward_extra;
 
         let input_amount = swap_with_exact_output(
-            &exchange.contract,
-            CallParameters::new(
-                Some(forward_amount),
-                Some(AssetId::new(*exchange.asset_b_id)),
-                None,
-            ),
+            &exchange.instance,
+            CallParameters::new(Some(forward_amount), Some(exchange.asset_b), None),
             output_amount,
-            deadline,
+            amounts.deadline,
         )
         .await
         .value;
 
-        let wallet_final_balance_a = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_a_id))
-            .await
-            .unwrap();
-        let wallet_final_balance_b = wallet
-            .get_asset_balance(&AssetId::new(*exchange.asset_b_id))
-            .await
-            .unwrap();
-        let final_pool_info = pool_info(&exchange.contract).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
         assert_eq!(
-            wallet_final_balance_b,
-            wallet_initial_balance_b - input_amount
+            final_wallet_balances.asset_b,
+            initial_wallet_balances.asset_b - input_amount
         );
         assert_eq!(
-            wallet_final_balance_a,
-            wallet_initial_balance_a + output_amount
+            final_wallet_balances.asset_a,
+            initial_wallet_balances.asset_a + output_amount
         );
         assert_eq!(
             final_pool_info.asset_b_reserve,
@@ -348,30 +224,17 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_msg_asset_id_is_invalid() {
-        let (exchange, _wallet, asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let output_amount = 10;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
-
         swap_with_exact_output(
-            &exchange.contract,
+            &exchange.instance,
             // sending invalid asset
             CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), None),
             output_amount,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }
@@ -379,29 +242,15 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_output_amount_is_zero() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
-
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
 
         swap_with_exact_output(
-            &exchange.contract,
-            CallParameters::new(Some(1), Some(AssetId::new(*exchange.asset_a_id)), None),
+            &exchange.instance,
+            CallParameters::new(Some(1), Some(exchange.asset_a), None),
             // passing 0 amount
             0,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }
@@ -409,27 +258,14 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_deadline_has_passed() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, _wallet, _amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let output_amount = 10;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
-
         swap_with_exact_output(
-            &exchange.contract,
-            CallParameters::new(Some(1), Some(AssetId::new(*exchange.asset_a_id)), None),
+            &exchange.instance,
+            CallParameters::new(Some(1), Some(exchange.asset_a), None),
             output_amount,
             // passing 0 deadline
             0,
@@ -440,30 +276,17 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_msg_amount_is_zero() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let output_amount = 10;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
-
         swap_with_exact_output(
-            &exchange.contract,
+            &exchange.instance,
             // forwarding 0 as msg_amount
-            CallParameters::new(Some(0), Some(AssetId::new(*exchange.asset_a_id)), None),
+            CallParameters::new(Some(0), Some(exchange.asset_a), None),
             output_amount,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }
@@ -471,26 +294,13 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_forwarding_insufficient_amount_of_a() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let output_amount = 10;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
-
         let preview_amount =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_b_id)
+            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_b)
                 .await
                 .value
                 .amount;
@@ -498,14 +308,10 @@ mod revert {
         let forward_amount = preview_amount - 1;
 
         swap_with_exact_output(
-            &exchange.contract,
-            CallParameters::new(
-                Some(forward_amount),
-                Some(AssetId::new(*exchange.asset_a_id)),
-                None,
-            ),
+            &exchange.instance,
+            CallParameters::new(Some(forward_amount), Some(exchange.asset_a), None),
             output_amount,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }
@@ -513,26 +319,13 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "Revert(42)")]
     async fn when_forwarding_insufficient_amount_of_b() {
-        let (exchange, _wallet, _asset_c_id) = setup_and_initialize().await;
-        let deposit_amount_a = 100;
-        let deposit_amount_b = 400;
-        let liquidity = 200;
-        let deadline = 1000;
+        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
+            setup_initialize_deposit_and_add_liquidity().await;
+
         let output_amount = 10;
 
-        deposit_and_add_liquidity(
-            &exchange.contract,
-            AssetId::new(*exchange.asset_a_id),
-            deposit_amount_a,
-            AssetId::new(*exchange.asset_b_id),
-            deposit_amount_b,
-            liquidity,
-            deadline,
-        )
-        .await;
-
         let preview_amount =
-            preview_swap_with_exact_output(&exchange.contract, output_amount, exchange.asset_a_id)
+            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_a)
                 .await
                 .value
                 .amount;
@@ -540,14 +333,10 @@ mod revert {
         let forward_amount = preview_amount - 1;
 
         swap_with_exact_output(
-            &exchange.contract,
-            CallParameters::new(
-                Some(forward_amount),
-                Some(AssetId::new(*exchange.asset_b_id)),
-                None,
-            ),
+            &exchange.instance,
+            CallParameters::new(Some(forward_amount), Some(exchange.asset_b), None),
             output_amount,
-            deadline,
+            amounts.deadline,
         )
         .await;
     }
