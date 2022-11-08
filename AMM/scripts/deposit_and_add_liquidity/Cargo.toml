@@ -6,7 +6,7 @@ name = "deposit_and_add_liquidity"
 version = "0.0.0"
 
 [dev-dependencies]
-fuels = { version = "0.30", features = ["fuel-core-lib"] }
+fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", branch = "iqdecay/feat-script-main-args", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]
