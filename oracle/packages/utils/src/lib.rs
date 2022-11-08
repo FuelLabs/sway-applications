@@ -1,6 +1,6 @@
 use fuels::{contract::contract::CallResponse, prelude::*, signers::wallet::Wallet};
 
-abigen!(Oracle, "out/debug/oracle-abi.json");
+abigen!(Oracle, "packages/contract/out/debug/oracle-abi.json");
 
 pub struct Metadata {
     pub oracle: Oracle,
@@ -33,9 +33,8 @@ pub mod test_helpers {
 
     pub async fn setup() -> (Metadata, Vec<WalletUnlocked>) {
         let wallets = launch_custom_provider_and_get_wallets(WalletsConfig::default(), None).await;
-
         let oracle_id = Contract::deploy(
-            "./out/debug/oracle.bin",
+            "../contract/out/debug/oracle.bin",
             &wallets[0],
             TxParameters::default(),
             StorageConfiguration::default(),

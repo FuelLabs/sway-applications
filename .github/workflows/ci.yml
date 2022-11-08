@@ -75,20 +75,20 @@ jobs:
           components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
 
       - name: Check Sway formatting
-        run: forc fmt --path ${{ matrix.project }} --check
+        run: sh ${{ env.PATH_TO_SCRIPTS }}/forc-handler.sh ${{ matrix.project }} fmt --check
 
       - name: Check Rust formatting
         run: |
           cd ${{ matrix.project }}
           cargo fmt --verbose --check
       - name: Build Sway
-        run: sh ${{ env.PATH_TO_SCRIPTS }}/build.sh ${{ matrix.project }}
+        run: sh ${{ env.PATH_TO_SCRIPTS }}/forc-handler.sh ${{ matrix.project }} build
 
       - name: Run Forc tests
         run: |
           cd ${{ matrix.project }}
-          forc build
           cargo test
+
   contributing-book:
     runs-on: ubuntu-latest
 
