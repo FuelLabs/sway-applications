@@ -1,15 +1,12 @@
-[project]
-name = "oracle"
-version = "0.0.0"
-authors = ["Fuel Labs <contact@fuel.sh>"]
-edition = "2021"
-license = "Apache-2.0"
-
-[dependencies]
-fuels = { version = "0.25", features = ["fuel-core-lib"] }
-tokio = { version = "1.12", features = ["rt", "macros"] }
-
-[[test]]
-harness = true
-name = "integration_tests"
-path = "tests/harness.rs"
+[workspace]
+# Use the new resolver to prevent dev-deps and build-deps from enabling debugging or test features in production.
+#
+# > If you are using a virtual workspace, you will still need to explicitly set the resolver field in the [workspace]
+#   definition if you want to opt-in to the new resolver.
+# https://doc.rust-lang.org/edition-guide/rust-2021/default-cargo-resolver.html#details
+resolver = "2"
+members = [
+    "packages/contract",
+    "packages/node",
+    "packages/utils",
+]
