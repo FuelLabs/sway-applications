@@ -10,7 +10,6 @@ use fuels::{
         Signature,
     },
     tx::{
-        AssetId, 
         Bytes32,
         Receipt, 
         Transaction,
@@ -23,54 +22,20 @@ use sha3::{
 };
 
 pub async fn test_recover_and_match_address_with_parameters(private_key: &str, eip_191_format: bool, eth_prefix: bool) {
-    //Setup wallets
-    let secret_key1: SecretKey =
-            private_key
-                .parse()
-                .unwrap();
+    let private_key = setup_env(private_key).await.unwrap();
 
-    let mut wallet = WalletUnlocked::new_from_private_key(secret_key1, None);
-    
-    let all_coins = [&wallet]
-        .iter()
-        .flat_map(|wallet| {
-            setup_single_asset_coins(wallet.address(), AssetId::default(), 10, 1_000_000)
-        })
-        .collect::<Vec<_>>();
-
-    //Setup provider
-    let (provider, _) = setup_test_provider(
-        all_coins,
-        vec![],
-        Some(Config {
-            utxo_validation: true,
-            ..Config::local_node()
-        }),
-    )
-    .await;
-    
-    [&mut wallet]
-        .iter_mut()
-        .for_each(|wallet| wallet.set_provider(provider.clone()));
-
-    //Create signature
     let message = "Data to sign";
     let message_hash = Message::new(message);
 
-    let signature = format_and_sign(wallet, message_hash, eip_191_format, eth_prefix).await;
+    let signature = format_and_sign(private_key, message_hash, eip_191_format, eth_prefix).await;
       
-    //prepare script and tx
     let script_data: Vec<u8> = [
         signature.to_vec(),
         message_hash.to_vec(),
-    ]
-    .into_iter()
-    .flatten()
-    .collect();
+        ].into_iter().flatten().collect();
 
     let path_to_bin = "out/debug/eth-account-abstraction.bin";
 
-    //run script
     let receipts = run_compiled_script(path_to_bin, None, script_data).await.unwrap();
 
     let return_value = receipts[0].val().unwrap();
@@ -80,7 +45,63 @@ pub async fn test_recover_and_match_address_with_parameters(private_key: &str, e
     //0 == false
     println!("Receipt : {:?}", receipts[0]);
     assert_eq!(1, return_value);
+}
 
+
+async fn setup_env(private_key: &str) -> Result< SecretKey, Error>
+{
+    let private_key: SecretKey = private_key.parse().unwrap();
+
+    Ok(private_key)
+}
+
+
+async fn format_and_sign(private_key: SecretKey, message_hash: Message, eip_191_format: bool, eth_prefix: bool) -> Signature {
+    if eip_191_format {
+        //EIP-191 format
+        /*
+        let initial_byte= 0x19u8;
+        let version_byte= 0x45u8;
+        
+        let mut eip_191_data: Vec<u8> = vec![initial_byte, version_byte];
+        eip_191_data.append(&mut message_hash.to_vec());
+        */
+        //TODO: replace with correct, unpadded `eip_191_data` from above
+        //once padding/bit-shifting in Sway is resolved
+        let eip_191_data: Vec<u8> = vec![0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239];
+        
+        let eip_191_formatted_message = keccak_hash(&eip_191_data);
+
+        if eth_prefix {
+            let prefix = r#"\x19Ethereum Signed Message:\n32"#;
+
+            let mut eth_prefix_data: Vec<u8> = Vec::new();
+            eth_prefix_data.append(&mut prefix.as_bytes().to_vec());
+            eth_prefix_data.append(&mut eip_191_formatted_message.to_vec());
+
+            let eth_prefixed_message = Hasher::hash(eth_prefix_data);
+
+            let eth_prefixed_message = unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) };
+            Signature::sign(&private_key, &eth_prefixed_message)
+        } else {
+            let eip_191_formatted_message = unsafe { Message::from_bytes_unchecked(*eip_191_formatted_message) };
+            Signature::sign(&private_key, &eip_191_formatted_message)
+        }
+    } else {
+        Signature::sign(&private_key, &message_hash)
+    }
+}
+
+// A keccak-256 method
+fn keccak_hash<B>(data: B) -> Bytes32
+where
+    B: AsRef<[u8]>,
+{
+    // create a Keccak256 object
+    let mut hasher = Keccak256::new();
+    // write input message
+    hasher.update(data);
+    <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
 }
 
 
@@ -115,51 +136,4 @@ fn build_script(script_binary: Vec<u8>, script_data: Vec<u8>) -> Script {
         vec![],
         vec![],
     ))
-}
-
-
-// A keccak-256 method
-fn keccak_hash<B>(data: B) -> Bytes32
-where
-    B: AsRef<[u8]>,
-{
-    // create a Keccak256 object
-    let mut hasher = Keccak256::new();
-    // write input message
-    hasher.update(data);
-    <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
-}
-
-async fn format_and_sign(wallet: WalletUnlocked, message_hash: Message, eip_191_format: bool, eth_prefix: bool) -> Signature {
-    if eip_191_format {
-        //EIP-191 format
-        /*
-        let initial_byte= 0x19u8;
-        let version_byte= 0x45u8;
-        
-        let mut eip_191_data: Vec<u8> = vec![initial_byte, version_byte];
-        eip_191_data.append(&mut message_hash.to_vec());
-        */
-        //TODO: replace with correct, unpadded `eip_191_data` from above
-        //once padding/bit-shifting in Sway is resolved
-        let eip_191_data: Vec<u8> = vec![0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239];
-        
-        let eip_191_formatted_message = keccak_hash(&eip_191_data);
-
-        if eth_prefix {
-            let prefix = r#"\x19Ethereum Signed Message:\n32"#;
-
-            let mut eth_prefix_data: Vec<u8> = Vec::new();
-            eth_prefix_data.append(&mut prefix.as_bytes().to_vec());
-            eth_prefix_data.append(&mut eip_191_formatted_message.to_vec());
-
-            let eth_prefixed_message = Hasher::hash(eth_prefix_data);
-            
-            wallet.sign_message(eth_prefixed_message).await.unwrap()
-        } else {
-            wallet.sign_message(eip_191_formatted_message).await.unwrap()
-        }
-    } else {
-        wallet.sign_message(message_hash).await.unwrap()
-    }
 }

@@ -25,15 +25,12 @@ fn main(signature: B512, message_hash: b256) -> bool {
     //Eth-prefix
     let eth_prefixed_message = eth_prefix(eip_191_formatted_message);
 
-    //Sha hash, to mimic SDK WalletUnlocked.sign_message inner hash
-    let recovery_message = sha256(eth_prefixed_message);
-
     let target_address = EvmAddress::from(
         0x44c646ac0426710470343f1cdb4aa29ef306fc8d28025b838ccd3feecaedb333
     );
 
     //recover evm address from signature
-    let evm_address_result = ec_recover_evm_address(signature, recovery_message);
+    let evm_address_result = ec_recover_evm_address(signature, eth_prefixed_message);
     require(evm_address_result.is_ok(),"ec recover evm address failed");
     let evm_address = evm_address_result.unwrap();
 
