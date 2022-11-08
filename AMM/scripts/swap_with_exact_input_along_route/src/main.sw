@@ -2,14 +2,7 @@ script;
 
 use core::num::*;
 use libraries::{AMM, Exchange};
-use std::{
-    constants::ZERO_B256,
-    contract_id::ContractId,
-    logging::log,
-    prelude::*,
-    revert::require,
-    u128::U128,
-};
+use std::{logging::log, prelude::*};
 
 pub enum SwapError {
     PairExchangeNotRegistered: (ContractId, ContractId),

@@ -13,6 +13,24 @@ abigen!(
     "../../contracts/exchange/out/debug/exchange-abi.json"
 );
 
+pub struct MetaAMM {
+    instance: AMM,
+    id: ContractId,
+}
+
+pub struct MetaExchange {
+    instance: Exchange,
+    id: ContractId,
+}
+
+pub struct MetaAmounts {
+    asset_a: AssetId,
+    asset_b: AssetId,
+    amount_a: u64,
+    amount_b: u64,
+    liquidity: u64,
+}
+
 pub mod amm_abi_calls {
     use super::*;
 
@@ -71,11 +89,13 @@ pub mod exchange_abi_calls {
             .unwrap()
     }
 
-    pub async fn constructor(
-        contract: &Exchange,
-        pool: (ContractId, ContractId),
-    ) -> CallResponse<()> {
-        contract.methods().constructor(pool).call().await.unwrap()
+    pub async fn constructor(contract: &Exchange, pair: (AssetId, AssetId)) -> CallResponse<()> {
+        contract
+            .methods()
+            .constructor((ContractId::new(*pair.0), ContractId::new(*pair.1)))
+            .call()
+            .await
+            .unwrap()
     }
 
     pub async fn deposit(contract: &Exchange, call_params: CallParameters) -> CallResponse<()> {
@@ -125,9 +145,7 @@ pub mod paths {
 pub mod test_helpers {
     use super::*;
     use amm_abi_calls::{add_pool, initialize, pool};
-    use exchange_abi_calls::{
-        add_liquidity, constructor, deposit, pool_info, swap_with_exact_input,
-    };
+    use exchange_abi_calls::{add_liquidity, constructor, deposit, swap_with_exact_input};
     use paths::{AMM_CONTRACT_BINARY_PATH, EXCHANGE_CONTRACT_BINARY_PATH};
 
     pub async fn initialize_amm_contract(wallet: &WalletUnlocked, amm_instance: &AMM) {
@@ -140,21 +158,20 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        initialize(amm_instance, exchange_contract_id.into()).await;
+        initialize(&amm_instance, exchange_contract_id.into()).await;
     }
 
     pub async fn deposit_and_add_liquidity(
         exchange_instance: &Exchange,
-        asset_a: AssetId,
-        asset_a_amount: u64,
-        asset_b: AssetId,
-        asset_b_amount: u64,
+        amounts: &MetaAmounts,
     ) -> u64 {
-        let call_params = CallParameters::new(Some(asset_a_amount), Some(asset_a.clone()), None);
-        deposit(exchange_instance, call_params).await;
+        let call_params =
+            CallParameters::new(Some(amounts.amount_a), Some(amounts.asset_a.clone()), None);
+        deposit(&exchange_instance, call_params).await;
 
-        let call_params = CallParameters::new(Some(asset_b_amount), Some(asset_b.clone()), None);
-        deposit(exchange_instance, call_params).await;
+        let call_params =
+            CallParameters::new(Some(amounts.amount_b), Some(amounts.asset_b.clone()), None);
+        deposit(&exchange_instance, call_params).await;
 
         let call_params = CallParameters::new(None, None, Some(10_000_000));
         let tx_params = TxParameters {
@@ -163,10 +180,10 @@ pub mod test_helpers {
             maturity: 0,
         };
         let result = add_liquidity(
-            exchange_instance,
+            &exchange_instance,
             call_params,
             tx_params,
-            asset_a_amount,
+            amounts.liquidity,
             1000,
         )
         .await;
@@ -186,13 +203,13 @@ pub mod test_helpers {
             coins_per_asset,
             amount_per_coin,
         );
-        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None).await;
+        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None, None).await;
         wallet.set_provider(provider.clone());
         (wallet, asset_ids, provider)
     }
 
-    pub async fn setup_amm_contract(wallet: WalletUnlocked) -> (AMM, ContractId) {
-        let amm_contract_id = Contract::deploy(
+    pub async fn setup_amm_contract(wallet: WalletUnlocked) -> MetaAMM {
+        let contract_id = Contract::deploy(
             AMM_CONTRACT_BINARY_PATH,
             &wallet,
             TxParameters::default(),
@@ -200,19 +217,21 @@ pub mod test_helpers {
         )
         .await
         .unwrap();
-        let amm_instance = AMM::new(amm_contract_id.clone(), wallet.clone());
-        initialize_amm_contract(&wallet, &amm_instance).await;
-        (amm_instance, amm_contract_id.into())
+        let instance = AMM::new(contract_id.clone(), wallet.clone());
+        initialize_amm_contract(&wallet, &instance).await;
+        MetaAMM {
+            instance,
+            id: contract_id.into(),
+        }
     }
 
     pub async fn setup_exchange_contract(
         wallet: WalletUnlocked,
-        asset_a: AssetId,
-        asset_b: AssetId,
+        pair: (AssetId, AssetId),
         reverse_ratio: u64,
         salt: [u8; 32],
-    ) -> (Exchange, ContractId) {
-        let exchange_contract_id = Contract::deploy_with_parameters(
+    ) -> MetaExchange {
+        let contract_id = Contract::deploy_with_parameters(
             EXCHANGE_CONTRACT_BINARY_PATH,
             &wallet,
             TxParameters::default(),
@@ -222,39 +241,30 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let exchange_instance = Exchange::new(exchange_contract_id.clone(), wallet.clone());
+        let id = ContractId::from(contract_id.clone());
+        let instance = Exchange::new(contract_id, wallet.clone());
 
-        constructor(
-            &exchange_instance,
-            (ContractId::new(*asset_a), ContractId::new(*asset_b)),
-        )
-        .await;
-        let asset_a_amount = 100;
-        let asset_b_amount = 100 * reverse_ratio;
+        constructor(&instance, pair).await;
 
-        deposit_and_add_liquidity(
-            &exchange_instance,
-            asset_a,
-            asset_a_amount,
-            asset_b,
-            asset_b_amount,
-        )
-        .await;
+        let amounts = MetaAmounts {
+            asset_a: pair.0,
+            amount_a: 100,
+            asset_b: pair.1,
+            amount_b: 100 * reverse_ratio,
+            liquidity: 100,
+        };
 
-        let contract_id = ContractId::from(exchange_contract_id);
-        println!("{:#?}", contract_id);
-        println!("{:#?}", pool_info(&exchange_instance).await);
+        deposit_and_add_liquidity(&instance, &amounts).await;
 
-        (exchange_instance, contract_id)
+        MetaExchange { instance, id }
     }
 
     pub async fn setup_exchange_contracts(
         wallet: WalletUnlocked,
-        amm_instance: &AMM,
+        amm: &MetaAMM,
         asset_ids: Vec<AssetId>,
-    ) -> (Vec<Exchange>, Vec<ContractId>) {
-        let mut exchange_instances: Vec<Exchange> = Vec::new();
-        let mut exchange_ids: Vec<ContractId> = Vec::new();
+    ) -> Vec<MetaExchange> {
+        let mut exchanges: Vec<MetaExchange> = Vec::new();
         for (i, asset) in asset_ids.iter().enumerate() {
             if i == 0 {
                 continue;
@@ -265,49 +275,35 @@ pub mod test_helpers {
                 ContractId::from(*asset_a.clone()),
                 ContractId::from(*asset_b.clone()),
             );
-            let (exchange_instance, exchange_id) = setup_exchange_contract(
+            let exchange = setup_exchange_contract(
                 wallet.clone(),
-                *asset_a,
-                *asset_b,
+                (*asset_a, *asset_b),
                 i as u64 * 6,
                 [i as u8 + 1; 32],
             )
             .await;
-            add_pool(&amm_instance, asset_pair, exchange_id).await;
-            exchange_instances.push(exchange_instance);
-            exchange_ids.push(exchange_id);
+            add_pool(&amm.instance, asset_pair, exchange.id).await;
+            exchanges.push(exchange);
         }
-        (exchange_instances, exchange_ids)
+        exchanges
     }
 
     pub async fn setup() -> (
         WalletUnlocked,
         Provider,
-        AMM,
-        ContractId,
-        Vec<Exchange>,
-        Vec<ContractId>,
+        MetaAMM,
+        Vec<MetaExchange>,
         Vec<AssetId>,
     ) {
         let (wallet, asset_ids, provider) = setup_wallet_and_provider().await;
-        let (amm_instance, amm_contract_id) = setup_amm_contract(wallet.clone()).await;
-        let (exchange_instances, exchange_ids) =
-            setup_exchange_contracts(wallet.clone(), &amm_instance, asset_ids.clone()).await;
-        (
-            wallet,
-            provider,
-            amm_instance,
-            amm_contract_id,
-            exchange_instances,
-            exchange_ids,
-            asset_ids,
-        )
+        let amm = setup_amm_contract(wallet.clone()).await;
+        let exchanges = setup_exchange_contracts(wallet.clone(), &amm, asset_ids.clone()).await;
+        (wallet, provider, amm, exchanges, asset_ids)
     }
 
     pub async fn expected_swap_output(
         amm_instance: AMM,
-        exchange_instances: Vec<Exchange>,
-        exchange_ids: Vec<ContractId>,
+        exchanges: Vec<MetaExchange>,
         swap_amount: u64,
         path: Vec<AssetId>,
     ) -> u64 {
@@ -322,11 +318,11 @@ pub mod test_helpers {
                 ContractId::new(*asset_b.clone()),
             );
             let exchange_contract_id = pool(&amm_instance, asset_pair).await.unwrap();
-            let index = exchange_ids
+            let index = exchanges
                 .iter()
-                .position(|&e| e == exchange_contract_id)
+                .position(|e| e.id == exchange_contract_id)
                 .unwrap();
-            let exchange_contract = exchange_instances.get(index).unwrap();
+            let exchange_contract = &exchanges.get(index).unwrap().instance;
             output_amount = swap_with_exact_input(
                 &exchange_contract,
                 CallParameters::new(Some(output_amount), Some(*asset_a), Some(10_000_000)),
@@ -343,22 +339,14 @@ pub mod test_helpers {
 
 #[tokio::test]
 async fn can_swap_with_exact_input_along_path() {
-    let (
-        wallet,
-        _provider,
-        amm_instance,
-        amm_contract_id,
-        exchange_instances,
-        exchange_ids,
-        asset_ids,
-    ) = setup().await;
+    let (wallet, _provider, amm, exchanges, asset_ids) = setup().await;
     let swap_amount: u64 = 150;
     let path = vec![asset_ids[0], asset_ids[1], asset_ids[2]];
     let script_instance = SwapScript::new(wallet.clone(), SCRIPT_BINARY_PATH);
     // waiting for a function similar to set_contracts()
     let result = script_instance
         .main(
-            amm_contract_id,
+            amm.id,
             ContractId::new(*path[0]),
             ContractId::new(*path[1]),
             ContractId::new(*path[2]),
@@ -366,13 +354,6 @@ async fn can_swap_with_exact_input_along_path() {
         )
         .await
         .unwrap();
-    let expected_result = expected_swap_output(
-        amm_instance,
-        exchange_instances,
-        exchange_ids,
-        swap_amount,
-        path,
-    )
-    .await;
+    let expected_result = expected_swap_output(amm.instance, exchanges, swap_amount, path).await;
     assert_eq!(expected_result, result);
 }
