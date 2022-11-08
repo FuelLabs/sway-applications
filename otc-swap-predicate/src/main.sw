@@ -13,7 +13,7 @@ use std::{
     },
 };
 
-// TO DO : Remove once __gtf getters implemented in std-lib
+// TODO : Remove once __gtf getters implemented in std-lib
 const GTF_OUTPUT_COIN_TO = 0x202;
 const GTF_OUTPUT_COIN_ASSET_ID = 0x204;
 
@@ -21,29 +21,28 @@ const GTF_OUTPUT_COIN_ASSET_ID = 0x204;
 fn main() -> bool {
     // Order conditions: These are set in Forc.toml
     // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `receiver`
-    // Conversion to ContractId and Address types will be unnecessary once
+    // TODO: Conversion to ContractId and Address types will be unnecessary once
     // https://github.com/FuelLabs/sway/issues/2647 is fixed
-    let ask_token: ContractId = ContractId {
-        value: ask_token_config,
+    const ASK_TOKEN = ContractId {
+        value: ASK_TOKEN_CONFIG,
     };
-    let receiver = ~Address::from(receiver_config);
+    const RECEIVER = ~Address::from(RECEIVER_CONFIG);
 
     // Check if the transaction contains a single input coin from the receiver, to cancel their own order
     // Note that the predicate is necessarily one of the inputs, so the other must be the coin input.
-    if (input_count() == 2u8) {
+    if input_count() == 2u8 {
         let owner = match input_owner(0) {
             Option::Some(owner) => owner,
             _ => input_owner(1).unwrap(),
         };
 
-        if (owner == receiver) {
+        if owner == RECEIVER {
             return true;
         };
     };
 
     // Otherwise, evaluate the terms of the order:
-    // TO DO : Have the order taker provide the index of the output via predicateData
-    // The output which pays the receiver must be in the first position (output_index = 0)
+    // The output which pays the receiver must be the first output
     let output_index = 0;
 
     // Revert if output is not an Output::Coin
@@ -59,5 +58,5 @@ fn main() -> bool {
     let amount = output_amount(output_index);
 
     // Evaluate the predicate
-    (to == receiver) && (amount == ask_amount) && (asset_id == ask_token)
+    (to == RECEIVER) && (amount == ASK_AMOUNT) && (asset_id == ASK_TOKEN)
 }

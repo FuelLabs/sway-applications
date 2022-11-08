@@ -35,10 +35,14 @@ As such, this mechanism is most useful for OTC trades and atomic swaps.
 The project consists of a predicate written in Sway (`/src/main.sw`) and tests using fuels-rs (`/tests/`)
 
 # Running the project
-In order to run the tests make sure that you are in the root of this project.
+In order to run the tests make sure that you are in the root of this project, i.e. `/path/to/otc-swap-predicate/<you are here>`
 
 Build the predicate:  
-`forc build`
+```
+forc build
+```
 
 Run the tests:  
-`cargo test`
+```
+cargo test
+```

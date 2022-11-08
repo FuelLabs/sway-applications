@@ -66,7 +66,6 @@ pub async fn test_predicate_spend_with_parameters(
     let receiver_wallet = &wallets[0];
     let taker_wallet = &wallets[1];
 
-    // Get provider
     let provider = receiver_wallet.get_provider().unwrap();
 
     let (predicate_bytecode, predicate_root) = predicate_bytecode_and_root_from_bin(
