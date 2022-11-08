@@ -422,16 +422,17 @@ the sdk
 <details>
 <summary>Over the counter (OTC) Swap Predicate</summary>
 
-<h3>Contracts</h3>
+<h3>Contracts✅</h3>
 
-<h3>User Interface</h3>
+<h3>User Interface❌</h3>
 
 <h3>Tests</h3>
 
-- <h3>Rust</h3>
+- <h3>Rust ✅</h3>
 - <h3>Typescript</h3>
 
 <h3>Documentation</h3>
+- Readme ✅
 
 </details>
 
