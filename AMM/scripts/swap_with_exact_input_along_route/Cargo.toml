@@ -1,9 +1,9 @@
 [project]
-name = "swap_with_exact_input_along_route"
-version = "0.1.0"
-authors = ["Bikem"]
+authors = ["Fuel Labs <contact@fuel.sh>"]
 edition = "2021"
 license = "Apache-2.0"
+name = "swap_with_exact_input_along_route"
+version = "0.0.0"
 
 [dependencies]
 fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", branch = "iqdecay/feat-script-main-args", features = ["fuel-core-lib"] }
@@ -11,5 +11,5 @@ tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]
 harness = true
-name = "integration_tests"
+name = "tests"
 path = "tests/harness.rs"
