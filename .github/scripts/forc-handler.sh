@@ -9,6 +9,14 @@ if [ $PROJECT = 'airdrop/airdrop-distributor' ]; then
     forc $COMMAND --path $PROJECT/../simple-asset/ $FLAG
 elif [ $PROJECT = 'airdrop/simple-asset' ]; then
     forc $COMMAND --path $PROJECT $FLAG
+elif [ $PROJECT = 'AMM/contracts/AMM' ]; then
+    forc $COMMAND --path $PROJECT/../../libraries/ $FLAG
+    forc $COMMAND --path $PROJECT/../exchange/ $FLAG
+    forc $COMMAND --path $PROJECT/../exchange/tests/artifacts/malicious_implementation/ $FLAG
+    forc $COMMAND --path $PROJECT $FLAG
+elif [ $PROJECT = 'AMM/contracts/exchange' ]; then
+    forc $COMMAND --path $PROJECT/../../libraries/ $FLAG
+    forc $COMMAND --path $PROJECT $FLAG
 elif [ $PROJECT = 'auctions/english-auction' ]; then
     forc $COMMAND --path $PROJECT $FLAG
     forc $COMMAND --path $PROJECT/tests/artifacts/asset $FLAG
