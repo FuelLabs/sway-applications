@@ -21,14 +21,17 @@ use sha3::{
     Keccak256
 };
 
+
 pub async fn test_recover_and_match_address_with_parameters(private_key: &str, eip_191_format: bool, eth_prefix: bool) {
+
     let private_key = setup_env(private_key).await.unwrap();
 
     let message = "Data to sign";
     let message_hash = Message::new(message);
 
+    // let signature = format_and_sign(private_key, message_hash, eip_191_format, eth_prefix).await;
     let signature = format_and_sign(private_key, message_hash, eip_191_format, eth_prefix).await;
-      
+  
     let script_data: Vec<u8> = [
         signature.to_vec(),
         message_hash.to_vec(),
@@ -45,11 +48,12 @@ pub async fn test_recover_and_match_address_with_parameters(private_key: &str, e
     //0 == false
     println!("Receipt : {:?}", receipts[0]);
     assert_eq!(1, return_value);
+
 }
 
 
-async fn setup_env(private_key: &str) -> Result< SecretKey, Error>
-{
+async fn setup_env(private_key: &str) -> Result< SecretKey, Error> {
+    
     let private_key: SecretKey = private_key.parse().unwrap();
 
     Ok(private_key)
@@ -57,22 +61,19 @@ async fn setup_env(private_key: &str) -> Result< SecretKey, Error>
 
 
 async fn format_and_sign(private_key: SecretKey, message_hash: Message, eip_191_format: bool, eth_prefix: bool) -> Signature {
+
     if eip_191_format {
-        //EIP-191 format
-        /*
+
         let initial_byte= 0x19u8;
         let version_byte= 0x45u8;
         
         let mut eip_191_data: Vec<u8> = vec![initial_byte, version_byte];
         eip_191_data.append(&mut message_hash.to_vec());
-        */
-        //TODO: replace with correct, unpadded `eip_191_data` from above
-        //once padding/bit-shifting in Sway is resolved
-        let eip_191_data: Vec<u8> = vec![0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 69, 180, 213, 8, 212, 50, 173, 93, 232, 25, 195, 255, 235, 146, 224, 80, 183, 99, 32, 241, 122, 150, 83, 86, 0, 113, 107, 19, 116, 130, 159, 96, 239];
         
         let eip_191_formatted_message = keccak_hash(&eip_191_data);
 
         if eth_prefix {
+
             let prefix = r#"\x19Ethereum Signed Message:\n32"#;
 
             let mut eth_prefix_data: Vec<u8> = Vec::new();
@@ -83,25 +84,35 @@ async fn format_and_sign(private_key: SecretKey, message_hash: Message, eip_191_
 
             let eth_prefixed_message = unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) };
             Signature::sign(&private_key, &eth_prefixed_message)
+
         } else {
+
             let eip_191_formatted_message = unsafe { Message::from_bytes_unchecked(*eip_191_formatted_message) };
             Signature::sign(&private_key, &eip_191_formatted_message)
+
         }
     } else {
+
         Signature::sign(&private_key, &message_hash)
+
     }
 }
+
 
 // A keccak-256 method
 fn keccak_hash<B>(data: B) -> Bytes32
 where
     B: AsRef<[u8]>,
 {
+    
     // create a Keccak256 object
     let mut hasher = Keccak256::new();
+
     // write input message
     hasher.update(data);
+
     <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
+
 }
 
 
@@ -111,6 +122,7 @@ pub async fn run_compiled_script(
     provider: Option<Provider>, 
     script_data: Vec<u8>,
 ) -> Result<Vec<Receipt>, Error> {
+
     let script_binary = std::fs::read(binary_filepath)?;
 
     let server = FuelService::new_node(Config::local_node()).await.unwrap();
@@ -120,10 +132,12 @@ pub async fn run_compiled_script(
     let script = build_script(script_binary, script_data);
 
     script.call(&provider).await
+
 }
 
 
 fn build_script(script_binary: Vec<u8>, script_data: Vec<u8>) -> Script {
+
     let tx_params = TxParameters::default();
     
     Script::new(Transaction::script(
@@ -136,4 +150,5 @@ fn build_script(script_binary: Vec<u8>, script_data: Vec<u8>) -> Script {
         vec![],
         vec![],
     ))
+    
 }
