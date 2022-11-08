@@ -17,13 +17,13 @@ elif [ $PROJECT = 'dao-voting' ]; then
     forc $COMMAND --path $PROJECT $FLAG
     forc $COMMAND --path $PROJECT/tests/artifacts/gov_token $FLAG
 elif [ $PROJECT = 'escrow' ]; then
-    forc $COMMAND --path $PROJECT $FLAGS
+    forc $COMMAND --path $PROJECT $FLAG
     forc $COMMAND --path $PROJECT/tests/artifacts/asset $FLAG
 elif [ $PROJECT = 'fundraiser' ]; then
-    forc $COMMAND --path $PROJECT $FLAGS
+    forc $COMMAND --path $PROJECT $FLAG
     forc $COMMAND --path $PROJECT/tests/artifacts/asset $FLAG
 elif [ $PROJECT = 'multisig-wallet' ]; then
-    forc $COMMAND --path $PROJECT $FLAGS
+    forc $COMMAND --path $PROJECT $FLAG
 elif [ $PROJECT = 'name-registry' ]; then
     forc $COMMAND --path $PROJECT $FLAG
 elif [ $PROJECT = 'NFT' ]; then
