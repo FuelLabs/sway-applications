@@ -338,16 +338,18 @@ A user should be able to see the campaigns that they have pledged towards
 <details>
 <summary>Name Registry</summary>
 
-<h3>Contracts</h3>
+<h3>Contracts ❌</h3>
+
+- str[8] is used as a temporary workaround due to [dynamic strings not being available in storage](https://github.com/FuelLabs/sway-libs/issues/40)
 
 <h3>User Interface</h3>
 
 <h3>Tests</h3>
 
-- <h3>Rust</h3>
+- <h3>Rust ✅</h3>
 - <h3>Typescript</h3>
 
-<h3>Documentation</h3>
+<h3>Documentation ✅</h3>
 
 </details>
 
@@ -399,6 +401,9 @@ Will move from Apps repo to Libs repo soon
 <h3>User Interface</h3>
 
 <h3>Oracle Node</h3>
+
+- Feature complete, but it could be improved to resemble something closer to chainlink once event monitoring is supported.
+the sdk
 
 <h3>Tests</h3>
 
