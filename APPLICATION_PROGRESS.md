@@ -427,6 +427,7 @@ the sdk
 <h3>User Interface✅</h3>
 
 - Will not exist for this predicate. A larger predicate based exchange could implement a UI.
+
 <h3>Tests</h3>
 
 - <h3>Rust ✅</h3>
