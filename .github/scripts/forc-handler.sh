@@ -29,7 +29,7 @@ elif [ $PROJECT = 'name-registry' ]; then
 elif [ $PROJECT = 'NFT' ]; then
     forc $COMMAND --path $PROJECT $FLAG
 elif [ $PROJECT = 'oracle' ]; then
-    forc $COMMAND --path $PROJECT $FLAG
+    forc $COMMAND --path $PROJECT/packages/contract $FLAG
 else
     echo "project name did not match"
     exit 1
