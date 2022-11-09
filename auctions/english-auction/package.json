@@ -19,12 +19,34 @@
     "packages/*"
   ],
   "scripts": {
+    "build": "turbo run build",
+    "contracts": "",
+    "contracts:build": "pnpm exec english-auction-scripts build",
+    "contracts:deploy": "pnpm exec english-auction-scripts deploy",
+    "dev": "turbo run dev --parallel",
+    "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "pnpm lint:check --fix",
+    "lint": "run-s lint:check prettier:check",
     "prettier:check": "prettier --check .",
     "prettier:format": "prettier --write .",
     "services:clean": "make -C docker services-clean",
     "services:setup": "",
     "services:run": "make -C docker services-run",
     "services:reset": "run-s services:clean services:setup"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.8",
+    "dotenv": "^16.0.3",
+    "english-auction-scripts": "workspace:0.1.0",
+    "eslint": "^8.18.0",
+    "husky": "^8.0.2",
+    "prettier": "^2.7.1",
+    "ts-node": "^10.9.1",
+    "tsup": "^6.4.0",
+    "turbo": "^1.6.3",
+    "typescript": "^4.8.4"
   },
   "pnpm": {
     "peerDependencyRules": {
