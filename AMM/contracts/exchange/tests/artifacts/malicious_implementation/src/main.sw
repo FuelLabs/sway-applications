@@ -30,22 +30,6 @@ impl Exchange for Contract {
     fn deposit() {}
 
     #[storage(read, write)]
-    fn preview_swap_with_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo {
-        PreviewSwapInfo {
-            amount: 0,
-            sufficient_reserve: false,
-        }
-    }
-
-    #[storage(read, write)]
-    fn preview_swap_with_exact_output(exact_output: u64, input_asset: ContractId) -> PreviewSwapInfo {
-        PreviewSwapInfo {
-            amount: 0,
-            sufficient_reserve: false,
-        }
-    }
-
-    #[storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo {
         RemoveLiquidityInfo {
             asset_a_amount: 0,
@@ -93,6 +77,22 @@ impl Exchange for Contract {
         PreviewAddLiquidityInfo {
             other_asset_amount_to_add: 0,
             liquidity_asset_amount_to_receive: 0,
+        }
+    }
+
+    #[storage(read)]
+    fn preview_swap_with_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo {
+        PreviewSwapInfo {
+            amount: 0,
+            sufficient_reserve: false,
+        }
+    }
+
+    #[storage(read)]
+    fn preview_swap_with_exact_output(exact_output: u64, input_asset: ContractId) -> PreviewSwapInfo {
+        PreviewSwapInfo {
+            amount: 0,
+            sufficient_reserve: false,
         }
     }
 }

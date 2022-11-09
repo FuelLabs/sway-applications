@@ -85,41 +85,6 @@ abi Exchange {
     #[storage(read, write)]
     fn deposit();
 
-    /// Get the preview info of a `swap_with_exact_input`.
-    ///
-    /// The preview info while swapping `exact_input` of input asset consists of:
-    /// - The minimum amount of output asset to receive,
-    /// - Whether the output asset reserves are sufficient for the swap or not.
-    ///
-    /// # Arguments
-    ///
-    /// - `exact_input` - the amount to input
-    /// - `input_asset` - asset to input
-    ///
-    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
-    /// * When the `msg_asset_id` does not identify asset A or asset B
-    #[storage(read, write)]
-    fn preview_swap_with_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo;
-
-    /// Get the preview info of a `swap_with_exact_output`.
-    ///
-    /// The preview info while swapping to get `exact_output` amount of output asset consists of:
-    /// - The maximum amount of input asset to forward,
-    /// - Whether the input asset reserves are sufficient for the swap or not.
-    ///
-    /// # Arguments
-    ///
-    /// - `exact_output` - the desired amount of other asset to receive after swap
-    /// - `output_asset` - asset to output
-    ///
-    /// # Reverts
-    ///
-    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
-    /// * When the `msg_asset_id` does not identify asset A or asset B
-    /// * When the `exact_output` is less than the reserve amount of the output asset
-    #[storage(read, write)]
-    fn preview_swap_with_exact_output(exact_output: u64, output_asset: ContractId) -> PreviewSwapInfo;
-
     /// Burn liquidity pool asset at current ratio and transfer asset A and asset B to the sender.
     ///
     /// # Arguments
@@ -235,4 +200,39 @@ abi Exchange {
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     #[storage(read)]
     fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo;
+
+    /// Get the preview info of a `swap_with_exact_input`.
+    ///
+    /// The preview info while swapping `exact_input` of input asset consists of:
+    /// - The minimum amount of output asset to receive,
+    /// - Whether the output asset reserves are sufficient for the swap or not.
+    ///
+    /// # Arguments
+    ///
+    /// - `exact_input` - the amount to input
+    /// - `input_asset` - asset to input
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
+    /// * When the `msg_asset_id` does not identify asset A or asset B
+    #[storage(read)]
+    fn preview_swap_with_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo;
+
+    /// Get the preview info of a `swap_with_exact_output`.
+    ///
+    /// The preview info while swapping to get `exact_output` amount of output asset consists of:
+    /// - The maximum amount of input asset to forward,
+    /// - Whether the input asset reserves are sufficient for the swap or not.
+    ///
+    /// # Arguments
+    ///
+    /// - `exact_output` - the desired amount of other asset to receive after swap
+    /// - `output_asset` - asset to output
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
+    /// * When the `msg_asset_id` does not identify asset A or asset B
+    /// * When the `exact_output` is less than the reserve amount of the output asset
+    #[storage(read)]
+    fn preview_swap_with_exact_output(exact_output: u64, output_asset: ContractId) -> PreviewSwapInfo;
 }

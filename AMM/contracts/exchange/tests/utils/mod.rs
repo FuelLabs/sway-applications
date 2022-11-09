@@ -67,32 +67,6 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn preview_swap_with_exact_input(
-        contract: &Exchange,
-        exact_input: u64,
-        input_asset: AssetId,
-    ) -> CallResponse<PreviewSwapInfo> {
-        contract
-            .methods()
-            .preview_swap_with_exact_input(exact_input, ContractId::new(*input_asset))
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn preview_swap_with_exact_output(
-        contract: &Exchange,
-        exact_output: u64,
-        output_asset: AssetId,
-    ) -> CallResponse<PreviewSwapInfo> {
-        contract
-            .methods()
-            .preview_swap_with_exact_output(exact_output, ContractId::new(*output_asset))
-            .call()
-            .await
-            .unwrap()
-    }
-
     pub async fn remove_liquidity(
         contract: &Exchange,
         call_params: CallParameters,
@@ -179,6 +153,32 @@ pub mod abi_calls {
             .preview_add_liquidity(amount, ContractId::new(*asset))
             .call_params(call_params)
             .tx_params(tx_params)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn preview_swap_with_exact_input(
+        contract: &Exchange,
+        exact_input: u64,
+        input_asset: AssetId,
+    ) -> CallResponse<PreviewSwapInfo> {
+        contract
+            .methods()
+            .preview_swap_with_exact_input(exact_input, ContractId::new(*input_asset))
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn preview_swap_with_exact_output(
+        contract: &Exchange,
+        exact_output: u64,
+        output_asset: AssetId,
+    ) -> CallResponse<PreviewSwapInfo> {
+        contract
+            .methods()
+            .preview_swap_with_exact_output(exact_output, ContractId::new(*output_asset))
             .call()
             .await
             .unwrap()
