@@ -74,7 +74,7 @@ mod success {
             CallParameters::default(),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 10_000_000,
+                gas_limit: 100_000_000,
                 maturity: 0,
             },
             preview_amount_a,
@@ -113,7 +113,7 @@ mod success {
             CallParameters::default(),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 10_000_000,
+                gas_limit: 100_000_000,
                 maturity: 0,
             },
             preview_amount_a,
@@ -152,7 +152,7 @@ mod success {
             CallParameters::default(),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 10_000_000,
+                gas_limit: 100_000_000,
                 maturity: 0,
             },
             preview_amount_b,
@@ -191,7 +191,7 @@ mod success {
             CallParameters::default(),
             TxParameters {
                 gas_price: 0,
-                gas_limit: 10_000_000,
+                gas_limit: 100_000_000,
                 maturity: 0,
             },
             preview_amount_b,
@@ -212,7 +212,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_unitialized() {
         // call setup instead of setup_and_initialize
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =

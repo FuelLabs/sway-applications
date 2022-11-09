@@ -105,7 +105,7 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let exchange_instance = Exchange::new(exchange_contract_id.to_string(), wallet.clone());
+        let exchange_instance = Exchange::new(exchange_contract_id.clone(), wallet.clone());
         constructor(&exchange_instance, asset_pair).await;
         ContractId::new(*exchange_contract_id.hash())
     }
@@ -130,7 +130,7 @@ pub mod test_helpers {
             coins_per_asset,
             amount_per_coin,
         );
-        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None).await;
+        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None, None).await;
         wallet.set_provider(provider);
 
         // setup AMM contract
@@ -142,7 +142,7 @@ pub mod test_helpers {
         )
         .await
         .unwrap();
-        let amm_instance = AMM::new(amm_contract_id.to_string(), wallet.clone());
+        let amm_instance = AMM::new(amm_contract_id.clone(), wallet.clone());
 
         // setup two asset pairs that will be used in tests
         let asset_pairs = vec![

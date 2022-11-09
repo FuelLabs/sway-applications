@@ -23,15 +23,13 @@ use libraries::{
     Exchange,
 };
 use std::{
+    auth::msg_sender,
     block::height,
-    chain::auth::msg_sender,
-    context::{
-        call_frames::{
-            contract_id,
-            msg_asset_id,
-        },
-        msg_amount,
+    call_frames::{
+        contract_id,
+        msg_asset_id,
     },
+    context::msg_amount,
     logging::log,
     math::*,
     storage::StorageMap,

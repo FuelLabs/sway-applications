@@ -30,24 +30,6 @@ pub struct MetaExchange {
 pub mod exchange_abi_calls {
     use super::*;
 
-    pub async fn add_liquidity(
-        contract: &Exchange,
-        call_params: CallParameters,
-        tx_params: TxParameters,
-        desired_liquidity: u64,
-        deadline: u64,
-    ) -> CallResponse<u64> {
-        contract
-            .methods()
-            .add_liquidity(desired_liquidity, deadline)
-            .call_params(call_params)
-            .append_variable_outputs(2)
-            .tx_params(tx_params)
-            .call()
-            .await
-            .unwrap()
-    }
-
     pub async fn constructor(contract: &Exchange, pair: (AssetId, AssetId)) -> CallResponse<()> {
         contract
             .methods()
@@ -55,26 +37,6 @@ pub mod exchange_abi_calls {
             .call()
             .await
             .unwrap()
-    }
-
-    pub async fn deposit(contract: &Exchange, call_params: CallParameters) -> CallResponse<()> {
-        contract
-            .methods()
-            .deposit()
-            .call_params(call_params)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn pool_info(contract: &Exchange) -> PoolInfo {
-        contract
-            .methods()
-            .pool_info()
-            .simulate()
-            .await
-            .unwrap()
-            .value
     }
 }
 
@@ -86,39 +48,8 @@ pub mod paths {
 
 pub mod test_helpers {
     use super::*;
-    use exchange_abi_calls::{add_liquidity, constructor, deposit};
+    use exchange_abi_calls::constructor;
     use paths::EXCHANGE_CONTRACT_BINARY_PATH;
-
-    pub async fn deposit_and_add_liquidity(
-        exchange_instance: &Exchange,
-        asset_a: AssetId,
-        asset_a_amount: u64,
-        asset_b: AssetId,
-        asset_b_amount: u64,
-    ) -> u64 {
-        let call_params = CallParameters::new(Some(asset_a_amount), Some(asset_a.clone()), None);
-        deposit(exchange_instance, call_params).await;
-
-        let call_params = CallParameters::new(Some(asset_b_amount), Some(asset_b.clone()), None);
-        deposit(exchange_instance, call_params).await;
-
-        let call_params = CallParameters::new(None, None, Some(10_000_000));
-        let tx_params = TxParameters {
-            gas_price: 0,
-            gas_limit: 100_000_000,
-            maturity: 0,
-        };
-        let result = add_liquidity(
-            exchange_instance,
-            call_params,
-            tx_params,
-            asset_a_amount,
-            1000,
-        )
-        .await;
-
-        result.value
-    }
 
     pub async fn setup_wallet_and_provider() -> (WalletUnlocked, Vec<AssetId>, Provider) {
         let mut wallet = WalletUnlocked::new_random(None);
@@ -178,13 +109,14 @@ pub mod test_helpers {
 #[tokio::test]
 async fn can_deposit_and_add_liquidity_atomically() {
     let (wallet, _provider, exchange, amounts) = setup().await;
-    let script_instance = DepositAndAddLiquidityScript::new(wallet.clone(), SCRIPT_BINARY_PATH);
+    let script_instance = DepositAndAddLiquidityScript::new(wallet, SCRIPT_BINARY_PATH);
+
     let added_liquidity = script_instance
         .main(
             exchange.id,
             ContractId::new(*exchange.pair.0),
-            amounts.asset_a_deposit,
             ContractId::new(*exchange.pair.1),
+            amounts.asset_a_deposit,
             amounts.asset_b_deposit,
         )
         .await

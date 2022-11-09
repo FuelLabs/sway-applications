@@ -80,7 +80,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_not_initialized() {
         let (wallet, amm_instance, asset_pairs) = setup().await;
         let pair = asset_pairs[0];
@@ -92,7 +92,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_exchange_contract_byteroot_invalid() {
         let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
         let pair = asset_pairs[0];
@@ -104,7 +104,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_exchange_contract_does_not_match_pair() {
         let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
         let pair = asset_pairs[0];

@@ -96,6 +96,11 @@ pub mod abi_calls {
             .methods()
             .swap_with_exact_input(min_output, deadline)
             .call_params(call_params)
+            .tx_params(TxParameters {
+                gas_price: 0,
+                gas_limit: 10_000_000,
+                maturity: 0,
+            })
             .append_variable_outputs(2)
             .call()
             .await
@@ -112,6 +117,11 @@ pub mod abi_calls {
             .methods()
             .swap_with_exact_output(output, deadline)
             .call_params(call_params)
+            .tx_params(TxParameters {
+                gas_price: 0,
+                gas_limit: 10_000_000,
+                maturity: 0,
+            })
             .append_variable_outputs(2)
             .call()
             .await
@@ -236,7 +246,7 @@ pub mod test_helpers {
 
         let added = add_liquidity(
             &exchange.instance,
-            CallParameters::new(Some(0), None, Some(10_000_000)),
+            CallParameters::new(Some(0), None, Some(100_000_000)),
             TxParameters {
                 gas_price: 0,
                 gas_limit: 100_000_000,
@@ -262,7 +272,7 @@ pub mod test_helpers {
             coins_per_asset,
             amount_per_coin,
         );
-        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None).await;
+        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None, None).await;
         wallet.set_provider(provider);
 
         // setup exchange contract
@@ -274,7 +284,7 @@ pub mod test_helpers {
         )
         .await
         .unwrap();
-        let exchange_instance = Exchange::new(exchange_contract_id.to_string(), wallet.clone());
+        let exchange_instance = Exchange::new(exchange_contract_id.clone(), wallet.clone());
 
         let liquidity_pool_asset_id = AssetId::from(*exchange_contract_id.hash());
 

@@ -2,13 +2,11 @@ contract;
 
 dep errors;
 dep events;
-dep utils;
 
 use errors::InitError;
 use events::{RegisterPoolEvent, SetExchangeBytecodeRootEvent};
 use libraries::{AMM, Exchange};
-use std::{constants::BASE_ASSET_ID, logging::log, storage::StorageMap};
-use utils::bytecode_root;
+use std::{constants::BASE_ASSET_ID, external::bytecode_root, logging::log, storage::StorageMap};
 
 storage {
     /// The valid exchange contract bytecode root
