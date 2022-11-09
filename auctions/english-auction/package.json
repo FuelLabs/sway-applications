@@ -1,0 +1,41 @@
+{
+  "name": "english-auction",
+  "version": "0.0.0",
+  "author": "Fuel Labs <contact@fuel.sh> (https://fuel.network/)",
+  "private": true,
+  "engines": {
+    "node": ">=16"
+  },
+  "homepage": "https://github.com/FuelLabs/sway-applications#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FuelLabs/sway-applications.git"
+  },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/FuelLabs/sway-applications/issues"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "prettier:check": "prettier --check .",
+    "prettier:format": "prettier --write .",
+    "services:clean": "make -C docker services-clean",
+    "services:setup": "",
+    "services:run": "make -C docker services-run",
+    "services:reset": "run-s services:clean services:setup"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowAny": [
+        "react",
+        "react-dom"
+      ],
+      "ignoreMissing": [
+        "react",
+        "react-dom"
+      ]
+    }
+  }
+}
