@@ -4,7 +4,7 @@ dep utils;
 
 use utils::{recover_signer, SignatureData};
 
-abi MultiSignatureWallet {
+abi CountApprovals {
     #[storage(read, write)]
     fn count_approvals(transaction_hash: b256, signatures: Vec<SignatureData>) -> u64;
 }
@@ -14,10 +14,10 @@ storage {
     weighting: StorageMap<b256, u64> = StorageMap {},
 }
 
-impl MultiSignatureWallet for Contract {
+impl CountApprovals for Contract {
     #[storage(read, write)]
     fn count_approvals(message_hash: b256, signatures_data: Vec<SignatureData>) -> u64 {
-        //construct storage.weighting
+        //setup storage.weighting
         storage.weighting.insert(0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1, 2);
         storage.weighting.insert(0x000000000000000000000000db4aa29ef306fc8d28025b838ccd3feecaedb333, 4);
 
