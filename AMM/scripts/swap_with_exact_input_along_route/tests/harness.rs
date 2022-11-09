@@ -6,7 +6,7 @@ use fuels::{
 use paths::SCRIPT_BINARY_PATH;
 use test_helpers::{expected_swap_output, setup};
 
-// script_abigen!(SwapScript, "out/debug/swap_route-abi.json");
+script_abigen!(SwapScript, "out/debug/swap_route-abi.json");
 abigen!(AMM, "../../contracts/AMM/out/debug/amm-abi.json");
 abigen!(
     Exchange,
@@ -82,8 +82,8 @@ pub mod exchange_abi_calls {
             .methods()
             .add_liquidity(desired_liquidity, deadline)
             .call_params(call_params)
-            .append_variable_outputs(2)
             .tx_params(tx_params)
+            .append_variable_outputs(2)
             .call()
             .await
             .unwrap()
@@ -342,18 +342,18 @@ async fn can_swap_with_exact_input_along_path() {
     let (wallet, _provider, amm, exchanges, asset_ids) = setup().await;
     let swap_amount: u64 = 150;
     let path = vec![asset_ids[0], asset_ids[1], asset_ids[2]];
-    // let script_instance = SwapScript::new(wallet.clone(), SCRIPT_BINARY_PATH);
-    // // waiting for a function similar to set_contracts()
-    // let result = script_instance
-    //     .main(
-    //         amm.id,
-    //         ContractId::new(*path[0]),
-    //         ContractId::new(*path[1]),
-    //         ContractId::new(*path[2]),
-    //         swap_amount,
-    //     )
-    //     .await
-    //     .unwrap();
-    // let expected_result = expected_swap_output(amm.instance, exchanges, swap_amount, path).await;
-    // assert_eq!(expected_result, result);
+    let script_instance = SwapScript::new(wallet.clone(), SCRIPT_BINARY_PATH);
+    // waiting for a function similar to set_contracts()
+    let result = script_instance
+        .main(
+            amm.id,
+            ContractId::new(*path[0]),
+            ContractId::new(*path[1]),
+            ContractId::new(*path[2]),
+            swap_amount,
+        )
+        .await
+        .unwrap();
+    let expected_result = expected_swap_output(amm.instance, exchanges, swap_amount, path).await;
+    assert_eq!(expected_result, result);
 }
