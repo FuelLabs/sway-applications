@@ -1,31 +1,42 @@
-script;
+contract;
 
 dep utils;
 
-use utils::{eip_191_format, eth_prefix};
+use utils::{recover_signer, SignatureData};
 
-use std::{
-    b512::B512,
-    hash::sha256,
-    vm::evm::{
-        ecr::ec_recover_evm_address,
-        evm_address::EvmAddress,
-    },
-};
+abi MultiSignatureWallet {
+    #[storage(read, write)]
+    fn count_approvals(transaction_hash: b256, signatures: Vec<SignatureData>) -> u64;
+}
 
-// Recover the EVM address from the input signature and message.
-// Check if it matched the target address.
-fn main(signature: B512, message_hash: b256) -> bool {
-    let eip_191_formatted_message = eip_191_format(message_hash);
+storage {
+    /// Number of approvals per user
+    weighting: StorageMap<b256, u64> = StorageMap {},
+}
 
-    let eth_prefixed_message = eth_prefix(eip_191_formatted_message);
+impl MultiSignatureWallet for Contract {
+    #[storage(read, write)]
+    fn count_approvals(message_hash: b256, signatures_data: Vec<SignatureData>) -> u64 {
+        //construct storage.weighting
+        storage.weighting.insert(0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1, 2);
+        storage.weighting.insert(0x000000000000000000000000db4aa29ef306fc8d28025b838ccd3feecaedb333, 4);
 
-    let target_address = EvmAddress::from(0x44c646ac0426710470343f1cdb4aa29ef306fc8d28025b838ccd3feecaedb333);
+        // The signers must have increasing values in order to check for duplicates or a zero-value
+        let mut previous_signer = b256::min();
 
-    //recover evm address from signature
-    let evm_address_result = ec_recover_evm_address(signature, eth_prefixed_message);
-    require(evm_address_result.is_ok(), "ec recover evm address failed");
-    let evm_address = evm_address_result.unwrap();
+        let mut approval_count = 0;
+        let mut index = 0;
+        while index < signatures_data.len() {
+            let signer = recover_signer(message_hash, signatures_data.get(index).unwrap());
 
-    evm_address == target_address
+            require(previous_signer < signer, "IncorrectSignerOrdering");
+
+            previous_signer = signer;
+            approval_count += storage.weighting.get(signer);
+
+            index += 1;
+        }
+
+        approval_count
+    }
 }

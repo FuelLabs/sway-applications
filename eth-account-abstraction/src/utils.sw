@@ -3,20 +3,41 @@ library utils;
 use std::{
     b512::B512,
     ecr::{
-        ec_recover,
-        EcRecoverError,
+        ec_recover_address,
     },
     hash::{
-        keccak256,
         sha256,
     },
-    identity::Identity,
-    vm::evm::evm_address::EvmAddress,
+    vm::evm::{
+        ecr::ec_recover_evm_address,
+    },
 };
+
+enum MessageFormat {
+    None: (),
+    EIP191PersonalSign: (),
+}
+
+enum MessagePrefix {
+    None: (),
+    EthereumPrefix: (),
+}
+
+enum WalletType {
+    Fuel: (),
+    EVM: (),
+}
+
+pub struct SignatureData {
+    signature: B512,
+    format: MessageFormat,
+    prefix: MessagePrefix,
+    wallet_type: WalletType,
+}
 
 //Applies the prefix used by Geth to a message hash.
 //Returns the prefixed hash.
-pub fn eth_prefix(msg_hash: b256) -> b256 {
+fn eth_prefix(msg_hash: b256) -> b256 {
     let prefix = "\x19Ethereum Signed Message:\n32";
 
     sha256((prefix, msg_hash))
@@ -26,7 +47,7 @@ pub fn eth_prefix(msg_hash: b256) -> b256 {
 //0x45, personal sign.
 //It takes a data_to_sign to represent the <data to sign> in the following EIP-191 format:
 //0x19 <1 byte version> <version specific data> <data to sign>
-pub fn eip_191_format(data_to_sign: b256) -> b256 {
+fn eip_191_format(data_to_sign: b256) -> b256 {
     let initial_byte = 0x19u8;
     let version_byte = 0x45u8;
 
@@ -51,12 +72,12 @@ pub fn eip_191_format(data_to_sign: b256) -> b256 {
 }
 
 // Build a single b256 value from a tuple of 4 u64 values.
-pub fn compose(words: (u64, u64, u64, u64)) -> b256 {
+fn compose(words: (u64, u64, u64, u64)) -> b256 {
     asm(r1: __addr_of(words)) { r1: b256 }
 }
 
 // Get a tuple of 4 u64 values from a single b256 value.
-pub fn decompose(val: b256) -> (u64, u64, u64, u64) {
+fn decompose(val: b256) -> (u64, u64, u64, u64) {
     asm(r1: __addr_of(val)) { r1: (u64, u64, u64, u64) }
 }
 
@@ -76,4 +97,32 @@ fn encode_data(packed_bytes: b256, message_hash: b256) -> Vec<u64> {
     data.push(message_4 << 48);
 
     data
+}
+
+pub fn recover_signer(message_hash: b256, signature_data: SignatureData) -> b256 {
+    //Format
+    let formatted_message = match signature_data.format {
+        MessageFormat::None => message_hash,
+        MessageFormat::EIP191PersonalSign => eip_191_format(message_hash),
+    };
+
+    //Prefix
+    let prefixed_message = match signature_data.prefix {
+        MessagePrefix::None => formatted_message,
+        MessagePrefix::EthereumPrefix => eth_prefix(formatted_message),
+    };
+
+    //Recover
+    match signature_data.wallet_type {
+        WalletType::Fuel => {
+            let recover_result = ec_recover_address(signature_data.signature, prefixed_message);
+            require(recover_result.is_ok(), "ec_recover_address failed");
+            recover_result.unwrap().value
+        },
+        WalletType::EVM => {
+            let recover_result = ec_recover_evm_address(signature_data.signature, prefixed_message);
+            require(recover_result.is_ok(), "ec_recover_evm_address failed");
+            recover_result.unwrap().value
+        },
+    }
 }
