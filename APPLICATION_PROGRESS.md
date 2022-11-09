@@ -458,16 +458,25 @@ the sdk
 <details>
 <summary>Over the counter (OTC) Swap Predicate</summary>
 
-<h3>Contracts</h3>
+<h3>Contracts✅</h3>
 
-<h3>User Interface</h3>
+<h3>User Interface✅</h3>
+
+- Will not exist for this predicate. A larger predicate based exchange could implement a UI.
 
 <h3>Tests</h3>
 
-- <h3>Rust</h3>
-- <h3>Typescript</h3>
+- <h3>Rust ✅</h3>
+- <h3>Typescript✅</h3>
+
+  - Will not exist for this application.
 
 <h3>Documentation</h3>
+
+- Readme ✅  
+- Specification✅
+
+  - Will not exist as predicate has trivial information flow / actions by design.
 
 </details>
 
