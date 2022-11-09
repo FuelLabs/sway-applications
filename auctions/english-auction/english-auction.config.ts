@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { createConfig, replaceEventOnEnv } from 'swayswap-scripts';
+import { createConfig, replaceEventOnEnv } from 'english-auction-scripts';
 
 const { NODE_ENV, OUTPUT_ENV } = process.env;
 

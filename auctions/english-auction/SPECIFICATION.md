@@ -1,16 +1,17 @@
 Table of Contents
+
 - [Overview](#overview)
 - [Use Cases](#use-cases)
-    - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
-        - [English Auction Core Functionality](#english-auction-core-functionality)
-            - [`bid()`](#bid)
-            - [`cancel()`](#cancel)
-            - [`create()`](#create)
-            - [`withdraw()`](#withdraw)
-        - [English Auction State Checks](#english-auction-state-checks)
-            - [`auction_info()`](#auction-info)
-            - [`deposit_balance()`](#deposit-balance)
-            - [`total_auctions()`](#total-auctions)
+  - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
+    - [English Auction Core Functionality](#english-auction-core-functionality)
+      - [`bid()`](#bid)
+      - [`cancel()`](#cancel)
+      - [`create()`](#create)
+      - [`withdraw()`](#withdraw)
+    - [English Auction State Checks](#english-auction-state-checks)
+      - [`auction_info()`](#auction-info)
+      - [`deposit_balance()`](#deposit-balance)
+      - [`total_auctions()`](#total-auctions)
 - [Sequence Diagram](#sequence-diagram)
 
 # Overview
@@ -34,31 +35,31 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 #### `bid()`
 
 1. Allows a user to bid upon an auction if
-    1. The auction has not passed the deadline, not been cancelled, and reserve has not been met
-    2. The users bids with an accepted asset
-    3. The bid meets the initial price for the asset or is greater than the last bid
-    4. The user's total bid is either below or meets the reserve
+   1. The auction has not passed the deadline, not been cancelled, and reserve has not been met
+   2. The users bids with an accepted asset
+   3. The bid meets the initial price for the asset or is greater than the last bid
+   4. The user's total bid is either below or meets the reserve
 
 #### `cancel()`
 
 1. Allows a user to cancel an auction they have created if
-    1. The auction has not passed the deadline and reserve has not been met
+   1. The auction has not passed the deadline and reserve has not been met
 
 #### `create()`
 
 1. Allows a user to create a new auction if
-    1. They have provided an asset to sell
-    2. The asset type that is acceptable to submit as a bid has been specified
-    3. An initial price for the asset has been set
-    4. The duration for the auction has been set
-    5. They have specified whether they would like to set a reserve price
+   1. They have provided an asset to sell
+   2. The asset type that is acceptable to submit as a bid has been specified
+   3. An initial price for the asset has been set
+   4. The duration for the auction has been set
+   5. They have specified whether they would like to set a reserve price
 
 #### `withdraw()`
 
 1. Allows a user to withdraw their owed assests for an auction if:
-    1. The auction has passed the deadline, been cancelled, or the reserve has been met
-    2. They are the seller or have placed a bid
-    3. They have an outstanding balance
+   1. The auction has passed the deadline, been cancelled, or the reserve has been met
+   2. They are the seller or have placed a bid
+   3. They have an outstanding balance
 
 ### English Auction State Checks
 
