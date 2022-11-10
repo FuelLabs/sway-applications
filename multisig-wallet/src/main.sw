@@ -2,7 +2,7 @@ contract;
 
 // TODO:
 //      - change the "data" in the Tx hashing from b256 to Bytes type when available
-dep contract_abi;
+dep interface;
 dep data_structures;
 dep errors;
 dep events;
@@ -20,7 +20,7 @@ use std::{
     },
 };
 
-use contract_abi::MultiSignatureWallet;
+use interface::MultiSignatureWallet;
 use data_structures::{SignatureData, User};
 use errors::{ExecutionError, InitError};
 use events::{ExecutedEvent, TransferEvent};
