@@ -130,7 +130,7 @@ impl MultiSignatureWallet for Contract {
 /// it then increments the number of approvals by that address' approval weighting.
 /// Returns the final approval count.
 #[storage(read)]
-pub fn count_approvals(transaction_hash: b256, signatures_data: Vec<SignatureData>) -> u64 {
+fn count_approvals(transaction_hash: b256, signatures_data: Vec<SignatureData>) -> u64 {
     // The signers must have increasing values in order to check for duplicates or a zero-value.
     let mut previous_signer = b256::min();
 
