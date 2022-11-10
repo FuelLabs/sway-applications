@@ -13,11 +13,9 @@ dep events;
 use std::{
     address::Address,
     b512::B512,
+    call_frames::contract_id,
     constants::ZERO_B256,
-    context::{
-        call_frames::contract_id,
-        this_balance,
-    },
+    context::this_balance,
     contract_id::ContractId,
     ecr::ec_recover_address,
     hash::sha256,
@@ -69,7 +67,7 @@ impl MultiSignatureWallet for Contract {
 
         let mut user_index = 0;
         while user_index < 25 {
-            require(~Address::from(ZERO_B256) != users[user_index].identity, InitError::AddressCannotBeZero);
+            require(Address::from(ZERO_B256) != users[user_index].identity, InitError::AddressCannotBeZero);
             require(users[user_index].weight != 0, InitError::WeightingCannotBeZero);
             storage.weighting.insert(users[user_index].identity, users[user_index].weight);
             user_index = user_index + 1;
@@ -197,7 +195,7 @@ fn create_hash(
 #[storage(read)]
 fn count_approvals(transaction_hash: b256, signatures: [B512; 25]) -> u64 {
     // The signers must have increasing values in order to check for duplicates or a zero-value
-    let mut previous_signer = ~b256::min();
+    let mut previous_signer = b256::min();
 
     let mut approval_count = 0;
     let mut index = 0;
@@ -210,7 +208,7 @@ fn count_approvals(transaction_hash: b256, signatures: [B512; 25]) -> u64 {
         require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
 
         previous_signer = signer;
-        approval_count = approval_count + storage.weighting.get(~Address::from(signer));
+        approval_count = approval_count + storage.weighting.get(Address::from(signer));
 
         // Once break is implemented uncomment below. https://github.com/FuelLabs/sway/pull/1646
         // if storage.threshold <= approval_count {
