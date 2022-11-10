@@ -1,79 +1,15 @@
-use fuels::prelude::*;
+mod utils;
 
-abigen!(Multisig, "out/debug/multisig-wallet-abi.json");
+const VALID_SIGNER_PK: &str = "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301";
+const INVALID_SIGNER_PK: &str = "37fa81c84ccd547c30c176b118d5cb892bdb113e8e80141f266519422ef9eefd";
 
-async fn setup() -> (Multisig, WalletUnlocked, WalletUnlocked, WalletUnlocked) {
-    let num_wallets = 3;
-    let coins_per_wallet = 1;
-    let amount_per_coin = 1_000_000;
-
-    let config = WalletsConfig::new(
-        Some(num_wallets),
-        Some(coins_per_wallet),
-        Some(amount_per_coin),
-    );
-
-    let mut wallets = launch_custom_provider_and_get_wallets(config, None).await;
-
-    let wallet1 = wallets.pop().unwrap();
-    let wallet2 = wallets.pop().unwrap();
-    let wallet3 = wallets.pop().unwrap();
-
-    let id = Contract::deploy(
-        "./out/debug/multisig-wallet.bin",
-        &wallet1,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(
-            "./out/debug/multisig-wallet-storage_slots.json".to_string(),
-        )),
-    )
-    .await
-    .unwrap();
-
-    (
-        Multisig::new(id.to_string(), wallet1.clone()),
-        wallet1,
-        wallet2,
-        wallet3,
-    )
+#[tokio::test]
+async fn valid_signer() {
+    utils::test_recover_and_match_addresses(VALID_SIGNER_PK).await;
 }
 
-mod constructor {
-
-    use super::*;
-
-    #[tokio::test]
-    async fn placeholder() {
-        let (multisig, wallet1, wallet2, wallet3) = setup().await;
-    }
-}
-
-mod execute_transaction {
-
-    use super::*;
-
-    #[tokio::test]
-    async fn placeholder() {
-        let (multisig, wallet1, wallet2, wallet3) = setup().await;
-    }
-}
-
-mod is_owner {
-
-    use super::*;
-
-    #[tokio::test]
-    async fn placeholder() {
-        let (multisig, wallet1, wallet2, wallet3) = setup().await;
-    }
-}
-
-mod get_transaction_hash {
-
-    use super::*;
-
-    #[tokio::test]
-    async fn placeholder() {
-        let (multisig, wallet1, wallet2, wallet3) = setup().await;
-    }
+#[tokio::test]
+#[should_panic]
+async fn invalid_signer() {
+    utils::test_recover_and_match_addresses(INVALID_SIGNER_PK).await;
 }

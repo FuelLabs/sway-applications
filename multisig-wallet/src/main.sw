@@ -87,28 +87,30 @@ impl MultiSignatureWallet for Contract {
         value: u64,
         data: b256,
         signatures_data: Vec<SignatureData>,
-    ) {
+    ) -> u64 {
         require(storage.nonce != 0, InitError::NotInitialized);
-        require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
+        // require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
         let transaction_hash = create_hash(to, value, data, storage.nonce);
         let approval_count = count_approvals(transaction_hash, signatures_data);
 
-        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
+        approval_count
 
-        storage.nonce += 1;
 
-        match to {
-            Identity::Address(address) => transfer_to_address(value, asset_id, address),
-            Identity::ContractId(address) => force_transfer_to_contract(value, asset_id, address),
-        };
 
-        log(TransferEvent {
-            to,
-            asset: asset_id,
-            value,
-            nonce: storage.nonce - 1,
-        });
+        // require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
+        
+        // storage.nonce += 1;
+        // match to {
+        //     Identity::Address(address) => transfer_to_address(value, asset_id, address),
+        //     Identity::ContractId(address) => force_transfer_to_contract(value, asset_id, address),
+        // };
+        // log(TransferEvent {
+        //     to,
+        //     asset: asset_id,
+        //     value,
+        //     nonce: storage.nonce - 1,
+        // });
     }
 
     #[storage(read)]

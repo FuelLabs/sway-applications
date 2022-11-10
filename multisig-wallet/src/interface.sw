@@ -40,7 +40,7 @@ abi MultiSignatureWallet {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// - When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures_data: Vec<SignatureData>);
+    fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures_data: Vec<SignatureData>) -> u64;
 
     /// Returns the current nonce in the contract.
     /// Used to check the nonce and create a Tx via transaction_hash().
