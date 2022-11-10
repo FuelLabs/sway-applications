@@ -42,11 +42,13 @@ abi MultiSignatureWallet {
     #[storage(read, write)]
     fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures_data: Vec<SignatureData>);
 
-    /// Returns the balance of the specified asset_id for this contract
-    fn balance(asset_id: ContractId) -> u64;
-
+    /// Returns the current nonce in the contract
+    /// Used to check the nonce and create a Tx via transaction_hash()
     #[storage(read)]
     fn nonce() -> u64;
+
+    /// Returns the balance of the specified asset_id for this contract
+    fn balance(asset_id: ContractId) -> u64;
 
     /// Takes in transaction data and hashes it into a unique tx hash
     /// Used for verification of message

@@ -126,6 +126,11 @@ impl MultiSignatureWallet for Contract {
         });
     }
 
+    #[storage(read)]
+    fn nonce() -> u64 {
+        storage.nonce
+    }
+
     fn balance(asset_id: ContractId) -> u64 {
         this_balance(asset_id)
     }
@@ -133,15 +138,9 @@ impl MultiSignatureWallet for Contract {
     fn transaction_hash(to: Identity, value: u64, data: Vec<u64>, nonce: u64) -> b256 {
         create_hash(to, value, data, nonce, contract_id())
     }
-
-    /// Returns the current nonce in the contract
-    /// Used to check the nonce and create a Tx via transaction_hash()
-    #[storage(read)]
-    fn nonce() -> u64 {
-        storage.nonce
-    }
 }
 
+/// Takes in transaction data and hashes it into a unique tx hash
 fn create_hash(
     to: Identity,
     value: u64,
