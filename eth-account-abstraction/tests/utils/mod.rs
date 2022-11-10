@@ -32,7 +32,7 @@ pub async fn test_recover_and_match_addresses(private_key: &str) {
         private_key,
         message_hash,
         MessageFormat::EIP191PersonalSign(),
-        MessagePrefix::EthereumPrefix(),
+        MessagePrefix::Ethereum(),
         WalletType::EVM(),
     )
     .await;
@@ -92,31 +92,13 @@ async fn format_and_sign(
     //Format
     let formatted_message = match format {
         MessageFormat::None() => message_hash,
-        MessageFormat::EIP191PersonalSign() => {
-            let initial_byte = 0x19u8;
-            let version_byte = 0x45u8;
-
-            let mut eip_191_data: Vec<u8> = vec![initial_byte, version_byte];
-            eip_191_data.append(&mut message_hash.to_vec());
-
-            let eip_191_formatted_message = keccak_hash(&eip_191_data);
-            unsafe { Message::from_bytes_unchecked(*eip_191_formatted_message) }
-        }
+        MessageFormat::EIP191PersonalSign() => eip_191_personal_sign_format(message_hash),
     };
 
     //Prefix
     let prefixed_message = match prefix {
         MessagePrefix::None() => formatted_message,
-        MessagePrefix::EthereumPrefix() => {
-            let prefix = r#"\x19Ethereum Signed Message:\n32"#;
-
-            let mut eth_prefix_data: Vec<u8> = Vec::new();
-            eth_prefix_data.append(&mut prefix.as_bytes().to_vec());
-            eth_prefix_data.append(&mut formatted_message.to_vec());
-
-            let eth_prefixed_message = Hasher::hash(eth_prefix_data);
-            unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) }
-        }
+        MessagePrefix::Ethereum() => ethereum_prefix(formatted_message),
     };
 
     //Sign
@@ -138,6 +120,28 @@ async fn format_and_sign(
         prefix,
         wallet_type,
     }
+}
+
+fn eip_191_personal_sign_format(message_hash: Message) -> Message {
+    let initial_byte = 0x19u8;
+    let version_byte = 0x45u8;
+
+    let mut eip_191_data: Vec<u8> = vec![initial_byte, version_byte];
+    eip_191_data.append(&mut message_hash.to_vec());
+
+    let eip_191_formatted_message = keccak_hash(&eip_191_data);
+    unsafe { Message::from_bytes_unchecked(*eip_191_formatted_message) }
+}
+
+fn ethereum_prefix(formatted_message: Message) -> Message {
+    let prefix = r#"\x19Ethereum Signed Message:\n32"#;
+
+    let mut eth_prefix_data: Vec<u8> = Vec::new();
+    eth_prefix_data.append(&mut prefix.as_bytes().to_vec());
+    eth_prefix_data.append(&mut formatted_message.to_vec());
+
+    let eth_prefixed_message = Hasher::hash(eth_prefix_data);
+    unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) }
 }
 
 // A keccak-256 method
