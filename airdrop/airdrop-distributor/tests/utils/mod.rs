@@ -1,4 +1,7 @@
-use fuel_merkle::{binary::in_memory::MerkleTree, common::Bytes32};
+use fuel_merkle::{
+    binary::in_memory::MerkleTree,
+    common::{empty_sum_sha256, Bytes32},
+};
 use fuels::{contract::contract::CallResponse, core::types::Bits256, prelude::*};
 use sha2::{Digest, Sha256};
 
@@ -29,7 +32,7 @@ pub mod airdrop_distributor_abi_calls {
         contract: &AirdropDistributor,
         key: u64,
         num_leaves: u64,
-        proof: [Bits256; 2],
+        proof: Vec<Bits256>,
         to: Identity,
     ) -> CallResponse<()> {
         contract
@@ -97,10 +100,37 @@ pub mod test_helpers {
 
     use super::*;
 
+    #[derive(Clone)]
+    struct Node {
+        hash: Bytes32,
+        left: Option<usize>,
+        right: Option<usize>,
+    }
+
+    impl Node {
+        pub fn new(hash: Bytes32) -> Self {
+            Node {
+                hash,
+                left: None,
+                right: None,
+            }
+        }
+
+        pub fn left(mut self, node: usize) -> Self {
+            self.left = Some(node);
+            self
+        }
+
+        pub fn right(mut self, node: usize) -> Self {
+            self.right = Some(node);
+            self
+        }
+    }
+
     pub async fn build_tree(
         key: u64,
         leaves: Vec<(Identity, u64)>,
-    ) -> (MerkleTree, Bits256, Bytes32, [Bits256; 2]) {
+    ) -> (MerkleTree, Bits256, Bytes32, Vec<Bits256>) {
         let mut tree = MerkleTree::new();
 
         for datum in leaves.iter() {
@@ -123,109 +153,117 @@ pub mod test_helpers {
             tree.push(&digest);
         }
 
-        let merkle_root = Bits256(tree.root());
+        let merkle_root = tree.root();
         let mut proof = tree.prove(key).unwrap();
         let merkle_leaf = proof.1[0];
         proof.1.remove(0);
 
-        (
-            tree,
-            merkle_root,
-            merkle_leaf,
-            [Bits256(proof.1[0]), Bits256(proof.1[1])],
-        )
+        let mut final_proof: Vec<Bits256> = Vec::new();
+
+        for itterator in proof.1 {
+            final_proof.push(Bits256(itterator.clone()));
+        }
+
+        (tree, Bits256(merkle_root), merkle_leaf, final_proof)
     }
 
-    pub async fn build_tree_manual(leaves: [(Identity, u64); 3]) -> (Bits256, Bits256, Bits256) {
-        //            ABC
-        //           /   \
-        //          AB    C
-        //         /  \
-        //        A    B
-
-        // Leaf A hash
+    pub async fn build_tree_manual(
+        leaves: Vec<(Identity, u64)>,
+        height: u64,
+        key: u64,
+    ) -> (Bits256, Vec<Bits256>, Bits256) {
+        let num_leaves = leaves.len();
+        let mut nodes: Vec<Node> = Vec::new();
+        let mut leaf_hash: Bytes32 = *empty_sum_sha256();
+        let mut proof: Vec<Bits256> = Vec::new();
         let leaf_u64: u64 = 0;
-        let mut leaf_a = Sha256::new();
-        let identity_a = leaves[0].0.clone();
-        match identity_a {
-            Identity::Address(identity) => {
-                leaf_a.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
-                leaf_a.update(&*identity);
-            }
-            Identity::ContractId(identity) => {
-                leaf_a.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
-                leaf_a.update(&*identity);
-            }
-        }
-        leaf_a.update(&leaves[0].1.to_be_bytes());
-        let leaf_a: Bytes32 = leaf_a.finalize().try_into().unwrap();
 
-        let mut merkle_leaf_a = Sha256::new();
-        merkle_leaf_a.update(leaf_u64.to_be_bytes());
-        merkle_leaf_a.update(&leaf_a);
-        let leaf_a_hash: Bytes32 = merkle_leaf_a.finalize().try_into().unwrap();
+        assert!(key <= num_leaves as u64);
 
-        // Leaf B hash
-        let mut leaf_b = Sha256::new();
-        let identity_b = leaves[1].0.clone();
-        match identity_b {
-            Identity::Address(identity) => {
-                leaf_b.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
-                leaf_b.update(&*identity);
-            }
-            Identity::ContractId(identity) => {
-                leaf_b.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
-                leaf_b.update(&*identity);
-            }
-        }
-        leaf_b.update(&leaves[1].1.to_be_bytes());
-        let leaf_b: Bytes32 = leaf_b.finalize().try_into().unwrap();
+        // Hash leaves and create leaf nodes
+        for n in 0..num_leaves {
+            let mut hasher = Sha256::new();
 
-        let mut merkle_leaf_b = Sha256::new();
-        merkle_leaf_b.update(leaf_u64.to_be_bytes());
-        merkle_leaf_b.update(&leaf_b);
-        let leaf_b_hash: Bytes32 = merkle_leaf_b.finalize().try_into().unwrap();
-
-        // leaf C hash
-        let mut leaf_c = Sha256::new();
-        let identity_c = leaves[2].0.clone();
-        match identity_c {
-            Identity::Address(identity) => {
-                leaf_c.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
-                leaf_c.update(&*identity);
+            let identity = leaves[n].0.clone();
+            match identity {
+                Identity::Address(identity_a) => {
+                    hasher.update(&[0, 0, 0, 0, 0, 0, 0, 0]);
+                    hasher.update(&*identity_a);
+                }
+                Identity::ContractId(identity_c) => {
+                    hasher.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
+                    hasher.update(&*identity_c);
+                }
             }
-            Identity::ContractId(identity) => {
-                leaf_c.update(&[0, 0, 0, 0, 0, 0, 0, 1]);
-                leaf_c.update(&*identity);
+            hasher.update(&leaves[n].1.to_be_bytes());
+            let hash_leaf_data: Bytes32 = hasher.finalize().try_into().unwrap();
+
+            let mut hasher2 = Sha256::new();
+            hasher2.update(leaf_u64.to_be_bytes());
+            hasher2.update(&hash_leaf_data);
+            let hash2_leaf: Bytes32 = hasher2.finalize().try_into().unwrap();
+
+            let new_node = Node::new(hash2_leaf);
+            nodes.push(new_node);
+            if n as u64 == key {
+                leaf_hash = hash2_leaf.clone();
             }
         }
-        leaf_c.update(&leaves[2].1.to_be_bytes());
-        let leaf_c: Bytes32 = leaf_c.finalize().try_into().unwrap();
 
-        let mut merkle_leaf_c = Sha256::new();
-        merkle_leaf_c.update(leaf_u64.to_be_bytes());
-        merkle_leaf_c.update(&leaf_c);
-        let leaf_c_hash: Bytes32 = merkle_leaf_c.finalize().try_into().unwrap();
-
-        // Node AB hash
         let node_u64: u64 = 1;
-        let mut node_ab = Sha256::new();
-        node_ab.update(node_u64.to_be_bytes());
-        node_ab.update(&leaf_a_hash);
-        node_ab.update(&leaf_b_hash);
-        let node_ab_hash: Bytes32 = node_ab.finalize().try_into().unwrap();
+        let mut itterator = 0;
+        // Build tree
+        for i in 0..height {
+            let current_num_leaves = itterator + 2usize.pow((height - i).try_into().unwrap());
 
-        // Root hash
-        let mut node_abc = Sha256::new();
-        node_abc.update(node_u64.to_be_bytes());
-        node_abc.update(&node_ab_hash);
-        node_abc.update(&leaf_c_hash);
-        let node_abc_hash: Bytes32 = node_abc.finalize().try_into().unwrap();
+            // Create new depth
+            while itterator < current_num_leaves {
+                let mut hasher = Sha256::new();
+                hasher.update(node_u64.to_be_bytes());
+                hasher.update(&nodes[itterator].hash);
+                hasher.update(&nodes[itterator + 1].hash);
+                let hash: Bytes32 = hasher.finalize().try_into().unwrap();
+
+                let new_node = Node::new(hash).left(itterator).right(itterator + 1);
+                nodes.push(new_node);
+                itterator += 2;
+            }
+        }
+
+        // Get proof
+        let mut key = key;
+        let mut index = nodes.len() - 1;
+        for i in 0..height as usize {
+            let node = nodes[index].clone();
+
+            if node.left == None && node.right == None {
+                break;
+            }
+
+            let number_subtree_elements =
+                (2usize.pow(((height as usize - i) + 1).try_into().unwrap())) / 2;
+
+            if key <= number_subtree_elements as u64 {
+                // Go left
+                index = node.left.unwrap();
+                let proof_node = node.right.unwrap();
+                proof.push(Bits256(nodes[proof_node].hash));
+            } else {
+                // Go right
+                index = node.right.unwrap();
+                let proof_node = node.left.unwrap();
+                proof.push(Bits256(nodes[proof_node].hash));
+
+                key = key - number_subtree_elements as u64;
+            }
+        }
+
+        proof.reverse();
 
         (
-            Bits256(node_abc_hash),
-            Bits256(leaf_b_hash),
-            Bits256(leaf_c_hash),
+            Bits256(leaf_hash),
+            proof,
+            Bits256(nodes.last().unwrap().hash),
         )
     }
 
@@ -242,7 +280,8 @@ pub mod test_helpers {
         u64,
         u64,
         u64,
-        [(Identity, u64); 3],
+        Vec<(Identity, u64)>,
+        u64,
         u64,
     ) {
         let identity_a = Identity::Address(wallet1.wallet.address().into());
@@ -250,14 +289,16 @@ pub mod test_helpers {
         let identity_c = Identity::Address(wallet3.wallet.address().into());
         let minter = Identity::ContractId(deploy_wallet.contract_id);
         let key = 0;
-        let num_leaves = 3;
         let asset_supply = 10;
-        let airdrop_leaves = [
-            (identity_a.clone(), 1),
-            (identity_b.clone(), 2),
-            (identity_c.clone(), 3),
-        ];
         let claim_time = 15;
+        let depth = 8;
+
+        let mut identity_vec = Vec::new();
+        identity_vec.push(identity_a.clone());
+        identity_vec.push(identity_b.clone());
+        identity_vec.push(identity_c.clone());
+
+        let airdrop_leaves = leaves_with_depth(depth, identity_vec.clone()).await;
 
         (
             identity_a,
@@ -265,11 +306,26 @@ pub mod test_helpers {
             identity_c,
             minter,
             key,
-            num_leaves,
+            airdrop_leaves.len().try_into().unwrap(),
             asset_supply,
             airdrop_leaves,
             claim_time,
+            depth,
         )
+    }
+
+    pub async fn leaves_with_depth(depth: u64, identities: Vec<Identity>) -> Vec<(Identity, u64)> {
+        let num_elements_in_tree = 2_i64.pow(depth.try_into().unwrap());
+        let num_identities = identities.len();
+        let mut return_vec: Vec<(Identity, u64)> = Vec::new();
+
+        for n in 0..num_elements_in_tree {
+            let n_u64: u64 = (n % i64::MAX).try_into().unwrap();
+
+            return_vec.push((identities[n as usize % num_identities].clone(), n_u64 + 1));
+        }
+
+        return_vec
     }
 
     pub async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
