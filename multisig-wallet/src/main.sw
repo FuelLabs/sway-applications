@@ -1,7 +1,7 @@
 contract;
 
 // TODO:
-//      - change the "data" in the Tx hashing from b256 to Bytes type when available
+//      - change the "data" in the Tx hashing from b256 to Bytes type when available.
 dep interface;
 dep data_structures;
 dep errors;
@@ -28,11 +28,11 @@ use utils::{create_hash, recover_signer};
 
 storage {
     /// Used to add entropy into hashing of Tx to decrease the probability of collisions / double
-    /// spending
+    /// spending.
     nonce: u64 = 0,
-    /// The number of approvals required in order to execture a Tx
+    /// The number of approvals required in order to execture a Tx.
     threshold: u64 = 0,
-    /// Number of approvals per user
+    /// Number of approvals per user.
     weighting: StorageMap<b256, u64> = StorageMap {},
 }
 
@@ -44,10 +44,10 @@ impl MultiSignatureWallet for Contract {
 
         let mut user_index = 0;
         while user_index < users.len() {
-            require(ZERO_B256 != users.get(user_index).unwrap().identity, InitError::AddressCannotBeZero);
+            require(ZERO_B256 != users.get(user_index).unwrap().address, InitError::AddressCannotBeZero);
             require(users.get(user_index).unwrap().weight != 0, InitError::WeightingCannotBeZero);
 
-            storage.weighting.insert(users.get(user_index).unwrap().identity, users.get(user_index).unwrap().weight);
+            storage.weighting.insert(users.get(user_index).unwrap().address, users.get(user_index).unwrap().weight);
             user_index += 1;
         }
 
@@ -125,14 +125,13 @@ impl MultiSignatureWallet for Contract {
     }
 }
 
-// Internal functions
 /// Takes in a tx hash and signatures with associated data.
 /// Recovers a b256 address from each signature;
 /// it then increments the number of approvals by that address' approval weighting.
 /// Returns the final approval count.
 #[storage(read)]
 pub fn count_approvals(transaction_hash: b256, signatures_data: Vec<SignatureData>) -> u64 {
-    // The signers must have increasing values in order to check for duplicates or a zero-value
+    // The signers must have increasing values in order to check for duplicates or a zero-value.
     let mut previous_signer = b256::min();
 
     let mut approval_count = 0;
