@@ -4,7 +4,7 @@ dep data_structures;
 
 use std::{address::Address, b512::B512, contract_id::ContractId, identity::Identity};
 
-use data_structures::User;
+use data_structures::{SignatureData, User};
 
 abi MultiSignatureWallet {
     /// The constructor initializes the necessary values and unlocks further functionlity
@@ -18,8 +18,17 @@ abi MultiSignatureWallet {
     #[storage(read, write)]
     fn constructor(users: Vec<User>, threshold: u64);
 
+    /// Executes a Tx formed from the `to, `value` and `data` parameters if the signatures meet the
+    /// threshold requirement
+    ///
+    /// # Panics
+    ///
+    /// - When the constructor has not been called to initialize the contract
+    /// - When the public key cannot be recovered from a signature
+    /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
+    /// - When the total approval count is less than the required threshold for execution
     #[storage(read, write)]
-    fn execute_transaction(to: Identity, value: u64, data: b256, signatures: [B512; 25]);
+    fn execute_transaction(to: Identity, value: u64, data: b256, signatures_data: Vec<SignatureData>);
 
     #[storage(read, write)]
     fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures: [B512; 25]);

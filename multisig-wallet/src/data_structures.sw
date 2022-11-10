@@ -1,6 +1,6 @@
 library data_structures;
 
-use std::{address::Address, contract_id::ContractId, identity::Identity};
+use std::{address::Address, b512::B512, contract_id::ContractId, identity::Identity};
 
 pub struct User {
     // Contracts cannot sign therefore restrict scope to Address
@@ -23,4 +23,26 @@ pub struct Transaction {
     nonce: u64,
     /// Amount of asset
     value: u64,
+}
+
+enum MessageFormat {
+    None: (),
+    EIP191PersonalSign: (),
+}
+
+enum MessagePrefix {
+    None: (),
+    Ethereum: (),
+}
+
+enum WalletType {
+    Fuel: (),
+    EVM: (),
+}
+
+pub struct SignatureData {
+    signature: B512,
+    format: MessageFormat,
+    prefix: MessagePrefix,
+    wallet_type: WalletType,
 }

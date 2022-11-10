@@ -37,7 +37,7 @@ use core::num::*;
 
 // Our library imports
 use contract_abi::MultiSignatureWallet;
-use data_structures::{Transaction, User};
+use data_structures::{SignatureData, Transaction, User};
 use errors::{ExecutionError, InitError};
 use events::{ExecutedEvent, TransferEvent};
 
@@ -80,15 +80,20 @@ impl MultiSignatureWallet for Contract {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
     /// - When the total approval count is less than the required threshold for execution
     #[storage(read, write)]
-    fn execute_transaction(to: Identity, value: u64, data: b256, signatures: [B512; 25]) {
+    fn execute_transaction(
+        to: Identity,
+        value: u64,
+        data: b256,
+        signatures_data: Vec<SignatureData>,
+    ) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
         let transaction_hash = create_hash(to, value, data, storage.nonce, contract_id());
-        let approval_count = count_approvals(transaction_hash, signatures);
+        let approval_count = count_approvals(transaction_hash, signatures_data);
 
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
-        storage.nonce = storage.nonce + 1;
+        storage.nonce += 1;
 
         // TODO: Execute https://github.com/FuelLabs/sway-applications/issues/22
         log(ExecutedEvent {
