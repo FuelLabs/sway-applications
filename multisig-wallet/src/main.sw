@@ -1,8 +1,8 @@
 contract;
 
-// TODO: when vectors are implemented
-//      - change all uses of arrays to vec
-//      - change the "data" in the Tx hashing from b256 to vec
+// TODO:
+//      - change the "data" in the Tx hashing from Vec<u64> to Bytes type when available
+
 // Our library dependencies
 dep contract_abi;
 dep data_structures;
@@ -126,14 +126,11 @@ impl MultiSignatureWallet for Contract {
         });
     }
 
-    /// Returns the balance of the specified asset_id for this contract
     fn balance(asset_id: ContractId) -> u64 {
         this_balance(asset_id)
     }
 
-    /// Takes in transaction data and hashes it into a unique tx hash
-    /// Used for verification of message
-    fn transaction_hash(to: Identity, value: u64, data: b256, nonce: u64) -> b256 {
+    fn transaction_hash(to: Identity, value: u64, data: Vec<u64>, nonce: u64) -> b256 {
         create_hash(to, value, data, nonce, contract_id())
     }
 
