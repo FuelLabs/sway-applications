@@ -43,9 +43,6 @@ abi MultiSignatureWallet {
     fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures_data: Vec<SignatureData>);
 
     #[storage(read)]
-    fn is_owner(owner: Address) -> bool;
-
-    #[storage(read)]
     fn nonce() -> u64;
 
     fn balance(asset_id: ContractId) -> u64;

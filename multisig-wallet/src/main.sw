@@ -126,17 +126,6 @@ impl MultiSignatureWallet for Contract {
         });
     }
 
-    /// Returns a boolean value indicating if the given address is a user in the contract
-    ///
-    /// # Panics
-    ///
-    /// - When the constructor has not been called to initialize the contract
-    #[storage(read)]
-    fn is_owner(user: Address) -> bool {
-        require(storage.nonce != 0, InitError::NotInitialized);
-        storage.weighting.get(user) != 0
-    }
-
     /// Returns the balance of the specified asset_id for this contract
     fn balance(asset_id: ContractId) -> u64 {
         this_balance(asset_id)
