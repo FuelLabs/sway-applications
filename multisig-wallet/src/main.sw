@@ -1,7 +1,7 @@
 contract;
 
 // TODO:
-//      - change the "data" in the Tx hashing from Vec<u64> to Bytes type when available
+//      - change the "data" in the Tx hashing from b256 to Bytes type when available
 
 // Our library dependencies
 dep contract_abi;
@@ -79,7 +79,7 @@ impl MultiSignatureWallet for Contract {
     ) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
-        let transaction_hash = create_hash(to, value, data, storage.nonce, contract_id());
+        let transaction_hash = create_hash(to, value, data, storage.nonce);
         let approval_count = count_approvals(transaction_hash, signatures_data);
 
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
@@ -106,7 +106,7 @@ impl MultiSignatureWallet for Contract {
         require(storage.nonce != 0, InitError::NotInitialized);
         require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
-        let transaction_hash = create_hash(to, value, data, storage.nonce, contract_id());
+        let transaction_hash = create_hash(to, value, data, storage.nonce);
         let approval_count = count_approvals(transaction_hash, signatures_data);
 
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
@@ -135,8 +135,8 @@ impl MultiSignatureWallet for Contract {
         this_balance(asset_id)
     }
 
-    fn transaction_hash(to: Identity, value: u64, data: Vec<u64>, nonce: u64) -> b256 {
-        create_hash(to, value, data, nonce, contract_id())
+    fn transaction_hash(to: Identity, value: u64, data: b256, nonce: u64) -> b256 {
+        create_hash(to, value, data, nonce)
     }
 }
 
@@ -146,10 +146,9 @@ fn create_hash(
     value: u64,
     data: b256,
     nonce: u64,
-    self_id: ContractId,
 ) -> b256 {
     sha256(Transaction {
-        contract_identifier: self_id,
+        contract_identifier: contract_id(),
         destination: to,
         value,
         data,

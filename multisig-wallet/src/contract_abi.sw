@@ -52,5 +52,5 @@ abi MultiSignatureWallet {
 
     /// Takes in transaction data and hashes it into a unique tx hash
     /// Used for verification of message
-    fn transaction_hash(to: Identity, value: u64, data: Vec<u64>, nonce: u64) -> b256;
+    fn transaction_hash(to: Identity, value: u64, data: b256, nonce: u64) -> b256;
 }
