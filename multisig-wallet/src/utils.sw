@@ -57,14 +57,6 @@ pub fn recover_signer(message_hash: b256, signature_data: SignatureData) -> b256
     }
 }
 
-/// Applies the prefix used by Geth to a message hash.
-/// Returns the prefixed hash.
-fn ethereum_prefix(msg_hash: b256) -> b256 {
-    let prefix = "\x19Ethereum Signed Message:\n32";
-
-    sha256((prefix, msg_hash))
-}
-
 /// Creates an EIP-191 compliant transaction hash, of the version:
 /// 0x45, personal sign.
 /// It takes a data_to_sign to represent the <data to sign> in the following EIP-191 format:
@@ -97,11 +89,6 @@ fn compose(words: (u64, u64, u64, u64)) -> b256 {
     asm(r1: __addr_of(words)) { r1: b256 }
 }
 
-/// Get a tuple of 4 u64 values from a single b256 value.
-fn decompose(val: b256) -> (u64, u64, u64, u64) {
-    asm(r1: __addr_of(val)) { r1: (u64, u64, u64, u64) }
-}
-
 /// Encode the packed_bytes and message_hash into a Vec<u64> of length 40 bytes,
 /// where the first 34 bytes are the desired data.
 fn encode_data(packed_bytes: b256, message_hash: b256) -> Vec<u64> {
@@ -118,4 +105,17 @@ fn encode_data(packed_bytes: b256, message_hash: b256) -> Vec<u64> {
     data.push(message_4 << 48);
 
     data
+}
+
+/// Get a tuple of 4 u64 values from a single b256 value.
+fn decompose(val: b256) -> (u64, u64, u64, u64) {
+    asm(r1: __addr_of(val)) { r1: (u64, u64, u64, u64) }
+}
+
+/// Applies the prefix used by Geth to a message hash.
+/// Returns the prefixed hash.
+fn ethereum_prefix(msg_hash: b256) -> b256 {
+    let prefix = "\x19Ethereum Signed Message:\n32";
+
+    sha256((prefix, msg_hash))
 }
