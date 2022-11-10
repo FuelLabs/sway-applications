@@ -230,7 +230,7 @@ mod success {
         identity_vec.push(identity_a.clone());
         identity_vec.push(identity_b.clone());
         identity_vec.push(identity_c.clone());
-        
+
         let depth = 16;
         let airdrop_leaves = leaves_with_depth(depth, identity_vec.clone()).await;
         let num_leaves = airdrop_leaves.len().try_into().unwrap();
