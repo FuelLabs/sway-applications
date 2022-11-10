@@ -40,9 +40,9 @@ export type AddressOutput = { value: string };
 export type AuctionInput = {
   bid_asset: AuctionAssetInput;
   end_block: BigNumberish;
-  highest_bidder: OptionInput;
+  highest_bidder: OptionalIdentityInput;
   initial_price: BigNumberish;
-  reserve_price: OptionInput;
+  reserve_price: OptionalU64Input;
   sell_asset: AuctionAssetInput;
   seller: IdentityInput;
   state: StateInput;
@@ -51,9 +51,9 @@ export type AuctionInput = {
 export type AuctionOutput = {
   bid_asset: AuctionAssetOutput;
   end_block: BN;
-  highest_bidder: OptionOutput;
+  highest_bidder: OptionalIdentityOutput;
   initial_price: BN;
-  reserve_price: OptionOutput;
+  reserve_price: OptionalU64Output;
   sell_asset: AuctionAssetOutput;
   seller: IdentityOutput;
   state: StateOutput;
@@ -79,13 +79,25 @@ export type IdentityOutput = Enum<{
   ContractId: ContractIdOutput;
 }>;
 
-export type OptionInput = Option<[]>;
+export type OptionalIdentityInput = Option<IdentityInput>;
 
-export type OptionOutput = Option<[]>;
+export type OptionalIdentityOutput = Option<IdentityOutput>;
+
+export type OptionalU64Input = Option<BigNumberish>;
+
+export type OptionalU64Output = Option<BN>;
 
 export type StateInput = Enum<{ Closed: []; Open: [] }>;
 
 export type StateOutput = Enum<{ Closed: []; Open: [] }>;
+
+export type OptionalAuctionInput = Option<AuctionInput>;
+
+export type OptionalAuctionOutput = Option<AuctionOutput>;
+
+export type OptionalAuctionAssetInput = Option<AuctionAssetInput>;
+
+export type OptionalAuctionAssetOutput = Option<AuctionAssetOutput>;
 
 interface EnglishAuctionAbiInterface extends Interface {
   functions: {
@@ -110,7 +122,7 @@ interface EnglishAuctionAbiInterface extends Interface {
       AuctionAssetInput,
       BigNumberish,
       BigNumberish,
-      OptionInput,
+      OptionalU64Input,
       IdentityInput,
       AuctionAssetInput
     ]
@@ -134,7 +146,7 @@ interface EnglishAuctionAbiInterface extends Interface {
 export class EnglishAuctionAbi extends Contract {
   interface: EnglishAuctionAbiInterface;
   functions: {
-    auction_info: InvokeFunction<[auction_id: BigNumberish], OptionOutput>;
+    auction_info: InvokeFunction<[auction_id: BigNumberish], OptionalAuctionOutput>;
 
     bid: InvokeFunction<[auction_id: BigNumberish, bid_asset: AuctionAssetInput], void>;
 
@@ -145,7 +157,7 @@ export class EnglishAuctionAbi extends Contract {
         bid_asset: AuctionAssetInput,
         duration: BigNumberish,
         initial_price: BigNumberish,
-        reserve_price: OptionInput,
+        reserve_price: OptionalU64Input,
         seller: IdentityInput,
         sell_asset: AuctionAssetInput
       ],
@@ -154,7 +166,7 @@ export class EnglishAuctionAbi extends Contract {
 
     deposit_balance: InvokeFunction<
       [auction_id: BigNumberish, identity: IdentityInput],
-      OptionOutput
+      OptionalAuctionAssetOutput
     >;
 
     withdraw: InvokeFunction<[auction_id: BigNumberish], void>;

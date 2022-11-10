@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { Provider, Wallet, AbstractAddress } from 'fuels';
+import type { Provider, BaseWalletLocked, AbstractAddress } from 'fuels';
 import { Interface, Contract } from 'fuels';
 import type { EnglishAuctionAbi, EnglishAuctionAbiInterface } from '../EnglishAuctionAbi';
 const _abi = [
@@ -918,7 +918,7 @@ export class EnglishAuctionAbi__factory {
   }
   static connect(
     id: string | AbstractAddress,
-    walletOrProvider: Wallet | Provider
+    walletOrProvider: BaseWalletLocked | Provider
   ): EnglishAuctionAbi {
     return new Contract(id, _abi, walletOrProvider) as unknown as EnglishAuctionAbi;
   }
