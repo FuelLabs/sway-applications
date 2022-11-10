@@ -7,7 +7,7 @@ export async function getWalletInstance() {
 
   if (WALLET_SECRET) {
     log('WALLET_SECRET detected');
-    return new Wallet(WALLET_SECRET, PROVIDER_URL);
+    return Wallet.fromPrivateKey(WALLET_SECRET, PROVIDER_URL);
   }
   // If no WALLET_SECRET is informed we assume
   // We are on a test environment

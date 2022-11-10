@@ -18,7 +18,7 @@
     "debug": "^4.3.4",
     "esbuild": "^0.14.54",
     "fuelchain": "^0.16.0",
-    "fuels": "0.16.0",
+    "fuels": "0.20.0",
     "joycon": "^3.1.1",
     "prettier": "^2.7.1",
     "typechain-target-fuels": "0.16.0",
