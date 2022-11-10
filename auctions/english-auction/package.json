@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "contracts": "",
+    "contracts": "pnpm exec english-auction-scripts run",
     "contracts:build": "pnpm exec english-auction-scripts build",
     "contracts:deploy": "pnpm exec english-auction-scripts deploy",
     "dev": "turbo run dev --parallel",
@@ -29,11 +29,11 @@
     "lint": "run-s lint:check prettier:check",
     "prettier:check": "prettier --check .",
     "prettier:format": "prettier --write .",
+    "scripts:setup": "pnpm run --filter=english-auction-scripts build && pnpm install",
     "services:clean": "make -C docker services-clean",
-    "services:setup": "",
+    "services:setup": "run-s scripts:setup services:run contracts",
     "services:run": "make -C docker services-run",
-    "services:reset": "run-s services:clean services:setup",
-    "prepare": "husky install"
+    "services:reset": "run-s services:clean services:setup"
   },
   "devDependencies": {
     "@babel/core": "^7.19.0",

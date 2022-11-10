@@ -23,24 +23,13 @@ export default createConfig({
   contracts: [
     {
       name: 'VITE_TOKEN_ID',
-      path: './packages/contracts/token_contract',
+      path: './packages/contracts/english-auction',
       options: getDeployOptions(),
     },
     {
       name: 'VITE_CONTRACT_ID',
-      path: './packages/contracts/exchange_contract',
-      options: (contracts) => {
-        const contractDeployed = contracts.find((c) => c.name === 'VITE_TOKEN_ID')!;
-        return {
-          ...getDeployOptions(),
-          storageSlots: [
-            {
-              key: '0x0000000000000000000000000000000000000000000000000000000000000001',
-              value: contractDeployed.contractId,
-            },
-          ],
-        };
-      },
+      path: './packages/contracts/english-auction/tests/artifacts/asset',
+      options: getDeployOptions(),
     },
   ],
   onSuccess: (event) => {

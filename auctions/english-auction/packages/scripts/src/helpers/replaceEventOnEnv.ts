@@ -4,7 +4,7 @@ import type { Event } from 'src/types';
 import { Commands } from 'src/types';
 
 // TODO: This file should be placed inside the
-// swayswap.config.ts but for now as the app
+// english-auction.config.ts but for now as the app
 // uses es5 and esbuild didn't support we have
 // add it here as a helper function
 

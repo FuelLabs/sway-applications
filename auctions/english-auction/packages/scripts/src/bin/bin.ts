@@ -7,7 +7,7 @@ import { loadConfig } from 'src/helpers/loader';
 import type { Config } from 'src/types';
 import { Commands } from 'src/types';
 
-const program = new Command('swayswap');
+const program = new Command('english-auction');
 
 function action(command: string, func: (config: Config) => Promise<unknown>) {
   return async () => {
@@ -29,7 +29,7 @@ function action(command: string, func: (config: Config) => Promise<unknown>) {
 }
 
 program
-  .name('SwaySwap Scripts')
+  .name('English-Auction Scripts')
   .description('Utility to build, deploy and generate types for Sway Contracts');
 
 program
