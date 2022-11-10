@@ -2,44 +2,29 @@ contract;
 
 // TODO:
 //      - change the "data" in the Tx hashing from b256 to Bytes type when available
-
-// Our library dependencies
 dep contract_abi;
 dep data_structures;
 dep errors;
 dep events;
+dep utils;
 
-// Standard library code
 use std::{
-    address::Address,
-    b512::B512,
-    call_frames::contract_id,
     constants::ZERO_B256,
     context::this_balance,
-    contract_id::ContractId,
-    ecr::ec_recover_address,
-    hash::sha256,
     identity::Identity,
     logging::log,
-    result::*,
-    revert::{
-        require,
-        revert,
-    },
-    storage::StorageMap,
+    revert::require,
     token::{
         force_transfer_to_contract,
         transfer_to_address,
     },
 };
 
-use core::num::*;
-
-// Our library imports
 use contract_abi::MultiSignatureWallet;
-use data_structures::{SignatureData, Transaction, User};
+use data_structures::{SignatureData, User};
 use errors::{ExecutionError, InitError};
 use events::{ExecutedEvent, TransferEvent};
+use utils::{create_hash, recover_signer};
 
 storage {
     /// Used to add entropy into hashing of Tx to decrease the probability of collisions / double
@@ -140,45 +125,31 @@ impl MultiSignatureWallet for Contract {
     }
 }
 
-/// Takes in transaction data and hashes it into a unique tx hash
-fn create_hash(
-    to: Identity,
-    value: u64,
-    data: b256,
-    nonce: u64,
-) -> b256 {
-    sha256(Transaction {
-        contract_identifier: contract_id(),
-        destination: to,
-        value,
-        data,
-        nonce,
-    })
-}
-
+// Internal functions
+/// Takes in a tx hash and signatures with associated data.
+/// Recovers a b256 address from each signature;
+/// it then increments the number of approvals by that address' approval weighting.
+/// Returns the final approval count.
 #[storage(read)]
-fn count_approvals(transaction_hash: b256, signatures: [B512; 25]) -> u64 {
+pub fn count_approvals(transaction_hash: b256, signatures_data: Vec<SignatureData>) -> u64 {
     // The signers must have increasing values in order to check for duplicates or a zero-value
     let mut previous_signer = b256::min();
 
     let mut approval_count = 0;
     let mut index = 0;
-    while index < 25 {
-        let signer = match ec_recover_address(signatures[index], transaction_hash) {
-            Result::Ok(address) => address.value,
-            _ => revert(42),
-        };
+    while index < signatures_data.len() {
+        let signer = recover_signer(transaction_hash, signatures_data.get(index).unwrap());
 
         require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
 
         previous_signer = signer;
-        approval_count = approval_count + storage.weighting.get(Address::from(signer));
+        approval_count += storage.weighting.get(signer);
 
-        // Once break is implemented uncomment below. https://github.com/FuelLabs/sway/pull/1646
-        // if storage.threshold <= approval_count {
-        //     break;
-        // }
-        index = index + 1;
+        if storage.threshold <= approval_count {
+            break;
+        }
+
+        index += 1;
     }
 
     approval_count

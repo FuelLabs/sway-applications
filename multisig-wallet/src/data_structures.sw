@@ -25,17 +25,17 @@ pub struct Transaction {
     value: u64,
 }
 
-enum MessageFormat {
+pub enum MessageFormat {
     None: (),
     EIP191PersonalSign: (),
 }
 
-enum MessagePrefix {
+pub enum MessagePrefix {
     None: (),
     Ethereum: (),
 }
 
-enum WalletType {
+pub enum WalletType {
     Fuel: (),
     EVM: (),
 }
