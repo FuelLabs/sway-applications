@@ -5,7 +5,7 @@ use std::{address::Address, contract_id::ContractId, identity::Identity};
 pub struct User {
     // Contracts cannot sign therefore restrict scope to Address
     /// The wallet address of a user
-    identity: Address,
+    identity: b256,
     /// Number of approvals the user provides when approving.
     /// The default is usually 1
     weight: u64,

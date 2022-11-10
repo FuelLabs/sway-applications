@@ -7,8 +7,16 @@ use std::{address::Address, b512::B512, contract_id::ContractId, identity::Ident
 use data_structures::User;
 
 abi MultiSignatureWallet {
+    /// The constructor initializes the necessary values and unlocks further functionlity
+    ///
+    /// # Panics
+    ///
+    /// - When the constructor is called more than once
+    /// - When the user address is the 0th address (0x00000...)
+    /// - When the threshold is set to 0
+    /// - When an owner has an approval weight of 0
     #[storage(read, write)]
-    fn constructor(users: [User; 25], threshold: u64);
+    fn constructor(users: Vec<User>, threshold: u64);
 
     #[storage(read, write)]
     fn execute_transaction(to: Identity, value: u64, data: b256, signatures: [B512; 25]);

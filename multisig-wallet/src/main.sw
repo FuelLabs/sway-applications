@@ -48,29 +48,22 @@ storage {
     /// The number of approvals required in order to execture a Tx
     threshold: u64 = 0,
     /// Number of approvals per user
-    weighting: StorageMap<Address, u64> = StorageMap {},
+    weighting: StorageMap<b256, u64> = StorageMap {},
 }
 
 impl MultiSignatureWallet for Contract {
-    /// The constructor initializes the necessary values and unlocks further functionlity
-    ///
-    /// # Panics
-    ///
-    /// - When the constructor is called more than once
-    /// - When the user address is the 0th address (0x00000...)
-    /// - When the threshold is set to 0
-    /// - When an owner has an approval weight of 0
     #[storage(read, write)]
-    fn constructor(users: [User; 25], threshold: u64) {
+    fn constructor(users: Vec<User>, threshold: u64) {
         require(storage.nonce == 0, InitError::CannotReinitialize);
         require(threshold != 0, InitError::ThresholdCannotBeZero);
 
         let mut user_index = 0;
-        while user_index < 25 {
-            require(Address::from(ZERO_B256) != users[user_index].identity, InitError::AddressCannotBeZero);
-            require(users[user_index].weight != 0, InitError::WeightingCannotBeZero);
-            storage.weighting.insert(users[user_index].identity, users[user_index].weight);
-            user_index = user_index + 1;
+        while user_index < users.len() {
+            require(ZERO_B256 != users.get(user_index).unwrap().identity, InitError::AddressCannotBeZero);
+            require(users.get(user_index).unwrap().weight != 0, InitError::WeightingCannotBeZero);
+
+            storage.weighting.insert(users.get(user_index).unwrap().identity, users.get(user_index).unwrap().weight);
+            user_index += 1;
         }
 
         storage.nonce = 1;
