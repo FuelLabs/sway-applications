@@ -30,8 +30,17 @@ abi MultiSignatureWallet {
     #[storage(read, write)]
     fn execute_transaction(to: Identity, value: u64, data: b256, signatures_data: Vec<SignatureData>);
 
+    /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement
+    ///
+    /// # Panics
+    ///
+    /// - When the constructor has not been called to initialize the contract
+    /// - When the amount of the asset being sent is greater than the balance in the contract
+    /// - When the public key cannot be recovered from a signature
+    /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...)
+    /// - When the total approval count is less than the required threshold for execution
     #[storage(read, write)]
-    fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures: [B512; 25]);
+    fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures_data: Vec<SignatureData>);
 
     #[storage(read)]
     fn is_owner(owner: Address) -> bool;
