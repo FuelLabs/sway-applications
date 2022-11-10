@@ -6,9 +6,7 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-fuel-crypto = "0.6"
-fuel-vm = "0.15"
-fuels = { version = "0.28", features = ["fuel-core-lib"] }
+fuels = { version = "0.31", features = ["fuel-core-lib"] }
 sha3 = "0.10.6"
 tokio = { version = "1.12", features = ["rt", "macros"] }
 

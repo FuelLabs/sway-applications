@@ -65,7 +65,7 @@ async fn setup_env(private_key: &str) -> Result<(SecretKey, CountApprovalsContra
         amount_per_coin,
     );
 
-    let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None).await;
+    let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None, None).await;
 
     wallet.set_provider(provider);
 
