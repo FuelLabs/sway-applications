@@ -75,7 +75,7 @@ impl NFT for Contract {
 
     #[storage(read)]
     fn is_approved_for_all(operator: Identity, owner: Identity) -> bool {
-        storage.operator_approval.get((owner, operator))
+        is_approved_for_all(operator, owner)
     }
 
     #[storage(read)]
