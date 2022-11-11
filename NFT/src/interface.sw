@@ -129,9 +129,9 @@ abi NFT {
     #[storage(read, write)]
     fn set_approval_for_all(approval: bool, operator: Identity);
 
-    /// Returns the total supply of tokens which are currently in existence.
+    /// Returns the total number of tokens which have ever been minted.
     #[storage(read)]
-    fn total_supply() -> u64;
+    fn tokens_minted() -> u64;
 
     /// Transfers ownership of the specified token from one user to another.
     ///

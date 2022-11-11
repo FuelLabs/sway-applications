@@ -109,8 +109,8 @@ impl NFT for Contract {
     }
 
     #[storage(read)]
-    fn total_supply() -> u64 {
-        storage.total_supply
+    fn tokens_minted() -> u64 {
+        tokens_minted()
     }
 
     #[storage(read, write)]
