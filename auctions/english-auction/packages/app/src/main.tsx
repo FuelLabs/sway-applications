@@ -7,8 +7,9 @@ import { BrowserRouter } from "react-router-dom";
 
 import { App } from "./App";
 
+const { PUBLIC_URL } = process.env;
 createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
+  <BrowserRouter basename={PUBLIC_URL}>
     <App />
   </BrowserRouter>
 );
