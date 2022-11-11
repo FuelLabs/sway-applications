@@ -7,15 +7,7 @@ dep interface;
 use data_structures::TokenMetaData;
 use errors::{AccessError, InitError, InputError};
 use interface::{AdminEvent, ApprovalEvent, BurnEvent, MintEvent, NFT, OperatorEvent, TransferEvent};
-use std::{
-    chain::auth::msg_sender,
-    identity::Identity,
-    logging::log,
-    option::Option,
-    result::Result,
-    revert::require,
-    storage::StorageMap,
-};
+use std::{auth::msg_sender, logging::log, storage::StorageMap};
 
 storage {
     /// Determines if only the contract's `admin` is allowed to call the mint function.
@@ -115,7 +107,7 @@ impl NFT for Contract {
         let sender = msg_sender().unwrap();
         require(token_owner.unwrap() == sender, AccessError::SenderNotOwner);
 
-        storage.owners.insert(token_id, Option::None());
+        storage.owners.insert(token_id, Option::None::<Identity>());
         storage.balances.insert(sender, storage.balances.get(sender) - 1);
         storage.total_supply -= 1;
 
@@ -143,7 +135,7 @@ impl NFT for Contract {
 
     #[storage(read)]
     fn is_approved_for_all(operator: Identity, owner: Identity) -> bool {
-        storage.operator_approval.get((owner, operator, ))
+        storage.operator_approval.get((owner, operator))
     }
 
     #[storage(read)]
@@ -167,7 +159,7 @@ impl NFT for Contract {
         let mut index = tokens_minted;
         while index < total_mint {
             // Create the TokenMetaData for this new token
-            storage.meta_data.insert(index, ~TokenMetaData::new());
+            storage.meta_data.insert(index, TokenMetaData::new());
             storage.owners.insert(index, Option::Some(to));
             index += 1;
         }
@@ -216,7 +208,7 @@ impl NFT for Contract {
     fn set_approval_for_all(approve: bool, operator: Identity) {
         // Store `approve` with the (sender, operator) tuple
         let sender = msg_sender().unwrap();
-        storage.operator_approval.insert((sender, operator, ), approve);
+        storage.operator_approval.insert((sender, operator), approve);
 
         log(OperatorEvent {
             approve,
@@ -243,12 +235,12 @@ impl NFT for Contract {
         // 3. Has operator approval for the `from` identity and this token belongs to the `from` identity
         let sender = msg_sender().unwrap();
         let approved = storage.approved.get(token_id);
-        require(sender == token_owner || (approved.is_some() && sender == approved.unwrap()) || (from == token_owner && storage.operator_approval.get((from, sender, ))), AccessError::SenderNotOwnerOrApproved);
+        require(sender == token_owner || (approved.is_some() && sender == approved.unwrap()) || (from == token_owner && storage.operator_approval.get((from, sender))), AccessError::SenderNotOwnerOrApproved);
 
         // Set the new owner of the token and reset the approved Identity
         storage.owners.insert(token_id, Option::Some(to));
         if approved.is_some() {
-            storage.approved.insert(token_id, Option::None());
+            storage.approved.insert(token_id, Option::None::<Identity>());
         }
 
         storage.balances.insert(from, storage.balances.get(from) - 1);
