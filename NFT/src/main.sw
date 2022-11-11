@@ -59,17 +59,9 @@ impl NFT for Contract {
     }
 
     #[storage(read, write)]
-    fn constructor(access_control: bool, admin: Identity, max_supply: u64) {
-        // This function can only be called once so if the token supply is already set it has
-        // already been called
-        // let admin = Option::Some(admin);
-        // require(storage.max_supply == 0, InitError::CannotReinitialize);
-        // require(max_supply != 0, InputError::TokenSupplyCannotBeZero);
-        // require((access_control && admin.is_some()) || (!access_control && admin.is_none()), InitError::AdminIsNone);
-
-        // storage.access_control = access_control;
-        // storage.admin = admin;
-        // storage.max_supply = max_supply;
+    fn constructor(admin: Option<Identity>, max_supply: Option<u64>) {
+        set_admin(admin);
+        set_max_supply(max_supply);
     }
 
     #[storage(read)]
