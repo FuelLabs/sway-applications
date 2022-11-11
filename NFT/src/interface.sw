@@ -113,13 +113,9 @@ abi NFT {
     ///
     /// # Arguments
     ///
-    /// * `admin` - The user which is to be set as the new admin.
-    ///
-    /// # Reverts
-    ///
-    /// * When the sender is not the `admin` in storage.
+    /// * `new_admin` - The user which is to be set as the new admin.
     #[storage(read, write)]
-    fn set_admin(admin: Identity);
+    fn set_admin(new_admin: Option<Identity>);
 
     /// Gives the `operator` user approval to transfer ALL tokens owned by the `owner` user.
     ///

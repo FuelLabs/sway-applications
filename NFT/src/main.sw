@@ -99,12 +99,8 @@ impl NFT for Contract {
     }
 
     #[storage(read, write)]
-    fn set_admin(admin: Identity) {
-        // Ensure that the sender is the admin
-        let admin = Option::Some(admin);
-        let current_admin = storage.admin;
-        require(current_admin.is_some() && msg_sender().unwrap() == current_admin.unwrap(), AccessError::SenderCannotSetAccessControl);
-        storage.admin = admin;
+    fn set_admin(new_admin: Option<Identity>) {
+        set_admin(new_admin);
     }
 
     #[storage(read, write)]
