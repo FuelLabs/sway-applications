@@ -6,8 +6,32 @@ dep interface;
 
 use data_structures::TokenMetaData;
 use errors::{AccessError, InitError, InputError};
-use interface::{AdminEvent, ApprovalEvent, BurnEvent, MintEvent, NFT, OperatorEvent, TransferEvent};
+use interface::NFT;
 use std::{auth::msg_sender, logging::log, storage::StorageMap};
+use sway_libs::nft::{
+    administrator::{
+        admin,
+        set_admin,
+    },
+    approve,
+    approved,
+    balance_of,
+    burnable::burn,
+    is_approved_for_all,
+    meta_data::{
+        meta_data,
+        set_meta_data,
+    },
+    mint,
+    owner_of,
+    set_approval_for_all,    
+    supply::{
+        max_supply,
+        set_max_supply,
+    },
+    tokens_minted,
+    transfer,
+};
 
 storage {
     /// Determines if only the contract's `admin` is allowed to call the mint function.
@@ -52,8 +76,6 @@ storage {
 impl NFT for Contract {
     #[storage(read)]
     fn admin() -> Identity {
-        // TODO: Remove this and update function definition to include Option once
-        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
         let admin = storage.admin;
         require(admin.is_some(), InputError::AdminDoesNotExist);
         admin.unwrap()
@@ -62,8 +84,6 @@ impl NFT for Contract {
     #[storage(read, write)]
     fn approve(approved: Identity, token_id: u64) {
         // Ensure this is a valid token
-        // TODO: Remove this and update function definition to include Option once
-        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
         let approved = Option::Some(approved);
         let token_owner = storage.owners.get(token_id);
         require(token_owner.is_some(), InputError::TokenDoesNotExist);
@@ -74,18 +94,10 @@ impl NFT for Contract {
 
         // Set and store the `approved` `Identity`
         storage.approved.insert(token_id, approved);
-
-        log(ApprovalEvent {
-            owner: sender,
-            approved,
-            token_id,
-        });
     }
 
     #[storage(read)]
     fn approved(token_id: u64) -> Identity {
-        // TODO: This should be removed and update function definition to include Option once
-        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
         // storage.approved.get(token_id)
         let approved = storage.approved.get(token_id);
         require(approved.is_some(), InputError::ApprovedDoesNotExist);
@@ -110,19 +122,12 @@ impl NFT for Contract {
         storage.owners.insert(token_id, Option::None::<Identity>());
         storage.balances.insert(sender, storage.balances.get(sender) - 1);
         storage.total_supply -= 1;
-
-        log(BurnEvent {
-            owner: sender,
-            token_id,
-        });
     }
 
     #[storage(read, write)]
     fn constructor(access_control: bool, admin: Identity, max_supply: u64) {
         // This function can only be called once so if the token supply is already set it has
         // already been called
-        // TODO: Remove this and update function definition to include Option once
-        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
         let admin = Option::Some(admin);
         require(storage.max_supply == 0, InitError::CannotReinitialize);
         require(max_supply != 0, InputError::TokenSupplyCannotBeZero);
@@ -167,12 +172,6 @@ impl NFT for Contract {
         storage.balances.insert(to, storage.balances.get(to) + amount);
         storage.tokens_minted = total_mint;
         storage.total_supply += amount;
-
-        log(MintEvent {
-            owner: to,
-            token_id_start: tokens_minted,
-            total_tokens: amount,
-        });
     }
 
     #[storage(read)]
@@ -183,8 +182,6 @@ impl NFT for Contract {
 
     #[storage(read)]
     fn owner_of(token_id: u64) -> Identity {
-        // TODO: This should be removed and update function definition to include Option once
-        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
         //storage.owners.get(token_id).unwrap()
         let owner = storage.owners.get(token_id);
         require(owner.is_some(), InputError::OwnerDoesNotExist);
@@ -194,14 +191,10 @@ impl NFT for Contract {
     #[storage(read, write)]
     fn set_admin(admin: Identity) {
         // Ensure that the sender is the admin
-        // TODO: Remove this and update function definition to include Option once
-        // https://github.com/FuelLabs/fuels-rs/issues/415 is revolved
         let admin = Option::Some(admin);
         let current_admin = storage.admin;
         require(current_admin.is_some() && msg_sender().unwrap() == current_admin.unwrap(), AccessError::SenderCannotSetAccessControl);
         storage.admin = admin;
-
-        log(AdminEvent { admin });
     }
 
     #[storage(read, write)]
@@ -210,11 +203,6 @@ impl NFT for Contract {
         let sender = msg_sender().unwrap();
         storage.operator_approval.insert((sender, operator), approve);
 
-        log(OperatorEvent {
-            approve,
-            owner: sender,
-            operator,
-        });
     }
 
     #[storage(read)]
@@ -245,12 +233,5 @@ impl NFT for Contract {
 
         storage.balances.insert(from, storage.balances.get(from) - 1);
         storage.balances.insert(to, storage.balances.get(to) + 1);
-
-        log(TransferEvent {
-            from,
-            sender,
-            to,
-            token_id,
-        });
     }
 }
