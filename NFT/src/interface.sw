@@ -107,12 +107,8 @@ abi NFT {
     /// # Arguments
     ///
     /// * `token_id` - The unique identifier of the token.
-    ///
-    /// # Reverts
-    ///
-    /// * When there is no owner for the `token_id`.
     #[storage(read)]
-    fn owner_of(token_id: u64) -> Identity;
+    fn owner_of(token_id: u64) -> Option<Identity>;
 
     /// Changes the contract's admin.
     ///

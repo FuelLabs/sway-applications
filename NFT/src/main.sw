@@ -95,11 +95,8 @@ impl NFT for Contract {
     }
 
     #[storage(read)]
-    fn owner_of(token_id: u64) -> Identity {
-        //storage.owners.get(token_id).unwrap()
-        let owner = storage.owners.get(token_id);
-        require(owner.is_some(), InputError::OwnerDoesNotExist);
-        owner.unwrap()
+    fn owner_of(token_id: u64) -> Option<Identity> {
+        owner_of(token_id)
     }
 
     #[storage(read, write)]
