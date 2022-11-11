@@ -45,7 +45,7 @@ impl NFT for Contract {
     }
 
     #[storage(read)]
-    fn approved(token_id: u64) -> Identity {
+    fn approved(token_id: u64) -> Option<Identity> {
         // storage.approved.get(token_id)
         let approved = storage.approved.get(token_id);
         require(approved.is_some(), InputError::ApprovedDoesNotExist);
