@@ -6,10 +6,6 @@ use data_structures::TokenMetaData;
 
 abi NFT {
     /// Returns the current admin for the contract.
-    ///
-    /// # Reverts
-    ///
-    /// * When the contract does not have an admin.
     #[storage(read)]
     fn admin() -> Option<Identity>;
 
@@ -19,15 +15,10 @@ abi NFT {
     ///
     /// # Arguments
     ///
-    /// * `approved` - The user which will be allowed to transfer the token on the owner's behalf.
+    /// * `approved_identity` - The user which will be allowed to transfer the token on the owner's behalf.
     /// * `token_id` - The unique identifier of the token which the owner is giving approval for.
-    ///
-    /// # Reverts
-    ///
-    /// * When `token_id` does not map to an existing token.
-    /// * When the sender is not the token's owner.
     #[storage(read, write)]
-    fn approve(approved: Identity, token_id: u64);
+    fn approve(approved_identity: Option<Identity>, token_id: u64);
 
     /// Returns the user which is approved to transfer the given token.
     ///

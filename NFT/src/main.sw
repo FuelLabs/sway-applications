@@ -40,18 +40,8 @@ impl NFT for Contract {
     }
 
     #[storage(read, write)]
-    fn approve(approved: Identity, token_id: u64) {
-        // Ensure this is a valid token
-        let approved = Option::Some(approved);
-        let token_owner = storage.owners.get(token_id);
-        require(token_owner.is_some(), InputError::TokenDoesNotExist);
-
-        // Ensure that the sender is the owner of the token to be approved
-        let sender = msg_sender().unwrap();
-        require(token_owner.unwrap() == sender, AccessError::SenderNotOwner);
-
-        // Set and store the `approved` `Identity`
-        storage.approved.insert(token_id, approved);
+    fn approve(approved_identity: Option<Identity>, token_id: u64) {
+        approve(approved_identity, token_id);
     }
 
     #[storage(read)]
