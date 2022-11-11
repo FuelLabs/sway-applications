@@ -87,11 +87,6 @@ abi NFT {
     ///
     /// * `amount` - The number of tokens to be minted in this transaction.
     /// * `to` - The user which will own the minted tokens.
-    ///
-    /// # Reverts
-    ///
-    /// * When the sender attempts to mint more tokens than total supply.
-    /// * When the sender is not the admin and `access_control` is set.
     #[storage(read, write)]
     fn mint(amount: u64, to: Identity);
 

@@ -85,28 +85,7 @@ impl NFT for Contract {
 
     #[storage(read, write)]
     fn mint(amount: u64, to: Identity) {
-        let tokens_minted = storage.tokens_minted;
-        let total_mint = tokens_minted + amount;
-        // The current number of tokens minted plus the amount to be minted cannot be
-        // greater than the total supply
-        require(storage.max_supply >= total_mint, InputError::NotEnoughTokensToMint);
-
-        // Ensure that the sender is the admin if this is a controlled access mint
-        let admin = storage.admin;
-        require(!storage.access_control || (admin.is_some() && msg_sender().unwrap() == admin.unwrap()), AccessError::SenderNotAdmin);
-
-        // Mint as many tokens as the sender has asked for
-        let mut index = tokens_minted;
-        while index < total_mint {
-            // Create the TokenMetaData for this new token
-            storage.meta_data.insert(index, TokenMetaData::new());
-            storage.owners.insert(index, Option::Some(to));
-            index += 1;
-        }
-
-        storage.balances.insert(to, storage.balances.get(to) + amount);
-        storage.tokens_minted = total_mint;
-        storage.total_supply += amount;
+        mint(amount, to);
     }
 
     #[storage(read)]
