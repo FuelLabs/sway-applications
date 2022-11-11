@@ -79,8 +79,8 @@ impl NFT for Contract {
     }
 
     #[storage(read)]
-    fn max_supply() -> u64 {
-        storage.max_supply
+    fn max_supply() -> Option<u64> {
+        max_supply()
     }
 
     #[storage(read, write)]

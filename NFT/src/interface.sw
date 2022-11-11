@@ -77,7 +77,7 @@ abi NFT {
 
     /// Returns the total number of tokens which will ever be minted.
     #[storage(read)]
-    fn max_supply() -> u64;
+    fn max_supply() -> Option<u64>;
 
     /// Mints `amount` number of tokens to the `to` `Identity`.
     ///
