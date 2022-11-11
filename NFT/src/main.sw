@@ -89,9 +89,8 @@ impl NFT for Contract {
     }
 
     #[storage(read)]
-    fn meta_data(token_id: u64) -> TokenMetaData {
-        require(token_id < storage.tokens_minted, InputError::TokenDoesNotExist);
-        storage.meta_data.get(token_id)
+    fn meta_data(token_id: u64) -> Option<TokenMetaData> {
+        meta_data(token_id)
     }
 
     #[storage(read)]

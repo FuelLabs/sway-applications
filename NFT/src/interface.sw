@@ -95,12 +95,8 @@ abi NFT {
     /// # Arguments
     ///
     /// * `token_id` - The unique identifier of the token.
-    ///
-    /// # Reverts
-    ///
-    /// * When the `token_id` does not map to an exsiting token.
     #[storage(read)]
-    fn meta_data(token_id: u64) -> TokenMetaData;
+    fn meta_data(token_id: u64) -> Option<TokenMetaData>;
 
     /// Returns the user which owns the specified token.
     ///
