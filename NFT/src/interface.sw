@@ -124,10 +124,10 @@ abi NFT {
     ///
     /// # Arguments
     ///
-    /// * `approve` - Represents whether the user is giving or revoking operator status.
+    /// * `approval` - Represents whether the user is giving or revoking operator status.
     /// * `operator` - The user which may transfer all tokens on the owner's behalf.
     #[storage(read, write)]
-    fn set_approval_for_all(approve: bool, operator: Identity);
+    fn set_approval_for_all(approval: bool, operator: Identity);
 
     /// Returns the total supply of tokens which are currently in existence.
     #[storage(read)]

@@ -104,11 +104,8 @@ impl NFT for Contract {
     }
 
     #[storage(read, write)]
-    fn set_approval_for_all(approve: bool, operator: Identity) {
-        // Store `approve` with the (sender, operator) tuple
-        let sender = msg_sender().unwrap();
-        storage.operator_approval.insert((sender, operator), approve);
-
+    fn set_approval_for_all(approval: bool, operator: Identity) {
+        set_approval_for_all(approval, operator);
     }
 
     #[storage(read)]
