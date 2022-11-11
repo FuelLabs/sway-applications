@@ -56,17 +56,7 @@ impl NFT for Contract {
 
     #[storage(read, write)]
     fn burn(token_id: u64) {
-        // Ensure this is a valid token
-        let token_owner = storage.owners.get(token_id);
-        require(token_owner.is_some(), InputError::TokenDoesNotExist);
-
-        // Ensure the sender owns the token that is provided
-        let sender = msg_sender().unwrap();
-        require(token_owner.unwrap() == sender, AccessError::SenderNotOwner);
-
-        storage.owners.insert(token_id, Option::None::<Identity>());
-        storage.balances.insert(sender, storage.balances.get(sender) - 1);
-        storage.total_supply -= 1;
+        burn(token_id);
     }
 
     #[storage(read, write)]

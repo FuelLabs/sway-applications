@@ -41,17 +41,9 @@ abi NFT {
 
     /// Burns the specified token.
     ///
-    /// When burned, the metadata of the token is removed. After the token has been burned, no one
-    /// will be able to fetch any data about this token or have control over it.
-    ///
     /// # Arguments
     ///
     /// * `token_id` - The unique identifier of the token which is to be burned.
-    ///
-    /// * Reverts
-    ///
-    /// * When `token_id` does not map to an existing token.
-    /// * When sender is not the owner of the token.
     #[storage(read, write)]
     fn burn(token_id: u64);
 
