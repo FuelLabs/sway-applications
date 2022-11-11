@@ -135,14 +135,8 @@ abi NFT {
 
     /// Transfers ownership of the specified token from one user to another.
     ///
-    /// Transfers can occur under one of three conditions:
-    /// 1. The token's owner is transfering the token.
-    /// 2. The token's approved user is transfering the token.
-    /// 3. The token's owner has a user set as an operator and is transfering the token.
-    ///
     /// # Arguments
     ///
-    /// * `from` - The user which currently owns the token to be transfered.
     /// * `to` - The user which the ownership of the token should be set to.
     /// * `token_id` - The unique identifier of the token which should be transfered.
     ///
@@ -153,5 +147,5 @@ abi NFT {
     /// * When the sender is not approved to transfer the token on the owner's behalf.
     /// * When the sender is not approved to transfer all tokens on the owner's behalf.
     #[storage(read, write)]
-    fn transfer_from(from: Identity, to: Identity, token_id: u64);
+    fn transfer(to: Identity, token_id: u64);
 }
