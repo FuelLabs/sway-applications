@@ -11,7 +11,7 @@ abi NFT {
     ///
     /// * When the contract does not have an admin.
     #[storage(read)]
-    fn admin() -> Identity;
+    fn admin() -> Option<Identity>;
 
     /// Gives approval to the `approved` user to transfer a specific token on another user's behalf.
     ///
