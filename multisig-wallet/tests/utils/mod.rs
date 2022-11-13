@@ -1,3 +1,5 @@
+use std::io::Read;
+
 use fuels::{
     prelude::*,
     signers::fuel_crypto::{Hasher, Message, SecretKey, Signature},
@@ -11,7 +13,7 @@ use rand::{rngs::StdRng, Rng, SeedableRng};
 abigen!(MultiSigContract, "out/debug/multisig-wallet-abi.json");
 
 pub async fn test_recover_and_match_addresses(private_key: &str) {
-    let (private_key, contract) = setup_env(private_key).await.unwrap();
+    let (private_key, contract, deployer_wallet) = setup_env(private_key).await.unwrap();
 
     // Constructor
     let fuel_user_1 = User {
@@ -37,15 +39,42 @@ pub async fn test_recover_and_match_addresses(private_key: &str) {
         .await
         .unwrap();
 
-    // Get tx_hash
-    let address_data =
-        Bits256::from_hex_str("0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1")
-            .unwrap()
-            .0;
-    let to_address = Address::new(address_data);
-    let to = Identity::Address(to_address);
+    // Fund MS
+    let _receipt = deployer_wallet
+        .force_transfer_to_contract(
+            contract.get_contract_id(),
+            200,
+            BASE_ASSET_ID,
+            TxParameters::default(),
+        )
+        .await
+        .unwrap();
 
-    let value = 25;
+    // Create receiver wallet
+    let mut receiver_wallet = WalletUnlocked::new_random(None);
+
+    //Check balances pre-transfer
+    let base_asset_id = ContractId::new(BASE_ASSET_ID.try_into().unwrap());
+
+    let initial_contract_balance = contract
+        .methods()
+        .balance(base_asset_id)
+        .call()
+        .await
+        .unwrap()
+        .value;
+
+    let initial_receiver_balance = deployer_wallet
+        .get_provider()
+        .unwrap()
+        .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
+        .await
+        .unwrap();
+
+    // Get tx_hash
+    let to = Identity::Address(receiver_wallet.address().try_into().unwrap());
+
+    let value = 200;
 
     let mut rng = StdRng::seed_from_u64(1000);
     let data: Bytes32 = rng.gen();
@@ -87,32 +116,57 @@ pub async fn test_recover_and_match_addresses(private_key: &str) {
     //Must comply with ascending signers requirement of Multisig's count_approvals
     let signatures_data: Vec<SignatureData> = vec![signature_data_evm, signature_data_fuel];
 
-    //transfer
-    let base_asset_id = [0u8; 32];
-    let asset_id = ContractId::new(base_asset_id);
-
-    let response = contract
+    // //call transfer
+    let _response = contract
         .methods()
-        .transfer(to, asset_id, value, data, signatures_data)
+        .transfer(to, base_asset_id, value, data, signatures_data)
+        .append_variable_outputs(1)
         .call()
         .await
         .unwrap();
 
-    assert_eq!(response.value, 5);
-    println!("Contract response: \n{:?}\n", response);
+    // check balances of deployer, MS, and receiver
+    let final_contract_balance = contract
+        .methods()
+        .balance(base_asset_id)
+        .call()
+        .await
+        .unwrap()
+        .value;
+
+    let final_receiver_balance = deployer_wallet
+        .get_provider()
+        .unwrap()
+        .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
+        .await
+        .unwrap();
+
+    println!("Intial contract balance: {:?}", initial_contract_balance);
+    println!("Intial receiver balance: {:?}", initial_receiver_balance);
+
+    println!("\nFinal contract balance: {:?}", final_contract_balance);
+    println!("Final receiver balance: {:?}", final_receiver_balance);
+
+    assert_eq!(initial_contract_balance, 200);
+    assert_eq!(initial_receiver_balance, 0);
+
+    assert_eq!(final_contract_balance, 0);
+    assert_eq!(final_receiver_balance, 200);
 }
 
-async fn setup_env(private_key: &str) -> Result<(SecretKey, MultiSigContract), Error> {
+async fn setup_env(
+    private_key: &str,
+) -> Result<(SecretKey, MultiSigContract, WalletUnlocked), Error> {
     let private_key: SecretKey = private_key.parse().unwrap();
 
     let mut wallet = WalletUnlocked::new_from_private_key(private_key, None);
 
-    let num_assets = 1;
+    let num_asset = 1;
     let coins_per_asset = 10;
-    let amount_per_coin = 15;
+    let amount_per_coin = 200;
     let (coins, _asset_ids) = setup_multiple_assets_coins(
         wallet.address(),
-        num_assets,
+        num_asset,
         coins_per_asset,
         amount_per_coin,
     );
@@ -131,7 +185,7 @@ async fn setup_env(private_key: &str) -> Result<(SecretKey, MultiSigContract), E
 
     let contract_instance = MultiSigContract::new(contract_id, wallet.clone());
 
-    Ok((private_key, contract_instance))
+    Ok((private_key, contract_instance, wallet))
 }
 
 async fn format_and_sign(
