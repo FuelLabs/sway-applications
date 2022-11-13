@@ -1,7 +1,5 @@
 library interface;
 
-use std::{contract_id::ContractId, identity::Identity};
-
 abi SimpleAsset {
     /// An example constructor which implements an airdrop distributor contract.
     ///

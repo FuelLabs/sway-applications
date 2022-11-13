@@ -3,7 +3,6 @@ library utils;
 dep interface;
 
 use interface::SimpleAsset;
-use std::{contract_id::ContractId, identity::Identity};
 
 /// Calls the `mint_to` function in another contract.
 ///

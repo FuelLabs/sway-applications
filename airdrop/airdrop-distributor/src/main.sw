@@ -1,39 +1,29 @@
 contract;
 
-dep events;
-dep errors;
 dep data_structures;
+dep errors;
+dep events;
 dep interface;
 dep utils;
 
-use events::{ClaimEvent, CreateAirdropEvent};
-use errors::{AccessError, InitError, StateError, VerificationError};
 use data_structures::ClaimData;
+use errors::{AccessError, InitError, StateError, VerificationError};
+use events::{ClaimEvent, CreateAirdropEvent};
 use interface::AirdropDistributor;
-use std::{
-    address::Address,
-    block::height,
-    contract_id::ContractId,
-    hash::sha256,
-    identity::Identity,
-    logging::log,
-    option::Option,
-    revert::require,
-    storage::StorageMap,
-};
+use std::{block::height, hash::sha256, logging::log, storage::StorageMap};
 use sway_libs::binary_merkle_proof::{leaf_digest, verify_proof};
 use utils::mint_to;
 
 storage {
     /// The contract of the asset which is to be distributed.
-    asset: Option<ContractId> = Option::None(),
+    asset: Option<ContractId> = Option::None,
     /// Stores the ClaimData struct of users that have interacted with the Airdrop Distrubutor contract.
     /// Maps (user => claim)
     claims: StorageMap<Identity, ClaimData> = StorageMap {},
     /// The block at which the claiming period will end.
     end_block: u64 = 0,
     /// The computed merkle root which is to be verified against.
-    merkle_root: Option<b256> = Option::None(),
+    merkle_root: Option<b256> = Option::None,
 }
 
 impl AirdropDistributor for Contract {
@@ -42,7 +32,7 @@ impl AirdropDistributor for Contract {
         amount: u64,
         key: u64,
         num_leaves: u64,
-        proof: [b256; 2],
+        proof: Vec<b256>,
         to: Identity,
     ) {
         // The claiming period must be open and the `to` identity hasn't already claimed

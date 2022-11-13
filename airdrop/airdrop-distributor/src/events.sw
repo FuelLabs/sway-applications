@@ -1,7 +1,5 @@
 library events;
 
-use std::{contract_id::ContractId, identity::Identity};
-
 pub struct ClaimEvent {
     /// The quantity of an asset which is to be minted to the user.
     amount: u64,
