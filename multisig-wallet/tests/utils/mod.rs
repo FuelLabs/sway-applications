@@ -15,6 +15,10 @@ abigen!(MultiSigContract, "out/debug/multisig-wallet-abi.json");
 pub async fn test_recover_and_match_addresses(private_key: &str) {
     let (private_key, contract, deployer_wallet) = setup_env(private_key).await.unwrap();
 
+    let mut receiver_wallet = WalletUnlocked::new_random(None);
+
+    let base_asset_contract_id = ContractId::new(BASE_ASSET_ID.try_into().unwrap());
+
     // Constructor
     let fuel_user_1 = User {
         address: Bits256::from_hex_str(
@@ -39,7 +43,7 @@ pub async fn test_recover_and_match_addresses(private_key: &str) {
         .await
         .unwrap();
 
-    // Fund MS
+    // Fund multi-sig
     let _receipt = deployer_wallet
         .force_transfer_to_contract(
             contract.get_contract_id(),
@@ -50,15 +54,10 @@ pub async fn test_recover_and_match_addresses(private_key: &str) {
         .await
         .unwrap();
 
-    // Create receiver wallet
-    let mut receiver_wallet = WalletUnlocked::new_random(None);
-
-    //Check balances pre-transfer
-    let base_asset_id = ContractId::new(BASE_ASSET_ID.try_into().unwrap());
-
+    // Check balances pre-transfer
     let initial_contract_balance = contract
         .methods()
-        .balance(base_asset_id)
+        .balance(base_asset_contract_id)
         .call()
         .await
         .unwrap()
@@ -71,7 +70,7 @@ pub async fn test_recover_and_match_addresses(private_key: &str) {
         .await
         .unwrap();
 
-    // Get tx_hash
+    // Tx-hash
     let to = Identity::Address(receiver_wallet.address().try_into().unwrap());
 
     let value = 200;
@@ -92,8 +91,8 @@ pub async fn test_recover_and_match_addresses(private_key: &str) {
         .0;
     let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
 
-    //Sign tx_hash
-    //Fuel signature. Fuel wallet. No format. No prefix.
+    // Signature Data
+    // - Fuel signature. Fuel wallet. No format. No prefix.
     let signature_data_fuel = format_and_sign(
         private_key,
         tx_hash,
@@ -103,7 +102,7 @@ pub async fn test_recover_and_match_addresses(private_key: &str) {
     )
     .await;
 
-    //EVM signature. EVM wallet. EIP-191 personal sign format. Ethereum prefix.
+    // - EVM signature. EVM wallet. EIP-191 personal sign format. Ethereum prefix.
     let signature_data_evm = format_and_sign(
         private_key,
         tx_hash,
@@ -113,22 +112,22 @@ pub async fn test_recover_and_match_addresses(private_key: &str) {
     )
     .await;
 
-    //Must comply with ascending signers requirement of Multisig's count_approvals
+    // - Must comply with ascending signers requirement of Multisig's count_approvals
     let signatures_data: Vec<SignatureData> = vec![signature_data_evm, signature_data_fuel];
 
-    // //call transfer
+    // Multi-sig transfer
     let _response = contract
         .methods()
-        .transfer(to, base_asset_id, value, data, signatures_data)
+        .transfer(to, base_asset_contract_id, value, data, signatures_data)
         .append_variable_outputs(1)
         .call()
         .await
         .unwrap();
 
-    // check balances of deployer, MS, and receiver
+    // check balances post-transfer
     let final_contract_balance = contract
         .methods()
-        .balance(base_asset_id)
+        .balance(base_asset_contract_id)
         .call()
         .await
         .unwrap()
@@ -141,12 +140,14 @@ pub async fn test_recover_and_match_addresses(private_key: &str) {
         .await
         .unwrap();
 
+    // Display
     println!("Intial contract balance: {:?}", initial_contract_balance);
     println!("Intial receiver balance: {:?}", initial_receiver_balance);
 
     println!("\nFinal contract balance: {:?}", final_contract_balance);
     println!("Final receiver balance: {:?}", final_receiver_balance);
 
+    // Assertions
     assert_eq!(initial_contract_balance, 200);
     assert_eq!(initial_receiver_balance, 0);
 
