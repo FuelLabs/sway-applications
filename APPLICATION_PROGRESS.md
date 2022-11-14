@@ -67,7 +67,6 @@ The information in this section is split into subsections in order to conceptual
 <h3>Contracts ✅</h3>
 
 - Feature complete for UI integration
-  - Needs vec support in SDK so that array can be changed to vec
 
 <h3>Scripts ❌</h3>
 
