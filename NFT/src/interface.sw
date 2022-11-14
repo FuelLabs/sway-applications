@@ -53,17 +53,14 @@ abi NFT {
     ///
     /// # Arguments
     ///
-    /// * `access_control` - Determines whether only the admin can call the mint function.
-    /// * `admin` - The user which has the ability to mint if `access_control` is set to true and change the contract's admin.
+    /// * `admin` - The only user which has the ability to mint.
     /// * `max_supply` - The maximum supply of tokens that can ever be minted.
     ///
     /// # Reverts
     ///
-    /// * When the constructor function has already been called.
-    /// * When the `token_supply` is set to 0.
-    /// * When `access_control` is set to true and no admin `Identity` was given.
+    /// * When the contract has already been initalized
     #[storage(read, write)]
-    fn constructor(access_control: bool, admin: Identity, max_supply: u64);
+    fn constructor(new_admin: Option<Identity>, new_max_supply: Option<u64>);
 
     /// Returns whether the `operator` user is approved to transfer all tokens on the `owner`
     /// user's behalf.
@@ -87,6 +84,12 @@ abi NFT {
     ///
     /// * `amount` - The number of tokens to be minted in this transaction.
     /// * `to` - The user which will own the minted tokens.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initalized
+    /// * When an admin exsits and the sender is not the admin
+    /// * When a max supply exists and the sender is not the admin
     #[storage(read, write)]
     fn mint(amount: u64, to: Identity);
 
@@ -126,7 +129,7 @@ abi NFT {
     ///
     /// * `approval` - Represents whether the user is giving or revoking operator status.
     /// * `operator` - The user which may transfer all tokens on the owner's behalf.
-    #[storage(read, write)]
+    #[storage(write)]
     fn set_approval_for_all(approval: bool, operator: Identity);
 
     /// Returns the total number of tokens which have ever been minted.

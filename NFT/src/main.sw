@@ -4,9 +4,9 @@ dep data_structures;
 dep errors;
 dep interface;
 
-use data_structures::TokenMetaData;
-use errors::{AccessError, InitError, InputError};
+use data_structures::{State, TokenMetaData};
 use interface::NFT;
+use std::auth::msg_sender;
 use sway_libs::nft::{
     administrator::{
         admin,
@@ -32,6 +32,10 @@ use sway_libs::nft::{
     transfer,
 };
 
+storage {
+    state: State = State::Uninitialize,
+}
+
 impl NFT for Contract {
     #[storage(read)]
     fn admin() -> Option<Identity> {
@@ -56,12 +60,16 @@ impl NFT for Contract {
     #[storage(read, write)]
     fn burn(token_id: u64) {
         burn(token_id);
+        set_meta_data(Option::None::<TokenMetaData>(), token_id);
     }
 
     #[storage(read, write)]
-    fn constructor(admin: Option<Identity>, max_supply: Option<u64>) {
-        set_admin(admin);
-        set_max_supply(max_supply);
+    fn constructor(new_admin: Option<Identity>, new_max_supply: Option<u64>) {
+        require(storage.state == State::Uninitialize, "Error");
+        storage.state = State::Initialize;
+
+        set_admin(new_admin);
+        set_max_supply(new_max_supply);
     }
 
     #[storage(read)]
@@ -76,6 +84,9 @@ impl NFT for Contract {
 
     #[storage(read, write)]
     fn mint(amount: u64, to: Identity) {
+        require(storage.state == State::Initialize, "Error");
+        require(admin().is_none() || (msg_sender().unwrap() == admin().unwrap()), "Error");
+        require(max_supply().is_none() || (tokens_minted() <= max_supply().unwrap()), "Error");
         mint(amount, to);
     }
 
@@ -94,7 +105,7 @@ impl NFT for Contract {
         set_admin(new_admin);
     }
 
-    #[storage(read, write)]
+    #[storage(write)]
     fn set_approval_for_all(approval: bool, operator: Identity) {
         set_approval_for_all(approval, operator);
     }
