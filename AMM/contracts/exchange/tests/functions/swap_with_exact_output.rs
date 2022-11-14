@@ -32,24 +32,24 @@ mod success {
         .await
         .value;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
-        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
+        let pool_info = pool_info(&exchange.instance).await.value;
+        let wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
         assert_eq!(
-            final_wallet_balances.asset_a,
+            wallet_balances.asset_a,
             initial_wallet_balances.asset_a - input_amount
         );
         assert_eq!(
-            final_wallet_balances.asset_b,
+            wallet_balances.asset_b,
             initial_wallet_balances.asset_b + output_amount
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
+            pool_info.asset_a_reserve,
             initial_pool_info.asset_a_reserve + input_amount
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
+            pool_info.asset_b_reserve,
             initial_pool_info.asset_b_reserve - output_amount
         );
     }
@@ -81,24 +81,24 @@ mod success {
         .await
         .value;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
-        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
+        let pool_info = pool_info(&exchange.instance).await.value;
+        let wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
         assert_eq!(
-            final_wallet_balances.asset_a,
+            wallet_balances.asset_a,
             initial_wallet_balances.asset_a - input_amount
         );
         assert_eq!(
-            final_wallet_balances.asset_b,
+            wallet_balances.asset_b,
             initial_wallet_balances.asset_b + output_amount
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
+            pool_info.asset_a_reserve,
             initial_pool_info.asset_a_reserve + input_amount
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
+            pool_info.asset_b_reserve,
             initial_pool_info.asset_b_reserve - output_amount
         );
     }
@@ -128,24 +128,24 @@ mod success {
         .await
         .value;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
-        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
+        let pool_info = pool_info(&exchange.instance).await.value;
+        let wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
         assert_eq!(
-            final_wallet_balances.asset_b,
+            wallet_balances.asset_b,
             initial_wallet_balances.asset_b - input_amount
         );
         assert_eq!(
-            final_wallet_balances.asset_a,
+            wallet_balances.asset_a,
             initial_wallet_balances.asset_a + output_amount
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
+            pool_info.asset_b_reserve,
             initial_pool_info.asset_b_reserve + input_amount
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
+            pool_info.asset_a_reserve,
             initial_pool_info.asset_a_reserve - output_amount
         );
     }
@@ -177,24 +177,24 @@ mod success {
         .await
         .value;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
-        let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
+        let pool_info = pool_info(&exchange.instance).await.value;
+        let wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
         assert_eq!(
-            final_wallet_balances.asset_b,
+            wallet_balances.asset_b,
             initial_wallet_balances.asset_b - input_amount
         );
         assert_eq!(
-            final_wallet_balances.asset_a,
+            wallet_balances.asset_a,
             initial_wallet_balances.asset_a + output_amount
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
+            pool_info.asset_b_reserve,
             initial_pool_info.asset_b_reserve + input_amount
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
+            pool_info.asset_a_reserve,
             initial_pool_info.asset_a_reserve - output_amount
         );
     }

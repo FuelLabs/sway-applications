@@ -21,13 +21,13 @@ mod success {
         )
         .await;
 
-        let final_contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
-        let final_wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
+        let contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
+        let wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
 
         assert_eq!(initial_contract_balance, 0);
-        assert_eq!(final_contract_balance, deposit_amount);
+        assert_eq!(contract_balance, deposit_amount);
         assert_eq!(
-            final_wallet_balance,
+            wallet_balance,
             initial_wallet_balance - deposit_amount
         );
     }
@@ -56,17 +56,17 @@ mod success {
         )
         .await;
 
-        let final_contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
-        let final_wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
+        let contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
+        let wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
 
         assert_eq!(initial_contract_balance, 0);
         assert_eq!(contract_balance_after_deposit, first_deposit_amount);
         assert_eq!(
-            final_contract_balance,
+            contract_balance,
             contract_balance_after_deposit + second_deposit_amount
         );
         assert_eq!(
-            final_wallet_balance,
+            wallet_balance,
             initial_wallet_balance - first_deposit_amount - second_deposit_amount
         );
     }

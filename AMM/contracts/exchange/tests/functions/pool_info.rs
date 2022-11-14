@@ -27,7 +27,7 @@ mod success {
 
         deposit_and_add_liquidity(&amounts, &exchange).await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let pool_info = pool_info(&exchange.instance).await.value;
 
         assert_eq!(
             initial_pool_info.asset_a,
@@ -40,12 +40,12 @@ mod success {
         );
         assert_eq!(initial_pool_info.asset_b_reserve, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
-        assert_eq!(final_pool_info.asset_a, ContractId::new(*exchange.asset_a));
-        assert_eq!(final_pool_info.asset_a_reserve, amounts.amount_a);
-        assert_eq!(final_pool_info.asset_b, ContractId::new(*exchange.asset_b));
-        assert_eq!(final_pool_info.asset_b_reserve, amounts.amount_b);
+        assert_eq!(pool_info.asset_a, ContractId::new(*exchange.asset_a));
+        assert_eq!(pool_info.asset_a_reserve, amounts.amount_a);
+        assert_eq!(pool_info.asset_b, ContractId::new(*exchange.asset_b));
+        assert_eq!(pool_info.asset_b_reserve, amounts.amount_b);
         assert_eq!(
-            final_pool_info.liquidity * final_pool_info.liquidity,
+            pool_info.liquidity * pool_info.liquidity,
             amounts.amount_a * amounts.amount_b
         );
     }

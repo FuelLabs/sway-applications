@@ -24,15 +24,15 @@ mod success {
 
         withdraw(&exchange.instance, deposit_amount, exchange.asset_a).await;
 
-        let final_contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
-        let final_wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
+        let contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
+        let wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
 
         assert_eq!(
-            final_contract_balance,
+            contract_balance,
             initial_contract_balance - withdraw_amount
         );
         assert_eq!(
-            final_wallet_balance,
+            wallet_balance,
             initial_wallet_balance + withdraw_amount
         );
     }
@@ -54,15 +54,15 @@ mod success {
 
         withdraw(&exchange.instance, withdraw_amount, exchange.asset_a).await;
 
-        let final_contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
-        let final_wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
+        let contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
+        let wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
 
         assert_eq!(
-            final_contract_balance,
+            contract_balance,
             initial_contract_balance - withdraw_amount
         );
         assert_eq!(
-            final_wallet_balance,
+            wallet_balance,
             initial_wallet_balance + withdraw_amount
         );
     }
