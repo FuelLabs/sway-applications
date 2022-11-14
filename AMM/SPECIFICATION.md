@@ -123,6 +123,7 @@ This sub-section details what a user is able to do, e.g., click a button and "x,
 
 
 ##### `swap_with_exact_output()`
+
 1. Allows selling an asset for an exact amount of the other asset 
     1. If the asset pair of the pool is set
     2. If the deadline has not passed

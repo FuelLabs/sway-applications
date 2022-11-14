@@ -10,6 +10,7 @@
 An *automated market maker (AMM)* is a type of decentralized exchange protocol that determines asset prices algorithmically through a conservation function. Trades on an AMM take place between the user and the contract, rather than between two users. The liquidity pool of assets in an AMM is supplied by the users. Providing liquidity is incentivized via liquidity miner rewards. 
 
 This application supports:
+
 - Depositing assets that can be
     - Used to add liquidity
     - Withdrawn without adding liquidity
@@ -17,11 +18,11 @@ This application supports:
 - Removing liquidity
 - Swapping assets
 
-The AMM and exchange contracts in this application is designed so that:
-- Liquidity pools consist of two assets each
-- The conservation function used to keep the total liquidity at a constant ratio when exchanging assets is
+The contracts are designed to
+- Support liquidity pools that consist of two assets
+- Use a conservation function which keeps the total liquidity at a constant ratio
     - $price_{asset\ A} * price_{asset\ B} = total\ liquidity$
-- Liquidity miner fee is $\frac1{333} \approx 3\%$
+- Provide a liquidity miner fee of $\frac1{333} \approx 3\%$
 
 	> **NOTE** The miner fee can be modified per asset pair
 
