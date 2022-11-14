@@ -5,6 +5,7 @@ dep errors;
 dep interface;
 
 use data_structures::{State, TokenMetaData};
+use error::{AccessError, InitError};
 use interface::NFT;
 use std::auth::msg_sender;
 use sway_libs::nft::{
@@ -65,7 +66,7 @@ impl NFT for Contract {
 
     #[storage(read, write)]
     fn constructor(new_admin: Option<Identity>, new_max_supply: Option<u64>) {
-        require(storage.state == State::Uninitialize, "Error");
+        require(storage.state == State::Uninitialize, InitError::CannotReinitialized);
         storage.state = State::Initialize;
 
         set_admin(new_admin);
@@ -84,9 +85,10 @@ impl NFT for Contract {
 
     #[storage(read, write)]
     fn mint(amount: u64, to: Identity) {
-        require(storage.state == State::Initialize, "Error");
-        require(admin().is_none() || (msg_sender().unwrap() == admin().unwrap()), "Error");
-        require(max_supply().is_none() || (tokens_minted() <= max_supply().unwrap()), "Error");
+        require(storage.state == State::Initialize, InitError::NotInitialized);
+        require(admin().is_none() || (msg_sender().unwrap() == admin().unwrap()), AccessError::SenderNotAdmin);
+        require(max_supply().is_none() || (tokens_minted() <= max_supply().unwrap()), AccessError::MaxTokensMinted);
+        
         mint(amount, to);
     }
 
