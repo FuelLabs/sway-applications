@@ -5,18 +5,7 @@ dep interface;
 
 use errors::{AccessError, InitError, InputError};
 use interface::SimpleAsset;
-use std::{
-    chain::auth::{
-        AuthError,
-        msg_sender,
-    },
-    contract_id::ContractId,
-    identity::Identity,
-    option::Option,
-    result::Result,
-    revert::require,
-    token::mint_to,
-};
+use std::{chain::auth::{AuthError, msg_sender}, token::mint_to};
 
 storage {
     /// The current quantity of the asset minted.
@@ -24,7 +13,7 @@ storage {
     /// The maximum quantity of the asset ever to be minted.
     asset_supply: u64 = 0,
     /// The Address or Contract that has permission to mint.
-    minter: Option<Identity> = Option::None(),
+    minter: Option<Identity> = Option::None,
 }
 
 impl SimpleAsset for Contract {

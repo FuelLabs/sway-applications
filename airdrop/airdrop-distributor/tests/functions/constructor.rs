@@ -11,7 +11,7 @@ mod success {
     #[tokio::test]
     async fn initalizes() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (_, _, _, _, _, _, _, _, claim_time) =
+        let (_, _, _, _, _, _, _, _, claim_time, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
         let provider = deploy_wallet.wallet.get_provider().unwrap();
         let root = Bits256([1u8; 32]);
@@ -42,7 +42,7 @@ mod revert {
     #[should_panic(expected = "Revert(42)")]
     async fn when_already_initalized() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (_, _, _, _, _, _, _, _, claim_time) =
+        let (_, _, _, _, _, _, _, _, claim_time, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
         let root = Bits256([1u8; 32]);
 
