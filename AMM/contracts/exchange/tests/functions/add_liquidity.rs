@@ -46,14 +46,8 @@ mod success {
         assert_eq!(contract_balances_after_deposit.asset_a, amounts.amount_a);
         assert_eq!(contract_balances_after_deposit.asset_b, amounts.amount_b);
         assert_eq!(added_liquidity, amounts.liquidity);
-        assert_eq!(
-            pool_info.asset_a_reserve,
-            amounts.amount_a
-        );
-        assert_eq!(
-            pool_info.asset_b_reserve,
-            amounts.amount_b
-        );
+        assert_eq!(pool_info.asset_a_reserve, amounts.amount_a);
+        assert_eq!(pool_info.asset_b_reserve, amounts.amount_b);
         assert_eq!(pool_info.liquidity, added_liquidity);
         assert_eq!(contract_balances.asset_a, 0);
         assert_eq!(contract_balances.asset_b, 0);
@@ -118,10 +112,7 @@ mod success {
             pool_info.asset_b_reserve,
             amounts.amount_b + (second_liquidity_amounts.amount_b / 2)
         );
-        assert_eq!(
-            pool_info.liquidity,
-            amounts.liquidity + added_liquidity
-        );
+        assert_eq!(pool_info.liquidity, amounts.liquidity + added_liquidity);
         assert_eq!(contract_balances.asset_a, 0);
         assert_eq!(contract_balances.asset_b, 0);
         assert_eq!(
@@ -187,10 +178,7 @@ mod success {
             pool_info.asset_b_reserve,
             amounts.amount_b + second_liquidity_amounts.amount_b
         );
-        assert_eq!(
-            pool_info.liquidity,
-            amounts.liquidity + added_liquidity
-        );
+        assert_eq!(pool_info.liquidity, amounts.liquidity + added_liquidity);
         assert_eq!(contract_balances.asset_a, 0);
         assert_eq!(contract_balances.asset_b, 0);
         assert_eq!(

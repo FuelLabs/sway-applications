@@ -26,10 +26,7 @@ mod success {
 
         assert_eq!(initial_contract_balance, 0);
         assert_eq!(contract_balance, deposit_amount);
-        assert_eq!(
-            wallet_balance,
-            initial_wallet_balance - deposit_amount
-        );
+        assert_eq!(wallet_balance, initial_wallet_balance - deposit_amount);
     }
 
     #[tokio::test]

@@ -27,14 +27,8 @@ mod success {
         let contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
         let wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
 
-        assert_eq!(
-            contract_balance,
-            initial_contract_balance - withdraw_amount
-        );
-        assert_eq!(
-            wallet_balance,
-            initial_wallet_balance + withdraw_amount
-        );
+        assert_eq!(contract_balance, initial_contract_balance - withdraw_amount);
+        assert_eq!(wallet_balance, initial_wallet_balance + withdraw_amount);
     }
 
     #[tokio::test]
@@ -57,14 +51,8 @@ mod success {
         let contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
         let wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
 
-        assert_eq!(
-            contract_balance,
-            initial_contract_balance - withdraw_amount
-        );
-        assert_eq!(
-            wallet_balance,
-            initial_wallet_balance + withdraw_amount
-        );
+        assert_eq!(contract_balance, initial_contract_balance - withdraw_amount);
+        assert_eq!(wallet_balance, initial_wallet_balance + withdraw_amount);
     }
 }
 
