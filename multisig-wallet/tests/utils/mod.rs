@@ -262,3 +262,81 @@ where
 
     <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
 }
+
+////////
+
+pub mod abi_calls {
+
+    use fuels::contract::contract::CallResponse;
+
+    use super::*;
+
+    pub async fn constructor(
+        contract: &MultiSigContract,
+        users: Vec<User>,
+        threshold: u64,
+    ) -> CallResponse<()> {
+        contract
+            .methods()
+            .constructor(users, threshold)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn execute_transaction(
+        contract: &MultiSigContract,
+        to: Identity,
+        value: u64,
+        data: Bits256,
+        signatures_data: Vec<SignatureData>,
+    ) -> CallResponse<()> {
+        contract
+            .methods()
+            .execute_transaction(to, value, data, signatures_data)
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn transfer(
+        contract: &MultiSigContract,
+        to: Identity,
+        asset_id: ContractId,
+        value: u64,
+        data: Bits256,
+        signatures_data: Vec<SignatureData>,
+    ) -> CallResponse<()> {
+        contract
+            .methods()
+            .transfer(to, asset_id, value, data, signatures_data)
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn nonce(contract: &MultiSigContract) -> CallResponse<(u64)> {
+        contract.methods().nonce().call().await.unwrap()
+    }
+
+    pub async fn balance(contract: &MultiSigContract, asset_id: ContractId) -> CallResponse<(u64)> {
+        contract.methods().balance(asset_id).call().await.unwrap()
+    }
+
+    pub async fn transaction_hash(
+        contract: &MultiSigContract,
+        to: Identity,
+        value: u64,
+        data: Bits256,
+        nonce: u64,
+    ) -> CallResponse<Bits256> {
+        contract
+            .methods()
+            .transaction_hash(to, value, data, nonce)
+            .call()
+            .await
+            .unwrap()
+    }
+}
