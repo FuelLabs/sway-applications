@@ -9,12 +9,10 @@
 
 An *automated market maker (AMM)* is a type of decentralized exchange protocol that determines asset prices algorithmically through a conservation function. Trades on an AMM take place between the user and the contract, rather than between two users. The liquidity pool of assets in an AMM is supplied by the users. Providing liquidity is incentivized via liquidity miner rewards. 
 
-This application supports:
-
-- Depositing assets that can be
-    - Used to add liquidity
-    - Withdrawn without adding liquidity
-- Adding liquidity
+This application supports
+- Depositing assets
+- Withdrawing assets
+- Adding liquidity using deposited assets
 - Removing liquidity
 - Swapping assets
 
@@ -51,36 +49,47 @@ TODO: UI is to be added.
 
 ### Tests
 
-To run the tests for either contract, firstly make sure that you are in the root of this application, i.e., `/path/to/AMM/<you are here>`.
+To run the tests for either contract follow the instructions below.
 
-- In order to run the AMM contract tests, change directory to the root of the AMM contract project, i.e., `/path/to/AMM/contracts/AMM/<you are here>`:
-    ```bash
-    cd contracts/AMM
-    ```
-    1. Build the AMM contract:
-        ```bash
-        forc build
-        ```
-    2. Build the contract used for testing against malicious implementations of the exchange contract:
-        ```bash
-        forc build --path ../exchange/tests/artifacts/malicious_implementation/
-        ```
-    3. Run the tests:
-        ```bash
-        cargo test
-        ```
-- In order to run the exchange contract tests, change directory to the root of the exchange contract project, i.e., `/path/to/AMM/contracts/exchange/<you are here>` from the root of the AMM contract project:
-    ```bash
-    cd ../contracts/exchange
-    ```
-    1. Build the exchange contract:
-        ```bash
-        forc build
-        ```
-    2. Run the tests:
-        ```bash
-        cargo test
-        ```
+Change into the following directory `/<path>/sway-applications/AMM/contracts`
+
+```bash
+cd /<path>/sway-applications/AMM/contracts
+```
+
+#### AMM
+
+Build the AMM contract
+
+```bash
+forc build --path ./AMM
+```
+
+Build the malicious exchange contract
+
+```bash
+forc build --path ./exchange/tests/artifacts/malicious_implementation/
+```
+
+Run the tests
+
+```bash
+cargo test --manifest-path ./AMM/Cargo.toml
+```
+
+#### Exchange
+
+Build the exchange contract
+
+```bash
+forc build --path ./exchange
+```
+
+Run the tests
+
+```bash
+cargo test --manifest-path ./exchange/Cargo.toml
+```
 
 ## Specification
 
