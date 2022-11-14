@@ -1,9 +1,7 @@
-use std::io::Read;
-
 use fuels::{
     prelude::*,
     signers::fuel_crypto::{Hasher, Message, SecretKey, Signature},
-    tx::{Address, Bytes32, Bytes64},
+    tx::{Bytes32, Bytes64},
 };
 
 use sha3::{Digest, Keccak256};
@@ -15,7 +13,7 @@ abigen!(MultiSigContract, "out/debug/multisig-wallet-abi.json");
 pub async fn test_recover_and_match_addresses(private_key: &str) {
     let (private_key, contract, deployer_wallet) = setup_env(private_key).await.unwrap();
 
-    let mut receiver_wallet = WalletUnlocked::new_random(None);
+    let receiver_wallet = WalletUnlocked::new_random(None);
 
     let base_asset_contract_id = ContractId::new(BASE_ASSET_ID.try_into().unwrap());
 
