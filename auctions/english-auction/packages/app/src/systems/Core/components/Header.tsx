@@ -50,7 +50,7 @@ export const Header = () => {
   const location = useLocation();
 
   return (
-    <Grid templateColumns="repeat(2, 1fr)">
+    <Grid templateColumns="repeat(2, 1fr)" css={{ padding: "$4" }}>
       <Grid.Item area="header">
         <Image
           onClick={() => navigate("/")}
