@@ -6,12 +6,8 @@ dep events;
 dep interface;
 
 use std::{
-    address::Address,
     chain::auth::msg_sender,
-    identity::Identity,
     logging::log,
-    result::Result,
-    revert::require,
 };
 
 use data_structures::State;

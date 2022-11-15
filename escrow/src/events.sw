@@ -3,7 +3,6 @@ library events;
 dep data_structures;
 
 use data_structures::{Arbiter, EscrowInfo};
-use std::{contract_id::ContractId, identity::Identity};
 
 pub struct AcceptedArbiterEvent {
     /// Unique escrow identifier
