@@ -51,7 +51,7 @@ TODO: UI is to be added.
 
 To run the tests for either contract follow the instructions below.
 
-Change into the following directory `/<path>/sway-applications/AMM/contracts`
+Change into the following directory:
 
 ```bash
 cd /<path>/sway-applications/AMM/contracts
@@ -59,19 +59,25 @@ cd /<path>/sway-applications/AMM/contracts
 
 #### AMM
 
-Build the AMM contract
+Build the contract:
 
 ```bash
 forc build --path ./AMM
 ```
 
-Build the malicious exchange contract
+Build the exchange contract:
 
 ```bash
-forc build --path ./exchange/tests/artifacts/malicious_implementation/
+forc build --path ./exchange
 ```
 
-Run the tests
+Build the malicious exchange contract:
+
+```bash
+forc build --path ./exchange/tests/artifacts/malicious_implementation
+```
+
+Run the tests:
 
 ```bash
 cargo test --manifest-path ./AMM/Cargo.toml
@@ -79,13 +85,13 @@ cargo test --manifest-path ./AMM/Cargo.toml
 
 #### Exchange
 
-Build the exchange contract
+Build the contract:
 
 ```bash
 forc build --path ./exchange
 ```
 
-Run the tests
+Run the tests:
 
 ```bash
 cargo test --manifest-path ./exchange/Cargo.toml
