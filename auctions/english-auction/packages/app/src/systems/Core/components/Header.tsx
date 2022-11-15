@@ -1,5 +1,5 @@
 import { cx } from "@fuel-ui/css";
-import { Button, ButtonGroup } from "@fuel-ui/react";
+import { Button, ButtonGroup, Image, Grid } from "@fuel-ui/react";
 import type { ButtonProps } from "@fuel-ui/react";
 import type { ComponentType, ReactNode } from "react";
 import { BiDollarCircle } from "react-icons/bi";
@@ -50,34 +50,35 @@ export const Header = () => {
   const location = useLocation();
 
   return (
-    <div className="header">
-      <img
-        onClick={() => navigate("/")}
-        src={relativeUrl("/fuel-logo-512x512.png")}
-        alt="english-auction"
-        className="cursor-pointer"
-      />
-      <div className="header--nav">
-        <div className="header--navContainer">
-          <ButtonGroup>
-            <HeaderNav
-              icon={MdSwapCalls}
-              onPress={() => navigate(Pages.sell)}
-              isActive={location.pathname === Pages.sell}
-            >
-              Sell
-            </HeaderNav>
-            <HeaderNav
-              icon={BiDollarCircle}
-              onPress={() => navigate(Pages.buy)}
-              isActive={location.pathname.includes(Pages.buy)}
-            >
-              Buy
-            </HeaderNav>
-          </ButtonGroup>
-        </div>
-      </div>
-      <div className="header--wallet">WALLET</div>
-    </div>
+    <Grid templateColumns="repeat(2, 1fr)">
+      <Grid.Item area="header">
+        <Image
+          onClick={() => navigate("/")}
+          src={relativeUrl("/fuel-logo-512x512.png")}
+          alt="english-auction"
+          className="cursor-pointer"
+          height="40px"
+          width="40px"
+        />
+      </Grid.Item>
+      <Grid.Item area="header">
+        <ButtonGroup>
+          <HeaderNav
+            icon={MdSwapCalls}
+            onPress={() => navigate(Pages.sell)}
+            isActive={location.pathname === Pages.sell}
+          >
+            Sell
+          </HeaderNav>
+          <HeaderNav
+            icon={BiDollarCircle}
+            onPress={() => navigate(Pages.buy)}
+            isActive={location.pathname.includes(Pages.buy)}
+          >
+            Buy
+          </HeaderNav>
+        </ButtonGroup>
+      </Grid.Item>
+    </Grid>
   );
 };
