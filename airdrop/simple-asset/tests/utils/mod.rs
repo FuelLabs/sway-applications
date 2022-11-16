@@ -47,6 +47,7 @@ pub mod test_helpers {
         let mut wallets = launch_custom_provider_and_get_wallets(
             WalletsConfig::new(Some(num_wallets), Some(coins_per_wallet), Some(coin_amount)),
             None,
+            None,
         )
         .await;
 
@@ -66,13 +67,13 @@ pub mod test_helpers {
 
         let deployer = Metadata {
             asset_id: ContractId::new(*simple_asset_id.hash()),
-            simple_asset: SimpleAsset::new(simple_asset_id.to_string(), wallet1.clone()),
+            simple_asset: SimpleAsset::new(simple_asset_id.clone(), wallet1.clone()),
             wallet: wallet1.clone(),
         };
 
         let user = Metadata {
             asset_id: ContractId::new(*simple_asset_id.hash()),
-            simple_asset: SimpleAsset::new(simple_asset_id.to_string(), wallet2.clone()),
+            simple_asset: SimpleAsset::new(simple_asset_id.clone(), wallet2.clone()),
             wallet: wallet2.clone(),
         };
 

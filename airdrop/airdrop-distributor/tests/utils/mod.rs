@@ -339,6 +339,7 @@ pub mod test_helpers {
         let mut wallets = launch_custom_provider_and_get_wallets(
             WalletsConfig::new(Some(num_wallets), Some(coins_per_wallet), Some(coin_amount)),
             Some(config),
+            None,
         )
         .await;
 
@@ -371,7 +372,7 @@ pub mod test_helpers {
 
         let deployer = Metadata {
             airdrop_distributor: AirdropDistributor::new(
-                airdrop_distributor_id.to_string(),
+                airdrop_distributor_id.clone(),
                 wallet1.clone(),
             ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
@@ -380,7 +381,7 @@ pub mod test_helpers {
 
         let user1 = Metadata {
             airdrop_distributor: AirdropDistributor::new(
-                airdrop_distributor_id.to_string(),
+                airdrop_distributor_id.clone(),
                 wallet2.clone(),
             ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
@@ -389,7 +390,7 @@ pub mod test_helpers {
 
         let user2 = Metadata {
             airdrop_distributor: AirdropDistributor::new(
-                airdrop_distributor_id.to_string(),
+                airdrop_distributor_id.clone(),
                 wallet3.clone(),
             ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
@@ -398,7 +399,7 @@ pub mod test_helpers {
 
         let user3 = Metadata {
             airdrop_distributor: AirdropDistributor::new(
-                airdrop_distributor_id.to_string(),
+                airdrop_distributor_id.clone(),
                 wallet4.clone(),
             ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
@@ -406,7 +407,7 @@ pub mod test_helpers {
         };
 
         let asset = Asset {
-            asset: SimpleAsset::new(simple_asset_id.to_string(), wallet1.clone()),
+            asset: SimpleAsset::new(simple_asset_id.clone(), wallet1.clone()),
             asset_id: ContractId::new(*simple_asset_id.hash()),
         };
 

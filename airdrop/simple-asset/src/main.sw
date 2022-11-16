@@ -5,7 +5,7 @@ dep interface;
 
 use errors::{AccessError, InitError, InputError};
 use interface::SimpleAsset;
-use std::{chain::auth::{AuthError, msg_sender}, token::mint_to};
+use std::{auth::{AuthError, msg_sender}, token::mint_to};
 
 storage {
     /// The current quantity of the asset minted.
@@ -28,7 +28,7 @@ impl SimpleAsset for Contract {
         storage.asset_supply = asset_supply;
     }
 
-    #[storage(read, write)]
+    #[storage(read)]
     fn mint_to(amount: u64, to: Identity) {
         // Ensure that the sender is the minter.
         require(storage.minter.is_some() && msg_sender().unwrap() == storage.minter.unwrap(), AccessError::SenderNotPermittedToMint);

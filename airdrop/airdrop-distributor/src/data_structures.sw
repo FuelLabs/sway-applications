@@ -8,7 +8,7 @@ pub struct ClaimData {
 }
 
 impl ClaimData {
-    fn new(amount: u64, claimed: bool) -> Self {
+    pub fn new(amount: u64, claimed: bool) -> Self {
         Self {
             amount,
             claimed,
