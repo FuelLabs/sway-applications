@@ -4,8 +4,8 @@ dep data_structures;
 dep errors;
 dep interface;
 
-use data_structures::{State, TokenMetaData};
-use error::{AccessError, InitError};
+use data_structures::{NFTMetadata, State};
+use errors::{AccessError, InitError};
 use interface::NFT;
 use std::auth::msg_sender;
 use sway_libs::nft::{
@@ -61,7 +61,7 @@ impl NFT for Contract {
     #[storage(read, write)]
     fn burn(token_id: u64) {
         burn(token_id);
-        set_meta_data(Option::None::<TokenMetaData>(), token_id);
+        set_meta_data(Option::None::<NFTMetadata>(), token_id);
     }
 
     #[storage(read, write)]
@@ -93,7 +93,7 @@ impl NFT for Contract {
     }
 
     #[storage(read)]
-    fn meta_data(token_id: u64) -> Option<TokenMetaData> {
+    fn meta_data(token_id: u64) -> Option<NFTMetadata> {
         meta_data(token_id)
     }
 
@@ -104,6 +104,7 @@ impl NFT for Contract {
 
     #[storage(read, write)]
     fn set_admin(new_admin: Option<Identity>) {
+        require(admin().is_some(), AccessError::NoContractAdmin);
         set_admin(new_admin);
     }
 

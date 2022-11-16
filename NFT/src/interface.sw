@@ -2,7 +2,7 @@ library interface;
 
 dep data_structures;
 
-use data_structures::TokenMetaData;
+use data_structures::NFTMetadata;
 
 abi NFT {
     /// Returns the current admin for the contract.
@@ -99,7 +99,7 @@ abi NFT {
     ///
     /// * `token_id` - The unique identifier of the token.
     #[storage(read)]
-    fn meta_data(token_id: u64) -> Option<TokenMetaData>;
+    fn meta_data(token_id: u64) -> Option<NFTMetadata>;
 
     /// Returns the user which owns the specified token.
     ///
@@ -117,6 +117,10 @@ abi NFT {
     /// # Arguments
     ///
     /// * `new_admin` - The user which is to be set as the new admin.
+    ///
+    /// # Reverts
+    ///
+    /// * When there is no contract admin.
     #[storage(read, write)]
     fn set_admin(new_admin: Option<Identity>);
 
