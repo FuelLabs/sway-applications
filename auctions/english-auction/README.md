@@ -55,7 +55,8 @@ There are three commands required to run the tests
 3. Run the tests
 
    ```bash
-   forc test
+   forc build
+cargo test
    ```
 
 ## Specification

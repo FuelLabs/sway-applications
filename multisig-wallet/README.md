@@ -50,7 +50,8 @@ Use the following command to run the tests
 1. Run the tests
 
    ```bash
-   forc test
+   forc build
+cargo test
    ```
 
 ## Specification

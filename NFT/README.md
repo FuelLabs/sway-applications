@@ -25,5 +25,6 @@ In order to run the tests make sure that you are in the root of this project i.e
 Run the tests
 
 ```bash
-forc test
+forc build
+cargo test
 ```
