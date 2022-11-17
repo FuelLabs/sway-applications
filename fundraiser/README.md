@@ -50,7 +50,7 @@ There are two commands required to run the tests
 
    ```bash
    forc build
-cargo test
+   cargo test
    ```
 
 ## Specification

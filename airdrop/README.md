@@ -57,7 +57,7 @@ There is one command required to run the tests for simple-asset. This will both 
 
    ```bash
    forc build
-cargo test
+   cargo test
    ```
 
 Second, make sure that you are in the root of the airdrop-distributor project i.e. `/path/to/airdrop/airdrop-distributor/<you are here>`
@@ -68,7 +68,7 @@ As the simple-asset project has been compiled with the previous command, there i
 
    ```bash
    forc build
-cargo test
+   cargo test
    ```
 
 ## Specification

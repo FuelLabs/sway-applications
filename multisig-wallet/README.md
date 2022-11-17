@@ -51,7 +51,7 @@ Use the following command to run the tests
 
    ```bash
    forc build
-cargo test
+   cargo test
    ```
 
 ## Specification
