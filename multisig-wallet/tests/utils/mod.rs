@@ -4,139 +4,22 @@ use fuels::{
     tx::{Bytes32, Bytes64},
 };
 
-use sha3::{Digest, Keccak256};
+use serde::Serialize;
 
-use rand::{rngs::StdRng, Rng, SeedableRng};
+use sha3::{Digest, Keccak256};
 
 abigen!(MultiSigContract, "out/debug/multisig-wallet-abi.json");
 
-pub async fn test_recover_and_match_addresses(private_key: &str) {
-    let (private_key, contract, deployer_wallet) =
-        test_helpers::setup_env(private_key).await.unwrap();
+pub const VALID_SIGNER_PK: &str =
+    "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301";
 
-    let receiver_wallet = WalletUnlocked::new_random(None);
-
-    let base_asset_contract_id = ContractId::new(BASE_ASSET_ID.try_into().unwrap());
-
-    // Constructor
-    let fuel_user_1 = User {
-        address: Bits256::from_hex_str(
-            "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
-        )
-        .unwrap(),
-        weight: 3,
-    };
-    let evm_user_1 = User {
-        address: Bits256::from_hex_str(
-            "0x000000000000000000000000db4aa29ef306fc8d28025b838ccd3feecaedb333",
-        )
-        .unwrap(),
-        weight: 2,
-    };
-    let users = vec![fuel_user_1, evm_user_1];
-
-    let _response = abi_calls::constructor(&contract, users, 5).await;
-
-    // Fund multi-sig
-    let _receipt = deployer_wallet
-        .force_transfer_to_contract(
-            contract.get_contract_id(),
-            200,
-            BASE_ASSET_ID,
-            TxParameters::default(),
-        )
-        .await
-        .unwrap();
-
-    // Check balances pre-transfer
-    let initial_contract_balance = abi_calls::balance(&contract, base_asset_contract_id)
-        .await
-        .value;
-
-    let initial_receiver_balance = deployer_wallet
-        .get_provider()
-        .unwrap()
-        .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
-        .await
-        .unwrap();
-
-    // Tx-hash
-    let to = Identity::Address(receiver_wallet.address().try_into().unwrap());
-
-    let value = 200;
-
-    let mut rng = StdRng::seed_from_u64(1000);
-    let data: Bytes32 = rng.gen();
-    let data = Bits256(*data);
-
-    let nonce = abi_calls::nonce(&contract).await.value;
-
-    let tx_hash = abi_calls::transaction_hash(&contract, to.clone(), value, data, nonce)
-        .await
-        .value
-        .0;
-    let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
-
-    // Signature Data
-    // - Fuel signature. Fuel wallet. No format. No prefix.
-    let signature_data_fuel = test_helpers::format_and_sign(
-        private_key,
-        tx_hash,
-        MessageFormat::None(),
-        MessagePrefix::None(),
-        WalletType::Fuel(),
-    )
-    .await;
-
-    // - EVM signature. EVM wallet. EIP-191 personal sign format. Ethereum prefix.
-    let signature_data_evm = test_helpers::format_and_sign(
-        private_key,
-        tx_hash,
-        MessageFormat::EIP191PersonalSign(),
-        MessagePrefix::Ethereum(),
-        WalletType::EVM(),
-    )
-    .await;
-
-    // - Must comply with ascending signers requirement of Multisig's count_approvals
-    let signatures_data: Vec<SignatureData> = vec![signature_data_evm, signature_data_fuel];
-
-    // Multi-sig transfer
-    let _response = abi_calls::transfer(
-        &contract,
-        to,
-        base_asset_contract_id,
-        value,
-        data,
-        signatures_data,
-    )
-    .await;
-
-    // check balances post-transfer
-    let final_contract_balance = abi_calls::balance(&contract, base_asset_contract_id)
-        .await
-        .value;
-
-    let final_receiver_balance = deployer_wallet
-        .get_provider()
-        .unwrap()
-        .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
-        .await
-        .unwrap();
-
-    // Display
-    println!("Intial contract balance: {:?}", initial_contract_balance);
-    println!("Intial receiver balance: {:?}", initial_receiver_balance);
-
-    println!("\nFinal contract balance: {:?}", final_contract_balance);
-    println!("Final receiver balance: {:?}", final_receiver_balance);
-
-    // Assertions
-    assert_eq!(initial_contract_balance, 200);
-    assert_eq!(initial_receiver_balance, 0);
-
-    assert_eq!(final_contract_balance, 0);
-    assert_eq!(final_receiver_balance, 200);
+#[derive(Serialize)]
+pub struct Transaction {
+    pub contract_identifier: ContractId,
+    pub data: Vec<u8>,
+    pub destination: Vec<u8>,
+    pub nonce: u64,
+    pub value: u64,
 }
 
 pub mod abi_calls {
@@ -327,5 +210,9 @@ pub mod test_helpers {
         hasher.update(data);
 
         <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
+    }
+
+    pub fn base_asset_contract_id() -> ContractId {
+        ContractId::new(BASE_ASSET_ID.try_into().unwrap())
     }
 }
