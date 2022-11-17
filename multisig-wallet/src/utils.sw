@@ -65,9 +65,7 @@ fn eip_191_personal_sign_format(data_to_sign: b256) -> b256 {
     let initial_byte = 0x19u8;
     let version_byte = 0x45u8;
 
-    let packed_bytes = compose((initial_byte, version_byte, 0, 0));
-
-    let encoded_data = encode_data(packed_bytes, data_to_sign);
+    let encoded_data = encode_data(initial_byte, version_byte, data_to_sign);
     let encoded_data = (
         encoded_data.get(0).unwrap(),
         encoded_data.get(1).unwrap(),
@@ -83,21 +81,14 @@ fn eip_191_personal_sign_format(data_to_sign: b256) -> b256 {
         hash: b256
     }
 }
-
-/// Build a single b256 value from a tuple of 4 u64 values.
-fn compose(words: (u64, u64, u64, u64)) -> b256 {
-    asm(r1: __addr_of(words)) { r1: b256 }
-}
-
 /// Encode the packed_bytes and message_hash into a Vec<u64> of length 40 bytes,
 /// where the first 34 bytes are the desired data.
-fn encode_data(packed_bytes: b256, message_hash: b256) -> Vec<u64> {
+fn encode_data(initial_byte: u64, version_byte: u64, message_hash: b256) -> Vec<u64> {
     let mut data = Vec::with_capacity(5);
 
-    let (bytes_1, bytes_2, _bytes_3, _bytes_4) = decompose(packed_bytes);
     let (message_1, message_2, message_3, message_4) = decompose(message_hash);
 
-    data.push((bytes_1 << 56) + (bytes_2 << 48) + (message_1 >> 16));
+    data.push((initial_byte << 56) + (version_byte << 48) + (message_1 >> 16));
 
     data.push((message_1 << 48) + (message_2 >> 16));
     data.push((message_2 << 48) + (message_3 >> 16));
