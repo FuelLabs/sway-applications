@@ -49,7 +49,6 @@ There are two commands required to run the tests
 2. Run the tests
 
    ```bash
-   forc build
    cargo test
    ```
 

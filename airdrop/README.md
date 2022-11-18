@@ -51,18 +51,7 @@ In order to run the tests you will need to build both the simple-asset and airdr
 
 First, make sure that you are in the root of the simple-asset project i.e. `/path/to/airdrop/simple-asset/<you are here>`.
 
-There is one command required to run the tests for simple-asset. This will both build and test the simple-asset project.
-
-1. Run the tests
-
-   ```bash
-   forc build
-   cargo test
-   ```
-
-Second, make sure that you are in the root of the airdrop-distributor project i.e. `/path/to/airdrop/airdrop-distributor/<you are here>`
-
-As the simple-asset project has been compiled with the previous command, there is one command required to run the tests for airdrop-distributor. This will both build and test the airdrop-distributor project.
+There are two commands required to run the tests for simple-asset. This will build and test the simple-asset project.
 
 1. Run the tests
 
