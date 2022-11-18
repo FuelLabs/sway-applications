@@ -1,6 +1,5 @@
 library interface;
 
-
 abi Oracle {
     /// Return the owner (node) of the oracle
     ///

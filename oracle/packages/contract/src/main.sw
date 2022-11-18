@@ -5,10 +5,7 @@ dep errors;
 dep events;
 dep interface;
 
-use std::{
-    chain::auth::msg_sender,
-    logging::log,
-};
+use std::{chain::auth::msg_sender, logging::log};
 
 use data_structures::State;
 use errors::AccessError;
