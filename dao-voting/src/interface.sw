@@ -2,7 +2,6 @@ library interface;
 
 dep data_structures;
 
-
 use data_structures::{Proposal, ProposalInfo, Votes};
 
 abi DaoVoting {
