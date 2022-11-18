@@ -195,33 +195,33 @@ pub mod test_helpers {
         let user_wallet = wallets.pop().unwrap();
 
         let id = Contract::deploy(
-            "./out/debug/fundraiser.bin",
+            paths::CONTRACT_BINARY,
             &deployer_wallet,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                "./out/debug/fundraiser-storage_slots.json".to_string(),
+                paths::CONTRACT_STORAGE.to_string(),
             )),
         )
         .await
         .unwrap();
 
         let asset_id = Contract::deploy(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            paths::ASSET_BINARY,
             &deployer_wallet,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/asset/out/debug/asset-storage_slots.json".to_string(),
+                paths::ASSET_STORAGE.to_string(),
             )),
         )
         .await
         .unwrap();
 
         let asset2_id = Contract::deploy_with_parameters(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            paths::ASSET_BINARY,
             &deployer_wallet,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/asset/out/debug/asset-storage_slots.json".to_string(),
+                paths::ASSET_STORAGE.to_string(),
             )),
             Salt::from([1u8; 32]),
         )
