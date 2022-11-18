@@ -1,6 +1,5 @@
 library events;
 
-
 pub struct ExecutedEvent {
     data: b256, // TODO: change to vector when implemented
     nonce: u64,

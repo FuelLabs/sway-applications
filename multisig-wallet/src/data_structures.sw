@@ -1,6 +1,5 @@
 library data_structures;
 
-
 pub struct User {
     // Contracts cannot sign therefore restrict scope to Address
     /// The wallet address of a user
