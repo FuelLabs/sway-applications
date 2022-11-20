@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { useWallet } from "../hooks/useWallet";
+import { useConnectWallet } from "../hooks/useConnectWallet";
 
 import { Header } from "./Header";
 
@@ -9,7 +9,7 @@ type MainLayoutProps = {
 };
 
 export function MainLayout({ children }: MainLayoutProps) {
-  useWallet();
+  useConnectWallet();
   return (
     <>
       <Header />
