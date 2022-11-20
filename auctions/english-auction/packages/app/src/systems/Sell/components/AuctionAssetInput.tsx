@@ -14,12 +14,22 @@ type AuctionAssetInputProps = {
   placeholderAssetId: string;
   placeholderTokenId: string;
   placeholderTokenAmount: string;
+  onChange: (id: string, val: string) => void;
+  assetIdValue?: string;
+  tokenIdValue?: string;
+  assetAmountValue?: string;
+  id: string;
 };
 
 export const AuctionAssetInput = ({
   placeholderAssetId,
   placeholderTokenId,
   placeholderTokenAmount,
+  onChange,
+  assetIdValue,
+  tokenIdValue,
+  assetAmountValue,
+  id,
 }: AuctionAssetInputProps) => {
   const [isNFT, setIsNFT] = useState(false);
   const assets: CoinQuantity[] = useAssets();
@@ -37,6 +47,7 @@ export const AuctionAssetInput = ({
   });
 
   const handleTokenTypeSelection = (newTokenType: string) => {
+    onChange(`tokenType${id}`, newTokenType);
     setIsNFT(newTokenType === "nft");
   };
 
@@ -45,26 +56,37 @@ export const AuctionAssetInput = ({
       <Input css={styles.input}>
         {isNFT ? (
           <Input.Number
+            id={`tokenId${id}`}
             allowNegative={false}
             autoComplete="off"
             inputMode="numeric"
+            onChange={(e) => onChange(`tokenId${id}`, e.target.value)}
             placeholder={placeholderTokenId}
+            value={tokenIdValue}
           />
         ) : (
           <Input.Number
+            id={`assetAmount${id}`}
             allowedDecimalSeparators={[".", ","]}
             allowNegative={false}
             autoComplete="off"
             inputMode="decimal"
             decimalScale={DECIMAL_UNITS}
+            onChange={(e) => onChange(`assetAmount${id}`, e.target.value)}
             placeholder={placeholderTokenAmount}
             thousandSeparator={false}
+            value={assetAmountValue}
           />
         )}
       </Input>
       {isNFT && (
         <Input css={styles.input}>
-          <Input.Field placeholder={placeholderAssetId} />
+          <Input.Field
+            id={`assetId${id}`}
+            onChange={(e) => onChange(`assetId${id}`, e.target.value)}
+            placeholder={placeholderAssetId}
+            value={assetIdValue}
+          />
         </Input>
       )}
       <Dropdown>
@@ -80,7 +102,6 @@ export const AuctionAssetInput = ({
             <Icon icon="Image" />
             NFT
           </Dropdown.MenuItem>
-          {/* TODO figure out how to remove this extra needed {} */}
         </Dropdown.Menu>
       </Dropdown>
     </>

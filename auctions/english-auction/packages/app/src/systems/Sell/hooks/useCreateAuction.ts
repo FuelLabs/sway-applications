@@ -8,14 +8,14 @@ import type {
   OptionalU64Input,
 } from '~/types/contracts/EnglishAuctionAbi';
 
-interface UseCreateAuctionProps {
+export type UseCreateAuctionProps = {
   bidAsset: AuctionAssetInput;
   duration: BigNumberish;
   initialPrice: BigNumberish;
   reservePrice: OptionalU64Input;
   seller: IdentityInput;
   sellAsset: AuctionAssetInput;
-}
+};
 
 export function useCreateAuction({
   bidAsset,
