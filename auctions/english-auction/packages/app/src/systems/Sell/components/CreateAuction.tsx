@@ -1,4 +1,5 @@
 import { Button, Card, Flex, Input, Stack } from "@fuel-ui/react";
+import { bn, DECIMAL_UNITS } from "fuels";
 import { useState } from "react";
 
 import { useCreateAuction } from "../hooks/useCreateAuction";
@@ -6,7 +7,20 @@ import { useCreateAuction } from "../hooks/useCreateAuction";
 import { AuctionAssetInput } from "./AuctionAssetInput";
 
 export const CreateAuction = () => {
-  const [auctionValues, setAuctionValues] = useState({
+  const [auctionValues, setAuctionValues] = useState<{
+    assetIdBid: string;
+    assetAmountBid: string;
+    tokenIdBid: string;
+    tokenTypeBid: string;
+    duration: string;
+    initialPrice: string;
+    reservePrice: string;
+    seller: string;
+    assetIdSell: string;
+    assetAmountSell: string;
+    tokenIdSell: string;
+    tokenTypeSell: string;
+  }>({
     assetIdBid: "",
     assetAmountBid: "",
     tokenIdBid: "",
@@ -21,10 +35,10 @@ export const CreateAuction = () => {
     tokenTypeSell: "",
   });
   const createAuctionMutation = useCreateAuction({
-    bidAsset: auctionValues.assetIdBid
+    bidAsset: !auctionValues.assetIdBid
       ? {
           TokenAsset: {
-            amount: auctionValues.assetAmountBid,
+            amount: bn.parseUnits(auctionValues.assetAmountBid, DECIMAL_UNITS),
             asset_id: { value: auctionValues.tokenTypeBid },
           },
         }
@@ -35,13 +49,13 @@ export const CreateAuction = () => {
           },
         },
     duration: auctionValues.duration,
-    initialPrice: auctionValues.initialPrice,
-    reservePrice: auctionValues.reservePrice,
-    seller: { Address: { value: auctionValues.seller } },
-    sellAsset: auctionValues.assetIdSell
+    initialPrice: bn.parseUnits(auctionValues.initialPrice, DECIMAL_UNITS),
+    reservePrice: bn.parseUnits(auctionValues.reservePrice, DECIMAL_UNITS),
+    sellerAddress: auctionValues.seller,
+    sellAsset: !auctionValues.assetIdSell
       ? {
           TokenAsset: {
-            amount: auctionValues.assetAmountSell,
+            amount: bn.parseUnits(auctionValues.assetAmountSell, DECIMAL_UNITS),
             asset_id: { value: auctionValues.tokenTypeSell },
           },
         }
@@ -79,12 +93,14 @@ export const CreateAuction = () => {
           <Input css={{ alignSelf: "stretch" }}>
             <Input.Number
               inputMode="numeric"
+              allowNegative={false}
               onChange={(e) => handleInputChange("duration", e.target.value)}
               placeholder="Duration"
             />
           </Input>
           <Input css={{ alignSelf: "stretch" }}>
             <Input.Number
+              allowNegative={false}
               placeholder="Initial Price"
               onChange={(e) =>
                 handleInputChange("initialPrice", e.target.value)
@@ -93,6 +109,7 @@ export const CreateAuction = () => {
           </Input>
           <Input css={{ alignSelf: "stretch" }}>
             <Input.Number
+              allowNegative={false}
               placeholder="Reserve Price"
               onChange={(e) =>
                 handleInputChange("reservePrice", e.target.value)

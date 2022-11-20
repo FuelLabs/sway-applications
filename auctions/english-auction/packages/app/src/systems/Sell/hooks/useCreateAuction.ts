@@ -1,3 +1,4 @@
+import { Address } from 'fuels';
 import type { BigNumberish } from 'fuels';
 import { useMutation } from 'react-query';
 
@@ -13,7 +14,7 @@ export type UseCreateAuctionProps = {
   duration: BigNumberish;
   initialPrice: BigNumberish;
   reservePrice: OptionalU64Input;
-  seller: IdentityInput;
+  sellerAddress: string;
   sellAsset: AuctionAssetInput;
 };
 
@@ -22,12 +23,15 @@ export function useCreateAuction({
   duration,
   initialPrice,
   reservePrice,
-  seller,
+  sellerAddress,
   sellAsset,
 }: UseCreateAuctionProps) {
   const contract = useContract();
   const mutation = useMutation(async () => {
     const callParams = sellAsset.TokenAsset ? sellAsset.TokenAsset : {};
+    const seller: IdentityInput = {
+      Address: { value: Address.fromString(sellerAddress).toHexString() },
+    };
     const result = await contract.functions
       .create(bidAsset, duration, initialPrice, reservePrice, seller, sellAsset)
       .callParams(callParams)
