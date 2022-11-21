@@ -1,7 +1,5 @@
 library data_structures;
 
-use std::{contract_id::ContractId, identity::Identity, option::Option};
-
 pub struct Auction {
     /// The asset the auction accepts for placing bids
     asset_id: ContractId,

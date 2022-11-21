@@ -4,14 +4,15 @@ dep data_structures;
 dep errors;
 
 use std::{
-    address::Address,
+    auth::{
+        AuthError,
+        msg_sender,
+    },
     block::height,
-    chain::auth::{AuthError, msg_sender},
-    contract_id::ContractId,
-    identity::Identity,
-    result::*,
-    revert::require,
-    token::{force_transfer_to_contract, transfer_to_output}
+    token::{
+        force_transfer_to_contract,
+        transfer_to_address,
+    },
 };
 
 use data_structures::Auction;
@@ -48,7 +49,7 @@ pub fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
                 Identity::Address(address2) => {
                     address1 == address2
                 },
-                _ => false, 
+                _ => false,
             }
         },
         Identity::ContractId(contract_id_1) => {
@@ -56,7 +57,7 @@ pub fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
                 Identity::ContractId(contract_id_2) => {
                     contract_id_1 == contract_id_2
                 },
-                _ => false, 
+                _ => false,
             }
         },
     }
@@ -72,7 +73,7 @@ pub fn sender_indentity() -> Identity {
 pub fn transfer_to_identity(amount: u64, asset_id: ContractId, reciever: Identity) {
     match reciever {
         Identity::Address(address) => {
-            transfer_to_output(amount, asset_id, address);
+            transfer_to_address(amount, asset_id, address);
         },
         Identity::ContractId(contractid) => {
             force_transfer_to_contract(amount, asset_id, contractid);
