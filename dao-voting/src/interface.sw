@@ -7,7 +7,7 @@ use std::{contract_id::ContractId, identity::Identity};
 use data_structures::{Proposal, ProposalInfo, Votes};
 
 abi DaoVoting {
-    /// Initialize the dao with the governance token, voting parameters, and the proposal.
+    /// Initialize the dao with the governance token.
     ///
     /// # Arguments
     ///
@@ -16,7 +16,8 @@ abi DaoVoting {
     /// # Reverts
     ///
     /// * When the constructor is called more than once
-    #[storage(read, write)] fn constructor(gov_token: ContractId);
+    #[storage(read, write)]
+    fn constructor(gov_token: ContractId);
 
     /// Create a new proposal
     ///
@@ -31,7 +32,8 @@ abi DaoVoting {
     /// * When the duration is 0
     /// * When the acceptance percentage is 0
     /// * When the acceptance percentage is greater than 100
-    #[storage(read, write)]fn create_proposal(acceptance_percentage: u64, duration: u64, proposal_transaction: Proposal);
+    #[storage(read, write)]
+    fn create_proposal(acceptance_percentage: u64, duration: u64, proposal_transaction: Proposal, );
 
     /// Deposit governance tokens into contract
     ///
@@ -45,7 +47,8 @@ abi DaoVoting {
     /// * When the constructor has not been called to initialize
     /// * When the user deposits an asset that is not the specified governance token.
     /// * When the user does not deposit any assets
-    #[storage(read, write)] fn deposit();
+    #[storage(read, write)]
+    fn deposit();
 
     /// Update the user balance to indicate they have withdrawn governance tokens
     ///
@@ -57,7 +60,8 @@ abi DaoVoting {
     ///
     /// * When the user tries to withdraw 0 from their balance
     /// * When the user tries to withdraw more than their balance
-    #[storage(read, write)] fn withdraw(amount: u64);
+    #[storage(read, write)]
+    fn withdraw(amount: u64);
 
     /// Vote on a given proposal
     ///
@@ -73,7 +77,8 @@ abi DaoVoting {
     /// * When the vote amount is 0
     /// * When the proposal has passed its deadline
     /// * When the vote amount is greater than the user's deposited balance
-    #[storage(read, write)]fn vote(approve: bool, proposal_id: u64, vote_amount: u64);
+    #[storage(read, write)]
+    fn vote(approve: bool, proposal_id: u64, vote_amount: u64);
 
     /// Execute a given proposal
     ///
@@ -87,7 +92,8 @@ abi DaoVoting {
     /// * When the proposal has already been executed
     /// * When the proposal is still active and being voted on
     /// * When the proposal has not met the necessary approval percentage
-    #[storage(read, write)] fn execute(proposal_id: u64);
+    #[storage(read, write)]
+    fn execute(proposal_id: u64);
 
     /// Unlock governance tokens from a proposal
     ///
@@ -104,17 +110,20 @@ abi DaoVoting {
     ///
     /// * When the given proposal id is greater than or equal to proposal_count
     /// * When the proposal is still active
-    #[storage(read, write)] fn unlock_votes(proposal_id: u64);
+    #[storage(read, write)]
+    fn unlock_votes(proposal_id: u64);
 
     /// Return the amount of governance tokens in this contract
-    #[storage(read)] fn balance() -> u64;
+    #[storage(read)]
+    fn balance() -> u64;
 
     /// Return the amount of governance tokens a user has in this contract
     ///
     /// # Arguments
     ///
     /// - `user` - Identity to look up governance token balance in this contract.
-    #[storage(read)] fn user_balance(user: Identity) -> u64;
+    #[storage(read)]
+    fn user_balance(user: Identity) -> u64;
 
     /// Return the amount of votes a user has used on a proposal
     ///
@@ -122,7 +131,8 @@ abi DaoVoting {
     ///
     /// - `proposal_id` - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count)
     /// - `user` - Identity to look up votes spent on a specified proposal
-    #[storage(read)] fn user_votes(proposal_id: u64, user: Identity) -> Votes;
+    #[storage(read)]
+    fn user_votes(proposal_id: u64, user: Identity) -> Votes;
 
     /// Return proposal data for a given id
     ///
@@ -133,15 +143,18 @@ abi DaoVoting {
     /// # Reverts
     ///
     /// * When the given proposal id is greater than or equal to proposal_count
-    #[storage(read)] fn proposal(id: u64) -> ProposalInfo;
+    #[storage(read)]
+    fn proposal(id: u64) -> ProposalInfo;
 
     /// Return governance token id
     ///
     /// # Reverts
     ///
     /// * When the constructor has not been called to initialize
-    #[storage(read)] fn governance_token_id() -> ContractId;
+    #[storage(read)]
+    fn governance_token_id() -> ContractId;
 
     /// Return proposal count
-    #[storage(read)] fn proposal_count() -> u64;
+    #[storage(read)]
+    fn proposal_count() -> u64;
 }

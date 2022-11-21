@@ -1,6 +1,5 @@
 use fuels::{contract::contract::CallResponse, prelude::*, tx::ContractId};
 
-// Load abi from json
 abigen!(DaoVoting, "out/debug/dao-voting-abi.json");
 abigen!(
     GovToken,
@@ -10,14 +9,15 @@ abigen!(
 pub struct Metadata {
     pub dao_voting: DaoVoting,
     pub gov_token: Option<GovToken>,
-    pub wallet: LocalWallet,
+    pub wallet: WalletUnlocked,
 }
 
 pub mod abi_calls {
+
     use super::*;
 
     pub async fn constructor(contract: &DaoVoting, token: ContractId) -> CallResponse<()> {
-        contract.constructor(token).call().await.unwrap()
+        contract.methods().constructor(token).call().await.unwrap()
     }
 
     pub async fn create_proposal(
@@ -27,6 +27,7 @@ pub mod abi_calls {
         proposal: Proposal,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .create_proposal(acceptance_percentage, deadline, proposal)
             .call()
             .await
@@ -34,8 +35,9 @@ pub mod abi_calls {
     }
 
     pub async fn deposit(contract: &DaoVoting, call_params: CallParameters) -> CallResponse<()> {
-        let tx_params = TxParameters::new(None, Some(1_000_000), None, None);
+        let tx_params = TxParameters::new(None, Some(1_000_000), None);
         contract
+            .methods()
             .deposit()
             .tx_params(tx_params)
             .call_params(call_params)
@@ -46,6 +48,7 @@ pub mod abi_calls {
 
     pub async fn withdraw(contract: &DaoVoting, amount: u64) -> CallResponse<()> {
         contract
+            .methods()
             .withdraw(amount)
             .append_variable_outputs(1)
             .call()
@@ -60,6 +63,7 @@ pub mod abi_calls {
         vote_amount: u64,
     ) -> CallResponse<()> {
         contract
+            .methods()
             .vote(approve, proposal_id, vote_amount)
             .call()
             .await
@@ -67,29 +71,31 @@ pub mod abi_calls {
     }
 
     pub async fn execute(contract: &DaoVoting, id: u64) -> CallResponse<()> {
-        contract.execute(id).call().await.unwrap()
+        contract.methods().execute(id).call().await.unwrap()
     }
 
     pub async fn unlock_votes(contract: &DaoVoting, id: u64) -> CallResponse<()> {
-        contract.unlock_votes(id).call().await.unwrap()
+        contract.methods().unlock_votes(id).call().await.unwrap()
     }
 
     pub async fn balance(contract: &DaoVoting) -> u64 {
-        contract.balance().call().await.unwrap().value
+        contract.methods().balance().call().await.unwrap().value
     }
 
-    pub async fn user_balance(contract: &DaoVoting, user_identity: Identity) -> u64 {
+    pub async fn user_balance(contract: &DaoVoting, user_identity: &Bech32Address) -> u64 {
         contract
-            .user_balance(user_identity)
+            .methods()
+            .user_balance(Identity::Address(user_identity.into()))
             .call()
             .await
             .unwrap()
             .value
     }
 
-    pub async fn user_votes(contract: &DaoVoting, user_identity: Identity, id: u64) -> Votes {
+    pub async fn user_votes(contract: &DaoVoting, user_identity: &Bech32Address, id: u64) -> Votes {
         contract
-            .user_votes(id, user_identity)
+            .methods()
+            .user_votes(id, Identity::Address(user_identity.into()))
             .call()
             .await
             .unwrap()
@@ -97,20 +103,61 @@ pub mod abi_calls {
     }
 
     pub async fn proposal(contract: &DaoVoting, id: u64) -> ProposalInfo {
-        contract.proposal(id).call().await.unwrap().value
+        contract.methods().proposal(id).call().await.unwrap().value
     }
 
     pub async fn governance_token_id(contract: &DaoVoting) -> ContractId {
-        contract.governance_token_id().call().await.unwrap().value
+        contract
+            .methods()
+            .governance_token_id()
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 
     pub async fn proposal_count(contract: &DaoVoting) -> u64 {
-        contract.proposal_count().call().await.unwrap().value
+        contract
+            .methods()
+            .proposal_count()
+            .call()
+            .await
+            .unwrap()
+            .value
     }
 }
 
 pub mod test_helpers {
+
     use super::*;
+
+    pub async fn mint(contract: &GovToken, amount: u64, address: &Bech32Address) -> bool {
+        contract
+            .methods()
+            .mint_and_send_to_address(amount, address.into())
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+
+    pub fn proposal_transaction(asset_id: ContractId) -> Proposal {
+        let call_data = CallData {
+            id: asset_id,
+            function_selector: 0,
+            arguments: 0,
+        };
+
+        let proposal = Proposal {
+            call_data: call_data,
+            amount: 0,
+            asset: asset_id,
+            gas: 20000,
+        };
+
+        proposal
+    }
 
     pub async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {
         let num_wallets = 2;
@@ -122,7 +169,7 @@ pub mod test_helpers {
             Some(amount_per_coin),
         );
 
-        let mut wallets = launch_provider_and_get_wallets(config).await;
+        let mut wallets = launch_custom_provider_and_get_wallets(config, None).await;
         let deployer_wallet = wallets.pop().unwrap();
         let user_wallet = wallets.pop().unwrap();
 
@@ -130,6 +177,9 @@ pub mod test_helpers {
             "./out/debug/dao-voting.bin",
             &deployer_wallet,
             TxParameters::default(),
+            StorageConfiguration::with_storage_path(Some(
+                "./out/debug/dao-voting-storage_slots.json".to_string(),
+            )),
         )
         .await
         .unwrap();
@@ -138,6 +188,9 @@ pub mod test_helpers {
             "./tests/artifacts/gov_token/out/debug/gov_token.bin",
             &deployer_wallet,
             TxParameters::default(),
+            StorageConfiguration::with_storage_path(Some(
+                "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json".to_string(),
+            )),
         )
         .await
         .unwrap();
@@ -161,33 +214,6 @@ pub mod test_helpers {
 
         let asset_amount: u64 = 10;
 
-        (gov_token, gov_token_id, deployer, user, asset_amount)
-    }
-
-    pub async fn mint(contract: &GovToken, amount: u64, address: Address) -> bool {
-        contract
-            .mint_and_send_to_address(amount, address)
-            .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
-
-    pub fn proposal_transaction(asset_id: ContractId) -> Proposal {
-        let call_data = CallData {
-            id: asset_id,
-            function_selector: 0,
-            arguments: 0,
-        };
-
-        let proposal = Proposal {
-            call_data: call_data,
-            amount: 0,
-            asset: asset_id,
-            gas: 20000,
-        };
-
-        proposal
+        (gov_token, gov_token_id.into(), deployer, user, asset_amount)
     }
 }
