@@ -260,8 +260,8 @@ pub mod test_helpers {
 }
 
 pub mod paths {
-    const CONTRACT_BINARY: &str = "./out/debug/fundraiser.bin";
-    const CONTRACT_STORAGE: &str = "./out/debug/fundraiser-storage_slots.json";
-    const ASSET_BINARY: &str = "./tests/artifacts/asset/out/debug/asset.bin";
-    const ASSET_STORAGE: &str = "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
+    pub const CONTRACT_BINARY: &str = "./out/debug/fundraiser.bin";
+    pub const CONTRACT_STORAGE: &str = "./out/debug/fundraiser-storage_slots.json";
+    pub const ASSET_BINARY: &str = "./tests/artifacts/asset/out/debug/asset.bin";
+    pub const ASSET_STORAGE: &str = "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
 }
