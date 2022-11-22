@@ -71,6 +71,8 @@ The project can be started by executing the following steps:
 
     This will allow the node to interact with the oracle contract deployed to our local `fuel-core` instance.
 
+    Note: Double check that the contract ID is the ID in the `.env` file.
+
 6. Start the Oracle node.
 
     ```bash

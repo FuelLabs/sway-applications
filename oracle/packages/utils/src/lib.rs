@@ -32,7 +32,8 @@ pub mod test_helpers {
     use super::*;
 
     pub async fn setup() -> (Metadata, Vec<WalletUnlocked>) {
-        let wallets = launch_custom_provider_and_get_wallets(WalletsConfig::default(), None).await;
+        let wallets =
+            launch_custom_provider_and_get_wallets(WalletsConfig::default(), None, None).await;
         let oracle_id = Contract::deploy(
             "../contract/out/debug/oracle.bin",
             &wallets[0],
@@ -43,7 +44,7 @@ pub mod test_helpers {
         .unwrap();
 
         let user = Metadata {
-            oracle: Oracle::new(oracle_id.to_string(), wallets[0].clone()),
+            oracle: Oracle::new(oracle_id.clone(), wallets[0].clone()),
             wallet: wallets[0].clone().lock(),
         };
 
