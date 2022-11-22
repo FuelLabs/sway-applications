@@ -54,7 +54,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_not_initialized() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
@@ -74,7 +74,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn with_incorrect_asset() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
@@ -90,7 +90,7 @@ mod revert {
         .await
         .unwrap();
 
-        let another_asset = GovToken::new(another_asset_id.to_string(), deployer.wallet.clone());
+        let another_asset = GovToken::new(another_asset_id.clone(), deployer.wallet.clone());
         let id: ContractId = another_asset_id.into();
 
         mint(&another_asset, asset_amount, user.wallet.address()).await;
@@ -103,7 +103,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn on_zero_deposit() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 

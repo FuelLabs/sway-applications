@@ -169,7 +169,7 @@ pub mod test_helpers {
             Some(amount_per_coin),
         );
 
-        let mut wallets = launch_custom_provider_and_get_wallets(config, None).await;
+        let mut wallets = launch_custom_provider_and_get_wallets(config, None, None).await;
         let deployer_wallet = wallets.pop().unwrap();
         let user_wallet = wallets.pop().unwrap();
 
@@ -195,19 +195,16 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let gov_token = GovToken::new(gov_token_id.to_string(), deployer_wallet.clone());
+        let gov_token = GovToken::new(gov_token_id.clone(), deployer_wallet.clone());
 
         let deployer = Metadata {
-            dao_voting: DaoVoting::new(dao_voting_id.to_string(), deployer_wallet.clone()),
-            gov_token: Some(GovToken::new(
-                gov_token_id.to_string(),
-                deployer_wallet.clone(),
-            )),
+            dao_voting: DaoVoting::new(dao_voting_id.clone(), deployer_wallet.clone()),
+            gov_token: Some(GovToken::new(gov_token_id.clone(), deployer_wallet.clone())),
             wallet: deployer_wallet,
         };
 
         let user = Metadata {
-            dao_voting: DaoVoting::new(dao_voting_id.to_string(), user_wallet.clone()),
+            dao_voting: DaoVoting::new(dao_voting_id.clone(), user_wallet.clone()),
             gov_token: None,
             wallet: user_wallet,
         };

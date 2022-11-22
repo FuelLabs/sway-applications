@@ -70,7 +70,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_duration_is_zero() {
         let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
@@ -80,7 +80,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn with_zero_acceptance_percentage() {
         let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
@@ -90,7 +90,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn with_over_hundred_acceptance_percentage() {
         let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;

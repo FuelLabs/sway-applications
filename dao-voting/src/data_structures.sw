@@ -45,7 +45,7 @@ pub struct ProposalInfo {
 }
 
 impl ProposalInfo {
-    fn new(
+    pub fn new(
         acceptance_percentage: u64,
         author: Identity,
         duration: u64,

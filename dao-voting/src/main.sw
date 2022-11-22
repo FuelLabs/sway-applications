@@ -7,26 +7,18 @@ dep events;
 dep utils;
 
 use std::{
-    address::Address,
-    block::height,
-    chain::auth::{
+    auth::{
         AuthError,
         msg_sender,
     },
+    block::height,
+    call_frames::msg_asset_id,
     context::{
-        call_frames::msg_asset_id,
         msg_amount,
         this_balance,
     },
-    contract_id::ContractId,
-    identity::Identity,
     logging::log,
-    result::Result,
-    revert::{
-        require,
-        revert,
-    },
-    storage::StorageMap,
+    prelude::*,
     token::transfer,
 };
 
@@ -88,7 +80,7 @@ impl DaoVoting for Contract {
         require(0 < acceptance_percentage && acceptance_percentage <= 100, CreationError::InvalidAcceptancePercentage);
 
         let author = msg_sender().unwrap();
-        let proposal = ~ProposalInfo::new(acceptance_percentage, author, duration, proposal_transaction);
+        let proposal = ProposalInfo::new(acceptance_percentage, author, duration, proposal_transaction);
         storage.proposals.insert(storage.proposal_count, proposal);
         storage.proposal_count += 1;
 
@@ -143,7 +135,7 @@ impl DaoVoting for Contract {
 
         require(vote_amount <= user_balance, UserError::InsufficientBalance);
 
-        let mut votes = storage.votes.get((user, proposal_id, ));
+        let mut votes = storage.votes.get((user, proposal_id));
         if approve {
             proposal.yes_votes += vote_amount;
             votes.yes_votes += vote_amount;
@@ -153,7 +145,7 @@ impl DaoVoting for Contract {
         };
 
         storage.balances.insert(user, user_balance - vote_amount);
-        storage.votes.insert((user, proposal_id, ), votes);
+        storage.votes.insert((user, proposal_id), votes);
         storage.proposals.insert(proposal_id, proposal);
 
         log(VoteEvent {
@@ -200,9 +192,9 @@ impl DaoVoting for Contract {
         require(proposal.deadline < height(), ProposalError::ProposalStillActive);
 
         let user: Identity = msg_sender().unwrap();
-        let votes = storage.votes.get((user, proposal_id, ));
+        let votes = storage.votes.get((user, proposal_id));
 
-        storage.votes.insert((user, proposal_id, ), Votes {
+        storage.votes.insert((user, proposal_id), Votes {
             no_votes: 0,
             yes_votes: 0,
         });
@@ -230,7 +222,7 @@ impl DaoVoting for Contract {
     #[storage(read)]
     fn user_votes(proposal_id: u64, user: Identity) -> Votes {
         validate_id(proposal_id, storage.proposal_count);
-        storage.votes.get((user, proposal_id, ))
+        storage.votes.get((user, proposal_id))
     }
 
     #[storage(read)]
