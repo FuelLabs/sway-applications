@@ -20,7 +20,7 @@ impl NFTAsset {
         }
     }
 
-    fn token_id(self) -> u64 {
+    pub fn token_id(self) -> u64 {
         self.token_id
     }
 }

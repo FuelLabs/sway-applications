@@ -332,7 +332,7 @@ pub mod test_helpers {
         };
         let mut wallets = launch_custom_provider_and_get_wallets(
             WalletsConfig::new(Some(num_wallets), Some(coins_per_wallet), Some(coin_amount)),
-            Some(config),
+            Some(config), None
         )
         .await;
 
@@ -372,16 +372,16 @@ pub mod test_helpers {
         .unwrap();
 
         let deploy_wallet = Metadata {
-            asset: MyAsset::new(sell_asset_id.to_string(), wallet1.clone()),
-            auction: EnglishAuction::new(auction_id.to_string(), wallet1.clone()),
-            nft: Nft::new(sell_nft_id.to_string(), wallet1.clone()),
+            asset: MyAsset::new(sell_asset_id.clone(), wallet1.clone()),
+            auction: EnglishAuction::new(auction_id.clone(), wallet1.clone()),
+            nft: Nft::new(sell_nft_id.clone(), wallet1.clone()),
             wallet: wallet1.clone(),
         };
 
         let seller = Metadata {
-            asset: MyAsset::new(sell_asset_id.to_string(), wallet2.clone()),
-            auction: EnglishAuction::new(auction_id.to_string(), wallet2.clone()),
-            nft: Nft::new(sell_nft_id.to_string(), wallet2.clone()),
+            asset: MyAsset::new(sell_asset_id.clone(), wallet2.clone()),
+            auction: EnglishAuction::new(auction_id.clone(), wallet2.clone()),
+            nft: Nft::new(sell_nft_id.clone(), wallet2.clone()),
             wallet: wallet2.clone(),
         };
 
@@ -406,16 +406,16 @@ pub mod test_helpers {
         .unwrap();
 
         let buyer1 = Metadata {
-            asset: MyAsset::new(buy_asset_id.to_string(), wallet3.clone()),
-            auction: EnglishAuction::new(auction_id.to_string(), wallet3.clone()),
-            nft: Nft::new(buy_nft_id.to_string(), wallet3.clone()),
+            asset: MyAsset::new(buy_asset_id.clone(), wallet3.clone()),
+            auction: EnglishAuction::new(auction_id.clone(), wallet3.clone()),
+            nft: Nft::new(buy_nft_id.clone(), wallet3.clone()),
             wallet: wallet3.clone(),
         };
 
         let buyer2 = Metadata {
-            asset: MyAsset::new(buy_asset_id.to_string(), wallet4.clone()),
-            auction: EnglishAuction::new(auction_id.to_string(), wallet4.clone()),
-            nft: Nft::new(buy_nft_id.to_string(), wallet4.clone()),
+            asset: MyAsset::new(buy_asset_id.clone(), wallet4.clone()),
+            auction: EnglishAuction::new(auction_id.clone(), wallet4.clone()),
+            nft: Nft::new(buy_nft_id.clone(), wallet4.clone()),
             wallet: wallet4.clone(),
         };
 

@@ -1,0 +1,1 @@
+members = ["english-auction", "english-auction/tests/artifacts/asset", "../NFT"]

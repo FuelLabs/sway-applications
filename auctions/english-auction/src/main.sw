@@ -20,15 +20,13 @@ use interface::{EnglishAuction, NFT};
 use nft_asset::NFTAsset;
 use state::State;
 use std::{
+    auth::msg_sender,
     block::height,
-    chain::auth::msg_sender,
-    context::{
-        call_frames::{
-            contract_id,
-            msg_asset_id,
-        },
-        msg_amount,
+    call_frames::{
+        contract_id,
+        msg_asset_id,
     },
+    context::msg_amount,
     logging::log,
     storage::StorageMap,
 };
@@ -178,7 +176,7 @@ impl EnglishAuction for Contract {
         }
 
         // Setup auction
-        let auction = ~Auction::new(bid_asset, height() + duration, initial_price, reserve_price, sell_asset, seller);
+        let auction = Auction::new(bid_asset, height() + duration, initial_price, reserve_price, sell_asset, seller);
 
         // Store the auction information
         let total_auctions = storage.total_auctions;
@@ -222,7 +220,7 @@ impl EnglishAuction for Contract {
 
         // Make sure the sender still has something to withdraw
         require(sender_deposit.is_some(), UserError::UserHasAlreadyWithdrawn);
-        storage.deposits.insert((sender, auction_id), Option::None());
+        storage.deposits.insert((sender, auction_id), Option::None::<AuctionAsset>());
         let mut withdrawn_asset = sender_deposit.unwrap();
 
         // Withdraw owed assets

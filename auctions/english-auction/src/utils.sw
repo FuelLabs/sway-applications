@@ -12,7 +12,7 @@ use auction::Auction;
 use errors::AccessError;
 use interface::NFT;
 use nft_asset::NFTAsset;
-use std::{context::call_frames::contract_id, token::transfer};
+use std::{call_frames::contract_id, token::transfer};
 use token_asset::TokenAsset;
 
 /// Transfers assets out of the auction contract to the specified user.

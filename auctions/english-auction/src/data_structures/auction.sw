@@ -26,7 +26,7 @@ pub struct Auction {
 }
 
 impl Auction {
-    fn new(
+    pub fn new(
         bid_asset: AuctionAsset,
         end_block: u64,
         initial_price: u64,

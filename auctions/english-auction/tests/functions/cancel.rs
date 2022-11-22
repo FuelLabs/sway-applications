@@ -139,7 +139,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_auction_does_not_exist() {
         let (_, seller, _, _, _, _, _, _, _) = setup().await;
 
@@ -147,7 +147,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_auction_bid_period_has_ended() {
         let (deployer, seller, _, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -177,7 +177,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_auction_has_closed() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -209,7 +209,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_auction_already_canceled() {
         let (_, seller, _, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -237,7 +237,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_sender_is_not_seller() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
