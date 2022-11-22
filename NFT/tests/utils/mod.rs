@@ -172,6 +172,7 @@ pub mod test_helpers {
                 Some(amount_per_coin),
             ),
             None,
+            None,
         )
         .await;
 
@@ -192,17 +193,17 @@ pub mod test_helpers {
         .unwrap();
 
         let deploy_wallet = Metadata {
-            contract: Nft::new(nft_id.to_string(), wallet1.clone()),
+            contract: Nft::new(nft_id.clone(), wallet1.clone()),
             wallet: wallet1.clone(),
         };
 
         let owner1 = Metadata {
-            contract: Nft::new(nft_id.to_string(), wallet2.clone()),
+            contract: Nft::new(nft_id.clone(), wallet2.clone()),
             wallet: wallet2.clone(),
         };
 
         let owner2 = Metadata {
-            contract: Nft::new(nft_id.to_string(), wallet3.clone()),
+            contract: Nft::new(nft_id.clone(), wallet3.clone()),
             wallet: wallet3.clone(),
         };
 

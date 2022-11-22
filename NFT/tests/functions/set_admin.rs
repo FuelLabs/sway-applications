@@ -34,7 +34,7 @@ mod reverts {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_admin_not_set() {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
@@ -44,7 +44,7 @@ mod reverts {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_not_admin_identity() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 

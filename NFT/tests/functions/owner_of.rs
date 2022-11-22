@@ -59,7 +59,7 @@ mod reverts {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn gets_owner_of_none() {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 

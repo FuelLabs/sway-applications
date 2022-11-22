@@ -121,7 +121,7 @@ mod reverts {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_no_token_supply_set() {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
@@ -130,7 +130,7 @@ mod reverts {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_minting_more_tokens_than_supply() {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
@@ -148,7 +148,7 @@ mod reverts {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_minter_does_not_have_access() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
