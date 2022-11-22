@@ -24,6 +24,13 @@ pub struct MetaAsset {
     pub id: ContractId,
 }
 
+pub mod paths {
+    pub const CONTRACT_BINARY: &str = "./out/debug/fundraiser.bin";
+    pub const CONTRACT_STORAGE: &str = "./out/debug/fundraiser-storage_slots.json";
+    pub const ASSET_BINARY: &str = "./tests/artifacts/asset/out/debug/asset.bin";
+    pub const ASSET_STORAGE: &str = "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
+}
+
 pub mod abi_calls {
 
     use super::*;
@@ -257,11 +264,4 @@ pub mod test_helpers {
 
         (author, user, asset, asset2, defaults)
     }
-}
-
-pub mod paths {
-    pub const CONTRACT_BINARY: &str = "./out/debug/fundraiser.bin";
-    pub const CONTRACT_STORAGE: &str = "./out/debug/fundraiser-storage_slots.json";
-    pub const ASSET_BINARY: &str = "./tests/artifacts/asset/out/debug/asset.bin";
-    pub const ASSET_STORAGE: &str = "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
 }
