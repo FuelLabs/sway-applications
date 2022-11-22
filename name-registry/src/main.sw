@@ -15,16 +15,16 @@ use events::{
 };
 use interface::NameRegistry;
 use std::{
+    auth::msg_sender,
     block::timestamp,
-    chain::auth::msg_sender,
-    context::call_frames::msg_asset_id,
+    call_frames::msg_asset_id,
     context::msg_amount,
     logging::log,
     storage::StorageMap,
 };
 
 // TODO: Replace the B256 config-time constant with a ContractId when possible
-const ASSET_ID = ~ContractId::from(ASSET_B256);
+const ASSET_ID = ContractId::from(ASSET_B256);
 
 storage {
     /// A mapping of names to an option of records, with a none representing an unregistered name

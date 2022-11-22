@@ -65,7 +65,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn cant_extend_name_not_registered() {
         let (instance, acc, _wallet2) = setup().await;
 

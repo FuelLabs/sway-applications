@@ -17,6 +17,7 @@ pub async fn setup() -> (NameRegistry, Account, WalletUnlocked) {
             Some(1_000_000_000), /* Amount per coin */
         ),
         None,
+        None,
     )
     .await;
     let wallet = wallets.pop().unwrap();
@@ -33,7 +34,7 @@ pub async fn setup() -> (NameRegistry, Account, WalletUnlocked) {
     .await
     .unwrap();
 
-    let instance = NameRegistry::new(id.to_string(), wallet.clone());
+    let instance = NameRegistry::new(id.clone(), wallet.clone());
 
     (instance, Account::new(wallet), wallet2)
 }

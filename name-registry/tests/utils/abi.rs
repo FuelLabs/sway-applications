@@ -3,6 +3,7 @@ use fuels::{
     client::types::TransactionStatus,
     contract::contract::{CallResponse, ContractCallHandler},
     prelude::*,
+    tx::UniqueIdentifier,
 };
 
 use crate::utils::{NameRegistry, RegistrationValidityError};
@@ -21,7 +22,7 @@ where
         TransactionStatus::Success { time, .. } => time,
         _ => panic!("tx failed"),
     };
-    let time = time.timestamp() as u64;
+    let time = time.0 as u64;
 
     (call_response, time)
 }

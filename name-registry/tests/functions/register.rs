@@ -35,7 +35,7 @@ mod revert {
     use crate::utils::{abi::register, setup, REGISTER_DURATION};
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn cant_repeat_register() {
         let (instance, acc, _wallet2) = setup().await;
 
