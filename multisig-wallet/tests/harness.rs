@@ -13,7 +13,7 @@ async fn setup() -> (Multisig, WalletUnlocked, WalletUnlocked, WalletUnlocked) {
         Some(amount_per_coin),
     );
 
-    let mut wallets = launch_custom_provider_and_get_wallets(config, None).await;
+    let mut wallets = launch_custom_provider_and_get_wallets(config, None, None).await;
 
     let wallet1 = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
@@ -31,7 +31,7 @@ async fn setup() -> (Multisig, WalletUnlocked, WalletUnlocked, WalletUnlocked) {
     .unwrap();
 
     (
-        Multisig::new(id.to_string(), wallet1.clone()),
+        Multisig::new(id.clone(), wallet1.clone()),
         wallet1,
         wallet2,
         wallet3,
