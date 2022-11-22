@@ -40,7 +40,7 @@ pub mod abi_calls {
     ) -> CallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params =
-            CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(100_000));
+            CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(1_000_000));
 
         contract
             .methods()
@@ -65,7 +65,7 @@ pub mod abi_calls {
     ) -> CallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params =
-            CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(100_000));
+            CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(1_000_000));
 
         contract
             .methods()
@@ -90,7 +90,7 @@ pub mod abi_calls {
         let call_params = CallParameters::new(
             Some(arbiter.fee_amount),
             Some(AssetId::from(*arbiter.asset)),
-            Some(100_000),
+            Some(1_000_000),
         );
 
         contract
@@ -206,7 +206,7 @@ pub mod test_helpers {
 
         (
             asset_id.clone().into(),
-            MyAsset::new(asset_id.to_string(), wallet.clone()),
+            MyAsset::new(asset_id.clone(), wallet.clone()),
         )
     }
 
@@ -231,7 +231,7 @@ pub mod test_helpers {
             Some(amount_per_coin),
         );
 
-        let mut wallets = launch_custom_provider_and_get_wallets(config, None).await;
+        let mut wallets = launch_custom_provider_and_get_wallets(config, None, None).await;
 
         let deployer_wallet = wallets.pop().unwrap();
         let arbiter_wallet = wallets.pop().unwrap();
@@ -260,20 +260,20 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let asset = MyAsset::new(asset_id.to_string(), deployer_wallet.clone());
+        let asset = MyAsset::new(asset_id.clone(), deployer_wallet.clone());
 
         let arbiter = User {
-            contract: Escrow::new(escrow_id.to_string(), arbiter_wallet.clone()),
+            contract: Escrow::new(escrow_id.clone(), arbiter_wallet.clone()),
             wallet: arbiter_wallet,
         };
 
         let buyer = User {
-            contract: Escrow::new(escrow_id.to_string(), buyer_wallet.clone()),
+            contract: Escrow::new(escrow_id.clone(), buyer_wallet.clone()),
             wallet: buyer_wallet,
         };
 
         let seller = User {
-            contract: Escrow::new(escrow_id.to_string(), seller_wallet.clone()),
+            contract: Escrow::new(escrow_id.clone(), seller_wallet.clone()),
             wallet: seller_wallet,
         };
 

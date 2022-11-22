@@ -32,12 +32,10 @@ use events::{
 
 use interface::Escrow;
 use std::{
+    auth::msg_sender,
     block::height,
-    chain::auth::msg_sender,
-    context::{
-        call_frames::msg_asset_id,
-        msg_amount,
-    },
+    call_frames::msg_asset_id,
+    context::msg_amount,
     contract_id::ContractId,
     identity::Identity,
     logging::log,
@@ -87,7 +85,7 @@ impl Escrow for Contract {
         escrow.arbiter = arbiter.unwrap();
 
         // We must reset the proposal or the escrow contract will be drained
-        storage.arbiter_proposal.insert(identifier, Option::None);
+        storage.arbiter_proposal.insert(identifier, Option::None::<Arbiter>());
         storage.escrows.insert(identifier, escrow);
 
         log(AcceptedArbiterEvent { identifier });
@@ -118,7 +116,7 @@ impl Escrow for Contract {
             index += 1;
         }
 
-        let escrow = ~EscrowInfo::new(arbiter, assets.len(), buyer, deadline, storage.assets.len() - assets.len(), msg_sender().unwrap());
+        let escrow = EscrowInfo::new(arbiter, assets.len(), buyer, deadline, storage.assets.len() - assets.len(), msg_sender().unwrap());
 
         storage.escrows.insert(storage.escrow_count, escrow);
 
@@ -246,7 +244,7 @@ impl Escrow for Contract {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
-            storage.arbiter_proposal.insert(identifier, Option::None);
+            storage.arbiter_proposal.insert(identifier, Option::None::<Arbiter>());
         }
 
         log(ResolvedDisputeEvent {
@@ -277,7 +275,7 @@ impl Escrow for Contract {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
-            storage.arbiter_proposal.insert(identifier, Option::None);
+            storage.arbiter_proposal.insert(identifier, Option::None::<Arbiter>());
         }
 
         log(ReturnedDepositEvent { identifier });
@@ -307,7 +305,7 @@ impl Escrow for Contract {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
-            storage.arbiter_proposal.insert(identifier, Option::None);
+            storage.arbiter_proposal.insert(identifier, Option::None::<Arbiter>());
         }
 
         log(PaymentTakenEvent { identifier });
@@ -334,7 +332,7 @@ impl Escrow for Contract {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
-            storage.arbiter_proposal.insert(identifier, Option::None);
+            storage.arbiter_proposal.insert(identifier, Option::None::<Arbiter>());
         }
 
         log(TransferredToSellerEvent { identifier });
@@ -362,7 +360,7 @@ impl Escrow for Contract {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
-            storage.arbiter_proposal.insert(identifier, Option::None);
+            storage.arbiter_proposal.insert(identifier, Option::None::<Arbiter>());
         }
 
         log(WithdrawnCollateralEvent { identifier });
