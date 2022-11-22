@@ -3,7 +3,6 @@ library interface;
 dep data_structures;
 
 use data_structures::{Arbiter, Asset};
-use std::identity::Identity;
 
 abi Escrow {
     /// Buyer accepts proposal to change arbiter details

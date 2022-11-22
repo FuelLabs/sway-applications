@@ -7,7 +7,6 @@ dep events;
 dep utils;
 
 use std::{
-    address::Address,
     block::height,
     chain::auth::{
         AuthError,
@@ -18,14 +17,7 @@ use std::{
         msg_amount,
         this_balance,
     },
-    contract_id::ContractId,
-    identity::Identity,
     logging::log,
-    result::Result,
-    revert::{
-        require,
-        revert,
-    },
     storage::StorageMap,
     token::transfer,
 };

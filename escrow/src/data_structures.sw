@@ -1,7 +1,6 @@
 library data_structures;
 
 use core::ops::Eq;
-use std::{contract_id::ContractId, identity::Identity, option::Option};
 
 pub struct Arbiter {
     /// Address identifying the arbiter

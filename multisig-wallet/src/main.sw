@@ -11,23 +11,16 @@ dep events;
 
 // Standard library code
 use std::{
-    address::Address,
     b512::B512,
     constants::ZERO_B256,
     context::{
         call_frames::contract_id,
         this_balance,
     },
-    contract_id::ContractId,
     ecr::ec_recover_address,
     hash::sha256,
-    identity::Identity,
     logging::log,
     result::*,
-    revert::{
-        require,
-        revert,
-    },
     storage::StorageMap,
     token::{
         force_transfer_to_contract,
