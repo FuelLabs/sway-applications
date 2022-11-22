@@ -205,9 +205,7 @@ pub mod test_helpers {
             paths::CONTRACT_BINARY,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                paths::CONTRACT_STORAGE.to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::CONTRACT_STORAGE.to_string())),
         )
         .await
         .unwrap();
@@ -216,9 +214,7 @@ pub mod test_helpers {
             paths::ASSET_BINARY,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                paths::ASSET_STORAGE.to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
         )
         .await
         .unwrap();
@@ -227,9 +223,7 @@ pub mod test_helpers {
             paths::ASSET_BINARY,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                paths::ASSET_STORAGE.to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
             Salt::from([1u8; 32]),
         )
         .await
