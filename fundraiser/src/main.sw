@@ -12,8 +12,9 @@ use errors::{CampaignError, CreationError, UserError};
 use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
 use std::{
     block::height,
-    chain::auth::msg_sender,
-    context::{call_frames::msg_asset_id, msg_amount},
+    auth::msg_sender,
+    call_frames::msg_asset_id,
+    context::msg_amount,
     contract_id::ContractId,
     identity::Identity,
     logging::log,

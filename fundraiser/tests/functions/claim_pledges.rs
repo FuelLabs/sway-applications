@@ -59,7 +59,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_id_is_zero() {
         let (author, _, _, _, defaults) = setup().await;
 
@@ -77,7 +77,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_id_is_greater_than_number_of_campaigns() {
         let (author, _, _, _, defaults) = setup().await;
 
@@ -95,7 +95,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_sender_is_not_author() {
         let (author, user, _, _, defaults) = setup().await;
 
@@ -114,7 +114,7 @@ mod revert {
 
     #[tokio::test]
     #[ignore]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_claiming_before_deadline() {
         let (author, user, asset, _, defaults) = setup().await;
         let deadline = 5;
@@ -142,7 +142,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_target_amount_is_not_reached() {
         let (author, _, _, _, defaults) = setup().await;
         let deadline = 1;
@@ -161,7 +161,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_claiming_more_than_once() {
         let (author, user, asset, _, defaults) = setup().await;
         let deadline = 5;
@@ -188,7 +188,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_cancelled() {
         let (author, user, asset, _, defaults) = setup().await;
         let deadline = 6;

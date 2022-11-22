@@ -36,7 +36,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_id_is_zero() {
         let (author, _, _, _, _) = setup().await;
 
@@ -45,7 +45,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(42)")]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_id_is_greater_than_number_of_campaigns() {
         let (author, _, _, _, _) = setup().await;
 
