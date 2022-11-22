@@ -1,6 +1,6 @@
 contract;
 
-use std::{address::Address, context::call_frames::contract_id, token::mint_to_address};
+use std::{context::call_frames::contract_id, token::mint_to_address};
 
 abi GovToken {
     fn mint_and_send_to_address(amount: u64, recipient: Address) -> bool;

@@ -2,8 +2,6 @@ library interface;
 
 dep data_structures;
 
-use std::{contract_id::ContractId, identity::Identity};
-
 use data_structures::{Proposal, ProposalInfo, Votes};
 
 abi DaoVoting {

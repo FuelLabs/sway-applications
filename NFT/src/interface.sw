@@ -3,7 +3,6 @@ library interface;
 dep data_structures;
 
 use data_structures::TokenMetaData;
-use std::{identity::Identity, option::Option};
 
 pub struct AdminEvent {
     /// The user which is now the admin of this contract.

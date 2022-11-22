@@ -2,7 +2,6 @@ library events;
 
 dep data_structures;
 
-use std::{contract_id::ContractId, identity::Identity};
 use data_structures::ProposalInfo;
 
 // TODO ename once https://github.com/FuelLabs/sway/issues/2106 is fixed

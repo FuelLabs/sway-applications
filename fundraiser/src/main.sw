@@ -14,11 +14,7 @@ use std::{
     block::height,
     chain::auth::msg_sender,
     context::{call_frames::msg_asset_id, msg_amount},
-    contract_id::ContractId,
-    identity::Identity,
     logging::log,
-    result::Result,
-    revert::{require, revert},
     storage::StorageMap,
     token::transfer,
 };

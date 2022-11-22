@@ -2,7 +2,6 @@ library events;
 
 dep data_structures;
 
-use std::identity::Identity;
 use data_structures::CampaignInfo;
 
 pub struct CancelledCampaignEvent {
