@@ -26,17 +26,13 @@ fn main() -> bool {
     const ASK_TOKEN = ContractId {
         value: ASK_TOKEN_CONFIG,
     };
-    const RECEIVER = ~Address::from(RECEIVER_CONFIG);
+    const RECEIVER = Address::from(RECEIVER_CONFIG);
 
-    // Check if the transaction contains a single input coin from the receiver, to cancel their own order
-    // Note that the predicate is necessarily one of the inputs, so the other must be the coin input.
+    // Check if the transaction contains a single input coin from the receiver, to cancel their own order (in addition to this predicate)
     if input_count() == 2u8 {
-        let owner = match input_owner(0) {
-            Option::Some(owner) => owner,
-            _ => input_owner(1).unwrap(),
-        };
-
-        if owner == RECEIVER {
+        if input_owner(0).unwrap() == RECEIVER
+            || input_owner(1).unwrap() == RECEIVER
+        {
             return true;
         };
     };
@@ -52,8 +48,8 @@ fn main() -> bool {
     };
 
     // Since output is known to be a Coin, the following are always valid
-    let to = ~Address::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_TO));
-    let asset_id = ~ContractId::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_ASSET_ID));
+    let to = Address::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_TO));
+    let asset_id = ContractId::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_ASSET_ID));
 
     let amount = output_amount(output_index);
 
