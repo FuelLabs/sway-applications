@@ -38,12 +38,7 @@ use std::{
         call_frames::msg_asset_id,
         msg_amount,
     },
-    contract_id::ContractId,
-    identity::Identity,
     logging::log,
-    option::Option,
-    result::Result,
-    revert::require,
     storage::{
         StorageMap,
         StorageVec,

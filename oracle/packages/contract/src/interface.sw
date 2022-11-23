@@ -1,7 +1,5 @@
 library interface;
 
-use std::identity::Identity;
-
 abi Oracle {
     /// Return the owner (node) of the oracle
     ///

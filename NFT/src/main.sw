@@ -7,15 +7,7 @@ dep interface;
 use data_structures::TokenMetaData;
 use errors::{AccessError, InitError, InputError};
 use interface::{AdminEvent, ApprovalEvent, BurnEvent, MintEvent, NFT, OperatorEvent, TransferEvent};
-use std::{
-    chain::auth::msg_sender,
-    identity::Identity,
-    logging::log,
-    option::Option,
-    result::Result,
-    revert::require,
-    storage::StorageMap,
-};
+use std::{chain::auth::msg_sender, logging::log, storage::StorageMap};
 
 storage {
     /// Determines if only the contract's `admin` is allowed to call the mint function.

@@ -2,7 +2,7 @@ library contract_abi;
 
 dep data_structures;
 
-use std::{address::Address, b512::B512, contract_id::ContractId, identity::Identity};
+use std::b512::B512;
 
 use data_structures::User;
 
