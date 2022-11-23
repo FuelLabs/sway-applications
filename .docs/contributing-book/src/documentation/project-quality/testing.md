@@ -36,7 +36,7 @@ The repository follows the pattern of putting utility functions in `mod.rs` and 
 
 ### `harness.rs`
 
-This file is the entry point for the tests, and thus it contains only the modules `functions` and `utils`. This is what is executed when `cargo test` is run.
+The `harness` file is the entry point for the tests, and thus it contains the `functions` and `utils` modules. This is what is executed when `cargo test` is run.
 
 ## Testing Suggestions
 
