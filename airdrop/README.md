@@ -51,7 +51,7 @@ In order to run the tests you will need to build both the simple-asset and airdr
 
 First, make sure that you are in the root of the simple-asset project i.e. `/path/to/airdrop/simple-asset/<you are here>`.
 
-There are two commands required to run the tests for simple-asset. This will build and test the simple-asset project.
+There are two commands required to run the tests for the simple-asset. The first command builds the contracts and the second command runs the tests.
 
 1. Run the tests
 
