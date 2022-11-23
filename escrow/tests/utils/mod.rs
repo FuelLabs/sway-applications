@@ -15,6 +15,13 @@ pub struct User {
     pub wallet: WalletUnlocked,
 }
 
+pub mod paths {
+    pub const CONTRACT_BINARY: &str = "./out/debug/escrow.bin";
+    pub const CONTRACT_STORAGE: &str = "./out/debug/escrow-storage_slots.json";
+    pub const ASSET_BINARY: &str = "./tests/artifacts/asset/out/debug/asset.bin";
+    pub const ASSET_STORAGE: &str = "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
+}
+
 pub mod abi_calls {
 
     use super::*;
@@ -193,12 +200,10 @@ pub mod test_helpers {
         wallet: WalletUnlocked,
     ) -> (ContractId, MyAsset) {
         let asset_id = Contract::deploy_with_parameters(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            paths::ASSET_BINARY,
             &wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/asset/out/debug/asset-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
             Salt::from(salt),
         )
         .await
@@ -239,23 +244,19 @@ pub mod test_helpers {
         let seller_wallet = wallets.pop().unwrap();
 
         let escrow_id = Contract::deploy(
-            "./out/debug/escrow.bin",
+            paths::CONTRACT_BINARY,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./out/debug/escrow-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::CONTRACT_STORAGE.to_string())),
         )
         .await
         .unwrap();
 
         let asset_id = Contract::deploy(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            paths::ASSET_BINARY,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/asset/out/debug/asset-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
         )
         .await
         .unwrap();
