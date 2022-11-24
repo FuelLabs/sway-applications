@@ -11,7 +11,10 @@ abigen!(
 );
 // TODO: This should be a seperate project and added to the test artifacts once
 // https://github.com/FuelLabs/sway-libs/issues/19 is resolved
-abigen!(Nft, "../NFT/project/NFT-contract/out/debug/NFT-contract-abi.json");
+abigen!(
+    Nft,
+    "../NFT/project/NFT-contract/out/debug/NFT-contract-abi.json"
+);
 abigen!(
     MyAsset,
     "./english-auction/project/auction-contract/tests/artifacts/asset/out/debug/asset-abi.json"
@@ -257,8 +260,10 @@ pub mod paths {
     pub const ENGLISH_AUCTION_CONTRACT_STORAGE_PATH: &str =
         "./out/debug/auction-contract-storage_slots.json";
     pub const NATIVE_ASSET_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
-    pub const NFT_BINARY_PATH: &str = "../../../../NFT/project/NFT-contract/out/debug/NFT-contract.bin";
-    pub const NFT_CONTRACT_STORAGE_PATH: &str = "../../../../NFT/project/NFT-contract/out/debug/NFT-contract-storage_slots.json";
+    pub const NFT_BINARY_PATH: &str =
+        "../../../../NFT/project/NFT-contract/out/debug/NFT-contract.bin";
+    pub const NFT_CONTRACT_STORAGE_PATH: &str =
+        "../../../../NFT/project/NFT-contract/out/debug/NFT-contract-storage_slots.json";
 }
 
 pub mod test_helpers {
