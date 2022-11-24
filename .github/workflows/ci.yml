@@ -78,13 +78,17 @@ jobs:
         run: forc fmt --path ${{ matrix.project }} --check
 
       - name: Check Rust formatting
-        run: cargo fmt --manifest-path ${{ matrix.project }} --verbose --check
+        run: |
+          cd ${{ matrix.project }}
+          cargo fmt --verbose --check
 
       - name: Build Sway
         run: forc build --path ${{ matrix.project }}
 
       - name: Run Forc tests
-        run: cargo test --manifest-path ${{ matrix.project }}
+        run: |
+          cd ${{ matrix.project }}
+          cargo test
 
   contributing-book:
     runs-on: ubuntu-latest
