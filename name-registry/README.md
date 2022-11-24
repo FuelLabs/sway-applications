@@ -24,10 +24,10 @@ The project consists of a smart contract and a user interface which the user can
 
 ```
 name-registry/
-├── contract/
-|    └── src/main.sw
-|    └── tests/harness.rs
-├── frontend/
+├── project/
+|   └── registry-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
 ├── README.md
 └── SPECIFICATION.md
 ```
@@ -40,13 +40,19 @@ TODO: UI does not currently exist
 
 ### Tests
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/name-registry/<you are here>`
+Make sure that you are in the root of the name registry project i.e. `/path/to/name-registry/<you are here>`
 
-Run the tests
-   ```bash
-   forc build
-   cargo test
-   ```
+Build the contract:
+
+```bash
+forc build
+```
+
+Run the tests:
+
+```bash
+cargo test
+```
 
 ## Specification
 

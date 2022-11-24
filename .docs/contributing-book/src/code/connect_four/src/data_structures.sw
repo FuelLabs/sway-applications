@@ -6,7 +6,7 @@ pub struct Game {
 }
 
 impl Game {
-    fn new(player_one: Player, player_two: Player) -> Self {
+    pub fn new(player_one: Player, player_two: Player) -> Self {
         Self {
             player_one,
             player_two,
@@ -14,4 +14,6 @@ impl Game {
     }
 }
 
-pub struct Player {}
+pub struct Player {
+    score: u64,
+}

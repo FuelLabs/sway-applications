@@ -70,7 +70,7 @@ If you wish to run any of the projects then clone this repository and go through
 Any instructions related to running a specific project should be found within the README.md of that project.
 
 > **Note**
-> All projects currently use `forc 0.26.0`, and `fuel-core 0.10.1`.
+> All projects currently use `forc 0.31.1`, and `fuel-core 0.14.1`.
 
 ## Contributing
 

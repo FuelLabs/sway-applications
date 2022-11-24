@@ -11,13 +11,6 @@ A multi-signature wallet is a wallet that has multiple owners. In order to execu
 
 More information can be found in the [specification](./SPECIFICATION.md).
 
-### Current state of the application
-
-- The smart contract is under development and is not ready for integration into a user interface
-- The user interface does not currently exist
-- Spec needs to be added
-- Tests are being written as functionality is added therefore skip step 1 of running the tests
-
 ## Project Structure
 
 The project consists of a smart contract and a user interface which the user can interact with.
@@ -26,11 +19,10 @@ The project consists of a smart contract and a user interface which the user can
 
 ```
 multisig-wallet/
-├── contract/
-|    └── src/main.sw
-|    └── tests/harness.rs
-├── frontend/
-|    └── Directories & files
+├── project/
+|   └── multisig-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
 ├── README.md
 └── SPECIFICATION.md
 ```
@@ -43,15 +35,19 @@ TODO: UI does not currently exist
 
 ### Tests
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/multisig-wallet/<you are here>`
+Make sure that you are in the root of the multisig wallet project i.e. `/path/to/multisig-wallet/<you are here>`
 
-Use the following command to run the tests
+Build the contract:
 
-1. Run the tests
+```bash
+forc build
+```
 
-   ```bash
-   forc test
-   ```
+Run the tests:
+
+```bash
+cargo test
+```
 
 ## Specification
 
