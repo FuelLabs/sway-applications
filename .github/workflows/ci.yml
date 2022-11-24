@@ -14,7 +14,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  RUST_VERSION: 1.63.0
+  RUST_VERSION: 1.64.0
   FORC_VERSION: 0.31.1
   CORE_VERSION: 0.14.1
   PATH_TO_SCRIPTS: .github/scripts
