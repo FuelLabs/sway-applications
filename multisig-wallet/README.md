@@ -26,11 +26,10 @@ The project consists of a smart contract and a user interface which the user can
 
 ```
 multisig-wallet/
-├── contract/
-|    └── src/main.sw
-|    └── tests/harness.rs
-├── frontend/
-|    └── Directories & files
+├── project/
+|   └── multisig-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
 ├── README.md
 └── SPECIFICATION.md
 ```
@@ -43,15 +42,19 @@ TODO: UI does not currently exist
 
 ### Tests
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/multisig-wallet/<you are here>`
+Make sure that you are in the root of the multisig wallet project i.e. `/path/to/multisig-wallet/<you are here>`
 
-Use the following command to run the tests
+Build the contract:
 
-1. Run the tests
+```bash
+forc build
+```
 
-   ```bash
-   forc test
-   ```
+Run the tests:
+
+```bash
+cargo test
+```
 
 ## Specification
 

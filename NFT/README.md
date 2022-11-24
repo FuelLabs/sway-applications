@@ -20,10 +20,16 @@ A non-fungible token (NFT) is a unique token that has an identifier which distin
 
 ### Tests
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/NFT/<you are here>`
+Make sure that you are in the root of the NFT project i.e. `/path/to/NFT/<you are here>`
 
-Run the tests
+Build the contract:
 
 ```bash
-forc test
+forc build
+```
+
+Run the tests:
+
+```bash
+cargo test
 ```
