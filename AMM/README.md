@@ -28,16 +28,17 @@ The contracts are designed to
 
 ```
 AMM/
-├── contracts/
-|    └── AMM/
-|         ├── src/main.sw
-|         └── tests/harness.rs
-|    └── exchange/
-|         ├── src/main.sw
-|         └── tests/harness.rs
-├── libraries/
-|    └── src/interface.sw
-└── README.md
+├── project/
+|   └── contracts/
+|   |   ├── AMM-contract/
+|   |   |   ├── src/main.sw
+|   |   |   └── tests/harness.rs
+|   |   └── exchange-contract/
+|   |       ├── src/main.sw
+|   |       └── tests/harness.rs
+|   └── libraries/
+|       └── src/interface.sw
+├── README.md
 └── SPECIFICATION.md
 ```
 
@@ -49,52 +50,18 @@ TODO: UI is to be added.
 
 ### Tests
 
-To run the tests for either contract follow the instructions below.
+Make sure that you are in the root of the AMM project i.e. `/path/to/AMM/<you are here>`
 
-Change into the following directory:
-
-```bash
-cd /<path>/sway-applications/AMM/contracts
-```
-
-#### AMM
-
-Build the contract:
+Build the contracts:
 
 ```bash
-forc build --path ./AMM
-```
-
-Build the exchange contract:
-
-```bash
-forc build --path ./exchange
-```
-
-Build the malicious exchange contract:
-
-```bash
-forc build --path ./exchange/tests/artifacts/malicious_implementation
+forc build
 ```
 
 Run the tests:
 
 ```bash
-cargo test --manifest-path ./AMM/Cargo.toml
-```
-
-#### Exchange
-
-Build the contract:
-
-```bash
-forc build --path ./exchange
-```
-
-Run the tests:
-
-```bash
-cargo test --manifest-path ./exchange/Cargo.toml
+cargo test
 ```
 
 ## Specification

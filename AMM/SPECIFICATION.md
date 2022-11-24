@@ -2,13 +2,13 @@ Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
     - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
-        - [AMM](#amm)
+        - [AMM Contract](#amm)
             - [Core Functionality](#core-functionality)
                 - [`initialize()`](#initialize)
                 - [`add_pool()`](#add_pool)
             - [State Checks](#state-checks)
                 - [`pool()`](#pool)
-        - [Exchange](#exchange)
+        - [Exchange Contract](#exchange)
             - [Core Functionality](#core-functionality-1)
                 - [`constructor()`](#constructor)
                 - [`deposit()`](#deposit)
@@ -42,7 +42,7 @@ If you are interested in a functional overview then this is the section for you.
 
 This sub-section details what a user is able to do, e.g., click a button and "x, y, z" happens.
 
-### AMM
+### AMM Contract
 
 #### Core Functionality 
 
@@ -66,7 +66,7 @@ This sub-section details what a user is able to do, e.g., click a button and "x,
 1. Returns the exchange contract identifier for an asset pair
     1. Requires the identifiers of the two assets
 
-### Exchange
+### Exchange Contract
 
 #### Core Functionality 
 
