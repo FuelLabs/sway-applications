@@ -1,0 +1,4 @@
+members = [
+  "./project/DAO-contract",
+  "./project/DAO-contract/tests/artifacts/gov_token",
+]

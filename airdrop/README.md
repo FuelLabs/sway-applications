@@ -1,6 +1,6 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset=".docs/airdrop-distributor_dark.png">
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/distributor-contract_dark.png">
         <img alt="airdrop-distributor logo" width="400px" src=".docs/airdrop-distributor_light.png">
     </picture>
 </p>
