@@ -15,10 +15,6 @@ In order to verifiably prove that a user has a claim to an airdrop and avoiding 
 
 More information can be found in the [specification](./SPECIFICATION.md) and [interface](./project/contracts/distributor-contract/src/interface.sw).
 
-### Current state of the application
-
-Information on the current state of the application can be found in the [Application Progress](../APPLICATION_PROGRESS.md#decentralized-apps) file.
-
 ## Project Structure
 
 The project consists of 2 smart contracts and a user interface which the user can interact with.

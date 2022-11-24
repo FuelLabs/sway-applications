@@ -11,13 +11,6 @@ A multi-signature wallet is a wallet that has multiple owners. In order to execu
 
 More information can be found in the [specification](./SPECIFICATION.md).
 
-### Current state of the application
-
-- The smart contract is under development and is not ready for integration into a user interface
-- The user interface does not currently exist
-- Spec needs to be added
-- Tests are being written as functionality is added therefore skip step 1 of running the tests
-
 ## Project Structure
 
 The project consists of a smart contract and a user interface which the user can interact with.
