@@ -85,7 +85,7 @@ jobs:
       - name: Build Sway
         run: forc build --path ${{ matrix.project }}
 
-      - name: Run Forc tests
+      - name: Run Rust tests
         run: |
           cd ${{ matrix.project }}
           cargo test
