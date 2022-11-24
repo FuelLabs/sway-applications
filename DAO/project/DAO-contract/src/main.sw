@@ -7,10 +7,7 @@ dep events;
 dep utils;
 
 use std::{
-    auth::{
-        AuthError,
-        msg_sender,
-    },
+    auth::msg_sender,
     block::height,
     call_frames::msg_asset_id,
     context::{
@@ -18,7 +15,6 @@ use std::{
         this_balance,
     },
     logging::log,
-    prelude::*,
     token::transfer,
 };
 

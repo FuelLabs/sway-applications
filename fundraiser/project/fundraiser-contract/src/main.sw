@@ -11,15 +11,11 @@ use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
 use errors::{CampaignError, CreationError, UserError};
 use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
 use std::{
-    block::height,
     auth::msg_sender,
+    block::height,
     call_frames::msg_asset_id,
     context::msg_amount,
-    contract_id::ContractId,
-    identity::Identity,
     logging::log,
-    result::Result,
-    revert::{require, revert},
     storage::StorageMap,
     token::transfer,
 };

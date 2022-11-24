@@ -1,7 +1,13 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
 
-abigen!(Escrow, "project/escrow-contract/out/debug/escrow-contract-abi.json");
-abigen!(MyAsset, "project/escrow-contract/tests/artifacts/asset/out/debug/asset-abi.json");
+abigen!(
+    Escrow,
+    "project/escrow-contract/out/debug/escrow-contract-abi.json"
+);
+abigen!(
+    MyAsset,
+    "project/escrow-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+);
 
 pub struct Defaults {
     pub asset: MyAsset,
@@ -13,6 +19,13 @@ pub struct Defaults {
 pub struct User {
     pub contract: Escrow,
     pub wallet: WalletUnlocked,
+}
+
+pub mod paths {
+    pub const ASSET_BINARY: &str = "./tests/artifacts/asset/out/debug/asset.bin";
+    pub const ASSET_STORAGE: &str = "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
+    pub const CONTRACT_BINARY: &str = "./out/debug/escrow-contract.bin";
+    pub const CONTRACT_STORAGE: &str = "./out/debug/escrow-contract-storage_slots.json";
 }
 
 pub mod abi_calls {
@@ -193,12 +206,10 @@ pub mod test_helpers {
         wallet: WalletUnlocked,
     ) -> (ContractId, MyAsset) {
         let asset_id = Contract::deploy_with_parameters(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            paths::ASSET_BINARY,
             &wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/asset/out/debug/asset-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
             Salt::from(salt),
         )
         .await
@@ -239,23 +250,19 @@ pub mod test_helpers {
         let seller_wallet = wallets.pop().unwrap();
 
         let escrow_id = Contract::deploy(
-            "./out/debug/escrow-contract.bin",
+            paths::CONTRACT_BINARY,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./out/debug/escrow-contract-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::CONTRACT_STORAGE.to_string())),
         )
         .await
         .unwrap();
 
         let asset_id = Contract::deploy(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            paths::ASSET_BINARY,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/asset/out/debug/asset-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
         )
         .await
         .unwrap();

@@ -70,9 +70,8 @@ pub async fn test_predicate_spend_with_parameters(
 
     let provider = receiver_wallet.get_provider().unwrap();
 
-    let (predicate_bytecode, predicate_root) = predicate_bytecode_and_root_from_bin(
-        "../OTC-swap-predicate/out/debug/swap-predicate.bin",
-    );
+    let (predicate_bytecode, predicate_root) =
+        predicate_bytecode_and_root_from_bin("../swap-predicate/out/debug/swap-predicate.bin");
 
     // Transfer some coins to the predicate root
     let offered_amount = 1000;
@@ -228,9 +227,8 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
 
     let initial_wallet_balance = get_balance(&provider, wallet.address(), OFFERED_ASSET).await;
 
-    let (predicate_bytecode, predicate_root) = predicate_bytecode_and_root_from_bin(
-        "../OTC-swap-predicate/out/debug/swap-predicate.bin",
-    );
+    let (predicate_bytecode, predicate_root) =
+        predicate_bytecode_and_root_from_bin("../swap-predicate/out/debug/swap-predicate.bin");
 
     // Transfer some coins to the predicate root
     let offered_amount = 1000;

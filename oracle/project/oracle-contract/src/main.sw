@@ -5,14 +5,7 @@ dep errors;
 dep events;
 dep interface;
 
-use std::{
-    address::Address,
-    auth::msg_sender,
-    identity::Identity,
-    logging::log,
-    result::Result,
-    revert::require,
-};
+use std::{auth::msg_sender, logging::log};
 
 use data_structures::State;
 use errors::AccessError;

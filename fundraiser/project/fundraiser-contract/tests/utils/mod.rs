@@ -4,8 +4,14 @@ use fuels::{
     tx::{AssetId, ContractId, Salt},
 };
 
-abigen!(Fundraiser, "./project/fundraiser-contract/out/debug/fundraiser-contract-abi.json");
-abigen!(Asset, "./project/fundraiser-contract/tests/artifacts/asset/out/debug/asset-abi.json");
+abigen!(
+    Fundraiser,
+    "./project/fundraiser-contract/out/debug/fundraiser-contract-abi.json"
+);
+abigen!(
+    Asset,
+    "./project/fundraiser-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+);
 
 pub struct DefaultParameters {
     pub asset_id: ContractId,
@@ -22,6 +28,13 @@ pub struct Metadata {
 pub struct MetaAsset {
     pub contract: Asset,
     pub id: ContractId,
+}
+
+pub mod paths {
+    pub const ASSET_BINARY: &str = "./tests/artifacts/asset/out/debug/asset.bin";
+    pub const ASSET_STORAGE: &str = "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
+    pub const CONTRACT_BINARY: &str = "./out/debug/fundraiser-contract.bin";
+    pub const CONTRACT_STORAGE: &str = "./out/debug/fundraiser-contract-storage_slots.json";
 }
 
 pub mod abi_calls {
@@ -195,34 +208,28 @@ pub mod test_helpers {
         let user_wallet = wallets.pop().unwrap();
 
         let id = Contract::deploy(
-            "./out/debug/fundraiser-contract.bin",
+            paths::CONTRACT_BINARY,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./out/debug/fundraiser-contract-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::CONTRACT_STORAGE.to_string())),
         )
         .await
         .unwrap();
 
         let asset_id = Contract::deploy(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            paths::ASSET_BINARY,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/asset/out/debug/asset-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
         )
         .await
         .unwrap();
 
         let asset2_id = Contract::deploy_with_parameters(
-            "./tests/artifacts/asset/out/debug/asset.bin",
+            paths::ASSET_BINARY,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/asset/out/debug/asset-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
             Salt::from([1u8; 32]),
         )
         .await
