@@ -1,6 +1,6 @@
 contract;
 
-dep contract_abi;
+dep interface;
 dep data_structures;
 dep errors;
 dep events;
@@ -8,11 +8,11 @@ dep utils;
 
 use std::{block::height, call_frames::msg_asset_id, context::msg_amount, logging::log};
 
-use contract_abi::DutchAuction;
+use interface::DutchAuction;
 use data_structures::Auction;
 use errors::{SetupError, TimeError, UserError};
 use events::{CancelledAuctionEvent, ChangedAsset, CreatedAuctionEvent, WinningBidEvent};
-use utils::{calculate_price, eq_identity, sender_indentity, transfer_to_identity, validate_id};
+use utils::{calculate_price, eq_identity, sender_indentity, transfer_to_identity, validate_id, StorageMapVec};
 
 storage {
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
@@ -20,11 +20,11 @@ storage {
     /// Tracking how many auctions have been made till now
     auction_count: u64 = 0,
     /// Auction ids of the active auctions by author
-    active_auctions_of_author: StorageMap<Identity, [u64; 1]> = StorageMap {},
+    active_auctions_of_author: StorageMapVec<Identity, u64> = StorageMapVec {},
     /// Auction ids of all auctions by author
-    auctions_of_author: StorageMap<Identity, [u64; 1]> = StorageMap {},
+    auctions_of_author: StorageMapVec<Identity, u64> = StorageMapVec {},
     /// The auctions which any given bidder has won
-    auctions_won: StorageMap<Identity, [u64; 1]> = StorageMap {},
+    auctions_won: StorageMapVec<Identity, u64> = StorageMapVec {},
 }
 
 impl DutchAuction for Contract {
@@ -85,10 +85,10 @@ impl DutchAuction for Contract {
 
         on_win(auction, price);
 
-        // WARNING: This needs to be changed to a pop to a vec instead of just replacing the contents of the array
-        storage.active_auctions_of_author.insert(auction.author, [0]);
-        // WARNING: This needs to be changed to a push to a vec instead of just replacing the contents of the array
-        storage.auctions_won.insert(sender_indentity(), [auction_id]);
+
+        let _ = storage.active_auctions_of_author.pop(auction.author);
+
+        storage.auctions_won.push(sender_indentity(), auction_id);
 
         log(WinningBidEvent {
             id: auction_id,
@@ -133,10 +133,10 @@ impl DutchAuction for Contract {
         storage.auction_count = storage.auction_count + 1;
         storage.auctions.insert(storage.auction_count, auction);
 
-        // WARNING: This needs to be changed to a push to a vec instead of just replacing the contents of the array
-        storage.active_auctions_of_author.insert(sender_indentity(), [storage.auction_count]);
-        // WARNING: This needs to be changed to a push to a vec instead of just replacing the contents of the array
-        storage.auctions_of_author.insert(sender_indentity(), [storage.auction_count]);
+
+        storage.active_auctions_of_author.push(sender_indentity(), storage.auction_count);
+
+        storage.auctions_of_author.push(sender_indentity(), storage.auction_count);
 
         log(CreatedAuctionEvent {
             auction,
@@ -165,8 +165,8 @@ impl DutchAuction for Contract {
 
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
-        // WARNING: This needs to be changed to a pop to a vec instead of just replacing the contents of the array
-        storage.active_auctions_of_author.insert(sender_indentity(), [0]);
+
+        let _ = storage.active_auctions_of_author.pop(sender_indentity());
 
         log(CancelledAuctionEvent {
             id: auction_id,
@@ -236,22 +236,40 @@ impl DutchAuction for Contract {
         storage.auctions.insert(auction_id, auction);
     }
 
-    /// Returns the active auctions of the author
+    /// Returns the number of active auctions of the author
     #[storage(read)]
-    fn active_auctions_of_author(author: Identity) -> [u64; 1] {
-        storage.active_auctions_of_author.get(author)
+    fn active_auctions_of_author(author: Identity) -> u64 {
+        storage.active_auctions_of_author.len(author)
     }
 
-    /// Returns all the auctions created by author
+    /// Returns the number of auctions created by author
     #[storage(read)]
-    fn auctions_of_author(author: Identity) -> [u64; 1] {
-        storage.auctions_of_author.get(author)
+    fn auctions_of_author(author: Identity) -> u64 {
+        storage.auctions_of_author.len(author)
     }
 
-    /// Returns what auctions some bidder has won
+    /// Returns the number of auctions some bidder has won
     #[storage(read)]
-    fn auctions_won(bidder: Identity) -> [u64; 1] {
-        storage.auctions_won.get(bidder)
+    fn auctions_won(bidder: Identity) -> u64 {
+        storage.auctions_won.len(bidder)
+    }
+
+    /// Returns the active auction of the author at the given index
+    #[storage(read)]
+    fn active_auction_of_author(author: Identity, index: u64) -> u64 {
+        storage.active_auctions_of_author.get(author, index).unwrap()
+    }
+
+    /// Returns the number of auctions created by author
+    #[storage(read)]
+    fn auction_of_author(author: Identity, index: u64) -> u64 {
+        storage.auctions_of_author.get(author, index).unwrap()
+    }
+
+    /// Returns the number of auctions some bidder has won
+    #[storage(read)]
+    fn auction_won(bidder: Identity, index: u64) -> u64 {
+        storage.auctions_won.get(bidder, index).unwrap()
     }
 }
 
