@@ -13,7 +13,7 @@ In this case the pledged asset is a native asset on the Fuel network. More infor
 
 ## Project Structure
 
-The project consists of a smart contract and a user interface which the user can interact with.
+The project consists of a smart contract.
 
 <!--Only show most important files e.g. script to run, build etc.-->
 
@@ -35,7 +35,7 @@ TODO: UI does not currently exist
 
 ### Tests
 
-Make sure that you are in the root of the fundraiser project i.e. `/path/to/fundraiser/<you are here>`
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/fundraiser/<you are here>`
 
 Build the contracts:
 

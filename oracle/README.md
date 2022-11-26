@@ -94,7 +94,7 @@ The project can be started by executing the following steps:
 
 ### Tests
 
-Make sure that you are in the root of the oracle project i.e. `/path/to/oracle/<you are here>`
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/oracle/<you are here>`
 
 Build the contract:
 

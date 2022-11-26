@@ -10,10 +10,10 @@
 ## Predicates in Fuel
 Predicates are pure functions evaluating to either `True` or `False`. They are stateless, and can neither read nor write to any contract state. They can not emit logs.
 
-In Fuel, coins can be sent to an address uniquely representing a particular predicate's bytecode (the bytecode root, calculated [here](https://github.com/FuelLabs/fuel-specs/blob/master/specs/protocol/identifiers.md#contract-id)).
+In Fuel, coins can be sent to an address uniquely representing a particular predicate's bytecode (the bytecode root, calculated [here](https://github.com/FuelLabs/fuel-specs/blob/master/src/protocol/id/contract.md).
 
 
-These coin UTXOs then become spendable not on the provision of a valid signature, but rather if the supplied predicate both has a root that matches their owner, and [evaluates](https://github.com/FuelLabs/fuel-specs/blob/master/specs/vm/main.md#predicate-verification) to `True`. If a predicate reverts, or tries to access impure VM opcodes, the evaluation is automatically `False`.
+These coin UTXOs then become spendable not on the provision of a valid signature, but rather if the supplied predicate both has a root that matches their owner, and [evaluates](https://github.com/FuelLabs/fuel-specs/blob/master/src/vm/index.md#predicate-verification) to `True`. If a predicate reverts, or tries to access impure VM opcodes, the evaluation is automatically `False`.
 
 Predicates may introspect the transaction spending their coins (inputs, outputs, script bytecode, etc.) and may take runtime arguments (the `predicateData`), either or both of which may affect the evaluation of the predicate.
 
@@ -35,7 +35,7 @@ As such, this mechanism is most useful for OTC trades and atomic swaps.
 The project consists of a predicate written in Sway (`./project/swap-predicate/src/main.sw`) and tests using fuels-rs (`./project/swap-predicate/tests/`)
 
 # Running the project
-Make sure that you are in the root of the OTC swap predicate project i.e. `/path/to/OTC-swap-predicate/<you are here>`
+In order to run the project make sure that you are in the root of this project i.e. `/path/to/OTC-swap-predicate/<you are here>`
 
 Build the predicate:
 

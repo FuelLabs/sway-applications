@@ -9,8 +9,8 @@
     <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
         <img src="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml/badge.svg" />
     </a>
-    <a href="https://crates.io/crates/forc/0.25.2" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.25.2-orange" />
+    <a href="https://crates.io/crates/forc/0.31.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.31.1-orange" />
     </a>
     <a href="./LICENSE" alt="forc">
         <img src="https://img.shields.io/github/license/FuelLabs/sway-applications" />

@@ -17,7 +17,7 @@ More information can be found in the [specification](./SPECIFICATION.md) and [in
 
 ## Project Structure
 
-The project consists of 2 smart contracts and a user interface which the user can interact with.
+The project consists of two smart contracts.
 
 <!--Only show most important files e.g. script to run, build etc.-->
 
@@ -42,7 +42,7 @@ TODO: UI does not currently exist
 
 ### Tests
 
-Make sure that you are in the root of the airdrop project i.e. `/path/to/airdrop/<you are here>`
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/airdrop/<you are here>`
 
 Build the contracts:
 
