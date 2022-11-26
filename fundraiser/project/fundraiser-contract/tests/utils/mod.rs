@@ -31,10 +31,12 @@ pub struct MetaAsset {
 }
 
 pub mod paths {
-    pub const ASSET_BINARY: &str = "./tests/artifacts/asset/out/debug/asset.bin";
-    pub const ASSET_STORAGE: &str = "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
-    pub const CONTRACT_BINARY: &str = "./out/debug/fundraiser-contract.bin";
-    pub const CONTRACT_STORAGE: &str = "./out/debug/fundraiser-contract-storage_slots.json";
+    pub const ASSET_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
+    pub const ASSET_CONTRACT_STORAGE_PATH: &str =
+        "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
+    pub const FUNDRAISER_CONTRACT_BINARY_PATH: &str = "./out/debug/fundraiser-contract.bin";
+    pub const FUNDRAISER_CONTRACT_STORAGE_PATH: &str =
+        "./out/debug/fundraiser-contract-storage_slots.json";
 }
 
 pub mod abi_calls {
@@ -174,6 +176,10 @@ pub mod abi_calls {
 pub mod test_helpers {
 
     use super::*;
+    use paths::{
+        ASSET_CONTRACT_BINARY_PATH, ASSET_CONTRACT_STORAGE_PATH, FUNDRAISER_CONTRACT_BINARY_PATH,
+        FUNDRAISER_CONTRACT_STORAGE_PATH,
+    };
 
     pub async fn identity(address: &Bech32Address) -> Identity {
         Identity::Address(address.into())
@@ -208,28 +214,30 @@ pub mod test_helpers {
         let user_wallet = wallets.pop().unwrap();
 
         let id = Contract::deploy(
-            paths::CONTRACT_BINARY,
+            FUNDRAISER_CONTRACT_BINARY_PATH,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(paths::CONTRACT_STORAGE.to_string())),
+            StorageConfiguration::with_storage_path(Some(
+                FUNDRAISER_CONTRACT_STORAGE_PATH.to_string(),
+            )),
         )
         .await
         .unwrap();
 
         let asset_id = Contract::deploy(
-            paths::ASSET_BINARY,
+            ASSET_CONTRACT_BINARY_PATH,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
+            StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
         )
         .await
         .unwrap();
 
         let asset2_id = Contract::deploy_with_parameters(
-            paths::ASSET_BINARY,
+            ASSET_CONTRACT_BINARY_PATH,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
+            StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
             Salt::from([1u8; 32]),
         )
         .await

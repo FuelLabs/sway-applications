@@ -39,9 +39,15 @@ pub mod abi_calls {
     }
 }
 
+pub mod paths {
+    pub const ASSET_CONTRACT_BINARY_PATH: &str = "./out/debug/asset-contract.bin";
+    pub const ASSET_CONTRACT_STORAGE_PATH: &str = "./out/debug/asset-contract-storage_slots.json";
+}
+
 pub mod test_helpers {
 
     use super::*;
+    use paths::{ASSET_CONTRACT_BINARY_PATH, ASSET_CONTRACT_STORAGE_PATH};
 
     pub async fn setup() -> (Metadata, Metadata, u64) {
         let num_wallets = 2;
@@ -58,12 +64,10 @@ pub mod test_helpers {
         let wallet2 = wallets.pop().unwrap();
 
         let simple_asset_id = Contract::deploy(
-            "./out/debug/asset-contract.bin",
+            ASSET_CONTRACT_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./out/debug/asset-contract-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
         )
         .await
         .unwrap();

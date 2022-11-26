@@ -99,9 +99,22 @@ pub mod simple_asset_abi_calls {
     }
 }
 
+pub mod paths {
+    pub const ASSET_CONTRACT_BINARY_PATH: &str = "../asset-contract/out/debug/asset-contract.bin";
+    pub const ASSET_CONTRACT_STORAGE_PATH: &str =
+        "../asset-contract/out/debug/asset-contract-storage_slots.json";
+    pub const DISTRIBUTOR_CONTRACT_BINARY_PATH: &str = "./out/debug/distributor-contract.bin";
+    pub const DISTRIBUTOR_CONTRACT_STORAGE_PATH: &str =
+        "./out/debug/distributor-contract-storage_slots.json";
+}
+
 pub mod test_helpers {
 
     use super::*;
+    use paths::{
+        ASSET_CONTRACT_BINARY_PATH, ASSET_CONTRACT_STORAGE_PATH, DISTRIBUTOR_CONTRACT_BINARY_PATH,
+        DISTRIBUTOR_CONTRACT_STORAGE_PATH,
+    };
 
     #[derive(Clone)]
     struct Node {
@@ -352,23 +365,21 @@ pub mod test_helpers {
         let wallet4 = wallets.pop().unwrap();
 
         let airdrop_distributor_id = Contract::deploy(
-            "./out/debug/distributor-contract.bin",
+            DISTRIBUTOR_CONTRACT_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                "./out/debug/distributor-contract-storage_slots.json".to_string(),
+                DISTRIBUTOR_CONTRACT_STORAGE_PATH.to_string(),
             )),
         )
         .await
         .unwrap();
 
         let simple_asset_id = Contract::deploy(
-            "../asset-contract/out/debug/asset-contract.bin",
+            ASSET_CONTRACT_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "../asset-contract/out/debug/asset-contract-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
         )
         .await
         .unwrap();

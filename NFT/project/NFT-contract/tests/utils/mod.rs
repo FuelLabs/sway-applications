@@ -159,9 +159,15 @@ pub mod abi_calls {
     }
 }
 
+pub mod paths {
+    pub const NFT_CONTRACT_BINARY_PATH: &str = "./out/debug/NFT-contract.bin";
+    pub const NFT_CONTRACT_STORAGE_PATH: &str = "./out/debug/NFT-contract-storage_slots.json";
+}
+
 pub mod test_helpers {
 
     use super::*;
+    use paths::{NFT_CONTRACT_BINARY_PATH, NFT_CONTRACT_STORAGE_PATH};
 
     pub async fn setup() -> (Metadata, Metadata, Metadata) {
         let num_wallets = 3;
@@ -185,12 +191,10 @@ pub mod test_helpers {
         let wallet3 = wallets.pop().unwrap();
 
         let nft_id = Contract::deploy(
-            "./out/debug/NFT-contract.bin",
+            NFT_CONTRACT_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./out/debug/NFT-contract-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(NFT_CONTRACT_STORAGE_PATH.to_string())),
         )
         .await
         .unwrap();
