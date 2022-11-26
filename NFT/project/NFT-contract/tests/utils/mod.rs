@@ -201,17 +201,17 @@ pub mod test_helpers {
 
         let deploy_wallet = Metadata {
             contract: Nft::new(nft_id.clone(), wallet1.clone()),
-            wallet: wallet1.clone(),
+            wallet: wallet1,
         };
 
         let owner1 = Metadata {
             contract: Nft::new(nft_id.clone(), wallet2.clone()),
-            wallet: wallet2.clone(),
+            wallet: wallet2,
         };
 
         let owner2 = Metadata {
-            contract: Nft::new(nft_id.clone(), wallet3.clone()),
-            wallet: wallet3.clone(),
+            contract: Nft::new(nft_id, wallet3.clone()),
+            wallet: wallet3,
         };
 
         (deploy_wallet, owner1, owner2)

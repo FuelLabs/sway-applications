@@ -220,10 +220,7 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        (
-            asset_id.clone().into(),
-            MyAsset::new(asset_id.clone(), wallet.clone()),
-        )
+        (asset_id.clone().into(), MyAsset::new(asset_id, wallet))
     }
 
     pub async fn mint(address: &Bech32Address, amount: u64, contract: &MyAsset) {
@@ -272,7 +269,7 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        let asset = MyAsset::new(asset_id.clone(), deployer_wallet.clone());
+        let asset = MyAsset::new(asset_id.clone(), deployer_wallet);
 
         let arbiter = User {
             contract: Escrow::new(escrow_id.clone(), arbiter_wallet.clone()),

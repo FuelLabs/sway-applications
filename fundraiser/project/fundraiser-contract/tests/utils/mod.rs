@@ -249,7 +249,7 @@ pub mod test_helpers {
         };
 
         let user = Metadata {
-            contract: Fundraiser::new(id.clone(), user_wallet.clone()),
+            contract: Fundraiser::new(id, user_wallet.clone()),
             wallet: user_wallet.clone(),
         };
 

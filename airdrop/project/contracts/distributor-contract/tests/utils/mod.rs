@@ -399,7 +399,7 @@ pub mod test_helpers {
                 wallet2.clone(),
             ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
-            wallet: wallet2.clone(),
+            wallet: wallet2,
         };
 
         let user2 = Metadata {
@@ -408,7 +408,7 @@ pub mod test_helpers {
                 wallet3.clone(),
             ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
-            wallet: wallet3.clone(),
+            wallet: wallet3,
         };
 
         let user3 = Metadata {
@@ -417,11 +417,11 @@ pub mod test_helpers {
                 wallet4.clone(),
             ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
-            wallet: wallet4.clone(),
+            wallet: wallet4,
         };
 
         let asset = Asset {
-            asset: SimpleAsset::new(simple_asset_id.clone(), wallet1.clone()),
+            asset: SimpleAsset::new(simple_asset_id.clone(), wallet1),
             asset_id: ContractId::new(*simple_asset_id.hash()),
         };
 

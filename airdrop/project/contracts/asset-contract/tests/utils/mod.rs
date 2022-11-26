@@ -75,13 +75,13 @@ pub mod test_helpers {
         let deployer = Metadata {
             asset_id: ContractId::new(*simple_asset_id.hash()),
             simple_asset: SimpleAsset::new(simple_asset_id.clone(), wallet1.clone()),
-            wallet: wallet1.clone(),
+            wallet: wallet1,
         };
 
         let user = Metadata {
             asset_id: ContractId::new(*simple_asset_id.hash()),
-            simple_asset: SimpleAsset::new(simple_asset_id.clone(), wallet2.clone()),
-            wallet: wallet2.clone(),
+            simple_asset: SimpleAsset::new(simple_asset_id, wallet2.clone()),
+            wallet: wallet2,
         };
 
         let total_supply = 100;

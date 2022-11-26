@@ -391,14 +391,14 @@ pub mod test_helpers {
             asset: MyAsset::new(sell_asset_id.clone(), wallet1.clone()),
             auction: EnglishAuction::new(auction_id.clone(), wallet1.clone()),
             nft: Nft::new(sell_nft_id.clone(), wallet1.clone()),
-            wallet: wallet1.clone(),
+            wallet: wallet1,
         };
 
         let seller = Metadata {
             asset: MyAsset::new(sell_asset_id.clone(), wallet2.clone()),
             auction: EnglishAuction::new(auction_id.clone(), wallet2.clone()),
             nft: Nft::new(sell_nft_id.clone(), wallet2.clone()),
-            wallet: wallet2.clone(),
+            wallet: wallet2,
         };
 
         let buy_asset_id = Contract::deploy_with_parameters(
@@ -425,14 +425,14 @@ pub mod test_helpers {
             asset: MyAsset::new(buy_asset_id.clone(), wallet3.clone()),
             auction: EnglishAuction::new(auction_id.clone(), wallet3.clone()),
             nft: Nft::new(buy_nft_id.clone(), wallet3.clone()),
-            wallet: wallet3.clone(),
+            wallet: wallet3,
         };
 
         let buyer2 = Metadata {
             asset: MyAsset::new(buy_asset_id.clone(), wallet4.clone()),
             auction: EnglishAuction::new(auction_id.clone(), wallet4.clone()),
             nft: Nft::new(buy_nft_id.clone(), wallet4.clone()),
-            wallet: wallet4.clone(),
+            wallet: wallet4,
         };
 
         (

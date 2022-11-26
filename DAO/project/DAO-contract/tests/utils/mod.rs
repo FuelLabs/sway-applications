@@ -218,7 +218,7 @@ pub mod test_helpers {
         };
 
         let user = Metadata {
-            dao_voting: DaoVoting::new(dao_voting_id.clone(), user_wallet.clone()),
+            dao_voting: DaoVoting::new(dao_voting_id, user_wallet.clone()),
             gov_token: None,
             wallet: user_wallet,
         };

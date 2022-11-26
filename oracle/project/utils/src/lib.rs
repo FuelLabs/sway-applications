@@ -54,7 +54,7 @@ pub mod test_helpers {
         .unwrap();
 
         let user = Metadata {
-            oracle: Oracle::new(oracle_id.clone(), wallets[0].clone()),
+            oracle: Oracle::new(oracle_id, wallets[0].clone()),
             wallet: wallets[0].clone().lock(),
         };
 
