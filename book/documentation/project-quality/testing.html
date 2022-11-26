@@ -161,7 +161,7 @@
 <p>This can be achieved by separating content into files, internally creating modules in <code>mod.rs</code> or a mixture of both.</p>
 <p>The repository follows the pattern of putting utility functions in <code>mod.rs</code> and separating them internally into <code>ABI</code> wrappers and test helpers. The <code>ABI</code> wrappers are functions which directly call the contract function with the arguments passed in while the test helpers are general utility functions such as creating a new contract instance for a new test etc.</p>
 <h3 id="harnessrs"><a class="header" href="#harnessrs"><code>harness.rs</code></a></h3>
-<p>This file is the one that is called by <code>forc test</code> and thus it only contains the modules <code>functions</code> and <code>utils</code> in order to bring them into scope so that the tests can run.</p>
+<p>The <code>harness</code> file is the entry point for the tests, and thus it contains the <code>functions</code> and <code>utils</code> modules. This is what is executed when <code>cargo test</code> is run.</p>
 <h2 id="testing-suggestions"><a class="header" href="#testing-suggestions">Testing Suggestions</a></h2>
 <!-- TODO: this is a mess and it should be cleaned up and categorized at some point-->
 <p>Here are some tips on how to approach testing:</p>
