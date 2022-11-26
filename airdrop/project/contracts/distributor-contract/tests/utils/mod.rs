@@ -11,7 +11,7 @@ abigen!(
 );
 abigen!(
     SimpleAsset,
-    "./project/contracts//asset-contract/out/debug/asset-contract-abi.json"
+    "./project/contracts/asset-contract/out/debug/asset-contract-abi.json"
 );
 
 pub struct Asset {
