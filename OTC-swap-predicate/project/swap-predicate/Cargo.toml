@@ -1,9 +1,9 @@
 [project]
+name = "swap-predicate"
+version = "0.0.0"
 authors = ["Fuel Labs <contact@fuel.sh>"]
 edition = "2021"
 license = "Apache-2.0"
-name = "swap-predicate"
-version = "0.0.0"
 
 [dependencies]
 fuel-gql-client = { version = "0.14.1", default-features = false }
