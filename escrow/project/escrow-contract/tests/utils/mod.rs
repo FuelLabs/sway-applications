@@ -22,10 +22,11 @@ pub struct User {
 }
 
 pub mod paths {
-    pub const ASSET_BINARY: &str = "./tests/artifacts/asset/out/debug/asset.bin";
-    pub const ASSET_STORAGE: &str = "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
-    pub const CONTRACT_BINARY: &str = "./out/debug/escrow-contract.bin";
-    pub const CONTRACT_STORAGE: &str = "./out/debug/escrow-contract-storage_slots.json";
+    pub const ASSET_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
+    pub const ASSET_CONTRACT_STORAGE_PATH: &str =
+        "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
+    pub const ESCROW_CONTRACT_BINARY_PATH: &str = "./out/debug/escrow-contract.bin";
+    pub const ESCROW_CONTRACT_STORAGE_PATH: &str = "./out/debug/escrow-contract-storage_slots.json";
 }
 
 pub mod abi_calls {
@@ -176,6 +177,10 @@ pub mod abi_calls {
 pub mod test_helpers {
 
     use super::*;
+    use paths::{
+        ASSET_CONTRACT_BINARY_PATH, ASSET_CONTRACT_STORAGE_PATH, ESCROW_CONTRACT_BINARY_PATH,
+        ESCROW_CONTRACT_STORAGE_PATH,
+    };
 
     pub async fn asset_amount(asset: &ContractId, wallet: &WalletUnlocked) -> u64 {
         wallet
@@ -206,19 +211,16 @@ pub mod test_helpers {
         wallet: WalletUnlocked,
     ) -> (ContractId, MyAsset) {
         let asset_id = Contract::deploy_with_parameters(
-            paths::ASSET_BINARY,
+            ASSET_CONTRACT_BINARY_PATH,
             &wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
+            StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
             Salt::from(salt),
         )
         .await
         .unwrap();
 
-        (
-            asset_id.clone().into(),
-            MyAsset::new(asset_id.clone(), wallet.clone()),
-        )
+        (asset_id.clone().into(), MyAsset::new(asset_id, wallet))
     }
 
     pub async fn mint(address: &Bech32Address, amount: u64, contract: &MyAsset) {
@@ -250,24 +252,24 @@ pub mod test_helpers {
         let seller_wallet = wallets.pop().unwrap();
 
         let escrow_id = Contract::deploy(
-            paths::CONTRACT_BINARY,
+            ESCROW_CONTRACT_BINARY_PATH,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(paths::CONTRACT_STORAGE.to_string())),
+            StorageConfiguration::with_storage_path(Some(ESCROW_CONTRACT_STORAGE_PATH.to_string())),
         )
         .await
         .unwrap();
 
         let asset_id = Contract::deploy(
-            paths::ASSET_BINARY,
+            ASSET_CONTRACT_BINARY_PATH,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(paths::ASSET_STORAGE.to_string())),
+            StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
         )
         .await
         .unwrap();
 
-        let asset = MyAsset::new(asset_id.clone(), deployer_wallet.clone());
+        let asset = MyAsset::new(asset_id.clone(), deployer_wallet);
 
         let arbiter = User {
             contract: Escrow::new(escrow_id.clone(), arbiter_wallet.clone()),

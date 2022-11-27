@@ -159,9 +159,15 @@ pub mod abi_calls {
     }
 }
 
+pub mod paths {
+    pub const NFT_CONTRACT_BINARY_PATH: &str = "./out/debug/NFT-contract.bin";
+    pub const NFT_CONTRACT_STORAGE_PATH: &str = "./out/debug/NFT-contract-storage_slots.json";
+}
+
 pub mod test_helpers {
 
     use super::*;
+    use paths::{NFT_CONTRACT_BINARY_PATH, NFT_CONTRACT_STORAGE_PATH};
 
     pub async fn setup() -> (Metadata, Metadata, Metadata) {
         let num_wallets = 3;
@@ -185,29 +191,27 @@ pub mod test_helpers {
         let wallet3 = wallets.pop().unwrap();
 
         let nft_id = Contract::deploy(
-            "./out/debug/NFT-contract.bin",
+            NFT_CONTRACT_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./out/debug/NFT-contract-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(NFT_CONTRACT_STORAGE_PATH.to_string())),
         )
         .await
         .unwrap();
 
         let deploy_wallet = Metadata {
             contract: Nft::new(nft_id.clone(), wallet1.clone()),
-            wallet: wallet1.clone(),
+            wallet: wallet1,
         };
 
         let owner1 = Metadata {
             contract: Nft::new(nft_id.clone(), wallet2.clone()),
-            wallet: wallet2.clone(),
+            wallet: wallet2,
         };
 
         let owner2 = Metadata {
-            contract: Nft::new(nft_id.clone(), wallet3.clone()),
-            wallet: wallet3.clone(),
+            contract: Nft::new(nft_id, wallet3.clone()),
+            wallet: wallet3,
         };
 
         (deploy_wallet, owner1, owner2)

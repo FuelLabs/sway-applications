@@ -5,7 +5,7 @@ dep interface;
 
 use errors::{AccessError, InitError, InputError};
 use interface::SimpleAsset;
-use std::{auth::{AuthError, msg_sender}, token::mint_to};
+use std::{auth::msg_sender, token::mint_to};
 
 storage {
     /// The current quantity of the asset minted.

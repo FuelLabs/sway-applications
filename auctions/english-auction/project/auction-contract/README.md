@@ -15,7 +15,7 @@ More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Repository Structure
 
-The project consists of a smart contract and a user interface which the user can interact with.
+The project consists of a smart contract.
 
 ```
 english-auction/
@@ -35,7 +35,7 @@ TODO: UI does not currently exist
 
 ### Tests
 
-Make sure that you are in the root of the English auction project i.e. `/path/to/auctions/english-auction/<you are here>`
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/auctions/english-auction/<you are here>`
 
 Build the contracts:
 

@@ -34,7 +34,7 @@ async fn setup() -> (Multisig, WalletUnlocked, WalletUnlocked, WalletUnlocked) {
     .unwrap();
 
     (
-        Multisig::new(id.clone(), wallet1.clone()),
+        Multisig::new(id, wallet1.clone()),
         wallet1,
         wallet2,
         wallet3,

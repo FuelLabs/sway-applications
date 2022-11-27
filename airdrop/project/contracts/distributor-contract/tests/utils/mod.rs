@@ -11,7 +11,7 @@ abigen!(
 );
 abigen!(
     SimpleAsset,
-    "./project/contracts//asset-contract/out/debug/asset-contract-abi.json"
+    "./project/contracts/asset-contract/out/debug/asset-contract-abi.json"
 );
 
 pub struct Asset {
@@ -99,9 +99,22 @@ pub mod simple_asset_abi_calls {
     }
 }
 
+pub mod paths {
+    pub const ASSET_CONTRACT_BINARY_PATH: &str = "../asset-contract/out/debug/asset-contract.bin";
+    pub const ASSET_CONTRACT_STORAGE_PATH: &str =
+        "../asset-contract/out/debug/asset-contract-storage_slots.json";
+    pub const DISTRIBUTOR_CONTRACT_BINARY_PATH: &str = "./out/debug/distributor-contract.bin";
+    pub const DISTRIBUTOR_CONTRACT_STORAGE_PATH: &str =
+        "./out/debug/distributor-contract-storage_slots.json";
+}
+
 pub mod test_helpers {
 
     use super::*;
+    use paths::{
+        ASSET_CONTRACT_BINARY_PATH, ASSET_CONTRACT_STORAGE_PATH, DISTRIBUTOR_CONTRACT_BINARY_PATH,
+        DISTRIBUTOR_CONTRACT_STORAGE_PATH,
+    };
 
     #[derive(Clone)]
     struct Node {
@@ -352,23 +365,21 @@ pub mod test_helpers {
         let wallet4 = wallets.pop().unwrap();
 
         let airdrop_distributor_id = Contract::deploy(
-            "./out/debug/distributor-contract.bin",
+            DISTRIBUTOR_CONTRACT_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                "./out/debug/distributor-contract-storage_slots.json".to_string(),
+                DISTRIBUTOR_CONTRACT_STORAGE_PATH.to_string(),
             )),
         )
         .await
         .unwrap();
 
         let simple_asset_id = Contract::deploy(
-            "../asset-contract/out/debug/asset-contract.bin",
+            ASSET_CONTRACT_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "../asset-contract/out/debug/asset-contract-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
         )
         .await
         .unwrap();
@@ -388,7 +399,7 @@ pub mod test_helpers {
                 wallet2.clone(),
             ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
-            wallet: wallet2.clone(),
+            wallet: wallet2,
         };
 
         let user2 = Metadata {
@@ -397,7 +408,7 @@ pub mod test_helpers {
                 wallet3.clone(),
             ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
-            wallet: wallet3.clone(),
+            wallet: wallet3,
         };
 
         let user3 = Metadata {
@@ -406,11 +417,11 @@ pub mod test_helpers {
                 wallet4.clone(),
             ),
             contract_id: ContractId::new(*airdrop_distributor_id.hash()),
-            wallet: wallet4.clone(),
+            wallet: wallet4,
         };
 
         let asset = Asset {
-            asset: SimpleAsset::new(simple_asset_id.clone(), wallet1.clone()),
+            asset: SimpleAsset::new(simple_asset_id.clone(), wallet1),
             asset_id: ContractId::new(*simple_asset_id.hash()),
         };
 

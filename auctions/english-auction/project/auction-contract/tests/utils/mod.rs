@@ -256,11 +256,11 @@ pub mod nft_abi_calls {
 }
 
 pub mod paths {
-    pub const ENGLISH_AUCTION_BINARY_PATH: &str = "./out/debug/auction-contract.bin";
-    pub const ENGLISH_AUCTION_CONTRACT_STORAGE_PATH: &str =
+    pub const AUCTION_CONTRACT_BINARY_PATH: &str = "./out/debug/auction-contract.bin";
+    pub const AUCTION_CONTRACT_STORAGE_PATH: &str =
         "./out/debug/auction-contract-storage_slots.json";
     pub const NATIVE_ASSET_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
-    pub const NFT_BINARY_PATH: &str =
+    pub const NFT_CONTRACT_BINARY_PATH: &str =
         "../../../../NFT/project/NFT-contract/out/debug/NFT-contract.bin";
     pub const NFT_CONTRACT_STORAGE_PATH: &str =
         "../../../../NFT/project/NFT-contract/out/debug/NFT-contract-storage_slots.json";
@@ -270,8 +270,8 @@ pub mod test_helpers {
 
     use super::*;
     use paths::{
-        ENGLISH_AUCTION_BINARY_PATH, ENGLISH_AUCTION_CONTRACT_STORAGE_PATH,
-        NATIVE_ASSET_BINARY_PATH, NFT_BINARY_PATH, NFT_CONTRACT_STORAGE_PATH,
+        AUCTION_CONTRACT_BINARY_PATH, AUCTION_CONTRACT_STORAGE_PATH, NATIVE_ASSET_BINARY_PATH,
+        NFT_CONTRACT_BINARY_PATH, NFT_CONTRACT_STORAGE_PATH,
     };
 
     pub async fn create_auction_copy(
@@ -359,11 +359,11 @@ pub mod test_helpers {
         let wallet4 = wallets.pop().unwrap();
 
         let auction_id = Contract::deploy(
-            ENGLISH_AUCTION_BINARY_PATH,
+            AUCTION_CONTRACT_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                ENGLISH_AUCTION_CONTRACT_STORAGE_PATH.to_string(),
+                AUCTION_CONTRACT_STORAGE_PATH.to_string(),
             )),
         )
         .await
@@ -379,7 +379,7 @@ pub mod test_helpers {
         .unwrap();
 
         let sell_nft_id = Contract::deploy(
-            NFT_BINARY_PATH,
+            NFT_CONTRACT_BINARY_PATH,
             &wallet1,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(NFT_CONTRACT_STORAGE_PATH.to_string())),
@@ -391,14 +391,14 @@ pub mod test_helpers {
             asset: MyAsset::new(sell_asset_id.clone(), wallet1.clone()),
             auction: EnglishAuction::new(auction_id.clone(), wallet1.clone()),
             nft: Nft::new(sell_nft_id.clone(), wallet1.clone()),
-            wallet: wallet1.clone(),
+            wallet: wallet1,
         };
 
         let seller = Metadata {
             asset: MyAsset::new(sell_asset_id.clone(), wallet2.clone()),
             auction: EnglishAuction::new(auction_id.clone(), wallet2.clone()),
             nft: Nft::new(sell_nft_id.clone(), wallet2.clone()),
-            wallet: wallet2.clone(),
+            wallet: wallet2,
         };
 
         let buy_asset_id = Contract::deploy_with_parameters(
@@ -412,7 +412,7 @@ pub mod test_helpers {
         .unwrap();
 
         let buy_nft_id = Contract::deploy_with_parameters(
-            NFT_BINARY_PATH,
+            NFT_CONTRACT_BINARY_PATH,
             &wallet3,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(NFT_CONTRACT_STORAGE_PATH.to_string())),
@@ -425,14 +425,14 @@ pub mod test_helpers {
             asset: MyAsset::new(buy_asset_id.clone(), wallet3.clone()),
             auction: EnglishAuction::new(auction_id.clone(), wallet3.clone()),
             nft: Nft::new(buy_nft_id.clone(), wallet3.clone()),
-            wallet: wallet3.clone(),
+            wallet: wallet3,
         };
 
         let buyer2 = Metadata {
             asset: MyAsset::new(buy_asset_id.clone(), wallet4.clone()),
             auction: EnglishAuction::new(auction_id.clone(), wallet4.clone()),
             nft: Nft::new(buy_nft_id.clone(), wallet4.clone()),
-            wallet: wallet4.clone(),
+            wallet: wallet4,
         };
 
         (

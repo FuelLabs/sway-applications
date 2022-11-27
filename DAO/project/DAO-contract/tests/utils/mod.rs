@@ -130,9 +130,22 @@ pub mod abi_calls {
     }
 }
 
+pub mod paths {
+    pub const DAO_CONTRACT_BINARY_PATH: &str = "./out/debug/DAO-contract.bin";
+    pub const DAO_CONTRACT_STORAGE_PATH: &str = "./out/debug/DAO-contract-storage_slots.json";
+    pub const GOVERNANCE_TOKEN_BINARY_PATH: &str =
+        "./tests/artifacts/gov_token/out/debug/gov_token.bin";
+    pub const GOVERNANCE_TOKEN_STORAGE_PATH: &str =
+        "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json";
+}
+
 pub mod test_helpers {
 
     use super::*;
+    use paths::{
+        DAO_CONTRACT_BINARY_PATH, DAO_CONTRACT_STORAGE_PATH, GOVERNANCE_TOKEN_BINARY_PATH,
+        GOVERNANCE_TOKEN_STORAGE_PATH,
+    };
 
     pub async fn mint(contract: &GovToken, amount: u64, address: &Bech32Address) -> bool {
         contract
@@ -177,22 +190,20 @@ pub mod test_helpers {
         let user_wallet = wallets.pop().unwrap();
 
         let dao_voting_id = Contract::deploy(
-            "./out/debug/DAO-contract.bin",
+            DAO_CONTRACT_BINARY_PATH,
             &deployer_wallet,
             TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./out/debug/DAO-contract-storage_slots.json".to_string(),
-            )),
+            StorageConfiguration::with_storage_path(Some(DAO_CONTRACT_STORAGE_PATH.to_string())),
         )
         .await
         .unwrap();
 
         let gov_token_id = Contract::deploy(
-            "./tests/artifacts/gov_token/out/debug/gov_token.bin",
+            GOVERNANCE_TOKEN_BINARY_PATH,
             &deployer_wallet,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json".to_string(),
+                GOVERNANCE_TOKEN_STORAGE_PATH.to_string(),
             )),
         )
         .await
@@ -207,7 +218,7 @@ pub mod test_helpers {
         };
 
         let user = Metadata {
-            dao_voting: DaoVoting::new(dao_voting_id.clone(), user_wallet.clone()),
+            dao_voting: DaoVoting::new(dao_voting_id, user_wallet.clone()),
             gov_token: None,
             wallet: user_wallet,
         };
