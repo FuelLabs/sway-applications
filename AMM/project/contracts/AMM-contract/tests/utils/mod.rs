@@ -69,7 +69,6 @@ pub mod paths {
 
 pub mod test_helpers {
     use super::*;
-
     use amm_abi_calls::initialize;
     use exchange_abi_calls::constructor;
     use paths::{

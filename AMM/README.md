@@ -50,7 +50,7 @@ TODO: UI is to be added.
 
 ### Tests
 
-Make sure that you are in the root of the AMM project i.e. `/path/to/AMM/<you are here>`
+In order to run the tests make sure that you are in the root of this project `/path/to/AMM/<you are here>`
 
 Build the contracts:
 
