@@ -10,6 +10,11 @@ pub struct Metadata {
     pub wallet: Wallet,
 }
 
+pub mod paths {
+    pub const ORACLE_CONTRACT_BINARY_PATH: &str =
+        "../oracle-contract/out/debug/oracle-contract.bin";
+}
+
 pub mod abi_calls {
     use super::*;
 
@@ -29,11 +34,6 @@ pub mod abi_calls {
             .await
             .unwrap()
     }
-}
-
-pub mod paths {
-    pub const ORACLE_CONTRACT_BINARY_PATH: &str =
-        "../oracle-contract/out/debug/oracle-contract.bin";
 }
 
 pub mod test_helpers {

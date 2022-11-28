@@ -27,6 +27,17 @@ pub struct Metadata {
     pub wallet: WalletUnlocked,
 }
 
+pub mod paths {
+    pub const AUCTION_CONTRACT_BINARY_PATH: &str = "./out/debug/auction-contract.bin";
+    pub const AUCTION_CONTRACT_STORAGE_PATH: &str =
+        "./out/debug/auction-contract-storage_slots.json";
+    pub const NATIVE_ASSET_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
+    pub const NFT_CONTRACT_BINARY_PATH: &str =
+        "../../../../NFT/project/NFT-contract/out/debug/NFT-contract.bin";
+    pub const NFT_CONTRACT_STORAGE_PATH: &str =
+        "../../../../NFT/project/NFT-contract/out/debug/NFT-contract-storage_slots.json";
+}
+
 pub mod asset_abi_calls {
 
     use super::*;
@@ -253,17 +264,6 @@ pub mod nft_abi_calls {
             .await
             .unwrap()
     }
-}
-
-pub mod paths {
-    pub const AUCTION_CONTRACT_BINARY_PATH: &str = "./out/debug/auction-contract.bin";
-    pub const AUCTION_CONTRACT_STORAGE_PATH: &str =
-        "./out/debug/auction-contract-storage_slots.json";
-    pub const NATIVE_ASSET_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
-    pub const NFT_CONTRACT_BINARY_PATH: &str =
-        "../../../../NFT/project/NFT-contract/out/debug/NFT-contract.bin";
-    pub const NFT_CONTRACT_STORAGE_PATH: &str =
-        "../../../../NFT/project/NFT-contract/out/debug/NFT-contract-storage_slots.json";
 }
 
 pub mod test_helpers {

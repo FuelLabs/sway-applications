@@ -25,6 +25,15 @@ pub struct Metadata {
     pub wallet: WalletUnlocked,
 }
 
+pub mod paths {
+    pub const ASSET_CONTRACT_BINARY_PATH: &str = "../asset-contract/out/debug/asset-contract.bin";
+    pub const ASSET_CONTRACT_STORAGE_PATH: &str =
+        "../asset-contract/out/debug/asset-contract-storage_slots.json";
+    pub const DISTRIBUTOR_CONTRACT_BINARY_PATH: &str = "./out/debug/distributor-contract.bin";
+    pub const DISTRIBUTOR_CONTRACT_STORAGE_PATH: &str =
+        "./out/debug/distributor-contract-storage_slots.json";
+}
+
 pub mod airdrop_distributor_abi_calls {
 
     use super::*;
@@ -97,15 +106,6 @@ pub mod simple_asset_abi_calls {
             .await
             .unwrap()
     }
-}
-
-pub mod paths {
-    pub const ASSET_CONTRACT_BINARY_PATH: &str = "../asset-contract/out/debug/asset-contract.bin";
-    pub const ASSET_CONTRACT_STORAGE_PATH: &str =
-        "../asset-contract/out/debug/asset-contract-storage_slots.json";
-    pub const DISTRIBUTOR_CONTRACT_BINARY_PATH: &str = "./out/debug/distributor-contract.bin";
-    pub const DISTRIBUTOR_CONTRACT_STORAGE_PATH: &str =
-        "./out/debug/distributor-contract-storage_slots.json";
 }
 
 pub mod test_helpers {

@@ -15,6 +15,15 @@ pub struct Metadata {
     pub wallet: WalletUnlocked,
 }
 
+pub mod paths {
+    pub const DAO_CONTRACT_BINARY_PATH: &str = "./out/debug/DAO-contract.bin";
+    pub const DAO_CONTRACT_STORAGE_PATH: &str = "./out/debug/DAO-contract-storage_slots.json";
+    pub const GOVERNANCE_TOKEN_BINARY_PATH: &str =
+        "./tests/artifacts/gov_token/out/debug/gov_token.bin";
+    pub const GOVERNANCE_TOKEN_STORAGE_PATH: &str =
+        "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json";
+}
+
 pub mod abi_calls {
 
     use super::*;
@@ -128,15 +137,6 @@ pub mod abi_calls {
             .unwrap()
             .value
     }
-}
-
-pub mod paths {
-    pub const DAO_CONTRACT_BINARY_PATH: &str = "./out/debug/DAO-contract.bin";
-    pub const DAO_CONTRACT_STORAGE_PATH: &str = "./out/debug/DAO-contract-storage_slots.json";
-    pub const GOVERNANCE_TOKEN_BINARY_PATH: &str =
-        "./tests/artifacts/gov_token/out/debug/gov_token.bin";
-    pub const GOVERNANCE_TOKEN_STORAGE_PATH: &str =
-        "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json";
 }
 
 pub mod test_helpers {
