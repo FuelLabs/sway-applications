@@ -9,32 +9,27 @@
 
 An airdrop is an application where a set number of users are able to claim a specific amount of an asset. In today's ecosystem, this is often used to distribute tokens to an application's user base that has previously interacted with their project. 
 
-In order to verifiably prove that a user has a claim to an airdrop and avoiding the expensive transaction of storing every address on chain, a Merkle Proof is used. By storing the Merkle root, a single `b256` hash, the airdrop-distributor application can cryptographically prove a user's validity to their claim.
+In order to verifiably prove that a user has a claim to an airdrop and avoiding the expensive transaction of storing every address on chain, a Merkle Proof is used. By storing the Merkle root, a single `b256` hash, the airdrop application can cryptographically prove a user's validity to their claim.
 
 > **Note** This application implements the [Binary Merkle Proof Verification Library](https://github.com/FuelLabs/sway-libs/tree/master/sway_libs/src/merkle_proof).
 
-More information can be found in the [specification](./SPECIFICATION.md) and [interface](./airdrop-distributor/src/interface.sw).
-
-### Current state of the application
-
-Information on the current state of the application can be found in the [Application Progress](../APPLICATION_PROGRESS.md#decentralized-apps) file.
+More information can be found in the [specification](./SPECIFICATION.md) and [interface](./project/contracts/distributor-contract/src/interface.sw).
 
 ## Project Structure
 
-The project consists of 2 smart contracts and a user interface which the user can interact with.
+The project consists of two smart contracts.
 
 <!--Only show most important files e.g. script to run, build etc.-->
 
 ```
 airdrop/
-├── airdrop-distributor/
-|    └── src/main.sw
-|    └── tests/harness.rs
-├── simple-asset/
-|    └── src/main.sw
-|    └── tests/harness.rs
-├── frontend/
-|    └── Directories & files
+├── project/
+|   ├── asset-contract/
+|   |   ├── src/main.sw
+|   |   └── tests/harness.rs
+|   └ distributor-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
 ├── README.md
 └── SPECIFICATION.md
 ```
@@ -47,18 +42,19 @@ TODO: UI does not currently exist
 
 ### Tests
 
-In order to run the tests you will need to build both the simple-asset and airdrop-distributor projects. The airdrop-distributor is dependent on the simple-asset project, as a result simple-asset MUST be compiled first.
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/airdrop/<you are here>`
 
-First, make sure that you are in the root of the simple-asset project i.e. `/path/to/airdrop/simple-asset/<you are here>`.
+Build the contracts:
 
-There are two commands required to run the tests for the simple-asset. The first command builds the contracts and the second command runs the tests.
+```bash
+forc build
+```
 
-1. Run the tests
+Run the tests:
 
-   ```bash
-   forc build
-   cargo test
-   ```
+```bash
+cargo test
+```
 
 ## Specification
 
