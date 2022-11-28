@@ -30,6 +30,10 @@ pub struct MetaWalletBalances {
     pub liquidity_pool_asset: u64,
 }
 
+pub mod paths {
+    pub const EXCHANGE_CONTRACT_BINARY_PATH: &str = "./out/debug/exchange-contract.bin";
+}
+
 pub mod abi_calls {
     use super::*;
 
@@ -206,10 +210,6 @@ pub mod abi_calls {
             .await
             .unwrap()
     }
-}
-
-pub mod paths {
-    pub const EXCHANGE_CONTRACT_BINARY_PATH: &str = "./out/debug/exchange-contract.bin";
 }
 
 pub mod test_helpers {

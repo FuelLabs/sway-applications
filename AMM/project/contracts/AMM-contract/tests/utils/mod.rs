@@ -9,6 +9,15 @@ abigen!(
     "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
 );
 
+pub mod paths {
+    pub const AMM_CONTRACT_BINARY_PATH: &str = "./out/debug/AMM-contract.bin";
+    pub const AMM_CONTRACT_STORAGE_PATH: &str = "./out/debug/AMM-contract-storage_slots.json";
+    pub const EXCHANGE_CONTRACT_BINARY_PATH: &str =
+        "../exchange-contract/out/debug/exchange-contract.bin";
+    pub const MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH: &str =
+        "../exchange-contract/tests/artifacts/malicious_implementation/out/debug/malicious_implementation.bin";
+}
+
 pub mod exchange_abi_calls {
     use super::*;
 
@@ -56,15 +65,6 @@ pub mod amm_abi_calls {
             .unwrap()
             .value
     }
-}
-
-pub mod paths {
-    pub const AMM_CONTRACT_BINARY_PATH: &str = "./out/debug/AMM-contract.bin";
-    pub const AMM_CONTRACT_STORAGE_PATH: &str = "./out/debug/AMM-contract-storage_slots.json";
-    pub const EXCHANGE_CONTRACT_BINARY_PATH: &str =
-        "../exchange-contract/out/debug/exchange-contract.bin";
-    pub const MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH: &str =
-        "../exchange-contract/tests/artifacts/malicious_implementation/out/debug/malicious_implementation.bin";
 }
 
 pub mod test_helpers {
