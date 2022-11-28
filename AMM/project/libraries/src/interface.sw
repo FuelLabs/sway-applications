@@ -9,13 +9,13 @@ abi AMM {
     ///
     /// # Arguments
     ///
-    /// - `exchange_contract_id` - bytecode root of the intended implementation of the exchange ABI
+    /// - `exchange_bytecode_root` - bytecode root of the intended implementation of the exchange ABI
     ///
     /// # Reverts
     ///
     /// * When the AMM has already been initialized
     #[storage(read, write)]
-    fn initialize(exchange_id: ContractId);
+    fn initialize(exchange_bytecode_root: ContractId);
 
     /// Add an (asset pair, exchange contract ID) mapping to the storage.
     ///

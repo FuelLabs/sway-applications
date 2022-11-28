@@ -1,9 +1,4 @@
-use fuels::{
-    contract::contract::CallResponse,
-    prelude::*,
-    tx::{Bytes32, Contract as TxContract},
-};
-use std::str::FromStr;
+use fuels::{contract::contract::CallResponse, prelude::*, tx::Contract as TxContract};
 
 abigen!(
     AMM,
@@ -14,8 +9,13 @@ abigen!(
     "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
 );
 
-pub const HARDCODED_EXCHANGE_CONTRACT_MERKLE_ROOT: &str =
+pub const HARDCODED_EXCHANGE_CONTRACT_BYTECODE_ROOT: &str =
     "0xa23889138cf16dbbe0d9b0ce8ef8fb550d6db5b2d73f84a40aaded715ad85871";
+
+pub struct MetaExchange {
+    pub contract_id: ContractId,
+    pub bytecode_root: ContractId,
+}
 
 pub mod paths {
     pub const AMM_CONTRACT_BINARY_PATH: &str = "./out/debug/AMM-contract.bin";
@@ -41,10 +41,13 @@ pub mod exchange_abi_calls {
 pub mod amm_abi_calls {
     use super::*;
 
-    pub async fn initialize(contract: &AMM, exchange_id: ContractId) -> CallResponse<()> {
+    pub async fn initialize(
+        contract: &AMM,
+        exchange_bytecode_root: ContractId,
+    ) -> CallResponse<()> {
         contract
             .methods()
-            .initialize(exchange_id)
+            .initialize(exchange_bytecode_root)
             .call()
             .await
             .unwrap()
@@ -84,24 +87,19 @@ pub mod test_helpers {
         MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH,
     };
 
-    // calculates the merkle root of the exchange contract used for tests
-    // and checks whether it is equal to the hardcoded merkle root of the legitimate exchange contract
-    pub async fn bytecode_root_legitimate() -> bool {
-        let hardcoded_root = Bytes32::from_str(HARDCODED_EXCHANGE_CONTRACT_MERKLE_ROOT).unwrap();
-
-        let raw_code = Contract::load_contract(
+    pub async fn bytecode_root() -> ContractId {
+        // calculate the bytecode root of the exchange contract
+        let exchange_raw_code = Contract::load_contract(
             EXCHANGE_CONTRACT_BINARY_PATH,
             &StorageConfiguration::default().storage_path,
         )
         .unwrap()
         .raw;
-        let calculated_root = (*TxContract::root_from_code(raw_code)).into();
-
-        hardcoded_root == calculated_root
+        (*TxContract::root_from_code(exchange_raw_code)).into()
     }
 
     pub async fn initialize_amm_contract(wallet: &WalletUnlocked, amm_instance: &AMM) {
-        let exchange_contract_id = Contract::deploy(
+        Contract::deploy(
             EXCHANGE_CONTRACT_BINARY_PATH,
             &wallet,
             TxParameters::default(),
@@ -110,7 +108,7 @@ pub mod test_helpers {
         .await
         .unwrap();
 
-        initialize(amm_instance, exchange_contract_id.into()).await;
+        initialize(amm_instance, bytecode_root().await).await;
     }
 
     pub async fn deploy_and_construct_exchange_contract(
@@ -118,7 +116,7 @@ pub mod test_helpers {
         asset_pair: (ContractId, ContractId),
         malicious: Option<bool>,
         index_for_salt: Option<u8>,
-    ) -> ContractId {
+    ) -> MetaExchange {
         let salt = [index_for_salt.unwrap_or(0u8); 32];
 
         let exchange_contract_id = Contract::deploy_with_parameters(
@@ -137,7 +135,10 @@ pub mod test_helpers {
 
         let exchange_instance = Exchange::new(exchange_contract_id.clone(), wallet.clone());
         constructor(&exchange_instance, asset_pair).await;
-        ContractId::new(*exchange_contract_id.hash())
+        MetaExchange {
+            contract_id: ContractId::new(*exchange_contract_id.hash()),
+            bytecode_root: bytecode_root().await,
+        }
     }
 
     pub async fn setup_and_initialize() -> (WalletUnlocked, AMM, Vec<(ContractId, ContractId)>) {

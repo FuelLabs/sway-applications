@@ -17,11 +17,12 @@ storage {
 
 impl AMM for Contract {
     #[storage(read, write)]
-    fn initialize(exchange_id: ContractId) {
+    fn initialize(exchange_bytecode_root: ContractId) {
         require(storage.exchange_bytecode_root.is_none(), InitError::BytecodeRootAlreadySet);
-        let root = bytecode_root(exchange_id);
-        storage.exchange_bytecode_root = Option::Some(root);
-        log(SetExchangeBytecodeRootEvent { root });
+        storage.exchange_bytecode_root = Option::Some(exchange_bytecode_root.into());
+        log(SetExchangeBytecodeRootEvent {
+            root: exchange_bytecode_root.into(),
+        });
     }
 
     #[storage(read, write)]
