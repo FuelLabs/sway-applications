@@ -3,7 +3,7 @@ use crate::utils::{
     test_helpers::{
         bytecode_root, deploy_and_construct_exchange_contract, setup, setup_and_initialize,
     },
-    HARDCODED_EXCHANGE_CONTRACT_BYTECODE_ROOT,
+    EXCHANGE_CONTRACT_BYTECODE_ROOT,
 };
 use fuels::tx::ContractId;
 use std::str::FromStr;
@@ -16,7 +16,7 @@ mod success {
         let (_wallet, amm_instance, _asset_pairs) = setup().await;
 
         let hardcoded_bytecode_root =
-            ContractId::from_str(HARDCODED_EXCHANGE_CONTRACT_BYTECODE_ROOT).unwrap();
+            ContractId::from_str(EXCHANGE_CONTRACT_BYTECODE_ROOT).unwrap();
         let calculated_bytecode_root = bytecode_root().await;
 
         initialize(&amm_instance, hardcoded_bytecode_root).await;
