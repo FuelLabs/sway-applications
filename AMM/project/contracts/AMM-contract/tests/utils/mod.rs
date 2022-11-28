@@ -15,7 +15,7 @@ pub mod paths {
     pub const EXCHANGE_CONTRACT_BINARY_PATH: &str =
         "../exchange-contract/out/debug/exchange-contract.bin";
     pub const MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH: &str =
-        "../exchange-contract/tests/artifacts/malicious_implementation/out/debug/malicious_implementation.bin";
+        "../exchange-contract/tests/artifacts/malicious-implementation/out/debug/malicious-implementation.bin";
 }
 
 pub mod exchange_abi_calls {

@@ -1,4 +1,4 @@
 target
 project/contracts/AMM-contract/out
 project/contracts/exchange-contract/out
-project/contracts/exchange-contract/tests/artifacts/malicious_implementation/out
+project/contracts/exchange-contract/tests/artifacts/malicious-implementation/out
