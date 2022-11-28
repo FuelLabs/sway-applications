@@ -1,4 +1,9 @@
-use fuels::{contract::contract::CallResponse, prelude::*};
+use fuels::{
+    contract::contract::CallResponse,
+    prelude::*,
+    tx::{Bytes32, Contract as TxContract},
+};
+use std::str::FromStr;
 
 abigen!(
     AMM,
@@ -8,6 +13,9 @@ abigen!(
     Exchange,
     "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
 );
+
+pub const HARDCODED_EXCHANGE_CONTRACT_MERKLE_ROOT: &str =
+    "0xa23889138cf16dbbe0d9b0ce8ef8fb550d6db5b2d73f84a40aaded715ad85871";
 
 pub mod paths {
     pub const AMM_CONTRACT_BINARY_PATH: &str = "./out/debug/AMM-contract.bin";
@@ -75,6 +83,22 @@ pub mod test_helpers {
         AMM_CONTRACT_BINARY_PATH, AMM_CONTRACT_STORAGE_PATH, EXCHANGE_CONTRACT_BINARY_PATH,
         MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH,
     };
+
+    // calculates the merkle root of the exchange contract used for tests
+    // and checks whether it is equal to the hardcoded merkle root of the legitimate exchange contract
+    pub async fn bytecode_root_legitimate() -> bool {
+        let hardcoded_root = Bytes32::from_str(HARDCODED_EXCHANGE_CONTRACT_MERKLE_ROOT).unwrap();
+
+        let raw_code = Contract::load_contract(
+            EXCHANGE_CONTRACT_BINARY_PATH,
+            &StorageConfiguration::default().storage_path,
+        )
+        .unwrap()
+        .raw;
+        let calculated_root = (*TxContract::root_from_code(raw_code)).into();
+
+        hardcoded_root == calculated_root
+    }
 
     pub async fn initialize_amm_contract(wallet: &WalletUnlocked, amm_instance: &AMM) {
         let exchange_contract_id = Contract::deploy(

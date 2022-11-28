@@ -1,12 +1,14 @@
 use crate::utils::{
     amm_abi_calls::initialize,
-    test_helpers::{deploy_and_construct_exchange_contract, setup, setup_and_initialize},
+    test_helpers::{
+        bytecode_root_legitimate, deploy_and_construct_exchange_contract, setup,
+        setup_and_initialize,
+    },
 };
 
 mod success {
     use super::*;
 
-    #[ignore]
     #[tokio::test]
     async fn initializes() {
         let (wallet, amm_instance, asset_pairs) = setup().await;
@@ -14,8 +16,10 @@ mod success {
         let exchange_contract_id =
             deploy_and_construct_exchange_contract(&wallet, asset_pairs[0], None, None).await;
 
+        // assert that the AMM contract stores the correct exchange contract merkle root
+        assert!(bytecode_root_legitimate().await);
+
         initialize(&amm_instance, exchange_contract_id).await;
-        // TODO: no way to compute the bytecode using the SDK for now
     }
 }
 
