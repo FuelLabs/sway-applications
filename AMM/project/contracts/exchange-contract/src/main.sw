@@ -32,7 +32,6 @@ use std::{
     context::msg_amount,
     logging::log,
     math::*,
-    storage::StorageMap,
     token::{
         burn,
         mint,
@@ -52,7 +51,7 @@ storage {
     /// Total amount of the liquidity pool asset that has a unique identifier different from the identifiers of assets on either side of the pool.
     liquidity_pool_supply: u64 = 0,
     /// The unique identifiers that make up the pool that can be set only once using the `constructor`.
-    pair: Option<(ContractId, ContractId)> = Option::None(),
+    pair: Option<(ContractId, ContractId)> = Option::None,
     /// Reserve amounts per asset A and asset B
     reserves: StorageMap<ContractId, u64> = StorageMap {},
 }

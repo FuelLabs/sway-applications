@@ -12,7 +12,7 @@ use libraries::{
 use std::constants::BASE_ASSET_ID;
 
 storage {
-    pair: Option<(ContractId, ContractId)> = Option::None(),
+    pair: Option<(ContractId, ContractId)> = Option::None,
 }
 
 impl Exchange for Contract {

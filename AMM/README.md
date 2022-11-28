@@ -20,7 +20,7 @@ The contracts are designed to
 - Support liquidity pools that consist of two assets
 - Use a conservation function which keeps the total liquidity at a constant ratio
     - $price_{asset\ A} * price_{asset\ B} = total\ liquidity$
-- Provide a liquidity miner fee of $\frac1{333} \approx 3\%$
+- Provide a liquidity miner fee of $\frac1{333} \approx 0.003\%$
 
 	> **NOTE** The miner fee can be modified per asset pair
 
