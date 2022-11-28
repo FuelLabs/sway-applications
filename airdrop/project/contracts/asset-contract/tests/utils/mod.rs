@@ -11,6 +11,11 @@ pub struct Metadata {
     pub wallet: WalletUnlocked,
 }
 
+pub mod paths {
+    pub const ASSET_CONTRACT_BINARY_PATH: &str = "./out/debug/asset-contract.bin";
+    pub const ASSET_CONTRACT_STORAGE_PATH: &str = "./out/debug/asset-contract-storage_slots.json";
+}
+
 pub mod abi_calls {
 
     use super::*;
@@ -37,11 +42,6 @@ pub mod abi_calls {
             .await
             .unwrap()
     }
-}
-
-pub mod paths {
-    pub const ASSET_CONTRACT_BINARY_PATH: &str = "./out/debug/asset-contract.bin";
-    pub const ASSET_CONTRACT_STORAGE_PATH: &str = "./out/debug/asset-contract-storage_slots.json";
 }
 
 pub mod test_helpers {

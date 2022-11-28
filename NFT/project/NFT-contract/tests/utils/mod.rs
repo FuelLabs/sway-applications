@@ -10,6 +10,11 @@ pub struct Metadata {
     pub wallet: WalletUnlocked,
 }
 
+pub mod paths {
+    pub const NFT_CONTRACT_BINARY_PATH: &str = "./out/debug/NFT-contract.bin";
+    pub const NFT_CONTRACT_STORAGE_PATH: &str = "./out/debug/NFT-contract-storage_slots.json";
+}
+
 pub mod abi_calls {
 
     use super::*;
@@ -157,11 +162,6 @@ pub mod abi_calls {
             .await
             .unwrap()
     }
-}
-
-pub mod paths {
-    pub const NFT_CONTRACT_BINARY_PATH: &str = "./out/debug/NFT-contract.bin";
-    pub const NFT_CONTRACT_STORAGE_PATH: &str = "./out/debug/NFT-contract-storage_slots.json";
 }
 
 pub mod test_helpers {
