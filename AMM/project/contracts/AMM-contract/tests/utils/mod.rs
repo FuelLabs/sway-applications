@@ -9,9 +9,6 @@ abigen!(
     "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
 );
 
-pub const EXCHANGE_CONTRACT_BYTECODE_ROOT: &str =
-    "0xa23889138cf16dbbe0d9b0ce8ef8fb550d6db5b2d73f84a40aaded715ad85871";
-
 pub struct MetaExchange {
     pub contract_id: ContractId,
     pub bytecode_root: ContractId,
