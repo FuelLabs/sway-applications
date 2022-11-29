@@ -38,11 +38,9 @@ export const AuctionAssetInput = ({
     <Flex>
       <Flex grow="2">
         {isNFT ? (
-          <Flex direction='column' css={{ minWidth: "100%" }}>
+          <Flex direction="column" css={{ minWidth: "100%" }}>
             <Form.Control isRequired css={{ minWidth: "100%" }}>
-              <Form.Label>
-                {nftIdFormLabel}
-              </Form.Label>
+              <Form.Label>{nftIdFormLabel}</Form.Label>
               <Input>
                 <Input.Number
                   id={`tokenId${id}`}
@@ -56,9 +54,7 @@ export const AuctionAssetInput = ({
               </Input>
             </Form.Control>
             <Form.Control isRequired css={{ minWidth: "100%" }}>
-              <Form.Label>
-                {nftContractIdFormLabel}
-              </Form.Label>
+              <Form.Label>{nftContractIdFormLabel}</Form.Label>
               <Input css={styles.input}>
                 <Input.Field
                   id={`assetId${id}`}
@@ -71,9 +67,7 @@ export const AuctionAssetInput = ({
           </Flex>
         ) : (
           <Form.Control isRequired css={{ minWidth: "100%" }}>
-            <Form.Label>
-              {tokenAmountLabel}
-            </Form.Label>
+            <Form.Label>{tokenAmountLabel}</Form.Label>
             <Input>
               <Input.Number
                 id={`assetAmount${id}`}
@@ -91,10 +85,10 @@ export const AuctionAssetInput = ({
           </Form.Control>
         )}
       </Flex>
-      <Flex align="start" css={{  marginTop: "$9" }}>
+      <Flex align="start" css={{ marginTop: "$9" }}>
         <AuctionAssetDropdown onChange={(e) => setIsNFT(e)} />
       </Flex>
-    </Flex >
+    </Flex>
   );
 };
 

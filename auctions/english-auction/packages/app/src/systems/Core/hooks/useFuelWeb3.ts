@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 export const useFuelWeb3 = () => {
-  const windowLocal = (window as any);
+  const windowLocal = window as any;
   const [error, setError] = useState('');
   const [fuelWeb3, setFuelWeb3] = useState<any>(windowLocal.FuelWeb3);
 
@@ -17,4 +17,4 @@ export const useFuelWeb3 = () => {
   }, []);
 
   return [fuelWeb3, error] as const;
-}
+};

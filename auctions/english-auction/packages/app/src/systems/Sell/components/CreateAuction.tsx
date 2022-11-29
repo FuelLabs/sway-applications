@@ -38,34 +38,34 @@ export const CreateAuction = () => {
   const createAuctionMutation = useCreateAuction({
     bidAsset: !auctionValues.assetIdBid
       ? {
-        TokenAsset: {
-          amount: bn.parseUnits(auctionValues.assetAmountBid, DECIMAL_UNITS),
-          asset_id: { value: auctionValues.tokenTypeBid },
-        },
-      }
+          TokenAsset: {
+            amount: bn.parseUnits(auctionValues.assetAmountBid, DECIMAL_UNITS),
+            asset_id: { value: auctionValues.tokenTypeBid },
+          },
+        }
       : {
-        NFTAsset: {
-          token_id: auctionValues.tokenIdBid,
-          asset_id: { value: auctionValues.assetIdBid },
+          NFTAsset: {
+            token_id: auctionValues.tokenIdBid,
+            asset_id: { value: auctionValues.assetIdBid },
+          },
         },
-      },
     duration: auctionValues.duration,
     initialPrice: bn.parseUnits(auctionValues.initialPrice, DECIMAL_UNITS),
     reservePrice: bn.parseUnits(auctionValues.reservePrice, DECIMAL_UNITS),
     sellerAddress: auctionValues.seller,
     sellAsset: !auctionValues.assetIdSell
       ? {
-        TokenAsset: {
-          amount: bn.parseUnits(auctionValues.assetAmountSell, DECIMAL_UNITS),
-          asset_id: { value: auctionValues.tokenTypeSell },
-        },
-      }
+          TokenAsset: {
+            amount: bn.parseUnits(auctionValues.assetAmountSell, DECIMAL_UNITS),
+            asset_id: { value: auctionValues.tokenTypeSell },
+          },
+        }
       : {
-        NFTAsset: {
-          token_id: auctionValues.tokenIdSell,
-          asset_id: { value: auctionValues.assetIdSell },
+          NFTAsset: {
+            token_id: auctionValues.tokenIdSell,
+            asset_id: { value: auctionValues.assetIdSell },
+          },
         },
-      },
   });
 
   const handleInputChange = (field: string, value: string) => {
