@@ -79,7 +79,6 @@ The information in this section is split into subsections in order to conceptual
 
 - <h3>Rust ✅</h3>
   
-  - The AMM contract has one ignored test because [bytecode root](https://github.com/FuelLabs/sway/blob/master/sway-lib-std/src/external.sw#L7) cannot be computed via the SDK
   - Scripts should added along with their tests
 
 - <h3>Typescript</h3>
