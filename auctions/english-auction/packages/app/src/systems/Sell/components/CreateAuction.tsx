@@ -76,17 +76,17 @@ export const CreateAuction = () => {
     <Flex justify="center">
       <Card>
         <Card.Header>Create Auction</Card.Header>
-        <Stack css={{ width: "475px", margin: "10px", alignItems: "center" }}>
-            <AuctionAssetInput
-              placeholderAssetId="Bid Asset Id"
-              placeholderTokenAmount="Bid Asset Amount"
-              placeholderTokenId="Bid Token Id"
-              onChange={handleInputChange}
-              tokenIdValue={auctionValues!.tokenIdBid}
-              assetAmountValue={auctionValues!.assetAmountBid}
-              assetIdValue={auctionValues!.assetIdBid}
-              id="Bid"
-            />
+        <Stack css={{ width: "475px", margin: "10px" }}>
+          <AuctionAssetInput
+            placeholderAssetId="Bid Asset Id"
+            placeholderTokenAmount="Bid Asset Amount"
+            placeholderTokenId="Bid Token Id"
+            onChange={handleInputChange}
+            tokenIdValue={auctionValues!.tokenIdBid}
+            assetAmountValue={auctionValues!.assetAmountBid}
+            assetIdValue={auctionValues!.assetIdBid}
+            id="Bid"
+          />
           <Input css={{ alignSelf: "stretch" }}>
             <Input.Number
               inputMode="numeric"

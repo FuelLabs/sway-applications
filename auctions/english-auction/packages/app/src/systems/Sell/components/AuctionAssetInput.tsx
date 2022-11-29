@@ -35,9 +35,9 @@ export const AuctionAssetInput = ({
   const [isNFT, setIsNFT] = useState(false);
 
   return (
-    <Flex css={styles.input}>
-      <Flex grow={2} basis="auto">
-        <Form.Control isRequired>
+    <Flex>
+      <Flex grow="2">
+        <Form.Control isRequired css={{ minWidth: "100%"}}>
           <Input>
             {isNFT ? (
               <Input.Number

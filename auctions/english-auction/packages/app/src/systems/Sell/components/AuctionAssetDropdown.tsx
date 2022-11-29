@@ -53,7 +53,6 @@ export const AuctionAssetDropdown = ({ onChange }: AuctionAssetDropdownProps) =>
     }
 
     const getAssetText = (isNFT: boolean = false) => {
-        console.log(assets);
         if (isNFT || !assets) {
             return "NFT";
         }
