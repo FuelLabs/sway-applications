@@ -38,7 +38,7 @@ export const AuctionAssetDropdown = ({ onChange }: AuctionAssetDropdownProps) =>
     }, [assets]);
   
     const handleTokenTypeSelection = (newTokenType: string) => {
-      const iconText = newTokenType === "nft" ? "Calendar" : "Coin";
+      const iconText = newTokenType === "nft" ? "Image" : "Coin";
       setAssetIcon(iconText);
 
       const isNFT = isTokenTypeNFT(newTokenType);

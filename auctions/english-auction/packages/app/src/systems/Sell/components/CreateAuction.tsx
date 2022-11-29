@@ -78,9 +78,9 @@ export const CreateAuction = () => {
         <Card.Header>Create Auction</Card.Header>
         <Stack css={{ width: "475px", margin: "10px" }}>
           <AuctionAssetInput
-            placeholderAssetId="Bid Asset Id"
-            placeholderTokenAmount="Bid Asset Amount"
-            placeholderTokenId="Bid Token Id"
+            nftContractIdFormLabel="Bid NFT Contract Id"
+            tokenAmountLabel="Bid Token Amount"
+            nftIdFormLabel="Bid NFT Id"
             onChange={handleInputChange}
             tokenIdValue={auctionValues!.tokenIdBid}
             assetAmountValue={auctionValues!.assetAmountBid}
@@ -120,9 +120,9 @@ export const CreateAuction = () => {
             />
           </Input>
           <AuctionAssetInput
-            placeholderAssetId="Sell Asset Id"
-            placeholderTokenAmount="Sell Asset Amount"
-            placeholderTokenId="Sell Token Id"
+            nftContractIdFormLabel="Sell NFT Contract Id"
+            tokenAmountLabel="Sell Asset Amount"
+            nftIdFormLabel="Sell NFT Id"
             onChange={handleInputChange}
             tokenIdValue={auctionValues!.tokenIdSell}
             assetAmountValue={auctionValues!.assetAmountSell}

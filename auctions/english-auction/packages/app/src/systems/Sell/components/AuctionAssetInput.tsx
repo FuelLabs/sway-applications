@@ -12,9 +12,9 @@ import { AuctionAssetDropdown } from "./AuctionAssetDropdown";
 // add max button to token input for auction asset input
 
 type AuctionAssetInputProps = {
-  placeholderAssetId: string;
-  placeholderTokenId: string;
-  placeholderTokenAmount: string;
+  nftContractIdFormLabel: string;
+  nftIdFormLabel: string;
+  tokenAmountLabel: string;
   onChange: (id: string, val: string) => void;
   assetIdValue?: string;
   tokenIdValue?: string;
@@ -23,9 +23,9 @@ type AuctionAssetInputProps = {
 };
 
 export const AuctionAssetInput = ({
-  placeholderAssetId,
-  placeholderTokenId,
-  placeholderTokenAmount,
+  nftContractIdFormLabel,
+  nftIdFormLabel,
+  tokenAmountLabel,
   onChange,
   assetIdValue,
   tokenIdValue,
@@ -37,19 +37,44 @@ export const AuctionAssetInput = ({
   return (
     <Flex>
       <Flex grow="2">
-        <Form.Control isRequired css={{ minWidth: "100%"}}>
-          <Input>
-            {isNFT ? (
-              <Input.Number
-                id={`tokenId${id}`}
-                allowNegative={false}
-                autoComplete="off"
-                inputMode="numeric"
-                onChange={(e) => onChange(`tokenId${id}`, e.target.value)}
-                placeholder={placeholderTokenId}
-                value={tokenIdValue}
-              />
-            ) : (
+        {isNFT ? (
+          <Flex direction='column' css={{ minWidth: "100%" }}>
+            <Form.Control isRequired css={{ minWidth: "100%" }}>
+              <Form.Label>
+                {nftIdFormLabel}
+              </Form.Label>
+              <Input>
+                <Input.Number
+                  id={`tokenId${id}`}
+                  allowNegative={false}
+                  autoComplete="off"
+                  inputMode="numeric"
+                  onChange={(e) => onChange(`tokenId${id}`, e.target.value)}
+                  placeholder="0"
+                  value={tokenIdValue}
+                />
+              </Input>
+            </Form.Control>
+            <Form.Control isRequired css={{ minWidth: "100%" }}>
+              <Form.Label>
+                {nftContractIdFormLabel}
+              </Form.Label>
+              <Input css={styles.input}>
+                <Input.Field
+                  id={`assetId${id}`}
+                  onChange={(e) => onChange(`assetId${id}`, e.target.value)}
+                  placeholder="0x000.000"
+                  value={assetIdValue}
+                />
+              </Input>
+            </Form.Control>
+          </Flex>
+        ) : (
+          <Form.Control isRequired css={{ minWidth: "100%" }}>
+            <Form.Label>
+              {tokenAmountLabel}
+            </Form.Label>
+            <Input>
               <Input.Number
                 id={`assetAmount${id}`}
                 allowedDecimalSeparators={[".", ","]}
@@ -58,28 +83,18 @@ export const AuctionAssetInput = ({
                 inputMode="decimal"
                 decimalScale={DECIMAL_UNITS}
                 onChange={(e) => onChange(`assetAmount${id}`, e.target.value)}
-                placeholder={placeholderTokenAmount}
+                placeholder="0.0"
                 thousandSeparator={false}
                 value={assetAmountValue}
               />
-            )}
-          </Input>
-        </Form.Control>
+            </Input>
+          </Form.Control>
+        )}
       </Flex>
-      {isNFT && (
-        <Input css={styles.input}>
-          <Input.Field
-            id={`assetId${id}`}
-            onChange={(e) => onChange(`assetId${id}`, e.target.value)}
-            placeholder={placeholderAssetId}
-            value={assetIdValue}
-          />
-        </Input>
-      )}
-      <Flex grow={0}>
+      <Flex align="start" css={{  marginTop: "$9" }}>
         <AuctionAssetDropdown onChange={(e) => setIsNFT(e)} />
       </Flex>
-    </Flex>
+    </Flex >
   );
 };
 
