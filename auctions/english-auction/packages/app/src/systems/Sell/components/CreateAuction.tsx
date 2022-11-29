@@ -38,34 +38,34 @@ export const CreateAuction = () => {
   const createAuctionMutation = useCreateAuction({
     bidAsset: !auctionValues.assetIdBid
       ? {
-          TokenAsset: {
-            amount: bn.parseUnits(auctionValues.assetAmountBid, DECIMAL_UNITS),
-            asset_id: { value: auctionValues.tokenTypeBid },
-          },
-        }
-      : {
-          NFTAsset: {
-            token_id: auctionValues.tokenIdBid,
-            asset_id: { value: auctionValues.assetIdBid },
-          },
+        TokenAsset: {
+          amount: bn.parseUnits(auctionValues.assetAmountBid, DECIMAL_UNITS),
+          asset_id: { value: auctionValues.tokenTypeBid },
         },
+      }
+      : {
+        NFTAsset: {
+          token_id: auctionValues.tokenIdBid,
+          asset_id: { value: auctionValues.assetIdBid },
+        },
+      },
     duration: auctionValues.duration,
     initialPrice: bn.parseUnits(auctionValues.initialPrice, DECIMAL_UNITS),
     reservePrice: bn.parseUnits(auctionValues.reservePrice, DECIMAL_UNITS),
     sellerAddress: auctionValues.seller,
     sellAsset: !auctionValues.assetIdSell
       ? {
-          TokenAsset: {
-            amount: bn.parseUnits(auctionValues.assetAmountSell, DECIMAL_UNITS),
-            asset_id: { value: auctionValues.tokenTypeSell },
-          },
-        }
-      : {
-          NFTAsset: {
-            token_id: auctionValues.tokenIdSell,
-            asset_id: { value: auctionValues.assetIdSell },
-          },
+        TokenAsset: {
+          amount: bn.parseUnits(auctionValues.assetAmountSell, DECIMAL_UNITS),
+          asset_id: { value: auctionValues.tokenTypeSell },
         },
+      }
+      : {
+        NFTAsset: {
+          token_id: auctionValues.tokenIdSell,
+          asset_id: { value: auctionValues.assetIdSell },
+        },
+      },
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -79,7 +79,7 @@ export const CreateAuction = () => {
         <Stack css={{ width: "475px", margin: "10px" }}>
           <AuctionAssetInput
             nftContractIdFormLabel="Bid NFT Contract Id"
-            tokenAmountLabel="Bid Token Amount"
+            tokenAmountLabel="Bid Asset Amount"
             nftIdFormLabel="Bid NFT Id"
             onChange={handleInputChange}
             tokenIdValue={auctionValues!.tokenIdBid}
@@ -87,38 +87,60 @@ export const CreateAuction = () => {
             assetIdValue={auctionValues!.assetIdBid}
             id="Bid"
           />
-          <Input css={{ alignSelf: "stretch" }}>
-            <Input.Number
-              inputMode="numeric"
-              allowNegative={false}
-              onChange={(e) => handleInputChange("duration", e.target.value)}
-              placeholder="Duration"
-            />
-          </Input>
-          <Input css={{ alignSelf: "stretch" }}>
-            <Input.Number
-              allowNegative={false}
-              placeholder="Initial Price"
-              onChange={(e) =>
-                handleInputChange("initialPrice", e.target.value)
-              }
-            />
-          </Input>
-          <Input css={{ alignSelf: "stretch" }}>
-            <Input.Number
-              allowNegative={false}
-              placeholder="Reserve Price"
-              onChange={(e) =>
-                handleInputChange("reservePrice", e.target.value)
-              }
-            />
-          </Input>
-          <Input css={{ alignSelf: "stretch" }}>
-            <Input.Field
-              placeholder="Seller"
-              onChange={(e) => handleInputChange("seller", e.target.value)}
-            />
-          </Input>
+          <Form.Control isRequired>
+            <Form.Label>
+              Duration
+            </Form.Label>
+            <Input css={{ alignSelf: "stretch" }}>
+              <Input.Number
+                inputMode="numeric"
+                allowNegative={false}
+                onChange={(e) => handleInputChange("duration", e.target.value)}
+                placeholder="0"
+              />
+            </Input>
+          </Form.Control>
+
+          <Form.Control isRequired>
+            <Form.Label>
+              Initial Price
+            </Form.Label>
+            <Input css={{ alignSelf: "stretch" }}>
+              <Input.Number
+                allowNegative={false}
+                placeholder="0.0"
+                onChange={(e) =>
+                  handleInputChange("initialPrice", e.target.value)
+                }
+              />
+            </Input>
+          </Form.Control>
+
+          <Form.Control isRequired>
+            <Form.Label>Reserve Price</Form.Label>
+            <Input css={{ alignSelf: "stretch" }}>
+              <Input.Number
+                allowNegative={false}
+                placeholder="0.0"
+                onChange={(e) =>
+                  handleInputChange("reservePrice", e.target.value)
+                }
+              />
+            </Input>
+          </Form.Control>
+
+          <Form.Control isRequired>
+            <Form.Label>
+              Seller
+            </Form.Label>
+            <Input css={{ alignSelf: "stretch" }}>
+              <Input.Field
+                placeholder="0x000...000"
+                onChange={(e) => handleInputChange("seller", e.target.value)}
+              />
+            </Input>
+          </Form.Control>
+
           <AuctionAssetInput
             nftContractIdFormLabel="Sell NFT Contract Id"
             tokenAmountLabel="Sell Asset Amount"
@@ -129,6 +151,7 @@ export const CreateAuction = () => {
             assetIdValue={auctionValues!.assetIdSell}
             id="Sell"
           />
+
           <Button
             leftIcon="Plus"
             onPress={() => createAuctionMutation.mutate()}
