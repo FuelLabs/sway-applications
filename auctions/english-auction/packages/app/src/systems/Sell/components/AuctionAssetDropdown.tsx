@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useAssets } from "~/systems/Core/hooks/useAssets";
 
 interface AuctionAssetDropdownProps {
-  onChange: (isNFT: boolean) => void;
+  onChange: (isNFT: boolean, assetKey: string) => void;
 }
 
 export const AuctionAssetDropdown = ({
@@ -45,7 +45,7 @@ export const AuctionAssetDropdown = ({
 
     const isNFT = isTokenTypeNFT(newTokenType);
     // Pass to parent component
-    onChange(isNFT);
+    onChange(isNFT, newTokenType);
     const text = getAssetText(isNFT);
     setAssetText(text);
   };

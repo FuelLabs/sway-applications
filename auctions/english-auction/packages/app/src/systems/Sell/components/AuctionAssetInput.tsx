@@ -59,7 +59,7 @@ export const AuctionAssetInput = ({
                 <Input.Field
                   id={`assetId${id}`}
                   onChange={(e) => onChange(`assetId${id}`, e.target.value)}
-                  placeholder="0x000.000"
+                  placeholder="0x000...000"
                   value={assetIdValue}
                 />
               </Input>
