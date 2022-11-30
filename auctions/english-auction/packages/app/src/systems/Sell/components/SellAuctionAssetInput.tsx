@@ -4,9 +4,7 @@ import { DECIMAL_UNITS, NativeAssetId } from "fuels";
 import type { CoinQuantity } from "fuels";
 import { useState } from "react";
 
-import { useAssets } from "~/systems/Core/hooks/useAssets";
-import { AuctionAssetDropdown } from "./AuctionAssetDropdown";
-import { DropdownContainer } from "./DropDownContainer";
+import { DropdownContainer } from "./DropdownContainer";
 
 // TODO
 // Make component look nicer
@@ -96,63 +94,6 @@ export const SellAuctionAssetInput = ({
       )}
     </DropdownContainer>
   );
-
-  // return (
-  //   <Flex>
-  //     <Flex grow="2">
-  //       {isNFT ? (
-  //         <Flex direction="column" css={{ minWidth: "100%" }}>
-  //           <Form.Control isRequired css={{ minWidth: "100%" }}>
-  //             <Form.Label>{nftIdFormLabel}</Form.Label>
-  //             <Input>
-  //               <Input.Number
-  //                 id='tokenIdSell'
-  //                 allowNegative={false}
-  //                 autoComplete="off"
-  //                 inputMode="numeric"
-  //                 onChange={(e) => onChange('tokenIdSell', e.target.value)}
-  //                 placeholder="0"
-  //                 value={nftTokenIdValue}
-  //               />
-  //             </Input>
-  //           </Form.Control>
-  //           <Form.Control isRequired css={{ minWidth: "100%" }}>
-  //             <Form.Label>{nftContractIdFormLabel}</Form.Label>
-  //             <Input css={styles.input}>
-  //               <Input.Field
-  //                 id='nftAssetIdSell'
-  //                 onChange={(e) => onChange('nftAssetIdSell', e.target.value)}
-  //                 placeholder="0x000...000"
-  //                 value={nftAssetIdValue}
-  //               />
-  //             </Input>
-  //           </Form.Control>
-  //         </Flex>
-  //       ) : (
-  //         <Form.Control isRequired css={{ minWidth: "100%" }}>
-  //           <Form.Label>{tokenAmountLabel}</Form.Label>
-  //           <Input>
-  //             <Input.Number
-  //               id='assetAmountSell'
-  //               allowedDecimalSeparators={[".", ","]}
-  //               allowNegative={false}
-  //               autoComplete="off"
-  //               inputMode="decimal"
-  //               decimalScale={DECIMAL_UNITS}
-  //               onChange={(e) => onChange('assetAmountSell', e.target.value)}
-  //               placeholder="0.0"
-  //               thousandSeparator={false}
-  //               value={assetAmountValue}
-  //             />
-  //           </Input>
-  //         </Form.Control>
-  //       )}
-  //     </Flex>
-  //     <Flex align="start" css={{ marginTop: "$9" }}>
-  //       <AuctionAssetDropdown onChange={handleAssetChange} />
-  //     </Flex>
-  //   </Flex>
-  // );
 };
 
 const styles = {

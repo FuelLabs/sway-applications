@@ -76,7 +76,7 @@ export const AuctionAssetDropdown = ({
         autoFocus
         onAction={(e) => handleTokenTypeSelection(e.toString())}
       >
-        {assetItems ? assetItems : {}}
+        <>{assetItems ? assetItems: {}}</>
         <Dropdown.MenuItem key="nft" textValue="NFT">
           <Icon icon="Image" />
           NFT

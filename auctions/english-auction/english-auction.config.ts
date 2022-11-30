@@ -4,7 +4,12 @@ import { createConfig, replaceEventOnEnv } from 'english-auction-scripts';
 const { NODE_ENV, OUTPUT_ENV } = process.env;
 
 function getEnvName() {
-  return NODE_ENV === 'test' ? '.env.test' : '.env';
+  if (NODE_ENV === 'test') {
+    return '.env.test';
+  } else if (NODE_ENV === 'testnet') {
+    return '.env.testnet';
+  }
+  return '.env';
 }
 
 dotenv.config({
