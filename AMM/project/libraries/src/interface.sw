@@ -51,6 +51,7 @@ abi Exchange {
     ///
     /// - `desired_liquidity` - minimum amount of liquidity to add
     /// - `deadline` - limit on block height for operation
+    /// - `recipient` -  identity to receive liquidity pool assets that should be specified if the caller is a script
     ///
     /// # Reverts
     ///
@@ -61,7 +62,7 @@ abi Exchange {
     /// * When asset A or B deposits are 0
     /// * When calculated liquidity to add is less than `desired liquidity`
     #[storage(read, write)]
-    fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64;
+    fn add_liquidity(desired_liquidity: u64, deadline: u64, recipient: Option<Identity>) -> u64;
 
     /// Initialize contract by specifying the asset pair that makes up the pool.
     ///

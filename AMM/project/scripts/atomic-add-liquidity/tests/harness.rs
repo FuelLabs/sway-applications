@@ -1,7 +1,11 @@
+use fuel_gql_client::{
+    client::schema::resource::Resource,
+    prelude::{Address, Bytes32, Output, UtxoId},
+};
 use fuels::{
     contract::call_response::FuelCallResponse,
     prelude::*,
-    tx::{AssetId, ContractId},
+    tx::{AssetId, ContractId, Input, TxPointer},
 };
 use paths::SCRIPT_BINARY_PATH;
 use test_helpers::setup;
@@ -23,7 +27,6 @@ pub struct MetaAmounts {
 }
 
 pub struct MetaExchange {
-    instance: Exchange,
     id: ContractId,
     pair: (AssetId, AssetId),
 }
@@ -46,8 +49,8 @@ pub mod exchange_abi_calls {
 
 pub mod paths {
     pub const EXCHANGE_CONTRACT_BINARY_PATH: &str =
-        "../../contracts/exchange/out/debug/exchange.bin";
-    pub const SCRIPT_BINARY_PATH: &str = "out/debug/deposit-and-add-liquidity.bin";
+        "../../contracts/exchange-contract/out/debug/exchange-contract.bin";
+    pub const SCRIPT_BINARY_PATH: &str = "out/debug/atomic-add-liquidity.bin";
 }
 
 pub mod test_helpers {
@@ -57,7 +60,7 @@ pub mod test_helpers {
 
     pub async fn setup_wallet_and_provider() -> (WalletUnlocked, Vec<AssetId>, Provider) {
         let mut wallet = WalletUnlocked::new_random(None);
-        let num_assets = 2;
+        let num_assets = 3;
         let coins_per_asset = 10;
         let amount_per_coin = 100000;
 
@@ -91,7 +94,6 @@ pub mod test_helpers {
         let contract_id = ContractId::from(exchange_contract_id);
 
         MetaExchange {
-            instance: exchange_instance,
             id: contract_id,
             pair: *asset_pair,
         }
@@ -111,9 +113,67 @@ pub mod test_helpers {
 }
 
 #[tokio::test]
-async fn can_deposit_and_add_liquidity_atomically() {
-    let (wallet, _provider, exchange, amounts) = setup().await;
-    let script_instance = AtomicAddLiquidityScript::new(wallet, SCRIPT_BINARY_PATH);
+async fn adds_when_neither_asset_is_base_asset() {
+    let (wallet, provider, exchange, amounts) = setup().await;
+    let script_instance = AtomicAddLiquidityScript::new(wallet.clone(), SCRIPT_BINARY_PATH);
+
+    let coin_a = &provider
+        .get_spendable_resources(&wallet.address(), exchange.pair.0, amounts.asset_a_deposit)
+        .await
+        .unwrap()[0];
+    let (coin_a_utxo_id, coin_a_amount) = match coin_a {
+        Resource::Coin(coin) => (coin.utxo_id.clone(), coin.amount.clone()),
+        _ => panic!(),
+    };
+
+    let input_a = Input::CoinSigned {
+        utxo_id: coin_a_utxo_id.into(),
+        owner: Address::from(wallet.address()),
+        amount: coin_a_amount.into(),
+        asset_id: exchange.pair.0,
+        tx_pointer: TxPointer::default(),
+        witness_index: 0,
+        maturity: 0,
+    };
+
+    let coin_b = &provider
+        .get_spendable_resources(&wallet.address(), exchange.pair.1, amounts.asset_b_deposit)
+        .await
+        .unwrap()[0];
+    let (coin_b_utxo_id, coin_b_amount) = match coin_b {
+        Resource::Coin(coin) => (coin.utxo_id.clone(), coin.amount.clone()),
+        _ => panic!(),
+    };
+
+    let input_b = Input::CoinSigned {
+        utxo_id: coin_b_utxo_id.into(),
+        owner: Address::from(wallet.address()),
+        amount: coin_b_amount.into(),
+        asset_id: exchange.pair.1,
+        tx_pointer: TxPointer::default(),
+        witness_index: 0,
+        maturity: 0,
+    };
+
+    let input_contract = Input::Contract {
+        utxo_id: UtxoId::new(Bytes32::zeroed(), 0),
+        balance_root: Bytes32::zeroed(),
+        state_root: Bytes32::zeroed(),
+        tx_pointer: TxPointer::default(),
+        contract_id: exchange.id,
+    };
+
+    let output_contract = Output::Contract {
+        input_index: 0,
+        balance_root: Bytes32::zeroed(),
+        state_root: Bytes32::zeroed(),
+    };
+
+    let output_variable = Output::Variable {
+        amount: 0,
+        to: Address::zeroed(),
+        asset_id: AssetId::default(),
+    };
 
     let added_liquidity = script_instance
         .main(
@@ -122,9 +182,23 @@ async fn can_deposit_and_add_liquidity_atomically() {
             ContractId::new(*exchange.pair.1),
             amounts.asset_a_deposit,
             amounts.asset_b_deposit,
+            wallet.address().into(),
         )
+        .with_inputs(vec![input_contract, input_a, input_b])
+        .with_outputs(vec![
+            output_contract,
+            output_variable.clone(),
+            output_variable,
+        ])
+        .call()
         .await
-        .unwrap();
+        .unwrap()
+        .value;
 
     assert_eq!(added_liquidity, amounts.liquidity);
 }
+
+// TODO (supiket): when one of the assets being added is the base asset, the built transaction is not valid. find out why.
+#[ignore]
+#[tokio::test]
+async fn adds_when_one_of_the_assets_is_base_asset() {}
