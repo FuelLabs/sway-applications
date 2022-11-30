@@ -10,7 +10,7 @@
 ## Predicates in Fuel
 Predicates are pure functions evaluating to either `True` or `False`. They are stateless, and can neither read nor write to any contract state. They can not emit logs.
 
-In Fuel, coins can be sent to an address uniquely representing a particular predicate's bytecode (the bytecode root, calculated [here](https://github.com/FuelLabs/fuel-specs/blob/master/src/protocol/id/contract.md).
+In Fuel, coins can be sent to an address uniquely representing a particular predicate's bytecode (the bytecode root, calculated [here](https://github.com/FuelLabs/fuel-specs/blob/master/src/protocol/id/contract.md)).
 
 
 These coin UTXOs then become spendable not on the provision of a valid signature, but rather if the supplied predicate both has a root that matches their owner, and [evaluates](https://github.com/FuelLabs/fuel-specs/blob/master/src/vm/index.md#predicate-verification) to `True`. If a predicate reverts, or tries to access impure VM opcodes, the evaluation is automatically `False`.
