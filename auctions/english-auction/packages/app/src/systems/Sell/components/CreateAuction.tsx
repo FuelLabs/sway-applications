@@ -1,6 +1,6 @@
 import { Button, Card, Flex, Input, Stack, Form, Checkbox } from "@fuel-ui/react";
 import { bn, DECIMAL_UNITS } from "fuels";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useCreateAuction } from "../hooks/useCreateAuction";
 import { AuctionAssetDropdown } from "./AuctionAssetDropdown";
@@ -16,11 +16,14 @@ export const CreateAuction = () => {
   const assets = useAssets();
 
   const getInitialAssetId = () => {
+    console.log(assets);
     if (!!assets && assets.length > 0) {
       return assets[0].assetId;
     }
     return "";
   }
+
+
 
   const initialAssetId = getInitialAssetId();
 
@@ -51,6 +54,11 @@ export const CreateAuction = () => {
     nftTokenIdSell: "",
     nftAssetIdSell: "",
   });
+
+  useEffect(() => {
+    const updateAssetId = getInitialAssetId();
+    setAuctionValues({ ...auctionValues, "assetIdSell": updateAssetId, "assetIdBid": updateAssetId });
+  }, [assets]);
 
   // TODO refactor: figure out how to make this look nicer
   const createAuctionMutation = useCreateAuction({
