@@ -7,16 +7,14 @@ import { AuctionAssetDropdown } from "./AuctionAssetDropdown";
 interface BidAuctionAssetInputProps {
     assetIdValue: string;
     onChange: (id: string, val: string) => void;
-    id: string;
 }
 
-export const BidAuctionAssetInput = ({ onChange, assetIdValue, id }: BidAuctionAssetInputProps) => {
+export const BidAuctionAssetInput = ({ onChange, assetIdValue }: BidAuctionAssetInputProps) => {
     const [isNFT, setIsNFT] = useState(false);
 
     const handleAssetChange = (newIsNFT: boolean, assetType: string) => {
         setIsNFT(newIsNFT);
-        console.log("here", assetType);
-        onChange(`assetId${id}`, assetType);
+        onChange("assetIdBid", assetType);
     }
 
     return (
@@ -29,8 +27,8 @@ export const BidAuctionAssetInput = ({ onChange, assetIdValue, id }: BidAuctionA
                             <Form.Label>Bid NFT Asset Id</Form.Label>
                             <Input>
                                 <Input.Field
-                                    id={`assetId${id}`}
-                                    onChange={(e) => onChange(`assetId${id}`, e.target.value)}
+                                    id="assetIdBid"
+                                    onChange={(e) => onChange("assetIdBid", e.target.value)}
                                     placeholder="0x000...000"
                                     value={assetIdValue}
                                 />

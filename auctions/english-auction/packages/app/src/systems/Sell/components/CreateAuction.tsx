@@ -38,6 +38,7 @@ export const CreateAuction = () => {
     tokenTypeSell: "",
   });
 
+  // TODO refactor: figure out how to make this look nicer
   const createAuctionMutation = useCreateAuction({
     bidAsset: !auctionValues.assetIdBid
       ? {
@@ -160,7 +161,7 @@ export const CreateAuction = () => {
           </Form.Control>
           }
 
-          <BidAuctionAssetInput onChange={handleInputChange} id='Bid' assetIdValue={auctionValues!.assetIdBid} />
+          <BidAuctionAssetInput onChange={handleInputChange} assetIdValue={auctionValues!.assetIdBid} />
 
           <Form.Control isRequired isInvalid={auctionValues["duration"] === "0"}>
             <Form.Label>

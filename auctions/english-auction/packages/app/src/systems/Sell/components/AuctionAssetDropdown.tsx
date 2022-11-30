@@ -36,6 +36,9 @@ export const AuctionAssetDropdown = ({
   // Set the initial asset text
   useEffect(() => {
     const text = getAssetText();
+    if (!!assets) {
+      onChange(false, assets[0].assetId);
+    }
     setAssetText(text);
   }, [assets]);
 
