@@ -1,20 +1,22 @@
 import { Dropdown, Button, Icon } from "@fuel-ui/react";
-import { NativeAssetId } from "fuels";
+import { CoinQuantityLike, NativeAssetId } from "fuels";
 import type { CoinQuantity } from "fuels";
 import { useEffect, useState } from "react";
 import { useAssets } from "~/systems/Core/hooks/useAssets";
 
 interface AuctionAssetDropdownProps {
   onChange: (isNFT: boolean, assetKey: string) => void;
+  assets: CoinQuantity[]
 }
 
 export const AuctionAssetDropdown = ({
   onChange,
+  assets,
 }: AuctionAssetDropdownProps) => {
   const [assetIcon, setAssetIcon] = useState("Coin");
   const [assetText, setAssetText] = useState("Token");
 
-  const assets = useAssets();
+  //const assets = useAssets();
 
   const getTokenText = (assetId: string) => {
     return assetId === NativeAssetId ? "ETH" : "Token";
@@ -36,9 +38,9 @@ export const AuctionAssetDropdown = ({
   // Set the initial asset text
   useEffect(() => {
     const text = getAssetText();
-    if (!!assets) {
-      onChange(false, assets[0].assetId);
-    }
+    // if (!!assets) {
+    //   onChange(false, assets[0].assetId);
+    // }
     setAssetText(text);
   }, [assets]);
 

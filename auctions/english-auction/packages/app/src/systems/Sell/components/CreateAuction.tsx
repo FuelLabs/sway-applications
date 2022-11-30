@@ -5,69 +5,83 @@ import { useState } from "react";
 import { useCreateAuction } from "../hooks/useCreateAuction";
 import { AuctionAssetDropdown } from "./AuctionAssetDropdown";
 
-import { AuctionAssetInput } from "./AuctionAssetInput";
+import { SellAuctionAssetInput } from "./SellAuctionAssetInput";
 import { BidAuctionAssetInput } from "./BidAuctionAssetInput";
+import { useAssets } from "~/systems/Core/hooks/useAssets";
 
 export const CreateAuction = () => {
   const [hasReservePrice, setHasReservePrice] = useState(false);
+
+  // Get initial asset ids for the bid and sell assets
+  const assets = useAssets();
+
+  const getInitialAssetId = () => {
+    if (!!assets && assets.length > 0) {
+      return assets[0].assetId;
+    }
+    return "";
+  }
+
+  const initialAssetId = getInitialAssetId();
+
   const [auctionValues, setAuctionValues] = useState<{
     assetIdBid: string;
     assetAmountBid: string;
-    tokenIdBid: string;
-    tokenTypeBid: string;
+    nftTokenIdBid: string;
+    nftAssetIdBid: string;
     duration: string;
     initialPrice: string;
     reservePrice: string;
     seller: string;
     assetIdSell: string;
     assetAmountSell: string;
-    tokenIdSell: string;
-    tokenTypeSell: string;
+    nftTokenIdSell: string;
+    nftAssetIdSell: string;
   }>({
-    assetIdBid: "",
+    assetIdBid: initialAssetId,
     assetAmountBid: "",
-    tokenIdBid: "",
-    tokenTypeBid: "",
+    nftTokenIdBid: "",
+    nftAssetIdBid: "",
     duration: "",
     initialPrice: "",
     reservePrice: "",
     seller: "",
-    assetIdSell: "",
+    assetIdSell: initialAssetId,
     assetAmountSell: "",
-    tokenIdSell: "",
-    tokenTypeSell: "",
+    nftTokenIdSell: "",
+    nftAssetIdSell: "",
   });
 
   // TODO refactor: figure out how to make this look nicer
   const createAuctionMutation = useCreateAuction({
-    bidAsset: !auctionValues.assetIdBid
+    bidAsset: !auctionValues.nftAssetIdBid
       ? {
         TokenAsset: {
           amount: bn(0),
-          asset_id: { value: auctionValues.tokenTypeBid },
+          asset_id: { value: auctionValues.assetIdBid },
         },
       }
       : {
         NFTAsset: {
           token_id: bn(0),
-          asset_id: { value: auctionValues.assetIdBid },
+          asset_id: { value: auctionValues.nftAssetIdBid },
         },
       },
     duration: auctionValues.duration,
     initialPrice: bn.parseUnits(auctionValues.initialPrice, DECIMAL_UNITS),
     reservePrice: bn.parseUnits(auctionValues.reservePrice.length ? auctionValues.reservePrice : "0", DECIMAL_UNITS),
     sellerAddress: auctionValues.seller,
-    sellAsset: !auctionValues.assetIdSell
+    sellAsset: !auctionValues.nftAssetIdSell
       ? {
         TokenAsset: {
           amount: bn.parseUnits(auctionValues.assetAmountSell, DECIMAL_UNITS),
-          asset_id: { value: auctionValues.tokenTypeSell },
+          asset_id: { value: auctionValues.assetIdSell },
         },
       }
       : {
         NFTAsset: {
-          token_id: auctionValues.tokenIdSell,
-          asset_id: { value: auctionValues.assetIdSell },
+          token_id: auctionValues.nftTokenIdSell,
+          asset_id: { value: auctionValues.nftAssetIdSell },
         },
       },
   });
@@ -79,7 +93,7 @@ export const CreateAuction = () => {
   // TODO fix: doesn't account for invalid inputs
   // TODO fix: doesn't account for bid asset input
   const canCreateAuction = () => {
-    const isSellAssetFilled = !!auctionValues.assetAmountSell.length || (!!auctionValues.assetIdSell.length && !!auctionValues.tokenIdSell.length);
+    const isSellAssetFilled = !!auctionValues.assetAmountSell.length || (!!auctionValues.assetIdSell.length && !!auctionValues.nftTokenIdSell.length);
     const isReservePriceFilled = !hasReservePrice || !!auctionValues.reservePrice.length;
     return (
       !createAuctionMutation.isLoading &&
@@ -108,15 +122,15 @@ export const CreateAuction = () => {
             </Input>
           </Form.Control>
 
-          <AuctionAssetInput
+          <SellAuctionAssetInput
+            assets={assets!}
             nftContractIdFormLabel="Sell NFT Contract Id"
             tokenAmountLabel="Sell Asset Amount"
             nftIdFormLabel="Sell NFT Id"
             onChange={handleInputChange}
-            tokenIdValue={auctionValues!.tokenIdSell}
+            nftTokenIdValue={auctionValues!.nftTokenIdSell}
             assetAmountValue={auctionValues!.assetAmountSell}
-            assetIdValue={auctionValues!.assetIdSell}
-            id="Sell"
+            nftAssetIdValue={auctionValues!.nftAssetIdSell}
           />
 
           <Form.Control isRequired isInvalid={parseFloat(auctionValues["initialPrice"]) === 0}>
@@ -161,7 +175,7 @@ export const CreateAuction = () => {
           </Form.Control>
           }
 
-          <BidAuctionAssetInput onChange={handleInputChange} assetIdValue={auctionValues!.assetIdBid} />
+          <BidAuctionAssetInput assets={assets!} onChange={handleInputChange} nftAssetIdValue={auctionValues!.nftAssetIdBid} />
 
           <Form.Control isRequired isInvalid={auctionValues["duration"] === "0"}>
             <Form.Label>

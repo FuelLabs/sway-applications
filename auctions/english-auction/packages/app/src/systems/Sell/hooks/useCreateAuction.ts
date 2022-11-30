@@ -35,8 +35,8 @@ export function useCreateAuction({
       const seller: IdentityInput = {
         Address: { value: Address.fromString(sellerAddress).toHexString() },
       };
-      console.log("bid", bidAsset.TokenAsset?.asset_id);
-      console.log("sell", sellAsset.TokenAsset?.asset_id);
+      console.log("bid", bidAsset);
+      console.log("sell", sellAsset);
       const result = await contract?.functions
         .create(bidAsset, duration, initialPrice, reservePrice, seller, sellAsset)
         .callParams({ forward: callParams })

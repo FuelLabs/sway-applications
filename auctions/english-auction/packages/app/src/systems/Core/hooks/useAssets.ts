@@ -7,7 +7,7 @@ export const useAssets = () => {
   const { data: balances } = useQuery(
     ['balances'],
     async () => {
-      const temp = await wallet.getBalances();
+      const temp = await wallet!.getBalances();
       return temp;
     },
     {
