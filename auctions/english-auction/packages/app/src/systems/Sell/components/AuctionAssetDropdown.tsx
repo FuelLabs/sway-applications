@@ -1,8 +1,7 @@
 import { Dropdown, Button, Icon } from "@fuel-ui/react";
-import { CoinQuantityLike, NativeAssetId } from "fuels";
+import { NativeAssetId } from "fuels";
 import type { CoinQuantity } from "fuels";
 import { useEffect, useState } from "react";
-import { useAssets } from "~/systems/Core/hooks/useAssets";
 
 interface AuctionAssetDropdownProps {
   onChange: (isNFT: boolean, assetKey: string) => void;

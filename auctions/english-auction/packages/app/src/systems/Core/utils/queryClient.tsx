@@ -17,6 +17,7 @@ const panicError = (msg: string) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function handleError(error: any) {
   const msg = error?.message;
+  console.log("here", msg);
   toast.error(msg?.includes("Panic") ? panicError(msg) : msg, {
     duration: 100000000,
     id: msg,

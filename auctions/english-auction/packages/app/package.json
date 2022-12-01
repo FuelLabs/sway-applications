@@ -44,7 +44,7 @@
     "decimal.js": "^10.3.1",
     "ethers": "^5.6.9",
     "framer-motion": "^6.3.15",
-    "fuels": "^0.21.0",
+    "fuels": "^0.22.2",
     "graphql": "^16.5.0",
     "graphql-request": "^4.3.0",
     "jotai": "^1.7.2",

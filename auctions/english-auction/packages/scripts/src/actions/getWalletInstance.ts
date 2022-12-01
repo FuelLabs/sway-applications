@@ -8,7 +8,10 @@ export async function getWalletInstance() {
   if (WALLET_SECRET) {
     log('WALLET_SECRET detected');
     if (WALLET_SECRET.includes(" ")) {
-      return Wallet.fromMnemonic(WALLET_SECRET, PROVIDER_URL);
+      // TODO: refactor once we can pass in the provider url directly
+      const wallet = Wallet.fromMnemonic(WALLET_SECRET);
+      wallet.provider = new Provider(PROVIDER_URL!);
+      return wallet;
     }
     return Wallet.fromPrivateKey(WALLET_SECRET, PROVIDER_URL);
   }

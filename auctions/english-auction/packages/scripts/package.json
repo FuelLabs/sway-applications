@@ -17,11 +17,11 @@
     "commander": "^9.4.0",
     "debug": "^4.3.4",
     "esbuild": "^0.14.54",
-    "fuelchain": "^0.21.0",
-    "fuels": "0.21.0",
+    "fuelchain": "^0.22.2",
+    "fuels": "0.22.2",
     "joycon": "^3.1.1",
     "prettier": "^2.7.1",
-    "typechain-target-fuels": "0.21.0",
+    "typechain-target-fuels": "0.22.2",
     "typescript": "^4.8.3"
   },
   "devDependencies": {

@@ -3,7 +3,6 @@ import { bn, DECIMAL_UNITS } from "fuels";
 import { useEffect, useState } from "react";
 
 import { useCreateAuction } from "../hooks/useCreateAuction";
-import { AuctionAssetDropdown } from "./AuctionAssetDropdown";
 
 import { SellAuctionAssetInput } from "./SellAuctionAssetInput";
 import { BidAuctionAssetInput } from "./BidAuctionAssetInput";
@@ -16,7 +15,6 @@ export const CreateAuction = () => {
   const assets = useAssets();
 
   const getInitialAssetId = () => {
-    console.log(assets);
     if (!!assets && assets.length > 0) {
       return assets[0].assetId;
     }
@@ -77,7 +75,7 @@ export const CreateAuction = () => {
       },
     duration: auctionValues.duration,
     initialPrice: bn.parseUnits(auctionValues.initialPrice, DECIMAL_UNITS),
-    reservePrice: bn.parseUnits(auctionValues.reservePrice.length ? auctionValues.reservePrice : "0", DECIMAL_UNITS),
+    reservePrice: !!auctionValues.reservePrice.length ? bn.parseUnits(auctionValues.reservePrice, DECIMAL_UNITS) : undefined,
     sellerAddress: auctionValues.seller,
     sellAsset: !auctionValues.nftAssetIdSell
       ? {
