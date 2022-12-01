@@ -28,12 +28,12 @@ export default createConfig({
   contracts: [
     {
       name: 'VITE_TOKEN_ID',
-      path: './packages/contracts/english-auction',
+      path: './packages/contracts',
       options: getDeployOptions(),
     },
     {
       name: 'VITE_CONTRACT_ID',
-      path: './packages/contracts/english-auction/tests/artifacts/asset',
+      path: './packages/contracts',
       options: getDeployOptions(),
     },
   ],

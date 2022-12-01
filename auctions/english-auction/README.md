@@ -9,21 +9,20 @@
 
 An English Auction is where a seller auctions off an asset with an initial price and a reserve price. Users will then begin bidding on the asset until the bidding period has ended or the reserve has been met. Upon completion, users will withdraw either their original deposits or their newly purchased assets depending on the outcome.
 
-The English Auction application implements this idea in a decentralized manner without the need for a 3rd party and with strong settlement assurances. The application has been designed to utilize native assets and NFTs enabling users to auction off native assets / NFTs and place bids using native assets / NFTs.
+The English Auction application implements this idea in a decentralized manner without the need for a 3rd party and with strong settlement assurances. The application has been designed to utilize native assets and NFTs enabling users to auction off native assets / NFTs and place bids using native assets / NFTs. 
 
 More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Repository Structure
 
-The project consists of a smart contract and a user interface which the user can interact with.
+The project consists of a smart contract.
 
 ```
 english-auction/
-├── contract/
-|    └── src/main.sw
-|    └── tests/harness.rs
-├── frontend/
-|    └── Directories & files
+├── project/
+|   └── auction-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
 ├── README.md
 └── SPECIFICATION.md
 ```
@@ -36,27 +35,19 @@ TODO: UI does not currently exist
 
 ### Tests
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/english-auction/<you are here>`
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/auctions/english-auction/<you are here>`
 
-There are three commands required to run the tests
+Build the contracts:
 
-1. Build the native token asset used for selling and bidding in the auction
+```bash
+forc build
+```
 
-   ```bash
-   forc build --path tests/artifacts/asset
-   ```
+Run the tests:
 
-1. Build the NFT asset used for selling and bidding in the auction
-
-   ```bash
-   forc build --path ../../NFT/
-   ```
-
-1. Run the tests
-
-   ```bash
-   forc test
-   ```
+```bash
+cargo test
+```
 
 ## Specification
 

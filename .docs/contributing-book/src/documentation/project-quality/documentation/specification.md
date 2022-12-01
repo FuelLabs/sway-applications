@@ -4,7 +4,7 @@ A specification is a document which outlines the requirements and design of the 
 
 For simplicity, a specification can be broken into two levels of detail and the one you choose depends on your target audiance.
 
-## Non-techincal specification
+## Non-technical specification
 
 A non-technical specification is aimed at an audience that may not have the expertise in an area to appreciate the technical challenges involved in achieving the goals and thus it can be seen as an overview or summary.
 

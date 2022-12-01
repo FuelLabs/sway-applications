@@ -36,7 +36,7 @@ The repository follows the pattern of putting utility functions in `mod.rs` and 
 
 ### `harness.rs`
 
-This file is the one that is called by `forc test` and thus it only contains the modules `functions` and `utils` in order to bring them into scope so that the tests can run.
+The `harness` file is the entry point for the tests, and thus it contains the `functions` and `utils` modules. This is what is executed when `cargo test` is run.
 
 ## Testing Suggestions
 
