@@ -46,7 +46,7 @@ pub mod abi_calls {
     ) -> CallResponse<u64> {
         contract
             .methods()
-            .add_liquidity(desired_liquidity, deadline, Option::None)
+            .add_liquidity(desired_liquidity, deadline)
             .call_params(call_params)
             .append_variable_outputs(2)
             .tx_params(tx_params)

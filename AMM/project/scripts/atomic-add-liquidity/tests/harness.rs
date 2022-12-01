@@ -182,7 +182,6 @@ async fn adds_when_neither_asset_is_base_asset() {
             ContractId::new(*exchange.pair.1),
             amounts.asset_a_deposit,
             amounts.asset_b_deposit,
-            wallet.address().into(),
         )
         .with_inputs(vec![input_contract, input_a, input_b])
         .with_outputs(vec![
@@ -198,7 +197,7 @@ async fn adds_when_neither_asset_is_base_asset() {
     assert_eq!(added_liquidity, amounts.liquidity);
 }
 
-// TODO (supiket): when one of the assets being added is the base asset, the built transaction is not valid. find out why.
+// TODO (supiket): when one of the assets being added is the base asset, the built transaction is not valid because of duplicate asset.
 #[ignore]
 #[tokio::test]
 async fn adds_when_one_of_the_assets_is_base_asset() {}

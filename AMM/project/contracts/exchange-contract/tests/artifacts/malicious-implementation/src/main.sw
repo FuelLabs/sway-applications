@@ -20,7 +20,6 @@ impl Exchange for Contract {
     fn add_liquidity(
         desired_liquidity: u64,
         deadline: u64,
-        recipient: Option<Identity>,
     ) -> u64 {
         0
     }

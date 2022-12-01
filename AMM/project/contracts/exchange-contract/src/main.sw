@@ -61,7 +61,6 @@ impl Exchange for Contract {
     fn add_liquidity(
         desired_liquidity: u64,
         deadline: u64,
-        recipient: Option<Identity>,
     ) -> u64 {
         require(storage.pair.is_some(), InitError::NotInitialized);
         require(deadline > height(), InputError::DeadlinePassed);
@@ -69,11 +68,8 @@ impl Exchange for Contract {
         require(MINIMUM_LIQUIDITY <= desired_liquidity, InputError::AmountTooLow(desired_liquidity));
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
-        let sender = if recipient.is_some() {
-            recipient.unwrap()
-        } else {
-            msg_sender().unwrap()
-        };
+        let sender = msg_sender().unwrap();
+
         let total_liquidity = storage.liquidity_pool_supply;
         let asset_a_in_deposit = storage.deposits.get((sender, asset_a_id));
         let asset_b_in_deposit = storage.deposits.get((sender, asset_b_id));

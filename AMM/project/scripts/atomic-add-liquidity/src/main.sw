@@ -9,7 +9,6 @@ fn main(
     asset_b_id: ContractId,
     asset_a_amount: u64,
     asset_b_amount: u64,
-    recipient: Address,
 ) -> u64 {
     let exchange_contract = abi(Exchange, exchange_contract_id.into());
     exchange_contract.deposit {
@@ -31,5 +30,5 @@ fn main(
     exchange_contract.add_liquidity {
         gas: 1_000_000,
         coins: 0,
-    }(min_liquidity, deadline, Option::Some(Identity::Address(recipient)))
+    }(min_liquidity, deadline)
 }
