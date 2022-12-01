@@ -8,7 +8,10 @@ use fuels::{
     tx::{AssetId, ContractId, Input, TxPointer},
 };
 use paths::SCRIPT_BINARY_PATH;
-use test_helpers::setup;
+use test_helpers::{
+    setup, transaction_input_coin, transaction_input_contract, transaction_output_contract,
+    transaction_output_variable,
+};
 
 script_abigen!(
     AtomicAddLiquidityScript,
@@ -57,6 +60,59 @@ pub mod test_helpers {
     use super::*;
     use exchange_abi_calls::constructor;
     use paths::EXCHANGE_CONTRACT_BINARY_PATH;
+
+    pub async fn transaction_input_coin(
+        provider: &Provider,
+        from: &Bech32Address,
+        asset_id: AssetId,
+        amount: u64,
+    ) -> Input {
+        let coin = &provider
+            .get_spendable_resources(from, asset_id, amount)
+            .await
+            .unwrap()[0];
+
+        let (coin_utxo_id, coin_amount) = match coin {
+            Resource::Coin(coin) => (coin.utxo_id.clone(), coin.amount.clone()),
+            _ => panic!(),
+        };
+
+        Input::CoinSigned {
+            utxo_id: coin_utxo_id.into(),
+            owner: Address::from(from),
+            amount: coin_amount.into(),
+            asset_id: asset_id,
+            tx_pointer: TxPointer::default(),
+            witness_index: 0,
+            maturity: 0,
+        }
+    }
+
+    pub fn transaction_input_contract(contract_id: ContractId) -> Input {
+        Input::Contract {
+            utxo_id: UtxoId::new(Bytes32::zeroed(), 0),
+            balance_root: Bytes32::zeroed(),
+            state_root: Bytes32::zeroed(),
+            tx_pointer: TxPointer::default(),
+            contract_id,
+        }
+    }
+
+    pub fn transaction_output_contract(input_index: u8) -> Output {
+        Output::Contract {
+            input_index,
+            balance_root: Bytes32::zeroed(),
+            state_root: Bytes32::zeroed(),
+        }
+    }
+
+    pub fn transaction_output_variable() -> Output {
+        Output::Variable {
+            amount: 0,
+            to: Address::zeroed(),
+            asset_id: AssetId::default(),
+        }
+    }
 
     pub async fn setup_wallet_and_provider() -> (WalletUnlocked, Vec<AssetId>, Provider) {
         let mut wallet = WalletUnlocked::new_random(None);
@@ -117,63 +173,23 @@ async fn adds_when_neither_asset_is_base_asset() {
     let (wallet, provider, exchange, amounts) = setup().await;
     let script_instance = AtomicAddLiquidityScript::new(wallet.clone(), SCRIPT_BINARY_PATH);
 
-    let coin_a = &provider
-        .get_spendable_resources(&wallet.address(), exchange.pair.0, amounts.asset_a_deposit)
-        .await
-        .unwrap()[0];
-    let (coin_a_utxo_id, coin_a_amount) = match coin_a {
-        Resource::Coin(coin) => (coin.utxo_id.clone(), coin.amount.clone()),
-        _ => panic!(),
-    };
-
-    let input_a = Input::CoinSigned {
-        utxo_id: coin_a_utxo_id.into(),
-        owner: Address::from(wallet.address()),
-        amount: coin_a_amount.into(),
-        asset_id: exchange.pair.0,
-        tx_pointer: TxPointer::default(),
-        witness_index: 0,
-        maturity: 0,
-    };
-
-    let coin_b = &provider
-        .get_spendable_resources(&wallet.address(), exchange.pair.1, amounts.asset_b_deposit)
-        .await
-        .unwrap()[0];
-    let (coin_b_utxo_id, coin_b_amount) = match coin_b {
-        Resource::Coin(coin) => (coin.utxo_id.clone(), coin.amount.clone()),
-        _ => panic!(),
-    };
-
-    let input_b = Input::CoinSigned {
-        utxo_id: coin_b_utxo_id.into(),
-        owner: Address::from(wallet.address()),
-        amount: coin_b_amount.into(),
-        asset_id: exchange.pair.1,
-        tx_pointer: TxPointer::default(),
-        witness_index: 0,
-        maturity: 0,
-    };
-
-    let input_contract = Input::Contract {
-        utxo_id: UtxoId::new(Bytes32::zeroed(), 0),
-        balance_root: Bytes32::zeroed(),
-        state_root: Bytes32::zeroed(),
-        tx_pointer: TxPointer::default(),
-        contract_id: exchange.id,
-    };
-
-    let output_contract = Output::Contract {
-        input_index: 0,
-        balance_root: Bytes32::zeroed(),
-        state_root: Bytes32::zeroed(),
-    };
-
-    let output_variable = Output::Variable {
-        amount: 0,
-        to: Address::zeroed(),
-        asset_id: AssetId::default(),
-    };
+    let input_a = transaction_input_coin(
+        &provider,
+        wallet.address(),
+        exchange.pair.0,
+        amounts.asset_a_deposit,
+    )
+    .await;
+    let input_b = transaction_input_coin(
+        &provider,
+        wallet.address(),
+        exchange.pair.1,
+        amounts.asset_b_deposit,
+    )
+    .await;
+    let input_contract = transaction_input_contract(exchange.id);
+    let output_contract = transaction_output_contract(0);
+    let output_variable = transaction_output_variable();
 
     let added_liquidity = script_instance
         .main(
