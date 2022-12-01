@@ -58,10 +58,7 @@ storage {
 
 impl Exchange for Contract {
     #[storage(read, write)]
-    fn add_liquidity(
-        desired_liquidity: u64,
-        deadline: u64,
-    ) -> u64 {
+    fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64 {
         require(storage.pair.is_some(), InitError::NotInitialized);
         require(deadline > height(), InputError::DeadlinePassed);
         require(msg_amount() == 0, InputError::AmountMustBeZero);

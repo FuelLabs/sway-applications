@@ -155,9 +155,16 @@ pub mod test_helpers {
         }
     }
 
-    pub async fn setup() -> (WalletUnlocked, Provider, MetaExchange, MetaAmounts) {
+    pub async fn setup(
+        with_base_asset: bool,
+    ) -> (WalletUnlocked, Provider, MetaExchange, MetaAmounts) {
         let (wallet, asset_ids, provider) = setup_wallet_and_provider().await;
-        let asset_pair = (*asset_ids.get(0).unwrap(), *asset_ids.get(1).unwrap());
+        let asset_pair = if with_base_asset {
+            // the asset with index 2 of asset_ids is the base asset
+            (*asset_ids.get(1).unwrap(), *asset_ids.get(2).unwrap())
+        } else {
+            (*asset_ids.get(0).unwrap(), *asset_ids.get(1).unwrap())
+        };
         let exchange = setup_exchange_contract(wallet.clone(), &asset_pair).await;
         let amounts = MetaAmounts {
             asset_a_deposit: 100,
@@ -170,7 +177,7 @@ pub mod test_helpers {
 
 #[tokio::test]
 async fn adds_when_neither_asset_is_base_asset() {
-    let (wallet, provider, exchange, amounts) = setup().await;
+    let (wallet, provider, exchange, amounts) = setup(false).await;
     let script_instance = AtomicAddLiquidityScript::new(wallet.clone(), SCRIPT_BINARY_PATH);
 
     let input_a = transaction_input_coin(
@@ -214,6 +221,47 @@ async fn adds_when_neither_asset_is_base_asset() {
 }
 
 // TODO (supiket): when one of the assets being added is the base asset, the built transaction is not valid because of duplicate asset.
-#[ignore]
 #[tokio::test]
-async fn adds_when_one_of_the_assets_is_base_asset() {}
+async fn adds_when_one_of_the_assets_is_base_asset() {
+    let (wallet, provider, exchange, amounts) = setup(true).await;
+    let script_instance = AtomicAddLiquidityScript::new(wallet.clone(), SCRIPT_BINARY_PATH);
+
+    let input_a = transaction_input_coin(
+        &provider,
+        wallet.address(),
+        exchange.pair.0,
+        amounts.asset_a_deposit,
+    )
+    .await;
+    let input_b = transaction_input_coin(
+        &provider,
+        wallet.address(),
+        exchange.pair.1,
+        amounts.asset_b_deposit,
+    )
+    .await;
+    let input_contract = transaction_input_contract(exchange.id);
+    let output_contract = transaction_output_contract(0);
+    let output_variable = transaction_output_variable();
+
+    let added_liquidity = script_instance
+        .main(
+            exchange.id,
+            ContractId::new(*exchange.pair.0),
+            ContractId::new(*exchange.pair.1),
+            amounts.asset_a_deposit,
+            amounts.asset_b_deposit,
+        )
+        .with_inputs(vec![input_contract, input_a, input_b])
+        .with_outputs(vec![
+            output_contract,
+            output_variable.clone(),
+            output_variable,
+        ])
+        .call()
+        .await
+        .unwrap()
+        .value;
+
+    assert_eq!(added_liquidity, amounts.liquidity);
+}

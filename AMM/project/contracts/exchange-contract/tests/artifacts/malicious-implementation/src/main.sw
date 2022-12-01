@@ -17,10 +17,7 @@ storage {
 
 impl Exchange for Contract {
     #[storage(read, write)]
-    fn add_liquidity(
-        desired_liquidity: u64,
-        deadline: u64,
-    ) -> u64 {
+    fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64 {
         0
     }
 
