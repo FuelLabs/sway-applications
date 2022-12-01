@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
 import { CONTRACT_ID } from '~/config';
-import { EnglishAuctionAbi__factory } from '~/types/contracts';
+import { AuctionContractAbi__factory } from '~/types/contracts';
 import { useWallet } from './useWallet';
 
 export const useContract = () => {
@@ -10,7 +10,7 @@ export const useContract = () => {
     () => {
       // Connects our contract instance to the deployed contract
       // using the given wallet.
-      return EnglishAuctionAbi__factory.connect(CONTRACT_ID, wallet!);
+      return AuctionContractAbi__factory.connect(CONTRACT_ID, wallet!);
     },
     {
       enabled: !!wallet,

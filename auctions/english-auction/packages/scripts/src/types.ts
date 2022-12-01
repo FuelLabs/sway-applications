@@ -36,7 +36,8 @@ export type OptionsFunction = (contracts: Array<ContractDeployed>) => DeployCont
 
 export type ContractConfig = {
   name: string;
-  path: string;
+  buildPath: string;
+  deployPath: string | undefined;
   options?: DeployContractOptions | OptionsFunction;
 };
 

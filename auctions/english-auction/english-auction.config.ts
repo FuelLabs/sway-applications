@@ -28,12 +28,20 @@ export default createConfig({
   contracts: [
     {
       name: 'VITE_TOKEN_ID',
-      path: './packages/contracts',
+      buildPath: './packages/contracts',
+      deployPath: './packages/contracts/english-auction/project/auction-contract/tests/artifacts/asset',
       options: getDeployOptions(),
     },
     {
       name: 'VITE_CONTRACT_ID',
-      path: './packages/contracts',
+      buildPath: './packages/contracts',
+      deployPath: './packages/contracts/english-auction/project/auction-contract',
+      options: getDeployOptions(),
+    },
+    {
+      name: 'VITE_NFT_ID',
+      buildPath: './packages/contracts',
+      deployPath: '../../NFT/project/NFT-contract',
       options: getDeployOptions(),
     },
   ],
