@@ -12,12 +12,10 @@ mod success {
     async fn gets_max_supply() {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
-        assert_eq!(max_supply(&owner1.contract).await, 0);
+        assert_eq!(max_supply(&owner1.contract).await, None);
 
-        // constructor(false, &deploy_wallet.contract, &Option::None(), 10).await;
-        let admin = Identity::Address(owner1.wallet.address().into());
-        constructor(true, &deploy_wallet.contract, &admin, 10).await;
+        constructor(None, &deploy_wallet.contract, Some(10)).await;
 
-        assert_eq!(max_supply(&owner1.contract).await, 10);
+        assert_eq!(max_supply(&owner1.contract).await, Some(10));
     }
 }
