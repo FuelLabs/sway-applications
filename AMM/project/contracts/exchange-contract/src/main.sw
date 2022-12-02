@@ -66,7 +66,6 @@ impl Exchange for Contract {
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
         let sender = msg_sender().unwrap();
-
         let total_liquidity = storage.liquidity_pool_supply;
         let asset_a_in_deposit = storage.deposits.get((sender, asset_a_id));
         let asset_b_in_deposit = storage.deposits.get((sender, asset_b_id));
