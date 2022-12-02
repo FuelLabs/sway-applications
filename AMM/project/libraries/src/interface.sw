@@ -120,7 +120,7 @@ abi Exchange {
     /// * When the `msg_amount` with function call is 0
     /// * When `min_output` is provided and is lower than the output amount
     #[storage(read, write)]
-    fn swap_with_exact_input(min_output: Option<u64>, deadline: u64) -> u64;
+    fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64;
 
     /// Swap forwarded asset for `exact_output_amount` of other asset and transfer to sender.
     ///
@@ -140,7 +140,7 @@ abi Exchange {
     /// * When the `msg_amount` with function call is 0
     /// * When the `msg_amount` is insufficient for swap
     #[storage(read, write)]
-    fn swap_with_exact_output(output: u64, deadline: u64) -> u64;
+    fn swap_exact_output(output: u64, deadline: u64) -> u64;
 
     /// Withdraw coins that have not been added to a liquidity pool yet.
     ///
@@ -201,7 +201,7 @@ abi Exchange {
     #[storage(read)]
     fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo;
 
-    /// Get the preview info of a `swap_with_exact_input`.
+    /// Get the preview info of a `swap_exact_input`.
     ///
     /// The preview info while swapping `exact_input` of input asset consists of:
     /// - The minimum amount of output asset to receive,
@@ -215,9 +215,9 @@ abi Exchange {
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     /// * When the `msg_asset_id` does not identify asset A or asset B
     #[storage(read)]
-    fn preview_swap_with_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo;
+    fn preview_swap_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo;
 
-    /// Get the preview info of a `swap_with_exact_output`.
+    /// Get the preview info of a `swap_exact_output`.
     ///
     /// The preview info while swapping to get `exact_output` amount of output asset consists of:
     /// - The maximum amount of input asset to forward,
@@ -234,5 +234,5 @@ abi Exchange {
     /// * When the `msg_asset_id` does not identify asset A or asset B
     /// * When the `exact_output` is less than the reserve amount of the output asset
     #[storage(read)]
-    fn preview_swap_with_exact_output(exact_output: u64, output_asset: ContractId) -> PreviewSwapInfo;
+    fn preview_swap_exact_output(exact_output: u64, output_asset: ContractId) -> PreviewSwapInfo;
 }
