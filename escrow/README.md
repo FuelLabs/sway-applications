@@ -15,17 +15,16 @@ For this application, the on-chain asset can be any native asset on the Fuel Net
 
 ## Project Structure
 
-The project consists of a smart contract and a user interface which the user can interact with.
+The project consists of a smart contract.
 
 <!--Only show most important files e.g. script to run, build etc.-->
 
 ```
 escrow/
-├── contract/
-|    └── src/main.sw
-|    └── tests/harness.rs
-├── frontend/
-|    └── Directories & files
+├── project/
+|   └── escrow-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
 ├── README.md
 └── SPECIFICATION.md
 ```
@@ -40,19 +39,17 @@ TODO: UI does not currently exist
 
 In order to run the tests make sure that you are in the root of this project i.e. `/path/to/escrow/<you are here>`
 
-There are two commands required to run the tests
+Build the contracts:
 
-1. Build the asset used for depositing into the escrow
-   
-   ```bash
-   forc build --path tests/artifacts/asset/
-   ```
+```bash
+forc build
+```
 
-2. Run the tests
+Run the tests:
 
-   ```bash
-   forc test
-   ```
+```bash
+cargo test
+```
 
 ## Specification
 

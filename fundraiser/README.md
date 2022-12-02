@@ -13,17 +13,16 @@ In this case the pledged asset is a native asset on the Fuel network. More infor
 
 ## Project Structure
 
-The project consists of a smart contract and a user interface which the user can interact with.
+The project consists of a smart contract.
 
 <!--Only show most important files e.g. script to run, build etc.-->
 
 ```
 fundraiser/
-├── contract/
-|    └── src/main.sw
-|    └── tests/harness.rs
-├── frontend/
-|    └── Directories & files
+├── project/
+|   └── fundraiser-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
 ├── README.md
 └── SPECIFICATION.md
 ```
@@ -38,19 +37,17 @@ TODO: UI does not currently exist
 
 In order to run the tests make sure that you are in the root of this project i.e. `/path/to/fundraiser/<you are here>`
 
-There are two commands required to run the tests
+Build the contracts:
 
-1. Build the asset used for depositing into the fundraiser
-   
-   ```bash
-   forc build --path tests/artifacts/asset/
-   ```
+```bash
+forc build
+```
 
-2. Run the tests
+Run the tests:
 
-   ```bash
-   forc test
-   ```
+```bash
+cargo test
+```
 
 ## Specification
 
