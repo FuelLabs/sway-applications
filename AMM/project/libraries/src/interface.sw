@@ -201,7 +201,7 @@ abi Exchange {
     #[storage(read)]
     fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo;
 
-    /// Get the preview info of a `swap_exact_input`.
+    /// Get information about the output asset for a `swap_exact_input` without doing the swap operation.
     ///
     /// The preview info while swapping `exact_input` of input asset consists of:
     /// - The minimum amount of output asset to receive,
@@ -217,7 +217,7 @@ abi Exchange {
     #[storage(read)]
     fn preview_swap_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo;
 
-    /// Get the preview info of a `swap_exact_output`.
+    /// Get information about the input asset for a `swap_exact_output` without doing the swap operation.
     ///
     /// The preview info while swapping to get `exact_output` amount of output asset consists of:
     /// - The maximum amount of input asset to forward,
