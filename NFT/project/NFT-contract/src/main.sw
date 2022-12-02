@@ -105,7 +105,7 @@ impl NFT for Contract {
     fn mint(amount: u64, to: Identity) {
         require(storage.state == State::Initialize, InitError::NotInitialized);
         require(admin().is_none() || (msg_sender().unwrap() == admin().unwrap()), AccessError::SenderNotAdmin);
-        require(max_supply().is_none() || (tokens_minted() <= max_supply().unwrap()), AccessError::MaxTokensMinted);
+        require(max_supply().is_none() || (tokens_minted() + amount <= max_supply().unwrap()), AccessError::MaxTokensMinted);
 
         mint(amount, to);
 
