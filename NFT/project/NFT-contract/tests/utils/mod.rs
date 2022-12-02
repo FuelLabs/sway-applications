@@ -2,7 +2,7 @@ use fuels::{contract::contract::CallResponse, prelude::*};
 
 abigen!(
     Nft,
-    "./project/NFT-contract/out/debug/NFT-contract-abi.json"
+    "./project/NFT-contract/out/debug/NFT-abi.json"
 );
 
 pub struct Metadata {
@@ -11,19 +11,19 @@ pub struct Metadata {
 }
 
 pub mod paths {
-    pub const NFT_CONTRACT_BINARY_PATH: &str = "./out/debug/NFT-contract.bin";
-    pub const NFT_CONTRACT_STORAGE_PATH: &str = "./out/debug/NFT-contract-storage_slots.json";
+    pub const NFT_CONTRACT_BINARY_PATH: &str = "./out/debug/NFT.bin";
+    pub const NFT_CONTRACT_STORAGE_PATH: &str = "./out/debug/NFT-storage_slots.json";
 }
 
 pub mod abi_calls {
 
     use super::*;
 
-    pub async fn admin(contract: &Nft) -> Identity {
+    pub async fn admin(contract: &Nft) -> Option<Identity> {
         contract.methods().admin().call().await.unwrap().value
     }
 
-    pub async fn approve(approved: &Identity, contract: &Nft, token_id: u64) -> CallResponse<()> {
+    pub async fn approve(approved: Option<Identity>, contract: &Nft, token_id: u64) -> CallResponse<()> {
         contract
             .methods()
             .approve(approved.clone(), token_id)
@@ -32,7 +32,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn approved(contract: &Nft, token_id: u64) -> Identity {
+    pub async fn approved(contract: &Nft, token_id: u64) -> Option<Identity> {
         contract
             .methods()
             .approved(token_id)
@@ -42,7 +42,7 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn balance_of(contract: &Nft, wallet: &Identity) -> u64 {
+    pub async fn balance_of(contract: &Nft, wallet: Identity) -> u64 {
         contract
             .methods()
             .balance_of(wallet.clone())
@@ -57,14 +57,13 @@ pub mod abi_calls {
     }
 
     pub async fn constructor(
-        access_control: bool,
+        admin: Option<Identity>,
         contract: &Nft,
-        owner: &Identity,
-        token_supply: u64,
+        token_supply: Option<u64>,
     ) -> CallResponse<()> {
         contract
             .methods()
-            .constructor(access_control, owner.clone(), token_supply)
+            .constructor(admin.clone(), token_supply.clone())
             .call()
             .await
             .unwrap()
@@ -72,8 +71,8 @@ pub mod abi_calls {
 
     pub async fn is_approved_for_all(
         contract: &Nft,
-        operator: &Identity,
-        owner: &Identity,
+        operator: Identity,
+        owner: Identity,
     ) -> bool {
         contract
             .methods()
@@ -84,11 +83,11 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn max_supply(contract: &Nft) -> u64 {
+    pub async fn max_supply(contract: &Nft) -> Option<u64> {
         contract.methods().max_supply().call().await.unwrap().value
     }
 
-    pub async fn mint(amount: u64, contract: &Nft, owner: &Identity) -> CallResponse<()> {
+    pub async fn mint(amount: u64, contract: &Nft, owner: Identity) -> CallResponse<()> {
         contract
             .methods()
             .mint(amount, owner.clone())
@@ -97,17 +96,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn meta_data(contract: &Nft, token_id: u64) -> TokenMetaData {
-        contract
-            .methods()
-            .meta_data(token_id)
-            .call()
-            .await
-            .unwrap()
-            .value
-    }
-
-    pub async fn owner_of(contract: &Nft, token_id: u64) -> Identity {
+    pub async fn owner_of(contract: &Nft, token_id: u64) -> Option<Identity> {
         contract
             .methods()
             .owner_of(token_id)
@@ -120,7 +109,7 @@ pub mod abi_calls {
     pub async fn set_approval_for_all(
         approve: bool,
         contract: &Nft,
-        operator: &Identity,
+        operator: Identity,
     ) -> CallResponse<()> {
         contract
             .methods()
@@ -130,7 +119,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn set_admin(contract: &Nft, minter: &Identity) -> CallResponse<()> {
+    pub async fn set_admin(contract: &Nft, minter: Option<Identity>) -> CallResponse<()> {
         contract
             .methods()
             .set_admin(minter.clone())
@@ -139,25 +128,34 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn total_supply(contract: &Nft) -> u64 {
+    pub async fn token_metadata(contract: &Nft, token_id: u64) -> Option<TokenMetadata> {
         contract
             .methods()
-            .total_supply()
+            .token_metadata(token_id)
             .call()
             .await
             .unwrap()
             .value
     }
 
-    pub async fn transfer_from(
+    pub async fn tokens_minted(contract: &Nft) -> u64 {
+        contract
+            .methods()
+            .tokens_minted()
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+
+    pub async fn transfer(
         contract: &Nft,
-        from: &Identity,
-        to: &Identity,
+        to: Identity,
         token_id: u64,
     ) -> CallResponse<()> {
         contract
             .methods()
-            .transfer_from(from.clone(), to.clone(), token_id)
+            .transfer(to.clone(), token_id)
             .call()
             .await
             .unwrap()
