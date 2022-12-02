@@ -6,7 +6,7 @@ dep interface;
 
 use data_structures::{State, TokenMetadata};
 use errors::{AccessError, InitError};
-use interface::Custom;
+use interface::Auxiliary;
 use std::auth::msg_sender;
 use sway_libs::nft::{
     administrator::{
@@ -64,7 +64,7 @@ impl Burn for Contract {
     }
 }
 
-impl Custom for Contract {
+impl Auxiliary for Contract {
     #[storage(read, write)]
     fn constructor(new_admin: Option<Identity>, new_max_supply: Option<u64>) {
         require(storage.state == State::Uninitialize, InitError::CannotReinitialized);
