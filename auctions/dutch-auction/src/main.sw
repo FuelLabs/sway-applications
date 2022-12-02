@@ -27,29 +27,13 @@ storage {
     auctions_won: StorageMapVec<Identity, u64> = StorageMapVec {},
 }
 
-impl DutchAuction for Contract {
-    /// Returns the current price for the auction corresponding to the auction_id
-    ///
-    /// # Panics
-    ///
-    /// This function will panic when:
-    ///     1. auction_id is 0 or higher than storage.auction_count
+impl DutchAuction for Contract {  
     #[storage(read)]
     fn price(auction_id: u64) -> u64 {
         validate_id(auction_id, storage.auction_count);
         calculate_price(storage.auctions.get(auction_id))
     }
 
-    /// Bids on the specified auction
-    ///
-    /// # Panics
-    ///
-    /// This function will panic when:
-    ///     1. auction_id is 0 or greater than storage.auction_count
-    ///     2. auction has already ended
-    ///     3. current block height is lower than start_time, or higher than end_time
-    ///     4. Incorrect asset is sent to the auction
-    ///     5. The bid is less than the current price
     #[storage(read, write)]
     fn bid(auction_id: u64) {
         // In a Dutch auction the first bid wins
@@ -96,14 +80,6 @@ impl DutchAuction for Contract {
         });
     }
 
-    /// Creates a new auction
-    ///
-    /// # Panics
-    ///
-    /// This function will panic when:
-    ///     1. reserve_price is greater than opening_price
-    ///     2. block height is greater than end_time or start_time
-    ///     3. start_time is greater than end_time
     #[storage(read, write)]
     fn create_auction(
         opening_price: u64,
@@ -144,14 +120,6 @@ impl DutchAuction for Contract {
         });
     }
 
-    /// Cancels an auction preventing any bids from being placed
-    ///
-    /// # Panics
-    ///
-    /// This function will panic when:
-    ///     1. auction_id is 0 or greater than storage.auction_count
-    ///     2. msg_sender is not the author of the auction
-    ///     3. auction has already ended
     #[storage(read, write)]
     fn cancel_auction(auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
@@ -173,26 +141,12 @@ impl DutchAuction for Contract {
         });
     }
 
-    /// Returns the auction data for the specified auction ID
-    ///
-    /// # Panics
-    ///
-    /// This function will panic when:
-    ///     1. auction_id is 0 or greater than storage.auction_count
     #[storage(read)]
     fn auction(auction_id: u64) -> Auction {
         validate_id(auction_id, storage.auction_count);
         storage.auctions.get(auction_id)
     }
 
-    /// Changes the asset an auction accepts for a bid
-    ///
-    /// # Panics
-    ///
-    /// This function will panic when:
-    ///     1. auction_id is 0 or greater than storage.auction_count
-    ///     2. msg_sender is not the author of the auction
-    ///     3. auction has already ended
     #[storage(read, write)]
     fn change_asset(new_asset: ContractId, auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
@@ -213,14 +167,6 @@ impl DutchAuction for Contract {
         });
     }
 
-    /// Changes the beneficiary of the given auction
-    ///
-    /// # Panics
-    ///
-    /// This function will panic when:
-    ///     1. auction_id is 0 or greater than storage.auction_count
-    ///     2. msg_sender is not the author of the auction
-    ///     3. auction has already ended
     #[storage(read, write)]
     fn change_beneficiary(new_beneficiary: Identity, auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
@@ -236,37 +182,31 @@ impl DutchAuction for Contract {
         storage.auctions.insert(auction_id, auction);
     }
 
-    /// Returns the number of active auctions of the author
     #[storage(read)]
     fn active_auctions_of_author(author: Identity) -> u64 {
         storage.active_auctions_of_author.len(author)
     }
 
-    /// Returns the number of auctions created by author
     #[storage(read)]
     fn auctions_of_author(author: Identity) -> u64 {
         storage.auctions_of_author.len(author)
     }
 
-    /// Returns the number of auctions some bidder has won
     #[storage(read)]
     fn auctions_won(bidder: Identity) -> u64 {
         storage.auctions_won.len(bidder)
     }
 
-    /// Returns the active auction of the author at the given index
     #[storage(read)]
     fn active_auction_of_author(author: Identity, index: u64) -> u64 {
         storage.active_auctions_of_author.get(author, index).unwrap()
     }
 
-    /// Returns the number of auctions created by author
     #[storage(read)]
     fn auction_of_author(author: Identity, index: u64) -> u64 {
         storage.auctions_of_author.get(author, index).unwrap()
     }
 
-    /// Returns the number of auctions some bidder has won
     #[storage(read)]
     fn auction_won(bidder: Identity, index: u64) -> u64 {
         storage.auctions_won.get(bidder, index).unwrap()
