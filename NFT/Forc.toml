@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "NFT"
 
 [dependencies]
-sway_libs = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.3.1" }
+sway_libs = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.4.1" }

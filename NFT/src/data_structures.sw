@@ -15,13 +15,13 @@ impl core::ops::Eq for State {
     }
 }
 
-pub struct NFTMetadata {
+pub struct TokenMetadata {
     // This is left as an example. Support for dynamic length string is needed here
     name: str[7],
 }
 
-impl NFTMetadata {
-    fn new() -> Self {
+impl TokenMetadata {
+    pub fn new() -> Self {
         Self {
             name: "Example",
         }
