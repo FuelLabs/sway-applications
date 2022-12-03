@@ -1,7 +1,9 @@
 import { useQuery } from 'react-query';
+
+import { useWallet } from './useWallet';
+
 import { CONTRACT_ID } from '~/config';
 import { AuctionContractAbi__factory } from '~/types/contracts';
-import { useWallet } from './useWallet';
 
 export const useContract = () => {
   const wallet = useWallet();

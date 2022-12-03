@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 interface AuctionAssetDropdownProps {
   onChange: (isNFT: boolean, assetKey: string) => void;
-  assets: CoinQuantity[]
+  assets: CoinQuantity[];
 }
 
 export const AuctionAssetDropdown = ({
@@ -46,7 +46,7 @@ export const AuctionAssetDropdown = ({
     if (isNFT) {
       onChange(isNFT, "");
     } else {
-      onChange(isNFT, newTokenType)
+      onChange(isNFT, newTokenType);
     }
     const text = getAssetText(isNFT);
     setAssetText(text);
@@ -56,7 +56,10 @@ export const AuctionAssetDropdown = ({
     return tokenType === "nft";
   };
 
-  const getAssetText = (isNFT: boolean = false, assetId: string | undefined = NativeAssetId) => {
+  const getAssetText = (
+    isNFT: boolean = false,
+    assetId: string | undefined = NativeAssetId
+  ) => {
     if (isNFT || !assets) {
       return "NFT";
     }

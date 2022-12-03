@@ -8,12 +8,21 @@ interface NumericFormInputProps {
   isRequired?: boolean;
   isInvalid?: boolean;
   formErrorMessage?: string;
-};
+}
 
-export const NumericFormInput = ({ onChange, formLabel, formValue, objKey, ...props }: NumericFormInputProps) => {
-
+export const NumericFormInput = ({
+  onChange,
+  formLabel,
+  formValue,
+  objKey,
+  ...props
+}: NumericFormInputProps) => {
   return (
-    <Form.Control isRequired={props.isRequired} isInvalid={props.isInvalid} css={{ minWidth: "100%" }}>
+    <Form.Control
+      isRequired={props.isRequired}
+      isInvalid={props.isInvalid}
+      css={{ minWidth: "100%" }}
+    >
       <Form.Label>{formLabel}</Form.Label>
       <Input>
         <Input.Number
@@ -29,4 +38,4 @@ export const NumericFormInput = ({ onChange, formLabel, formValue, objKey, ...pr
       <Form.ErrorMessage>{props.formErrorMessage}</Form.ErrorMessage>
     </Form.Control>
   );
-}
+};

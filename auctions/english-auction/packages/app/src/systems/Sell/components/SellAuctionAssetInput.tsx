@@ -1,12 +1,11 @@
 import { cssObj } from "@fuel-ui/css";
-import { Input, Form, Flex, Stack } from "@fuel-ui/react";
-import { DECIMAL_UNITS } from "fuels";
+import { Stack } from "@fuel-ui/react";
 import type { CoinQuantity } from "fuels";
 import { useState } from "react";
 
+import { AssetAmountInput } from "./AssetAmountInput";
 import { DropdownContainer } from "./DropdownContainer";
 import { IdentityFormInput } from "./IdentityFormInput";
-import { AssetAmountInput } from "./AssetAmountInput";
 import { NumericFormInput } from "./NumericFormInput";
 
 // TODO
@@ -36,7 +35,7 @@ export const SellAuctionAssetInput = ({
     if (!newIsNFT) {
       onChange("assetIdSell", assetType);
     }
-  }
+  };
 
   // TODO refactor: change outer flex to stack
   return (
@@ -54,7 +53,8 @@ export const SellAuctionAssetInput = ({
             onChange={onChange}
             label="Sell NFT Asset Id"
             objKey="nftAssetIdSell"
-            identityValue={nftAssetIdValue!} />
+            identityValue={nftAssetIdValue!}
+          />
         </Stack>
       ) : (
         <AssetAmountInput

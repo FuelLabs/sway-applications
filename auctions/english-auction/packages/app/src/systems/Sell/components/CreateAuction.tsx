@@ -1,15 +1,22 @@
-import { Button, Card, Flex, Input, Stack, Form, Checkbox } from "@fuel-ui/react";
+import {
+  Button,
+  Card,
+  Flex,
+  Stack,
+  Form,
+  Checkbox,
+} from "@fuel-ui/react";
 import { bn, DECIMAL_UNITS } from "fuels";
 import { useEffect, useState } from "react";
 
 import { useCreateAuction } from "../hooks/useCreateAuction";
 
-import { SellAuctionAssetInput } from "./SellAuctionAssetInput";
 import { BidAuctionAssetInput } from "./BidAuctionAssetInput";
-import { useAssets } from "~/systems/Core/hooks/useAssets";
-import { AuctionAssetDropdown } from "./AuctionAssetDropdown";
-import { NumericFormInput } from "./NumericFormInput";
 import { IdentityFormInput } from "./IdentityFormInput";
+import { NumericFormInput } from "./NumericFormInput";
+import { SellAuctionAssetInput } from "./SellAuctionAssetInput";
+
+import { useAssets } from "~/systems/Core/hooks/useAssets";
 
 export const CreateAuction = () => {
   const [hasReservePrice, setHasReservePrice] = useState(false);
@@ -22,7 +29,7 @@ export const CreateAuction = () => {
       return assets[0].assetId;
     }
     return "";
-  }
+  };
 
   const initialAssetId = getInitialAssetId();
 
@@ -56,7 +63,11 @@ export const CreateAuction = () => {
 
   useEffect(() => {
     const updateAssetId = getInitialAssetId();
-    setAuctionValues({ ...auctionValues, "assetIdSell": updateAssetId, "assetIdBid": updateAssetId });
+    setAuctionValues({
+      ...auctionValues,
+      assetIdSell: updateAssetId,
+      assetIdBid: updateAssetId,
+    });
   }, [assets]);
 
   // TODO refactor: figure out how to make this look nicer
@@ -76,7 +87,9 @@ export const CreateAuction = () => {
       },
     duration: auctionValues.duration,
     initialPrice: bn.parseUnits(auctionValues.initialPrice, DECIMAL_UNITS),
-    reservePrice: !!auctionValues.reservePrice.length ? bn.parseUnits(auctionValues.reservePrice, DECIMAL_UNITS) : undefined,
+    reservePrice: auctionValues.reservePrice.length
+      ? bn.parseUnits(auctionValues.reservePrice, DECIMAL_UNITS)
+      : undefined,
     sellerAddress: auctionValues.seller,
     sellAsset: !auctionValues.nftAssetIdSell
       ? {
@@ -102,8 +115,12 @@ export const CreateAuction = () => {
   // TODO fix: doesn't account for invalid inputs
   // TODO fix: doesn't account for bid asset input
   const canCreateAuction = () => {
-    const isSellAssetFilled = !!auctionValues.assetAmountSell.length || (!!auctionValues.assetIdSell.length && !!auctionValues.nftTokenIdSell.length);
-    const isReservePriceFilled = !hasReservePrice || !!auctionValues.reservePrice.length;
+    const isSellAssetFilled =
+      !!auctionValues.assetAmountSell.length ||
+      (!!auctionValues.assetIdSell.length &&
+        !!auctionValues.nftTokenIdSell.length);
+    const isReservePriceFilled =
+      !hasReservePrice || !!auctionValues.reservePrice.length;
     return (
       !createAuctionMutation.isLoading &&
       !!auctionValues.seller.length &&
@@ -112,7 +129,7 @@ export const CreateAuction = () => {
       !!auctionValues.initialPrice.length &&
       !!auctionValues.duration.length
     );
-  }
+  };
 
   return (
     <Flex justify="center">
@@ -156,21 +173,25 @@ export const CreateAuction = () => {
           />
 
           <Form.Control css={{ flexDirection: "row" }}>
-            <Checkbox onCheckedChange={() => setHasReservePrice(!hasReservePrice)} />
-            <Form.Label>
-              Set reserve price
-            </Form.Label>
+            <Checkbox
+              onCheckedChange={() => setHasReservePrice(!hasReservePrice)}
+            />
+            <Form.Label>Set reserve price</Form.Label>
           </Form.Control>
 
-          {hasReservePrice && <NumericFormInput
-            onChange={handleInputChange}
-            formLabel="Reserve Price"
-            formValue={auctionValues.reservePrice}
-            objKey="reservePrice"
-            isInvalid={parseFloat(auctionValues.reservePrice) < parseFloat(auctionValues.initialPrice)}
-            formErrorMessage="Reserve price cannot be less than the inital price"
-          />
-          }
+          {hasReservePrice && (
+            <NumericFormInput
+              onChange={handleInputChange}
+              formLabel="Reserve Price"
+              formValue={auctionValues.reservePrice}
+              objKey="reservePrice"
+              isInvalid={
+                parseFloat(auctionValues.reservePrice) <
+                parseFloat(auctionValues.initialPrice)
+              }
+              formErrorMessage="Reserve price cannot be less than the inital price"
+            />
+          )}
 
           <BidAuctionAssetInput
             assets={assets!}
@@ -184,7 +205,7 @@ export const CreateAuction = () => {
             formValue={auctionValues.duration}
             objKey="duration"
             isRequired={true}
-            isInvalid={auctionValues.duration === '0'}
+            isInvalid={auctionValues.duration === "0"}
             formErrorMessage="Duration must be greater than 0"
           />
 

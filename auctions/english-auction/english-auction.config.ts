@@ -6,7 +6,8 @@ const { NODE_ENV, OUTPUT_ENV } = process.env;
 function getEnvName() {
   if (NODE_ENV === 'test') {
     return '.env.test';
-  } else if (NODE_ENV === 'testnet') {
+  }
+  if (NODE_ENV === 'testnet') {
     return '.env.testnet';
   }
   return '.env';
@@ -29,7 +30,8 @@ export default createConfig({
     {
       name: 'VITE_TOKEN_ID',
       buildPath: './packages/contracts',
-      deployPath: './packages/contracts/english-auction/project/auction-contract/tests/artifacts/asset',
+      deployPath:
+        './packages/contracts/english-auction/project/auction-contract/tests/artifacts/asset',
       options: getDeployOptions(),
     },
     {

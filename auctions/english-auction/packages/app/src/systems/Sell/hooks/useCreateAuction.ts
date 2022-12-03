@@ -1,16 +1,15 @@
-import { Address, CoinQuantityLike } from 'fuels';
-import type { BigNumberish } from 'fuels';
+import { Address } from 'fuels';
+import type { BigNumberish, CoinQuantityLike } from 'fuels';
 import { useMutation } from 'react-query';
 
 import { useContract } from '~/systems/Core/hooks/useContract';
+import { handleError } from '~/systems/Core/utils';
+import { txFeedback } from '~/systems/Core/utils/feedback';
 import type {
   AuctionAssetInput,
   IdentityInput,
   OptionalU64Input,
 } from '~/types/contracts/EnglishAuctionAbi';
-import { txFeedback } from '~/systems/Core/utils/feedback';
-
-import { handleError } from '~/systems/Core/utils';
 
 export type UseCreateAuctionProps = {
   bidAsset: AuctionAssetInput;
@@ -38,21 +37,21 @@ export function useCreateAuction({
         Address: { value: Address.fromString(sellerAddress).toHexString() },
       };
 
-      const { transactionResult } = await contract?.functions
+      const { transactionResult } = await contract.functions
         .create(bidAsset, duration, initialPrice, reservePrice, seller, sellAsset)
         .callParams({ forward: callParams })
         .call();
       return transactionResult;
     },
     {
-      onSuccess: txFeedback("Auction created successfully!", handleSuccess),
+      onSuccess: txFeedback('Auction created successfully!', handleSuccess),
       onError: handleError,
     }
   );
 
   // TODO clear form inputs on success
   function handleSuccess() {
-    console.log("uwu");
+    console.log('uwu');
   }
 
   return mutation;

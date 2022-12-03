@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
-import { BaseWalletLocked, JsonAbi, Wallet, WalletUnlocked } from 'fuels';
 import { ContractFactory } from 'fuels';
+import type { JsonAbi, WalletUnlocked } from 'fuels';
 import path from 'path';
 import { log } from 'src/log';
 import type { DeployContractOptions } from 'src/types';
