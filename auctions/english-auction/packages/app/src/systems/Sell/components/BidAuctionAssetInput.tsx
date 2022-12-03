@@ -13,12 +13,12 @@ interface BidAuctionAssetInputProps {
 
 export const BidAuctionAssetInput = ({ onChange, nftAssetIdValue, assets }: BidAuctionAssetInputProps) => {
     const [isNFT, setIsNFT] = useState(false);
-    const id = "nftAssetIdBid";
+    const key = "nftAssetIdBid";
 
     const handleAssetChange = (newIsNFT: boolean, assetType: string) => {
         setIsNFT(newIsNFT);
         if (newIsNFT) {
-            onChange(id, assetType);
+            onChange(key, assetType);
         } else {
             // TODO remove, i dont think this is used, but im fixing something else rn
             onChange("assetIdBid", assetType);
@@ -30,7 +30,7 @@ export const BidAuctionAssetInput = ({ onChange, nftAssetIdValue, assets }: BidA
             <Form.Control isRequired>
                 <Form.Label>Bid Asset</Form.Label>
                 {isNFT && (
-                    <NFTAssetIdInput onChange={onChange} label="Bid NFT Asset Id" id={id} nftAssetIdValue={nftAssetIdValue} />
+                    <NFTAssetIdInput onChange={onChange} label="Bid NFT Asset Id" key={key} nftAssetIdValue={nftAssetIdValue} />
                 )}
             </Form.Control>
         </DropdownContainer >

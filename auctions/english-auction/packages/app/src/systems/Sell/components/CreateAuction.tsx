@@ -132,7 +132,6 @@ export const CreateAuction = () => {
           <SellAuctionAssetInput
             assets={assets!}
             nftContractIdFormLabel="Sell NFT Contract Id"
-            tokenAmountLabel="Sell Asset Amount"
             nftIdFormLabel="Sell NFT Id"
             onChange={handleInputChange}
             nftTokenIdValue={auctionValues!.nftTokenIdSell}
