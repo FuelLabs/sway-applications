@@ -94,13 +94,9 @@ mod success {
 
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
-        println!("\nExpected hash:\n{:?}", expected_hash.to_vec());
-
         let resp = transaction_hash(&contract, to, value, data, nonce)
             .await
             .value;
-
-        println!("\nContract response:\n{:?}", resp.0);
 
         assert_eq!(Bits256(expected_hash.into()), resp);
     }
