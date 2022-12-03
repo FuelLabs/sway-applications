@@ -148,7 +148,6 @@ export const CreateAuction = () => {
             formErrorMessage="Initial price must be greater than 0"
           />
 
-
           <Form.Control css={{ flexDirection: "row" }}>
             <Checkbox onCheckedChange={() => setHasReservePrice(!hasReservePrice)} />
             <Form.Label>
@@ -156,21 +155,15 @@ export const CreateAuction = () => {
             </Form.Label>
           </Form.Control>
 
-          {hasReservePrice && <Form.Control isRequired isInvalid={parseFloat(auctionValues["reservePrice"]) < parseFloat(auctionValues["initialPrice"])}>
-            <Form.Label>Reserve Price</Form.Label>
-            <Input css={{ alignSelf: "stretch" }}>
-              <Input.Number
-                allowNegative={false}
-                placeholder="0.0"
-                onChange={(e) =>
-                  handleInputChange("reservePrice", e.target.value)
-                }
-              />
-            </Input>
-            <Form.ErrorMessage>
-              Reserve price cannot be less than the initial price
-            </Form.ErrorMessage>
-          </Form.Control>
+          {hasReservePrice && <NumericFormInput
+            onChange={handleInputChange}
+            formLabel="Reserve Price"
+            formValue={auctionValues.reservePrice}
+            objKey="reservePrice"
+            isRequired={true}
+            isInvalid={parseFloat(auctionValues.reservePrice) < parseFloat(auctionValues.initialPrice)}
+            formErrorMessage="Reserve price cannot be less than the inital price"
+          />
           }
 
           <BidAuctionAssetInput
