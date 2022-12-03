@@ -160,7 +160,6 @@ export const CreateAuction = () => {
             formLabel="Reserve Price"
             formValue={auctionValues.reservePrice}
             objKey="reservePrice"
-            isRequired={true}
             isInvalid={parseFloat(auctionValues.reservePrice) < parseFloat(auctionValues.initialPrice)}
             formErrorMessage="Reserve price cannot be less than the inital price"
           />
@@ -172,22 +171,15 @@ export const CreateAuction = () => {
             nftAssetIdValue={auctionValues!.nftAssetIdBid}
           />
 
-          <Form.Control isRequired isInvalid={auctionValues["duration"] === "0"}>
-            <Form.Label>
-              Duration
-            </Form.Label>
-            <Input css={{ alignSelf: "stretch" }}>
-              <Input.Number
-                inputMode="numeric"
-                allowNegative={false}
-                onChange={(e) => handleInputChange("duration", e.target.value)}
-                placeholder="0"
-              />
-            </Input>
-            <Form.ErrorMessage>
-              Duration must be greater than 0
-            </Form.ErrorMessage>
-          </Form.Control>
+          <NumericFormInput
+            onChange={handleInputChange}
+            formLabel="Duration"
+            formValue={auctionValues.duration}
+            objKey="duration"
+            isRequired={true}
+            isInvalid={auctionValues.duration === '0'}
+            formErrorMessage="Duration must be greater than 0"
+          />
 
           <Button
             isDisabled={!canCreateAuction()}
