@@ -140,17 +140,6 @@ export const CreateAuction = () => {
             objKey="seller"
             label="Seller"
           />
-          {/* <Form.Control isRequired>
-            <Form.Label>
-              Seller
-            </Form.Label>
-            <Input css={{ alignSelf: "stretch" }}>
-              <Input.Field
-                placeholder="0x000...000"
-                onChange={(e) => handleInputChange("seller", e.target.value)}
-              />
-            </Input>
-          </Form.Control> */}
 
           <SellAuctionAssetInput
             assets={assets!}

@@ -19,6 +19,7 @@ export const IdentityFormInput = ({
       <Input>
         <Input.Field
           id={objKey}
+          autoComplete="off"
           onChange={(e) => onChange(objKey, e.target.value)}
           placeholder="0x000...000"
           value={identityValue}
