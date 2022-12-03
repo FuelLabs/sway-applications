@@ -5,6 +5,7 @@ import type { CoinQuantity } from "fuels";
 import { useState } from "react";
 
 import { DropdownContainer } from "./DropdownContainer";
+import { NFTAssetIdInput } from "./NFTAssetIdInput";
 
 // TODO
 // Make component look nicer
@@ -33,11 +34,12 @@ export const SellAuctionAssetInput = ({
   assets,
 }: SellAuctionAssetInputProps) => {
   const [isNFT, setIsNFT] = useState(false);
+  const id = "nftAssetIdSell";
 
   const handleAssetChange = (newIsNFT: boolean, assetType: string) => {
     setIsNFT(newIsNFT);
     if (newIsNFT) {
-      onChange("nftAssetIdSell", assetType);
+      onChange(id, assetType);
     } else {
       onChange("assetIdSell", assetType);
     }
@@ -61,17 +63,7 @@ export const SellAuctionAssetInput = ({
               />
             </Input>
           </Form.Control>
-          <Form.Control isRequired css={{ minWidth: "100%" }}>
-            <Form.Label>{nftContractIdFormLabel}</Form.Label>
-            <Input css={styles.input}>
-              <Input.Field
-                id='nftAssetIdSell'
-                onChange={(e) => onChange('nftAssetIdSell', e.target.value)}
-                placeholder="0x000...000"
-                value={nftAssetIdValue}
-              />
-            </Input>
-          </Form.Control>
+          <NFTAssetIdInput onChange={onChange} label="Sell NFT Asset Id" id={id} nftAssetIdValue={nftAssetIdValue!} />
         </Flex>
       ) : (
         <Form.Control isRequired css={{ minWidth: "100%" }}>

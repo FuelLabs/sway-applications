@@ -31,17 +31,6 @@ export const BidAuctionAssetInput = ({ onChange, nftAssetIdValue, assets }: BidA
                 <Form.Label>Bid Asset</Form.Label>
                 {isNFT && (
                     <NFTAssetIdInput onChange={onChange} label="Bid NFT Asset Id" id={id} nftAssetIdValue={nftAssetIdValue} />
-                    // <Form.Control isRequired css={{ minWidth: "100%" }}>
-                    //     <Form.Label>Bid NFT Asset Id</Form.Label>
-                    //     <Input>
-                    //         <Input.Field
-                    //             id="nftAssetIdBid"
-                    //             onChange={(e) => onChange("nftAssetIdBid", e.target.value)}
-                    //             placeholder="0x000...000"
-                    //             value={nftAssetIdValue}
-                    //         />
-                    //     </Input>
-                    // </Form.Control>
                 )}
             </Form.Control>
         </DropdownContainer >
