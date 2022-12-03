@@ -1,10 +1,9 @@
 use fuels::{
+    contract::contract::CallResponse,
     prelude::*,
     signers::fuel_crypto::{Hasher, Message, SecretKey, Signature},
     tx::{Bytes32, Bytes64},
 };
-
-use serde::Serialize;
 
 use sha3::{Digest, Keccak256};
 
@@ -13,18 +12,7 @@ abigen!(MultiSigContract, "out/debug/multisig-wallet-abi.json");
 pub const VALID_SIGNER_PK: &str =
     "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301";
 
-#[derive(Serialize)]
-pub struct Transaction {
-    pub contract_identifier: ContractId,
-    pub data: Vec<u8>,
-    pub destination: Vec<u8>,
-    pub nonce: u64,
-    pub value: u64,
-}
-
 pub mod abi_calls {
-
-    use fuels::contract::contract::CallResponse;
 
     use super::*;
 
@@ -161,12 +149,10 @@ pub mod test_helpers {
         //Create SignatureData
         let signature_bytes: Bytes64 = Bytes64::try_from(signature).unwrap();
 
-        let signature = B512 {
-            bytes: [
-                Bits256(signature_bytes[..32].try_into().unwrap()),
-                Bits256(signature_bytes[32..].try_into().unwrap()),
-            ],
-        };
+        let signature = B512::from((
+            Bits256(signature_bytes[..32].try_into().unwrap()),
+            Bits256(signature_bytes[32..].try_into().unwrap()),
+        ));
 
         SignatureData {
             signature,
