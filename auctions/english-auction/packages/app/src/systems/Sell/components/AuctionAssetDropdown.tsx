@@ -43,7 +43,11 @@ export const AuctionAssetDropdown = ({
     const iconText = getAssetIconText(isNFT);
     setAssetIcon(iconText);
     // Pass to parent component
-    onChange(isNFT, newTokenType);
+    if (isNFT) {
+      onChange(isNFT, "");
+    } else {
+      onChange(isNFT, newTokenType)
+    }
     const text = getAssetText(isNFT);
     setAssetText(text);
   };
@@ -52,11 +56,11 @@ export const AuctionAssetDropdown = ({
     return tokenType === "nft";
   };
 
-  const getAssetText = (isNFT: boolean = false) => {
+  const getAssetText = (isNFT: boolean = false, assetId: string | undefined = NativeAssetId) => {
     if (isNFT || !assets) {
       return "NFT";
     }
-    const text = getTokenText(assets[0].assetId);
+    const text = getTokenText(assetId!);
     return text;
   };
 

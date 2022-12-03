@@ -94,6 +94,8 @@ export const CreateAuction = () => {
   });
 
   const handleInputChange = (field: string, value: string) => {
+    console.log("fied: ", field);
+    console.log("valie: ", value);
     setAuctionValues({ ...auctionValues!, [field]: value });
   };
 
@@ -131,8 +133,6 @@ export const CreateAuction = () => {
 
           <SellAuctionAssetInput
             assets={assets!}
-            nftContractIdFormLabel="Sell NFT Contract Id"
-            nftIdFormLabel="Sell NFT Id"
             onChange={handleInputChange}
             nftTokenIdValue={auctionValues!.nftTokenIdSell}
             assetAmountValue={auctionValues!.assetAmountSell}
@@ -181,7 +181,11 @@ export const CreateAuction = () => {
           </Form.Control>
           }
 
-          <BidAuctionAssetInput assets={assets!} onChange={handleInputChange} nftAssetIdValue={auctionValues!.nftAssetIdBid} />
+          <BidAuctionAssetInput
+            assets={assets!}
+            onChange={handleInputChange}
+            nftAssetIdValue={auctionValues!.nftAssetIdBid}
+          />
 
           <Form.Control isRequired isInvalid={auctionValues["duration"] === "0"}>
             <Form.Label>

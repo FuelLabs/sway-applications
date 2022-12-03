@@ -15,8 +15,6 @@ import { NumericFormInput } from "./NumericFormInput";
 // or show current balance of specified asset
 
 type SellAuctionAssetInputProps = {
-  nftContractIdFormLabel: string;
-  nftIdFormLabel: string;
   onChange: (id: string, val: string) => void;
   nftAssetIdValue?: string;
   nftTokenIdValue?: string;
@@ -25,8 +23,6 @@ type SellAuctionAssetInputProps = {
 };
 
 export const SellAuctionAssetInput = ({
-  nftContractIdFormLabel,
-  nftIdFormLabel,
   onChange,
   nftAssetIdValue,
   nftTokenIdValue,
@@ -38,9 +34,7 @@ export const SellAuctionAssetInput = ({
 
   const handleAssetChange = (newIsNFT: boolean, assetType: string) => {
     setIsNFT(newIsNFT);
-    if (newIsNFT) {
-      onChange(key, assetType);
-    } else {
+    if (!isNFT) {
       onChange("assetIdSell", assetType);
     }
   }
@@ -60,7 +54,7 @@ export const SellAuctionAssetInput = ({
             onChange={onChange}
             label="Sell NFT Asset Id"
             key={key}
-          nftAssetIdValue={nftAssetIdValue!} />
+            nftAssetIdValue={nftAssetIdValue!} />
         </Flex>
       ) : (
         <AssetAmountInput
