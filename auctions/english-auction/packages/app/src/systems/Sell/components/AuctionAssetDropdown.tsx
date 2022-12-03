@@ -42,7 +42,7 @@ export const AuctionAssetDropdown = ({
     const isNFT = isTokenTypeNFT(newTokenType);
     const iconText = getAssetIconText(isNFT);
     setAssetIcon(iconText);
-    // Pass to parent component
+    // We don't pass the asset id of the nft because we do not know it from the dropdown
     if (isNFT) {
       onChange(isNFT, "");
     } else {

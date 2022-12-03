@@ -30,7 +30,6 @@ export const SellAuctionAssetInput = ({
   assets,
 }: SellAuctionAssetInputProps) => {
   const [isNFT, setIsNFT] = useState(false);
-  const key = "nftAssetIdSell";
 
   const handleAssetChange = (newIsNFT: boolean, assetType: string) => {
     setIsNFT(newIsNFT);
@@ -48,18 +47,18 @@ export const SellAuctionAssetInput = ({
             onChange={(e) => onChange('tokenIdSell', e)}
             formLabel="Sell NFT Id"
             formValue={nftTokenIdValue!}
-            key="tokenIdSell"
+            objKey="tokenIdSell"
           />
           <NFTAssetIdInput
             onChange={onChange}
             label="Sell NFT Asset Id"
-            key={key}
+            objKey="nftAssetIdSell"
             nftAssetIdValue={nftAssetIdValue!} />
         </Flex>
       ) : (
         <AssetAmountInput
           onChange={onChange}
-          key="assetAmountSell"
+          objKey="assetAmountSell"
           assetAmountLabel="Sell Asset Amount"
           assetAmountValue={assetAmountValue!}
         />

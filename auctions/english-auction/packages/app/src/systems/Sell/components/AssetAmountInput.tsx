@@ -5,10 +5,10 @@ interface AssetAmountInputProps {
     onChange: (key: string, val: string) => void;
     assetAmountLabel: string;
     assetAmountValue: string;
-    key: string;
+    objKey: string;
 };
 
-export const AssetAmountInput = ({ onChange, assetAmountLabel, assetAmountValue, key }: AssetAmountInputProps) => {
+export const AssetAmountInput = ({ onChange, assetAmountLabel, assetAmountValue, objKey }: AssetAmountInputProps) => {
 
     // TODO refactor how we handle styles
     return (
@@ -16,13 +16,13 @@ export const AssetAmountInput = ({ onChange, assetAmountLabel, assetAmountValue,
             <Form.Label>{assetAmountLabel}</Form.Label>
             <Input>
                 <Input.Number
-                    id={key}
+                    id={objKey}
                     allowedDecimalSeparators={[".", ","]}
                     allowNegative={false}
                     autoComplete="off"
                     inputMode="decimal"
                     decimalScale={DECIMAL_UNITS}
-                    onChange={(e) => onChange(key, e.target.value)}
+                    onChange={(e) => onChange(objKey, e.target.value)}
                     placeholder="0.0"
                     thousandSeparator={false}
                     value={assetAmountValue}
