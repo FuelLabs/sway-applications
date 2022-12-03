@@ -1,6 +1,6 @@
 import { cssObj } from "@fuel-ui/css";
-import { Button, Dropdown, Icon, Input, Form, Flex } from "@fuel-ui/react";
-import { DECIMAL_UNITS, NativeAssetId } from "fuels";
+import { Input, Form, Flex } from "@fuel-ui/react";
+import { DECIMAL_UNITS } from "fuels";
 import type { CoinQuantity } from "fuels";
 import { useState } from "react";
 

@@ -38,15 +38,6 @@ export function useCreateAuction({
         Address: { value: Address.fromString(sellerAddress).toHexString() },
       };
 
-      console.log("bid asset: ", bidAsset);
-      console.log("amount: ", bidAsset.TokenAsset?.amount.toString());
-      console.log("duration: ", duration);
-      console.log("inital price: ", initialPrice.toString());
-      console.log("reserve price: ", reservePrice?.toString());
-      console.log("seller address: ", seller);
-      console.log("sell asset: ", sellAsset);
-      console.log("amount: ", sellAsset.TokenAsset?.amount.toString());
-
       const { transactionResult } = await contract?.functions
         .create(bidAsset, duration, initialPrice, reservePrice, seller, sellAsset)
         .callParams({ forward: callParams })
@@ -59,6 +50,7 @@ export function useCreateAuction({
     }
   );
 
+  // TODO clear form inputs on success
   function handleSuccess() {
     console.log("uwu");
   }

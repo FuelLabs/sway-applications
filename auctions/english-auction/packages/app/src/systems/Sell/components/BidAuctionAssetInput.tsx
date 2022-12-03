@@ -3,6 +3,7 @@ import { CoinQuantity, DECIMAL_UNITS } from "fuels";
 import { useState } from "react"
 
 import { DropdownContainer } from "./DropdownContainer";
+import { NFTAssetIdInput } from "./NFTAssetIdInput";
 
 interface BidAuctionAssetInputProps {
     nftAssetIdValue: string;
@@ -12,12 +13,14 @@ interface BidAuctionAssetInputProps {
 
 export const BidAuctionAssetInput = ({ onChange, nftAssetIdValue, assets }: BidAuctionAssetInputProps) => {
     const [isNFT, setIsNFT] = useState(false);
+    const id = "nftAssetIdBid";
 
     const handleAssetChange = (newIsNFT: boolean, assetType: string) => {
         setIsNFT(newIsNFT);
         if (newIsNFT) {
-            onChange("nftAssetIdBid", assetType);
+            onChange(id, assetType);
         } else {
+            // TODO remove, i dont think this is used, but im fixing something else rn
             onChange("assetIdBid", assetType);
         }
     }
@@ -26,20 +29,19 @@ export const BidAuctionAssetInput = ({ onChange, nftAssetIdValue, assets }: BidA
         <DropdownContainer onChange={handleAssetChange} assets={assets}>
             <Form.Control isRequired>
                 <Form.Label>Bid Asset</Form.Label>
-                {isNFT ? (
-                    <Form.Control isRequired css={{ minWidth: "100%" }}>
-                        <Form.Label>Bid NFT Asset Id</Form.Label>
-                        <Input>
-                            <Input.Field
-                                id="nftAssetIdBid"
-                                onChange={(e) => onChange("nftAssetIdBid", e.target.value)}
-                                placeholder="0x000...000"
-                                value={nftAssetIdValue}
-                            />
-                        </Input>
-                    </Form.Control>
-                ) : (
-                    <></>
+                {isNFT && (
+                    <NFTAssetIdInput onChange={onChange} label="Bid NFT Asset Id" id={id} nftAssetIdValue={nftAssetIdValue} />
+                    // <Form.Control isRequired css={{ minWidth: "100%" }}>
+                    //     <Form.Label>Bid NFT Asset Id</Form.Label>
+                    //     <Input>
+                    //         <Input.Field
+                    //             id="nftAssetIdBid"
+                    //             onChange={(e) => onChange("nftAssetIdBid", e.target.value)}
+                    //             placeholder="0x000...000"
+                    //             value={nftAssetIdValue}
+                    //         />
+                    //     </Input>
+                    // </Form.Control>
                 )}
             </Form.Control>
         </DropdownContainer >

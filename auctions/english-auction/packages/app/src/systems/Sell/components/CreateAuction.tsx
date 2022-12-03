@@ -7,6 +7,7 @@ import { useCreateAuction } from "../hooks/useCreateAuction";
 import { SellAuctionAssetInput } from "./SellAuctionAssetInput";
 import { BidAuctionAssetInput } from "./BidAuctionAssetInput";
 import { useAssets } from "~/systems/Core/hooks/useAssets";
+import { AuctionAssetDropdown } from "./AuctionAssetDropdown";
 
 export const CreateAuction = () => {
   const [hasReservePrice, setHasReservePrice] = useState(false);
@@ -199,6 +200,8 @@ export const CreateAuction = () => {
               Duration must be greater than 0
             </Form.ErrorMessage>
           </Form.Control>
+
+          <AuctionAssetDropdown assets={assets!} onChange={(bool: boolean, key: string) => { console.log(`bool: ${bool}, key: ${key}`)}} />
 
           <Button
             isDisabled={!canCreateAuction()}

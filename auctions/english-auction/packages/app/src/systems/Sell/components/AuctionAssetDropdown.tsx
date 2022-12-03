@@ -15,8 +15,6 @@ export const AuctionAssetDropdown = ({
   const [assetIcon, setAssetIcon] = useState("Coin");
   const [assetText, setAssetText] = useState("Token");
 
-  //const assets = useAssets();
-
   const getTokenText = (assetId: string) => {
     return assetId === NativeAssetId ? "ETH" : "Token";
   };
@@ -34,20 +32,16 @@ export const AuctionAssetDropdown = ({
     );
   });
 
-  // Set the initial asset text
+  // Set the initial asset text and icon
   useEffect(() => {
     const text = getAssetText();
-    // if (!!assets) {
-    //   onChange(false, assets[0].assetId);
-    // }
     setAssetText(text);
   }, [assets]);
 
   const handleTokenTypeSelection = (newTokenType: string) => {
-    const iconText = newTokenType === "nft" ? "Image" : "Coin";
-    setAssetIcon(iconText);
-
     const isNFT = isTokenTypeNFT(newTokenType);
+    const iconText = getAssetIconText(isNFT);
+    setAssetIcon(iconText);
     // Pass to parent component
     onChange(isNFT, newTokenType);
     const text = getAssetText(isNFT);
@@ -66,6 +60,13 @@ export const AuctionAssetDropdown = ({
     return text;
   };
 
+  const getAssetIconText = (isNFT: boolean = false) => {
+    if (isNFT || !assets) {
+      return "Image";
+    }
+    return "Coin";
+  };
+
   return (
     <Dropdown>
       <Dropdown.Trigger>
@@ -75,7 +76,7 @@ export const AuctionAssetDropdown = ({
         autoFocus
         onAction={(e) => handleTokenTypeSelection(e.toString())}
       >
-        <>{assetItems ? assetItems: {}}</>
+        {!!assetItems && assetItems}
         <Dropdown.MenuItem key="nft" textValue="NFT">
           <Icon icon="Image" />
           NFT
