@@ -3,7 +3,7 @@ import { CoinQuantity, DECIMAL_UNITS } from "fuels";
 import { useState } from "react"
 
 import { DropdownContainer } from "./DropdownContainer";
-import { NFTAssetIdInput } from "./NFTAssetIdInput";
+import { IdentityFormInput } from "./IdentityFormInput";
 
 interface BidAuctionAssetInputProps {
     nftAssetIdValue: string;
@@ -26,11 +26,11 @@ export const BidAuctionAssetInput = ({ onChange, nftAssetIdValue, assets }: BidA
             <Form.Control isRequired>
                 <Form.Label>Bid Asset</Form.Label>
                 {isNFT && (
-                    <NFTAssetIdInput
+                    <IdentityFormInput
                         onChange={onChange}
                         label="Bid NFT Asset Id"
                         objKey="nftAssetIdBid"
-                        nftAssetIdValue={nftAssetIdValue}
+                        identityValue={nftAssetIdValue}
                     />
                 )}
             </Form.Control>

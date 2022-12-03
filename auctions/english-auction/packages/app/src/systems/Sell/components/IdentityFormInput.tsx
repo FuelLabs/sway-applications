@@ -1,13 +1,13 @@
 import { Form, Input } from "@fuel-ui/react";
 
-interface NFTAssetIdInputProps {
+interface IdentityFormInputProps {
     onChange: (key: string, value: string) => void;
-    nftAssetIdValue: string;
+    identityValue: string;
     objKey: string;
     label: string;
 };
 
-export const NFTAssetIdInput = ({ onChange, nftAssetIdValue, objKey, label }: NFTAssetIdInputProps) => {
+export const IdentityFormInput = ({ onChange, identityValue, objKey, label }: IdentityFormInputProps) => {
 
     return (
         <Form.Control isRequired css={{ minWidth: "100%" }}>
@@ -17,7 +17,7 @@ export const NFTAssetIdInput = ({ onChange, nftAssetIdValue, objKey, label }: NF
                     id={objKey}
                     onChange={(e) => onChange(objKey, e.target.value)}
                     placeholder="0x000...000"
-                    value={nftAssetIdValue}
+                    value={identityValue}
                 />
             </Input>
         </Form.Control>

@@ -5,7 +5,7 @@ import type { CoinQuantity } from "fuels";
 import { useState } from "react";
 
 import { DropdownContainer } from "./DropdownContainer";
-import { NFTAssetIdInput } from "./NFTAssetIdInput";
+import { IdentityFormInput } from "./IdentityFormInput";
 import { AssetAmountInput } from "./AssetAmountInput";
 import { NumericFormInput } from "./NumericFormInput";
 
@@ -50,11 +50,11 @@ export const SellAuctionAssetInput = ({
             objKey="tokenIdSell"
             isRequired={true}
           />
-          <NFTAssetIdInput
+          <IdentityFormInput
             onChange={onChange}
             label="Sell NFT Asset Id"
             objKey="nftAssetIdSell"
-            nftAssetIdValue={nftAssetIdValue!} />
+            identityValue={nftAssetIdValue!} />
         </Stack>
       ) : (
         <AssetAmountInput
