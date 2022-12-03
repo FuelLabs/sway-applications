@@ -66,6 +66,7 @@
     "xstate": "^4.32.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.28.1",
     "@react-types/button": "^3.5.1",
     "@react-types/dialog": "^3.4.1",
     "@react-types/link": "^3.3.1",

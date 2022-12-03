@@ -107,8 +107,6 @@ export const CreateAuction = () => {
   });
 
   const handleInputChange = (field: string, value: string) => {
-    console.log("field", field);
-    console.log("value: ", value);
     setAuctionValues({ ...auctionValues!, [field]: value });
   };
 
