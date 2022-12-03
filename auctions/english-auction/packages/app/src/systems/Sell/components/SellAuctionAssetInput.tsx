@@ -48,6 +48,7 @@ export const SellAuctionAssetInput = ({
             formLabel="Sell NFT Id"
             formValue={nftTokenIdValue!}
             objKey="tokenIdSell"
+            isRequired={true}
           />
           <NFTAssetIdInput
             onChange={onChange}

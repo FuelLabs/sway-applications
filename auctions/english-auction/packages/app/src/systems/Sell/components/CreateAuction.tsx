@@ -8,6 +8,7 @@ import { SellAuctionAssetInput } from "./SellAuctionAssetInput";
 import { BidAuctionAssetInput } from "./BidAuctionAssetInput";
 import { useAssets } from "~/systems/Core/hooks/useAssets";
 import { AuctionAssetDropdown } from "./AuctionAssetDropdown";
+import { NumericFormInput } from "./NumericFormInput";
 
 export const CreateAuction = () => {
   const [hasReservePrice, setHasReservePrice] = useState(false);
@@ -21,8 +22,6 @@ export const CreateAuction = () => {
     }
     return "";
   }
-
-
 
   const initialAssetId = getInitialAssetId();
 
@@ -94,6 +93,8 @@ export const CreateAuction = () => {
   });
 
   const handleInputChange = (field: string, value: string) => {
+    console.log("field", field);
+    console.log("value: ", value);
     setAuctionValues({ ...auctionValues!, [field]: value });
   };
 
@@ -137,23 +138,16 @@ export const CreateAuction = () => {
             nftAssetIdValue={auctionValues!.nftAssetIdSell}
           />
 
-          <Form.Control isRequired isInvalid={parseFloat(auctionValues["initialPrice"]) === 0}>
-            <Form.Label>
-              Initial Price
-            </Form.Label>
-            <Input css={{ alignSelf: "stretch" }}>
-              <Input.Number
-                allowNegative={false}
-                placeholder="0.0"
-                onChange={(e) =>
-                  handleInputChange("initialPrice", e.target.value)
-                }
-              />
-            </Input>
-            <Form.ErrorMessage>
-              Initial price must be greater than 0
-            </Form.ErrorMessage>
-          </Form.Control>
+          <NumericFormInput
+            onChange={handleInputChange}
+            formLabel="Initial Price"
+            formValue={auctionValues.initialPrice}
+            objKey="initialPrice"
+            isRequired={true}
+            isInvalid={parseFloat(auctionValues.initialPrice) === 0}
+            formErrorMessage="Initial price must be greater than 0"
+          />
+
 
           <Form.Control css={{ flexDirection: "row" }}>
             <Checkbox onCheckedChange={() => setHasReservePrice(!hasReservePrice)} />
