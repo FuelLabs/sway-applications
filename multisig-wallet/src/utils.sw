@@ -22,10 +22,10 @@ use data_structures::{MessageFormat, MessagePrefix, SignatureData, Transaction, 
 pub fn create_hash(to: Identity, value: u64, data: b256, nonce: u64) -> b256 {
     sha256(Transaction {
         contract_identifier: contract_id(),
-        destination: to,
-        value,
         data,
+        destination: to,
         nonce,
+        value,
     })
 }
 
