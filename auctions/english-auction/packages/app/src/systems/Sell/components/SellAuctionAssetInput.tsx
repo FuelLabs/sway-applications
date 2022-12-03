@@ -7,6 +7,7 @@ import { useState } from "react";
 import { DropdownContainer } from "./DropdownContainer";
 import { NFTAssetIdInput } from "./NFTAssetIdInput";
 import { AssetAmountInput } from "./AssetAmountInput";
+import { NumericFormInput } from "./NumericFormInput";
 
 // TODO
 // Make component look nicer
@@ -44,24 +45,17 @@ export const SellAuctionAssetInput = ({
     }
   }
 
+  // TODO refactor: change outer flex to stack
   return (
     <DropdownContainer onChange={handleAssetChange} assets={assets}>
       {isNFT ? (
         <Flex direction="column" css={{ minWidth: "100%" }}>
-          <Form.Control isRequired css={{ minWidth: "100%" }}>
-            <Form.Label>{nftIdFormLabel}</Form.Label>
-            <Input>
-              <Input.Number
-                id='tokenIdSell'
-                allowNegative={false}
-                autoComplete="off"
-                inputMode="numeric"
-                onChange={(e) => onChange('tokenIdSell', e.target.value)}
-                placeholder="0"
-                value={nftTokenIdValue}
-              />
-            </Input>
-          </Form.Control>
+          <NumericFormInput
+            onChange={(e) => onChange('tokenIdSell', e)}
+            formLabel="Sell NFT Id"
+            formValue={nftTokenIdValue!}
+            key="tokenIdSell"
+          />
           <NFTAssetIdInput
             onChange={onChange}
             label="Sell NFT Asset Id"
