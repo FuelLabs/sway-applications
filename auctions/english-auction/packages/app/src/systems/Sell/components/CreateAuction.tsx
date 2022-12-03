@@ -201,8 +201,6 @@ export const CreateAuction = () => {
             </Form.ErrorMessage>
           </Form.Control>
 
-          <AuctionAssetDropdown assets={assets!} onChange={(bool: boolean, key: string) => { console.log(`bool: ${bool}, key: ${key}`)}} />
-
           <Button
             isDisabled={!canCreateAuction()}
             leftIcon="Plus"
