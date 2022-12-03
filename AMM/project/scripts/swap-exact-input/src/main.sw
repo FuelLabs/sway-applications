@@ -3,7 +3,7 @@ script;
 use libraries::{AMM, Exchange};
 use std::{block::height, constants::ZERO_B256};
 
-pub enum SwapError {
+enum SwapError {
     PairExchangeNotRegistered: (ContractId, ContractId),
 }
 
@@ -12,6 +12,8 @@ fn main(
     assets: Vec<ContractId>,
     input_amount: u64,
 ) -> u64 {
+    assert(assets.len() > 1);
+
     let amm_contract = abi(AMM, amm_contract_address.into());
 
     let (mut i, mut latest_output_amount) = (0, input_amount);
@@ -21,11 +23,7 @@ fn main(
         let asset_pair = (assets.get(i).unwrap(), assets.get(i + 1).unwrap());
 
         // get the exchange contract id of asset pair
-        let exchange_contract_id = amm_contract.pool {
-            gas: 100_000,
-            coins: 0,
-            asset_id: ZERO_B256,
-        }(asset_pair);
+        let exchange_contract_id = amm_contract.pool { gas: 100_000 }(asset_pair);
 
         require(exchange_contract_id.is_some(), SwapError::PairExchangeNotRegistered(asset_pair));
 
