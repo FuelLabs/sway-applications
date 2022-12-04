@@ -12,18 +12,25 @@ export const EndBlock = ({ endBlock }: EndBlockProps) => {
     const latestBlockHeight = useLatestBlockHeight();
 
     const calcBlocksAway = (blockHeight0: BN, blockHeight1: BN) => {
-        return blockHeight0.sub(blockHeight1);
+        const result = blockHeight0.sub(blockHeight1);
+        if (blockHeight0.lt(blockHeight1)) {
+            return result.ineg()
+        }
+        return result;
     };
 
     useEffect(() => {
+        console.log("end block: ", endBlock.toString());
+        console.log("latest block: ", latestBlockHeight?.toString());
         const blocksAway = calcBlocksAway(endBlock, latestBlockHeight);
         setCurBlocksAway(blocksAway);
     }, [latestBlockHeight]);
 
+    const endText = curBlocksAway?.isNeg() ? 'Auction Ended' : `Auction ends in ${curBlocksAway?.toString()} blocks at block height ${endBlock.toString()}`;
 
     return (
         <>
-            <Heading as="h5">{`Auction ends in ${curBlocksAway?.toString()} blocks at block height ${endBlock.toString()}`}</Heading>
+            <Heading as="h5">{endText}</Heading>
         </>
     );
 }

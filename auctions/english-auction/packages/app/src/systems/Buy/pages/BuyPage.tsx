@@ -1,4 +1,5 @@
 import { Card, Heading, Stack, Flex, Button } from "@fuel-ui/react";
+import { DECIMAL_UNITS } from "fuels";
 import { MainLayout } from "~/systems/Core/components/MainLayout";
 import { EndBlock } from "../components/EndBlock";
 import { useAllAuctionInfo } from "../hooks/useAllAuctionInfo";
@@ -22,7 +23,7 @@ export function BuyPage() {
 
           <Heading as="h5">Bid Asset</Heading>
           <div>{auction?.bid_asset.TokenAsset?.asset_id.value}</div>
-          <div>{auction?.bid_asset.TokenAsset?.amount.toString()}</div>
+          <div>{auction?.bid_asset.TokenAsset?.amount.format()}</div>
 
           <EndBlock endBlock={auction!.end_block} />
 

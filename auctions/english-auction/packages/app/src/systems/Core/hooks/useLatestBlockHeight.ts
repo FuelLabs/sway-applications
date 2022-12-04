@@ -5,8 +5,6 @@ export const useLatestBlockHeight = () => {
 
     const [fuelWeb3] = useFuelWeb3();
 
-    console.log("types pls", fuelWeb3.getProvider());
-
     if (!fuelWeb3) {
         throw Error(`ERROR: fuel web3 is: ${fuelWeb3}`);
     }
