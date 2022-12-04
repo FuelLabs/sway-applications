@@ -7,7 +7,10 @@ use fuels::{
 
 use sha3::{Digest, Keccak256};
 
-abigen!(MultiSigContract, "out/debug/multisig-wallet-abi.json");
+abigen!(
+    MultiSigContract,
+    "./project/multisig-contract/out/debug/multisig-contract-abi.json"
+);
 
 pub const VALID_SIGNER_PK: &str =
     "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301";
@@ -112,7 +115,7 @@ pub mod test_helpers {
         wallet.set_provider(provider);
 
         let contract_id = Contract::deploy(
-            "out/debug/multisig-wallet.bin",
+            "./out/debug/multisig-contract.bin",
             &wallet,
             TxParameters::default(),
             StorageConfiguration::default(),

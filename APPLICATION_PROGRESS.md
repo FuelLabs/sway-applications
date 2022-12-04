@@ -39,7 +39,6 @@ The information in this section is split into subsections in order to conceptual
 <h3>Contracts ✅</h3>
 
 - Feature complete for UI integration
-  - Needs vec support in SDK so that array can be changed to vec
 
 <h3>User Interface</h3>
 
@@ -56,6 +55,40 @@ The information in this section is split into subsections in order to conceptual
 - Readme ✅
   - Once UI is added it needs to be documented
 - Specification ✅
+
+</details>
+
+---
+
+<details>
+<summary>Automated Market Maker (AMM)</summary>
+
+<h3>Contracts ✅</h3>
+
+- Feature complete for UI integration
+
+<h3>Scripts ❌</h3>
+
+- Two Sway scripts are in progress:
+  1) Swapping assets along a route
+  2) Depositing and adding liquidity atomically
+
+<h3>User Interface</h3>
+
+<h3>Tests</h3>
+
+- <h3>Rust ✅</h3>
+  
+  - Scripts should added along with their tests
+
+- <h3>Typescript</h3>
+
+<h3>Documentation ✅</h3>
+
+- Readme ✅
+  - Once UI and scripts are added they need to be documented
+- Specification ✅
+  - Once scripts are added this should be updated
 
 </details>
 

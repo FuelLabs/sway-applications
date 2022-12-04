@@ -14,9 +14,9 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  RUST_VERSION: 1.63.0
-  FORC_VERSION: 0.26.0
-  CORE_VERSION: 0.10.1
+  RUST_VERSION: 1.64.0
+  FORC_VERSION: 0.31.1
+  CORE_VERSION: 0.14.1
   PATH_TO_SCRIPTS: .github/scripts
 
 jobs:
@@ -40,7 +40,7 @@ jobs:
 
     strategy:
       matrix:
-        project: ["airdrop/airdrop-distributor", "airdrop/simple-asset", "auctions/english-auction", "dao-voting", "escrow", "fundraiser", "multisig-wallet", "name-registry", "NFT", "oracle", "otc-swap-predicate"]
+        project: ["airdrop", "AMM", "auctions", "DAO", "escrow", "fundraiser", "multisig-wallet", "name-registry", "NFT", "oracle", "OTC-swap-predicate"]
 
     steps:
       - name: Checkout repository
@@ -75,16 +75,17 @@ jobs:
           components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
 
       - name: Check Sway formatting
-        run: sh ${{ env.PATH_TO_SCRIPTS }}/forc-handler.sh ${{ matrix.project }} fmt --check
+        run: forc fmt --path ${{ matrix.project }} --check
 
       - name: Check Rust formatting
         run: |
           cd ${{ matrix.project }}
           cargo fmt --verbose --check
-      - name: Build Sway
-        run: sh ${{ env.PATH_TO_SCRIPTS }}/forc-handler.sh ${{ matrix.project }} build
 
-      - name: Run Forc tests
+      - name: Build Sway
+        run: forc build --path ${{ matrix.project }}
+
+      - name: Run Rust tests
         run: |
           cd ${{ matrix.project }}
           cargo test
@@ -94,11 +95,7 @@ jobs:
 
     strategy:
       matrix:
-        project: [
-          ".docs/contributing-book/src/code/bad_documentation", 
-          ".docs/contributing-book/src/code/connect_four",
-          ".docs/contributing-book/src/code/style_guide",
-        ]
+        project: [".docs/contributing-book/src/code"]
 
     steps:
       - name: Checkout repository
