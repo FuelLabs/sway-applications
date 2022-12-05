@@ -8,6 +8,7 @@ import { PlaceBid, EndBlock } from "~/systems/Buy/components";
 import { getSlicedAddress } from "~/systems/Core/utils";
 import { useState } from "react";
 import { useCanceAuction } from "../hooks/useCancelAuctaion";
+import { useBid } from "../hooks/useBid";
 
 interface AuctionInfoProps {
     auctions: OptionalAuctionOutput[];
@@ -17,6 +18,7 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
 
     const auctionInfo = auctions?.map((auction, index) => {
         const [auctionExpired, setAuctionExpired] = useState(false);
+        //const bidMutation = useBid({ auctionId: bn(index), auctionAsset: { TokenAsset: { amount: "", asset_id: { value: "" } } } });
         const cancelAuctionMutation = useCanceAuction({ auctionId: bn(index) });
 
         return (
@@ -41,7 +43,12 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
                     />
                 </Flex>
 
-                {(!auctionExpired && !auction?.state.Closed) && <PlaceBid />}
+                {(!auctionExpired && !auction?.state.Closed) &&
+                    <PlaceBid
+                        auctionId={bn(index)}
+                        auctionAssetAddress={auction?.bid_asset.TokenAsset?.asset_id!}
+                    />
+                }
 
                 <Flex>
                     <AssetIdOutput
