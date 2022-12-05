@@ -25,7 +25,7 @@ mod success {
 
         let output_amount = swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.asset_a), Some(10_000_000)),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_a), None),
             Some(min_output),
             amounts.deadline,
         )
@@ -72,7 +72,7 @@ mod success {
 
         let output_amount = swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.asset_b), Some(10_000_000)),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_b), None),
             Some(min_output),
             amounts.deadline,
         )
@@ -113,7 +113,7 @@ mod success {
 
         let output_amount = swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.asset_a), Some(10_000_000)),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_a), None),
             None,
             amounts.deadline,
         )
@@ -156,7 +156,7 @@ mod revert {
 
         swap_exact_input(
             &exchange_instance,
-            CallParameters::new(Some(1), Some(AssetId::new(*asset_a_id)), Some(10_000_000)),
+            CallParameters::new(Some(1), Some(AssetId::new(*asset_a_id)), None),
             None,
             deadline,
         )
@@ -172,7 +172,7 @@ mod revert {
         swap_exact_input(
             &exchange.instance,
             // sending invalid asset
-            CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), Some(10_000_000)),
+            CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), None),
             None,
             amounts.deadline,
         )
@@ -187,7 +187,7 @@ mod revert {
 
         swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(1), Some(exchange.asset_a), Some(10_000_000)),
+            CallParameters::new(Some(1), Some(exchange.asset_a), None),
             None,
             // passing 0 deadline
             0,
@@ -204,7 +204,7 @@ mod revert {
         swap_exact_input(
             &exchange.instance,
             // forwarding 0 as msg_amount
-            CallParameters::new(Some(0), Some(exchange.asset_a), Some(10_000_000)),
+            CallParameters::new(Some(0), Some(exchange.asset_a), None),
             None,
             amounts.deadline,
         )
@@ -227,7 +227,7 @@ mod revert {
 
         swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.asset_a), Some(10_000_000)),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_a), None),
             // setting min too high
             Some(preview_amount + 1),
             amounts.deadline,

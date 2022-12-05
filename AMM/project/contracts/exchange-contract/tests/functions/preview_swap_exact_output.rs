@@ -7,7 +7,7 @@ mod success {
     use super::*;
 
     #[tokio::test]
-    async fn previews_partial_swap_of_a() {
+    async fn previews_swap_of_a() {
         let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
 
@@ -33,7 +33,7 @@ mod success {
     }
 
     #[tokio::test]
-    async fn previews_partial_swap_of_b() {
+    async fn previews_swap_of_b() {
         let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
 
