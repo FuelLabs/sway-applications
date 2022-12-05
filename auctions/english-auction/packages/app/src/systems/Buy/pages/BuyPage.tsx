@@ -1,9 +1,11 @@
 import { Card, Heading, Stack, Flex, Button, Input } from "@fuel-ui/react";
 import { AssetAmountInput } from "~/systems/Core/components/AssetAmountInput";
+import { AssetIdOutput } from "~/systems/Core/components/AssetIdOutput";
 import { AssetOutput } from "~/systems/Core/components/AssetOutput";
 
 import { MainLayout } from "~/systems/Core/components/MainLayout";
-import { getAssetText } from "~/systems/Core/utils";
+import { getSlicedAddress } from "~/systems/Core/utils";
+import { AuctionInfo } from "../components";
 
 import { EndBlock } from "../components/EndBlock";
 import { PlaceBid } from "../components/PlaceBid";
@@ -14,8 +16,7 @@ export function BuyPage() {
 
   const auctions = auctionInfo?.map((auction) => {
     return (
-      <Flex>
-        <div>
+      <Stack>
           <Flex>
             <AssetOutput
               assetId={auction?.sell_asset.TokenAsset?.asset_id.value!}
@@ -38,22 +39,21 @@ export function BuyPage() {
 
           <PlaceBid />
 
-          <Heading as="h5">Seller</Heading>
-          <div>{auction?.seller.Address?.value}</div>
+          <Flex>
+            <AssetIdOutput
+              assetId={getSlicedAddress(auction?.seller.Address?.value!)}
+              heading="Seller"
+            />
 
-          <Heading as="h5">Highest Bidder</Heading>
-          <div>{auction?.highest_bidder?.Address?.value || "None"}</div>
+            <AssetIdOutput
+              assetId={(auction?.highest_bidder?.Address?.value && getSlicedAddress(auction?.highest_bidder?.Address?.value)) || "None"}
+              heading="Highest Bidder"
+            />
+          </Flex>
 
           <EndBlock endBlock={auction!.end_block} />
-
-          <div>{auction?.highest_bidder?.Address?.value}</div>
-          <div>{auction?.highest_bidder?.ContractId?.value}</div>
-          <div>{auction?.reserve_price?.toString()}</div>
-
-          <div>{auction?.state.Closed}</div>
-          <div>{auction?.state.Open}</div>
-        </div>
-      </Flex>
+          <Button css={{ minWidth: "100%"}}>Cancel Auction</Button>
+      </Stack>
     );
   });
 
@@ -68,8 +68,7 @@ export function BuyPage() {
           </Card.Header>
           <Card.Body>
             <Stack>
-              {auctions}
-              <Button>Cancel Auction</Button>
+              <AuctionInfo auctions={auctionInfo!} />
             </Stack>
           </Card.Body>
         </Card>
