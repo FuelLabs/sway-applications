@@ -5,26 +5,26 @@ abigen!(
     "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
 );
 
-pub struct MetaAmounts {
-    pub amount_a: u64,
-    pub amount_b: u64,
-    pub deadline: u64,
-    pub liquidity: u64,
-}
-
-pub struct MetaContractBalances {
+pub struct ContractBalances {
     pub asset_a: u64,
     pub asset_b: u64,
 }
 
-pub struct MetaExchange {
+pub struct ExchangeContract {
     pub asset_a: AssetId,
     pub asset_b: AssetId,
     pub instance: Exchange,
     pub liquidity_pool_asset: AssetId,
 }
 
-pub struct MetaWalletBalances {
+pub struct LiquidityParameters {
+    pub amount_a: u64,
+    pub amount_b: u64,
+    pub deadline: u64,
+    pub liquidity: u64,
+}
+
+pub struct WalletBalances {
     pub asset_a: u64,
     pub asset_b: u64,
     pub liquidity_pool_asset: u64,
@@ -203,30 +203,33 @@ pub mod test_helpers {
     use abi_calls::{add_liquidity, balance, constructor, deposit};
     use paths::EXCHANGE_CONTRACT_BINARY_PATH;
 
-    pub async fn contract_balances(exchange: &MetaExchange) -> MetaContractBalances {
+    pub async fn contract_balances(exchange: &ExchangeContract) -> ContractBalances {
         let asset_a = balance(&exchange.instance, exchange.asset_a).await.value;
         let asset_b = balance(&exchange.instance, exchange.asset_b).await.value;
-        MetaContractBalances { asset_a, asset_b }
+        ContractBalances { asset_a, asset_b }
     }
 
     pub async fn wallet_balances(
-        exchange: &MetaExchange,
+        exchange: &ExchangeContract,
         wallet: &WalletUnlocked,
-    ) -> MetaWalletBalances {
+    ) -> WalletBalances {
         let asset_a = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
         let asset_b = wallet.get_asset_balance(&exchange.asset_b).await.unwrap();
         let liquidity_pool_asset = wallet
             .get_asset_balance(&exchange.liquidity_pool_asset)
             .await
             .unwrap();
-        MetaWalletBalances {
+        WalletBalances {
             asset_a,
             asset_b,
             liquidity_pool_asset,
         }
     }
 
-    pub async fn deposit_but_do_not_add_liquidity(amounts: &MetaAmounts, exchange: &MetaExchange) {
+    pub async fn deposit_but_do_not_add_liquidity(
+        amounts: &LiquidityParameters,
+        exchange: &ExchangeContract,
+    ) {
         deposit(
             &exchange.instance,
             CallParameters::new(Some(amounts.amount_a), Some(exchange.asset_a), None),
@@ -240,7 +243,10 @@ pub mod test_helpers {
         .await;
     }
 
-    pub async fn deposit_and_add_liquidity(amounts: &MetaAmounts, exchange: &MetaExchange) -> u64 {
+    pub async fn deposit_and_add_liquidity(
+        amounts: &LiquidityParameters,
+        exchange: &ExchangeContract,
+    ) -> u64 {
         deposit_but_do_not_add_liquidity(&amounts, &exchange).await;
 
         let added = add_liquidity(
@@ -293,19 +299,24 @@ pub mod test_helpers {
         )
     }
 
-    pub async fn setup_and_initialize() -> (MetaExchange, WalletUnlocked, MetaAmounts, AssetId) {
+    pub async fn setup_and_initialize() -> (
+        ExchangeContract,
+        WalletUnlocked,
+        LiquidityParameters,
+        AssetId,
+    ) {
         let (exchange_instance, wallet, liquidity_pool_asset, asset_a, asset_b, asset_c) =
             setup().await;
         constructor(&exchange_instance, (asset_a, asset_b)).await;
 
-        let exchange = MetaExchange {
+        let exchange = ExchangeContract {
             asset_a,
             asset_b,
             instance: exchange_instance,
             liquidity_pool_asset,
         };
 
-        let amounts = MetaAmounts {
+        let amounts = LiquidityParameters {
             amount_a: 100,
             amount_b: 400,
             deadline: 1000,
@@ -315,8 +326,12 @@ pub mod test_helpers {
         (exchange, wallet, amounts, asset_c)
     }
 
-    pub async fn setup_initialize_and_deposit_but_do_not_add_liquidity(
-    ) -> (MetaExchange, WalletUnlocked, MetaAmounts, AssetId) {
+    pub async fn setup_initialize_and_deposit_but_do_not_add_liquidity() -> (
+        ExchangeContract,
+        WalletUnlocked,
+        LiquidityParameters,
+        AssetId,
+    ) {
         let (exchange, wallet, amounts, asset_c) = setup_and_initialize().await;
 
         deposit_but_do_not_add_liquidity(&amounts, &exchange).await;
@@ -324,8 +339,13 @@ pub mod test_helpers {
         (exchange, wallet, amounts, asset_c)
     }
 
-    pub async fn setup_initialize_deposit_and_add_liquidity(
-    ) -> (MetaExchange, WalletUnlocked, MetaAmounts, AssetId, u64) {
+    pub async fn setup_initialize_deposit_and_add_liquidity() -> (
+        ExchangeContract,
+        WalletUnlocked,
+        LiquidityParameters,
+        AssetId,
+        u64,
+    ) {
         let (exchange, wallet, amounts, asset_c) = setup_and_initialize().await;
 
         let added_liquidity = deposit_and_add_liquidity(&amounts, &exchange).await;

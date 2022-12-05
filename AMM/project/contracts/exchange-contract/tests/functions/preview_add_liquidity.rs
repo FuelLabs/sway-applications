@@ -4,7 +4,7 @@ use crate::utils::{
         deposit_and_add_liquidity, setup, setup_and_initialize,
         setup_initialize_deposit_and_add_liquidity,
     },
-    MetaAmounts,
+    LiquidityParameters,
 };
 use fuels::prelude::*;
 
@@ -90,7 +90,7 @@ mod success {
     async fn previews_adding_a_when_liquidity_is_not_zero_based_on_b() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        let override_amounts = MetaAmounts {
+        let override_amounts = LiquidityParameters {
             amount_a: 400,
             amount_b: 100,
             deadline: amounts.deadline,
@@ -125,7 +125,7 @@ mod success {
     async fn previews_adding_b_when_liquidity_is_not_zero_based_on_a() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        let override_amounts = MetaAmounts {
+        let override_amounts = LiquidityParameters {
             amount_a: 400,
             amount_b: 100,
             deadline: amounts.deadline,
@@ -160,7 +160,7 @@ mod success {
     async fn previews_adding_b_when_liquidity_is_not_zero_based_on_b() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        let override_amounts = MetaAmounts {
+        let override_amounts = LiquidityParameters {
             amount_a: 400,
             amount_b: 100,
             deadline: amounts.deadline,
