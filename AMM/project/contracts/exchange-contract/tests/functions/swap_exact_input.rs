@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{pool_info, preview_swap_with_exact_input, swap_with_exact_input},
+    abi_calls::{pool_info, preview_swap_exact_input, swap_exact_input},
     test_helpers::{setup, setup_initialize_deposit_and_add_liquidity, wallet_balances},
 };
 use fuels::prelude::*;
@@ -18,12 +18,12 @@ mod success {
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let min_output =
-            preview_swap_with_exact_input(&exchange.instance, input_amount, exchange.asset_a)
+            preview_swap_exact_input(&exchange.instance, input_amount, exchange.asset_a)
                 .await
                 .value
                 .amount;
 
-        let output_amount = swap_with_exact_input(
+        let output_amount = swap_exact_input(
             &exchange.instance,
             CallParameters::new(Some(input_amount), Some(exchange.asset_a), Some(10_000_000)),
             Some(min_output),
@@ -65,12 +65,12 @@ mod success {
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let min_output =
-            preview_swap_with_exact_input(&exchange.instance, input_amount, exchange.asset_b)
+            preview_swap_exact_input(&exchange.instance, input_amount, exchange.asset_b)
                 .await
                 .value
                 .amount;
 
-        let output_amount = swap_with_exact_input(
+        let output_amount = swap_exact_input(
             &exchange.instance,
             CallParameters::new(Some(input_amount), Some(exchange.asset_b), Some(10_000_000)),
             Some(min_output),
@@ -111,7 +111,7 @@ mod success {
         let initial_pool_info = pool_info(&exchange.instance).await.value;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        let output_amount = swap_with_exact_input(
+        let output_amount = swap_exact_input(
             &exchange.instance,
             CallParameters::new(Some(input_amount), Some(exchange.asset_a), Some(10_000_000)),
             None,
@@ -154,7 +154,7 @@ mod revert {
 
         let deadline = 1000;
 
-        swap_with_exact_input(
+        swap_exact_input(
             &exchange_instance,
             CallParameters::new(Some(1), Some(AssetId::new(*asset_a_id)), Some(10_000_000)),
             None,
@@ -169,7 +169,7 @@ mod revert {
         let (exchange, _wallet, amounts, asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
 
-        swap_with_exact_input(
+        swap_exact_input(
             &exchange.instance,
             // sending invalid asset
             CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), Some(10_000_000)),
@@ -185,7 +185,7 @@ mod revert {
         let (exchange, _wallet, _amounts, _asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
 
-        swap_with_exact_input(
+        swap_exact_input(
             &exchange.instance,
             CallParameters::new(Some(1), Some(exchange.asset_a), Some(10_000_000)),
             None,
@@ -201,7 +201,7 @@ mod revert {
         let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
 
-        swap_with_exact_input(
+        swap_exact_input(
             &exchange.instance,
             // forwarding 0 as msg_amount
             CallParameters::new(Some(0), Some(exchange.asset_a), Some(10_000_000)),
@@ -220,12 +220,12 @@ mod revert {
         let input_amount = 10;
 
         let preview_amount =
-            preview_swap_with_exact_input(&exchange.instance, input_amount, exchange.asset_a)
+            preview_swap_exact_input(&exchange.instance, input_amount, exchange.asset_a)
                 .await
                 .value
                 .amount;
 
-        swap_with_exact_input(
+        swap_exact_input(
             &exchange.instance,
             CallParameters::new(Some(input_amount), Some(exchange.asset_a), Some(10_000_000)),
             // setting min too high

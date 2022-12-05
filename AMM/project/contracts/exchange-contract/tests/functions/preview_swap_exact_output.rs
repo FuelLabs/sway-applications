@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::preview_swap_with_exact_output,
+    abi_calls::preview_swap_exact_output,
     test_helpers::{setup, setup_initialize_deposit_and_add_liquidity},
 };
 
@@ -21,7 +21,7 @@ mod success {
         let expected_sufficient_reserve = output_amount < amounts.amount_b;
 
         let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_b)
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.asset_b)
                 .await
                 .value;
 
@@ -47,7 +47,7 @@ mod success {
         let expected_sufficient_reserve = output_amount <= amounts.amount_a;
 
         let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_a)
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.asset_a)
                 .await
                 .value;
 
@@ -73,7 +73,7 @@ mod success {
         let expected_sufficient_reserve = output_amount < amounts.amount_b;
 
         let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_b)
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.asset_b)
                 .await
                 .value;
 
@@ -99,7 +99,7 @@ mod success {
         let expected_sufficient_reserve = output_amount < amounts.amount_a;
 
         let preview_swap_info =
-            preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_a)
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.asset_a)
                 .await
                 .value;
 
@@ -121,7 +121,7 @@ mod revert {
         let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, asset_b_id, _asset_c_id) =
             setup().await;
 
-        preview_swap_with_exact_output(&exchange_instance, 10, asset_b_id).await;
+        preview_swap_exact_output(&exchange_instance, 10, asset_b_id).await;
     }
 
     #[tokio::test]
@@ -130,7 +130,7 @@ mod revert {
         let (exchange, _wallet, _amounts, asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
 
-        preview_swap_with_exact_output(
+        preview_swap_exact_output(
             &exchange.instance,
             10,
             // sending invalid asset
@@ -147,7 +147,7 @@ mod revert {
 
         let output_amount = amounts.amount_b + 1;
 
-        preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_b).await;
+        preview_swap_exact_output(&exchange.instance, output_amount, exchange.asset_b).await;
     }
 
     #[tokio::test]
@@ -158,6 +158,6 @@ mod revert {
 
         let output_amount = amounts.amount_a + 1;
 
-        preview_swap_with_exact_output(&exchange.instance, output_amount, exchange.asset_a).await;
+        preview_swap_exact_output(&exchange.instance, output_amount, exchange.asset_a).await;
     }
 }

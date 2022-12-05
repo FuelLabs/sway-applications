@@ -93,7 +93,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn swap_with_exact_input(
+    pub async fn swap_exact_input(
         contract: &Exchange,
         call_params: CallParameters,
         min_output: Option<u64>,
@@ -101,7 +101,7 @@ pub mod abi_calls {
     ) -> CallResponse<u64> {
         contract
             .methods()
-            .swap_with_exact_input(min_output, deadline)
+            .swap_exact_input(min_output, deadline)
             .call_params(call_params)
             .tx_params(TxParameters {
                 gas_price: 0,
@@ -114,7 +114,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn swap_with_exact_output(
+    pub async fn swap_exact_output(
         contract: &Exchange,
         call_params: CallParameters,
         output: u64,
@@ -122,7 +122,7 @@ pub mod abi_calls {
     ) -> CallResponse<u64> {
         contract
             .methods()
-            .swap_with_exact_output(output, deadline)
+            .swap_exact_output(output, deadline)
             .call_params(call_params)
             .tx_params(TxParameters {
                 gas_price: 0,
@@ -175,14 +175,14 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn preview_swap_with_exact_input(
+    pub async fn preview_swap_exact_input(
         contract: &Exchange,
         exact_input: u64,
         input_asset: AssetId,
     ) -> CallResponse<PreviewSwapInfo> {
         contract
             .methods()
-            .preview_swap_with_exact_input(exact_input, ContractId::new(*input_asset))
+            .preview_swap_exact_input(exact_input, ContractId::new(*input_asset))
             .tx_params(TxParameters {
                 gas_price: 0,
                 gas_limit: 10_000_000,
@@ -193,14 +193,14 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn preview_swap_with_exact_output(
+    pub async fn preview_swap_exact_output(
         contract: &Exchange,
         exact_output: u64,
         output_asset: AssetId,
     ) -> CallResponse<PreviewSwapInfo> {
         contract
             .methods()
-            .preview_swap_with_exact_output(exact_output, ContractId::new(*output_asset))
+            .preview_swap_exact_output(exact_output, ContractId::new(*output_asset))
             .tx_params(TxParameters {
                 gas_price: 0,
                 gas_limit: 10_000_000,

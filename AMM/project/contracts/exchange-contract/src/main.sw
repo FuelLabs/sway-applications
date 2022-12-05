@@ -223,7 +223,7 @@ impl Exchange for Contract {
     }
 
     #[storage(read, write)]
-    fn swap_with_exact_input(min_output: Option<u64>, deadline: u64) -> u64 {
+    fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64 {
         require(storage.pair.is_some(), InitError::NotInitialized);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
@@ -263,7 +263,7 @@ impl Exchange for Contract {
     }
 
     #[storage(read, write)]
-    fn swap_with_exact_output(output: u64, deadline: u64) -> u64 {
+    fn swap_exact_output(output: u64, deadline: u64) -> u64 {
         require(storage.pair.is_some(), InitError::NotInitialized);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
@@ -399,7 +399,7 @@ impl Exchange for Contract {
     }
 
     #[storage(read)]
-    fn preview_swap_with_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo {
+    fn preview_swap_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo {
         require(storage.pair.is_some(), InitError::NotInitialized);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
@@ -423,7 +423,7 @@ impl Exchange for Contract {
     }
 
     #[storage(read)]
-    fn preview_swap_with_exact_output(exact_output: u64, output_asset: ContractId) -> PreviewSwapInfo {
+    fn preview_swap_exact_output(exact_output: u64, output_asset: ContractId) -> PreviewSwapInfo {
         require(storage.pair.is_some(), InitError::NotInitialized);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
