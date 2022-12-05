@@ -3,7 +3,7 @@ import { Stack } from "@fuel-ui/react";
 import type { CoinQuantity } from "fuels";
 import { useState } from "react";
 
-import { AssetAmountInput } from "./AssetAmountInput";
+import { AssetAmountInput } from "../../Core/components/AssetAmountInput";
 import { DropdownContainer } from "./DropdownContainer";
 import { IdentityFormInput } from "./IdentityFormInput";
 import { NumericFormInput } from "./NumericFormInput";
