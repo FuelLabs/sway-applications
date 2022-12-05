@@ -34,8 +34,8 @@ storage {
     /// Map(auction id => auction)
     auctions: StorageMap<u64, Option<Auction>> = StorageMap {}, 
     
-    // TODO: Move deposits into the Auction struct when StorageMaps are
-    //       supported inside structs
+    // TODO: Move deposits into the Auction struct when StorageMaps are supported inside structs
+    // This issue can be tracked here: https://github.com/FuelLabs/sway/issues/2465
     /// Stores the deposits made based on the user and auction ID.
     /// Map((user, auction id) => deposit)
     deposits: StorageMap<(Identity, u64), Option<AuctionAsset>> = StorageMap {},
@@ -84,6 +84,7 @@ impl EnglishAuction for Contract {
                 // Ensure this bid is greater than initial bid and the total deposits are greater 
                 // than the current winnning bid
                 // TODO: Move this outside the match statement once StorageVec is supported in structs
+                // This issue can be tracked here: https://github.com/FuelLabs/sway/issues/2465
                 require(token_asset.amount() >= auction.initial_price, InputError::InitialPriceNotMet);
                 require(token_asset.amount() > auction.bid_asset.amount(), InputError::IncorrectAmountProvided);
             }
@@ -144,6 +145,7 @@ impl EnglishAuction for Contract {
         require(duration != 0, InitError::AuctionDurationNotProvided);
 
         // TODO: This will be combined once StorageVec is supported in structs
+        // This issue can be tracked here: https://github.com/FuelLabs/sway/issues/2465
         match bid_asset {
             AuctionAsset::TokenAsset(asset) => {
                 require(asset.amount() == 0, InitError::BidAssetAmountNotZero);
@@ -158,6 +160,7 @@ impl EnglishAuction for Contract {
             AuctionAsset::TokenAsset(asset) => {
                 // Selling tokens
                 // TODO: Move this outside the match statement when StorageVec in structs is supported
+                // This issue can be tracked here: https://github.com/FuelLabs/sway/issues/2465
                 require(initial_price != 0, InitError::InitialPriceCannotBeZero);
                 require(msg_amount() == asset.amount(), InputError::IncorrectAmountProvided);
                 require(msg_asset_id() == asset.asset_id(), InputError::IncorrectAssetProvided);
@@ -166,6 +169,7 @@ impl EnglishAuction for Contract {
                 // Selling NFTs
                 let sender = msg_sender().unwrap();
                 // TODO: Remove this when StorageVec in structs is supported
+                // This issue can be tracked here: https://github.com/FuelLabs/sway/issues/2465
                 require(initial_price == 1, InitError::CannotAcceptMoreThanOneNFT);
                 transfer_nft(asset, Identity::ContractId(contract_id()));
             }
