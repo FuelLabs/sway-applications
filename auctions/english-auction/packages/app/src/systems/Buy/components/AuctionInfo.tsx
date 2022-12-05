@@ -1,18 +1,24 @@
 import { OptionalAuctionOutput } from "~/types/contracts/EnglishAuctionAbi";
 
 import { Stack, Flex, Button } from "@fuel-ui/react";
+import { bn } from "fuels";
 
 import { AssetOutput, AssetIdOutput } from "~/systems/Core/components";
 import { PlaceBid, EndBlock } from "~/systems/Buy/components";
 import { getSlicedAddress } from "~/systems/Core/utils";
+import { useState } from "react";
+import { useCanceAuction } from "../hooks/useCancelAuctaion";
 
 interface AuctionInfoProps {
     auctions: OptionalAuctionOutput[];
 }
 
 export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
+    const cancelAuctionMutation = useCanceAuction({ auctionId: bn(0) });
 
     const auctionInfo = auctions?.map((auction) => {
+        const [auctionExpired, setAuctionExpired] = useState(false);
+
         return (
             <Stack>
                 <Flex>
@@ -35,7 +41,7 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
                     />
                 </Flex>
 
-                <PlaceBid />
+                {!auctionExpired && <PlaceBid />}
 
                 <Flex>
                     <AssetIdOutput
@@ -49,8 +55,8 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
                     />
                 </Flex>
 
-                <EndBlock endBlock={auction!.end_block} />
-                <Button css={{ minWidth: "100%" }}>Cancel Auction</Button>
+                <EndBlock endBlock={auction!.end_block} onChange={setAuctionExpired} />
+                {!auctionExpired && <Button onPress={() => cancelAuctionMutation.mutate()} css={{ minWidth: "100%" }}>Cancel Auction</Button>}
             </Stack>
         );
     });

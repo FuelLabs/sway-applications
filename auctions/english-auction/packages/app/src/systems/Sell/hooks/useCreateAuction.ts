@@ -51,7 +51,7 @@ export function useCreateAuction({
 
   // TODO clear form inputs on success
   function handleSuccess() {
-    console.log('uwu');
+    console.log('auction created successfully');
   }
 
   return mutation;

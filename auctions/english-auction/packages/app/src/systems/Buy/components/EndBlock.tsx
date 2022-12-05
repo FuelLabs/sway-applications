@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 
 interface EndBlockProps {
     endBlock: BN;
+    onChange: (expired: boolean) => void;
 };
 
-export const EndBlock = ({ endBlock }: EndBlockProps) => {
+export const EndBlock = ({ endBlock, onChange }: EndBlockProps) => {
     const [curBlocksAway, setCurBlocksAway] = useState<BN>();
     const latestBlockHeight = useLatestBlockHeight();
 
@@ -20,10 +21,9 @@ export const EndBlock = ({ endBlock }: EndBlockProps) => {
     };
 
     useEffect(() => {
-        console.log("end block: ", endBlock.toString());
-        console.log("latest block: ", latestBlockHeight?.toString());
         const blocksAway = calcBlocksAway(endBlock, latestBlockHeight);
         setCurBlocksAway(blocksAway);
+        onChange(blocksAway?.isNeg()!);
     }, [latestBlockHeight]);
 
     const endText = curBlocksAway?.isNeg() ? 'Auction Ended' : `Auction ends in ${curBlocksAway?.toString()} blocks at block height ${endBlock.toString()}`;
