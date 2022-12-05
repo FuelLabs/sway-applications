@@ -9,15 +9,12 @@ dep utils;
 // TODO: Move these into alphabetical order once https://github.com/FuelLabs/sway/issues/409 is resolved
 dep data_structures/auction_asset;
 dep data_structures/auction;
-dep data_structures/token_asset;
-dep data_structures/nft_asset;
 
 use auction_asset::AuctionAsset;
 use auction::Auction;
 use errors::{AccessError, InitError, InputError, UserError};
 use events::{BidEvent, CancelAuctionEvent, CreateAuctionEvent, WithdrawEvent};
-use interface::{EnglishAuction, NFT};
-use nft_asset::NFTAsset;
+use interface::EnglishAuction;
 use state::State;
 use std::{
     auth::msg_sender,
@@ -30,7 +27,6 @@ use std::{
     logging::log,
     storage::StorageMap,
 };
-use token_asset::TokenAsset;
 use utils::{transfer_asset, transfer_nft};
 
 storage {
@@ -78,7 +74,7 @@ impl EnglishAuction for Contract {
 
         match total_bid {
             AuctionAsset::NFTAsset(nft_asset) => {
-                transfer_nft(nft_asset, sender, Identity::ContractId(contract_id()));
+                transfer_nft(nft_asset, Identity::ContractId(contract_id()));
                 // TODO: Remove this once StorageVec is supported in structs
                 auction.state = State::Closed;
             },
@@ -171,7 +167,7 @@ impl EnglishAuction for Contract {
                 let sender = msg_sender().unwrap();
                 // TODO: Remove this when StorageVec in structs is supported
                 require(initial_price == 1, InitError::CannotAcceptMoreThanOneNFT);
-                transfer_nft(asset, sender, Identity::ContractId(contract_id()));
+                transfer_nft(asset, Identity::ContractId(contract_id()));
             }
         }
 
