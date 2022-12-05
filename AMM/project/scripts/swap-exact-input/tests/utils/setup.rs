@@ -43,7 +43,10 @@ pub async fn exchange_bytecode_root() -> ContractId {
 }
 
 // TODO (@supiket): call the atomic add liquidity script for test setup
-pub async fn deposit_and_add_liquidity(exchange_instance: &Exchange, amounts: &LiquidityParameters) -> u64 {
+pub async fn deposit_and_add_liquidity(
+    exchange_instance: &Exchange,
+    amounts: &LiquidityParameters,
+) -> u64 {
     let call_params =
         CallParameters::new(Some(amounts.amount_a), Some(amounts.asset_a.clone()), None);
     deposit(&exchange_instance, call_params).await;
