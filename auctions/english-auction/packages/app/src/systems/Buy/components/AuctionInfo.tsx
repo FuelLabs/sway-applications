@@ -47,6 +47,7 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
                     <PlaceBid
                         auctionId={bn(index)}
                         auctionAssetAddress={auction?.bid_asset.TokenAsset?.asset_id!}
+                        seller={auction?.seller!}
                     />
                 }
 
