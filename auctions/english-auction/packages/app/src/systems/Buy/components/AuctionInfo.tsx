@@ -19,8 +19,6 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
 
     const auctionInfo = auctions?.map((auction, index) => {
         const [auctionExpired, setAuctionExpired] = useState(false);
-        //const bidMutation = useBid({ auctionId: bn(index), auctionAsset: { TokenAsset: { amount: "", asset_id: { value: "" } } } });
-        // const cancelAuctionMutation = useCancelAuction({ auctionId: bn(index) });
 
         return (
             <Stack>
@@ -69,10 +67,7 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
                     <EndBlock endBlock={auction!.end_block} onChange={setAuctionExpired} />
                 }
                 {(!auctionExpired && !auction?.state.Closed) &&
-                    // <Button onPress={() => cancelAuctionMutation.mutate()} css={{ minWidth: "100%" }}>
-                    //     Cancel Auction
-                    // </Button>
-                    <CancelAuctionButton index={index} seller={auction?.seller} />
+                    <CancelAuctionButton index={index} seller={auction?.seller!} />
                 }
             </Stack>
         );
