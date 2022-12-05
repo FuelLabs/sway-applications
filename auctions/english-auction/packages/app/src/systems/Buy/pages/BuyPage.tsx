@@ -17,7 +17,7 @@ export function BuyPage() {
             </Heading>
           </Card.Header>
           <Card.Body>
-            <Stack>
+            <Stack gap="$5">
               <AuctionInfo auctions={auctionInfo!} />
             </Stack>
           </Card.Body>
