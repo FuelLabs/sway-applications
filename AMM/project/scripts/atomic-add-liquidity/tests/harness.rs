@@ -23,13 +23,13 @@ abigen!(
     "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
 );
 
-pub struct MetaAmounts {
+pub struct LiquidityParameters {
     asset_a_deposit: u64,
     asset_b_deposit: u64,
     liquidity: u64,
 }
 
-pub struct MetaExchange {
+pub struct ExchangeContract {
     id: ContractId,
     pair: (AssetId, AssetId),
 }
@@ -134,7 +134,7 @@ pub mod test_helpers {
     pub async fn setup_exchange_contract(
         wallet: WalletUnlocked,
         asset_pair: &(AssetId, AssetId),
-    ) -> MetaExchange {
+    ) -> ExchangeContract {
         let exchange_contract_id = Contract::deploy(
             EXCHANGE_CONTRACT_BINARY_PATH,
             &wallet,
@@ -149,7 +149,7 @@ pub mod test_helpers {
 
         let contract_id = ContractId::from(exchange_contract_id);
 
-        MetaExchange {
+        ExchangeContract {
             id: contract_id,
             pair: *asset_pair,
         }
@@ -157,7 +157,7 @@ pub mod test_helpers {
 
     pub async fn setup(
         with_base_asset: bool,
-    ) -> (WalletUnlocked, Provider, MetaExchange, MetaAmounts) {
+    ) -> (WalletUnlocked, Provider, ExchangeContract, LiquidityParameters) {
         let (wallet, asset_ids, provider) = setup_wallet_and_provider().await;
         let asset_pair = if with_base_asset {
             // the asset with index 2 of asset_ids is the base asset
@@ -166,7 +166,7 @@ pub mod test_helpers {
             (*asset_ids.get(0).unwrap(), *asset_ids.get(1).unwrap())
         };
         let exchange = setup_exchange_contract(wallet.clone(), &asset_pair).await;
-        let amounts = MetaAmounts {
+        let amounts = LiquidityParameters {
             asset_a_deposit: 100,
             asset_b_deposit: 400,
             liquidity: 200,
