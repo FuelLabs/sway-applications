@@ -157,7 +157,12 @@ pub mod test_helpers {
 
     pub async fn setup(
         with_base_asset: bool,
-    ) -> (WalletUnlocked, Provider, ExchangeContract, LiquidityParameters) {
+    ) -> (
+        WalletUnlocked,
+        Provider,
+        ExchangeContract,
+        LiquidityParameters,
+    ) {
         let (wallet, asset_ids, provider) = setup_wallet_and_provider().await;
         let asset_pair = if with_base_asset {
             // the asset with index 2 of asset_ids is the base asset
