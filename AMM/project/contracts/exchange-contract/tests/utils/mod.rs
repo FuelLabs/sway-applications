@@ -48,6 +48,9 @@ pub mod abi_calls {
             .methods()
             .add_liquidity(desired_liquidity, deadline)
             .call_params(call_params)
+            // `add_liquidity` adds liquidity by using up at least one of the assets
+            // one variable output is for the minted liquidity pool asset
+            // the other variable output is for the asset that is not used up
             .append_variable_outputs(2)
             .tx_params(tx_params)
             .call()
@@ -108,7 +111,7 @@ pub mod abi_calls {
                 gas_limit: 10_000_000,
                 maturity: 0,
             })
-            .append_variable_outputs(2)
+            .append_variable_outputs(1)
             .call()
             .await
             .unwrap()
