@@ -40,8 +40,8 @@ use std::{
 };
 use utils::{
     div_multiply,
-    get_maximum_input_for_exact_output,
-    get_minimum_output_given_exact_input,
+    maximum_input_for_exact_output,
+    minimum_output_given_exact_input,
     multiply_div,
 };
 
@@ -243,7 +243,8 @@ impl Exchange for Contract {
         };
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
-        let bought = get_minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
+
+        let bought = minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
         require(bought <= output_asset_in_reserve, TransactionError::InsufficientLiquidity);
         if min_output.is_some() {
             require(bought >= min_output.unwrap(), TransactionError::DesiredAmountTooHigh(min_output.unwrap()));
@@ -287,7 +288,7 @@ impl Exchange for Contract {
 
         require(output <= output_asset_in_reserve, TransactionError::InsufficientLiquidity);
 
-        let sold = get_maximum_input_for_exact_output(output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
+        let sold = maximum_input_for_exact_output(output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
 
         require(input_amount >= sold, TransactionError::ProvidedAmountTooLow(input_amount));
 
@@ -413,7 +414,8 @@ impl Exchange for Contract {
         };
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
-        let min_output = get_minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
+
+        let min_output = minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
         let sufficient_reserve = min_output <= output_asset_in_reserve;
 
         PreviewSwapInfo {
@@ -438,7 +440,8 @@ impl Exchange for Contract {
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
         require(exact_output <= output_asset_in_reserve, TransactionError::DesiredAmountTooHigh(exact_output));
-        let max_input = get_maximum_input_for_exact_output(exact_output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
+
+        let max_input = maximum_input_for_exact_output(exact_output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
         let sufficient_reserve = exact_output <= output_asset_in_reserve;
 
         PreviewSwapInfo {

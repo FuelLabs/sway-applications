@@ -15,7 +15,7 @@ pub fn div_multiply(a: u64, b: u64, c: u64) -> u64 {
 }
 
 /// Returns the maximum required amount of the input asset to get exactly ` output_amount ` of the output asset
-pub fn get_maximum_input_for_exact_output(
+pub fn maximum_input_for_exact_output(
     output_amount: u64,
     input_reserve: u64,
     output_reserve: u64,
@@ -37,7 +37,7 @@ pub fn get_maximum_input_for_exact_output(
 }
 
 /// Given exactly ` input_amount ` of the input asset, returns the minimum resulting amount of the output asset
-pub fn get_minimum_output_given_exact_input(
+pub fn minimum_output_given_exact_input(
     input_amount: u64,
     input_reserve: u64,
     output_reserve: u64,
