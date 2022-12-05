@@ -1,6 +1,6 @@
 import { OptionalAuctionOutput } from "~/types/contracts/EnglishAuctionAbi";
 
-import { Stack, Flex, Button } from "@fuel-ui/react";
+import { Stack, Flex, Button, Heading } from "@fuel-ui/react";
 import { bn } from "fuels";
 
 import { AssetOutput, AssetIdOutput } from "~/systems/Core/components";
@@ -14,10 +14,10 @@ interface AuctionInfoProps {
 }
 
 export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
-    const cancelAuctionMutation = useCanceAuction({ auctionId: bn(0) });
 
-    const auctionInfo = auctions?.map((auction) => {
+    const auctionInfo = auctions?.map((auction, index) => {
         const [auctionExpired, setAuctionExpired] = useState(false);
+        const cancelAuctionMutation = useCanceAuction({ auctionId: bn(index) });
 
         return (
             <Stack>
@@ -41,7 +41,7 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
                     />
                 </Flex>
 
-                {!auctionExpired && <PlaceBid />}
+                {(!auctionExpired && !auction?.state.Closed) && <PlaceBid />}
 
                 <Flex>
                     <AssetIdOutput
@@ -55,8 +55,8 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
                     />
                 </Flex>
 
-                <EndBlock endBlock={auction!.end_block} onChange={setAuctionExpired} />
-                {!auctionExpired && <Button onPress={() => cancelAuctionMutation.mutate()} css={{ minWidth: "100%" }}>Cancel Auction</Button>}
+                {auction?.state.Closed ? <Heading as="h5">Auction Closed</Heading> : <EndBlock endBlock={auction!.end_block} onChange={setAuctionExpired} />}
+                {(!auctionExpired && !auction?.state.Closed) && <Button onPress={() => cancelAuctionMutation.mutate()} css={{ minWidth: "100%" }}>Cancel Auction</Button>}
             </Stack>
         );
     });
