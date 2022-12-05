@@ -1,6 +1,9 @@
 library utils;
 
+dep errors;
+
 use core::num::*;
+use errors::{InitError, InputError};
 use std::u128::U128;
 
 fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
@@ -55,4 +58,18 @@ pub fn multiply_div(a: u64, b: u64, c: u64) -> u64 {
     let calculation = (U128::from((0, a)) * U128::from((0, b)));
     let result_wrapped = (calculation / U128::from((0, c))).as_u64();
     result_wrapped.unwrap()
+}
+
+pub fn determine_output_asset(
+    input_asset: ContractId,
+    pair: Option<(ContractId, ContractId)>,
+) -> ContractId {
+    require(pair.is_some(), InitError::NotInitialized);
+    let (asset_a_id, asset_b_id) = pair.unwrap();
+    require(input_asset == asset_a_id || input_asset == asset_b_id, InputError::InvalidAsset);
+    if input_asset == asset_a_id {
+        asset_b_id
+    } else {
+        asset_a_id
+    }
 }
