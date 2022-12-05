@@ -17,6 +17,7 @@ import { NumericFormInput } from "./NumericFormInput";
 import { SellAuctionAssetInput } from "./SellAuctionAssetInput";
 
 import { useAssets } from "~/systems/Core/hooks/useAssets";
+import { AddressInput } from "./AddressInput";
 
 export const CreateAuction = () => {
   const [hasReservePrice, setHasReservePrice] = useState(false);
@@ -134,11 +135,11 @@ export const CreateAuction = () => {
       <Card>
         <Card.Header>Create Auction</Card.Header>
         <Stack css={{ width: "475px", margin: "10px" }}>
-          <IdentityFormInput
+          <AddressInput
             onChange={handleInputChange}
             identityValue={auctionValues.seller}
             objKey="seller"
-            label="Seller"
+            label="seller"
           />
 
           <SellAuctionAssetInput
