@@ -11,8 +11,8 @@ abi Auxiliary {
     ///
     /// # Arguments
     ///
-    /// * `admin` - The only user which has the ability to mint.
-    /// * `max_supply` - The maximum supply of tokens that can ever be minted.
+    /// * `new_admin` - The administrator to be set for this contract.
+    /// * `new_max_supply` - The maximum supply of tokens that may ever be minted.
     ///
     /// # Reverts
     ///
