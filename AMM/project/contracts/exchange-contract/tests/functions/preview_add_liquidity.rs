@@ -72,11 +72,7 @@ mod success {
         let preview = preview_add_liquidity(
             &exchange.instance,
             CallParameters::default(),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
+            TxParameters::new(None, Some(100_000_000), None),
             preview_amount_a,
             exchange.asset_a,
         )
@@ -111,11 +107,7 @@ mod success {
         let preview = preview_add_liquidity(
             &exchange.instance,
             CallParameters::default(),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
+            TxParameters::new(None, Some(100_000_000), None),
             preview_amount_a,
             exchange.asset_a,
         )
@@ -150,11 +142,7 @@ mod success {
         let preview = preview_add_liquidity(
             &exchange.instance,
             CallParameters::default(),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
+            TxParameters::new(None, Some(100_000_000), None),
             preview_amount_b,
             exchange.asset_b,
         )
@@ -189,11 +177,7 @@ mod success {
         let preview = preview_add_liquidity(
             &exchange.instance,
             CallParameters::default(),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
+            TxParameters::new(None, Some(100_000_000), None),
             preview_amount_b,
             exchange.asset_b,
         )

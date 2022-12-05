@@ -80,7 +80,6 @@ pub mod abi_calls {
     pub async fn remove_liquidity(
         contract: &Exchange,
         call_params: CallParameters,
-        tx_params: TxParameters,
         min_asset_a: u64,
         min_asset_b: u64,
         deadline: u64,
@@ -89,7 +88,7 @@ pub mod abi_calls {
             .methods()
             .remove_liquidity(min_asset_a, min_asset_b, deadline)
             .call_params(call_params)
-            .tx_params(tx_params)
+            .tx_params(TxParameters::new(None, Some(10_000_000), None))
             .append_variable_outputs(2)
             .call()
             .await
@@ -106,11 +105,7 @@ pub mod abi_calls {
             .methods()
             .swap_exact_input(min_output, deadline)
             .call_params(call_params)
-            .tx_params(TxParameters {
-                gas_price: 0,
-                gas_limit: 10_000_000,
-                maturity: 0,
-            })
+            .tx_params(TxParameters::new(None, Some(10_000_000), None))
             .append_variable_outputs(1)
             .call()
             .await
@@ -127,11 +122,7 @@ pub mod abi_calls {
             .methods()
             .swap_exact_output(output, deadline)
             .call_params(call_params)
-            .tx_params(TxParameters {
-                gas_price: 0,
-                gas_limit: 10_000_000,
-                maturity: 0,
-            })
+            .tx_params(TxParameters::new(None, Some(10_000_000), None))
             .append_variable_outputs(2)
             .call()
             .await
@@ -186,11 +177,7 @@ pub mod abi_calls {
         contract
             .methods()
             .preview_swap_exact_input(exact_input, ContractId::new(*input_asset))
-            .tx_params(TxParameters {
-                gas_price: 0,
-                gas_limit: 10_000_000,
-                maturity: 0,
-            })
+            .tx_params(TxParameters::new(None, Some(10_000_000), None))
             .call()
             .await
             .unwrap()
@@ -204,11 +191,7 @@ pub mod abi_calls {
         contract
             .methods()
             .preview_swap_exact_output(exact_output, ContractId::new(*output_asset))
-            .tx_params(TxParameters {
-                gas_price: 0,
-                gas_limit: 10_000_000,
-                maturity: 0,
-            })
+            .tx_params(TxParameters::new(None, Some(10_000_000), None))
             .call()
             .await
             .unwrap()
@@ -262,12 +245,8 @@ pub mod test_helpers {
 
         let added = add_liquidity(
             &exchange.instance,
-            CallParameters::new(Some(0), None, Some(100_000_000)),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
+            CallParameters::new(Some(0), None, None),
+            TxParameters::new(None, Some(100_000_000), None),
             amounts.liquidity,
             amounts.deadline,
         )
