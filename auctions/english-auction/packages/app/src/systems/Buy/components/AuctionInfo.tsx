@@ -7,7 +7,7 @@ import { AssetOutput, AssetIdOutput } from "~/systems/Core/components";
 import { PlaceBid, EndBlock } from "~/systems/Buy/components";
 import { getSlicedAddress } from "~/systems/Core/utils";
 import { useState } from "react";
-import { useCanceAuction } from "../hooks/useCancelAuctaion";
+import { useCancelAuction } from "../hooks/useCancelAuctaion";
 import { useBid } from "../hooks/useBid";
 
 interface AuctionInfoProps {
@@ -19,7 +19,7 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
     const auctionInfo = auctions?.map((auction, index) => {
         const [auctionExpired, setAuctionExpired] = useState(false);
         //const bidMutation = useBid({ auctionId: bn(index), auctionAsset: { TokenAsset: { amount: "", asset_id: { value: "" } } } });
-        const cancelAuctionMutation = useCanceAuction({ auctionId: bn(index) });
+        const cancelAuctionMutation = useCancelAuction({ auctionId: bn(index) });
 
         return (
             <Stack>
@@ -62,8 +62,15 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
                     />
                 </Flex>
 
-                {auction?.state.Closed ? <Heading as="h5">Auction Closed</Heading> : <EndBlock endBlock={auction!.end_block} onChange={setAuctionExpired} />}
-                {(!auctionExpired && !auction?.state.Closed) && <Button onPress={() => cancelAuctionMutation.mutate()} css={{ minWidth: "100%" }}>Cancel Auction</Button>}
+                {auction?.state.Closed ?
+                    <Heading as="h5">Auction Closed</Heading> :
+                    <EndBlock endBlock={auction!.end_block} onChange={setAuctionExpired} />
+                }
+                {(!auctionExpired && !auction?.state.Closed) &&
+                    <Button onPress={() => cancelAuctionMutation.mutate()} css={{ minWidth: "100%" }}>
+                        Cancel Auction
+                    </Button>
+                }
             </Stack>
         );
     });

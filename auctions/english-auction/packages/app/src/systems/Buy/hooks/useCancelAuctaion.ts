@@ -8,7 +8,7 @@ interface UseCancelAuctionProps {
     auctionId: BN;
 };
 
-export const useCanceAuction = ({ auctionId }: UseCancelAuctionProps) => {
+export const useCancelAuction = ({ auctionId }: UseCancelAuctionProps) => {
     const contract = useContract();
 
     const mutation = useMutation(
