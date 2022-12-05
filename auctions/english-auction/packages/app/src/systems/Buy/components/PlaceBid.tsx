@@ -25,8 +25,6 @@ export const PlaceBid = ({ auctionId, auctionAssetAddress, seller }: PlaceBidPro
 
     useEffect(() => {
         const result = wallet?.address.toHexString();
-        console.log("output: ", result);
-        console.log("Seller", seller);
         setIdentityOutput(result);
     }, [wallet]);
 
