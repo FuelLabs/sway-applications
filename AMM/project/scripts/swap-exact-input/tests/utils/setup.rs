@@ -13,18 +13,18 @@ use crate::utils::{
 use fuels::{prelude::*, tx::Contract as TxContract};
 use std::collections::HashMap;
 
-pub struct MetaAMM {
+pub struct AMMContract {
     pub instance: AMM,
     pub id: ContractId,
-    pub pools: HashMap<(AssetId, AssetId), MetaExchange>,
+    pub pools: HashMap<(AssetId, AssetId), ExchangeContract>,
 }
 
-pub struct MetaExchange {
+pub struct ExchangeContract {
     pub instance: Exchange,
     pub id: ContractId,
 }
 
-pub struct MetaAmounts {
+pub struct LiquidityParameters {
     pub asset_a: AssetId,
     pub asset_b: AssetId,
     pub amount_a: u64,
@@ -43,7 +43,7 @@ pub async fn exchange_bytecode_root() -> ContractId {
 }
 
 // TODO (@supiket): call the atomic add liquidity script for test setup
-pub async fn deposit_and_add_liquidity(exchange_instance: &Exchange, amounts: &MetaAmounts) -> u64 {
+pub async fn deposit_and_add_liquidity(exchange_instance: &Exchange, amounts: &LiquidityParameters) -> u64 {
     let call_params =
         CallParameters::new(Some(amounts.amount_a), Some(amounts.asset_a.clone()), None);
     deposit(&exchange_instance, call_params).await;
@@ -77,7 +77,7 @@ pub async fn setup_wallet_and_provider() -> (WalletUnlocked, Vec<AssetId>, Provi
     (wallet, asset_ids, provider)
 }
 
-pub async fn setup_amm_contract(wallet: WalletUnlocked) -> MetaAMM {
+pub async fn setup_amm_contract(wallet: WalletUnlocked) -> AMMContract {
     let contract_id = Contract::deploy(
         AMM_CONTRACT_BINARY_PATH,
         &wallet,
@@ -94,7 +94,7 @@ pub async fn setup_amm_contract(wallet: WalletUnlocked) -> MetaAMM {
 
     initialize(&instance, exchange_bytecode_root().await).await;
 
-    MetaAMM {
+    AMMContract {
         instance,
         id: contract_id.into(),
         pools: HashMap::new(),
@@ -106,7 +106,7 @@ pub async fn setup_exchange_contract(
     pair: (AssetId, AssetId),
     ratio: u64,
     salt: [u8; 32],
-) -> MetaExchange {
+) -> ExchangeContract {
     let contract_id = Contract::deploy_with_parameters(
         EXCHANGE_CONTRACT_BINARY_PATH,
         &wallet,
@@ -125,7 +125,7 @@ pub async fn setup_exchange_contract(
 
     constructor(&instance, pair).await;
 
-    let amounts = MetaAmounts {
+    let amounts = LiquidityParameters {
         asset_a: pair.0,
         amount_a: 100,
         asset_b: pair.1,
@@ -135,12 +135,12 @@ pub async fn setup_exchange_contract(
 
     deposit_and_add_liquidity(&instance, &amounts).await;
 
-    MetaExchange { instance, id }
+    ExchangeContract { instance, id }
 }
 
 pub async fn setup_exchange_contracts(
     wallet: WalletUnlocked,
-    amm: &mut MetaAMM,
+    amm: &mut AMMContract,
     asset_ids: Vec<AssetId>,
 ) -> () {
     let mut i = 0;
@@ -163,7 +163,7 @@ pub async fn setup_exchange_contracts(
     }
 }
 
-pub async fn setup() -> (WalletUnlocked, Provider, MetaAMM, Vec<AssetId>) {
+pub async fn setup() -> (WalletUnlocked, Provider, AMMContract, Vec<AssetId>) {
     let (wallet, asset_ids, provider) = setup_wallet_and_provider().await;
     let mut amm = setup_amm_contract(wallet.clone()).await;
     setup_exchange_contracts(wallet.clone(), &mut amm, asset_ids.clone()).await;

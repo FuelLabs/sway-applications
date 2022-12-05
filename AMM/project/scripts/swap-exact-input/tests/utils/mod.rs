@@ -2,8 +2,9 @@ pub mod abi;
 pub mod setup;
 pub mod transaction;
 
-use self::{abi::exchange::preview_swap_exact_input, setup::MetaAMM};
+use abi::exchange::preview_swap_exact_input;
 use fuels::prelude::*;
+use setup::AMMContract;
 
 script_abigen!(
     SwapScript,
@@ -38,7 +39,7 @@ pub mod amounts {
     pub const MAXIMUM_INPUT_AMOUNT: u64 = 1_000_000;
 }
 
-pub async fn expected_swap_output(amm: &MetaAMM, input_amount: u64, route: Vec<AssetId>) -> u64 {
+pub async fn expected_swap_output(amm: &AMMContract, input_amount: u64, route: Vec<AssetId>) -> u64 {
     let mut expected_output = input_amount;
     let mut i = 0;
     while i < route.len() - 1 {
