@@ -22,7 +22,10 @@ mod success {
         let approved_identity = Some(Identity::Address(owner2.wallet.address().into()));
         approve(approved_identity.clone(), &owner1.contract, 0).await;
 
-        assert_eq!(approved(&owner1.contract, 0).await, approved_identity.clone());
+        assert_eq!(
+            approved(&owner1.contract, 0).await,
+            approved_identity.clone()
+        );
     }
 
     #[tokio::test]
@@ -43,9 +46,18 @@ mod success {
         approve(approved_identity.clone(), &owner1.contract, 1).await;
         approve(approved_identity.clone(), &owner1.contract, 2).await;
 
-        assert_eq!(approved(&owner1.contract, 0).await, approved_identity.clone());
-        assert_eq!(approved(&owner1.contract, 1).await, approved_identity.clone());
-        assert_eq!(approved(&owner1.contract, 2).await, approved_identity.clone());
+        assert_eq!(
+            approved(&owner1.contract, 0).await,
+            approved_identity.clone()
+        );
+        assert_eq!(
+            approved(&owner1.contract, 1).await,
+            approved_identity.clone()
+        );
+        assert_eq!(
+            approved(&owner1.contract, 2).await,
+            approved_identity.clone()
+        );
     }
 
     #[tokio::test]

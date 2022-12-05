@@ -1,7 +1,5 @@
 use crate::utils::{
-    abi_calls::{
-        approve, balance_of, constructor, mint, owner_of, set_approval_for_all, transfer,
-    },
+    abi_calls::{approve, balance_of, constructor, mint, owner_of, set_approval_for_all, transfer},
     test_helpers::setup,
 };
 use fuels::{prelude::Identity, signers::Signer};
@@ -52,7 +50,10 @@ mod success {
 
         transfer(&owner2.contract, to.clone(), 0).await;
 
-        assert_eq!(owner_of(&owner1.contract, 0).await, approved_identity.clone());
+        assert_eq!(
+            owner_of(&owner1.contract, 0).await,
+            approved_identity.clone()
+        );
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 0);
         assert_eq!(balance_of(&owner2.contract, to.clone()).await, 1);
     }
@@ -109,7 +110,6 @@ mod success {
         assert_eq!(owner_of(&owner1.contract, 2).await, Some(minter.clone()));
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 2);
         assert_eq!(balance_of(&owner2.contract, to.clone()).await, 2);
-
 
         transfer(&owner1.contract, to.clone(), 2).await;
 

@@ -1,9 +1,12 @@
 use crate::utils::{
-    abi_calls::{constructor, token_metadata, mint},
+    abi_calls::{constructor, mint, token_metadata},
     test_helpers::setup,
     TokenMetadata,
 };
-use fuels::{prelude::{Identity, SizedAsciiString}, signers::Signer};
+use fuels::{
+    prelude::{Identity, SizedAsciiString},
+    signers::Signer,
+};
 
 mod success {
 
@@ -19,7 +22,7 @@ mod success {
         mint(1, &owner1.contract, minter.clone()).await;
 
         let example_metadata = TokenMetadata {
-            name: SizedAsciiString::<7>::new("Example".to_string()).unwrap()
+            name: SizedAsciiString::<7>::new("Example".to_string()).unwrap(),
         };
 
         assert_eq!(
@@ -38,7 +41,7 @@ mod success {
         mint(3, &owner1.contract, minter.clone()).await;
 
         let example_metadata = TokenMetadata {
-            name: SizedAsciiString::<7>::new("Example".to_string()).unwrap()
+            name: SizedAsciiString::<7>::new("Example".to_string()).unwrap(),
         };
 
         assert_eq!(

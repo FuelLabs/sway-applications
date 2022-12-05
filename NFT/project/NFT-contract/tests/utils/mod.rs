@@ -1,9 +1,6 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
 
-abigen!(
-    Nft,
-    "./project/NFT-contract/out/debug/NFT-abi.json"
-);
+abigen!(Nft, "./project/NFT-contract/out/debug/NFT-abi.json");
 
 pub struct Metadata {
     pub contract: Nft,
@@ -23,7 +20,11 @@ pub mod abi_calls {
         contract.methods().admin().call().await.unwrap().value
     }
 
-    pub async fn approve(approved: Option<Identity>, contract: &Nft, token_id: u64) -> CallResponse<()> {
+    pub async fn approve(
+        approved: Option<Identity>,
+        contract: &Nft,
+        token_id: u64,
+    ) -> CallResponse<()> {
         contract
             .methods()
             .approve(approved.clone(), token_id)
@@ -69,11 +70,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn is_approved_for_all(
-        contract: &Nft,
-        operator: Identity,
-        owner: Identity,
-    ) -> bool {
+    pub async fn is_approved_for_all(contract: &Nft, operator: Identity, owner: Identity) -> bool {
         contract
             .methods()
             .is_approved_for_all(operator.clone(), owner.clone())
@@ -148,11 +145,7 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn transfer(
-        contract: &Nft,
-        to: Identity,
-        token_id: u64,
-    ) -> CallResponse<()> {
+    pub async fn transfer(contract: &Nft, to: Identity, token_id: u64) -> CallResponse<()> {
         contract
             .methods()
             .transfer(to.clone(), token_id)

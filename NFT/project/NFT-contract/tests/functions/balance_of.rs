@@ -50,9 +50,15 @@ mod success {
         let (_deploy_wallet, owner1, owner2) = setup().await;
 
         let balance_identity_1 = Identity::Address(owner1.wallet.address().into());
-        assert_eq!(balance_of(&owner1.contract, balance_identity_1.clone()).await, 0);
+        assert_eq!(
+            balance_of(&owner1.contract, balance_identity_1.clone()).await,
+            0
+        );
 
         let balance_identity_2 = Identity::Address(owner2.wallet.address().into());
-        assert_eq!(balance_of(&owner1.contract, balance_identity_2.clone()).await, 0);
+        assert_eq!(
+            balance_of(&owner1.contract, balance_identity_2.clone()).await,
+            0
+        );
     }
 }
