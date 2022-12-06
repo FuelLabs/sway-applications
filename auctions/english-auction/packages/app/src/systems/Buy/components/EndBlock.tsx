@@ -1,5 +1,5 @@
 import type { BN } from "fuels";
-import { Heading } from "@fuel-ui/react";
+import { Flex, Heading } from "@fuel-ui/react";
 import { useLatestBlockHeight } from "~/systems/Core/hooks/useLatestBlockHeight";
 import { useEffect, useState } from "react";
 
@@ -29,8 +29,8 @@ export const EndBlock = ({ endBlock, onChange }: EndBlockProps) => {
     const endText = curBlocksAway?.isNeg() ? 'Auction Ended' : `Auction ends in ${curBlocksAway?.toString()} blocks at block height ${endBlock.toString()}`;
 
     return (
-        <>
-            <Heading as="h5">{endText}</Heading>
-        </>
+        <Flex>
+            <Heading as="h5" css={{ marginLeft: "$5" }}>{endText}</Heading>
+        </Flex>
     );
 }

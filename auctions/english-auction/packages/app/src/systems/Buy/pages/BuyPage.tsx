@@ -9,20 +9,17 @@ export function BuyPage() {
 
   return (
     <MainLayout>
-      <Flex justify="center">
-        <Card css={{ width: "600px" }}>
-          <Card.Header>
-            <Heading as="h3">
-              Auctions
-            </Heading>
-          </Card.Header>
-          <Card.Body>
-            <Stack gap="$5">
-              <AuctionInfo auctions={auctionInfo!} />
-            </Stack>
-          </Card.Body>
+      <Stack align="center">
+        <Card align="center" css={{ width: "700px" }}>
+          <Heading as="h3">
+            Auctions
+          </Heading>
         </Card>
-      </Flex>
+
+        <Stack gap="$5">
+          <AuctionInfo auctions={auctionInfo!} />
+        </Stack>
+      </Stack>
     </MainLayout>
   );
 }

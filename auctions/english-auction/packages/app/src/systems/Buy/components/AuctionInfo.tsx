@@ -1,6 +1,6 @@
 import { OptionalAuctionOutput } from "~/types/contracts/EnglishAuctionAbi";
 
-import { Stack, Flex, Button, Heading } from "@fuel-ui/react";
+import { Stack, Flex, Card, Heading } from "@fuel-ui/react";
 import { bn } from "fuels";
 
 import { AssetOutput, AssetIdOutput } from "~/systems/Core/components";
@@ -21,55 +21,59 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
         const [auctionExpired, setAuctionExpired] = useState(false);
 
         return (
-            <Stack>
-                <Flex>
-                    <AssetOutput
-                        assetId={auction?.sell_asset.TokenAsset?.asset_id.value!}
-                        assetAmount={auction?.sell_asset.TokenAsset?.amount.format()!}
-                        heading="Selling"
-                    />
+            <Card>
 
-                    <AssetOutput
-                        assetId={auction?.bid_asset.TokenAsset?.asset_id.value!}
-                        assetAmount={auction?.bid_asset.TokenAsset?.amount.format()!}
-                        heading="Highest Bid"
-                    />
+                <Stack>
+                    <Flex>
+                        <AssetOutput
+                            assetId={auction?.sell_asset.TokenAsset?.asset_id.value!}
+                            assetAmount={auction?.sell_asset.TokenAsset?.amount.format()!}
+                            heading="Selling"
+                        />
 
-                    <AssetOutput
-                        assetId={auction?.bid_asset.TokenAsset?.asset_id.value!}
-                        assetAmount={auction?.initial_price.format()!}
-                        heading="Initial Price"
-                    />
-                </Flex>
+                        <AssetOutput
+                            assetId={auction?.bid_asset.TokenAsset?.asset_id.value!}
+                            assetAmount={auction?.bid_asset.TokenAsset?.amount.format()!}
+                            heading="Highest Bid"
+                        />
 
-                {(!auctionExpired && !auction?.state.Closed) &&
-                    <PlaceBid
-                        auctionId={bn(index)}
-                        auctionAssetAddress={auction?.bid_asset.TokenAsset?.asset_id!}
-                        seller={auction?.seller!}
-                    />
-                }
+                        <AssetOutput
+                            assetId={auction?.bid_asset.TokenAsset?.asset_id.value!}
+                            assetAmount={auction?.initial_price.format()!}
+                            heading="Initial Price"
+                        />
+                    </Flex>
 
-                <Flex>
-                    <AssetIdOutput
-                        assetId={getSlicedAddress(auction?.seller.Address?.value!)}
-                        heading="Seller"
-                    />
+                    {(!auctionExpired && !auction?.state.Closed) &&
+                        <PlaceBid
+                            auctionId={bn(index)}
+                            auctionAssetAddress={auction?.bid_asset.TokenAsset?.asset_id!}
+                            seller={auction?.seller!}
+                        />
+                    }
 
-                    <AssetIdOutput
-                        assetId={(auction?.highest_bidder?.Address?.value && getSlicedAddress(auction?.highest_bidder?.Address?.value)) || "None"}
-                        heading="Highest Bidder"
-                    />
-                </Flex>
+                    <Flex>
+                        <AssetIdOutput
+                            assetId={getSlicedAddress(auction?.seller.Address?.value!)}
+                            heading="Seller"
+                        />
 
-                {auction?.state.Closed ?
-                    <Heading as="h5">Auction Closed</Heading> :
-                    <EndBlock endBlock={auction!.end_block} onChange={setAuctionExpired} />
-                }
-                {(!auctionExpired && !auction?.state.Closed) &&
-                    <CancelAuctionButton index={index} seller={auction?.seller!} />
-                }
-            </Stack>
+                        <AssetIdOutput
+                            assetId={(auction?.highest_bidder?.Address?.value && getSlicedAddress(auction?.highest_bidder?.Address?.value)) || "None"}
+                            heading="Highest Bidder"
+                        />
+                    </Flex>
+
+                    {auction?.state.Closed ?
+                        <Heading as="h5" css={{ marginLeft: "$5" }}>Auction Closed</Heading> :
+                        <EndBlock endBlock={auction!.end_block} onChange={setAuctionExpired} />
+                    }
+                    {(!auctionExpired && !auction?.state.Closed) &&
+                        <CancelAuctionButton index={index} seller={auction?.seller!} />
+                    }
+                </Stack>
+            </Card>
+
         );
     });
 
