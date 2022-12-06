@@ -139,7 +139,7 @@ export const CreateAuction = () => {
             onChange={handleInputChange}
             identityValue={auctionValues.seller}
             objKey="seller"
-            label="seller"
+            label="Seller"
           />
 
           <SellAuctionAssetInput
