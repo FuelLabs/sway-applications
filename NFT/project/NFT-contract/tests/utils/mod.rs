@@ -1,6 +1,6 @@
 use fuels::{contract::contract::CallResponse, prelude::*};
 
-abigen!(Nft, "./project/NFT-contract/out/debug/NFT-abi.json");
+abigen!(Nft, "./project/NFT-contract/out/debug/NFT-contract-abi.json");
 
 pub struct Metadata {
     pub contract: Nft,
@@ -8,8 +8,8 @@ pub struct Metadata {
 }
 
 pub mod paths {
-    pub const NFT_CONTRACT_BINARY_PATH: &str = "./out/debug/NFT.bin";
-    pub const NFT_CONTRACT_STORAGE_PATH: &str = "./out/debug/NFT-storage_slots.json";
+    pub const NFT_CONTRACT_BINARY_PATH: &str = "./out/debug/NFT-contract.bin";
+    pub const NFT_CONTRACT_STORAGE_PATH: &str = "./out/debug/NFT-contract-storage_slots.json";
 }
 
 pub mod abi_calls {
