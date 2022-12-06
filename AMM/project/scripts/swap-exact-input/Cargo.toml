@@ -8,8 +8,8 @@ license = "Apache-2.0"
 [dev-dependencies]
 fuel-gql-client = { version = "0.14.1", default-features = false }
 fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", branch = "hal3e/script-vec-support", features = ["fuel-core-lib"] }
-tokio = { version = "1.12", features = ["rt", "macros"] }
 test-utils = { path = "../../test-utils" }
+tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]
 harness = true
