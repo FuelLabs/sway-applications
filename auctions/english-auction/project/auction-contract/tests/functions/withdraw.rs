@@ -1,7 +1,7 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{bid, create, deposit_balance, withdraw},
-    nft_abi_calls::{approve, constructor, mint, owner_of},
+    nft_abi_calls::{approve, mint, owner_of},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
 use fuels::prelude::{AssetId, Identity};
@@ -78,8 +78,7 @@ mod success {
             _,
             buy_nft_contract_id,
         ) = setup().await;
-        let (sell_count, initial_count, reserve_count, duration, access_control) =
-            defaults_nft().await;
+        let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let auction_identity = Identity::ContractId(auction_contract_id.into());
@@ -88,24 +87,10 @@ mod success {
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
         let bid_asset = nft_asset(buy_nft_contract_id, 0).await;
 
-        constructor(
-            access_control,
-            &seller.nft,
-            seller_identity.clone(),
-            sell_count,
-        )
-        .await;
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
-        approve(auction_identity.clone(), &seller.nft, 0).await;
-        constructor(
-            access_control,
-            &buyer1.nft,
-            buyer1_identity.clone(),
-            reserve_count,
-        )
-        .await;
+        approve(Some(auction_identity.clone()), &seller.nft, 0).await;
         mint(reserve_count, &buyer1.nft, buyer1_identity.clone()).await;
-        approve(auction_identity.clone(), &buyer1.nft, 0).await;
+        approve(Some(auction_identity.clone()), &buyer1.nft, 0).await;
 
         let auction_id = create(
             buy_asset.clone(),
@@ -133,7 +118,7 @@ mod success {
             deposit_balance(auction_id, &seller.auction, buyer1_identity.clone()).await,
             None
         );
-        assert_eq!(owner_of(&seller.nft, 0).await, buyer1_identity);
+        assert_eq!(owner_of(&seller.nft, 0).await.unwrap(), buyer1_identity);
     }
 
     #[tokio::test]
@@ -257,8 +242,7 @@ mod success {
             _,
             buy_nft_contract_id,
         ) = setup().await;
-        let (sell_count, initial_count, reserve_count, duration, access_control) =
-            defaults_nft().await;
+        let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let auction_identity = Identity::ContractId(auction_contract_id.into());
@@ -267,24 +251,10 @@ mod success {
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
         let bid_asset = nft_asset(buy_nft_contract_id, 0).await;
 
-        constructor(
-            access_control,
-            &seller.nft,
-            seller_identity.clone(),
-            sell_count,
-        )
-        .await;
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
-        approve(auction_identity.clone(), &seller.nft, 0).await;
-        constructor(
-            access_control,
-            &buyer1.nft,
-            buyer1_identity.clone(),
-            reserve_count,
-        )
-        .await;
+        approve(Some(auction_identity.clone()), &seller.nft, 0).await;
         mint(reserve_count, &buyer1.nft, buyer1_identity.clone()).await;
-        approve(auction_identity.clone(), &buyer1.nft, 0).await;
+        approve(Some(auction_identity.clone()), &buyer1.nft, 0).await;
 
         let auction_id = create(
             buy_asset.clone(),
@@ -312,7 +282,7 @@ mod success {
             deposit_balance(auction_id, &seller.auction, seller_identity.clone()).await,
             None
         );
-        assert_eq!(owner_of(&buyer1.nft, 0).await, seller_identity);
+        assert_eq!(owner_of(&buyer1.nft, 0).await.unwrap(), seller_identity);
     }
 
     #[tokio::test]
