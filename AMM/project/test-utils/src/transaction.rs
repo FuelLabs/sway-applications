@@ -1,6 +1,9 @@
 use super::{data_structures::AMMContract, setup::scripts::MAXIMUM_INPUT_AMOUNT};
-use fuel_gql_client::{client::schema::resource::Resource, prelude::*};
-use fuels::prelude::*;
+use fuels::{
+    prelude::*,
+    tx::{Bytes32, Input, Output, TxPointer, UtxoId},
+    types::resource::Resource,
+};
 
 pub async fn transaction_inputs_outputs_for_scripts(
     wallet: &WalletUnlocked,

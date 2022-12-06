@@ -1,4 +1,3 @@
-use fuel_gql_client::prelude::*;
 use fuels::prelude::*;
 use test_utils::{
     abi::{exchange::preview_swap_exact_input, SwapScript},
