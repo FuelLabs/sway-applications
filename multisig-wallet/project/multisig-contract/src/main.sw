@@ -62,7 +62,7 @@ impl MultiSignatureWallet for Contract {
     ) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
-        let transaction_hash = create_hash(to, value, data, storage.nonce);
+        let transaction_hash = create_hash(data, storage.nonce, to, value);
         let approval_count = count_approvals(signatures_data, transaction_hash);
 
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
@@ -89,7 +89,7 @@ impl MultiSignatureWallet for Contract {
         require(storage.nonce != 0, InitError::NotInitialized);
         require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
-        let transaction_hash = create_hash(to, value, data, storage.nonce);
+        let transaction_hash = create_hash(data, storage.nonce, to, value);
         let approval_count = count_approvals(signatures_data, transaction_hash);
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
@@ -115,7 +115,7 @@ impl MultiSignatureWallet for Contract {
     }
 
     fn transaction_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
-        create_hash(to, value, data, nonce)
+        create_hash(data, nonce, to, value)
     }
 }
 

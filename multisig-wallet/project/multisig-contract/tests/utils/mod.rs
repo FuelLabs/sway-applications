@@ -26,7 +26,7 @@ pub mod abi_calls {
     ) -> CallResponse<()> {
         contract
             .methods()
-            .constructor(users, threshold)
+            .constructor(threshold, users)
             .call()
             .await
             .unwrap()
@@ -41,7 +41,7 @@ pub mod abi_calls {
     ) -> CallResponse<()> {
         contract
             .methods()
-            .execute_transaction(to, value, data, signatures_data)
+            .execute_transaction(data, signatures_data, to, value)
             .append_variable_outputs(1)
             .call()
             .await
@@ -58,7 +58,7 @@ pub mod abi_calls {
     ) -> CallResponse<()> {
         contract
             .methods()
-            .transfer(to, asset_id, value, data, signatures_data)
+            .transfer(asset_id, data, signatures_data, to, value)
             .append_variable_outputs(1)
             .call()
             .await
@@ -82,7 +82,7 @@ pub mod abi_calls {
     ) -> CallResponse<Bits256> {
         contract
             .methods()
-            .transaction_hash(to, value, data, nonce)
+            .transaction_hash(data, nonce, to, value)
             .call()
             .await
             .unwrap()

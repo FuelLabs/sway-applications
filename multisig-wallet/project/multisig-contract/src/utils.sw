@@ -19,7 +19,7 @@ use std::{
 use data_structures::{MessageFormat, MessagePrefix, SignatureData, Transaction, WalletType};
 
 /// Takes in transaction data and hashes it into a unique transaction hash.
-pub fn create_hash(to: Identity, value: u64, data: b256, nonce: u64) -> b256 {
+pub fn create_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
     sha256(Transaction {
         contract_identifier: contract_id(),
         data,
