@@ -8,14 +8,14 @@ abi DutchAuction {
     /// Returns the number of active auctions of the author
     ///
     /// # Argumets
-    /// 
+    ///
     /// * `author` - The author of which to retrieve the number of active auctions of
     #[storage(read)]
     fn active_auctions_of_author(author: Identity) -> u64;
     /// Returns the auction_id of the active auction of the author at the given index
     ///
     /// # Arguments
-    /// 
+    ///
     /// * `author` - The author of which to retrieve the active auction of
     /// * `index` - The index to retrieve
     ///
@@ -24,13 +24,13 @@ abi DutchAuction {
     /// * When the index is greater than the number of active auctions of the author
     #[storage(read)]
     fn active_auction_of_author(author: Identity, index: u64) -> u64;
-    
+
     /// Returns the auction data for the specified auction ID
     ///
     /// # Arguments
     ///
-    /// * `auction_id` - The id of the auction of which to fetch the data of 
-    /// 
+    /// * `auction_id` - The id of the auction of which to fetch the data of
+    ///
     /// # Reverts
     ///
     /// * When the auction_id is 0 or greater than storage.auction_count
@@ -53,7 +53,7 @@ abi DutchAuction {
     /// Returns the auction_id of the auction of the author at the given index
     ///
     /// # Arguments
-    /// 
+    ///
     /// * `author` - The author of which to retrieve the auction of
     /// * `index` - The index to retrieve
     ///
@@ -65,7 +65,7 @@ abi DutchAuction {
     /// Returns the auction_id of the won auction of the bidder at the given index
     ///
     /// # Arguments
-    /// 
+    ///
     /// * `bidder` - The bidder of which to retrieve the auction of
     /// * `index` - The index to retrieve
     ///
@@ -89,7 +89,7 @@ abi DutchAuction {
     /// * When the bid is less than the current price
     #[storage(read, write)]
     fn bid(auction_id: u64);
-    
+
     /// Cancels an auction preventing any bids from being placed
     ///
     /// # Arguments
@@ -103,11 +103,11 @@ abi DutchAuction {
     /// * When the auction has already ended
     #[storage(read, write)]
     fn cancel_auction(auction_id: u64);
-    
+
     /// Changes the asset an auction accepts for a bid
     ///
     /// # Arguments
-    /// 
+    ///
     /// * `new_asset` - The asset which will henceforth be used for the auction
     /// * `auction_id` - The id of the auction of which to change the asset of
     ///
@@ -118,7 +118,7 @@ abi DutchAuction {
     /// * When the auction has already ended
     #[storage(read, write)]
     fn change_asset(new_asset: ContractId, auction_id: u64);
-    
+
     /// Changes the beneficiary of the given auction
     ///
     /// # Arguments

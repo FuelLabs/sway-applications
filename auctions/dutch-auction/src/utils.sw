@@ -10,7 +10,10 @@ use std::{
     },
     block::height,
     hash::sha256,
-    storage::{store, get},
+    storage::{
+        get,
+        store,
+    },
     token::{
         force_transfer_to_contract,
         transfer_to_address,
@@ -89,7 +92,6 @@ pub fn validate_id(id: u64, auction_count: u64) {
     require(id != 0, UserError::InvalidAuctionID);
     require(id <= auction_count, UserError::InvalidAuctionID);
 }
-
 
 /// A persistant mapping of K -> Vec<V>
 pub struct StorageMapVec<K, V> {}
@@ -211,7 +213,6 @@ impl<K, V> StorageMapVec<K, V> {
         let key = sha256((key, index, __get_storage_key()));
         Option::Some::<V>(get::<V>(key))
     }
-
 
     /// Returns the length of the vector
     ///

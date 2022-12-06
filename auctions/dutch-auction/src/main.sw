@@ -12,7 +12,14 @@ use interface::DutchAuction;
 use data_structures::Auction;
 use errors::{SetupError, TimeError, UserError};
 use events::{CancelledAuctionEvent, ChangedAsset, CreatedAuctionEvent, WinningBidEvent};
-use utils::{calculate_price, eq_identity, sender_indentity, transfer_to_identity, validate_id, StorageMapVec};
+use utils::{
+    calculate_price,
+    eq_identity,
+    sender_indentity,
+    StorageMapVec,
+    transfer_to_identity,
+    validate_id,
+};
 
 storage {
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
@@ -27,7 +34,7 @@ storage {
     auctions_won: StorageMapVec<Identity, u64> = StorageMapVec {},
 }
 
-impl DutchAuction for Contract {  
+impl DutchAuction for Contract {
     #[storage(read)]
     fn price(auction_id: u64) -> u64 {
         validate_id(auction_id, storage.auction_count);
@@ -69,7 +76,6 @@ impl DutchAuction for Contract {
 
         on_win(auction, price);
 
-
         let _ = storage.active_auctions_of_author.pop(auction.author);
 
         storage.auctions_won.push(sender_indentity(), auction_id);
@@ -108,7 +114,6 @@ impl DutchAuction for Contract {
 
         storage.auction_count = storage.auction_count + 1;
         storage.auctions.insert(storage.auction_count, auction);
-
 
         storage.active_auctions_of_author.push(sender_indentity(), storage.auction_count);
 
