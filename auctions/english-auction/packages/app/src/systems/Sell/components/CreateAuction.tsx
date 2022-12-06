@@ -134,7 +134,7 @@ export const CreateAuction = () => {
     <Flex justify="center">
       <Card>
         <Card.Header>Create Auction</Card.Header>
-        <Stack css={{ width: "475px", margin: "10px" }}>
+        <Stack gap="$5" css={{ width: "475px", margin: "10px" }}>
           <AddressInput
             onChange={handleInputChange}
             identityValue={auctionValues.seller}
