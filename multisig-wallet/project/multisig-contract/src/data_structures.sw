@@ -11,10 +11,10 @@ pub struct User {
 }
 
 pub struct Transaction {
-    /// Unique identifier for the contract which prevents this Tx from being submitted to another
+    /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
     contract_identifier: ContractId,
-    /// Payload sent to destination  // TODO: change to Bytes when implemented.
+    /// Payload sent to destination  // TODO: change to Bytes when implemented: https://github.com/FuelLabs/sway/pull/3454
     data: b256,
     /// The recipient (output / contract) regarding the Tx details.
     destination: Identity,

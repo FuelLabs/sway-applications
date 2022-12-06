@@ -2,6 +2,7 @@ contract;
 
 // TODO:
 //      - change the "data" in the Tx hashing from b256 to Bytes type when available.
+//        https://github.com/FuelLabs/sway/pull/3454
 dep interface;
 dep data_structures;
 dep errors;
@@ -35,7 +36,7 @@ storage {
 
 impl MultiSignatureWallet for Contract {
     #[storage(read, write)]
-    fn constructor(users: Vec<User>, threshold: u64) {
+    fn constructor(threshold: u64, users: Vec<User>) {
         require(storage.nonce == 0, InitError::CannotReinitialize);
         require(threshold != 0, InitError::ThresholdCannotBeZero);
 
@@ -54,15 +55,15 @@ impl MultiSignatureWallet for Contract {
 
     #[storage(read, write)]
     fn execute_transaction(
-        to: Identity,
-        value: u64,
         data: b256,
         signatures_data: Vec<SignatureData>,
+        to: Identity,
+        value: u64,
     ) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
         let transaction_hash = create_hash(to, value, data, storage.nonce);
-        let approval_count = count_approvals(transaction_hash, signatures_data);
+        let approval_count = count_approvals(signatures_data, transaction_hash);
 
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
@@ -79,17 +80,17 @@ impl MultiSignatureWallet for Contract {
 
     #[storage(read, write)]
     fn transfer(
-        to: Identity,
         asset_id: ContractId,
-        value: u64,
         data: b256,
         signatures_data: Vec<SignatureData>,
+        to: Identity,
+        value: u64,
     ) {
         require(storage.nonce != 0, InitError::NotInitialized);
         require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
         let transaction_hash = create_hash(to, value, data, storage.nonce);
-        let approval_count = count_approvals(transaction_hash, signatures_data);
+        let approval_count = count_approvals(signatures_data, transaction_hash);
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
         storage.nonce += 1;
@@ -113,17 +114,17 @@ impl MultiSignatureWallet for Contract {
         this_balance(asset_id)
     }
 
-    fn transaction_hash(to: Identity, value: u64, data: b256, nonce: u64) -> b256 {
+    fn transaction_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
         create_hash(to, value, data, nonce)
     }
 }
 
-/// Takes in a tx hash and signatures with associated data.
+/// Takes in a transaction hash and signatures with associated data.
 /// Recovers a b256 address from each signature;
 /// it then increments the number of approvals by that address' approval weighting.
 /// Returns the final approval count.
 #[storage(read)]
-fn count_approvals(transaction_hash: b256, signatures_data: Vec<SignatureData>) -> u64 {
+fn count_approvals(signatures_data: Vec<SignatureData>, transaction_hash: b256) -> u64 {
     // The signers must have increasing values in order to check for duplicates or a zero-value.
     let mut previous_signer = b256::min();
 

@@ -9,17 +9,29 @@ use data_structures::{SignatureData, User};
 abi MultiSignatureWallet {
     /// The constructor initializes the necessary values and unlocks further functionlity.
     ///
-    /// # Panics
+    /// # Arguments
     ///
-    /// - When the constructor is called more than once.
-    /// - When the user address is the 0th address (0x00000...).
-    /// - When the threshold is set to 0.
-    /// - When an owner has an approval weight of 0.
+    /// * 'threshold' - The number of approvals required to enable a transasction.
+    /// * 'users' - The users of the multisig, who can sign transactions to add their approval.
+    ///
+    /// # Reverts
+    ///
+    /// * When the constructor is called more than once.
+    /// * When the user address is the 0th address (0x00000...).
+    /// * When the threshold is set to 0.
+    /// * When an owner has an approval weight of 0.
     #[storage(read, write)]
-    fn constructor(users: Vec<User>, threshold: u64);
+    fn constructor(threshold: u64, users: Vec<User>);
 
-    /// Executes a Tx formed from the `to, `value` and `data` parameters if the signatures meet the
+    /// Execute a transaction formed from the `to, `value` and `data` parameters if the signatures meet the
     /// threshold requirement.
+    ///
+    /// # Arguments
+    ///
+    /// * 'data' - The data field of the transaction.
+    /// * 'signatures_data' - The information for each user's signature for a specific transaction.
+    /// * 'to' - The recipient of the transaction.
+    /// * 'value' - The value sent in the transaction.
     ///
     /// # Panics
     ///
@@ -28,9 +40,17 @@ abi MultiSignatureWallet {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// - When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn execute_transaction(to: Identity, value: u64, data: b256, signatures_data: Vec<SignatureData>);
+    fn execute_transaction(data: b256, signatures_data: Vec<SignatureData>, to: Identity, value: u64);
 
     /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement.
+    ///
+    /// # Arguments
+    ///
+    /// * 'asset_id' - The contract ID of the asset to be transferred.
+    /// * 'data' - The data field of the transaction.
+    /// * 'signatures_data' - The information for each user's signature for a specific transaction.
+    /// * 'to' - The recipient of the transaction.
+    /// * 'value' - The value sent in the transaction.
     ///
     /// # Panics
     ///
@@ -40,17 +60,26 @@ abi MultiSignatureWallet {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// - When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn transfer(to: Identity, asset_id: ContractId, value: u64, data: b256, signatures_data: Vec<SignatureData>);
+    fn transfer(asset_id: ContractId, data: b256, signatures_data: Vec<SignatureData>, to: Identity, value: u64);
 
-    /// Returns the current nonce in the contract.
-    /// Used to check the nonce and create a Tx via transaction_hash().
+    /// Returns the current nonce in the contract
     #[storage(read)]
     fn nonce() -> u64;
 
-    /// Returns the balance of the specified asset_id for this contract.
+    /// Returns the contract's balance of the specified asset.
+    ///
+    /// # Arguments
+    ///
+    /// * 'asset_id' - The contract ID of the asset to check that balance of.
     fn balance(asset_id: ContractId) -> u64;
 
     /// Takes in transaction data and hashes it into a unique tx hash.
-    /// Used for verification of message.
-    fn transaction_hash(to: Identity, value: u64, data: b256, nonce: u64) -> b256;
+    ///
+    /// # Arguments
+    ///
+    /// * 'data' - The data field of the transaction.
+    /// * 'nonce' - The nonce field of the transaction.
+    /// * 'to' - The recipient of the transaction.
+    /// * 'value' - The value sent in the transaction.
+    fn transaction_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256;
 }

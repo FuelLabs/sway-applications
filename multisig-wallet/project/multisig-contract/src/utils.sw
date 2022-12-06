@@ -18,7 +18,7 @@ use std::{
 
 use data_structures::{MessageFormat, MessagePrefix, SignatureData, Transaction, WalletType};
 
-/// Takes in transaction data and hashes it into a unique tx hash.
+/// Takes in transaction data and hashes it into a unique transaction hash.
 pub fn create_hash(to: Identity, value: u64, data: b256, nonce: u64) -> b256 {
     sha256(Transaction {
         contract_identifier: contract_id(),
@@ -81,8 +81,9 @@ fn eip_191_personal_sign_format(data_to_sign: b256) -> b256 {
         hash: b256
     }
 }
-/// Encode the packed_bytes and message_hash into a Vec<u64> of length 40 bytes,
-/// where the first 34 bytes are the desired data.
+
+/// Encode the packed_bytes, version_byte and message_hash into a Vec<u64> of length 40 bytes,
+/// where the first 34 bytes are the desired data tightly packed.
 fn encode_data(initial_byte: u64, version_byte: u64, message_hash: b256) -> Vec<u64> {
     let mut data = Vec::with_capacity(5);
 
