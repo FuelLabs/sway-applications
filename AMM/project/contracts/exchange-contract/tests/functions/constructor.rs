@@ -1,8 +1,6 @@
-use crate::utils::{
-    abi_calls::{constructor, pool_info},
-    test_helpers::setup,
-};
+use crate::utils::setup;
 use fuels::prelude::*;
+use test_utils::abi::exchange::{constructor, pool_info};
 
 mod success {
     use super::*;
@@ -24,7 +22,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"CannotReinitialize\"")]
     async fn when_reinitialized() {
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, asset_b_id, _asset_c_id) =
             setup().await;
@@ -34,7 +32,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"PoolAssetsCannotBeIdentical\"")]
     async fn when_assets_in_pair_are_identical() {
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;

@@ -6,7 +6,8 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-fuels = { version = "0.31.1", features = ["fuel-core-lib"] }
+fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", branch = "hal3e/script-vec-support", features = ["fuel-core-lib"] }
+test-utils = { path = "../../test-utils" }
 tokio = { version = "1.21.0", features = ["rt", "macros"] }
 
 [[test]]

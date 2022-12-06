@@ -61,7 +61,7 @@ impl Exchange for Contract {
     #[storage(read, write)]
     fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64 {
         require(storage.pair.is_some(), InitError::NotInitialized);
-        require(deadline > height(), InputError::DeadlinePassed);
+        require(deadline > height(), InputError::DeadlinePassed(deadline));
         require(msg_amount() == 0, InputError::AmountMustBeZero);
         require(MINIMUM_LIQUIDITY <= desired_liquidity, InputError::AmountTooLow(desired_liquidity));
 
@@ -188,7 +188,7 @@ impl Exchange for Contract {
 
         require(msg_asset_id() == contract_id(), InputError::InvalidAsset);
         require(min_asset_a > 0 && min_asset_b > 0, InputError::AmountCannotBeZero);
-        require(deadline > height(), InputError::DeadlinePassed);
+        require(deadline > height(), InputError::DeadlinePassed(deadline));
 
         let amount = msg_amount();
 
@@ -228,7 +228,7 @@ impl Exchange for Contract {
         let input_asset = msg_asset_id();
         let output_asset = determine_output_asset(input_asset, storage.pair);
 
-        require(deadline >= height(), InputError::DeadlinePassed);
+        require(deadline >= height(), InputError::DeadlinePassed(deadline));
 
         let exact_input = msg_amount();
         require(exact_input > 0, InputError::AmountCannotBeZero);
@@ -264,7 +264,7 @@ impl Exchange for Contract {
         let input_asset = msg_asset_id();
         let output_asset = determine_output_asset(input_asset, storage.pair);
 
-        require(deadline > height(), InputError::DeadlinePassed);
+        require(deadline > height(), InputError::DeadlinePassed(deadline));
         require(output > 0, InputError::AmountCannotBeZero);
 
         let input_amount = msg_amount();

@@ -1,29 +1,27 @@
-use crate::utils::{
-    abi_calls::preview_add_liquidity,
-    test_helpers::{
-        deposit_and_add_liquidity, setup, setup_and_initialize,
-        setup_initialize_deposit_and_add_liquidity,
-    },
-    LiquidityParameters,
-};
+use crate::utils::{setup, setup_and_construct};
 use fuels::prelude::*;
+use test_utils::{
+    abi::exchange::preview_add_liquidity, data_structures::LiquidityParameters,
+    setup::common::deposit_and_add_liquidity,
+};
 
 mod success {
     use super::*;
 
     #[tokio::test]
     async fn previews_adding_a_when_liquidity_is_zero() {
-        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
-        let expected_b_to_add = amounts.amount_a;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
+        let expected_b_to_add = liquidity_parameters.amounts.0;
         let expected_liquidity_asset_amount_to_receive_squared =
-            amounts.amount_a * expected_b_to_add;
+            liquidity_parameters.amounts.0 * expected_b_to_add;
 
         let preview = preview_add_liquidity(
             &exchange.instance,
             CallParameters::default(),
             TxParameters::default(),
-            amounts.amount_a,
-            exchange.asset_a,
+            liquidity_parameters.amounts.0,
+            exchange.pair.0,
         )
         .await
         .value;
@@ -37,17 +35,18 @@ mod success {
 
     #[tokio::test]
     async fn previews_adding_b_when_liquidity_is_zero() {
-        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
-        let expected_a_to_add = amounts.amount_b;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
+        let expected_a_to_add = liquidity_parameters.amounts.1;
         let expected_liquidity_asset_amount_to_receive_squared =
-            amounts.amount_b * expected_a_to_add;
+            liquidity_parameters.amounts.1 * expected_a_to_add;
 
         let preview = preview_add_liquidity(
             &exchange.instance,
             CallParameters::default(),
             TxParameters::default(),
-            amounts.amount_b,
-            exchange.asset_a,
+            liquidity_parameters.amounts.1,
+            exchange.pair.0,
         )
         .await
         .value;
@@ -61,20 +60,21 @@ mod success {
 
     #[tokio::test]
     async fn previews_adding_a_when_liquidity_is_not_zero_based_on_a() {
-        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
-            setup_initialize_deposit_and_add_liquidity().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(true, true).await;
 
         let preview_amount_a = 100;
-        let expected_b_to_add = preview_amount_a * amounts.amount_b / amounts.amount_a;
+        let expected_b_to_add =
+            preview_amount_a * liquidity_parameters.amounts.1 / liquidity_parameters.amounts.0;
         let expected_liquidity_asset_amount_to_receive =
-            preview_amount_a * amounts.liquidity / amounts.amount_a;
+            preview_amount_a * liquidity_parameters.liquidity / liquidity_parameters.amounts.0;
 
         let preview = preview_add_liquidity(
             &exchange.instance,
             CallParameters::default(),
             TxParameters::new(None, Some(100_000_000), None),
             preview_amount_a,
-            exchange.asset_a,
+            exchange.pair.0,
         )
         .await
         .value;
@@ -88,28 +88,30 @@ mod success {
 
     #[tokio::test]
     async fn previews_adding_a_when_liquidity_is_not_zero_based_on_b() {
-        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
 
-        let override_amounts = LiquidityParameters {
-            amount_a: 400,
-            amount_b: 100,
-            deadline: amounts.deadline,
-            liquidity: amounts.liquidity,
-        };
+        let override_liquidity_parameters = LiquidityParameters::new(
+            Some((400, 100)),
+            Some(liquidity_parameters.deadline),
+            Some(liquidity_parameters.liquidity),
+        );
+
         let preview_amount_a = 100;
-        let expected_b_to_add =
-            preview_amount_a * override_amounts.amount_b / override_amounts.amount_a;
-        let expected_liquidity_asset_amount_to_receive =
-            expected_b_to_add * override_amounts.liquidity / override_amounts.amount_b;
+        let expected_b_to_add = preview_amount_a * override_liquidity_parameters.amounts.1
+            / override_liquidity_parameters.amounts.0;
+        let expected_liquidity_asset_amount_to_receive = expected_b_to_add
+            * override_liquidity_parameters.liquidity
+            / override_liquidity_parameters.amounts.1;
 
-        deposit_and_add_liquidity(&override_amounts, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
 
         let preview = preview_add_liquidity(
             &exchange.instance,
             CallParameters::default(),
             TxParameters::new(None, Some(100_000_000), None),
             preview_amount_a,
-            exchange.asset_a,
+            exchange.pair.0,
         )
         .await
         .value;
@@ -123,28 +125,30 @@ mod success {
 
     #[tokio::test]
     async fn previews_adding_b_when_liquidity_is_not_zero_based_on_a() {
-        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
 
-        let override_amounts = LiquidityParameters {
-            amount_a: 400,
-            amount_b: 100,
-            deadline: amounts.deadline,
-            liquidity: amounts.liquidity,
-        };
+        let override_liquidity_parameters = LiquidityParameters::new(
+            Some((400, 100)),
+            Some(liquidity_parameters.deadline),
+            Some(liquidity_parameters.liquidity),
+        );
+
         let preview_amount_b = 100;
-        let expected_a_to_add =
-            preview_amount_b * override_amounts.amount_a / override_amounts.amount_b;
-        let expected_liquidity_asset_amount_to_receive =
-            expected_a_to_add * override_amounts.liquidity / override_amounts.amount_a;
+        let expected_a_to_add = preview_amount_b * override_liquidity_parameters.amounts.0
+            / override_liquidity_parameters.amounts.1;
+        let expected_liquidity_asset_amount_to_receive = expected_a_to_add
+            * override_liquidity_parameters.liquidity
+            / override_liquidity_parameters.amounts.0;
 
-        deposit_and_add_liquidity(&override_amounts, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
 
         let preview = preview_add_liquidity(
             &exchange.instance,
             CallParameters::default(),
             TxParameters::new(None, Some(100_000_000), None),
             preview_amount_b,
-            exchange.asset_b,
+            exchange.pair.1,
         )
         .await
         .value;
@@ -158,28 +162,30 @@ mod success {
 
     #[tokio::test]
     async fn previews_adding_b_when_liquidity_is_not_zero_based_on_b() {
-        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
 
-        let override_amounts = LiquidityParameters {
-            amount_a: 400,
-            amount_b: 100,
-            deadline: amounts.deadline,
-            liquidity: amounts.liquidity,
-        };
+        let override_liquidity_parameters = LiquidityParameters::new(
+            Some((400, 100)),
+            Some(liquidity_parameters.deadline),
+            Some(liquidity_parameters.liquidity),
+        );
+
         let preview_amount_b = 100;
-        let expected_a_to_add =
-            preview_amount_b * override_amounts.amount_a / override_amounts.amount_b;
-        let expected_liquidity_asset_amount_to_receive =
-            preview_amount_b * override_amounts.liquidity / override_amounts.amount_b;
+        let expected_a_to_add = preview_amount_b * override_liquidity_parameters.amounts.0
+            / override_liquidity_parameters.amounts.1;
+        let expected_liquidity_asset_amount_to_receive = preview_amount_b
+            * override_liquidity_parameters.liquidity
+            / override_liquidity_parameters.amounts.1;
 
-        deposit_and_add_liquidity(&override_amounts, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
 
         let preview = preview_add_liquidity(
             &exchange.instance,
             CallParameters::default(),
             TxParameters::new(None, Some(100_000_000), None),
             preview_amount_b,
-            exchange.asset_b,
+            exchange.pair.1,
         )
         .await
         .value;
@@ -196,9 +202,9 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"NotInitialized\"")]
     async fn when_unitialized() {
-        // call setup instead of setup_and_initialize
+        // call setup instead of setup_and_construct
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;
 

@@ -10,7 +10,7 @@ pub enum InputError {
     AmountCannotBeZero: (),
     AmountMustBeZero: (),
     AmountTooLow: u64,
-    DeadlinePassed: (),
+    DeadlinePassed: u64,
     InvalidAsset: (),
 }
 

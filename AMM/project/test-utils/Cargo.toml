@@ -1,16 +1,13 @@
 [package]
-name = "AMM-contract"
+name = "test-utils"
 version = "0.0.0"
 authors = ["Fuel Labs <contact@fuel.sh>"]
 edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
+fuel-gql-client = { version = "0.14.1", default-features = false }
 fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", branch = "hal3e/script-vec-support", features = ["fuel-core-lib"] }
-test-utils = { path = "../../test-utils" }
-tokio = { version = "1.21.0", features = ["rt", "macros"] }
 
-[[test]]
-harness = true
-name = "tests"
-path = "tests/harness.rs"
+[lib]
+doctest = false

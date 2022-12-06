@@ -1,68 +1,45 @@
-use crate::utils::{
-    amounts::MAXIMUM_INPUT_AMOUNT,
-    expected_swap_output,
-    paths::SCRIPT_BINARY_PATH,
-    setup::setup,
-    transaction::{
-        transaction_input_coin, transaction_input_contract, transaction_output_contract,
-        transaction_output_variable,
-    },
-    SwapScript,
-};
 use fuel_gql_client::prelude::*;
 use fuels::prelude::*;
+use test_utils::{
+    abi::{exchange::preview_swap_exact_input, SwapScript},
+    data_structures::AMMContract,
+    paths::SWAP_SCRIPT_BINARY_PATH,
+    setup::scripts::setup,
+    transaction::transaction_inputs_outputs_for_scripts,
+};
 
-mod utils;
+pub async fn expected_swap_output(
+    amm: &AMMContract,
+    input_amount: u64,
+    route: &Vec<AssetId>,
+) -> u64 {
+    let mut expected_output = input_amount;
+    let mut i = 0;
+    while i < route.len() - 1 {
+        let pair = (*route.get(i).unwrap(), *route.get(i + 1).unwrap());
+        let exchange = &amm.pools.get(&pair).unwrap().instance;
+        expected_output = preview_swap_exact_input(&exchange, expected_output, pair.0)
+            .await
+            .value
+            .amount;
+
+        i += 1;
+    }
+    expected_output
+}
 
 #[tokio::test]
 async fn can_swap_exact_input_along_route() {
     let (wallet, provider, amm, asset_ids) = setup().await;
-    let script_instance = SwapScript::new(wallet.clone(), SCRIPT_BINARY_PATH);
 
+    let (inputs, outputs) =
+        transaction_inputs_outputs_for_scripts(&wallet, &provider, &amm, &asset_ids).await;
+
+    let route = asset_ids;
+    let script_instance = SwapScript::new(wallet.clone(), SWAP_SCRIPT_BINARY_PATH);
     let input_amount: u64 = 60;
 
-    // TODO (@supiket): investigate why adding the last asset's coins as transaction inputs does not fail the test
-    let route = vec![
-        asset_ids[0],
-        asset_ids[1],
-        asset_ids[2],
-        asset_ids[3],
-        asset_ids[4],
-    ];
-
-    dbg!(route.clone());
-
-    let mut input_contracts: Vec<Input> = vec![transaction_input_contract(amm.id)];
-    let mut output_contracts: Vec<Output> = vec![transaction_output_contract(0)];
-
-    amm.pools
-        .values()
-        .into_iter()
-        .enumerate()
-        .for_each(|(index, pool)| {
-            input_contracts.push(transaction_input_contract(pool.id));
-            output_contracts.push(transaction_output_contract(index as u8 + 1));
-        });
-
-    let mut input_coins: Vec<Input> = vec![];
-    let mut output_variables: Vec<Output> = vec![];
-
-    let mut i = 0;
-    while i < route.len() {
-        input_coins.extend(
-            transaction_input_coin(
-                &provider,
-                wallet.address(),
-                *route.get(i).unwrap(),
-                MAXIMUM_INPUT_AMOUNT,
-            )
-            .await,
-        );
-        output_variables.push(transaction_output_variable());
-        i += 1;
-    }
-
-    let expected_result = expected_swap_output(&amm, input_amount, route.clone()).await;
+    let expected_result = expected_swap_output(&amm, input_amount, &route).await;
 
     let result = script_instance
         .main(
@@ -74,13 +51,9 @@ async fn can_swap_exact_input_along_route() {
                 .collect(),
             input_amount,
         )
-        .with_inputs([input_contracts, input_coins].concat())
-        .with_outputs([output_contracts, output_variables].concat())
-        .tx_params(TxParameters {
-            gas_price: 0,
-            gas_limit: 100_000_000,
-            maturity: 0,
-        })
+        .with_inputs(inputs)
+        .with_outputs(outputs)
+        .tx_params(TxParameters::new(None, Some(100_000_000), None))
         .call()
         .await
         .unwrap()

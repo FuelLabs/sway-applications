@@ -1,28 +1,27 @@
-use crate::utils::{
-    abi_calls::{balance, deposit},
-    test_helpers::{setup, setup_and_initialize},
-};
+use crate::utils::{setup, setup_and_construct};
 use fuels::prelude::*;
+use test_utils::abi::exchange::{balance, deposit};
 
 mod success {
     use super::*;
 
     #[tokio::test]
     async fn deposits() {
-        let (exchange, wallet, _amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, wallet, _liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
         let deposit_amount = 100;
 
-        let initial_wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
-        let initial_contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
+        let initial_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
+        let initial_contract_balance = balance(&exchange.instance, exchange.pair.0).await.value;
 
         deposit(
             &exchange.instance,
-            CallParameters::new(Some(deposit_amount), Some(exchange.asset_a), None),
+            CallParameters::new(Some(deposit_amount), Some(exchange.pair.0), None),
         )
         .await;
 
-        let final_contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
-        let final_wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
+        let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await.value;
+        let final_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
         assert_eq!(initial_contract_balance, 0);
         assert_eq!(final_contract_balance, deposit_amount);
@@ -34,30 +33,31 @@ mod success {
 
     #[tokio::test]
     async fn deposits_more_than_once() {
-        let (exchange, wallet, _amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, wallet, _liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
         let first_deposit_amount = 100;
         let second_deposit_amount = 200;
 
-        let initial_wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
-        let initial_contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
+        let initial_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
+        let initial_contract_balance = balance(&exchange.instance, exchange.pair.0).await.value;
 
         deposit(
             &exchange.instance,
-            CallParameters::new(Some(first_deposit_amount), Some(exchange.asset_a), None),
+            CallParameters::new(Some(first_deposit_amount), Some(exchange.pair.0), None),
         )
         .await;
 
         let contract_balance_after_deposit =
-            balance(&exchange.instance, exchange.asset_a).await.value;
+            balance(&exchange.instance, exchange.pair.0).await.value;
 
         deposit(
             &exchange.instance,
-            CallParameters::new(Some(second_deposit_amount), Some(exchange.asset_a), None),
+            CallParameters::new(Some(second_deposit_amount), Some(exchange.pair.0), None),
         )
         .await;
 
-        let final_contract_balance = balance(&exchange.instance, exchange.asset_a).await.value;
-        let final_wallet_balance = wallet.get_asset_balance(&exchange.asset_a).await.unwrap();
+        let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await.value;
+        let final_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
         assert_eq!(initial_contract_balance, 0);
         assert_eq!(contract_balance_after_deposit, first_deposit_amount);
@@ -76,9 +76,9 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"NotInitialized\"")]
     async fn when_unitialized() {
-        // call setup instead of setup_and_initialize
+        // call setup instead of setup_and_construct
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;
         let deposit_amount = 100;
@@ -91,9 +91,10 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"InvalidAsset\"")]
     async fn when_msg_asset_id_is_invalid() {
-        let (exchange, _wallet, _amounts, asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, _liquidity_parameters, asset_c_id) =
+            setup_and_construct(false, false).await;
         let deposit_amount = 100;
 
         // send invalid asset id

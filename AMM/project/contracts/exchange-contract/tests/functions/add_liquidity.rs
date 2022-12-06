@@ -1,26 +1,24 @@
-use crate::utils::{
-    abi_calls::{add_liquidity, pool_info},
-    test_helpers::{
-        contract_balances, deposit_and_add_liquidity, deposit_but_do_not_add_liquidity, setup,
-        setup_and_initialize, setup_initialize_and_deposit_but_do_not_add_liquidity,
-        setup_initialize_deposit_and_add_liquidity, wallet_balances,
-    },
-    LiquidityParameters,
-};
+use crate::utils::{contract_balances, setup, setup_and_construct, wallet_balances};
 use fuels::prelude::*;
+use test_utils::{
+    abi::exchange::{add_liquidity, pool_info},
+    data_structures::LiquidityParameters,
+    setup::common::{deposit_and_add_liquidity, deposit_both_assets},
+};
 
 mod success {
     use super::*;
 
     #[tokio::test]
     async fn adds_when_liquidity_is_zero() {
-        let (exchange, wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
 
         let initial_pool_info = pool_info(&exchange.instance).await.value;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
         let initial_contract_balances = contract_balances(&exchange).await;
 
-        deposit_but_do_not_add_liquidity(&amounts, &exchange).await;
+        deposit_both_assets(&liquidity_parameters, &exchange).await;
 
         let contract_balances_after_deposit = contract_balances(&exchange).await;
 
@@ -28,8 +26,8 @@ mod success {
             &exchange.instance,
             CallParameters::default(),
             TxParameters::default(),
-            amounts.liquidity,
-            amounts.deadline,
+            liquidity_parameters.liquidity,
+            liquidity_parameters.deadline,
         )
         .await
         .value;
@@ -43,27 +41,33 @@ mod success {
         assert_eq!(initial_pool_info.liquidity, 0);
         assert_eq!(initial_contract_balances.asset_a, 0);
         assert_eq!(initial_contract_balances.asset_b, 0);
-        assert_eq!(contract_balances_after_deposit.asset_a, amounts.amount_a);
-        assert_eq!(contract_balances_after_deposit.asset_b, amounts.amount_b);
-        assert_eq!(added_liquidity, amounts.liquidity);
+        assert_eq!(
+            contract_balances_after_deposit.asset_a,
+            liquidity_parameters.amounts.0
+        );
+        assert_eq!(
+            contract_balances_after_deposit.asset_b,
+            liquidity_parameters.amounts.1
+        );
+        assert_eq!(added_liquidity, liquidity_parameters.liquidity);
         assert_eq!(
             pool_info_after_adding_liquidity.asset_a_reserve,
-            amounts.amount_a
+            liquidity_parameters.amounts.0
         );
         assert_eq!(
             pool_info_after_adding_liquidity.asset_b_reserve,
-            amounts.amount_b
+            liquidity_parameters.amounts.1
         );
         assert_eq!(pool_info_after_adding_liquidity.liquidity, added_liquidity);
         assert_eq!(contract_balances_after_adding_liquidity.asset_a, 0);
         assert_eq!(contract_balances_after_adding_liquidity.asset_b, 0);
         assert_eq!(
             wallet_balances_after_adding_liquidity.asset_a,
-            initial_wallet_balances.asset_a - amounts.amount_a
+            initial_wallet_balances.asset_a - liquidity_parameters.amounts.0
         );
         assert_eq!(
             wallet_balances_after_adding_liquidity.asset_b,
-            initial_wallet_balances.asset_b - amounts.amount_b
+            initial_wallet_balances.asset_b - liquidity_parameters.amounts.1
         );
         assert_eq!(
             wallet_balances_after_adding_liquidity.liquidity_pool_asset,
@@ -73,19 +77,22 @@ mod success {
 
     #[tokio::test]
     async fn adds_when_liquidity_exists_based_on_a_and_refunds() {
-        let (exchange, wallet, amounts, _asset_c_id) = setup_and_initialize().await;
-        let second_liquidity_amounts = LiquidityParameters {
-            amount_a: amounts.amount_a,
-            amount_b: amounts.amount_b * 2,
-            deadline: amounts.deadline,
-            liquidity: amounts.liquidity,
-        };
+        let (exchange, wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
+        let second_liquidity_amounts = LiquidityParameters::new(
+            Some((
+                liquidity_parameters.amounts.0,
+                liquidity_parameters.amounts.1 * 2,
+            )),
+            Some(liquidity_parameters.deadline),
+            Some(liquidity_parameters.liquidity),
+        );
 
         let initial_pool_info = pool_info(&exchange.instance).await.value;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
         let initial_contract_balances = contract_balances(&exchange).await;
 
-        deposit_and_add_liquidity(&amounts, &exchange).await;
+        deposit_and_add_liquidity(&liquidity_parameters, &exchange).await;
 
         let contract_balances_after_adding_liquidity_for_the_first_time =
             contract_balances(&exchange).await;
@@ -112,49 +119,53 @@ mod success {
         assert_eq!(added_liquidity, second_liquidity_amounts.liquidity);
         assert_eq!(
             final_pool_info.asset_a_reserve,
-            amounts.amount_a + second_liquidity_amounts.amount_a
+            liquidity_parameters.amounts.0 + second_liquidity_amounts.amounts.0
         );
         assert_eq!(
             final_pool_info.asset_b_reserve,
-            amounts.amount_b + (second_liquidity_amounts.amount_b / 2)
+            liquidity_parameters.amounts.1 + (second_liquidity_amounts.amounts.1 / 2)
         );
         assert_eq!(
             final_pool_info.liquidity,
-            amounts.liquidity + added_liquidity
+            liquidity_parameters.liquidity + added_liquidity
         );
         assert_eq!(final_contract_balances.asset_a, 0);
         assert_eq!(final_contract_balances.asset_b, 0);
         assert_eq!(
             final_wallet_balances.asset_a,
             initial_wallet_balances.asset_a
-                - (amounts.amount_a + second_liquidity_amounts.amount_a)
+                - (liquidity_parameters.amounts.0 + second_liquidity_amounts.amounts.0)
         );
         assert_eq!(
             final_wallet_balances.asset_b,
             initial_wallet_balances.asset_b
-                - (amounts.amount_b + (second_liquidity_amounts.amount_b / 2))
+                - (liquidity_parameters.amounts.1 + (second_liquidity_amounts.amounts.1 / 2))
         );
         assert_eq!(
             final_wallet_balances.liquidity_pool_asset,
             initial_wallet_balances.liquidity_pool_asset
-                + (amounts.liquidity + second_liquidity_amounts.liquidity)
+                + (liquidity_parameters.liquidity + second_liquidity_amounts.liquidity)
         );
     }
 
     #[tokio::test]
     async fn adds_when_liquidity_exists_based_on_b_and_refunds() {
-        let (exchange, wallet, amounts, _asset_c_id) = setup_and_initialize().await;
-        let second_liquidity_amounts = LiquidityParameters {
-            amount_a: amounts.amount_a * 2,
-            amount_b: amounts.amount_b,
-            deadline: amounts.deadline,
-            liquidity: amounts.liquidity,
-        };
+        let (exchange, wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
+        let second_liquidity_amounts = LiquidityParameters::new(
+            Some((
+                liquidity_parameters.amounts.0 * 2,
+                liquidity_parameters.amounts.1,
+            )),
+            Some(liquidity_parameters.deadline),
+            Some(liquidity_parameters.liquidity),
+        );
+
         let initial_pool_info = pool_info(&exchange.instance).await.value;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
         let initial_contract_balances = contract_balances(&exchange).await;
 
-        deposit_and_add_liquidity(&amounts, &exchange).await;
+        deposit_and_add_liquidity(&liquidity_parameters, &exchange).await;
 
         let contract_balances_after_adding_liquidity_for_the_first_time =
             contract_balances(&exchange).await;
@@ -181,32 +192,32 @@ mod success {
         assert_eq!(added_liquidity, second_liquidity_amounts.liquidity);
         assert_eq!(
             final_pool_info.asset_a_reserve,
-            amounts.amount_a + (second_liquidity_amounts.amount_a / 2)
+            liquidity_parameters.amounts.0 + (second_liquidity_amounts.amounts.0 / 2)
         );
         assert_eq!(
             final_pool_info.asset_b_reserve,
-            amounts.amount_b + second_liquidity_amounts.amount_b
+            liquidity_parameters.amounts.1 + second_liquidity_amounts.amounts.1
         );
         assert_eq!(
             final_pool_info.liquidity,
-            amounts.liquidity + added_liquidity
+            liquidity_parameters.liquidity + added_liquidity
         );
         assert_eq!(final_contract_balances.asset_a, 0);
         assert_eq!(final_contract_balances.asset_b, 0);
         assert_eq!(
             final_wallet_balances.asset_a,
             initial_wallet_balances.asset_a
-                - (amounts.amount_a + (second_liquidity_amounts.amount_a / 2))
+                - (liquidity_parameters.amounts.0 + (second_liquidity_amounts.amounts.0 / 2))
         );
         assert_eq!(
             final_wallet_balances.asset_b,
             initial_wallet_balances.asset_b
-                - (amounts.amount_b + second_liquidity_amounts.amount_b)
+                - (liquidity_parameters.amounts.1 + second_liquidity_amounts.amounts.1)
         );
         assert_eq!(
             final_wallet_balances.liquidity_pool_asset,
             initial_wallet_balances.liquidity_pool_asset
-                + (amounts.liquidity + second_liquidity_amounts.liquidity)
+                + (liquidity_parameters.liquidity + second_liquidity_amounts.liquidity)
         );
     }
 }
@@ -215,9 +226,9 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"NotInitialized\"")]
     async fn when_unitialized() {
-        // call setup instead of setup_and_initialize
+        // call setup instead of setup_and_construct
         let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;
         let min_liquidity = 200;
@@ -234,25 +245,28 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"DeadlinePassed(0)\"")]
     async fn when_deadline_has_passed() {
-        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
 
-        let override_amounts = LiquidityParameters {
-            amount_a: amounts.amount_a,
-            amount_b: amounts.amount_b,
-            deadline: 0, // deadline too low
-            liquidity: amounts.liquidity,
-        };
+        let override_liquidity_parameters = LiquidityParameters::new(
+            Some((
+                liquidity_parameters.amounts.0,
+                liquidity_parameters.amounts.1,
+            )),
+            Some(0), // deadline too low
+            Some(liquidity_parameters.liquidity),
+        );
 
-        deposit_and_add_liquidity(&override_amounts, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"AmountMustBeZero\"")]
     async fn when_msg_amount_is_not_zero() {
-        let (exchange, _wallet, amounts, _asset_c_id) =
-            setup_initialize_and_deposit_but_do_not_add_liquidity().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(true, false).await;
 
         add_liquidity(
             &exchange.instance,
@@ -263,101 +277,117 @@ mod revert {
                 None,
             ),
             TxParameters::default(),
-            amounts.liquidity,
-            amounts.deadline,
+            liquidity_parameters.liquidity,
+            liquidity_parameters.deadline,
         )
         .await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"AmountTooLow(0)\"")]
     async fn when_desired_liquidity_is_less_than_minimum_liquidity() {
-        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
 
-        let override_amounts = LiquidityParameters {
-            amount_a: amounts.amount_a,
-            amount_b: amounts.amount_b,
-            deadline: amounts.deadline,
-            liquidity: 0, // expected_liquidity is less than MINIMUM_LIQUIDITY
-        };
+        let override_liquidity_parameters = LiquidityParameters::new(
+            Some((
+                liquidity_parameters.amounts.0,
+                liquidity_parameters.amounts.1,
+            )),
+            Some(liquidity_parameters.deadline),
+            Some(0), // expected_liquidity is less than MINIMUM_LIQUIDITY
+        );
 
-        deposit_and_add_liquidity(&override_amounts, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"DepositCannotBeZero\"")]
     async fn when_deposited_a_is_zero() {
-        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
 
-        let override_amounts = LiquidityParameters {
-            amount_a: 0, // depositing 0 amount of asset A
-            amount_b: amounts.amount_b,
-            deadline: amounts.deadline,
-            liquidity: amounts.liquidity,
-        };
+        let override_liquidity_parameters = LiquidityParameters::new(
+            Some((
+                0, // depositing 0 amount of asset A
+                liquidity_parameters.amounts.1,
+            )),
+            Some(liquidity_parameters.deadline),
+            Some(liquidity_parameters.liquidity),
+        );
 
-        deposit_and_add_liquidity(&override_amounts, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"DepositCannotBeZero\"")]
     async fn when_deposited_b_is_zero() {
-        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
 
-        let override_amounts = LiquidityParameters {
-            amount_a: amounts.amount_a,
-            amount_b: 0, // depositing 0 amount of asset B
-            deadline: amounts.deadline,
-            liquidity: amounts.liquidity,
-        };
+        let override_liquidity_parameters = LiquidityParameters::new(
+            Some((
+                liquidity_parameters.amounts.0,
+                0, // depositing 0 amount of asset B
+            )),
+            Some(liquidity_parameters.deadline),
+            Some(liquidity_parameters.liquidity),
+        );
 
-        deposit_and_add_liquidity(&override_amounts, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(300)\"")]
     async fn when_liquidity_is_zero_but_desired_liquidity_is_too_high() {
-        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
 
-        let override_amounts = LiquidityParameters {
-            amount_a: amounts.amount_a,
-            amount_b: amounts.amount_b,
-            deadline: amounts.deadline,
-            liquidity: 300, // expected_liquidity is more than 200
-        };
+        let override_liquidity_parameters = LiquidityParameters::new(
+            Some((
+                liquidity_parameters.amounts.0,
+                liquidity_parameters.amounts.1,
+            )),
+            Some(liquidity_parameters.deadline),
+            Some(liquidity_parameters.liquidity + 100), // expected_liquidity is more than 200
+        );
 
-        deposit_and_add_liquidity(&override_amounts, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(400)\"")]
     async fn when_liquidity_exists_but_desired_liquidity_is_too_high_based_on_a() {
-        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
-            setup_initialize_deposit_and_add_liquidity().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(true, true).await;
 
-        let override_amounts = LiquidityParameters {
-            amount_a: amounts.amount_a,
-            amount_b: amounts.amount_b * 2, // setting this so that liquidity is calculated based on asset A amount
-            deadline: amounts.deadline,
-            liquidity: amounts.liquidity * 2, // expected_liquidity is more than 200
-        };
+        let override_liquidity_parameters = LiquidityParameters::new(
+            Some((
+                liquidity_parameters.amounts.0,
+                liquidity_parameters.amounts.1 * 2, // setting this so that liquidity is calculated based on asset A amount
+            )),
+            Some(liquidity_parameters.deadline),
+            Some(liquidity_parameters.liquidity * 2), // expected_liquidity is more than 200
+        );
 
-        deposit_and_add_liquidity(&override_amounts, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(400)\"")]
     async fn when_liquidity_exists_but_desired_liquidity_is_too_high_based_on_b() {
-        let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
-            setup_initialize_deposit_and_add_liquidity().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(true, true).await;
 
-        let override_amounts = LiquidityParameters {
-            amount_a: amounts.amount_a * 2, // setting this so that liquidity is calculated based on asset B amount
-            amount_b: amounts.amount_b,
-            deadline: amounts.deadline,
-            liquidity: amounts.liquidity * 2, // expected_liquidity is more than 200
-        };
+        let override_liquidity_parameters = LiquidityParameters::new(
+            Some((
+                liquidity_parameters.amounts.0 * 2, // setting this so that liquidity is calculated based on asset B amount
+                liquidity_parameters.amounts.1,
+            )),
+            Some(liquidity_parameters.deadline),
+            Some(liquidity_parameters.liquidity * 2), // expected_liquidity is more than 200
+        );
 
-        deposit_and_add_liquidity(&override_amounts, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 }
