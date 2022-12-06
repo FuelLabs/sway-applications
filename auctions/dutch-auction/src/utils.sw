@@ -296,4 +296,21 @@ impl<K, V> StorageMapVec<K, V> {
         let k = sha256((key, __get_storage_key()));
         store(k, 0);
     }
+
+    #[storage(read)]
+    pub fn to_vec(self, key: K) -> Vec<V> {
+        // The length of the vec is stored in the sha256((key, __get_storage_key())) slot
+        let k = sha256((key, __get_storage_key()));
+        let len = get::<u64>(k);
+        let mut i = 0;
+        let mut vec = Vec::new();
+        while len > i {
+            let k = sha256((key, i, __get_storage_key()));
+            let item = get::<V>(k);
+            vec.push(item);
+            i += 1;
+        }
+        vec
+    }
 }
+

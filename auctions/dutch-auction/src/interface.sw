@@ -5,25 +5,13 @@ dep data_structures;
 use data_structures::Auction;
 
 abi DutchAuction {
-    /// Returns the number of active auctions of the author
+    /// Returns the auction ids of the active auctions of the author
     ///
     /// # Argumets
     ///
     /// * `author` - The author of which to retrieve the number of active auctions of
     #[storage(read)]
-    fn active_auctions_of_author(author: Identity) -> u64;
-    /// Returns the auction_id of the active auction of the author at the given index
-    ///
-    /// # Arguments
-    ///
-    /// * `author` - The author of which to retrieve the active auction of
-    /// * `index` - The index to retrieve
-    ///
-    /// # Reverts
-    ///
-    /// * When the index is greater than the number of active auctions of the author
-    #[storage(read)]
-    fn active_auction_of_author(author: Identity, index: u64) -> u64;
+    fn active_auctions_of_author(author: Identity) -> Vec<u64>;
 
     /// Returns the auction data for the specified auction ID
     ///
@@ -36,44 +24,20 @@ abi DutchAuction {
     /// * When the auction_id is 0 or greater than storage.auction_count
     #[storage(read)]
     fn auction(auction_id: u64) -> Auction;
-    /// Returns the number of auctions created by author
+    /// Returns the auction ids of the auctions created by author
     ///
     /// # Arguments
     ///
     /// * `author` - The Identity of which to check the number of auctions created
     #[storage(read)]
-    fn auctions_of_author(author: Identity) -> u64;
-    /// Returns the number of auctions some bidder has won
+    fn auctions_of_author(author: Identity) -> Vec<u64>;
+    /// Returns the auction ids of the auctions some bidder has won
     ///
     /// # Arguments
     ///
     /// * `bidder` - The Identity of which to check the number of auctions won
     #[storage(read)]
-    fn auctions_won(bidder: Identity) -> u64;
-    /// Returns the auction_id of the auction of the author at the given index
-    ///
-    /// # Arguments
-    ///
-    /// * `author` - The author of which to retrieve the auction of
-    /// * `index` - The index to retrieve
-    ///
-    /// # Reverts
-    ///
-    /// * When the index is greater than the number of auctions of the author
-    #[storage(read)]
-    fn auction_of_author(author: Identity, index: u64) -> u64;
-    /// Returns the auction_id of the won auction of the bidder at the given index
-    ///
-    /// # Arguments
-    ///
-    /// * `bidder` - The bidder of which to retrieve the auction of
-    /// * `index` - The index to retrieve
-    ///
-    /// # Reverts
-    ///
-    /// * When the index is greater than the number of auctions won by the bidder
-    #[storage(read)]
-    fn auction_won(bidder: Identity, index: u64) -> u64;
+    fn auctions_won(bidder: Identity) -> Vec<u64>;
     /// Bids on the specified auction
     ///
     /// # Arguments

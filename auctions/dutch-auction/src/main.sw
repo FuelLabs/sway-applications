@@ -188,33 +188,18 @@ impl DutchAuction for Contract {
     }
 
     #[storage(read)]
-    fn active_auctions_of_author(author: Identity) -> u64 {
-        storage.active_auctions_of_author.len(author)
+    fn active_auctions_of_author(author: Identity) -> Vec<u64> {
+        storage.active_auctions_of_author.to_vec(author)
     }
 
     #[storage(read)]
-    fn auctions_of_author(author: Identity) -> u64 {
-        storage.auctions_of_author.len(author)
+    fn auctions_of_author(author: Identity) -> Vec<u64> {
+        storage.auctions_of_author.to_vec(author)
     }
 
     #[storage(read)]
-    fn auctions_won(bidder: Identity) -> u64 {
-        storage.auctions_won.len(bidder)
-    }
-
-    #[storage(read)]
-    fn active_auction_of_author(author: Identity, index: u64) -> u64 {
-        storage.active_auctions_of_author.get(author, index).unwrap()
-    }
-
-    #[storage(read)]
-    fn auction_of_author(author: Identity, index: u64) -> u64 {
-        storage.auctions_of_author.get(author, index).unwrap()
-    }
-
-    #[storage(read)]
-    fn auction_won(bidder: Identity, index: u64) -> u64 {
-        storage.auctions_won.get(bidder, index).unwrap()
+    fn auctions_won(bidder: Identity) -> Vec<u64> {
+        storage.auctions_won.to_vec(bidder)
     }
 }
 
