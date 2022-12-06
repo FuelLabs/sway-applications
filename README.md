@@ -61,8 +61,6 @@ sway-applications/
 - [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
 - [OTC Swap Predicate](./OTC-swap-predicate) is a predicate that can be used to propose and execute an atomic swap between two parties without requiring any on-chain state.
 
-To see an overview of the progress, and plans, for applications take a look at [APPLICATION_PROGRESS.md](./APPLICATION_PROGRESS.md).
-
 ## Running a project
 
 If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/) steps required to use our tools.
