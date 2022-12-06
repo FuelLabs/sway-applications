@@ -9,7 +9,7 @@ abigen!(
     "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
 );
 
-pub struct MetaExchange {
+pub struct ExchangeContract {
     pub contract_id: ContractId,
     pub bytecode_root: ContractId,
 }
@@ -113,7 +113,7 @@ pub mod test_helpers {
         asset_pair: (ContractId, ContractId),
         malicious: Option<bool>,
         index_for_salt: Option<u8>,
-    ) -> MetaExchange {
+    ) -> ExchangeContract {
         let salt = [index_for_salt.unwrap_or(0u8); 32];
 
         let exchange_contract_id = Contract::deploy_with_parameters(
@@ -132,7 +132,7 @@ pub mod test_helpers {
 
         let exchange_instance = Exchange::new(exchange_contract_id.clone(), wallet.clone());
         constructor(&exchange_instance, asset_pair).await;
-        MetaExchange {
+        ExchangeContract {
             contract_id: ContractId::new(*exchange_contract_id.hash()),
             bytecode_root: bytecode_root().await,
         }

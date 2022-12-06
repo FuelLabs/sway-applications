@@ -9,11 +9,9 @@ abigen!(
     EnglishAuction,
     "./english-auction/project/auction-contract/out/debug/auction-contract-abi.json"
 );
-// TODO: This should be a seperate project and added to the test artifacts once
-// https://github.com/FuelLabs/sway-libs/issues/19 is resolved
 abigen!(
     Nft,
-    "../NFT/project/NFT-contract/out/debug/NFT-contract-abi.json"
+    "./english-auction/project/auction-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"
 );
 abigen!(
     MyAsset,
@@ -32,10 +30,9 @@ pub mod paths {
     pub const AUCTION_CONTRACT_STORAGE_PATH: &str =
         "./out/debug/auction-contract-storage_slots.json";
     pub const NATIVE_ASSET_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
-    pub const NFT_CONTRACT_BINARY_PATH: &str =
-        "../../../../NFT/project/NFT-contract/out/debug/NFT-contract.bin";
+    pub const NFT_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT.bin";
     pub const NFT_CONTRACT_STORAGE_PATH: &str =
-        "../../../../NFT/project/NFT-contract/out/debug/NFT-contract-storage_slots.json";
+        "./tests/artifacts/NFT/out/debug/NFT-storage_slots.json";
 }
 
 pub mod asset_abi_calls {
@@ -215,24 +212,14 @@ pub mod nft_abi_calls {
 
     use super::*;
 
-    pub async fn approve(approved: Identity, contract: &Nft, token_id: u64) -> CallResponse<()> {
-        contract
-            .methods()
-            .approve(approved, token_id)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn constructor(
-        access_control: bool,
+    pub async fn approve(
+        approved: Option<Identity>,
         contract: &Nft,
-        owner: Identity,
-        token_supply: u64,
+        token_id: u64,
     ) -> CallResponse<()> {
         contract
             .methods()
-            .constructor(access_control, owner, token_supply)
+            .approve(approved, token_id)
             .call()
             .await
             .unwrap()
@@ -242,7 +229,7 @@ pub mod nft_abi_calls {
         contract.methods().mint(amount, owner).call().await.unwrap()
     }
 
-    pub async fn owner_of(contract: &Nft, token_id: u64) -> Identity {
+    pub async fn owner_of(contract: &Nft, token_id: u64) -> Option<Identity> {
         contract
             .methods()
             .owner_of(token_id)
@@ -296,20 +283,13 @@ pub mod test_helpers {
         }
     }
 
-    pub async fn defaults_nft() -> (u64, u64, u64, u64, bool) {
+    pub async fn defaults_nft() -> (u64, u64, u64, u64) {
         let sell_count = 1;
         let inital_count = 1;
         let reserve_count = 1;
         let duration = 10;
-        let access_control = true;
 
-        (
-            sell_count,
-            inital_count,
-            reserve_count,
-            duration,
-            access_control,
-        )
+        (sell_count, inital_count, reserve_count, duration)
     }
 
     pub async fn defaults_token() -> (u64, u64, u64, u64) {
