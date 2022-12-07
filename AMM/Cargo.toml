@@ -4,4 +4,5 @@ members = [
     "./project/contracts/AMM-contract",
     "./project/contracts/exchange-contract",
     "./project/scripts/swap-exact-input",
+    "./project/scripts/swap-exact-output",
 ]

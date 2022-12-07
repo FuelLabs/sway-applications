@@ -11,8 +11,13 @@ abigen!(
 );
 
 script_abigen!(
-    SwapScript,
+    SwapExactInputScript,
     "./project/scripts/swap-exact-input/out/debug/swap-exact-input-abi.json"
+);
+
+script_abigen!(
+    SwapExactOutputScript,
+    "./project/scripts/swap-exact-output/out/debug/swap-exact-output-abi.json"
 );
 
 pub mod amm {

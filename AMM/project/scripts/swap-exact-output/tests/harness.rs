@@ -1,35 +1,35 @@
 use fuels::prelude::*;
 use test_utils::{
-    abi::{exchange::preview_swap_exact_input, SwapExactInputScript},
+    abi::{exchange::preview_swap_exact_output, SwapExactOutputScript},
     data_structures::AMMContract,
-    paths::SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH,
+    paths::SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH,
     setup::scripts::setup,
     transaction::transaction_inputs_outputs_for_scripts,
 };
 
 pub async fn expected_swap_amounts(
     amm: &AMMContract,
-    input_amount: u64,
+    output_amount: u64,
     route: &Vec<AssetId>,
 ) -> Vec<u64> {
     assert!(route.len() >= 2);
-    let (mut i, mut amounts) = (0, vec![input_amount]);
+    let (mut i, mut amounts) = (route.len() - 1, vec![output_amount]);
 
-    while i < route.len() - 1 {
-        let pair = (*route.get(i).unwrap(), *route.get(i + 1).unwrap());
+    while i > 0 {
+        let pair = (*route.get(i - 1).unwrap(), *route.get(i).unwrap());
         let exchange = &amm.pools.get(&pair).unwrap().instance;
-        let amount = preview_swap_exact_input(&exchange, amounts[i], pair.0)
+        let amount = preview_swap_exact_output(&exchange, amounts[0], pair.1)
             .await
             .value
             .amount;
-        amounts.push(amount);
-        i += 1;
+        amounts.insert(0, amount);
+        i -= 1;
     }
     amounts
 }
 
 #[tokio::test]
-async fn can_swap_exact_input_along_route() {
+async fn can_swap_exact_output_along_route() {
     let (wallet, provider, amm, asset_ids) = setup().await;
 
     let (inputs, outputs) =
@@ -37,11 +37,11 @@ async fn can_swap_exact_input_along_route() {
 
     let route = asset_ids;
     let script_instance =
-        SwapExactInputScript::new(wallet.clone(), SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH);
-    let input_amount: u64 = 60;
+        SwapExactOutputScript::new(wallet.clone(), SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
+    let input_amount: u64 = 10_000;
 
     let amounts = expected_swap_amounts(&amm, input_amount, &route).await;
-    let expected_result = amounts[route.len() - 1];
+    let expected_result = amounts[0];
 
     let result = script_instance
         .main(

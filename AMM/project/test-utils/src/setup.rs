@@ -174,7 +174,7 @@ pub mod scripts {
     };
 
     const COINS_PER_ASSET: u64 = 100;
-    const AMOUNT_PER_COIN: u64 = 100_000;
+    const AMOUNT_PER_COIN: u64 = 1_000_000;
     pub const MAXIMUM_INPUT_AMOUNT: u64 = 1_000_000;
 
     pub async fn setup_exchange_contract(
@@ -191,7 +191,7 @@ pub mod scripts {
         .await;
 
         deposit_and_add_liquidity(
-            &LiquidityParameters::new(Some((100, 100 * ratio)), None, None),
+            &LiquidityParameters::new(Some((100_000, 100_000 * ratio)), None, None),
             &exchange,
         )
         .await;
@@ -212,7 +212,7 @@ pub mod scripts {
             let exchange = setup_exchange_contract(
                 wallet.clone(),
                 asset_pair,
-                (i as u64 + 1) * 6,
+                (i as u64 + 1) * 3,
                 [(i as u8 + 2); 32],
             )
             .await;
