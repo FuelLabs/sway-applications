@@ -4,15 +4,9 @@ dep data_structures;
 
 use std::{
     call_frames::contract_id,
-    ecr::{
-        ec_recover_address,
-    },
-    hash::{
-        sha256,
-    },
-    vm::evm::{
-        ecr::ec_recover_evm_address,
-    },
+    ecr::ec_recover_address,
+    hash::sha256,
+    vm::evm::ecr::ec_recover_evm_address,
 };
 
 use data_structures::{MessageFormat, MessagePrefix, SignatureData, Transaction, WalletType};

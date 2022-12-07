@@ -1,6 +1,6 @@
 library data_structures;
 
-use std::{b512::B512};
+use std::b512::B512;
 
 pub enum MessageFormat {
     None: (),
