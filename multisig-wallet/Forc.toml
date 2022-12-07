@@ -1,2 +1,1 @@
-[workspace]
 members = ["./project/multisig-contract"]
