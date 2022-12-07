@@ -9,8 +9,8 @@ abi MultiSignatureWallet {
     ///
     /// # Arguments
     ///
-    /// * 'threshold' - The number of approvals required to enable a transaction to be sent.
-    /// * 'users' - The users of the multisig, who can sign transactions to add their approval.
+    /// * `threshold` - The number of approvals required to enable a transaction to be sent.
+    /// * `users` - The users of the multisig, who can sign transactions to add their approval.
     ///
     /// # Reverts
     ///
@@ -26,10 +26,10 @@ abi MultiSignatureWallet {
     ///
     /// # Arguments
     ///
-    /// * 'data' - The data field of the transaction.
-    /// * 'signatures' - The information for each user's signature for a specific transaction.
-    /// * 'to' - The recipient of the transaction.
-    /// * 'value' - The value sent in the transaction.
+    /// * `data` - The data field of the transaction.
+    /// * `signatures` - The information for each user's signature for a specific transaction.
+    /// * `to` - The recipient of the transaction.
+    /// * `value` - The value sent in the transaction.
     ///
     /// # Reverts
     ///
@@ -44,11 +44,11 @@ abi MultiSignatureWallet {
     ///
     /// # Arguments
     ///
-    /// * 'asset_id' - The contract ID of the asset to be transferred.
-    /// * 'data' - The data field of the transaction.
-    /// * 'signatures' - The information for each user's signature for a specific transaction.
-    /// * 'to' - The recipient of the transaction.
-    /// * 'value' - The value sent in the transaction.
+    /// * `asset_id` - The contract ID of the asset to be transferred.
+    /// * `data` - The data field of the transaction.
+    /// * `signatures` - The information for each user's signature for a specific transaction.
+    /// * `to` - The recipient of the transaction.
+    /// * `value` - The value sent in the transaction.
     ///
     /// # Reverts
     ///
@@ -68,16 +68,16 @@ abi MultiSignatureWallet {
     ///
     /// # Arguments
     ///
-    /// * 'asset_id' - The contract ID of the asset to check that balance of.
+    /// * `asset_id` - The contract ID of the asset to check that balance of.
     fn balance(asset_id: ContractId) -> u64;
 
     /// Takes in transaction data and hashes it into a unique tx hash.
     ///
     /// # Arguments
     ///
-    /// * 'data' - The data field of the transaction.
-    /// * 'nonce' - The nonce field of the transaction.
-    /// * 'to' - The recipient of the transaction.
-    /// * 'value' - The value sent in the transaction.
+    /// * `data` - The data field of the transaction.
+    /// * `nonce` - The nonce field of the transaction.
+    /// * `to` - The recipient of the transaction.
+    /// * `value` - The value sent in the transaction.
     fn transaction_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256;
 }
