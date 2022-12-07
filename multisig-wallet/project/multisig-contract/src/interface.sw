@@ -23,7 +23,7 @@ abi MultiSignatureWallet {
     #[storage(read, write)]
     fn constructor(threshold: u64, users: Vec<User>);
 
-    /// Execute a transaction formed from the `to, `value` and `data` parameters if the signatures meet the
+    /// Execute a transaction formed from the `to`, `value` and `data` parameters if the signatures meet the
     /// threshold requirement.
     ///
     /// # Arguments
