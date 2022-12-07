@@ -74,7 +74,7 @@ fn eip_191_personal_sign_format(data_to_sign: b256) -> b256 {
     );
 
     // Keccak256 hash the first 34 bytes of encoded_data
-    let mut result_buffer: b256 = b256::min();
+    let mut result_buffer = b256::min();
     asm(hash: result_buffer, ptr: encoded_data, bytes: 34) {
         k256 hash ptr bytes;
         hash: b256
