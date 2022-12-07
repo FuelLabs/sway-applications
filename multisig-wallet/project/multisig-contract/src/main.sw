@@ -18,10 +18,10 @@ use std::{
     token::transfer,
 };
 
-use interface::MultiSignatureWallet;
 use data_structures::{SignatureData, User};
 use errors::{ExecutionError, InitError};
 use events::{ExecutedEvent, TransferEvent};
+use interface::MultiSignatureWallet;
 use utils::{create_hash, recover_signer};
 
 storage {
