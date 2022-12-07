@@ -28,7 +28,7 @@ storage {
     /// Used to add entropy into hashing of Tx to decrease the probability of collisions / double
     /// spending.
     nonce: u64 = 0,
-    /// The number of approvals required in order to execture a Tx.
+    /// The number of approvals required in order to execute a Tx.
     threshold: u64 = 0,
     /// Number of approvals per user.
     weighting: StorageMap<b256, u64> = StorageMap {},
