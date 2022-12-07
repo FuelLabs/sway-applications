@@ -134,22 +134,18 @@ pub mod test_helpers {
         prefix: MessagePrefix,
         wallet_type: WalletType,
     ) -> SignatureData {
-        //Format
         let formatted_message = match format {
             MessageFormat::None() => message_hash,
             MessageFormat::EIP191PersonalSign() => eip_191_personal_sign_format(message_hash),
         };
 
-        //Prefix
         let prefixed_message = match prefix {
             MessagePrefix::None() => formatted_message,
             MessagePrefix::Ethereum() => ethereum_prefix(formatted_message),
         };
 
-        //Sign
         let signature = Signature::sign(&private_key, &prefixed_message);
 
-        //Create SignatureData
         let signature_bytes: Bytes64 = Bytes64::try_from(signature).unwrap();
 
         let signature = B512::from((
@@ -187,15 +183,12 @@ pub mod test_helpers {
         unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) }
     }
 
-    // A keccak-256 method
     fn keccak_hash<B>(data: B) -> Bytes32
     where
         B: AsRef<[u8]>,
     {
-        // create a Keccak256 object
         let mut hasher = Keccak256::new();
 
-        // write input message
         hasher.update(data);
 
         <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()

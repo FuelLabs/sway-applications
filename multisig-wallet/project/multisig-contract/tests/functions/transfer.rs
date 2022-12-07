@@ -17,7 +17,6 @@ mod success {
 
         let receiver_wallet = WalletUnlocked::new_random(None);
 
-        // Constructor
         let fuel_user_1 = User {
             address: Bits256::from_hex_str(
                 "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
@@ -36,7 +35,6 @@ mod success {
 
         let _response = constructor(&contract, users, 5).await;
 
-        // Fund multi-sig
         let _receipt = deployer_wallet
             .force_transfer_to_contract(
                 contract.get_contract_id(),
@@ -57,7 +55,6 @@ mod success {
             .await
             .unwrap();
 
-        // Tx-hash
         let to = Identity::Address(receiver_wallet.address().try_into().unwrap());
 
         let value = 200;
@@ -98,7 +95,6 @@ mod success {
         // - Must comply with ascending signers requirement of Multisig's count_approvals
         let signatures_data: Vec<SignatureData> = vec![signature_data_evm, signature_data_fuel];
 
-        // Multi-sig transfer
         let _response = transfer(
             &contract,
             to,
@@ -119,7 +115,6 @@ mod success {
             .await
             .unwrap();
 
-        // Assertions
         assert_eq!(initial_contract_balance, 200);
         assert_eq!(initial_receiver_balance, 0);
 
@@ -139,7 +134,6 @@ mod revert {
 
         let receiver_wallet = WalletUnlocked::new_random(None);
 
-        // Fund multi-sig
         let _receipt = deployer_wallet
             .force_transfer_to_contract(
                 contract.get_contract_id(),
@@ -150,7 +144,6 @@ mod revert {
             .await
             .unwrap();
 
-        // Tx-hash
         let to = Identity::Address(receiver_wallet.address().try_into().unwrap());
 
         let value = 200;
@@ -191,7 +184,6 @@ mod revert {
         // - Must comply with ascending signers requirement of Multisig's count_approvals
         let signatures_data: Vec<SignatureData> = vec![signature_data_evm, signature_data_fuel];
 
-        // Multi-sig transfer
         let _response = transfer(
             &contract,
             to,
@@ -210,7 +202,6 @@ mod revert {
 
         let receiver_wallet = WalletUnlocked::new_random(None);
 
-        // Constructor
         let fuel_user_1 = User {
             address: Bits256::from_hex_str(
                 "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
@@ -229,7 +220,6 @@ mod revert {
 
         let _response = constructor(&contract, users, 5).await;
 
-        // Tx-hash
         let to = Identity::Address(receiver_wallet.address().try_into().unwrap());
 
         let value = 200;
@@ -270,7 +260,6 @@ mod revert {
         // - Must comply with ascending signers requirement of Multisig's count_approvals
         let signatures_data: Vec<SignatureData> = vec![signature_data_evm, signature_data_fuel];
 
-        // Multi-sig transfer
         let _response = transfer(
             &contract,
             to,
@@ -289,7 +278,6 @@ mod revert {
 
         let receiver_wallet = WalletUnlocked::new_random(None);
 
-        // Constructor
         let fuel_user_1 = User {
             address: Bits256::from_hex_str(
                 "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
@@ -308,7 +296,6 @@ mod revert {
 
         let _response = constructor(&contract, users, 5).await;
 
-        // Fund multi-sig
         let _receipt = deployer_wallet
             .force_transfer_to_contract(
                 contract.get_contract_id(),
@@ -319,7 +306,6 @@ mod revert {
             .await
             .unwrap();
 
-        // Tx-hash
         let to = Identity::Address(receiver_wallet.address().try_into().unwrap());
 
         let value = 200;
@@ -360,7 +346,6 @@ mod revert {
         // - Must comply with ascending signers requirement of Multisig's count_approvals
         let signatures_data: Vec<SignatureData> = vec![signature_data_evm, signature_data_fuel];
 
-        // Multi-sig transfer
         let _response = transfer(
             &contract,
             to,
@@ -379,7 +364,6 @@ mod revert {
 
         let receiver_wallet = WalletUnlocked::new_random(None);
 
-        // Constructor
         let fuel_user_1 = User {
             address: Bits256::from_hex_str(
                 "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
@@ -398,7 +382,6 @@ mod revert {
 
         let _response = constructor(&contract, users, 5).await;
 
-        // Fund multi-sig
         let _receipt = deployer_wallet
             .force_transfer_to_contract(
                 contract.get_contract_id(),
@@ -409,7 +392,6 @@ mod revert {
             .await
             .unwrap();
 
-        // Tx-hash
         let to = Identity::Address(receiver_wallet.address().try_into().unwrap());
 
         let value = 200;
@@ -447,10 +429,9 @@ mod revert {
         )
         .await;
 
-        // - Must comply with ascending signers requirement of Multisig's count_approvals
+        // - Should comply with ascending signers requirement of Multisig's count_approvals, but here is incorrectly ordered.
         let signatures_data: Vec<SignatureData> = vec![signature_data_fuel, signature_data_evm];
 
-        // Multi-sig transfer
         let _response = transfer(
             &contract,
             to,

@@ -32,7 +32,7 @@ mod success {
         };
         let users = vec![fuel_user_1, evm_user_1];
 
-        let _respone = constructor(&contract, users, 5).await;
+        let _response = constructor(&contract, users, 5).await;
 
         let final_nonce = nonce(&contract).await.value;
 

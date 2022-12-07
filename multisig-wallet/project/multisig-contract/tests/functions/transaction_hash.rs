@@ -30,7 +30,7 @@ mod success {
     async fn gets_transaction_hash() {
         let (_private_key, contract, deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        //Set parameters
+        // Set parameters
         let to = Identity::Address(deployer_wallet.address().try_into().unwrap());
 
         let value: u64 = 200;
@@ -41,7 +41,7 @@ mod success {
 
         let nonce = nonce(&contract).await.value;
 
-        //Recreate Transaction instance
+        // Recreate Transaction instance
         let tx = Transaction {
             contract_identifier: contract.get_contract_id().try_into().unwrap(),
             data,
@@ -50,7 +50,7 @@ mod success {
             value,
         };
 
-        //Set tokens for encoding with ABIEncoder
+        // Set tokens for encoding the Transaction instance with ABIEncoder
         let contract_identifier_token = Token::Struct(vec![Token::B256(
             tx.contract_identifier.try_into().unwrap(),
         )]);
@@ -94,10 +94,10 @@ mod success {
 
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
-        let resp = transaction_hash(&contract, to, value, data, nonce)
+        let response = transaction_hash(&contract, to, value, data, nonce)
             .await
             .value;
 
-        assert_eq!(Bits256(expected_hash.into()), resp);
+        assert_eq!(Bits256(expected_hash.into()), response);
     }
 }
