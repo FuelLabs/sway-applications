@@ -3,10 +3,10 @@ contract;
 // TODO:
 //      - change the "data" in the Tx hashing from b256 to Bytes type when available.
 //        https://github.com/FuelLabs/sway/pull/3454
-dep interface;
 dep data_structures;
 dep errors;
 dep events;
+dep interface;
 dep utils;
 
 use std::{
