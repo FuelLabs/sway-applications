@@ -7,7 +7,7 @@ use std::{contract_id::ContractId, identity::Identity};
 use data_structures::{SignatureData, User};
 
 abi MultiSignatureWallet {
-    /// The constructor initializes the necessary values and unlocks further functionlity.
+    /// The constructor initializes the necessary values and unlocks further functionality.
     ///
     /// # Arguments
     ///
