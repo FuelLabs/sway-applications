@@ -30,7 +30,6 @@ pub fn create_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
 }
 
 /// Applies the format and prefix specified by signature_data to the message_hash.
-/// Then recovers to the relevant address type specified by signature_data.
 /// Returns the b256 value of the recovered address.
 pub fn recover_signer(message_hash: b256, signature_data: SignatureData) -> b256 {
     let formatted_message = match signature_data.format {
