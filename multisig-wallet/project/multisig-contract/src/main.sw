@@ -64,10 +64,10 @@ impl MultiSignatureWallet for Contract {
 
         // TODO: Execute https://github.com/FuelLabs/sway-applications/issues/22
         log(ExecutedEvent {
-            to,
-            value,
             data,
             nonce: storage.nonce - 1,
+            to,
+            value,
         });
     }
 
@@ -91,10 +91,10 @@ impl MultiSignatureWallet for Contract {
         transfer(value, asset_id, to);
 
         log(TransferEvent {
-            to,
             asset: asset_id,
-            value,
             nonce: storage.nonce - 1,
+            to,
+            value,
         });
     }
 
