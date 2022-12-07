@@ -22,27 +22,27 @@ pub fn create_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
     })
 }
 
-/// Applies the format and prefix specified by signature_data to the message_hash.
+/// Applies the format and prefix specified by signature_info to the message_hash.
 /// Returns the b256 value of the recovered address.
-pub fn recover_signer(message_hash: b256, signature_data: SignatureInfo) -> b256 {
-    let formatted_message = match signature_data.message_format {
+pub fn recover_signer(message_hash: b256, signature_info: SignatureInfo) -> b256 {
+    let formatted_message = match signature_info.message_format {
         MessageFormat::None => message_hash,
         MessageFormat::EIP191PersonalSign => eip_191_personal_sign_format(message_hash),
     };
 
-    let prefixed_message = match signature_data.message_prefix {
+    let prefixed_message = match signature_info.message_prefix {
         MessagePrefix::None => formatted_message,
         MessagePrefix::Ethereum => ethereum_prefix(formatted_message),
     };
 
-    match signature_data.wallet_type {
+    match signature_info.wallet_type {
         WalletType::Fuel => {
-            let recover_result = ec_recover_address(signature_data.signature, prefixed_message);
+            let recover_result = ec_recover_address(signature_info.signature, prefixed_message);
             require(recover_result.is_ok(), "ec_recover_address failed");
             recover_result.unwrap().value
         },
         WalletType::EVM => {
-            let recover_result = ec_recover_evm_address(signature_data.signature, prefixed_message);
+            let recover_result = ec_recover_evm_address(signature_info.signature, prefixed_message);
             require(recover_result.is_ok(), "ec_recover_evm_address failed");
             recover_result.unwrap().value
         },

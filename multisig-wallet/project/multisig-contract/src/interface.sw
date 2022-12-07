@@ -27,7 +27,7 @@ abi MultiSignatureWallet {
     /// # Arguments
     ///
     /// * 'data' - The data field of the transaction.
-    /// * 'signatures_data' - The information for each user's signature for a specific transaction.
+    /// * 'signatures' - The information for each user's signature for a specific transaction.
     /// * 'to' - The recipient of the transaction.
     /// * 'value' - The value sent in the transaction.
     ///
@@ -38,7 +38,7 @@ abi MultiSignatureWallet {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// - When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn execute_transaction(data: b256, signatures_data: Vec<SignatureInfo>, to: Identity, value: u64);
+    fn execute_transaction(data: b256, signatures: Vec<SignatureInfo>, to: Identity, value: u64);
 
     /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement.
     ///
@@ -46,7 +46,7 @@ abi MultiSignatureWallet {
     ///
     /// * 'asset_id' - The contract ID of the asset to be transferred.
     /// * 'data' - The data field of the transaction.
-    /// * 'signatures_data' - The information for each user's signature for a specific transaction.
+    /// * 'signatures' - The information for each user's signature for a specific transaction.
     /// * 'to' - The recipient of the transaction.
     /// * 'value' - The value sent in the transaction.
     ///
@@ -58,7 +58,7 @@ abi MultiSignatureWallet {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// - When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn transfer(asset_id: ContractId, data: b256, signatures_data: Vec<SignatureInfo>, to: Identity, value: u64);
+    fn transfer(asset_id: ContractId, data: b256, signatures: Vec<SignatureInfo>, to: Identity, value: u64);
 
     /// Returns the current nonce in the contract
     #[storage(read)]
