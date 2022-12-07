@@ -130,16 +130,16 @@ pub mod test_helpers {
     pub async fn format_and_sign(
         private_key: SecretKey,
         message_hash: Message,
-        format: MessageFormat,
-        prefix: MessagePrefix,
+        message_format: MessageFormat,
+        message_prefix: MessagePrefix,
         wallet_type: WalletType,
     ) -> SignatureData {
-        let formatted_message = match format {
+        let formatted_message = match message_format {
             MessageFormat::None() => message_hash,
             MessageFormat::EIP191PersonalSign() => eip_191_personal_sign_format(message_hash),
         };
 
-        let prefixed_message = match prefix {
+        let prefixed_message = match message_prefix {
             MessagePrefix::None() => formatted_message,
             MessagePrefix::Ethereum() => ethereum_prefix(formatted_message),
         };
@@ -154,8 +154,8 @@ pub mod test_helpers {
         ));
 
         SignatureData {
-            format,
-            prefix,
+            message_format,
+            message_prefix,
             signature,
             wallet_type,
         }
