@@ -31,7 +31,7 @@ abi MultiSignatureWallet {
     /// * 'to' - The recipient of the transaction.
     /// * 'value' - The value sent in the transaction.
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// - When the constructor has not been called to initialize the contract.
     /// - When the public key cannot be recovered from a signature.
@@ -50,7 +50,7 @@ abi MultiSignatureWallet {
     /// * 'to' - The recipient of the transaction.
     /// * 'value' - The value sent in the transaction.
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// - When the constructor has not been called to initialize the contract.
     /// - When the amount of the asset being sent is greater than the balance in the contract.
