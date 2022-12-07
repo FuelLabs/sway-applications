@@ -158,9 +158,9 @@ pub mod test_helpers {
         ));
 
         SignatureData {
-            signature,
             format,
             prefix,
+            signature,
             wallet_type,
         }
     }
