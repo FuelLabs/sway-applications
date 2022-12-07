@@ -2,7 +2,7 @@ library interface;
 
 dep data_structures;
 
-use data_structures::{SignatureData, User};
+use data_structures::{SignatureInfo, User};
 
 abi MultiSignatureWallet {
     /// The constructor initializes the necessary values and unlocks further functionality.
@@ -38,7 +38,7 @@ abi MultiSignatureWallet {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// - When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn execute_transaction(data: b256, signatures_data: Vec<SignatureData>, to: Identity, value: u64);
+    fn execute_transaction(data: b256, signatures_data: Vec<SignatureInfo>, to: Identity, value: u64);
 
     /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement.
     ///
@@ -58,7 +58,7 @@ abi MultiSignatureWallet {
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// - When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn transfer(asset_id: ContractId, data: b256, signatures_data: Vec<SignatureData>, to: Identity, value: u64);
+    fn transfer(asset_id: ContractId, data: b256, signatures_data: Vec<SignatureInfo>, to: Identity, value: u64);
 
     /// Returns the current nonce in the contract
     #[storage(read)]

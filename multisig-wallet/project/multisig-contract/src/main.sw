@@ -11,7 +11,7 @@ dep utils;
 
 use std::{constants::ZERO_B256, context::this_balance, logging::log, token::transfer};
 
-use data_structures::{SignatureData, User};
+use data_structures::{SignatureInfo, User};
 use errors::{ExecutionError, InitError};
 use events::{ExecutedEvent, TransferEvent};
 use interface::MultiSignatureWallet;
@@ -49,7 +49,7 @@ impl MultiSignatureWallet for Contract {
     #[storage(read, write)]
     fn execute_transaction(
         data: b256,
-        signatures_data: Vec<SignatureData>,
+        signatures_data: Vec<SignatureInfo>,
         to: Identity,
         value: u64,
     ) {
@@ -75,7 +75,7 @@ impl MultiSignatureWallet for Contract {
     fn transfer(
         asset_id: ContractId,
         data: b256,
-        signatures_data: Vec<SignatureData>,
+        signatures_data: Vec<SignatureInfo>,
         to: Identity,
         value: u64,
     ) {
@@ -117,7 +117,7 @@ impl MultiSignatureWallet for Contract {
 /// it then increments the number of approvals by that address' approval weighting.
 /// Returns the final approval count.
 #[storage(read)]
-fn count_approvals(signatures_data: Vec<SignatureData>, transaction_hash: b256) -> u64 {
+fn count_approvals(signatures_data: Vec<SignatureInfo>, transaction_hash: b256) -> u64 {
     // The signers must have increasing values in order to check for duplicates or a zero-value.
     let mut previous_signer = b256::min();
 

@@ -9,7 +9,7 @@ use std::{
     vm::evm::ecr::ec_recover_evm_address,
 };
 
-use data_structures::{MessageFormat, MessagePrefix, SignatureData, Transaction, WalletType};
+use data_structures::{MessageFormat, MessagePrefix, SignatureInfo, Transaction, WalletType};
 
 /// Takes in transaction data and hashes it into a unique transaction hash.
 pub fn create_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
@@ -24,7 +24,7 @@ pub fn create_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
 
 /// Applies the format and prefix specified by signature_data to the message_hash.
 /// Returns the b256 value of the recovered address.
-pub fn recover_signer(message_hash: b256, signature_data: SignatureData) -> b256 {
+pub fn recover_signer(message_hash: b256, signature_data: SignatureInfo) -> b256 {
     let formatted_message = match signature_data.message_format {
         MessageFormat::None => message_hash,
         MessageFormat::EIP191PersonalSign => eip_191_personal_sign_format(message_hash),

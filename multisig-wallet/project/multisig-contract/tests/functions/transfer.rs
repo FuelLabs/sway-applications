@@ -1,7 +1,7 @@
 use crate::utils::{
     abi_calls::{balance, constructor, nonce, transaction_hash, transfer},
     test_helpers::{base_asset_contract_id, format_and_sign, setup_env},
-    MessageFormat, MessagePrefix, SignatureData, User, WalletType, VALID_SIGNER_PK,
+    MessageFormat, MessagePrefix, SignatureInfo, User, WalletType, VALID_SIGNER_PK,
 };
 use fuels::{prelude::*, signers::fuel_crypto::Message, tx::Bytes32};
 
@@ -93,7 +93,7 @@ mod success {
         .await;
 
         // - Must comply with ascending signers requirement of Multisig's count_approvals
-        let signatures_data: Vec<SignatureData> = vec![signature_data_evm, signature_data_fuel];
+        let signatures_data: Vec<SignatureInfo> = vec![signature_data_evm, signature_data_fuel];
 
         let _response = transfer(
             &contract,
@@ -182,7 +182,7 @@ mod revert {
         .await;
 
         // - Must comply with ascending signers requirement of Multisig's count_approvals
-        let signatures_data: Vec<SignatureData> = vec![signature_data_evm, signature_data_fuel];
+        let signatures_data: Vec<SignatureInfo> = vec![signature_data_evm, signature_data_fuel];
 
         let _response = transfer(
             &contract,
@@ -258,7 +258,7 @@ mod revert {
         .await;
 
         // - Must comply with ascending signers requirement of Multisig's count_approvals
-        let signatures_data: Vec<SignatureData> = vec![signature_data_evm, signature_data_fuel];
+        let signatures_data: Vec<SignatureInfo> = vec![signature_data_evm, signature_data_fuel];
 
         let _response = transfer(
             &contract,
@@ -344,7 +344,7 @@ mod revert {
         .await;
 
         // - Must comply with ascending signers requirement of Multisig's count_approvals
-        let signatures_data: Vec<SignatureData> = vec![signature_data_evm, signature_data_fuel];
+        let signatures_data: Vec<SignatureInfo> = vec![signature_data_evm, signature_data_fuel];
 
         let _response = transfer(
             &contract,
@@ -430,7 +430,7 @@ mod revert {
         .await;
 
         // - Should comply with ascending signers requirement of Multisig's count_approvals, but here is incorrectly ordered.
-        let signatures_data: Vec<SignatureData> = vec![signature_data_fuel, signature_data_evm];
+        let signatures_data: Vec<SignatureInfo> = vec![signature_data_fuel, signature_data_evm];
 
         let _response = transfer(
             &contract,

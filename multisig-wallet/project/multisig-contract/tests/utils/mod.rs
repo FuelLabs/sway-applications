@@ -37,7 +37,7 @@ pub mod abi_calls {
         to: Identity,
         value: u64,
         data: Bits256,
-        signatures_data: Vec<SignatureData>,
+        signatures_data: Vec<SignatureInfo>,
     ) -> CallResponse<()> {
         contract
             .methods()
@@ -54,7 +54,7 @@ pub mod abi_calls {
         asset_id: ContractId,
         value: u64,
         data: Bits256,
-        signatures_data: Vec<SignatureData>,
+        signatures_data: Vec<SignatureInfo>,
     ) -> CallResponse<()> {
         contract
             .methods()
@@ -133,7 +133,7 @@ pub mod test_helpers {
         message_format: MessageFormat,
         message_prefix: MessagePrefix,
         wallet_type: WalletType,
-    ) -> SignatureData {
+    ) -> SignatureInfo {
         let formatted_message = match message_format {
             MessageFormat::None() => message_hash,
             MessageFormat::EIP191PersonalSign() => eip_191_personal_sign_format(message_hash),
@@ -153,7 +153,7 @@ pub mod test_helpers {
             Bits256(signature_bytes[32..].try_into().unwrap()),
         ));
 
-        SignatureData {
+        SignatureInfo {
             message_format,
             message_prefix,
             signature,

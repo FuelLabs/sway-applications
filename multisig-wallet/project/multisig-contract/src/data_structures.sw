@@ -17,7 +17,7 @@ pub enum WalletType {
     EVM: (),
 }
 
-pub struct SignatureData {
+pub struct SignatureInfo {
     /// The type of formatting of the message that was signed.
     message_format: MessageFormat,
     /// The type of prefix prepended to the message that was signed.
