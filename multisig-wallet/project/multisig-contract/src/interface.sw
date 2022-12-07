@@ -11,7 +11,7 @@ abi MultiSignatureWallet {
     ///
     /// # Arguments
     ///
-    /// * 'threshold' - The number of approvals required to enable a transasction.
+    /// * 'threshold' - The number of approvals required to enable a transaction to be sent.
     /// * 'users' - The users of the multisig, who can sign transactions to add their approval.
     ///
     /// # Reverts
