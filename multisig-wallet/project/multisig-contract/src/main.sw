@@ -9,14 +9,7 @@ dep events;
 dep interface;
 dep utils;
 
-use std::{
-    constants::ZERO_B256,
-    context::this_balance,
-    identity::Identity,
-    logging::log,
-    revert::require,
-    token::transfer,
-};
+use std::{constants::ZERO_B256, context::this_balance, logging::log, token::transfer};
 
 use data_structures::{SignatureData, User};
 use errors::{ExecutionError, InitError};

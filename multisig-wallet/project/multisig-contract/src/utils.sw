@@ -10,7 +10,6 @@ use std::{
     hash::{
         sha256,
     },
-    identity::Identity,
     vm::evm::{
         ecr::ec_recover_evm_address,
     },

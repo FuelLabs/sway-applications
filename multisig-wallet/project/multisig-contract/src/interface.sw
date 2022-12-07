@@ -2,8 +2,6 @@ library interface;
 
 dep data_structures;
 
-use std::{contract_id::ContractId, identity::Identity};
-
 use data_structures::{SignatureData, User};
 
 abi MultiSignatureWallet {
