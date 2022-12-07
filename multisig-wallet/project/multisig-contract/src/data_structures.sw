@@ -33,7 +33,7 @@ pub struct Transaction {
     contract_identifier: ContractId,
     /// Payload sent to destination  // TODO: change to Bytes when implemented: https://github.com/FuelLabs/sway/pull/3454
     data: b256,
-    /// The recipient (output / contract) regarding the Tx details.
+    /// The recipient (output / contract) regarding the transaction details.
     destination: Identity,
     /// Value used to prevent double spending.
     nonce: u64,
