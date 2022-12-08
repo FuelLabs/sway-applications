@@ -36,6 +36,16 @@ impl FractionalNFT for Contract {
     }
 
     #[storage(read)]
+    fn nft() -> (Option<ContractId>, u64) {
+        (storage.nft, storage.token_id)
+    }
+
+    #[storage(read)]
+    fn owner() -> Option<Identity> {
+        storage.owner
+    }
+
+    #[storage(read)]
     fn supply() -> u64 {
         storage.supply
     }
