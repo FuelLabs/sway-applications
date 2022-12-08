@@ -2,7 +2,8 @@ use fuels::prelude::*;
 use test_utils::{
     abi::{exchange::balance, Exchange},
     data_structures::{
-        ExchangeContract, ExchangeContractConfiguration, LiquidityParameters, WalletAssetParameters,
+        ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
+        WalletAssetConfiguration,
     },
     setup::common::{
         deploy_and_construct_exchange, deploy_exchange, deposit_and_add_liquidity,
@@ -20,12 +21,6 @@ pub struct WalletBalances {
     pub asset_b: u64,
     pub liquidity_pool_asset: u64,
 }
-
-const ASSET_PARAMETERS: WalletAssetParameters = WalletAssetParameters {
-    num_assets: 3,
-    coins_per_asset: 10,
-    amount_per_coin: 1_000_000,
-};
 
 pub async fn contract_balances(exchange: &ExchangeContract) -> ContractBalances {
     let asset_a = balance(&exchange.instance, exchange.pair.0).await.value;
@@ -51,10 +46,14 @@ pub async fn wallet_balances(
 }
 
 pub async fn setup() -> (Exchange, WalletUnlocked, AssetId, AssetId, AssetId, AssetId) {
-    let (wallet, asset_ids, _provider) = setup_wallet_and_provider(ASSET_PARAMETERS).await;
+    let (wallet, asset_ids, _provider) =
+        setup_wallet_and_provider(&WalletAssetConfiguration::default()).await;
 
-    let (exchange_id, exchange_instance) =
-        deploy_exchange(&wallet, &ExchangeContractConfiguration::default()).await;
+    let (exchange_id, exchange_instance) = deploy_exchange(
+        &wallet,
+        &ExchangeContractConfiguration::new(None, None, None, None),
+    )
+    .await;
 
     (
         exchange_instance,
@@ -75,12 +74,12 @@ pub async fn setup_and_construct(
     LiquidityParameters,
     AssetId,
 ) {
-    let (wallet, asset_ids, _provider) = setup_wallet_and_provider(ASSET_PARAMETERS).await;
+    let (wallet, asset_ids, _provider) =
+        setup_wallet_and_provider(&WalletAssetConfiguration::default()).await;
 
     let exchange = deploy_and_construct_exchange(
         &wallet,
-        (asset_ids[0], asset_ids[1]),
-        &ExchangeContractConfiguration::default(),
+        &ExchangeContractConfiguration::new(Some((asset_ids[0], asset_ids[1])), None, None, None),
     )
     .await;
 

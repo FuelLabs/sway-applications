@@ -6,7 +6,7 @@ use super::{
     },
     data_structures::{
         AMMContract, ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
-        WalletAssetParameters,
+        WalletAssetConfiguration,
     },
     paths::{
         AMM_CONTRACT_BINARY_PATH, AMM_CONTRACT_STORAGE_PATH, EXCHANGE_CONTRACT_BINARY_PATH,
@@ -31,7 +31,7 @@ pub mod common {
     }
 
     pub async fn setup_wallet_and_provider(
-        asset_parameters: WalletAssetParameters,
+        asset_parameters: &WalletAssetConfiguration,
     ) -> (WalletUnlocked, Vec<AssetId>, Provider) {
         let mut wallet = WalletUnlocked::new_random(None);
 
@@ -55,8 +55,8 @@ pub mod common {
             &wallet,
             TxParameters::default(),
             StorageConfiguration {
-                storage_path: Option::Some(AMM_CONTRACT_STORAGE_PATH.to_string()),
-                manual_storage_vec: Option::None,
+                storage_path: Some(AMM_CONTRACT_STORAGE_PATH.to_string()),
+                manual_storage_vec: None,
             },
         )
         .await
@@ -98,8 +98,8 @@ pub mod common {
             &wallet,
             TxParameters::default(),
             StorageConfiguration {
-                storage_path: Option::Some(storage_path),
-                manual_storage_vec: Option::None,
+                storage_path: Some(storage_path),
+                manual_storage_vec: None,
             },
             Salt::from(config.salt),
         )
@@ -114,11 +114,10 @@ pub mod common {
 
     pub async fn deploy_and_construct_exchange(
         wallet: &WalletUnlocked,
-        pair: (AssetId, AssetId),
         config: &ExchangeContractConfiguration,
     ) -> ExchangeContract {
         let (id, instance) = deploy_exchange(&wallet, &config).await;
-        constructor(&instance, pair).await;
+        constructor(&instance, config.pair).await;
         ExchangeContract {
             bytecode_root: if config.compute_bytecode_root {
                 Some(exchange_bytecode_root().await)
@@ -127,7 +126,7 @@ pub mod common {
             },
             id,
             instance,
-            pair,
+            pair: config.pair,
         }
     }
 
@@ -168,33 +167,18 @@ pub mod common {
 
 pub mod scripts {
     use super::*;
-    use common::{
-        deploy_and_construct_exchange, deploy_and_initialize_amm, deposit_and_add_liquidity,
-        setup_wallet_and_provider,
-    };
+    use common::{deploy_and_construct_exchange, deposit_and_add_liquidity};
 
-    const COINS_PER_ASSET: u64 = 100;
-    const AMOUNT_PER_COIN: u64 = 1_000_000;
     pub const MAXIMUM_INPUT_AMOUNT: u64 = 1_000_000;
 
     pub async fn setup_exchange_contract(
         wallet: WalletUnlocked,
-        pair: (AssetId, AssetId),
-        ratio: u64,
-        salt: [u8; 32],
+        exchange_config: &ExchangeContractConfiguration,
+        liquidity_parameters: &LiquidityParameters,
     ) -> ExchangeContract {
-        let exchange = deploy_and_construct_exchange(
-            &wallet,
-            pair,
-            &ExchangeContractConfiguration::new(None, None, Some(salt)),
-        )
-        .await;
+        let exchange = deploy_and_construct_exchange(&wallet, &exchange_config).await;
 
-        deposit_and_add_liquidity(
-            &LiquidityParameters::new(Some((100_000, 100_000 * ratio)), None, None),
-            &exchange,
-        )
-        .await;
+        deposit_and_add_liquidity(&liquidity_parameters, &exchange).await;
 
         exchange
     }
@@ -211,9 +195,17 @@ pub mod scripts {
 
             let exchange = setup_exchange_contract(
                 wallet.clone(),
-                asset_pair,
-                (i as u64 + 1) * 3,
-                [(i as u8 + 2); 32],
+                &ExchangeContractConfiguration::new(
+                    Some(asset_pair),
+                    None,
+                    None,
+                    Some([(i as u8 + 2); 32]),
+                ),
+                &LiquidityParameters::new(
+                    Some((100_000, 100_000 * (i as u64 + 1) * 3)),
+                    None,
+                    Some(100_000),
+                ),
             )
             .await;
 
@@ -222,17 +214,5 @@ pub mod scripts {
             amm.pools.insert(asset_pair, exchange);
             i += 1;
         }
-    }
-
-    pub async fn setup() -> (WalletUnlocked, Provider, AMMContract, Vec<AssetId>) {
-        let asset_parameters = WalletAssetParameters {
-            num_assets: 5,
-            coins_per_asset: COINS_PER_ASSET,
-            amount_per_coin: AMOUNT_PER_COIN,
-        };
-        let (wallet, asset_ids, provider) = setup_wallet_and_provider(asset_parameters).await;
-        let mut amm = deploy_and_initialize_amm(&wallet).await;
-        setup_exchange_contracts(wallet.clone(), &mut amm, asset_ids.clone()).await;
-        (wallet, provider, amm, asset_ids)
     }
 }

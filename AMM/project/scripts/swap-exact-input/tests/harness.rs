@@ -1,9 +1,12 @@
 use fuels::prelude::*;
 use test_utils::{
     abi::{exchange::preview_swap_exact_input, SwapExactInputScript},
-    data_structures::AMMContract,
+    data_structures::{AMMContract, WalletAssetConfiguration},
     paths::SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH,
-    setup::scripts::setup,
+    setup::{
+        common::{deploy_and_initialize_amm, setup_wallet_and_provider},
+        scripts::setup_exchange_contracts,
+    },
     transaction::transaction_inputs_outputs_for_scripts,
 };
 
@@ -26,6 +29,14 @@ pub async fn expected_swap_amounts(
         i += 1;
     }
     amounts
+}
+
+pub async fn setup() -> (WalletUnlocked, Provider, AMMContract, Vec<AssetId>) {
+    let (wallet, asset_ids, provider) =
+        setup_wallet_and_provider(&WalletAssetConfiguration::default()).await;
+    let mut amm = deploy_and_initialize_amm(&wallet).await;
+    setup_exchange_contracts(wallet.clone(), &mut amm, asset_ids.clone()).await;
+    (wallet, provider, amm, asset_ids)
 }
 
 #[tokio::test]

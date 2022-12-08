@@ -13,9 +13,11 @@ mod success {
         let (wallet, amm_instance, asset_pairs) = setup(true).await;
         let pair = asset_pairs[0];
 
-        let exchange =
-            deploy_and_construct_exchange(&wallet, pair, &ExchangeContractConfiguration::default())
-                .await;
+        let exchange = deploy_and_construct_exchange(
+            &wallet,
+            &ExchangeContractConfiguration::new(Some(pair), None, None, None),
+        )
+        .await;
 
         // adding pair to the AMM contract in the same order as the constructed exchange contract
         add_pool(&amm_instance, pair, exchange.id).await;
@@ -31,9 +33,11 @@ mod success {
         let (wallet, amm_instance, asset_pairs) = setup(true).await;
         let pair = asset_pairs[0];
 
-        let exchange =
-            deploy_and_construct_exchange(&wallet, pair, &ExchangeContractConfiguration::default())
-                .await;
+        let exchange = deploy_and_construct_exchange(
+            &wallet,
+            &ExchangeContractConfiguration::new(Some(pair), None, None, None),
+        )
+        .await;
 
         // adding pair to the AMM contract in the reverse order as the constructed exchange contract
         add_pool(&amm_instance, (pair.1, pair.0), exchange.id).await;
@@ -52,14 +56,12 @@ mod success {
 
         let exchange_1 = deploy_and_construct_exchange(
             &wallet,
-            pair_1,
-            &ExchangeContractConfiguration::default(),
+            &ExchangeContractConfiguration::new(Some(pair_1), None, None, None),
         )
         .await;
         let exchange_2 = deploy_and_construct_exchange(
             &wallet,
-            pair_2,
-            &ExchangeContractConfiguration::new(None, None, Some([1u8; 32])),
+            &ExchangeContractConfiguration::new(Some(pair_2), None, None, Some([1u8; 32])),
         )
         .await;
 
@@ -91,9 +93,11 @@ mod revert {
         let (wallet, amm_instance, asset_pairs) = setup(false).await;
         let pair = asset_pairs[0];
 
-        let exchange =
-            deploy_and_construct_exchange(&wallet, pair, &ExchangeContractConfiguration::default())
-                .await;
+        let exchange = deploy_and_construct_exchange(
+            &wallet,
+            &ExchangeContractConfiguration::new(Some(pair), None, None, None),
+        )
+        .await;
 
         add_pool(&amm_instance, pair, exchange.id).await;
     }
@@ -106,8 +110,7 @@ mod revert {
 
         let invalid_exchange = deploy_and_construct_exchange(
             &wallet,
-            pair,
-            &ExchangeContractConfiguration::new(None, Some(true), None),
+            &ExchangeContractConfiguration::new(Some(pair), None, Some(true), None),
         )
         .await;
 
@@ -121,13 +124,14 @@ mod revert {
         let pair = asset_pairs[0];
         let another_pair = asset_pairs[1];
 
-        let _exchange =
-            deploy_and_construct_exchange(&wallet, pair, &ExchangeContractConfiguration::default())
-                .await;
+        let _exchange = deploy_and_construct_exchange(
+            &wallet,
+            &ExchangeContractConfiguration::new(Some(pair), None, None, None),
+        )
+        .await;
         let another_exchange = deploy_and_construct_exchange(
             &wallet,
-            another_pair,
-            &ExchangeContractConfiguration::new(None, None, Some([1u8; 32])),
+            &ExchangeContractConfiguration::new(Some(another_pair), None, None, Some([1u8; 32])),
         )
         .await;
 

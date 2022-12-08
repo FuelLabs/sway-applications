@@ -13,9 +13,11 @@ mod success {
         let (wallet, amm_instance, asset_pairs) = setup(true).await;
         let pair = asset_pairs[0];
 
-        let exchange =
-            deploy_and_construct_exchange(&wallet, pair, &ExchangeContractConfiguration::default())
-                .await;
+        let exchange = deploy_and_construct_exchange(
+            &wallet,
+            &ExchangeContractConfiguration::new(Some(pair), None, None, None),
+        )
+        .await;
 
         add_pool(&amm_instance, pair, exchange.id).await;
 
@@ -31,9 +33,11 @@ mod success {
         let pair = asset_pairs[0];
         let another_pair = asset_pairs[1];
 
-        let exchange =
-            deploy_and_construct_exchange(&wallet, pair, &ExchangeContractConfiguration::default())
-                .await;
+        let exchange = deploy_and_construct_exchange(
+            &wallet,
+            &ExchangeContractConfiguration::new(Some(pair), None, None, None),
+        )
+        .await;
 
         add_pool(&amm_instance, pair, exchange.id).await;
 

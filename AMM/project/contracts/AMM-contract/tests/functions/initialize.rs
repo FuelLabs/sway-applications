@@ -27,8 +27,7 @@ mod revert {
 
         let exchange = deploy_and_construct_exchange(
             &wallet,
-            asset_pairs[0],
-            &ExchangeContractConfiguration::new(Some(true), None, None),
+            &ExchangeContractConfiguration::new(Some(asset_pairs[0]), Some(true), None, None),
         )
         .await;
 
