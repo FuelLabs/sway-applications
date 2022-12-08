@@ -40,7 +40,7 @@ use sway_libs::nft::{
 };
 
 storage {
-    state: State = State::Uninitialize,
+    state: State = State::Uninitialized,
 }
 
 impl Administrator for Contract {
@@ -67,8 +67,8 @@ impl Burn for Contract {
 impl Auxiliary for Contract {
     #[storage(read, write)]
     fn constructor(new_admin: Option<Identity>, new_max_supply: Option<u64>) {
-        require(storage.state == State::Uninitialize, InitError::CannotReinitialized);
-        storage.state = State::Initialize;
+        require(storage.state == State::Uninitialized, InitError::CannotReinitialize);
+        storage.state = State::Initialized;
 
         set_admin(new_admin);
         set_max_supply(new_max_supply);
@@ -103,7 +103,7 @@ impl NFT for Contract {
 
     #[storage(read, write)]
     fn mint(amount: u64, to: Identity) {
-        require(storage.state == State::Initialize, InitError::NotInitialized);
+        require(storage.state == State::Initialized, InitError::NotInitialized);
         require(admin().is_none() || (msg_sender().unwrap() == admin().unwrap()), AccessError::SenderNotAdmin);
         require(max_supply().is_none() || (tokens_minted() + amount <= max_supply().unwrap()), AccessError::MaxTokensMinted);
 
@@ -145,7 +145,7 @@ impl Supply for Contract {
 
     #[storage(read, write)]
     fn set_max_supply(supply: Option<u64>) {
-        require(storage.state == State::Uninitialize, InitError::CannotReinitialized);
+        require(storage.state == State::Uninitialized, InitError::CannotReinitialize);
         set_max_supply(supply)
     }
 }

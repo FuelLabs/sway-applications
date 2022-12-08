@@ -1,15 +1,15 @@
 library data_structures;
 
 pub enum State {
-    Initialize: (),
-    Uninitialize: (),
+    Initialized: (),
+    Uninitialized: (),
 }
 
 impl core::ops::Eq for State {
     fn eq(self, other: Self) -> bool {
         match (self, other) {
-            (State::Initialize, State::Initialize) => true,
-            (State::Uninitialize, State::Uninitialize) => true,
+            (State::Initialized, State::Initialized) => true,
+            (State::Uninitialized, State::Uninitialized) => true,
             _ => false,
         }
     }

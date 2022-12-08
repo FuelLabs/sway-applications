@@ -7,6 +7,6 @@ pub enum AccessError {
 }
 
 pub enum InitError {
-    CannotReinitialized: (),
+    CannotReinitialize: (),
     NotInitialized: (),
 }
