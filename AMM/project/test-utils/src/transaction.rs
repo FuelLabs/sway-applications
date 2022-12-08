@@ -1,53 +1,10 @@
-use super::{data_structures::AMMContract, setup::scripts::MAXIMUM_INPUT_AMOUNT};
 use fuels::{
     prelude::*,
     tx::{Bytes32, Input, Output, TxPointer, UtxoId},
     types::resource::Resource,
 };
 
-pub async fn transaction_inputs_outputs_for_scripts(
-    wallet: &WalletUnlocked,
-    provider: &Provider,
-    amm: &AMMContract,
-    assets: &Vec<AssetId>,
-) -> (Vec<Input>, Vec<Output>) {
-    let mut input_contracts: Vec<Input> = vec![transaction_input_contract(amm.id)];
-    let mut output_contracts: Vec<Output> = vec![transaction_output_contract(0)];
-
-    amm.pools
-        .values()
-        .into_iter()
-        .enumerate()
-        .for_each(|(index, pool)| {
-            input_contracts.push(transaction_input_contract(pool.id));
-            output_contracts.push(transaction_output_contract(index as u8 + 1));
-        });
-
-    let mut input_coins: Vec<Input> = vec![];
-    let mut output_variables: Vec<Output> = vec![];
-
-    let mut i = 0;
-    while i < assets.len() {
-        input_coins.extend(
-            transaction_input_coin(
-                &provider,
-                wallet.address(),
-                *assets.get(i).unwrap(),
-                MAXIMUM_INPUT_AMOUNT,
-            )
-            .await,
-        );
-        output_variables.push(transaction_output_variable());
-        i += 1;
-    }
-
-    (
-        [input_contracts, input_coins].concat(),
-        [output_contracts, output_variables].concat(),
-    )
-}
-
-async fn transaction_input_coin(
+pub async fn transaction_input_coin(
     provider: &Provider,
     from: &Bech32Address,
     asset_id: AssetId,
@@ -80,7 +37,7 @@ async fn transaction_input_coin(
     input_coins
 }
 
-fn transaction_input_contract(contract_id: ContractId) -> Input {
+pub fn transaction_input_contract(contract_id: ContractId) -> Input {
     Input::Contract {
         utxo_id: UtxoId::new(Bytes32::zeroed(), 0),
         balance_root: Bytes32::zeroed(),
@@ -90,7 +47,7 @@ fn transaction_input_contract(contract_id: ContractId) -> Input {
     }
 }
 
-fn transaction_output_contract(input_index: u8) -> Output {
+pub fn transaction_output_contract(input_index: u8) -> Output {
     Output::Contract {
         input_index,
         balance_root: Bytes32::zeroed(),
@@ -98,7 +55,7 @@ fn transaction_output_contract(input_index: u8) -> Output {
     }
 }
 
-fn transaction_output_variable() -> Output {
+pub fn transaction_output_variable() -> Output {
     Output::Variable {
         amount: 0,
         to: Address::zeroed(),

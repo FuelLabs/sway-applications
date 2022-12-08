@@ -13,8 +13,15 @@ use super::{
         EXCHANGE_CONTRACT_STORAGE_PATH, MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH,
         MALICIOUS_EXCHANGE_CONTRACT_STORAGE_PATH,
     },
+    transaction::{
+        transaction_input_coin, transaction_input_contract, transaction_output_contract,
+        transaction_output_variable,
+    },
 };
-use fuels::{prelude::*, tx::Contract as TxContract};
+use fuels::{
+    prelude::*,
+    tx::{Contract as TxContract, Input, Output},
+};
 use std::collections::HashMap;
 
 pub mod common {
@@ -147,6 +154,7 @@ pub mod common {
         .await;
     }
 
+    // TODO: once the script is reliable enough, use it for this functionality
     pub async fn deposit_and_add_liquidity(
         liquidity_parameters: &LiquidityParameters,
         exchange: &ExchangeContract,
@@ -214,5 +222,47 @@ pub mod scripts {
             amm.pools.insert(asset_pair, exchange);
             i += 1;
         }
+    }
+
+    pub async fn transaction_inputs_outputs(
+        wallet: &WalletUnlocked,
+        provider: &Provider,
+        amm: &AMMContract,
+        assets: &Vec<AssetId>,
+    ) -> (Vec<Input>, Vec<Output>) {
+        let mut input_contracts: Vec<Input> = vec![transaction_input_contract(amm.id)];
+        let mut output_contracts: Vec<Output> = vec![transaction_output_contract(0)];
+
+        amm.pools
+            .values()
+            .into_iter()
+            .enumerate()
+            .for_each(|(index, pool)| {
+                input_contracts.push(transaction_input_contract(pool.id));
+                output_contracts.push(transaction_output_contract(index as u8 + 1));
+            });
+
+        let mut input_coins: Vec<Input> = vec![];
+        let mut output_variables: Vec<Output> = vec![];
+
+        let mut i = 0;
+        while i < assets.len() {
+            input_coins.extend(
+                transaction_input_coin(
+                    &provider,
+                    wallet.address(),
+                    *assets.get(i).unwrap(),
+                    MAXIMUM_INPUT_AMOUNT,
+                )
+                .await,
+            );
+            output_variables.push(transaction_output_variable());
+            i += 1;
+        }
+
+        (
+            [input_contracts, input_coins].concat(),
+            [output_contracts, output_variables].concat(),
+        )
     }
 }

@@ -5,12 +5,11 @@ use test_utils::{
     paths::SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH,
     setup::{
         common::{deploy_and_initialize_amm, setup_wallet_and_provider},
-        scripts::setup_exchange_contracts,
+        scripts::{setup_exchange_contracts, transaction_inputs_outputs},
     },
-    transaction::transaction_inputs_outputs_for_scripts,
 };
 
-pub async fn expected_swap_amounts(
+async fn expected_swap_amounts(
     amm: &AMMContract,
     input_amount: u64,
     route: &Vec<AssetId>,
@@ -31,7 +30,7 @@ pub async fn expected_swap_amounts(
     amounts
 }
 
-pub async fn setup() -> (WalletUnlocked, Provider, AMMContract, Vec<AssetId>) {
+async fn setup() -> (WalletUnlocked, Provider, AMMContract, Vec<AssetId>) {
     let (wallet, asset_ids, provider) =
         setup_wallet_and_provider(&WalletAssetConfiguration::default()).await;
     let mut amm = deploy_and_initialize_amm(&wallet).await;
@@ -43,8 +42,7 @@ pub async fn setup() -> (WalletUnlocked, Provider, AMMContract, Vec<AssetId>) {
 async fn can_swap_exact_input_along_route() {
     let (wallet, provider, amm, asset_ids) = setup().await;
 
-    let (inputs, outputs) =
-        transaction_inputs_outputs_for_scripts(&wallet, &provider, &amm, &asset_ids).await;
+    let (inputs, outputs) = transaction_inputs_outputs(&wallet, &provider, &amm, &asset_ids).await;
 
     let route = asset_ids;
     let script_instance =
