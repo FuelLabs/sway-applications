@@ -11,7 +11,9 @@ storage {
     games: Game = Game::default(),
     game_vec: StorageVec<(u64, Game)> = StorageVec {},
     game_boards: StorageMap<(u64, u64), Option<Identity>> = StorageMap {},
-    player_positions: StorageMap<(u64, u64), Option<Identity>> = StorageMap {}, //To determine the winner StorageMap<(Game_id, Player_address),positions)>,
+    board: StorageMap<(u64), Option<Identity>> = StorageMap {}, //To determine the winner StorageMap<(Game_id, Player_address),positions)>,
+    board: u64 = ,
+
 }
 
 impl TicTacToe for Contract {
@@ -70,8 +72,16 @@ impl TicTacToe for Contract {
 
     // save the game and return the winner
     #[storage(write)]
-    fn end_game(game: Game) -> Option<Identity> {
+    fn end_game(game_id: u64, game: Game) -> Option<Identity> {
+        let current_game = game_boards.get(game_id, i).unwrap()
+        if game_boards.get(game_id,0).unwrap() == game_boards.get(game_id,1) && if game_boards.get(game_id,0).unwrap() == if game_boards.get(game_id,2).unwrap() {
+
+            }
+        }
+
         storage.games = game;
         return game.winner;
     }
+
+
 }

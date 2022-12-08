@@ -1,4 +1,3 @@
-library interface;
 
 dep data_structures/game;
 
