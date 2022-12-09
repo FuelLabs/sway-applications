@@ -11,6 +11,9 @@ use std::{
 
 use data_structures::{MessageFormat, MessagePrefix, SignatureInfo, Transaction, WalletType};
 
+const EIP191_INITIAL_BYTE = 0x19u8;
+const EIP191_VERSION_BYTE = 0x45u8;
+
 /// Takes in transaction data and hashes it into a unique transaction hash.
 pub fn create_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
     sha256(Transaction {
@@ -49,15 +52,13 @@ pub fn recover_signer(message_hash: b256, signature_info: SignatureInfo) -> b256
     }
 }
 
+/// EIP-191: https://eips.ethereum.org/EIPS/eip-191
 /// Creates an EIP-191 compliant transaction hash, of the version:
-/// 0x45, personal sign.
-/// It takes a data_to_sign to represent the <data to sign> in the following EIP-191 format:
+/// 0x45 - personal sign.
+/// It takes a `data_to_sign` to represent the <data to sign> in the EIP-191 format:
 /// 0x19 <1 byte version> <version specific data> <data to sign>
 fn eip_191_personal_sign_format(data_to_sign: b256) -> b256 {
-    let initial_byte = 0x19u8;
-    let version_byte = 0x45u8;
-
-    let encoded_data = encode_data(initial_byte, version_byte, data_to_sign);
+    let encoded_data = encode_data(EIP191_INITIAL_BYTE, EIP191_VERSION_BYTE, data_to_sign);
     let encoded_data = (
         encoded_data.get(0).unwrap(),
         encoded_data.get(1).unwrap(),
