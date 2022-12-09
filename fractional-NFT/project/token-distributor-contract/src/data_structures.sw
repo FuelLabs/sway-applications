@@ -7,6 +7,18 @@ pub enum DistributionState {
     Returning: (),
 }
 
+impl core::ops::Eq for DistributionState {
+    fn eq(self, other: Self) -> bool {
+        match (self, other) {
+            (DistributionState::Created, DistributionState::Created) => true,
+            (DistributionState::Closed, DistributionState::Closed) => true,
+            (DistributionState::Distributing, DistributionState::Distributing) => true,
+            (DistributionState::Returning, DistributionState::Returning) => true,
+            _ => false,
+        }
+    }
+}
+
 pub struct TokenDistribution {
     buy_asset: ContractId,
     nft: ContractId,

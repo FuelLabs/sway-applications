@@ -6,11 +6,23 @@ dep utils;
 
 use data_structures::{DistributionState, TokenDistribution};
 use interface::TokenDistributor;
-use std::{auth::msg_sender, storage::StorageMap};
+use std::{
+    auth::msg_sender,
+    call_frames::{
+        contract_id,
+        msg_asset_id,
+    },
+    context::{
+        msg_amount,
+        this_balance,
+    },
+    storage::StorageMap,
+    token::transfer,
+};
 use utils::create_fractional_nft;
 
 storage {
-    token_distributions: StorageMap<ContractId, TokenDistribution> = StorageMap {},
+    token_distributions: StorageMap<ContractId, Option<TokenDistribution>> = StorageMap {},
 }
 
 impl TokenDistributor for Contract {
@@ -26,6 +38,25 @@ impl TokenDistributor for Contract {
     ) {
         create_fractional_nft(fractional_nft, nft, msg_sender().unwrap(), token_supply, token_id);
 
-        storage.token_distributions.insert(fractional_nft, TokenDistribution::new(buy_asset, nft, reserve_price, token_id, token_price));
+        storage.token_distributions.insert(fractional_nft, Option::Some(TokenDistribution::new(buy_asset, nft, reserve_price, token_id, token_price)));
+    }
+
+    #[storage(read, write)]
+    fn purchase(amount: u64, fractional_nft: ContractId) {
+        let token_distribution = storage.token_distributions.get(fractional_nft);
+        require(token_distribution.is_some(), "Fractional NFT distribution doesn't exist");
+        let mut token_distribution = token_distribution.unwrap();
+
+        require(token_distribution.state == DistributionState::Created || token_distribution.state == DistributionState::Distributing, "Not available");
+        if token_distribution.state == DistributionState::Created {
+            token_distribution.state = DistributionState::Distributing;
+            storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
+        }
+
+        let token_balance = this_balance(fractional_nft);
+        require(amount <= token_balance, "Buying too many tokens");
+        require(amount * token_distribution.token_price == msg_amount() && msg_asset_id() == token_distribution.buy_asset, "Incorrect asset");
+
+        transfer(amount, fractional_nft, msg_sender().unwrap());
     }
 }

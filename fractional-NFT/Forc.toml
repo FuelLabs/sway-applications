@@ -1,1 +1,4 @@
-members = ["./project/fractional-NFT-contract"]
+members = [
+  "./project/fractional-NFT-contract",
+  "./project/token-distributor-contract",
+]
