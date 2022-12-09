@@ -38,12 +38,12 @@ pub fn recover_signer(message_hash: b256, signature_info: SignatureInfo) -> b256
     match signature_info.wallet_type {
         WalletType::Fuel => {
             let recover_result = ec_recover_address(signature_info.signature, prefixed_message);
-            require(recover_result.is_ok(), "ec_recover_address failed");
+            require(recover_result.is_ok(), recover_result.unwrap());
             recover_result.unwrap().value
         },
         WalletType::EVM => {
             let recover_result = ec_recover_evm_address(signature_info.signature, prefixed_message);
-            require(recover_result.is_ok(), "ec_recover_evm_address failed");
+            require(recover_result.is_ok(), recover_result.unwrap());
             recover_result.unwrap().value
         },
     }
