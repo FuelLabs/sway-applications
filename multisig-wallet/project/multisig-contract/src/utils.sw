@@ -58,26 +58,30 @@ pub fn recover_signer(message_hash: b256, signature_info: SignatureInfo) -> b256
 /// It takes a `data_to_sign` to represent the <data to sign> in the EIP-191 format:
 /// 0x19 <1 byte version> <version specific data> <data to sign>
 fn eip_191_personal_sign_format(data_to_sign: b256) -> b256 {
-    let encoded_data = encode_data(EIP191_INITIAL_BYTE, EIP191_VERSION_BYTE, data_to_sign);
-    let encoded_data = (
-        encoded_data.get(0).unwrap(),
-        encoded_data.get(1).unwrap(),
-        encoded_data.get(2).unwrap(),
-        encoded_data.get(3).unwrap(),
-        encoded_data.get(4).unwrap(),
+    let signed_data = encode_and_pack_signed_data(EIP191_INITIAL_BYTE, EIP191_VERSION_BYTE, data_to_sign);
+    let signed_data = (
+        signed_data.get(0).unwrap(),
+        signed_data.get(1).unwrap(),
+        signed_data.get(2).unwrap(),
+        signed_data.get(3).unwrap(),
+        signed_data.get(4).unwrap(),
     );
 
     // Keccak256 hash the first 34 bytes of encoded_data
     let mut result_buffer = b256::min();
-    asm(hash: result_buffer, ptr: encoded_data, bytes: 34) {
+    asm(hash: result_buffer, ptr: signed_data, bytes: 34) {
         k256 hash ptr bytes;
         hash: b256
     }
 }
 
-/// Encode the packed_bytes, version_byte and message_hash into a Vec<u64> of length 40 bytes,
-/// where the first 34 bytes are the desired data tightly packed.
-fn encode_data(initial_byte: u64, version_byte: u64, message_hash: b256) -> Vec<u64> {
+/// Encode the `initial_byte`, `version_byte` and `message_hash` into a Vec<u64> of length 40 bytes,
+/// where the first 34 bytes are the desired `signed_data` tightly packed.
+fn encode_and_pack_signed_data(
+    initial_byte: u64,
+    version_byte: u64,
+    message_hash: b256,
+) -> Vec<u64> {
     let mut data = Vec::with_capacity(5);
 
     let (message_1, message_2, message_3, message_4) = decompose(message_hash);
