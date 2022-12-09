@@ -18,6 +18,7 @@ abi MultiSignatureWallet {
     /// * When the user address is the 0th address (0x00000...).
     /// * When the threshold is set to 0.
     /// * When an owner has an approval weight of 0.
+    /// * When the threshold is a value greater than the sum of the weights.
     #[storage(read, write)]
     fn constructor(threshold: u64, users: Vec<User>);
 

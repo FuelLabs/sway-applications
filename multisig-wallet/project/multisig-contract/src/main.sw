@@ -34,13 +34,18 @@ impl MultiSignatureWallet for Contract {
         require(threshold != 0, InitError::ThresholdCannotBeZero);
 
         let mut user_index = 0;
+        let mut total_weight = 0;
         while user_index < users.len() {
             require(ZERO_B256 != users.get(user_index).unwrap().address, InitError::AddressCannotBeZero);
             require(users.get(user_index).unwrap().weight != 0, InitError::WeightingCannotBeZero);
 
             storage.weighting.insert(users.get(user_index).unwrap().address, users.get(user_index).unwrap().weight);
+            total_weight += users.get(user_index).unwrap().weight;
+
             user_index += 1;
         }
+
+        require(threshold <= total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
 
         storage.nonce = 1;
         storage.threshold = threshold;
