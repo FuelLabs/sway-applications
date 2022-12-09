@@ -45,7 +45,6 @@ pub struct Transaction {
 pub struct User {
     /// The wallet address of a user.
     address: b256,
-    /// Number of approvals the user provides when approving.
-    /// The default is usually 1.
+    /// The number of approvals the user provides when approving.
     weight: u64,
 }
