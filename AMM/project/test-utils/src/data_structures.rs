@@ -1,6 +1,16 @@
 use super::abi::{Exchange, AMM};
-use fuels::prelude::*;
+use fuels::{
+    prelude::*,
+    tx::{Input, Output},
+};
 use std::collections::HashMap;
+
+const DEPOSIT_AMOUNTS: (u64, u64) = (10000, 40000);
+const DEADLINE: u64 = 1000;
+const LIQUIDITY: u64 = 20000;
+const NUM_ASSETS: u64 = 5;
+const COINS_PER_ASSET: u64 = 100;
+const AMOUNT_PER_COIN: u64 = 1_000_000;
 
 pub struct AMMContract {
     pub id: ContractId,
@@ -22,6 +32,23 @@ pub struct ExchangeContractConfiguration {
     pub salt: [u8; 32],
 }
 
+pub struct LiquidityParameters {
+    pub amounts: (u64, u64),
+    pub deadline: u64,
+    pub liquidity: u64,
+}
+
+pub struct TransactionParameters {
+    pub inputs: Vec<Input>,
+    pub outputs: Vec<Output>,
+}
+
+pub struct WalletAssetConfiguration {
+    pub num_assets: u64,
+    pub coins_per_asset: u64,
+    pub amount_per_coin: u64,
+}
+
 impl ExchangeContractConfiguration {
     pub fn new(
         pair: Option<(AssetId, AssetId)>,
@@ -38,18 +65,12 @@ impl ExchangeContractConfiguration {
     }
 }
 
-pub struct LiquidityParameters {
-    pub amounts: (u64, u64),
-    pub deadline: u64,
-    pub liquidity: u64,
-}
-
 impl Default for LiquidityParameters {
     fn default() -> Self {
         Self {
-            amounts: (100, 400),
-            deadline: 1000,
-            liquidity: 200,
+            amounts: DEPOSIT_AMOUNTS,
+            deadline: DEADLINE,
+            liquidity: LIQUIDITY,
         }
     }
 }
@@ -57,25 +78,19 @@ impl Default for LiquidityParameters {
 impl LiquidityParameters {
     pub fn new(amounts: Option<(u64, u64)>, deadline: Option<u64>, liquidity: Option<u64>) -> Self {
         Self {
-            amounts: amounts.unwrap_or((100, 400)),
-            deadline: deadline.unwrap_or(1000),
-            liquidity: liquidity.unwrap_or(200),
+            amounts: amounts.unwrap_or(DEPOSIT_AMOUNTS),
+            deadline: deadline.unwrap_or(DEADLINE),
+            liquidity: liquidity.unwrap_or(LIQUIDITY),
         }
     }
-}
-
-pub struct WalletAssetConfiguration {
-    pub num_assets: u64,
-    pub coins_per_asset: u64,
-    pub amount_per_coin: u64,
 }
 
 impl Default for WalletAssetConfiguration {
     fn default() -> Self {
         Self {
-            num_assets: 5,
-            coins_per_asset: 100,
-            amount_per_coin: 1_000_000,
+            num_assets: NUM_ASSETS,
+            coins_per_asset: COINS_PER_ASSET,
+            amount_per_coin: AMOUNT_PER_COIN,
         }
     }
 }
@@ -87,9 +102,9 @@ impl WalletAssetConfiguration {
         amount_per_coin: Option<u64>,
     ) -> Self {
         Self {
-            num_assets: num_assets.unwrap_or(5),
-            coins_per_asset: coins_per_asset.unwrap_or(100),
-            amount_per_coin: amount_per_coin.unwrap_or(1_000_000),
+            num_assets: num_assets.unwrap_or(NUM_ASSETS),
+            coins_per_asset: coins_per_asset.unwrap_or(COINS_PER_ASSET),
+            amount_per_coin: amount_per_coin.unwrap_or(AMOUNT_PER_COIN),
         }
     }
 }

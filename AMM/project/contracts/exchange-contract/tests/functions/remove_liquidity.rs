@@ -427,7 +427,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(110)\"")]
+    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(10010)\"")]
     async fn when_a_reserve_is_insufficient() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -456,7 +456,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(410)\"")]
+    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(40010)\"")]
     async fn when_b_reserve_is_insufficient() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;

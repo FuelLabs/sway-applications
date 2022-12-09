@@ -231,7 +231,7 @@ mod revert {
         // call setup instead of setup_and_construct
         let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;
-        let min_liquidity = 200;
+        let min_liquidity = 20000;
         let deadline = 1000;
 
         add_liquidity(
@@ -338,7 +338,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(300)\"")]
+    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(20100)\"")]
     async fn when_liquidity_is_zero_but_desired_liquidity_is_too_high() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(false, false).await;
@@ -349,14 +349,14 @@ mod revert {
                 liquidity_parameters.amounts.1,
             )),
             Some(liquidity_parameters.deadline),
-            Some(liquidity_parameters.liquidity + 100), // expected_liquidity is more than 200
+            Some(liquidity_parameters.liquidity + 100), // expected_liquidity is more than what can be provided with this setup
         );
 
         deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(400)\"")]
+    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(40000)\"")]
     async fn when_liquidity_exists_but_desired_liquidity_is_too_high_based_on_a() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -367,14 +367,14 @@ mod revert {
                 liquidity_parameters.amounts.1 * 2, // setting this so that liquidity is calculated based on asset A amount
             )),
             Some(liquidity_parameters.deadline),
-            Some(liquidity_parameters.liquidity * 2), // expected_liquidity is more than 200
+            Some(liquidity_parameters.liquidity * 2), // expected_liquidity is more than what can be provided with this setup
         );
 
         deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(400)\"")]
+    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(40000)\"")]
     async fn when_liquidity_exists_but_desired_liquidity_is_too_high_based_on_b() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -385,7 +385,7 @@ mod revert {
                 liquidity_parameters.amounts.1,
             )),
             Some(liquidity_parameters.deadline),
-            Some(liquidity_parameters.liquidity * 2), // expected_liquidity is more than 200
+            Some(liquidity_parameters.liquidity * 2), // expected_liquidity is more than what can be provided with this setup
         );
 
         deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;

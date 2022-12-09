@@ -1,7 +1,7 @@
 use fuels::prelude::*;
 use test_utils::{
     abi::{exchange::preview_swap_exact_input, SwapExactInputScript},
-    data_structures::{AMMContract, WalletAssetConfiguration},
+    data_structures::{AMMContract, TransactionParameters, WalletAssetConfiguration},
     paths::SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH,
     setup::{
         common::{deploy_and_initialize_amm, setup_wallet_and_provider},
@@ -30,19 +30,31 @@ async fn expected_swap_amounts(
     amounts
 }
 
-async fn setup() -> (WalletUnlocked, Provider, AMMContract, Vec<AssetId>) {
+async fn setup() -> (
+    WalletUnlocked,
+    AMMContract,
+    Vec<AssetId>,
+    TransactionParameters,
+) {
     let (wallet, asset_ids, provider) =
         setup_wallet_and_provider(&WalletAssetConfiguration::default()).await;
+
     let mut amm = deploy_and_initialize_amm(&wallet).await;
-    setup_exchange_contracts(wallet.clone(), &mut amm, asset_ids.clone()).await;
-    (wallet, provider, amm, asset_ids)
+
+    setup_exchange_contracts(&wallet, &mut amm, &asset_ids).await;
+
+    let mut contracts = vec![amm.id];
+    contracts.extend(amm.pools.values().into_iter().map(|exchange| exchange.id));
+
+    let transaction_parameters =
+        transaction_inputs_outputs(&wallet, &provider, &contracts, &asset_ids, None).await;
+
+    (wallet, amm, asset_ids, transaction_parameters)
 }
 
 #[tokio::test]
 async fn can_swap_exact_input_along_route() {
-    let (wallet, provider, amm, asset_ids) = setup().await;
-
-    let (inputs, outputs) = transaction_inputs_outputs(&wallet, &provider, &amm, &asset_ids).await;
+    let (wallet, amm, asset_ids, transaction_parameters) = setup().await;
 
     let route = asset_ids;
     let script_instance =
@@ -62,8 +74,8 @@ async fn can_swap_exact_input_along_route() {
                 .collect(),
             amounts,
         )
-        .with_inputs(inputs)
-        .with_outputs(outputs)
+        .with_inputs(transaction_parameters.inputs)
+        .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(100_000_000), None))
         .call()
         .await

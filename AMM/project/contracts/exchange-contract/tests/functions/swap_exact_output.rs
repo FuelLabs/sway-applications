@@ -327,7 +327,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"ProvidedAmountTooLow(44)\"")]
+    #[should_panic(expected = "RevertTransactionError(\"ProvidedAmountTooLow(40)\"")]
     async fn when_forwarding_insufficient_amount_of_b() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;

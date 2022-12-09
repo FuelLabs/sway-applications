@@ -210,7 +210,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(37)\"")]
+    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(40)\"")]
     async fn when_minimum_a_constraint_is_too_high() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;

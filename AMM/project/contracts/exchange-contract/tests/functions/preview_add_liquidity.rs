@@ -92,7 +92,10 @@ mod success {
             setup_and_construct(false, false).await;
 
         let override_liquidity_parameters = LiquidityParameters::new(
-            Some((400, 100)),
+            Some((
+                liquidity_parameters.amounts.1,
+                liquidity_parameters.amounts.0,
+            )),
             Some(liquidity_parameters.deadline),
             Some(liquidity_parameters.liquidity),
         );
@@ -129,7 +132,10 @@ mod success {
             setup_and_construct(false, false).await;
 
         let override_liquidity_parameters = LiquidityParameters::new(
-            Some((400, 100)),
+            Some((
+                liquidity_parameters.amounts.1,
+                liquidity_parameters.amounts.0,
+            )),
             Some(liquidity_parameters.deadline),
             Some(liquidity_parameters.liquidity),
         );
@@ -166,7 +172,10 @@ mod success {
             setup_and_construct(false, false).await;
 
         let override_liquidity_parameters = LiquidityParameters::new(
-            Some((400, 100)),
+            Some((
+                liquidity_parameters.amounts.1,
+                liquidity_parameters.amounts.0,
+            )),
             Some(liquidity_parameters.deadline),
             Some(liquidity_parameters.liquidity),
         );

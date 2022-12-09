@@ -6,7 +6,7 @@ use super::{
     },
     data_structures::{
         AMMContract, ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
-        WalletAssetConfiguration,
+        TransactionParameters, WalletAssetConfiguration,
     },
     paths::{
         AMM_CONTRACT_BINARY_PATH, AMM_CONTRACT_STORAGE_PATH, EXCHANGE_CONTRACT_BINARY_PATH,
@@ -27,35 +27,6 @@ use std::collections::HashMap;
 pub mod common {
     use super::*;
 
-    pub async fn exchange_bytecode_root() -> ContractId {
-        let exchange_raw_code = Contract::load_contract(
-            EXCHANGE_CONTRACT_BINARY_PATH,
-            &StorageConfiguration::default().storage_path,
-        )
-        .unwrap()
-        .raw;
-        (*TxContract::root_from_code(exchange_raw_code)).into()
-    }
-
-    pub async fn setup_wallet_and_provider(
-        asset_parameters: &WalletAssetConfiguration,
-    ) -> (WalletUnlocked, Vec<AssetId>, Provider) {
-        let mut wallet = WalletUnlocked::new_random(None);
-
-        let (coins, asset_ids) = setup_multiple_assets_coins(
-            wallet.address(),
-            asset_parameters.num_assets,
-            asset_parameters.coins_per_asset,
-            asset_parameters.amount_per_coin,
-        );
-
-        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None, None).await;
-
-        wallet.set_provider(provider.clone());
-
-        (wallet, asset_ids, provider)
-    }
-
     pub async fn deploy_amm(wallet: &WalletUnlocked) -> AMMContract {
         let contract_id = Contract::deploy(
             AMM_CONTRACT_BINARY_PATH,
@@ -75,6 +46,24 @@ pub mod common {
             instance,
             id: contract_id.into(),
             pools: HashMap::new(),
+        }
+    }
+
+    pub async fn deploy_and_construct_exchange(
+        wallet: &WalletUnlocked,
+        config: &ExchangeContractConfiguration,
+    ) -> ExchangeContract {
+        let (id, instance) = deploy_exchange(&wallet, &config).await;
+        constructor(&instance, config.pair).await;
+        ExchangeContract {
+            bytecode_root: if config.compute_bytecode_root {
+                Some(exchange_bytecode_root().await)
+            } else {
+                None
+            },
+            id,
+            instance,
+            pair: config.pair,
         }
     }
 
@@ -119,22 +108,22 @@ pub mod common {
         (id, instance)
     }
 
-    pub async fn deploy_and_construct_exchange(
-        wallet: &WalletUnlocked,
-        config: &ExchangeContractConfiguration,
-    ) -> ExchangeContract {
-        let (id, instance) = deploy_exchange(&wallet, &config).await;
-        constructor(&instance, config.pair).await;
-        ExchangeContract {
-            bytecode_root: if config.compute_bytecode_root {
-                Some(exchange_bytecode_root().await)
-            } else {
-                None
-            },
-            id,
-            instance,
-            pair: config.pair,
-        }
+    // TODO: once the script is reliable enough, use it for this functionality
+    pub async fn deposit_and_add_liquidity(
+        liquidity_parameters: &LiquidityParameters,
+        exchange: &ExchangeContract,
+    ) -> u64 {
+        deposit_both_assets(&liquidity_parameters, &exchange).await;
+
+        add_liquidity(
+            &exchange.instance,
+            CallParameters::new(Some(0), None, None),
+            TxParameters::new(None, Some(100_000_000), None),
+            liquidity_parameters.liquidity,
+            liquidity_parameters.deadline,
+        )
+        .await
+        .value
     }
 
     pub async fn deposit_both_assets(
@@ -154,22 +143,33 @@ pub mod common {
         .await;
     }
 
-    // TODO: once the script is reliable enough, use it for this functionality
-    pub async fn deposit_and_add_liquidity(
-        liquidity_parameters: &LiquidityParameters,
-        exchange: &ExchangeContract,
-    ) -> u64 {
-        deposit_both_assets(&liquidity_parameters, &exchange).await;
-
-        add_liquidity(
-            &exchange.instance,
-            CallParameters::new(Some(0), None, None),
-            TxParameters::new(None, Some(100_000_000), None),
-            liquidity_parameters.liquidity,
-            liquidity_parameters.deadline,
+    pub async fn exchange_bytecode_root() -> ContractId {
+        let exchange_raw_code = Contract::load_contract(
+            EXCHANGE_CONTRACT_BINARY_PATH,
+            &StorageConfiguration::default().storage_path,
         )
-        .await
-        .value
+        .unwrap()
+        .raw;
+        (*TxContract::root_from_code(exchange_raw_code)).into()
+    }
+
+    pub async fn setup_wallet_and_provider(
+        asset_parameters: &WalletAssetConfiguration,
+    ) -> (WalletUnlocked, Vec<AssetId>, Provider) {
+        let mut wallet = WalletUnlocked::new_random(None);
+
+        let (coins, asset_ids) = setup_multiple_assets_coins(
+            wallet.address(),
+            asset_parameters.num_assets,
+            asset_parameters.coins_per_asset,
+            asset_parameters.amount_per_coin,
+        );
+
+        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None, None).await;
+
+        wallet.set_provider(provider.clone());
+
+        (wallet, asset_ids, provider)
     }
 }
 
@@ -180,7 +180,7 @@ pub mod scripts {
     pub const MAXIMUM_INPUT_AMOUNT: u64 = 1_000_000;
 
     pub async fn setup_exchange_contract(
-        wallet: WalletUnlocked,
+        wallet: &WalletUnlocked,
         exchange_config: &ExchangeContractConfiguration,
         liquidity_parameters: &LiquidityParameters,
     ) -> ExchangeContract {
@@ -192,9 +192,9 @@ pub mod scripts {
     }
 
     pub async fn setup_exchange_contracts(
-        wallet: WalletUnlocked,
+        wallet: &WalletUnlocked,
         amm: &mut AMMContract,
-        asset_ids: Vec<AssetId>,
+        asset_ids: &Vec<AssetId>,
     ) -> () {
         let mut i = 0;
 
@@ -202,7 +202,7 @@ pub mod scripts {
             let asset_pair = (*asset_ids.get(i).unwrap(), *asset_ids.get(i + 1).unwrap());
 
             let exchange = setup_exchange_contract(
-                wallet.clone(),
+                wallet,
                 &ExchangeContractConfiguration::new(
                     Some(asset_pair),
                     None,
@@ -227,19 +227,19 @@ pub mod scripts {
     pub async fn transaction_inputs_outputs(
         wallet: &WalletUnlocked,
         provider: &Provider,
-        amm: &AMMContract,
+        contracts: &Vec<ContractId>,
         assets: &Vec<AssetId>,
-    ) -> (Vec<Input>, Vec<Output>) {
-        let mut input_contracts: Vec<Input> = vec![transaction_input_contract(amm.id)];
-        let mut output_contracts: Vec<Output> = vec![transaction_output_contract(0)];
+        amounts: Option<&Vec<u64>>,
+    ) -> TransactionParameters {
+        let mut input_contracts: Vec<Input> = vec![];
+        let mut output_contracts: Vec<Output> = vec![];
 
-        amm.pools
-            .values()
+        contracts
             .into_iter()
             .enumerate()
-            .for_each(|(index, pool)| {
-                input_contracts.push(transaction_input_contract(pool.id));
-                output_contracts.push(transaction_output_contract(index as u8 + 1));
+            .for_each(|(index, contract_id)| {
+                input_contracts.push(transaction_input_contract(*contract_id));
+                output_contracts.push(transaction_output_contract(index as u8));
             });
 
         let mut input_coins: Vec<Input> = vec![];
@@ -252,7 +252,11 @@ pub mod scripts {
                     &provider,
                     wallet.address(),
                     *assets.get(i).unwrap(),
-                    MAXIMUM_INPUT_AMOUNT,
+                    if amounts.is_some() {
+                        *amounts.unwrap().get(i).unwrap()
+                    } else {
+                        MAXIMUM_INPUT_AMOUNT
+                    },
                 )
                 .await,
             );
@@ -260,9 +264,9 @@ pub mod scripts {
             i += 1;
         }
 
-        (
-            [input_contracts, input_coins].concat(),
-            [output_contracts, output_variables].concat(),
-        )
+        TransactionParameters {
+            inputs: [input_contracts, input_coins].concat(),
+            outputs: [output_contracts, output_variables].concat(),
+        }
     }
 }
