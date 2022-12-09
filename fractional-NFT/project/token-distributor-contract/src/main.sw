@@ -19,13 +19,26 @@ use std::{
     storage::StorageMap,
     token::transfer,
 };
-use utils::create_fractional_nft;
+use utils::{create_fractional_nft, withdraw_fractional_nft};
 
 storage {
     token_distributions: StorageMap<ContractId, Option<TokenDistribution>> = StorageMap {},
 }
 
 impl TokenDistributor for Contract {
+    #[storage(read, write)]
+    fn close(fractional_nft: ContractId) {
+        let token_distribution = storage.token_distributions.get(fractional_nft);
+        require(token_distribution.is_some(), "Fractional NFT distribution doesn't exist");
+        let mut token_distribution = token_distribution.unwrap();
+
+        require(token_distribution.state == DistributionState::Returning, "Not in returning state");
+        withdraw_fractional_nft(fractional_nft);
+
+        token_distribution.state == DistributionState::Closed;
+        storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
+    }
+
     #[storage(read, write)]
     fn create(
         buy_asset: ContractId,
