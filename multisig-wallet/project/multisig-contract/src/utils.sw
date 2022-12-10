@@ -5,7 +5,10 @@ dep data_structures;
 use std::{
     call_frames::contract_id,
     ecr::ec_recover_address,
-    hash::sha256,
+    hash::{
+        keccak256,
+        sha256,
+    },
     vm::evm::ecr::ec_recover_evm_address,
 };
 
@@ -105,5 +108,5 @@ fn decompose(val: b256) -> (u64, u64, u64, u64) {
 /// Applies the prefix used by Geth to a message hash.
 /// Returns the prefixed hash.
 fn ethereum_prefix(msg_hash: b256) -> b256 {
-    sha256((ETHEREUM_PREFIX, msg_hash))
+    keccak256((ETHEREUM_PREFIX, msg_hash))
 }

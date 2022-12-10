@@ -1,7 +1,7 @@
 use fuels::{
     contract::contract::CallResponse,
     prelude::*,
-    signers::fuel_crypto::{Hasher, Message, SecretKey, Signature},
+    signers::fuel_crypto::{Message, SecretKey, Signature},
     tx::{Bytes32, Bytes64},
 };
 
@@ -188,7 +188,7 @@ pub mod test_helpers {
         eth_prefix_data.append(&mut prefix.as_bytes().to_vec());
         eth_prefix_data.append(&mut formatted_message.to_vec());
 
-        let eth_prefixed_message = Hasher::hash(eth_prefix_data);
+        let eth_prefixed_message = keccak_hash(eth_prefix_data);
         unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) }
     }
 
