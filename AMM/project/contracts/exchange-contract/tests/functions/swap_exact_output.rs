@@ -210,8 +210,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"NotInitialized\"")]
-    async fn when_unitialized() {
+    #[should_panic(expected = "AssetPairNotSet")]
+    async fn when_uninitialized() {
         // call setup instead of setup_and_initialize
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;
@@ -228,7 +228,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"InvalidAsset\"")]
+    #[should_panic(expected = "InvalidAsset")]
     async fn when_msg_asset_id_is_invalid() {
         let (exchange, _wallet, liquidity_parameters, asset_c_id) =
             setup_and_construct(true, true).await;
@@ -237,7 +237,7 @@ mod revert {
 
         swap_exact_output(
             &exchange.instance,
-            // sending invalid asset
+            // forwarding invalid asset
             CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), Some(10_000_000)),
             output_amount,
             liquidity_parameters.deadline,
@@ -246,24 +246,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"AmountCannotBeZero\"")]
-    async fn when_output_amount_is_zero() {
-        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
-            setup_and_construct(true, true).await;
-
-        swap_exact_output(
-            &exchange.instance,
-            CallParameters::new(Some(1), Some(exchange.pair.0), Some(10_000_000)),
-            // passing 0 amount
-            0,
-            liquidity_parameters.deadline,
-        )
-        .await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DeadlinePassed(0)\"")]
-    async fn when_deadline_has_passed() {
+    #[should_panic(expected = "DeadlinePassed")]
+    async fn when_deadline_passed() {
         let (exchange, _wallet, _liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
 
@@ -280,7 +264,23 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"AmountCannotBeZero\"")]
+    #[should_panic(expected = "ExpectedNonZeroParameter")]
+    async fn when_output_amount_is_zero() {
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(true, true).await;
+
+        swap_exact_output(
+            &exchange.instance,
+            CallParameters::new(Some(1), Some(exchange.pair.0), Some(10_000_000)),
+            // passing 0 amount
+            0,
+            liquidity_parameters.deadline,
+        )
+        .await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "ExpectedNonZeroAmount")]
     async fn when_msg_amount_is_zero() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -298,7 +298,34 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"ProvidedAmountTooLow(2)\"")]
+    #[should_panic(expected = "InsufficientReserve")]
+    async fn when_output_amount_is_more_than_reserve() {
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(true, true).await;
+
+        let output_amount = 10;
+        let forward_amount =
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0)
+                .await
+                .value
+                .amount;
+
+        swap_exact_output(
+            &exchange.instance,
+            CallParameters::new(
+                Some(forward_amount),
+                Some(exchange.pair.0),
+                Some(10_000_000),
+            ),
+            // requesting an output amount that is more than what the contract has in its reserves
+            liquidity_parameters.amounts.0 + 1000000,
+            liquidity_parameters.deadline,
+        )
+        .await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_forwarding_insufficient_amount_of_a() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -327,7 +354,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"ProvidedAmountTooLow(40)\"")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_forwarding_insufficient_amount_of_b() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;

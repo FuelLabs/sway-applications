@@ -55,8 +55,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"NotInitialized\"")]
-    async fn when_unitialized() {
+    #[should_panic(expected = "AssetPairNotSet")]
+    async fn when_uninitialized() {
         // call setup instead of setup_and_construct
         let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;

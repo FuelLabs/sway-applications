@@ -64,7 +64,7 @@ pub fn determine_output_asset(
     input_asset: ContractId,
     pair: Option<(ContractId, ContractId)>,
 ) -> ContractId {
-    require(pair.is_some(), InitError::NotInitialized);
+    require(pair.is_some(), InitError::AssetPairNotSet);
     let (asset_a_id, asset_b_id) = pair.unwrap();
     require(input_asset == asset_a_id || input_asset == asset_b_id, InputError::InvalidAsset);
     if input_asset == asset_a_id {

@@ -60,10 +60,10 @@ storage {
 impl Exchange for Contract {
     #[storage(read, write)]
     fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64 {
-        require(storage.pair.is_some(), InitError::NotInitialized);
+        require(storage.pair.is_some(), InitError::AssetPairNotSet);
         require(deadline > height(), InputError::DeadlinePassed(deadline));
-        require(msg_amount() == 0, InputError::AmountMustBeZero);
-        require(MINIMUM_LIQUIDITY <= desired_liquidity, InputError::AmountTooLow(desired_liquidity));
+        require(msg_amount() == 0, InputError::ExpectedZeroAmount);
+        require(MINIMUM_LIQUIDITY <= desired_liquidity, InputError::CannotAddLessThanMinimumLiquidity(desired_liquidity));
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
         let sender = msg_sender().unwrap();
@@ -77,8 +77,8 @@ impl Exchange for Contract {
         let mut added_liquidity = 0;
 
         // checking this because this will either result in a math error or adding no liquidity at all
-        require(asset_a_in_deposit != 0, TransactionError::DepositCannotBeZero);
-        require(asset_b_in_deposit != 0, TransactionError::DepositCannotBeZero);
+        require(asset_a_in_deposit != 0, TransactionError::ExpectedNonZeroDeposit);
+        require(asset_b_in_deposit != 0, TransactionError::ExpectedNonZeroDeposit);
 
         // adding liquidity for the first time
         // use up all the deposited amounts of assets to determine the ratio
@@ -150,8 +150,8 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn constructor(pair: (ContractId, ContractId)) {
-        require(storage.pair.is_none(), InitError::CannotReinitialize);
-        require(pair.0 != pair.1, InitError::PoolAssetsCannotBeIdentical);
+        require(storage.pair.is_none(), InitError::AssetPairAlreadySet);
+        require(pair.0 != pair.1, InitError::IdenticalAssets);
 
         storage.pair = Option::Some(pair);
         log(DefineAssetPairEvent { pair });
@@ -159,7 +159,7 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn deposit() {
-        require(storage.pair.is_some(), InitError::NotInitialized);
+        require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
         let deposit_asset = msg_asset_id();
 
@@ -179,20 +179,20 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo {
-        require(storage.pair.is_some(), InitError::NotInitialized);
+        require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
         let total_liquidity = storage.liquidity_pool_supply;
-        require(total_liquidity > 0, TransactionError::LiquidityCannotBeZero);
+        require(total_liquidity > 0, TransactionError::NoLiquidityToRemove);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
 
         require(msg_asset_id() == contract_id(), InputError::InvalidAsset);
-        require(min_asset_a > 0 && min_asset_b > 0, InputError::AmountCannotBeZero);
+        require(min_asset_a > 0 && min_asset_b > 0, InputError::ExpectedNonZeroParameter);
         require(deadline > height(), InputError::DeadlinePassed(deadline));
 
         let amount = msg_amount();
 
-        require(amount > 0, InputError::AmountCannotBeZero);
+        require(amount > 0, InputError::ExpectedNonZeroAmount);
 
         let sender = msg_sender().unwrap();
         let asset_a_in_reserve = storage.reserves.get(asset_a_id);
@@ -231,15 +231,13 @@ impl Exchange for Contract {
         require(deadline >= height(), InputError::DeadlinePassed(deadline));
 
         let exact_input = msg_amount();
-        require(exact_input > 0, InputError::AmountCannotBeZero);
+        require(exact_input > 0, InputError::ExpectedNonZeroAmount);
 
         let sender = msg_sender().unwrap();
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
 
         let bought = minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
-
-        require(bought <= output_asset_in_reserve, TransactionError::InsufficientLiquidity);
 
         if min_output.is_some() {
             require(bought >= min_output.unwrap(), TransactionError::DesiredAmountTooHigh(min_output.unwrap()));
@@ -265,20 +263,20 @@ impl Exchange for Contract {
         let output_asset = determine_output_asset(input_asset, storage.pair);
 
         require(deadline > height(), InputError::DeadlinePassed(deadline));
-        require(output > 0, InputError::AmountCannotBeZero);
+        require(output > 0, InputError::ExpectedNonZeroParameter);
 
         let input_amount = msg_amount();
-        require(input_amount > 0, InputError::AmountCannotBeZero);
+        require(input_amount > 0, InputError::ExpectedNonZeroAmount);
 
         let sender = msg_sender().unwrap();
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
 
-        require(output <= output_asset_in_reserve, TransactionError::InsufficientLiquidity);
+        require(output <= output_asset_in_reserve, TransactionError::InsufficientReserve);
 
         let sold = maximum_input_for_exact_output(output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
 
-        require(input_amount >= sold, TransactionError::ProvidedAmountTooLow(input_amount));
+        require(input_amount >= sold, TransactionError::DesiredAmountTooHigh(input_amount));
 
         let refund = input_amount - sold;
         if refund > 0 {
@@ -301,7 +299,7 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn withdraw(amount: u64, asset: ContractId) {
-        require(storage.pair.is_some(), InitError::NotInitialized);
+        require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
 
@@ -325,7 +323,7 @@ impl Exchange for Contract {
 
     #[storage(read)]
     fn balance(asset: ContractId) -> u64 {
-        require(storage.pair.is_some(), InitError::NotInitialized);
+        require(storage.pair.is_some(), InitError::AssetPairNotSet);
         require(asset == storage.pair.unwrap().0 || asset == storage.pair.unwrap().1, InputError::InvalidAsset);
 
         let sender = msg_sender().unwrap();
@@ -334,7 +332,7 @@ impl Exchange for Contract {
 
     #[storage(read)]
     fn pool_info() -> PoolInfo {
-        require(storage.pair.is_some(), InitError::NotInitialized);
+        require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
 
@@ -349,7 +347,7 @@ impl Exchange for Contract {
 
     #[storage(read)]
     fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo {
-        require(storage.pair.is_some(), InitError::NotInitialized);
+        require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
         let total_liquidity = storage.liquidity_pool_supply;
@@ -406,8 +404,7 @@ impl Exchange for Contract {
 
     #[storage(read)]
     fn preview_swap_exact_output(exact_output: u64, output_asset: ContractId) -> PreviewSwapInfo {
-        require(storage.pair.is_some(), InitError::NotInitialized);
-
+        require(storage.pair.is_some(), InitError::AssetPairNotSet);
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
 
         require(output_asset == asset_a_id || output_asset == asset_b_id, InputError::InvalidAsset);

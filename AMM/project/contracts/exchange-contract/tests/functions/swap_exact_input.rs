@@ -144,8 +144,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"NotInitialized\"")]
-    async fn when_unitialized() {
+    #[should_panic(expected = "AssetPairNotSet")]
+    async fn when_uninitialized() {
         // call setup instead of setup_and_initialize
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;
@@ -162,14 +162,14 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"InvalidAsset\"")]
+    #[should_panic(expected = "InvalidAsset")]
     async fn when_msg_asset_id_is_invalid() {
         let (exchange, _wallet, liquidity_parameters, asset_c_id) =
             setup_and_construct(true, true).await;
 
         swap_exact_input(
             &exchange.instance,
-            // sending invalid asset
+            // forwarding invalid asset
             CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), None),
             None,
             liquidity_parameters.deadline,
@@ -178,7 +178,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DeadlinePassed(0)\"")]
+    #[should_panic(expected = "DeadlinePassed")]
     async fn when_deadline_has_passed() {
         let (exchange, _wallet, _liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -194,7 +194,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"AmountCannotBeZero\"")]
+    #[should_panic(expected = "ExpectedNonZeroAmount")]
     async fn when_msg_amount_is_zero() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -210,7 +210,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(40)\"")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_minimum_a_constraint_is_too_high() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;

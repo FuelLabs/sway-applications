@@ -72,7 +72,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"NotInitialized\"")]
+    #[should_panic(expected = "AssetPairNotSet")]
     async fn on_unitialized() {
         // call setup instead of setup_and_construct
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
@@ -82,7 +82,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"InvalidAsset\"")]
+    #[should_panic(expected = "InvalidAsset")]
     async fn on_invalid_asset() {
         let (exchange, _wallet, _liquidity_parameters, asset_c_id) =
             setup_and_construct(false, false).await;
@@ -94,12 +94,12 @@ mod revert {
         )
         .await;
 
-        // sending invalid asset
+        // passing invalid asset
         withdraw(&exchange.instance, 0, asset_c_id).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(101)\"")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn on_withdraw_more_than_deposited() {
         let (exchange, _wallet, _liquidity_parameters, _asset_c_id) =
             setup_and_construct(false, false).await;

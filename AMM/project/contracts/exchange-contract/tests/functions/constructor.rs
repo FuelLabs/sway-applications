@@ -22,7 +22,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"CannotReinitialize\"")]
+    #[should_panic(expected = "AssetPairAlreadySet")]
     async fn when_reinitialized() {
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, asset_b_id, _asset_c_id) =
             setup().await;
@@ -32,7 +32,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"PoolAssetsCannotBeIdentical\"")]
+    #[should_panic(expected = "IdenticalAssets")]
     async fn when_assets_in_pair_are_identical() {
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;

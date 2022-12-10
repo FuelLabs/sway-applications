@@ -254,8 +254,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"NotInitialized\"")]
-    async fn when_unitialized() {
+    #[should_panic(expected = "AssetPairNotSet")]
+    async fn when_uninitialized() {
         // call setup instead of setup_and_initialize
         let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, _asset_b_id, _asset_c_id) =
             setup().await;
@@ -269,8 +269,6 @@ mod revert {
                 Some(1),
                 // Sending `None` instead of `Some(AssetId::new(*pool_asset_id))`
                 // because liquidity pool asset does not exist yet.
-                // Normally, this also causes Revert(18446744073709486080),
-                // but this test condition (not initialized contract) reverts before that.
                 None,
                 None,
             ),
@@ -282,7 +280,32 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"InvalidAsset\"")]
+    #[should_panic(expected = "NoLiquidityToRemove")]
+    async fn when_liquidity_is_zero() {
+        // not adding liquidity to contract before attempting to remove
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(true, false).await;
+        let a_to_remove = 1;
+        let b_to_remove = 1;
+
+        remove_liquidity(
+            &exchange.instance,
+            CallParameters::new(
+                Some(1),
+                // Sending `None` instead of `Some(AssetId::new(*exchange.id))`
+                // because liquidity pool asset does not exist yet.
+                None,
+                None,
+            ),
+            a_to_remove,
+            b_to_remove,
+            liquidity_parameters.deadline,
+        )
+        .await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "InvalidAsset")]
     async fn when_msg_asset_id_is_not_liquidity_pool_asset_id() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -294,7 +317,7 @@ mod revert {
             &exchange.instance,
             CallParameters::new(
                 Some(liquidity_parameters.liquidity),
-                // sending an asset other than pool asset
+                // forwarding an asset other than pool asset
                 Some(exchange.pair.0),
                 None,
             ),
@@ -306,7 +329,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"AmountCannotBeZero\"")]
+    #[should_panic(expected = "ExpectedNonZeroParameter")]
     async fn when_minimum_a_amount_is_zero() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -329,7 +352,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"AmountCannotBeZero\"")]
+    #[should_panic(expected = "ExpectedNonZeroParameter")]
     async fn when_minimum_b_amount_is_zero() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -352,8 +375,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DeadlinePassed(0)\"")]
-    async fn when_deadline_has_passed() {
+    #[should_panic(expected = "DeadlinePassed")]
+    async fn when_deadline_passed() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
 
@@ -376,7 +399,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"AmountCannotBeZero\"")]
+    #[should_panic(expected = "ExpectedNonZeroAmount")]
     async fn when_msg_amount_is_zero() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -387,7 +410,7 @@ mod revert {
         remove_liquidity(
             &exchange.instance,
             CallParameters::new(
-                // sending 0 msg_amount
+                // forwarding 0 as msg_amount
                 Some(0),
                 Some(AssetId::new(*exchange.id)),
                 None,
@@ -400,34 +423,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"LiquidityCannotBeZero\"")]
-    async fn when_liquidity_is_zero() {
-        // not adding liquidity to contract before attempting to remove
-        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
-            setup_and_construct(true, false).await;
-        let a_to_remove = 1;
-        let b_to_remove = 1;
-
-        remove_liquidity(
-            &exchange.instance,
-            CallParameters::new(
-                Some(1),
-                // Sending `None` instead of `Some(AssetId::new(*exchange.id))`
-                // because liquidity pool asset does not exist yet.
-                // Normally, this also causes Revert(18446744073709486080),
-                // but this test condition (zero liquidity) reverts before that.
-                None,
-                None,
-            ),
-            a_to_remove,
-            b_to_remove,
-            liquidity_parameters.deadline,
-        )
-        .await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(10010)\"")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_a_reserve_is_insufficient() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;
@@ -456,7 +452,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"DesiredAmountTooHigh(40010)\"")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_b_reserve_is_insufficient() {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(true, true).await;

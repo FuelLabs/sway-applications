@@ -88,8 +88,8 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"BytecodeRootNotSet\"")]
-    async fn when_not_initialized() {
+    #[should_panic(expected = "BytecodeRootNotSet")]
+    async fn when_uninitialized() {
         let (wallet, amm_instance, asset_pairs) = setup(false).await;
         let pair = asset_pairs[0];
 
@@ -103,8 +103,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"BytecodeRootDoesNotMatch\"")]
-    async fn when_exchange_contract_byteroot_invalid() {
+    #[should_panic(expected = "BytecodeRootDoesNotMatch")]
+    async fn when_byteroot_does_not_match() {
         let (wallet, amm_instance, asset_pairs) = setup(true).await;
         let pair = asset_pairs[0];
 
@@ -118,7 +118,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "RevertTransactionError(\"PairDoesNotDefinePool\"")]
+    #[should_panic(expected = "PairDoesNotDefinePool")]
     async fn when_exchange_contract_does_not_match_pair() {
         let (wallet, amm_instance, asset_pairs) = setup(true).await;
         let pair = asset_pairs[0];
