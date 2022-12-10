@@ -1,6 +1,6 @@
 use crate::utils::{
     abi_calls::{nonce, transaction_hash},
-    test_helpers::setup_env,
+    test_helpers::{setup_env, DEFAULT_TRANSFER_AMOUNT},
     VALID_SIGNER_PK,
 };
 
@@ -33,8 +33,6 @@ mod success {
         // Set parameters
         let to = Identity::Address(deployer_wallet.address().try_into().unwrap());
 
-        let value: u64 = 200;
-
         let mut rng = StdRng::seed_from_u64(1000);
         let data: Bytes32 = rng.gen();
         let data = Bits256(*data);
@@ -47,7 +45,7 @@ mod success {
             data,
             destination: to.clone(),
             nonce,
-            value,
+            value: DEFAULT_TRANSFER_AMOUNT,
         };
 
         // Set tokens for encoding the Transaction instance with ABIEncoder
@@ -94,7 +92,7 @@ mod success {
 
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
-        let response = transaction_hash(&contract, to, value, data, nonce)
+        let response = transaction_hash(&contract, to, DEFAULT_TRANSFER_AMOUNT, data, nonce)
             .await
             .value;
 

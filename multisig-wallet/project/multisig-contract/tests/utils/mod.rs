@@ -5,6 +5,8 @@ use fuels::{
     tx::{Bytes32, Bytes64},
 };
 
+use rand::{rngs::StdRng, Rng, SeedableRng};
+
 use sha3::{Digest, Keccak256};
 
 abigen!(
@@ -102,6 +104,9 @@ pub mod test_helpers {
 
     use super::*;
 
+    pub const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
+    pub const DEFAULT_THRESHOLD: u64 = 5;
+
     pub async fn setup_env(
         private_key: &str,
     ) -> Result<(SecretKey, MultiSigContract, WalletUnlocked), Error> {
@@ -134,6 +139,64 @@ pub mod test_helpers {
         let contract_instance = MultiSigContract::new(contract_id, wallet.clone());
 
         Ok((private_key, contract_instance, wallet))
+    }
+
+    pub fn constructor_users() -> Vec<User> {
+        let fuel_user_1 = User {
+            address: Bits256::from_hex_str(
+                "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
+            )
+            .unwrap(),
+            weight: 3,
+        };
+        let evm_user_1 = User {
+            address: Bits256::from_hex_str(
+                "0x000000000000000000000000db4aa29ef306fc8d28025b838ccd3feecaedb333",
+            )
+            .unwrap(),
+            weight: 2,
+        };
+        vec![fuel_user_1, evm_user_1]
+    }
+
+    pub fn transfer_parameters() -> (WalletUnlocked, Identity, Bits256) {
+        let receiver_wallet = WalletUnlocked::new_random(None);
+
+        let receiver = Identity::Address(receiver_wallet.address().try_into().unwrap());
+
+        let mut rng = StdRng::seed_from_u64(1000);
+        let data: Bytes32 = rng.gen();
+        let data = Bits256(*data);
+
+        (receiver_wallet, receiver, data)
+    }
+
+    pub async fn transfer_signatures(
+        private_key: SecretKey,
+        tx_hash: Message,
+    ) -> Vec<SignatureInfo> {
+        // - Fuel signature. Fuel wallet. No format. No prefix.
+        let fuel_signature = format_and_sign(
+            private_key,
+            tx_hash,
+            MessageFormat::None(),
+            MessagePrefix::None(),
+            WalletType::Fuel(),
+        )
+        .await;
+
+        // - EVM signature. EVM wallet. EIP-191 personal sign format. Ethereum prefix.
+        let evm_signature = format_and_sign(
+            private_key,
+            tx_hash,
+            MessageFormat::EIP191PersonalSign(),
+            MessagePrefix::Ethereum(),
+            WalletType::EVM(),
+        )
+        .await;
+
+        // - Must comply with ascending signers requirement of Multisig's count_approvals
+        vec![evm_signature, fuel_signature]
     }
 
     pub async fn format_and_sign(

@@ -1,6 +1,6 @@
 use crate::utils::{
     abi_calls::balance,
-    test_helpers::{base_asset_contract_id, setup_env},
+    test_helpers::{base_asset_contract_id, setup_env, DEFAULT_TRANSFER_AMOUNT},
     VALID_SIGNER_PK,
 };
 
@@ -16,11 +16,10 @@ mod success {
 
         let initial_balance = balance(&contract, base_asset_contract_id()).await.value;
 
-        let transfer_amount = 200;
-        let _receipt = deployer_wallet
+        deployer_wallet
             .force_transfer_to_contract(
                 contract.get_contract_id(),
-                transfer_amount,
+                DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),
             )
@@ -30,6 +29,6 @@ mod success {
         let final_balance = balance(&contract, base_asset_contract_id()).await.value;
 
         assert_eq!(initial_balance, 0);
-        assert_eq!(final_balance, transfer_amount);
+        assert_eq!(final_balance, DEFAULT_TRANSFER_AMOUNT);
     }
 }
