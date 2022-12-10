@@ -105,8 +105,7 @@ fn decompose(val: b256) -> (u64, u64, u64, u64) {
     asm(r1: __addr_of(val)) { r1: (u64, u64, u64, u64) }
 }
 
-/// Applies the prefix used by Geth to a message hash.
-/// Returns the prefixed hash.
+/// Applies the prefix "\x19Ethereum Signed Message:\n32" to a message hash.
 fn ethereum_prefix(msg_hash: b256) -> b256 {
     keccak256((ETHEREUM_PREFIX, msg_hash))
 }
