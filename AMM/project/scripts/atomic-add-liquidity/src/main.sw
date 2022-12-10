@@ -11,6 +11,7 @@ fn main(
 ) -> u64 {
     let exchange_contract = abi(Exchange, exchange_contract_id.into());
 
+    // deposit first asset
     if deposit_amounts.0 != 0 {
         exchange_contract.deposit {
             gas: 100_000,
@@ -19,6 +20,7 @@ fn main(
         }();
     }
 
+    // deposit second asset
     if deposit_amounts.1 != 0 {
         exchange_contract.deposit {
             gas: 100_000,
@@ -29,6 +31,7 @@ fn main(
 
     let deadline = height() + 5;
 
+    // add liquidity
     exchange_contract.add_liquidity {
         gas: 15_000_000,
     }(desired_liquidity, deadline)

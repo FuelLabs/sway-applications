@@ -196,10 +196,13 @@ pub mod scripts {
         amm: &mut AMMContract,
         asset_ids: &Vec<AssetId>,
     ) -> () {
-        let mut i = 0;
+        let mut exchange_index = 0;
 
-        while i < asset_ids.len() - 1 {
-            let asset_pair = (*asset_ids.get(i).unwrap(), *asset_ids.get(i + 1).unwrap());
+        while exchange_index < asset_ids.len() - 1 {
+            let asset_pair = (
+                *asset_ids.get(exchange_index).unwrap(),
+                *asset_ids.get(exchange_index + 1).unwrap(),
+            );
 
             let exchange = setup_exchange_contract(
                 wallet,
@@ -207,10 +210,10 @@ pub mod scripts {
                     Some(asset_pair),
                     None,
                     None,
-                    Some([(i as u8 + 2); 32]),
+                    Some([(exchange_index as u8 + 2); 32]),
                 ),
                 &LiquidityParameters::new(
-                    Some((100_000, 100_000 * (i as u64 + 1) * 3)),
+                    Some((100_000, 100_000 * (exchange_index as u64 + 1) * 3)),
                     None,
                     Some(100_000),
                 ),
@@ -220,7 +223,7 @@ pub mod scripts {
             add_pool(&amm.instance, asset_pair, exchange.id).await;
 
             amm.pools.insert(asset_pair, exchange);
-            i += 1;
+            exchange_index += 1;
         }
     }
 
@@ -245,15 +248,15 @@ pub mod scripts {
         let mut input_coins: Vec<Input> = vec![];
         let mut output_variables: Vec<Output> = vec![];
 
-        let mut i = 0;
-        while i < assets.len() {
+        let mut asset_index = 0;
+        while asset_index < assets.len() {
             input_coins.extend(
                 transaction_input_coin(
                     &provider,
                     wallet.address(),
-                    *assets.get(i).unwrap(),
+                    *assets.get(asset_index).unwrap(),
                     if amounts.is_some() {
-                        *amounts.unwrap().get(i).unwrap()
+                        *amounts.unwrap().get(asset_index).unwrap()
                     } else {
                         MAXIMUM_INPUT_AMOUNT
                     },
@@ -261,7 +264,7 @@ pub mod scripts {
                 .await,
             );
             output_variables.push(transaction_output_variable());
-            i += 1;
+            asset_index += 1;
         }
 
         TransactionParameters {

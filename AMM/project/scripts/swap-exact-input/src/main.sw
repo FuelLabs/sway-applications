@@ -16,14 +16,18 @@ fn main(
 
     let amm_contract = abi(AMM, amm_contract_address.into());
 
-    let mut i = 0;
-
-    let mut latest_output = amounts.get(1).unwrap();
+    let mut latest_bought = amounts.get(1).unwrap();
     let deadline = height() + 5;
 
-    // swap subsequent asset pairs along route by specifying the input asset and the input amount for each swap
-    while i < assets.len - 1 {
-        let asset_pair = (assets.get(i).unwrap(), assets.get(i + 1).unwrap());
+    // start swapping by selling the first asset in the route
+    let mut sold_asset_index = 0;
+
+    // swap subsequent asset pairs along route
+    while sold_asset_index < assets.len - 1 {
+        let asset_pair = (
+            assets.get(sold_asset_index).unwrap(),
+            assets.get(sold_asset_index + 1).unwrap(),
+        );
 
         // get the exchange contract id of asset pair
         let exchange_contract_id = amm_contract.pool { gas: 100_000 }(asset_pair);
@@ -32,16 +36,17 @@ fn main(
 
         let exchange_contract = abi(Exchange, exchange_contract_id.unwrap().into());
 
-        // initially, forward the input amount passed to the script
-        // for the following swaps, forward the previous output amount
-        latest_output = exchange_contract.swap_exact_input {
-            gas: 10_000_000,
-            coins: amounts.get(i).unwrap(),
-            asset_id: asset_pair.0.into(),
-        }(Option::Some(latest_output), deadline);
+        let minimum_buy_amount = Option::Some(latest_bought);
 
-        i += 1;
+        // swap by specifying the exact amount to sell
+        latest_bought = exchange_contract.swap_exact_input {
+            gas: 10_000_000,
+            coins: amounts.get(sold_asset_index).unwrap(), // forwarding coins of asset to sell
+            asset_id: asset_pair.0.into(), // identifier of asset to sell
+        }(minimum_buy_amount, deadline);
+
+        sold_asset_index += 1;
     }
 
-    latest_output
+    latest_bought
 }
