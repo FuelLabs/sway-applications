@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{constructor, max_supply, total_supply},
+    abi_calls::{admin, constructor, max_supply, tokens_minted},
     test_helpers::setup,
 };
 use fuels::{prelude::Identity, signers::Signer};
@@ -9,32 +9,65 @@ mod success {
     use super::*;
 
     #[tokio::test]
-    async fn initalizes_with_access_control() {
+    async fn initalizes_with_access_control_and_supply() {
         let (deploy_wallet, owner1, _owner2) = setup().await;
 
-        assert_eq!(total_supply(&owner1.contract).await, 0);
-        assert_eq!(max_supply(&owner1.contract).await, 0);
+        assert_eq!(tokens_minted(&owner1.contract).await, 0);
+        assert_eq!(max_supply(&owner1.contract).await, None);
+        assert_eq!(admin(&owner1.contract).await, None);
 
-        // let admin = Option::Some(Identity::Address(owner1.wallet.address().into()));
-        let admin = Identity::Address(owner1.wallet.address().into());
-        constructor(true, &deploy_wallet.contract, &admin, 1).await;
+        let admin_identity = Some(Identity::Address(owner1.wallet.address().into()));
+        constructor(admin_identity.clone(), &deploy_wallet.contract, Some(1)).await;
 
-        assert_eq!(total_supply(&owner1.contract).await, 0);
-        assert_eq!(max_supply(&owner1.contract).await, 1);
+        assert_eq!(tokens_minted(&owner1.contract).await, 0);
+        assert_eq!(max_supply(&owner1.contract).await, Some(1));
+        assert_eq!(admin(&owner1.contract).await, admin_identity.clone());
     }
 
     #[tokio::test]
-    #[ignore]
     async fn initalizes_without_access_control() {
-        let (_deploy_wallet, owner1, _owner2) = setup().await;
+        let (deploy_wallet, owner1, _owner2) = setup().await;
 
-        assert_eq!(total_supply(&owner1.contract).await, 0);
-        assert_eq!(max_supply(&owner1.contract).await, 0);
+        assert_eq!(tokens_minted(&owner1.contract).await, 0);
+        assert_eq!(max_supply(&owner1.contract).await, None);
+        assert_eq!(admin(&owner1.contract).await, None);
 
-        // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
+        constructor(None, &deploy_wallet.contract, Some(1)).await;
 
-        assert_eq!(total_supply(&owner1.contract).await, 0);
-        assert_eq!(max_supply(&owner1.contract).await, 1);
+        assert_eq!(tokens_minted(&owner1.contract).await, 0);
+        assert_eq!(max_supply(&owner1.contract).await, Some(1));
+        assert_eq!(admin(&owner1.contract).await, None);
+    }
+
+    #[tokio::test]
+    async fn initalizes_without_max_supply() {
+        let (deploy_wallet, owner1, _owner2) = setup().await;
+
+        assert_eq!(tokens_minted(&owner1.contract).await, 0);
+        assert_eq!(max_supply(&owner1.contract).await, None);
+        assert_eq!(admin(&owner1.contract).await, None);
+
+        let admin_identity = Some(Identity::Address(owner1.wallet.address().into()));
+        constructor(admin_identity.clone(), &deploy_wallet.contract, None).await;
+
+        assert_eq!(tokens_minted(&owner1.contract).await, 0);
+        assert_eq!(max_supply(&owner1.contract).await, None);
+        assert_eq!(admin(&owner1.contract).await, admin_identity.clone());
+    }
+
+    #[tokio::test]
+    async fn initalizes_without_access_control_and_supply() {
+        let (deploy_wallet, owner1, _owner2) = setup().await;
+
+        assert_eq!(tokens_minted(&owner1.contract).await, 0);
+        assert_eq!(max_supply(&owner1.contract).await, None);
+        assert_eq!(admin(&owner1.contract).await, None);
+
+        constructor(None, &deploy_wallet.contract, None).await;
+
+        assert_eq!(tokens_minted(&owner1.contract).await, 0);
+        assert_eq!(max_supply(&owner1.contract).await, None);
+        assert_eq!(admin(&owner1.contract).await, None);
     }
 }
 
@@ -45,31 +78,9 @@ mod reverts {
     #[tokio::test]
     #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_initalized_twice() {
-        let (deploy_wallet, owner1, _owner2) = setup().await;
+        let (deploy_wallet, _owner1, _owner2) = setup().await;
 
-        // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address().into());
-        constructor(true, &deploy_wallet.contract, &admin, 1).await;
-        constructor(true, &deploy_wallet.contract, &admin, 1).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
-    async fn when_token_supply_is_zero() {
-        let (deploy_wallet, owner1, _owner2) = setup().await;
-
-        // constructor(false, &deploy_wallet.contract, &Option::None(), 0).await;
-        let admin = Identity::Address(owner1.wallet.address().into());
-        constructor(true, &deploy_wallet.contract, &admin, 0).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
-    #[ignore]
-    async fn when_access_control_set_but_no_admin() {
-        let (_deploy_wallet, _owner1, _owner2) = setup().await;
-
-        // constructor(true, &deploy_wallet.contract, &Option::None(), 0).await;
+        constructor(None, &deploy_wallet.contract, Some(1)).await;
+        constructor(None, &deploy_wallet.contract, Some(1)).await;
     }
 }
