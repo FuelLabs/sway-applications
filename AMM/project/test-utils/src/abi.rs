@@ -11,6 +11,11 @@ abigen!(
 );
 
 script_abigen!(
+    AtomicAddLiquidityScript,
+    "./project/scripts/atomic-add-liquidity/out/debug/atomic-add-liquidity-abi.json"
+);
+
+script_abigen!(
     SwapExactInputScript,
     "./project/scripts/swap-exact-input/out/debug/swap-exact-input-abi.json"
 );
