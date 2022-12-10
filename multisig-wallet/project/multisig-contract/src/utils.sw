@@ -13,6 +13,7 @@ use data_structures::{MessageFormat, MessagePrefix, SignatureInfo, Transaction, 
 
 const EIP191_INITIAL_BYTE = 0x19u8;
 const EIP191_VERSION_BYTE = 0x45u8;
+const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
 
 /// Takes in transaction data and hashes it into a unique transaction hash.
 pub fn create_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
@@ -84,10 +85,10 @@ fn encode_and_pack_signed_data(
 ) -> Vec<u64> {
     let mut data = Vec::with_capacity(5);
 
+    // `message_1`, `message_2`, `message_3` and `message_4` are the four `u64`s that made up the `b256` `message_hash`.
     let (message_1, message_2, message_3, message_4) = decompose(message_hash);
 
     data.push((initial_byte << 56) + (version_byte << 48) + (message_1 >> 16));
-
     data.push((message_1 << 48) + (message_2 >> 16));
     data.push((message_2 << 48) + (message_3 >> 16));
     data.push((message_3 << 48) + (message_4 >> 16));
@@ -104,7 +105,5 @@ fn decompose(val: b256) -> (u64, u64, u64, u64) {
 /// Applies the prefix used by Geth to a message hash.
 /// Returns the prefixed hash.
 fn ethereum_prefix(msg_hash: b256) -> b256 {
-    let prefix = "\x19Ethereum Signed Message:\n32";
-
-    sha256((prefix, msg_hash))
+    sha256((ETHEREUM_PREFIX, msg_hash))
 }
