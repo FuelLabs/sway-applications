@@ -5,6 +5,14 @@ dep data_structures;
 use data_structures::{SignatureInfo, User};
 
 abi MultiSignatureWallet {
+    /// Cancel the next transaction by spending the current nonce.
+    ///
+    /// # Reverts
+    ///
+    /// * When the caller is not setup as an owner.
+    #[storage(read, write)]
+    fn cancel_transaction();
+
     /// The constructor initializes the necessary values and unlocks further functionality.
     ///
     /// # Arguments

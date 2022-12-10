@@ -9,11 +9,17 @@ dep events;
 dep interface;
 dep utils;
 
-use std::{constants::ZERO_B256, context::this_balance, logging::log, token::transfer};
+use std::{
+    auth::msg_sender,
+    constants::ZERO_B256,
+    context::this_balance,
+    logging::log,
+    token::transfer,
+};
 
 use data_structures::{SignatureInfo, User};
-use errors::{ExecutionError, InitError};
-use events::{ExecutedEvent, TransferEvent};
+use errors::{AccessControlError, ExecutionError, InitError};
+use events::{CancelEvent, ExecutedEvent, TransferEvent};
 use interface::MultiSignatureWallet;
 use utils::{create_hash, recover_signer};
 
@@ -28,6 +34,22 @@ storage {
 }
 
 impl MultiSignatureWallet for Contract {
+    #[storage(read, write)]
+    fn cancel_transaction() {
+        let sender = match msg_sender().unwrap() {
+            Identity::Address(address) => address.value,
+            Identity::ContractId(contract_id) => contract_id.value,
+        };
+        require(storage.weighting.get(sender) > 0, AccessControlError::CanOnlyBeAccessedByAnOwner);
+
+        storage.nonce += 1;
+
+        log(CancelEvent {
+            cancelled_nonce: storage.nonce - 1,
+            user: sender,
+        });
+    }
+
     #[storage(read, write)]
     fn constructor(threshold: u64, users: Vec<User>) {
         require(storage.nonce == 0, InitError::CannotReinitialize);

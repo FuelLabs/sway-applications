@@ -19,6 +19,15 @@ pub mod abi_calls {
 
     use super::*;
 
+    pub async fn cancel_transaction(contract: &MultiSigContract) -> CallResponse<()> {
+        contract
+            .methods()
+            .cancel_transaction()
+            .call()
+            .await
+            .unwrap()
+    }
+
     pub async fn constructor(
         contract: &MultiSigContract,
         users: Vec<User>,
