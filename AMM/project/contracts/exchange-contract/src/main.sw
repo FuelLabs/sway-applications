@@ -350,37 +350,46 @@ impl Exchange for Contract {
         require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
+        let sender = msg_sender().unwrap();
+
         let total_liquidity = storage.liquidity_pool_supply;
         let asset_a_in_reserve = storage.reserves.get(asset_a_id);
         let asset_b_in_reserve = storage.reserves.get(asset_b_id);
+        let asset_a_in_deposit = storage.deposits.get((sender, asset_a_id));
+        let asset_b_in_deposit = storage.deposits.get((sender, asset_b_id));
 
-        let asset_a_in_deposit = if asset == asset_a_id || asset_b_in_reserve == 0 {
-            amount
-        } else {
-            multiply_div(amount, asset_a_in_reserve, asset_b_in_reserve)
-        };
-        let asset_b_in_deposit = if asset == asset_b_id || asset_a_in_reserve == 0 {
-            amount
-        } else {
-            multiply_div(amount, asset_b_in_reserve, asset_a_in_reserve)
-        };
-
+        let mut asset_a_to_use = 0;
+        let mut asset_b_to_use = 0;
         let mut liquidity_to_add = 0;
-        let mut added_a = asset_a_in_deposit;
-        let mut added_b = asset_b_in_deposit;
 
-        if asset_a_in_reserve == 0 && asset_b_in_reserve == 0 {
-            liquidity_to_add = (asset_a_in_deposit * asset_b_in_deposit).sqrt();
+        if total_liquidity == 0 {
+            asset_a_to_use = if asset_a_in_deposit == 0 {
+                amount
+            } else {
+                asset_a_in_deposit
+            };
+            asset_b_to_use = if asset_b_in_deposit == 0 {
+                amount
+            } else {
+                asset_b_in_deposit
+            };
+            liquidity_to_add = (asset_a_to_use * asset_b_to_use).sqrt()
         } else {
-            let added_b = multiply_div(asset_a_in_deposit, asset_b_in_reserve, asset_a_in_reserve);
-            liquidity_to_add = multiply_div(added_b, total_liquidity, asset_b_in_reserve);
+            if asset == asset_a_id {
+                asset_a_to_use = amount;
+                asset_b_to_use = multiply_div(amount, asset_b_in_reserve, asset_a_in_reserve);
+            } else {
+                asset_a_to_use = multiply_div(amount, asset_a_in_reserve, asset_b_in_reserve);
+                asset_b_to_use = amount;
+            }
+            liquidity_to_add = multiply_div(asset_b_to_use, total_liquidity, asset_b_in_reserve);
         }
 
         PreviewAddLiquidityInfo {
             other_asset_amount_to_add: if asset == asset_a_id {
-                added_b
+                asset_b_to_use
             } else {
-                added_a
+                asset_a_to_use
             },
             liquidity_asset_amount_to_receive: liquidity_to_add,
         }
