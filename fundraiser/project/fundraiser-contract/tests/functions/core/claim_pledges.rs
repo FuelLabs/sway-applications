@@ -1,18 +1,23 @@
 use crate::utils::{
-    abi_calls::{campaign_info, cancel_campaign, claim_pledges, create_campaign, pledge},
-    test_helpers::{identity, mint, setup},
+    interface::core::{cancel_campaign, claim_pledges, create_campaign, pledge},
+    setup::{mint, setup},
 };
-use fuels::tx::AssetId;
 
 mod success {
 
     use super::*;
+    use crate::utils::{
+        interface::info::campaign_info,
+        setup::{identity, State},
+    };
+    use fuels::tx::AssetId;
 
     #[tokio::test]
     async fn claims() {
         let (author, user, asset, _, defaults) = setup().await;
         let beneficiary = identity(author.wallet.address()).await;
-        let deadline = 7;
+        let provider = author.wallet.get_provider().unwrap();
+        let deadline = provider.latest_block_height().await.unwrap() + 4;
 
         mint(
             &asset.contract,
@@ -30,7 +35,6 @@ mod success {
         .await;
 
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
-
         assert_eq!(
             0,
             author
@@ -41,7 +45,6 @@ mod success {
         );
 
         claim_pledges(&author.contract, 1).await;
-
         assert_eq!(
             defaults.target_amount,
             author
@@ -50,7 +53,10 @@ mod success {
                 .await
                 .unwrap()
         );
-        assert_eq!(campaign_info(&author.contract, 1).await.value.claimed, true);
+        assert!(matches!(
+            campaign_info(&author.contract, 1).await.value.state,
+            State::Claimed()
+        ));
     }
 }
 
@@ -59,7 +65,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_zero() {
         let (author, _, _, _, defaults) = setup().await;
 
@@ -77,7 +83,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_greater_than_number_of_campaigns() {
         let (author, _, _, _, defaults) = setup().await;
 
@@ -95,7 +101,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "UnauthorizedUser")]
     async fn when_sender_is_not_author() {
         let (author, user, _, _, defaults) = setup().await;
 
@@ -113,11 +119,11 @@ mod revert {
     }
 
     #[tokio::test]
-    #[ignore]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DeadlineNotReached")]
     async fn when_claiming_before_deadline() {
         let (author, user, asset, _, defaults) = setup().await;
-        let deadline = 5;
+        let provider = author.wallet.get_provider().unwrap();
+        let deadline = provider.latest_block_height().await.unwrap() + 7;
 
         mint(
             &asset.contract,
@@ -135,17 +141,16 @@ mod revert {
         .await;
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
-        // TODO: shift block height to be before deadline
-
         // Reverts
         claim_pledges(&author.contract, 1).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "TargetNotReached")]
     async fn when_target_amount_is_not_reached() {
         let (author, _, _, _, defaults) = setup().await;
-        let deadline = 1;
+        let provider = author.wallet.get_provider().unwrap();
+        let deadline = provider.latest_block_height().await.unwrap() + 2;
 
         create_campaign(
             &author.contract,
@@ -161,10 +166,11 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AlreadyClaimed")]
     async fn when_claiming_more_than_once() {
         let (author, user, asset, _, defaults) = setup().await;
-        let deadline = 5;
+        let provider = author.wallet.get_provider().unwrap();
+        let deadline = provider.latest_block_height().await.unwrap() + 4;
 
         mint(
             &asset.contract,
@@ -188,10 +194,11 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "CampaignHasBeenCancelled")]
     async fn when_cancelled() {
         let (author, user, asset, _, defaults) = setup().await;
-        let deadline = 6;
+        let provider = author.wallet.get_provider().unwrap();
+        let deadline = provider.latest_block_height().await.unwrap() + 5;
 
         mint(
             &asset.contract,

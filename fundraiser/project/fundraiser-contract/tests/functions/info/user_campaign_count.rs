@@ -1,11 +1,9 @@
-use crate::utils::{
-    abi_calls::{create_campaign, user_campaign_count},
-    test_helpers::{identity, setup},
-};
-
 mod success {
 
-    use super::*;
+    use crate::utils::{
+        interface::{core::create_campaign, info::user_campaign_count},
+        setup::{identity, setup},
+    };
 
     #[tokio::test]
     async fn returns_zero() {

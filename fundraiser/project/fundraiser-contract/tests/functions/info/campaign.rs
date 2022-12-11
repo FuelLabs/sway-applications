@@ -1,11 +1,12 @@
 use crate::utils::{
-    abi_calls::{campaign, create_campaign},
-    test_helpers::{identity, setup},
+    interface::info::campaign,
+    setup::{identity, setup},
 };
 
 mod success {
 
     use super::*;
+    use crate::utils::interface::core::create_campaign;
 
     #[tokio::test]
     async fn returns_info() {
@@ -36,7 +37,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_zero() {
         let (author, _, _, _, _) = setup().await;
 
@@ -45,7 +46,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_greater_than_number_of_campaigns() {
         let (author, _, _, _, _) = setup().await;
 

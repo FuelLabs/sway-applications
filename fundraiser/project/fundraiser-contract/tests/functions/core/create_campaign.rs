@@ -1,14 +1,14 @@
-use crate::utils::{
-    abi_calls::{
-        asset_info_by_count, campaign, campaign_info, create_campaign, total_campaigns,
-        user_campaign_count,
-    },
-    test_helpers::{identity, setup},
-};
+use crate::utils::{interface::core::create_campaign, setup::setup};
 
 mod success {
 
     use super::*;
+    use crate::utils::{
+        interface::info::{
+            asset_info_by_count, campaign, campaign_info, total_campaigns, user_campaign_count,
+        },
+        setup::{identity, State},
+    };
 
     #[tokio::test]
     async fn creates_a_campaign() {
@@ -51,8 +51,7 @@ mod success {
         assert_eq!(info.asset, defaults.asset_id);
         assert_eq!(info.author, identity(author.wallet.address()).await);
         assert_eq!(info.beneficiary, defaults.beneficiary);
-        assert_eq!(info.cancelled, false);
-        assert_eq!(info.claimed, false);
+        assert!(matches!(info.state, State::Funding()));
         assert_eq!(info.deadline, defaults.deadline);
         assert_eq!(info.target_amount, defaults.target_amount);
         assert_eq!(info.total_pledge, 0);
@@ -177,7 +176,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DeadlineMustBeInTheFuture")]
     async fn when_deadline_is_in_the_past() {
         let (author, _, _, _, defaults) = setup().await;
         let deadline = 0;
@@ -194,7 +193,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "TargetAmountCannotBeZero")]
     async fn when_target_amount_is_zero() {
         let (author, _, _, _, defaults) = setup().await;
         let target_amount = 0;

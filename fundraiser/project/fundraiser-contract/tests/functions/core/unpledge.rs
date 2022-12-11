@@ -1,15 +1,16 @@
 use crate::utils::{
-    abi_calls::{
-        asset_info_by_count, campaign_info, claim_pledges, create_campaign, pledge, pledge_count,
-        pledged, unpledge,
-    },
-    test_helpers::{identity, mint, setup},
+    interface::core::{claim_pledges, create_campaign, pledge, unpledge},
+    setup::{mint, setup},
 };
-use fuels::tx::AssetId;
 
 mod success {
 
     use super::*;
+    use crate::utils::{
+        interface::info::{asset_info_by_count, campaign_info, pledge_count, pledged},
+        setup::identity,
+    };
+    use fuels::tx::AssetId;
 
     #[tokio::test]
     async fn unpledges_full_amount() {
@@ -138,7 +139,6 @@ mod success {
         );
 
         unpledge(&user.contract, 1, defaults.target_amount - 1).await;
-
         assert_eq!(
             defaults.target_amount - 1,
             user.wallet
@@ -361,7 +361,6 @@ mod success {
                 .await
                 .unwrap()
         );
-
         assert_eq!(
             0,
             user.wallet
@@ -371,7 +370,6 @@ mod success {
         );
 
         unpledge(&user.contract, 1, defaults.target_amount * 10).await;
-
         assert_eq!(
             defaults.target_amount,
             user.wallet
@@ -403,7 +401,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_zero() {
         let (author, user, _, _, defaults) = setup().await;
 
@@ -421,7 +419,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_greater_than_number_of_campaigns() {
         let (author, user, _, _, defaults) = setup().await;
 
@@ -435,11 +433,11 @@ mod revert {
         .await;
 
         // Reverts
-        unpledge(&user.contract, 1, defaults.target_amount).await;
+        unpledge(&user.contract, 2, defaults.target_amount).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AmountCannotBeZero")]
     async fn when_unpledging_zero_amount() {
         let (author, user, _, _, defaults) = setup().await;
         let target_amount = 0;
@@ -458,10 +456,11 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AlreadyClaimed")]
     async fn after_claimed() {
         let (author, user, asset, _, defaults) = setup().await;
-        let deadline = 6;
+        let provider = author.wallet.get_provider().unwrap();
+        let deadline = provider.latest_block_height().await.unwrap() + 4;
 
         mint(
             &asset.contract,
@@ -477,7 +476,6 @@ mod revert {
             defaults.target_amount,
         )
         .await;
-
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         claim_pledges(&author.contract, 1).await;
 
@@ -486,7 +484,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "UserHasNotPledged")]
     async fn when_user_has_not_pledged() {
         let (author, user, _, _, defaults) = setup().await;
 

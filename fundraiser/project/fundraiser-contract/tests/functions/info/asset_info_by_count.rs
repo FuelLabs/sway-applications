@@ -1,11 +1,12 @@
-use crate::utils::{
-    abi_calls::{asset_info_by_count, create_campaign, pledge},
-    test_helpers::{mint, setup},
-};
-
 mod success {
 
-    use super::*;
+    use crate::utils::{
+        interface::{
+            core::{create_campaign, pledge},
+            info::asset_info_by_count,
+        },
+        setup::{mint, setup},
+    };
 
     #[tokio::test]
     async fn returns_asset_does_not_exist_info() {

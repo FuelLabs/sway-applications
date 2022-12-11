@@ -1,16 +1,21 @@
 use crate::utils::{
-    abi_calls::{create_campaign, pledge, pledged},
-    test_helpers::{identity, mint, setup},
+    interface::info::pledged,
+    setup::{identity, setup},
 };
 
 mod success {
 
     use super::*;
+    use crate::utils::{
+        interface::core::{create_campaign, pledge},
+        setup::mint,
+    };
 
     #[tokio::test]
     async fn returns_info() {
         let (author, user, asset, _, defaults) = setup().await;
-        let deadline = 7;
+        let provider = author.wallet.get_provider().unwrap();
+        let deadline = provider.latest_block_height().await.unwrap() + 4;
 
         mint(
             &asset.contract,
@@ -41,7 +46,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_zero() {
         let (_, user, _, _, _) = setup().await;
 
@@ -50,7 +55,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_greater_than_number_of_pledges() {
         let (_, user, _, _, _) = setup().await;
 

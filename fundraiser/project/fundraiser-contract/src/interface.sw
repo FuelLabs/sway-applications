@@ -5,55 +5,6 @@ dep data_structures;
 use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
 
 abi Fundraiser {
-    /// Returns the number of unique assets that have been pledged across all campaigns
-    #[storage(read)]
-    fn asset_count() -> u64;
-
-    /// Returns information about the specificed asset, specifically if it has been added and the
-    /// pledged amount
-    ///
-    /// # Arguments
-    ///
-    /// * `asset` - Uniquie identifier that identifies the asset
-    #[storage(read)]
-    fn asset_info_by_id(asset: ContractId) -> AssetInfo;
-
-    /// Returns information about the specificed asset, specifically if it has been added and the
-    /// pledged amount
-    ///
-    /// The user interface will not know all possible assets that the contract contains therefore
-    /// this helper method allows the interface to iterate over the asset_count to discover all assets
-    ///
-    /// # Arguments
-    ///
-    /// * `index` - Number from 1...asset_count
-    #[storage(read)]
-    fn asset_info_by_count(index: u64) -> AssetInfo;
-
-    /// Returns information about the specified campaign for the campaign author
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - Unique identifier which is a number starting from 1...storage.user_campaign_count
-    ///
-    /// # Reverts
-    ///
-    /// * When the `id` is either 0 or greater than the total number of campaigns created by the author
-    #[storage(read)]
-    fn campaign(campaign_history_index: u64, user: Identity) -> Campaign;
-
-    /// Returns information about the specified campaign
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
-    ///
-    /// # Reverts
-    ///
-    /// * When the `id` is either 0 or greater than the total number of campaigns created
-    #[storage(read)]
-    fn campaign_info(id: u64) -> CampaignInfo;
-
     /// Marks a campaign as cancelled preventing further pledges or a claim to be made
     ///
     /// # Arguments
@@ -125,6 +76,76 @@ abi Fundraiser {
     #[storage(read, write)]
     fn pledge(id: u64);
 
+    /// Allows a user to unpledge an amount of the campaign asset that they have pledged
+    ///
+    /// A user may have changed their mind about the amount of an asset that they have pledged
+    /// therefore they may wish to unpledge some amount of that pledge.
+    /// If they attempt to unpledge more than they have pledged then their total pledge will be returned
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
+    /// * `amount` - The amount of asset that the user wishes to unpledge
+    ///
+    /// # Reverts
+    ///
+    /// * When the `id` is either 0 or greater than the total number of campaigns created
+    /// * When the user attempts to unpledge after the deadline and `target_amount` have been reached
+    /// * When the user has not pledged to the campaign represented by the `id`
+    #[storage(read, write)]
+    fn unpledge(id: u64, amount: u64);
+}
+
+abi Info {
+    /// Returns the number of unique assets that have been pledged across all campaigns
+    #[storage(read)]
+    fn asset_count() -> u64;
+
+    /// Returns information about the specificed asset, specifically if it has been added and the
+    /// pledged amount
+    ///
+    /// # Arguments
+    ///
+    /// * `asset` - Uniquie identifier that identifies the asset
+    #[storage(read)]
+    fn asset_info_by_id(asset: ContractId) -> AssetInfo;
+
+    /// Returns information about the specificed asset, specifically if it has been added and the
+    /// pledged amount
+    ///
+    /// The user interface will not know all possible assets that the contract contains therefore
+    /// this helper method allows the interface to iterate over the asset_count to discover all assets
+    ///
+    /// # Arguments
+    ///
+    /// * `index` - Number from 1...asset_count
+    #[storage(read)]
+    fn asset_info_by_count(index: u64) -> AssetInfo;
+
+    /// Returns information about the specified campaign for the campaign author
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Unique identifier which is a number starting from 1...storage.user_campaign_count
+    ///
+    /// # Reverts
+    ///
+    /// * When the `id` is either 0 or greater than the total number of campaigns created by the author
+    #[storage(read)]
+    fn campaign(campaign_history_index: u64, user: Identity) -> Campaign;
+
+    /// Returns information about the specified campaign
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
+    ///
+    /// # Reverts
+    ///
+    /// * When the `id` is either 0 or greater than the total number of campaigns created
+    #[storage(read)]
+    fn campaign_info(id: u64) -> CampaignInfo;
+
     /// Returns information about the specified pledge for the user
     ///
     /// # Arguments
@@ -148,25 +169,6 @@ abi Fundraiser {
     /// Returns the total number of campaigns that have been created by all users
     #[storage(read)]
     fn total_campaigns() -> u64;
-
-    /// Allows a user to unpledge an amount of the campaign asset that they have pledged
-    ///
-    /// A user may have changed their mind about the amount of an asset that they have pledged
-    /// therefore they may wish to unpledge some amount of that pledge.
-    /// If they attempt to unpledge more than they have pledged then their total pledge will be returned
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
-    /// * `amount` - The amount of asset that the user wishes to unpledge
-    ///
-    /// # Reverts
-    ///
-    /// * When the `id` is either 0 or greater than the total number of campaigns created
-    /// * When the user attempts to unpledge after the deadline and `target_amount` have been reached
-    /// * When the user has not pledged to the campaign represented by the `id`
-    #[storage(read, write)]
-    fn unpledge(id: u64, amount: u64);
 
     /// Returns the number of campaigns that the user has created
     #[storage(read)]
