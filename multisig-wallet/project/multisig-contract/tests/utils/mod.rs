@@ -17,6 +17,12 @@ abigen!(
 pub const VALID_SIGNER_PK: &str =
     "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301";
 
+pub mod paths {
+    pub const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
+    pub const MULTISIG_CONTRACT_STORAGE_PATH: &str =
+        "./out/debug/multisig-contract-storage_slots.json";
+}
+
 pub mod abi_calls {
 
     use super::*;
@@ -103,6 +109,7 @@ pub mod abi_calls {
 pub mod test_helpers {
 
     use super::*;
+    use paths::{MULTISIG_CONTRACT_BINARY_PATH, MULTISIG_CONTRACT_STORAGE_PATH};
 
     pub const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
     pub const DEFAULT_THRESHOLD: u64 = 5;
@@ -114,12 +121,12 @@ pub mod test_helpers {
 
         let mut wallet = WalletUnlocked::new_from_private_key(private_key, None);
 
-        let num_asset = 1;
+        let number_of_assets = 1;
         let coins_per_asset = 10;
         let amount_per_coin = 200;
         let (coins, _asset_ids) = setup_multiple_assets_coins(
             wallet.address(),
-            num_asset,
+            number_of_assets,
             coins_per_asset,
             amount_per_coin,
         );
@@ -129,10 +136,12 @@ pub mod test_helpers {
         wallet.set_provider(provider);
 
         let contract_id = Contract::deploy(
-            "./out/debug/multisig-contract.bin",
+            MULTISIG_CONTRACT_BINARY_PATH,
             &wallet,
             TxParameters::default(),
-            StorageConfiguration::default(),
+            StorageConfiguration::with_storage_path(Some(
+                MULTISIG_CONTRACT_STORAGE_PATH.to_string(),
+            )),
         )
         .await?;
 
