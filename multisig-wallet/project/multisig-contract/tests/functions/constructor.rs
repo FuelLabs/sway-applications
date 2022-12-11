@@ -36,14 +36,6 @@ mod revert {
 
     #[tokio::test]
     #[should_panic]
-    async fn threshold_cannot_be_zero() {
-        let (_private_key, contract, _deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
-
-        constructor(&contract, constructor_users(), 0).await;
-    }
-
-    #[tokio::test]
-    #[should_panic]
     async fn address_cannot_be_zero() {
         let (_private_key, contract, _deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
@@ -57,6 +49,14 @@ mod revert {
         };
 
         constructor(&contract, users, DEFAULT_THRESHOLD).await;
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn threshold_cannot_be_zero() {
+        let (_private_key, contract, _deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+        constructor(&contract, constructor_users(), 0).await;
     }
 
     #[tokio::test]

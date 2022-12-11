@@ -170,53 +170,6 @@ mod revert {
 
     #[tokio::test]
     #[should_panic]
-    async fn insufficient_approvals() {
-        let (private_key, contract, deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
-
-        let (_receiver_wallet, receiver, data) = transfer_parameters();
-
-        constructor(&contract, constructor_users(), DEFAULT_THRESHOLD).await;
-
-        deployer_wallet
-            .force_transfer_to_contract(
-                contract.get_contract_id(),
-                DEFAULT_TRANSFER_AMOUNT,
-                BASE_ASSET_ID,
-                TxParameters::default(),
-            )
-            .await
-            .unwrap();
-
-        let nonce = nonce(&contract).await.value;
-
-        let tx_hash = transaction_hash(
-            &contract,
-            receiver.clone(),
-            DEFAULT_TRANSFER_AMOUNT,
-            data,
-            nonce,
-        )
-        .await
-        .value
-        .0;
-        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
-
-        let mut signatures = transfer_signatures(private_key, tx_hash).await;
-        signatures.remove(0);
-
-        transfer(
-            &contract,
-            receiver,
-            base_asset_contract_id(),
-            DEFAULT_TRANSFER_AMOUNT,
-            data,
-            signatures,
-        )
-        .await;
-    }
-
-    #[tokio::test]
-    #[should_panic]
     async fn incorrect_signer_ordering() {
         let (private_key, contract, deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
@@ -258,6 +211,53 @@ mod revert {
             DEFAULT_TRANSFER_AMOUNT,
             data,
             incorrectly_ordered_signatures,
+        )
+        .await;
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn insufficient_approvals() {
+        let (private_key, contract, deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+        let (_receiver_wallet, receiver, data) = transfer_parameters();
+
+        constructor(&contract, constructor_users(), DEFAULT_THRESHOLD).await;
+
+        deployer_wallet
+            .force_transfer_to_contract(
+                contract.get_contract_id(),
+                DEFAULT_TRANSFER_AMOUNT,
+                BASE_ASSET_ID,
+                TxParameters::default(),
+            )
+            .await
+            .unwrap();
+
+        let nonce = nonce(&contract).await.value;
+
+        let tx_hash = transaction_hash(
+            &contract,
+            receiver.clone(),
+            DEFAULT_TRANSFER_AMOUNT,
+            data,
+            nonce,
+        )
+        .await
+        .value
+        .0;
+        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+
+        let mut signatures = transfer_signatures(private_key, tx_hash).await;
+        signatures.remove(0);
+
+        transfer(
+            &contract,
+            receiver,
+            base_asset_contract_id(),
+            DEFAULT_TRANSFER_AMOUNT,
+            data,
+            signatures,
         )
         .await;
     }
