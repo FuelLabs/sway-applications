@@ -250,7 +250,7 @@ pub mod test_helpers {
         eip_191_data.append(&mut message_hash.to_vec());
 
         let eip_191_formatted_message = keccak_hash(&eip_191_data);
-        unsafe { Message::from_bytes_unchecked(*eip_191_formatted_message) }
+        unsafe { Message::from_bytes_unchecked(*eip_191_formatted_message) } // TODO: Remove use of unsafe when feature is available: https://github.com/FuelLabs/fuels-rs/issues/698
     }
 
     fn ethereum_prefix(formatted_message: Message) -> Message {
@@ -261,7 +261,7 @@ pub mod test_helpers {
         eth_prefix_data.append(&mut formatted_message.to_vec());
 
         let eth_prefixed_message = keccak_hash(eth_prefix_data);
-        unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) }
+        unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) } // TODO: Remove use of unsafe when feature is available: https://github.com/FuelLabs/fuels-rs/issues/698
     }
 
     fn keccak_hash<B>(data: B) -> Bytes32
