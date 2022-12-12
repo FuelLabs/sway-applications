@@ -27,6 +27,21 @@ storage {
 
 impl TokenDistributor for Contract {
     #[storage(read, write)]
+    fn cancel(fractional_nft: ContractId) {
+        let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+
+        let nft_owner = fractional_nft_owner(fractional_nft);
+        require(nft_owner.is_some() && nft_owner.unwrap() == msg_sender().unwrap(), "Not NFT owner");
+        require(token_distribution.state == DistributionState::Created, "Not available");
+
+        transfer(this_balance(fractional_nft), fractional_nft, Identity::ContractId(fractional_nft));
+        withdraw_fractional_nft(fractional_nft);
+
+        token_distribution.state == DistributionState::Closed;
+        storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
+    }
+    
+    #[storage(read, write)]
     fn close(fractional_nft: ContractId) {
         let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
 

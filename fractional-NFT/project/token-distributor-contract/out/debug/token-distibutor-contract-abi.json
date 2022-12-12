@@ -64,6 +64,21 @@
           "typeArguments": null
         }
       ],
+      "name": "cancel",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      }
+    },
+    {
+      "inputs": [
+        {
+          "name": "fractional_nft",
+          "type": 6,
+          "typeArguments": null
+        }
+      ],
       "name": "close",
       "output": {
         "name": "",
@@ -185,7 +200,7 @@
       "logId": 1,
       "loggedType": {
         "name": "",
-        "type": 4,
+        "type": 2,
         "typeArguments": null
       }
     },
@@ -193,7 +208,7 @@
       "logId": 2,
       "loggedType": {
         "name": "",
-        "type": 5,
+        "type": 2,
         "typeArguments": null
       }
     },
@@ -201,7 +216,7 @@
       "logId": 3,
       "loggedType": {
         "name": "",
-        "type": 2,
+        "type": 5,
         "typeArguments": null
       }
     },
@@ -217,7 +232,7 @@
       "logId": 5,
       "loggedType": {
         "name": "",
-        "type": 3,
+        "type": 5,
         "typeArguments": null
       }
     },
@@ -225,7 +240,7 @@
       "logId": 6,
       "loggedType": {
         "name": "",
-        "type": 5,
+        "type": 2,
         "typeArguments": null
       }
     },
@@ -233,7 +248,7 @@
       "logId": 7,
       "loggedType": {
         "name": "",
-        "type": 2,
+        "type": 4,
         "typeArguments": null
       }
     },
@@ -241,7 +256,7 @@
       "logId": 8,
       "loggedType": {
         "name": "",
-        "type": 2,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -249,7 +264,7 @@
       "logId": 9,
       "loggedType": {
         "name": "",
-        "type": 3,
+        "type": 5,
         "typeArguments": null
       }
     },
@@ -257,7 +272,7 @@
       "logId": 10,
       "loggedType": {
         "name": "",
-        "type": 5,
+        "type": 2,
         "typeArguments": null
       }
     },
@@ -271,6 +286,30 @@
     },
     {
       "logId": 12,
+      "loggedType": {
+        "name": "",
+        "type": 3,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 13,
+      "loggedType": {
+        "name": "",
+        "type": 5,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 14,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 15,
       "loggedType": {
         "name": "",
         "type": 3,
