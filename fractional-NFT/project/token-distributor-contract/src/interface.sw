@@ -6,9 +6,11 @@ abi TokenDistributor {
     #[storage(read, write)]
     fn close(fractional_nft: ContractId);
     #[storage(read, write)]
-    fn create(buy_asset: ContractId, fractional_nft: ContractId, nft: ContractId, reserve_price: u64, token_price: u64, token_supply: u64, token_id: u64);
+    fn create(buy_asset: ContractId, fractional_nft: ContractId, nft: ContractId, owner: Option<Identity>, reserve_price: Option<u64>, token_price: u64, token_supply: u64, token_id: u64);
     #[storage(read, write)]
     fn purchase(amount: u64, fractional_nft: ContractId);
+    #[storage(read, write)]
+    fn purchase_reserve(fractional_nft: ContractId, owner: Option<Identity>, reserve: Option<u64>);
     #[storage(read, write)]
     fn request_return(fractional_nft: ContractId, token_price: u64);
     #[storage(read)]

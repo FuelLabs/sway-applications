@@ -1,4 +1,5 @@
 library interface;
+
 abi FractionalNFT {
     #[storage(read, write)]
     fn deposit(nft: ContractId, owner: Identity, supply: u64, token_id: u64);
