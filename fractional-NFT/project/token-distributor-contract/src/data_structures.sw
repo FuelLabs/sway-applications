@@ -20,7 +20,8 @@ impl core::ops::Eq for DistributionState {
 }
 
 pub struct TokenDistribution {
-    buy_asset: ContractId,
+    external_asset: ContractId,
+    external_deposits: u64,
     nft: ContractId,
     reserve_price: u64,
     state: DistributionState,
@@ -30,14 +31,15 @@ pub struct TokenDistribution {
 
 impl TokenDistribution {
     pub fn new(
-        buy_asset: ContractId,
+        external_asset: ContractId,
         nft: ContractId,
         reserve_price: u64,
         token_id: u64,
         token_price: u64,
     ) -> Self {
         TokenDistribution {
-            buy_asset,
+            external_asset,
+            external_deposits: 0,
             nft,
             reserve_price,
             state: DistributionState::Created,

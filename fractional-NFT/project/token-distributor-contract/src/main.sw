@@ -54,7 +54,7 @@ impl TokenDistributor for Contract {
 
     #[storage(read, write)]
     fn create(
-        buy_asset: ContractId,
+        external_asset: ContractId,
         fractional_nft: ContractId,
         nft: ContractId,
         reserve_price: u64,
@@ -64,7 +64,7 @@ impl TokenDistributor for Contract {
     ) {
         create_fractional_nft(fractional_nft, nft, msg_sender().unwrap(), token_supply, token_id);
 
-        storage.token_distributions.insert(fractional_nft, Option::Some(TokenDistribution::new(buy_asset, nft, reserve_price, token_id, token_price)));
+        storage.token_distributions.insert(fractional_nft, Option::Some(TokenDistribution::new(external_asset, nft, reserve_price, token_id, token_price)));
     }
 
     #[storage(read, write)]
@@ -74,12 +74,13 @@ impl TokenDistributor for Contract {
         require(token_distribution.state == DistributionState::Created || token_distribution.state == DistributionState::Distributing, "Not available");
         if token_distribution.state == DistributionState::Created {
             token_distribution.state = DistributionState::Distributing;
-            storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
         }
 
         require(amount <= this_balance(fractional_nft), "Buying too many tokens");
-        require(amount * token_distribution.token_price == msg_amount() && msg_asset_id() == token_distribution.buy_asset, "Incorrect asset");
+        require(amount * token_distribution.token_price == msg_amount() && msg_asset_id() == token_distribution.external_asset, "Incorrect asset");
 
+        token_distribution.external_deposits += msg_amount();
+        storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
         transfer(amount, fractional_nft, msg_sender().unwrap());
     }
 
@@ -92,10 +93,9 @@ impl TokenDistributor for Contract {
         require(token_distribution.state == DistributionState::Distributing, "Not available");
 
         let token_supply = fractional_nft_supply(fractional_nft);
-        require(msg_amount() == (token_supply - this_balance(fractional_nft)) * token_price && msg_asset_id() == token_distribution.buy_asset, "Incorrect asset");
+        require(msg_amount() == (token_supply - this_balance(fractional_nft)) * token_price && msg_asset_id() == token_distribution.external_asset, "Incorrect asset");
         token_distribution.token_price = token_price;
         token_distribution.state = DistributionState::Returning;
-        storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
     }
 
     #[storage(read)]
@@ -105,7 +105,21 @@ impl TokenDistributor for Contract {
         require(token_distribution.state == DistributionState::Returning, "Not available");
         require(msg_asset_id() == fractional_nft, "Incorrect Asset");
 
-        transfer(msg_amount() * token_distribution.token_price, token_distribution.buy_asset, msg_sender().unwrap());
+        transfer(msg_amount() * token_distribution.token_price, token_distribution.external_asset, msg_sender().unwrap());
         transfer(msg_amount(), fractional_nft, Identity::ContractId(fractional_nft));
+    }
+
+    #[storage(read, write)]
+    fn withdraw(fractional_nft: ContractId) {
+        let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+
+        let nft_owner = fractional_nft_owner(fractional_nft);
+        require(nft_owner.is_some() && nft_owner.unwrap() == msg_sender().unwrap(), "Not NFT owner");
+
+        let amount= token_distribution.external_deposits;
+        token_distribution.external_deposits = 0;
+        storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
+
+        transfer(amount, token_distribution.external_asset, nft_owner.unwrap());
     }
 }

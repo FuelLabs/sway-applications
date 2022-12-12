@@ -13,6 +13,8 @@ abi TokenDistributor {
     fn request_return(fractional_nft: ContractId, token_price: u64);
     #[storage(read)]
     fn sell(fractional_nft: ContractId);
+    #[storage(read, write)]
+    fn withdraw(fractional_nft: ContractId);
 }
 
 abi FractionalNFT {

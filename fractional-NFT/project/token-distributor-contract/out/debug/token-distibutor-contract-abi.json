@@ -89,7 +89,7 @@
     {
       "inputs": [
         {
-          "name": "buy_asset",
+          "name": "external_asset",
           "type": 6,
           "typeArguments": null
         },
@@ -180,6 +180,21 @@
         }
       ],
       "name": "sell",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      }
+    },
+    {
+      "inputs": [
+        {
+          "name": "fractional_nft",
+          "type": 6,
+          "typeArguments": null
+        }
+      ],
+      "name": "withdraw",
       "output": {
         "name": "",
         "type": 0,
