@@ -35,7 +35,7 @@ mod success {
             .unwrap();
         let event = log.get(0).unwrap();
 
-        let info = campaign_info(&author.contract, 1).await.value;
+        let info = campaign_info(&author.contract, 1).await.value.unwrap();
         let asset_info = asset_info_by_count(&author.contract, 1).await;
         assert_eq!(
             *event,
@@ -99,8 +99,8 @@ mod success {
 
         let asset_info1 = asset_info_by_count(&author.contract, 1).await;
         let asset_info2 = asset_info_by_count(&author.contract, 2).await;
-        let info1 = campaign_info(&author.contract, 1).await.value;
-        let info2 = campaign_info(&author.contract, 2).await.value;
+        let info1 = campaign_info(&author.contract, 1).await.value.unwrap();
+        let info2 = campaign_info(&author.contract, 2).await.value.unwrap();
 
         let log1 = response1
             .get_logs_with_type::<CreatedCampaignEvent>()
@@ -174,8 +174,8 @@ mod success {
 
         let asset_info1 = asset_info_by_count(&author.contract, 1).await;
         let asset_info2 = asset_info_by_count(&author.contract, 2).await;
-        let info1 = campaign_info(&author.contract, 1).await.value;
-        let info2 = campaign_info(&author.contract, 2).await.value;
+        let info1 = campaign_info(&author.contract, 1).await.value.unwrap();
+        let info2 = campaign_info(&author.contract, 2).await.value.unwrap();
 
         let log1 = response1
             .get_logs_with_type::<CreatedCampaignEvent>()

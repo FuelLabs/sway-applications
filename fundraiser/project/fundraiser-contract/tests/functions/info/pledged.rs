@@ -1,14 +1,11 @@
-use crate::utils::{
-    interface::info::pledged,
-    setup::{identity, setup},
-};
-
 mod success {
 
-    use super::*;
     use crate::utils::{
-        interface::core::{create_campaign, pledge},
-        setup::{mint, Pledge},
+        interface::{
+            core::{create_campaign, pledge},
+            info::pledged,
+        },
+        setup::{identity, mint, setup, Pledge},
     };
 
     #[tokio::test]

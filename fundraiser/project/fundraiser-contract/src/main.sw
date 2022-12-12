@@ -51,7 +51,7 @@ storage {
     campaign_history: StorageMap<(Identity, u64), Campaign> = StorageMap {},
     /// Data describing the content of a campaign
     /// Map(Campaign ID => CampaignInfo)
-    campaign_info: StorageMap<u64, CampaignInfo> = StorageMap {},
+    campaign_info: StorageMap<u64, Option<CampaignInfo>> = StorageMap {},
     /// The total number of unique campaigns that a user has pledged to
     /// This should only be incremented.
     /// Unpledging should not affect this number
@@ -74,7 +74,7 @@ impl Fundraiser for Contract {
         validate_id(id, storage.total_campaigns);
 
         // Retrieve the campaign in order to check its data / update it
-        let mut campaign_info = storage.campaign_info.get(id);
+        let mut campaign_info = storage.campaign_info.get(id).unwrap();
 
         // Only the creator (author) of the campaign can cancel it
         require(campaign_info.author == msg_sender().unwrap(), UserError::UnauthorizedUser);
@@ -90,7 +90,7 @@ impl Fundraiser for Contract {
         campaign_info.state = State::Cancelled;
 
         // Overwrite the previous campaign (which has not been cancelled) with the updated version
-        storage.campaign_info.insert(id, campaign_info);
+        storage.campaign_info.insert(id, Option::Some(campaign_info));
 
         // We have updated the state of a campaign therefore we must log it
         log(CancelledCampaignEvent { id });
@@ -102,7 +102,7 @@ impl Fundraiser for Contract {
         validate_id(id, storage.total_campaigns);
 
         // Retrieve the campaign in order to check its data / update it
-        let mut campaign_info = storage.campaign_info.get(id);
+        let mut campaign_info = storage.campaign_info.get(id).unwrap();
 
         // Only the creator (author) of the campaign can initiate the claiming process
         require(campaign_info.author == msg_sender().unwrap(), UserError::UnauthorizedUser);
@@ -124,7 +124,7 @@ impl Fundraiser for Contract {
 
         // Mark the campaign as claimed and overwrite the previous state with the updated version
         campaign_info.state = State::Claimed;
-        storage.campaign_info.insert(id, campaign_info);
+        storage.campaign_info.insert(id, Option::Some(campaign_info));
 
         // Transfer the total pledged to this campaign to the beneficiary
         transfer(campaign_info.total_pledge, campaign_info.asset, campaign_info.beneficiary);
@@ -170,7 +170,7 @@ impl Fundraiser for Contract {
         // We've just created a new campaign so increment the number of created campaigns across all
         // users and store the new campaign
         storage.total_campaigns += 1;
-        storage.campaign_info.insert(storage.total_campaigns, campaign_info);
+        storage.campaign_info.insert(storage.total_campaigns, Option::Some(campaign_info));
 
         // Increment the number of campaigns this user has created and track the ID for the campaign
         // they have just created so that data can be easily retrieved without duplicating data
@@ -191,7 +191,7 @@ impl Fundraiser for Contract {
         validate_id(id, storage.total_campaigns);
 
         // Retrieve the campaign in order to check its data / update it
-        let mut campaign_info = storage.campaign_info.get(id);
+        let mut campaign_info = storage.campaign_info.get(id).unwrap();
 
         // The users should only have the ability to pledge to campaigns that have not reached their
         // deadline (ended naturally - not been cancelled)
@@ -245,7 +245,7 @@ impl Fundraiser for Contract {
         campaign_info.total_pledge += msg_amount();
 
         // Campaign state has been updated therefore overwrite the previous version with the new
-        storage.campaign_info.insert(id, campaign_info);
+        storage.campaign_info.insert(id, Option::Some(campaign_info));
 
         // Update the asset amount to track the addition of the new pledge
         let mut asset_info = storage.asset_info.get(campaign_info.asset).unwrap();
@@ -271,7 +271,7 @@ impl Fundraiser for Contract {
         require(amount != 0, UserError::AmountCannotBeZero);
 
         // Retrieve the campaign in order to check its data / update it
-        let mut campaign_info = storage.campaign_info.get(id);
+        let mut campaign_info = storage.campaign_info.get(id).unwrap();
 
         // A user should be able to unpledge at any point except if the deadline has been reached
         // and the author has claimed
@@ -304,7 +304,7 @@ impl Fundraiser for Contract {
         storage.pledge_history.insert((user, pledge_history_index), Option::Some(pledge));
 
         // Update the campaign state with the updated version as well
-        storage.campaign_info.insert(id, campaign_info);
+        storage.campaign_info.insert(id, Option::Some(campaign_info));
 
         // Update the asset amount to track the removal of the amount
         let mut asset_info = storage.asset_info.get(campaign_info.asset).unwrap();
@@ -349,9 +349,7 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn campaign_info(id: u64) -> CampaignInfo {
-        // User cannot interact with a non-existent campaign
-        validate_id(id, storage.total_campaigns);
+    fn campaign_info(id: u64) -> Option<CampaignInfo> {
         storage.campaign_info.get(id)
     }
 

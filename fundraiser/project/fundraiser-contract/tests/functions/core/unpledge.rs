@@ -36,7 +36,11 @@ mod success {
 
         assert_eq!(
             0,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
 
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
@@ -46,7 +50,11 @@ mod success {
         assert_eq!(defaults.target_amount, asset_info.value.unwrap().amount);
         assert_eq!(
             defaults.target_amount,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             0,
@@ -75,7 +83,11 @@ mod success {
         assert_eq!(0, asset_info.value.unwrap().amount);
         assert_eq!(
             0,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             defaults.target_amount,
@@ -110,7 +122,11 @@ mod success {
 
         assert_eq!(
             0,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             0,
@@ -124,7 +140,11 @@ mod success {
 
         assert_eq!(
             defaults.target_amount,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             1,
@@ -172,7 +192,11 @@ mod success {
 
         assert_eq!(
             1,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             1,
@@ -224,11 +248,19 @@ mod success {
 
         assert_eq!(
             0,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             0,
-            campaign_info(&author.contract, 2).await.value.total_pledge
+            campaign_info(&author.contract, 2)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             0,
@@ -245,11 +277,19 @@ mod success {
         assert_eq!(defaults.target_amount, asset_info2.value.unwrap().amount);
         assert_eq!(
             defaults.target_amount,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             defaults.target_amount,
-            campaign_info(&author.contract, 2).await.value.total_pledge
+            campaign_info(&author.contract, 2)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             2,
@@ -331,11 +371,19 @@ mod success {
         assert_eq!(0, asset_info2.value.unwrap().amount);
         assert_eq!(
             0,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             0,
-            campaign_info(&author.contract, 2).await.value.total_pledge
+            campaign_info(&author.contract, 2)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             2,
@@ -381,7 +429,11 @@ mod success {
 
         assert_eq!(
             0,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
 
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
@@ -391,7 +443,11 @@ mod success {
         assert_eq!(defaults.target_amount, asset_info.value.unwrap().amount);
         assert_eq!(
             defaults.target_amount,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             0,
@@ -434,7 +490,11 @@ mod success {
         assert_eq!(0, asset_info.value.unwrap().amount);
         assert_eq!(
             0,
-            campaign_info(&author.contract, 1).await.value.total_pledge
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .total_pledge
         );
         assert_eq!(
             defaults.target_amount,

@@ -150,7 +150,7 @@ abi Info {
     ///
     /// * When the `id` is either 0 or greater than the total number of campaigns created
     #[storage(read)]
-    fn campaign_info(id: u64) -> CampaignInfo;
+    fn campaign_info(id: u64) -> Option<CampaignInfo>;
 
     /// Returns information about the specified pledge for the user
     ///

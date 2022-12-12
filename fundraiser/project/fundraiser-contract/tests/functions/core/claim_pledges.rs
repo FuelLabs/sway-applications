@@ -58,7 +58,11 @@ mod success {
                 .unwrap()
         );
         assert!(matches!(
-            campaign_info(&author.contract, 1).await.value.state,
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .state,
             State::Claimed()
         ));
     }

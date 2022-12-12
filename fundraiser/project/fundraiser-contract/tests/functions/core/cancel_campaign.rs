@@ -25,7 +25,11 @@ mod success {
         .await;
 
         assert!(matches!(
-            campaign_info(&author.contract, 1).await.value.state,
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .state,
             State::Funding()
         ));
 
@@ -37,7 +41,11 @@ mod success {
 
         assert_eq!(*event, CancelledCampaignEvent { id: 1 });
         assert!(matches!(
-            campaign_info(&author.contract, 1).await.value.state,
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .state,
             State::Cancelled()
         ));
     }
@@ -64,11 +72,19 @@ mod success {
         .await;
 
         assert!(matches!(
-            campaign_info(&author.contract, 1).await.value.state,
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .state,
             State::Funding()
         ));
         assert!(matches!(
-            campaign_info(&author.contract, 2).await.value.state,
+            campaign_info(&author.contract, 2)
+                .await
+                .value
+                .unwrap()
+                .state,
             State::Funding()
         ));
 
@@ -88,11 +104,19 @@ mod success {
         assert_eq!(*event2, CancelledCampaignEvent { id: 2 });
 
         assert!(matches!(
-            campaign_info(&author.contract, 1).await.value.state,
+            campaign_info(&author.contract, 1)
+                .await
+                .value
+                .unwrap()
+                .state,
             State::Cancelled()
         ));
         assert!(matches!(
-            campaign_info(&author.contract, 2).await.value.state,
+            campaign_info(&author.contract, 2)
+                .await
+                .value
+                .unwrap()
+                .state,
             State::Cancelled()
         ));
     }
