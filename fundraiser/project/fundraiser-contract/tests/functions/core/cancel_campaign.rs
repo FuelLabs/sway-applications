@@ -27,16 +27,16 @@ mod success {
         ));
 
         let response = cancel_campaign(&author.contract, 1).await;
-
-        let log = response.get_logs_with_type::<CancelledCampaignEvent>().unwrap();
+        let log = response
+            .get_logs_with_type::<CancelledCampaignEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
+        assert_eq!(*event, CancelledCampaignEvent { id: 1 });
         assert!(matches!(
             campaign_info(&author.contract, 1).await.value.state,
             State::Cancelled()
         ));
-
-        assert_eq!(*event, CancelledCampaignEvent { id: 1 });
     }
 
     #[tokio::test]
@@ -69,13 +69,25 @@ mod success {
             State::Funding()
         ));
 
-        cancel_campaign(&author.contract, 1).await;
+        let response_one = cancel_campaign(&author.contract, 1).await;
+        let response_two = cancel_campaign(&author.contract, 2).await;
+
+        let log_one = response_one
+            .get_logs_with_type::<CancelledCampaignEvent>()
+            .unwrap();
+        let log_two = response_two
+            .get_logs_with_type::<CancelledCampaignEvent>()
+            .unwrap();
+        let event_one = log_one.get(0).unwrap();
+        let event_two = log_two.get(0).unwrap();
+
+        assert_eq!(*event_one, CancelledCampaignEvent { id: 1 });
+        assert_eq!(*event_two, CancelledCampaignEvent { id: 2 });
+
         assert!(matches!(
             campaign_info(&author.contract, 1).await.value.state,
             State::Cancelled()
         ));
-
-        cancel_campaign(&author.contract, 2).await;
         assert!(matches!(
             campaign_info(&author.contract, 2).await.value.state,
             State::Cancelled()
