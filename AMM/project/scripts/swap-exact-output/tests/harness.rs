@@ -52,35 +52,189 @@ async fn setup() -> (
     (wallet, amm, asset_ids, transaction_parameters)
 }
 
-#[tokio::test]
-async fn can_swap_exact_output_along_route() {
-    let (wallet, amm, asset_ids, transaction_parameters) = setup().await;
+mod success {
+    use super::*;
 
-    let route = asset_ids;
-    let script_instance =
-        SwapExactOutputScript::new(wallet.clone(), SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
-    let input_amount: u64 = 10_000;
+    #[tokio::test]
+    async fn can_swap_exact_output_along_route() {
+        let (wallet, amm, asset_ids, transaction_parameters) = setup().await;
 
-    let amounts = expected_swap_amounts(&amm, input_amount, &route).await;
-    let expected_result = amounts[0];
+        let route = asset_ids;
+        let script_instance =
+            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
+        let output_amount: u64 = 10_000;
 
-    let result = script_instance
-        .main(
-            amm.id,
-            route
-                .clone()
-                .into_iter()
-                .map(|asset_id| ContractId::new(*asset_id))
-                .collect(),
-            amounts,
-        )
-        .with_inputs(transaction_parameters.inputs)
-        .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(100_000_000), None))
-        .call()
-        .await
-        .unwrap()
-        .value;
+        let amounts = expected_swap_amounts(&amm, output_amount, &route).await;
+        let expected_result = amounts[0];
 
-    assert_eq!(expected_result, result);
+        let result = script_instance
+            .main(
+                amm.id,
+                route
+                    .into_iter()
+                    .map(|asset_id| ContractId::new(*asset_id))
+                    .collect(),
+                amounts,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert_eq!(expected_result, result);
+    }
+
+    #[tokio::test]
+    async fn can_swap_exact_output_two_assets() {
+        let (wallet, amm, asset_ids, transaction_parameters) = setup().await;
+
+        // route consists of two assets. this is a direct swap
+        let route = vec![*asset_ids.get(0).unwrap(), *asset_ids.get(1).unwrap()];
+        let script_instance =
+            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
+        let output_amount: u64 = 10_000;
+
+        let amounts = expected_swap_amounts(&amm, output_amount, &route).await;
+        let expected_result = amounts[0];
+
+        let result = script_instance
+            .main(
+                amm.id,
+                route
+                    .into_iter()
+                    .map(|asset_id| ContractId::new(*asset_id))
+                    .collect(),
+                amounts,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert_eq!(expected_result, result);
+    }
+}
+
+mod revert {
+    use super::*;
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
+    async fn when_route_length_is_zero() {
+        let (wallet, amm, _asset_ids, _transaction_parameters) = setup().await;
+
+        // route length is zero
+        let route: Vec<AssetId> = vec![];
+        let amounts: Vec<u64> = vec![];
+        let script_instance =
+            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
+
+        let _result = script_instance
+            .main(
+                amm.id,
+                route
+                    .into_iter()
+                    .map(|asset_id| ContractId::new(*asset_id))
+                    .collect(),
+                amounts,
+            )
+            .call()
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
+    async fn when_route_length_is_one() {
+        let (wallet, amm, asset_ids, _transaction_parameters) = setup().await;
+
+        // route length is one
+        let route: Vec<AssetId> = vec![*asset_ids.get(0).unwrap()];
+        let amounts: Vec<u64> = vec![60];
+        let script_instance =
+            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
+
+        script_instance
+            .main(
+                amm.id,
+                route
+                    .into_iter()
+                    .map(|asset_id| ContractId::new(*asset_id))
+                    .collect(),
+                amounts,
+            )
+            .call()
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
+    async fn when_swap_amounts_not_exact() {
+        let (wallet, amm, asset_ids, transaction_parameters) = setup().await;
+
+        let route = asset_ids;
+        let script_instance =
+            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
+        let output_amount: u64 = 10_000;
+
+        let mut amounts = expected_swap_amounts(&amm, output_amount, &route).await;
+
+        // amounts is missing an element
+        amounts.remove(amounts.len() - 1);
+
+        script_instance
+            .main(
+                amm.id,
+                route
+                    .into_iter()
+                    .map(|asset_id| ContractId::new(*asset_id))
+                    .collect(),
+                amounts,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .call()
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
+    async fn when_pair_exchange_not_registered() {
+        let (wallet, amm, asset_ids, transaction_parameters) = setup().await;
+
+        let mut route = asset_ids;
+        let script_instance =
+            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
+        let output_amount: u64 = 10_000;
+
+        let amounts = expected_swap_amounts(&amm, output_amount, &route).await;
+
+        // make sure that the first asset in the route does not have a pool
+        let not_registered_asset_id = AssetId::from([1u8; 32]);
+        route.remove(route.len() - 1);
+        route.push(not_registered_asset_id);
+
+        script_instance
+            .main(
+                amm.id,
+                route
+                    .into_iter()
+                    .map(|asset_id| ContractId::new(*asset_id))
+                    .collect(),
+                amounts,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .call()
+            .await
+            .unwrap();
+    }
 }

@@ -3,6 +3,11 @@ script;
 use libraries::{AMM, Exchange};
 use std::block::height;
 
+enum InputError {
+    RouteTooShort: (),
+    SwapAmountsNotExact: (),
+}
+
 enum SwapError {
     PairExchangeNotRegistered: (ContractId, ContractId),
 }
@@ -12,7 +17,8 @@ fn main(
     assets: Vec<ContractId>,
     amounts: Vec<u64>,
 ) -> u64 {
-    assert(assets.len() >= 2);
+    require(assets.len() >= 2, InputError::RouteTooShort);
+    require(amounts.len() == assets.len(), InputError::SwapAmountsNotExact);
 
     let amm_contract = abi(AMM, amm_contract_address.into());
 

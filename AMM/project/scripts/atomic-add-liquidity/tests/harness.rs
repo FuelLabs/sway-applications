@@ -58,7 +58,7 @@ async fn setup(
         setup_wallet_and_provider(&WalletAssetConfiguration::default()).await;
 
     let exchange = deploy_and_construct_exchange(
-        &wallet.clone(),
+        &wallet,
         &ExchangeContractConfiguration::new(Some((asset_ids[0], asset_ids[1])), None, None, None),
     )
     .await;
@@ -78,263 +78,306 @@ async fn setup(
     (wallet, exchange, transaction_parameters)
 }
 
-#[tokio::test]
-async fn adds_initial_liquidity_with_equal_deposit_amounts() {
-    let liquidity_parameters = LiquidityParameters::new(Some((1000, 1000)), Some(1000), Some(1000));
+mod success {
+    use super::*;
 
-    let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
+    #[tokio::test]
+    async fn adds_initial_liquidity_with_equal_deposit_amounts() {
+        let liquidity_parameters =
+            LiquidityParameters::new(Some((1000, 1000)), Some(1000), Some(1000));
 
-    let script_instance =
-        AtomicAddLiquidityScript::new(wallet.clone(), ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
+        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
 
-    let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
+        let script_instance =
+            AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
 
-    let liquidity = script_instance
-        .main(
-            exchange.id,
-            (
-                ContractId::new(*exchange.pair.0),
-                ContractId::new(*exchange.pair.1),
-            ),
-            (
-                liquidity_parameters.amounts.0,
-                liquidity_parameters.amounts.1,
-            ),
-            expected_liquidity,
-        )
-        .with_inputs(transaction_parameters.inputs)
-        .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(100_000_000), None))
-        .call()
-        .await
-        .unwrap()
-        .value;
+        let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
 
-    assert_eq!(expected_liquidity, liquidity);
+        let liquidity = script_instance
+            .main(
+                exchange.id,
+                (
+                    ContractId::new(*exchange.pair.0),
+                    ContractId::new(*exchange.pair.1),
+                ),
+                (
+                    liquidity_parameters.amounts.0,
+                    liquidity_parameters.amounts.1,
+                ),
+                expected_liquidity,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert_eq!(expected_liquidity, liquidity);
+    }
+
+    #[tokio::test]
+    async fn adds_initial_liquidity_to_make_a_more_valuable() {
+        let liquidity_parameters =
+            LiquidityParameters::new(Some((1000, 2000)), Some(1000), Some(1000));
+
+        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
+
+        let script_instance =
+            AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
+
+        let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
+
+        let liquidity = script_instance
+            .main(
+                exchange.id,
+                (
+                    ContractId::new(*exchange.pair.0),
+                    ContractId::new(*exchange.pair.1),
+                ),
+                (
+                    liquidity_parameters.amounts.0,
+                    liquidity_parameters.amounts.1,
+                ),
+                expected_liquidity,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert_eq!(expected_liquidity, liquidity);
+    }
+
+    #[tokio::test]
+    async fn adds_initial_liquidity_to_make_b_more_valuable() {
+        let liquidity_parameters =
+            LiquidityParameters::new(Some((2000, 1000)), Some(1000), Some(1000));
+
+        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
+
+        let script_instance =
+            AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
+
+        let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
+
+        let liquidity = script_instance
+            .main(
+                exchange.id,
+                (
+                    ContractId::new(*exchange.pair.0),
+                    ContractId::new(*exchange.pair.1),
+                ),
+                (
+                    liquidity_parameters.amounts.0,
+                    liquidity_parameters.amounts.1,
+                ),
+                expected_liquidity,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert_eq!(expected_liquidity, liquidity);
+    }
+
+    #[tokio::test]
+    async fn adds_further_liquidity_without_extra_deposit_when_a_is_more_valuable() {
+        let initial_liquidity_parameters =
+            LiquidityParameters::new(Some((1000, 4000)), Some(1000), Some(2000));
+
+        let liquidity_parameters = LiquidityParameters::new(Some((50, 200)), Some(1000), Some(100));
+
+        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
+        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
+
+        let script_instance =
+            AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
+
+        let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
+
+        let liquidity = script_instance
+            .main(
+                exchange.id,
+                (
+                    ContractId::new(*exchange.pair.0),
+                    ContractId::new(*exchange.pair.1),
+                ),
+                (
+                    liquidity_parameters.amounts.0,
+                    liquidity_parameters.amounts.1,
+                ),
+                expected_liquidity,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert_eq!(expected_liquidity, liquidity);
+    }
+
+    #[tokio::test]
+    async fn adds_further_liquidity_with_extra_a_deposit_when_a_is_more_valuable() {
+        let initial_liquidity_parameters =
+            LiquidityParameters::new(Some((1000, 4000)), Some(1000), Some(2000));
+
+        let liquidity_parameters =
+            LiquidityParameters::new(Some((200, 200)), Some(1000), Some(100));
+
+        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
+        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
+
+        let script_instance =
+            AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
+
+        let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
+
+        let liquidity = script_instance
+            .main(
+                exchange.id,
+                (
+                    ContractId::new(*exchange.pair.0),
+                    ContractId::new(*exchange.pair.1),
+                ),
+                (
+                    liquidity_parameters.amounts.0,
+                    liquidity_parameters.amounts.1,
+                ),
+                expected_liquidity,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert_eq!(expected_liquidity, liquidity);
+    }
+
+    #[tokio::test]
+    async fn adds_further_liquidity_without_extra_deposit_when_b_is_more_valuable() {
+        let initial_liquidity_parameters =
+            LiquidityParameters::new(Some((4000, 1000)), Some(1000), Some(2000));
+
+        let liquidity_parameters = LiquidityParameters::new(Some((400, 50)), Some(1000), Some(100));
+
+        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
+        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
+
+        let script_instance =
+            AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
+
+        let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
+
+        let liquidity = script_instance
+            .main(
+                exchange.id,
+                (
+                    ContractId::new(*exchange.pair.0),
+                    ContractId::new(*exchange.pair.1),
+                ),
+                (
+                    liquidity_parameters.amounts.0,
+                    liquidity_parameters.amounts.1,
+                ),
+                expected_liquidity,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert_eq!(expected_liquidity, liquidity);
+    }
+
+    #[tokio::test]
+    async fn adds_further_liquidity_with_extra_a_deposit_when_b_is_more_valuable() {
+        let initial_liquidity_parameters =
+            LiquidityParameters::new(Some((4000, 1000)), Some(1000), Some(2000));
+
+        let liquidity_parameters = LiquidityParameters::new(Some((200, 50)), Some(1000), Some(100));
+
+        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
+        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
+
+        let script_instance =
+            AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
+
+        let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
+
+        let liquidity = script_instance
+            .main(
+                exchange.id,
+                (
+                    ContractId::new(*exchange.pair.0),
+                    ContractId::new(*exchange.pair.1),
+                ),
+                (
+                    liquidity_parameters.amounts.0,
+                    liquidity_parameters.amounts.1,
+                ),
+                expected_liquidity,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .call()
+            .await
+            .unwrap()
+            .value;
+
+        assert_eq!(expected_liquidity, liquidity);
+    }
 }
 
-#[tokio::test]
-async fn adds_initial_liquidity_to_make_a_more_valuable() {
-    let liquidity_parameters = LiquidityParameters::new(Some((1000, 2000)), Some(1000), Some(1000));
+mod revert {
+    use super::*;
 
-    let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
+    #[tokio::test]
+    #[should_panic(expected = "DesiredLiquidityZero")]
+    async fn when_desired_liquidity_zero() {
+        let liquidity_parameters =
+            LiquidityParameters::new(Some((1000, 1000)), Some(1000), Some(1000));
 
-    let script_instance =
-        AtomicAddLiquidityScript::new(wallet.clone(), ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
+        let (wallet, exchange, _transaction_parameters) = setup(&liquidity_parameters).await;
 
-    let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
+        let script_instance =
+            AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
 
-    let liquidity = script_instance
-        .main(
-            exchange.id,
-            (
-                ContractId::new(*exchange.pair.0),
-                ContractId::new(*exchange.pair.1),
-            ),
-            (
-                liquidity_parameters.amounts.0,
-                liquidity_parameters.amounts.1,
-            ),
-            expected_liquidity,
-        )
-        .with_inputs(transaction_parameters.inputs)
-        .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(100_000_000), None))
-        .call()
-        .await
-        .unwrap()
-        .value;
+        let desired_liquidity = 0;
 
-    assert_eq!(expected_liquidity, liquidity);
-}
-
-#[tokio::test]
-async fn adds_initial_liquidity_to_make_b_more_valuable() {
-    let liquidity_parameters = LiquidityParameters::new(Some((2000, 1000)), Some(1000), Some(1000));
-
-    let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
-
-    let script_instance =
-        AtomicAddLiquidityScript::new(wallet.clone(), ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
-
-    let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
-
-    let liquidity = script_instance
-        .main(
-            exchange.id,
-            (
-                ContractId::new(*exchange.pair.0),
-                ContractId::new(*exchange.pair.1),
-            ),
-            (
-                liquidity_parameters.amounts.0,
-                liquidity_parameters.amounts.1,
-            ),
-            expected_liquidity,
-        )
-        .with_inputs(transaction_parameters.inputs)
-        .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(100_000_000), None))
-        .call()
-        .await
-        .unwrap()
-        .value;
-
-    assert_eq!(expected_liquidity, liquidity);
-}
-
-#[tokio::test]
-async fn adds_further_liquidity_without_extra_deposit_when_a_is_more_valuable() {
-    let initial_liquidity_parameters =
-        LiquidityParameters::new(Some((1000, 4000)), Some(1000), Some(2000));
-
-    let liquidity_parameters = LiquidityParameters::new(Some((50, 200)), Some(1000), Some(100));
-
-    let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
-    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
-
-    let script_instance =
-        AtomicAddLiquidityScript::new(wallet.clone(), ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
-
-    let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
-
-    let liquidity = script_instance
-        .main(
-            exchange.id,
-            (
-                ContractId::new(*exchange.pair.0),
-                ContractId::new(*exchange.pair.1),
-            ),
-            (
-                liquidity_parameters.amounts.0,
-                liquidity_parameters.amounts.1,
-            ),
-            expected_liquidity,
-        )
-        .with_inputs(transaction_parameters.inputs)
-        .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(100_000_000), None))
-        .call()
-        .await
-        .unwrap()
-        .value;
-
-    assert_eq!(expected_liquidity, liquidity);
-}
-
-#[tokio::test]
-async fn adds_further_liquidity_with_extra_a_deposit_when_a_is_more_valuable() {
-    let initial_liquidity_parameters =
-        LiquidityParameters::new(Some((1000, 4000)), Some(1000), Some(2000));
-
-    let liquidity_parameters = LiquidityParameters::new(Some((200, 200)), Some(1000), Some(100));
-
-    let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
-    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
-
-    let script_instance =
-        AtomicAddLiquidityScript::new(wallet.clone(), ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
-
-    let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
-
-    let liquidity = script_instance
-        .main(
-            exchange.id,
-            (
-                ContractId::new(*exchange.pair.0),
-                ContractId::new(*exchange.pair.1),
-            ),
-            (
-                liquidity_parameters.amounts.0,
-                liquidity_parameters.amounts.1,
-            ),
-            expected_liquidity,
-        )
-        .with_inputs(transaction_parameters.inputs)
-        .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(100_000_000), None))
-        .call()
-        .await
-        .unwrap()
-        .value;
-
-    assert_eq!(expected_liquidity, liquidity);
-}
-
-#[tokio::test]
-async fn adds_further_liquidity_without_extra_deposit_when_b_is_more_valuable() {
-    let initial_liquidity_parameters =
-        LiquidityParameters::new(Some((4000, 1000)), Some(1000), Some(2000));
-
-    let liquidity_parameters = LiquidityParameters::new(Some((400, 50)), Some(1000), Some(100));
-
-    let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
-    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
-
-    let script_instance =
-        AtomicAddLiquidityScript::new(wallet.clone(), ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
-
-    let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
-
-    let liquidity = script_instance
-        .main(
-            exchange.id,
-            (
-                ContractId::new(*exchange.pair.0),
-                ContractId::new(*exchange.pair.1),
-            ),
-            (
-                liquidity_parameters.amounts.0,
-                liquidity_parameters.amounts.1,
-            ),
-            expected_liquidity,
-        )
-        .with_inputs(transaction_parameters.inputs)
-        .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(100_000_000), None))
-        .call()
-        .await
-        .unwrap()
-        .value;
-
-    assert_eq!(expected_liquidity, liquidity);
-}
-
-#[tokio::test]
-async fn adds_further_liquidity_with_extra_a_deposit_when_b_is_more_valuable() {
-    let initial_liquidity_parameters =
-        LiquidityParameters::new(Some((4000, 1000)), Some(1000), Some(2000));
-
-    let liquidity_parameters = LiquidityParameters::new(Some((200, 50)), Some(1000), Some(100));
-
-    let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
-    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
-
-    let script_instance =
-        AtomicAddLiquidityScript::new(wallet.clone(), ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
-
-    let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
-
-    let liquidity = script_instance
-        .main(
-            exchange.id,
-            (
-                ContractId::new(*exchange.pair.0),
-                ContractId::new(*exchange.pair.1),
-            ),
-            (
-                liquidity_parameters.amounts.0,
-                liquidity_parameters.amounts.1,
-            ),
-            expected_liquidity,
-        )
-        .with_inputs(transaction_parameters.inputs)
-        .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(100_000_000), None))
-        .call()
-        .await
-        .unwrap()
-        .value;
-
-    assert_eq!(expected_liquidity, liquidity);
+        script_instance
+            .main(
+                exchange.id,
+                (
+                    ContractId::new(*exchange.pair.0),
+                    ContractId::new(*exchange.pair.1),
+                ),
+                (
+                    liquidity_parameters.amounts.0,
+                    liquidity_parameters.amounts.1,
+                ),
+                desired_liquidity,
+            )
+            .call()
+            .await
+            .unwrap();
+    }
 }

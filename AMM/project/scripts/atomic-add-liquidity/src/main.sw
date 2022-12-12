@@ -3,12 +3,18 @@ script;
 use libraries::Exchange;
 use std::block::height;
 
+enum InputError {
+    DesiredLiquidityZero: (),
+}
+
 fn main(
     exchange_contract_id: ContractId,
     assets: (ContractId, ContractId),
     deposit_amounts: (u64, u64),
     desired_liquidity: u64,
 ) -> u64 {
+    require(desired_liquidity > 0, InputError::DesiredLiquidityZero);
+
     let exchange_contract = abi(Exchange, exchange_contract_id.into());
 
     // deposit first asset
