@@ -72,20 +72,20 @@ mod success {
             State::Funding()
         ));
 
-        let response_one = cancel_campaign(&author.contract, 1).await;
-        let response_two = cancel_campaign(&author.contract, 2).await;
+        let response1 = cancel_campaign(&author.contract, 1).await;
+        let response2 = cancel_campaign(&author.contract, 2).await;
 
-        let log_one = response_one
+        let log1 = response1
             .get_logs_with_type::<CancelledCampaignEvent>()
             .unwrap();
-        let log_two = response_two
+        let log2 = response2
             .get_logs_with_type::<CancelledCampaignEvent>()
             .unwrap();
-        let event_one = log_one.get(0).unwrap();
-        let event_two = log_two.get(0).unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
 
-        assert_eq!(*event_one, CancelledCampaignEvent { id: 1 });
-        assert_eq!(*event_two, CancelledCampaignEvent { id: 2 });
+        assert_eq!(*event1, CancelledCampaignEvent { id: 1 });
+        assert_eq!(*event2, CancelledCampaignEvent { id: 2 });
 
         assert!(matches!(
             campaign_info(&author.contract, 1).await.value.state,

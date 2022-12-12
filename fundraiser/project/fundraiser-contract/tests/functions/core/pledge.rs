@@ -8,7 +8,7 @@ mod success {
     use super::*;
     use crate::utils::{
         interface::info::{asset_info_by_count, campaign_info, pledge_count, pledged},
-        setup::{identity, PledgedEvent},
+        setup::{identity, AssetInfo, PledgedEvent},
     };
     use fuels::tx::AssetId;
 
@@ -17,8 +17,7 @@ mod success {
         let (author, user, asset, _, defaults) = setup().await;
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
-        assert_eq!(0, asset_info.value.amount);
-        assert_eq!(false, asset_info.value.exists);
+        assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
 
         mint(
             &asset.contract,
@@ -74,8 +73,7 @@ mod success {
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
 
-        assert_eq!(defaults.target_amount, asset_info.value.amount);
-        assert_eq!(true, asset_info.value.exists);
+        assert_eq!(defaults.target_amount, asset_info.value.unwrap().amount);
         assert_eq!(
             defaults.target_amount,
             campaign_info(&author.contract, 1).await.value.total_pledge
@@ -98,8 +96,7 @@ mod success {
         let (author, user, asset, _, defaults) = setup().await;
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
-        assert_eq!(0, asset_info.value.amount);
-        assert_eq!(false, asset_info.value.exists);
+        assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
 
         mint(
             &asset.contract,
@@ -132,7 +129,7 @@ mod success {
                 .unwrap()
         );
 
-        let response_one = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+        let response1 = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         assert_eq!(
             defaults.target_amount,
             user.wallet
@@ -141,7 +138,7 @@ mod success {
                 .unwrap()
         );
 
-        let log = response_one.get_logs_with_type::<PledgedEvent>().unwrap();
+        let log = response1.get_logs_with_type::<PledgedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -155,8 +152,7 @@ mod success {
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
 
-        assert_eq!(defaults.target_amount, asset_info.value.amount);
-        assert_eq!(true, asset_info.value.exists);
+        assert_eq!(defaults.target_amount, asset_info.value.unwrap().amount);
         assert_eq!(
             defaults.target_amount,
             campaign_info(&author.contract, 1).await.value.total_pledge
@@ -173,7 +169,7 @@ mod success {
         assert_eq!(1, info.id);
         assert_eq!(defaults.target_amount, info.amount);
 
-        let response_two = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+        let response2 = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         assert_eq!(
             0,
             user.wallet
@@ -182,7 +178,7 @@ mod success {
                 .unwrap()
         );
 
-        let log = response_two.get_logs_with_type::<PledgedEvent>().unwrap();
+        let log = response2.get_logs_with_type::<PledgedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -196,8 +192,7 @@ mod success {
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
 
-        assert_eq!(defaults.target_amount * 2, asset_info.value.amount);
-        assert_eq!(true, asset_info.value.exists);
+        assert_eq!(defaults.target_amount * 2, asset_info.value.unwrap().amount);
         assert_eq!(
             defaults.target_amount * 2,
             campaign_info(&author.contract, 1).await.value.total_pledge
@@ -223,10 +218,8 @@ mod success {
         let asset_info1 = asset_info_by_count(&author.contract, 1).await;
         let asset_info2 = asset_info_by_count(&author.contract, 2).await;
 
-        assert_eq!(0, asset_info1.value.amount);
-        assert_eq!(0, asset_info2.value.amount);
-        assert_eq!(false, asset_info1.value.exists);
-        assert_eq!(false, asset_info2.value.exists);
+        assert!(matches!(asset_info1.value, Option::<AssetInfo>::None));
+        assert!(matches!(asset_info2.value, Option::<AssetInfo>::None));
 
         mint(
             &asset.contract,
@@ -286,16 +279,16 @@ mod success {
                 .unwrap()
         );
 
-        let response_one = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
-        let response_two = pledge(&user.contract, 2, &asset2, defaults.target_amount).await;
+        let response1 = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
+        let response2 = pledge(&user.contract, 2, &asset2, defaults.target_amount).await;
 
-        let log_one = response_one.get_logs_with_type::<PledgedEvent>().unwrap();
-        let log_two = response_two.get_logs_with_type::<PledgedEvent>().unwrap();
-        let event_one = log_one.get(0).unwrap();
-        let event_two = log_two.get(0).unwrap();
+        let log1 = response1.get_logs_with_type::<PledgedEvent>().unwrap();
+        let log2 = response2.get_logs_with_type::<PledgedEvent>().unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
 
         assert_eq!(
-            *event_one,
+            *event1,
             PledgedEvent {
                 amount: defaults.target_amount,
                 id: 1,
@@ -303,7 +296,7 @@ mod success {
             }
         );
         assert_eq!(
-            *event_two,
+            *event2,
             PledgedEvent {
                 amount: defaults.target_amount,
                 id: 2,
@@ -329,11 +322,8 @@ mod success {
         let asset_info1 = asset_info_by_count(&author.contract, 1).await;
         let asset_info2 = asset_info_by_count(&author.contract, 2).await;
 
-        assert_eq!(defaults.target_amount, asset_info1.value.amount);
-        assert_eq!(defaults.target_amount, asset_info2.value.amount);
-        assert_eq!(true, asset_info1.value.exists);
-        assert_eq!(true, asset_info2.value.exists);
-
+        assert_eq!(defaults.target_amount, asset_info1.value.unwrap().amount);
+        assert_eq!(defaults.target_amount, asset_info2.value.unwrap().amount);
         assert_eq!(
             defaults.target_amount,
             campaign_info(&author.contract, 1).await.value.total_pledge

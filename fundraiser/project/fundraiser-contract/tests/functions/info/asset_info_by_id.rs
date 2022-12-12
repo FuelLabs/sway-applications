@@ -5,7 +5,7 @@ mod success {
             core::{create_campaign, pledge},
             info::asset_info_by_id,
         },
-        setup::{mint, setup},
+        setup::{mint, setup, AssetInfo},
     };
 
     #[tokio::test]
@@ -13,8 +13,7 @@ mod success {
         let (author, _, _, _, defaults) = setup().await;
 
         let asset_info = asset_info_by_id(&author.contract, &defaults.asset_id).await;
-        assert_eq!(0, asset_info.value.amount);
-        assert_eq!(false, asset_info.value.exists);
+        assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
     }
 
     #[tokio::test]
@@ -22,8 +21,7 @@ mod success {
         let (author, user, asset, _, defaults) = setup().await;
 
         let asset_info = asset_info_by_id(&author.contract, &defaults.asset_id).await;
-        assert_eq!(0, asset_info.value.amount);
-        assert_eq!(false, asset_info.value.exists);
+        assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
 
         mint(
             &asset.contract,
@@ -42,7 +40,6 @@ mod success {
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
         let asset_info = asset_info_by_id(&author.contract, &defaults.asset_id).await;
-        assert_eq!(defaults.target_amount, asset_info.value.amount);
-        assert_eq!(true, asset_info.value.exists);
+        assert_eq!(defaults.target_amount, asset_info.value.unwrap().amount);
     }
 }

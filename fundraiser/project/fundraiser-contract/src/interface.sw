@@ -1,8 +1,14 @@
 library interface;
 
-dep data_structures;
+dep data_structures/asset_info;
+dep data_structures/campaign_info;
+dep data_structures/campaign;
+dep data_structures/pledge;
 
-use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
+use asset_info::AssetInfo;
+use campaign_info::CampaignInfo;
+use campaign::Campaign;
+use pledge::Pledge;
 
 abi Fundraiser {
     /// Marks a campaign as cancelled preventing further pledges or a claim to be made
@@ -108,7 +114,7 @@ abi Info {
     ///
     /// * `asset` - Uniquie identifier that identifies the asset
     #[storage(read)]
-    fn asset_info_by_id(asset: ContractId) -> AssetInfo;
+    fn asset_info_by_id(asset: ContractId) -> Option<AssetInfo>;
 
     /// Returns information about the specificed asset, specifically if it has been added and the
     /// pledged amount
@@ -120,7 +126,7 @@ abi Info {
     ///
     /// * `index` - Number from 1...asset_count
     #[storage(read)]
-    fn asset_info_by_count(index: u64) -> AssetInfo;
+    fn asset_info_by_count(index: u64) -> Option<AssetInfo>;
 
     /// Returns information about the specified campaign for the campaign author
     ///

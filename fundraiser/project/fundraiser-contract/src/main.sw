@@ -1,12 +1,18 @@
 contract;
 
-dep data_structures;
+dep data_structures/asset_info;
+dep data_structures/campaign_info;
+dep data_structures/campaign;
+dep data_structures/pledge;
+dep data_structures/state;
 dep errors;
 dep events;
 dep interface;
 dep utils;
 
-use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge, State};
+use asset_info::AssetInfo;
+use campaign_info::CampaignInfo;
+use campaign::Campaign;
 use errors::{CampaignError, CreationError, UserError};
 use events::{
     CancelledCampaignEvent,
@@ -15,6 +21,8 @@ use events::{
     PledgedEvent,
     UnpledgedEvent,
 };
+use pledge::Pledge;
+use state::State;
 use std::{
     auth::msg_sender,
     block::height,
@@ -30,7 +38,7 @@ storage {
     /// Total number of unique assets used across all campaigns
     asset_count: u64 = 0,
     /// Direct look-up for asset data if the user wants to check via a known ID
-    asset_info: StorageMap<ContractId, AssetInfo> = StorageMap {},
+    asset_info: StorageMap<ContractId, Option<AssetInfo>> = StorageMap {},
     /// O(1) look-up to allow searching via asset_count
     /// Map(1...asset_count => asset)
     asset_index: StorageMap<u64, ContractId> = StorageMap {},
@@ -145,12 +153,9 @@ impl Fundraiser for Contract {
 
         // Keep track of new assets
         let mut asset_info = storage.asset_info.get(asset);
-        if !asset_info.exists {
-            // New asset so mark it as existing
-            asset_info.exists = true;
-
+        if asset_info.is_none() {
             // Update storage for new asset
-            storage.asset_info.insert(asset, asset_info);
+            storage.asset_info.insert(asset, Option::Some(AssetInfo::new(0)));
 
             // Increment asset count to keep track of new total
             storage.asset_count += 1;
@@ -243,11 +248,11 @@ impl Fundraiser for Contract {
         storage.campaign_info.insert(id, campaign_info);
 
         // Update the asset amount to track the addition of the new pledge
-        let mut asset_info = storage.asset_info.get(campaign_info.asset);
+        let mut asset_info = storage.asset_info.get(campaign_info.asset).unwrap();
         asset_info.amount += msg_amount();
 
         // Update asset state
-        storage.asset_info.insert(campaign_info.asset, asset_info);
+        storage.asset_info.insert(campaign_info.asset, Option::Some(asset_info));
 
         // We have updated the state of a campaign therefore we must log it
         log(PledgedEvent {
@@ -302,11 +307,11 @@ impl Fundraiser for Contract {
         storage.campaign_info.insert(id, campaign_info);
 
         // Update the asset amount to track the removal of the amount
-        let mut asset_info = storage.asset_info.get(campaign_info.asset);
+        let mut asset_info = storage.asset_info.get(campaign_info.asset).unwrap();
         asset_info.amount -= amount;
 
         // Update asset state
-        storage.asset_info.insert(campaign_info.asset, asset_info);
+        storage.asset_info.insert(campaign_info.asset, Option::Some(asset_info));
 
         // Transfer back the amount the user has unpledged
         transfer(amount, campaign_info.asset, user);
@@ -327,12 +332,12 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn asset_info_by_id(asset: ContractId) -> AssetInfo {
+    fn asset_info_by_id(asset: ContractId) -> Option<AssetInfo> {
         storage.asset_info.get(asset)
     }
 
     #[storage(read)]
-    fn asset_info_by_count(index: u64) -> AssetInfo {
+    fn asset_info_by_count(index: u64) -> Option<AssetInfo> {
         storage.asset_info.get(storage.asset_index.get(index))
     }
 

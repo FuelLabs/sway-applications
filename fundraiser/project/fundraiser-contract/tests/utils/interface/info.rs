@@ -9,7 +9,7 @@ pub async fn asset_count(contract: &Fundraiser) -> u64 {
 pub async fn asset_info_by_id(
     contract: &Fundraiser,
     asset: &ContractId,
-) -> FuelCallResponse<AssetInfo> {
+) -> FuelCallResponse<Option<AssetInfo>> {
     contract
         .methods()
         .asset_info_by_id(*asset)
@@ -18,7 +18,10 @@ pub async fn asset_info_by_id(
         .unwrap()
 }
 
-pub async fn asset_info_by_count(contract: &Fundraiser, id: u64) -> FuelCallResponse<AssetInfo> {
+pub async fn asset_info_by_count(
+    contract: &Fundraiser,
+    id: u64,
+) -> FuelCallResponse<Option<AssetInfo>> {
     contract
         .methods()
         .asset_info_by_count(id)
