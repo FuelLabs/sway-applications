@@ -8,7 +8,7 @@ mod success {
     use super::*;
     use crate::utils::{
         interface::info::campaign_info,
-        setup::{identity, State},
+        setup::{identity, ClaimedEvent, State},
     };
     use fuels::tx::AssetId;
 
@@ -44,7 +44,11 @@ mod success {
                 .unwrap()
         );
 
-        claim_pledges(&author.contract, 1).await;
+        let response = claim_pledges(&author.contract, 1).await;
+        let log = response.get_logs_with_type::<ClaimedEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(*event, ClaimedEvent { id: 1 });
         assert_eq!(
             defaults.target_amount,
             author

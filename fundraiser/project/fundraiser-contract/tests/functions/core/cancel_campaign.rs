@@ -1,12 +1,15 @@
 use crate::utils::{
     interface::core::{cancel_campaign, create_campaign},
-    setup::{setup, CancelledCampaignEvent},
+    setup::setup,
 };
 
 mod success {
 
     use super::*;
-    use crate::utils::{interface::info::campaign_info, setup::State};
+    use crate::utils::{
+        interface::info::campaign_info,
+        setup::{CancelledCampaignEvent, State},
+    };
 
     #[tokio::test]
     async fn cancels() {

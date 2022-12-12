@@ -8,7 +8,7 @@ mod success {
     use super::*;
     use crate::utils::{
         interface::info::{asset_info_by_count, campaign_info, pledge_count, pledged},
-        setup::identity,
+        setup::{identity, UnpledgedEvent},
     };
     use fuels::tx::AssetId;
 
@@ -58,7 +58,19 @@ mod success {
                 .unwrap()
         );
 
-        unpledge(&user.contract, 1, defaults.target_amount).await;
+        let response = unpledge(&user.contract, 1, defaults.target_amount).await;
+
+        let log = response.get_logs_with_type::<UnpledgedEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            UnpledgedEvent {
+                amount: defaults.target_amount,
+                id: 1,
+                user: identity(user.wallet.address()).await
+            }
+        );
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
 
@@ -138,13 +150,25 @@ mod success {
                 .unwrap()
         );
 
-        unpledge(&user.contract, 1, defaults.target_amount - 1).await;
+        let response = unpledge(&user.contract, 1, defaults.target_amount - 1).await;
         assert_eq!(
             defaults.target_amount - 1,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
                 .unwrap()
+        );
+
+        let log = response.get_logs_with_type::<UnpledgedEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            UnpledgedEvent {
+                amount: defaults.target_amount - 1,
+                id: 1,
+                user: identity(user.wallet.address()).await
+            }
         );
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
@@ -265,8 +289,30 @@ mod success {
                 .unwrap()
         );
 
-        unpledge(&user.contract, 1, defaults.target_amount).await;
-        unpledge(&user.contract, 2, defaults.target_amount).await;
+        let response_one = unpledge(&user.contract, 1, defaults.target_amount).await;
+        let response_two = unpledge(&user.contract, 2, defaults.target_amount).await;
+
+        let log_one = response_one.get_logs_with_type::<UnpledgedEvent>().unwrap();
+        let log_two = response_two.get_logs_with_type::<UnpledgedEvent>().unwrap();
+        let event_one = log_one.get(0).unwrap();
+        let event_two = log_two.get(0).unwrap();
+
+        assert_eq!(
+            *event_one,
+            UnpledgedEvent {
+                amount: defaults.target_amount,
+                id: 1,
+                user: identity(user.wallet.address()).await
+            }
+        );
+        assert_eq!(
+            *event_two,
+            UnpledgedEvent {
+                amount: defaults.target_amount,
+                id: 2,
+                user: identity(user.wallet.address()).await
+            }
+        );
 
         assert_eq!(
             defaults.target_amount,
@@ -369,13 +415,25 @@ mod success {
                 .unwrap()
         );
 
-        unpledge(&user.contract, 1, defaults.target_amount * 10).await;
+        let response = unpledge(&user.contract, 1, defaults.target_amount * 10).await;
         assert_eq!(
             defaults.target_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
                 .unwrap()
+        );
+
+        let log = response.get_logs_with_type::<UnpledgedEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            UnpledgedEvent {
+                amount: defaults.target_amount,
+                id: 1,
+                user: identity(user.wallet.address()).await
+            }
         );
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
