@@ -19,11 +19,13 @@ impl FractionalNFT for Contract {
     #[storage(read, write)]
     fn deposit(nft: ContractId, owner: Identity, supply: u64, token_id: u64) {
         require(storage.owner.is_none(), "Already initalized error");
-        transfer_nft(nft, Identity::ContractId(contract_id()), token_id);
+
         storage.nft = Option::Some(nft);
         storage.owner = Option::Some(owner);
         storage.supply = supply;
         storage.token_id = token_id;
+
+        transfer_nft(nft, Identity::ContractId(contract_id()), token_id);
         mint_to(supply, msg_sender().unwrap());
     }
 
@@ -52,8 +54,10 @@ impl FractionalNFT for Contract {
     fn withdraw() {
         require(storage.owner.is_some() && msg_sender().unwrap() == storage.owner.unwrap(), "Not NFT owner");
         require(this_balance(contract_id()) == storage.supply, "All tokens not returned");
-        transfer_nft(storage.nft.unwrap(), storage.owner.unwrap(), storage.token_id);
+
         storage.nft = Option::None();
         storage.owner = Option::None();
+
+        transfer_nft(storage.nft.unwrap(), storage.owner.unwrap(), storage.token_id);
     }
 }
