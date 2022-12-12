@@ -339,7 +339,6 @@ impl Info for Contract {
     #[storage(read)]
     fn campaign(id: u64, user: Identity) -> Campaign {
         // TODO: change validated getters to return Result
-
         // Validate the ID to ensure that the user has created the campaign
         validate_id(id, storage.user_campaign_count.get(user));
         storage.campaign_history.get((user, id))
