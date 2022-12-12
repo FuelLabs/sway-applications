@@ -135,6 +135,36 @@
         "type": 0,
         "typeArguments": null
       }
+    },
+    {
+      "inputs": [
+        {
+          "name": "fractional_nft",
+          "type": 6,
+          "typeArguments": null
+        }
+      ],
+      "name": "request_return",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      }
+    },
+    {
+      "inputs": [
+        {
+          "name": "fractional_nft",
+          "type": 6,
+          "typeArguments": null
+        }
+      ],
+      "name": "sell",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      }
     }
   ],
   "loggedTypes": [
@@ -180,6 +210,30 @@
     },
     {
       "logId": 5,
+      "loggedType": {
+        "name": "",
+        "type": 3,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 6,
+      "loggedType": {
+        "name": "",
+        "type": 5,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 7,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 8,
       "loggedType": {
         "name": "",
         "type": 3,
