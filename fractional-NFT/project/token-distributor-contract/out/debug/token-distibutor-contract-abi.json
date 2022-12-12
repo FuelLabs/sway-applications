@@ -142,6 +142,11 @@
           "name": "fractional_nft",
           "type": 6,
           "typeArguments": null
+        },
+        {
+          "name": "token_price",
+          "type": 7,
+          "typeArguments": null
         }
       ],
       "name": "request_return",
@@ -234,6 +239,38 @@
     },
     {
       "logId": 8,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 9,
+      "loggedType": {
+        "name": "",
+        "type": 3,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 10,
+      "loggedType": {
+        "name": "",
+        "type": 5,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 11,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 12,
       "loggedType": {
         "name": "",
         "type": 3,

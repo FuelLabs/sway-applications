@@ -8,7 +8,7 @@ abi TokenDistributor {
     #[storage(read, write)]
     fn purchase(amount: u64, fractional_nft: ContractId);
     #[storage(read, write)]
-    fn request_return(fractional_nft: ContractId);
+    fn request_return(fractional_nft: ContractId, token_price: u64);
     #[storage(read)]
     fn sell(fractional_nft: ContractId);
 }
