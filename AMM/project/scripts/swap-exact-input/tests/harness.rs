@@ -125,7 +125,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RouteTooShort")]
     async fn when_route_length_is_zero() {
         let (wallet, amm, _asset_ids, _transaction_parameters) = setup().await;
 
@@ -150,7 +150,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "RouteTooShort")]
     async fn when_route_length_is_one() {
         let (wallet, amm, asset_ids, _transaction_parameters) = setup().await;
 
@@ -175,7 +175,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "SwapAmountsNotExact")]
     async fn when_swap_amounts_not_exact() {
         let (wallet, amm, asset_ids, transaction_parameters) = setup().await;
 
@@ -207,7 +207,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "PairExchangeNotRegistered")]
     async fn when_pair_exchange_not_registered() {
         let (wallet, amm, asset_ids, transaction_parameters) = setup().await;
 
