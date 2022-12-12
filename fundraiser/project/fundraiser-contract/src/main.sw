@@ -59,7 +59,7 @@ storage {
     /// Record of how much a user has pledged to a specific campaign
     /// Locked after the deadline
     /// Map(Identity => Map(1...pledge_count => Pledge))
-    pledge_history: StorageMap<(Identity, u64), Pledge> = StorageMap {},
+    pledge_history: StorageMap<(Identity, u64), Option<Pledge>> = StorageMap {},
     /// O(1) look-up to prevent iterating over pledge_history
     /// Map(Identity => Map(Campaign ID => Pledge History Index))
     pledge_history_index: StorageMap<(Identity, u64), u64> = StorageMap {},
@@ -220,10 +220,10 @@ impl Fundraiser for Contract {
         if pledge_history_index != 0 {
             // 0 is the sentinel therefore they have pledged to this ID (campaign)
             // increment their previous amount with the current pledge and update their pledge
-            let mut pledge = storage.pledge_history.get((user, pledge_history_index));
+            let mut pledge = storage.pledge_history.get((user, pledge_history_index)).unwrap();
             pledge.amount += msg_amount();
 
-            storage.pledge_history.insert((user, pledge_history_index), pledge);
+            storage.pledge_history.insert((user, pledge_history_index), Option::Some(pledge));
         } else {
             // Pledging to a new campaign
             
@@ -233,7 +233,7 @@ impl Fundraiser for Contract {
             // Store the data structure required to look up the campaign they have pledged to, also
             // track how much they have pledged so that they can withdraw the correct amount.
             // Moreover, this can be used to show the user how much they have pledged to any campaign
-            storage.pledge_history.insert((user, pledge_count + 1), Pledge::new(msg_amount(), id));
+            storage.pledge_history.insert((user, pledge_count + 1), Option::Some(Pledge::new(msg_amount(), id)));
 
             // Since we use the campaign ID to interact with the contract use the ID as a key for
             // a reverse look-up. Value is the 1st pledge (count)
@@ -286,7 +286,7 @@ impl Fundraiser for Contract {
         require(pledge_history_index != 0, UserError::UserHasNotPledged);
 
         // User has pledged therefore retrieve the total that they have pledged
-        let mut pledge = storage.pledge_history.get((user, pledge_history_index));
+        let mut pledge = storage.pledge_history.get((user, pledge_history_index)).unwrap();
         let mut amount = amount; // https://github.com/FuelLabs/sway/issues/3570
         // If the user is attempting to unpledge more than they have pledged then reset the amount
         // they are withdrawing to the maximum that they have pledged to this campaign
@@ -301,7 +301,7 @@ impl Fundraiser for Contract {
         campaign_info.total_pledge -= amount;
 
         // Update the state of their pledge with the new version
-        storage.pledge_history.insert((user, pledge_history_index), pledge);
+        storage.pledge_history.insert((user, pledge_history_index), Option::Some(pledge));
 
         // Update the campaign state with the updated version as well
         storage.campaign_info.insert(id, campaign_info);
@@ -343,7 +343,6 @@ impl Info for Contract {
 
     #[storage(read)]
     fn campaign(id: u64, user: Identity) -> Campaign {
-        // TODO: change validated getters to return Result
         // Validate the ID to ensure that the user has created the campaign
         validate_id(id, storage.user_campaign_count.get(user));
         storage.campaign_history.get((user, id))
@@ -357,9 +356,7 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn pledged(pledge_history_index: u64, user: Identity) -> Pledge {
-        // Validate the ID to ensure that the user has pledged
-        validate_id(pledge_history_index, storage.pledge_count.get(user));
+    fn pledged(pledge_history_index: u64, user: Identity) -> Option<Pledge> {
         storage.pledge_history.get((user, pledge_history_index))
     }
 

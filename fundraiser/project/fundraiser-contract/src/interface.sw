@@ -162,7 +162,7 @@ abi Info {
     ///
     /// * When the `pledge_history_index` is either 0 or greater than the total number of pledges made by the user
     #[storage(read)]
-    fn pledged(pledge_history_index: u64, user: Identity) -> Pledge;
+    fn pledged(pledge_history_index: u64, user: Identity) -> Option<Pledge>;
 
     /// Returns the number of campaigns that the user has pledged to
     ///

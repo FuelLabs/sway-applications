@@ -42,7 +42,11 @@ pub async fn campaign_info(contract: &Fundraiser, id: u64) -> FuelCallResponse<C
     contract.methods().campaign_info(id).call().await.unwrap()
 }
 
-pub async fn pledged(contract: &Fundraiser, id: u64, user: Identity) -> FuelCallResponse<Pledge> {
+pub async fn pledged(
+    contract: &Fundraiser,
+    id: u64,
+    user: Identity,
+) -> FuelCallResponse<Option<Pledge>> {
     contract.methods().pledged(id, user).call().await.unwrap()
 }
 

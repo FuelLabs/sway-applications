@@ -8,8 +8,18 @@ mod success {
     use super::*;
     use crate::utils::{
         interface::core::{create_campaign, pledge},
-        setup::mint,
+        setup::{mint, Pledge},
     };
+
+    #[tokio::test]
+    async fn returns_none() {
+        let (_, user, _, _, _) = setup().await;
+
+        let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
+            .await
+            .value;
+        assert!(matches!(info, Option::<Pledge>::None));
+    }
 
     #[tokio::test]
     async fn returns_info() {
@@ -35,31 +45,9 @@ mod success {
 
         let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
-            .value;
+            .value
+            .unwrap();
         assert_eq!(1, info.id);
         assert_eq!(defaults.target_amount, info.amount);
-    }
-}
-
-mod revert {
-
-    use super::*;
-
-    #[tokio::test]
-    #[should_panic(expected = "InvalidID")]
-    async fn when_id_is_zero() {
-        let (_, user, _, _, _) = setup().await;
-
-        // Reverts
-        pledged(&user.contract, 0, identity(user.wallet.address()).await).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "InvalidID")]
-    async fn when_id_is_greater_than_number_of_pledges() {
-        let (_, user, _, _, _) = setup().await;
-
-        // Reverts
-        pledged(&user.contract, 1, identity(user.wallet.address()).await).await;
     }
 }

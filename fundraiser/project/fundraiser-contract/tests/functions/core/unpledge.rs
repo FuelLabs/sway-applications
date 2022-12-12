@@ -133,7 +133,8 @@ mod success {
 
         let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
-            .value;
+            .value
+            .unwrap();
         assert_eq!(1, info.id);
         assert_eq!(defaults.target_amount, info.amount);
 
@@ -179,7 +180,8 @@ mod success {
         );
         let info = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
-            .value;
+            .value
+            .unwrap();
         assert_eq!(1, info.id);
         assert_eq!(1, info.amount);
     }
@@ -256,10 +258,12 @@ mod success {
 
         let info1 = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
-            .value;
+            .value
+            .unwrap();
         let info2 = pledged(&user.contract, 2, identity(user.wallet.address()).await)
             .await
-            .value;
+            .value
+            .unwrap();
 
         assert_eq!(1, info1.id);
         assert_eq!(2, info2.id);
@@ -340,10 +344,12 @@ mod success {
 
         let info1 = pledged(&user.contract, 1, identity(user.wallet.address()).await)
             .await
-            .value;
+            .value
+            .unwrap();
         let info2 = pledged(&user.contract, 2, identity(user.wallet.address()).await)
             .await
-            .value;
+            .value
+            .unwrap();
 
         assert_eq!(1, info1.id);
         assert_eq!(2, info2.id);
