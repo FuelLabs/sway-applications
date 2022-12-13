@@ -1,10 +1,12 @@
 contract;
 
 dep data_structures;
+dep events;
 dep interface;
 dep utils;
 
 use data_structures::{DistributionState, TokenDistribution};
+use events::{Canceled, Closed, Created, Purchased, PurchasedReserve, RequestedReturn, Sell, Withdraw};
 use interface::TokenDistributor;
 use std::{
     auth::msg_sender,
@@ -16,6 +18,7 @@ use std::{
         msg_amount,
         this_balance,
     },
+    logging::log,
     storage::StorageMap,
     token::transfer,
 };
@@ -43,6 +46,8 @@ impl TokenDistributor for Contract {
 
         transfer(this_balance(fractional_nft), fractional_nft, Identity::ContractId(fractional_nft));
         withdraw_fractional_nft(fractional_nft);
+
+        log(Canceled { fractional_nft });
     }
 
     #[storage(read, write)]
@@ -54,6 +59,8 @@ impl TokenDistributor for Contract {
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
         withdraw_fractional_nft(fractional_nft);
+
+        log(Closed { fractional_nft });
     }
 
     #[storage(read, write)]
@@ -70,7 +77,13 @@ impl TokenDistributor for Contract {
         require(storage.token_distributions.get(fractional_nft).is_none(), "Fractional NFT already exists");
         create_fractional_nft(fractional_nft, nft, Identity::ContractId(contract_id()), token_supply, token_id);
 
-        storage.token_distributions.insert(fractional_nft, Option::Some(TokenDistribution::new(external_asset, nft, owner, reserve_price, token_id, token_price)));
+        let token_distribution = TokenDistribution::new(external_asset, nft, owner, reserve_price, token_id, token_price);
+        storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
+
+        log(Created {
+            fractional_nft,
+            token_distribution,
+        });
     }
 
     #[storage(read, write)]
@@ -88,6 +101,12 @@ impl TokenDistributor for Contract {
         token_distribution.external_deposits += msg_amount();
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
         transfer(amount, fractional_nft, msg_sender().unwrap());
+
+        log(Purchased {
+            amount,
+            buyer: msg_sender().unwrap(),
+            fractional_nft,
+        });
     }
 
     #[storage(read, write)]
@@ -108,6 +127,12 @@ impl TokenDistributor for Contract {
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
         transfer(msg_amount(), token_distribution.external_asset, previous_owner.unwrap());
+
+        log(PurchasedReserve {
+            fractional_nft,
+            owner,
+            reserve,
+        });
     }
 
     #[storage(read, write)]
@@ -123,6 +148,11 @@ impl TokenDistributor for Contract {
         token_distribution.token_price = token_price;
         token_distribution.state = DistributionState::Returning;
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
+
+        log(RequestedReturn {
+            fractional_nft,
+            token_price,
+        });
     }
 
     #[storage(read)]
@@ -134,6 +164,11 @@ impl TokenDistributor for Contract {
 
         transfer(msg_amount() * token_distribution.token_price, token_distribution.external_asset, msg_sender().unwrap());
         transfer(msg_amount(), fractional_nft, Identity::ContractId(fractional_nft));
+
+        log(Sell {
+            fractional_nft,
+            seller: msg_sender().unwrap(),
+        });
     }
 
     #[storage(read, write)]
@@ -147,5 +182,11 @@ impl TokenDistributor for Contract {
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
         transfer(amount, token_distribution.external_asset, token_distribution.owner.unwrap());
+
+        log(Withdraw {
+            amount,
+            external_asset: token_distribution.external_asset,
+            fractional_nft,
+        });
     }
 }
