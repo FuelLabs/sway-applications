@@ -9,7 +9,7 @@ mod success {
     };
 
     #[tokio::test]
-    async fn returns_asset_does_not_exist_info() {
+    async fn returns_none() {
         let (author, _, _, _, _) = setup().await;
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;

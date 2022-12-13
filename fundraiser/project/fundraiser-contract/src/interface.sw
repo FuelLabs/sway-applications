@@ -138,7 +138,7 @@ abi Info {
     ///
     /// * When the `id` is either 0 or greater than the total number of campaigns created by the author
     #[storage(read)]
-    fn campaign(campaign_history_index: u64, user: Identity) -> Campaign;
+    fn campaign(campaign_history_index: u64, user: Identity) -> Option<Campaign>;
 
     /// Returns information about the specified campaign
     ///

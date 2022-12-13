@@ -57,6 +57,7 @@ mod success {
             campaign(&author.contract, 1, identity(author.wallet.address()).await)
                 .await
                 .value
+                .unwrap()
                 .id
         );
         assert_eq!(info.asset, defaults.asset_id);

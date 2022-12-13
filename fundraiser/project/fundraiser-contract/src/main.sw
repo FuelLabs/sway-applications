@@ -48,7 +48,7 @@ storage {
     user_campaign_count: StorageMap<Identity, u64> = StorageMap {},
     /// Campaigns that have been created by a user
     /// Map(Identity => Map(1...user_campaign_count => Campaign)
-    campaign_history: StorageMap<(Identity, u64), Campaign> = StorageMap {},
+    campaign_history: StorageMap<(Identity, u64), Option<Campaign>> = StorageMap {},
     /// Data describing the content of a campaign
     /// Map(Campaign ID => CampaignInfo)
     campaign_info: StorageMap<u64, Option<CampaignInfo>> = StorageMap {},
@@ -175,7 +175,7 @@ impl Fundraiser for Contract {
         // Increment the number of campaigns this user has created and track the ID for the campaign
         // they have just created so that data can be easily retrieved without duplicating data
         storage.user_campaign_count.insert(author, user_campaign_count + 1);
-        storage.campaign_history.insert((author, user_campaign_count + 1), Campaign::new(storage.total_campaigns));
+        storage.campaign_history.insert((author, user_campaign_count + 1), Option::Some(Campaign::new(storage.total_campaigns)));
 
         // We have changed the state by adding a new data structure therefore we log it
         log(CreatedCampaignEvent {
@@ -342,9 +342,7 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn campaign(id: u64, user: Identity) -> Campaign {
-        // Validate the ID to ensure that the user has created the campaign
-        validate_id(id, storage.user_campaign_count.get(user));
+    fn campaign(id: u64, user: Identity) -> Option<Campaign> {
         storage.campaign_history.get((user, id))
     }
 

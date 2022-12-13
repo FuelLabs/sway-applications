@@ -1,17 +1,23 @@
-use crate::utils::{
-    interface::info::campaign,
-    setup::{identity, setup},
-};
-
 mod success {
 
-    use super::*;
-    use crate::utils::interface::core::create_campaign;
+    use crate::utils::{
+        interface::{core::create_campaign, info::campaign},
+        setup::{identity, setup, Campaign},
+    };
+
+    #[tokio::test]
+    async fn returns_none() {
+        let (author, _, _, _, _) = setup().await;
+
+        let campaign = campaign(&author.contract, 1, identity(author.wallet.address()).await).await;
+        assert!(matches!(campaign.value, Option::<Campaign>::None));
+    }
 
     #[tokio::test]
     async fn returns_info() {
         let (author, _, _, _, defaults) = setup().await;
-        let deadline = 6;
+        let provider = author.wallet.get_provider().unwrap();
+        let deadline = provider.latest_block_height().await.unwrap() + 3;
 
         create_campaign(
             &author.contract,
@@ -27,30 +33,8 @@ mod success {
             campaign(&author.contract, 1, identity(author.wallet.address()).await)
                 .await
                 .value
+                .unwrap()
                 .id
         );
-    }
-}
-
-mod revert {
-
-    use super::*;
-
-    #[tokio::test]
-    #[should_panic(expected = "InvalidID")]
-    async fn when_id_is_zero() {
-        let (author, _, _, _, _) = setup().await;
-
-        // Reverts
-        campaign(&author.contract, 0, identity(author.wallet.address()).await).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "InvalidID")]
-    async fn when_id_is_greater_than_number_of_campaigns() {
-        let (author, _, _, _, _) = setup().await;
-
-        // Reverts
-        campaign(&author.contract, 1, identity(author.wallet.address()).await).await;
     }
 }
