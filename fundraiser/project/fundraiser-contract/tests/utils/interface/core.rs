@@ -4,7 +4,7 @@ use fuels::{
     tx::{AssetId, ContractId},
 };
 
-use crate::utils::setup::{Fundraiser, MetaAsset};
+use crate::utils::setup::{Coin, Fundraiser};
 
 pub async fn cancel_campaign(contract: &Fundraiser, id: u64) -> FuelCallResponse<()> {
     contract.methods().cancel_campaign(id).call().await.unwrap()
@@ -38,7 +38,7 @@ pub async fn create_campaign(
 pub async fn pledge(
     contract: &Fundraiser,
     id: u64,
-    asset: &MetaAsset,
+    asset: &Coin,
     amount: u64,
 ) -> FuelCallResponse<()> {
     let tx_params = TxParameters::new(None, Some(1_000_000), None);

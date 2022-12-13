@@ -19,14 +19,9 @@ const ASSET_CONTRACT_STORAGE_PATH: &str =
 const FUNDRAISER_CONTRACT_BINARY_PATH: &str = "./out/debug/fundraiser-contract.bin";
 const FUNDRAISER_CONTRACT_STORAGE_PATH: &str = "./out/debug/fundraiser-contract-storage_slots.json";
 
-pub struct MetaAsset {
+pub struct Coin {
     pub contract: Asset,
     pub id: ContractId,
-}
-
-pub struct Metadata {
-    pub contract: Fundraiser,
-    pub wallet: WalletUnlocked,
 }
 
 pub struct DefaultParameters {
@@ -34,6 +29,11 @@ pub struct DefaultParameters {
     pub beneficiary: Identity,
     pub deadline: u64,
     pub target_amount: u64,
+}
+
+pub struct User {
+    pub contract: Fundraiser,
+    pub wallet: WalletUnlocked,
 }
 
 pub async fn identity(address: &Bech32Address) -> Identity {
@@ -51,7 +51,7 @@ pub async fn mint(contract: &Asset, amount: u64, address: &Bech32Address) -> boo
         .value
 }
 
-pub async fn setup() -> (Metadata, Metadata, MetaAsset, MetaAsset, DefaultParameters) {
+pub async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
     let number_of_wallets = 3;
     let coins_per_wallet = 1;
     let amount_per_coin = 1_000_000;
@@ -102,22 +102,22 @@ pub async fn setup() -> (Metadata, Metadata, MetaAsset, MetaAsset, DefaultParame
     .await
     .unwrap();
 
-    let author = Metadata {
+    let author = User {
         contract: Fundraiser::new(id.clone(), author_wallet.clone()),
         wallet: author_wallet,
     };
 
-    let user = Metadata {
+    let user = User {
         contract: Fundraiser::new(id, user_wallet.clone()),
         wallet: user_wallet.clone(),
     };
 
-    let asset = MetaAsset {
+    let asset = Coin {
         contract: Asset::new(asset_id.clone(), deployer_wallet.clone()),
         id: asset_id.clone().into(),
     };
 
-    let asset2 = MetaAsset {
+    let asset2 = Coin {
         contract: Asset::new(asset2_id.clone(), deployer_wallet),
         id: asset2_id.into(),
     };
