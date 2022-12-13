@@ -1,5 +1,9 @@
 library interface;
 
+dep data_structures;
+
+use data_structures::TokenDistribution;
+
 abi TokenDistributor {
     #[storage(read, write)]
     fn cancel(fractional_nft: ContractId);
@@ -15,6 +19,8 @@ abi TokenDistributor {
     fn request_return(fractional_nft: ContractId, token_price: u64);
     #[storage(read)]
     fn sell(fractional_nft: ContractId);
+    #[storage(read)]
+    fn token_distribution(fractional_nft: ContractId) -> Option<TokenDistribution>;
     #[storage(read, write)]
     fn withdraw(fractional_nft: ContractId);
 }

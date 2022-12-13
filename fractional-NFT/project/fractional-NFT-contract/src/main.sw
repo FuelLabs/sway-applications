@@ -8,7 +8,13 @@ dep utils;
 use errors::{AccessError, AssetError};
 use events::{Deposited, OwnerChanged, Withdraw};
 use interface::FractionalNFT;
-use std::{auth::msg_sender, call_frames::contract_id, context::this_balance, logging::log, token::mint_to};
+use std::{
+    auth::msg_sender,
+    call_frames::contract_id,
+    context::this_balance,
+    logging::log,
+    token::mint_to,
+};
 use utils::transfer_nft;
 
 storage {
@@ -32,7 +38,12 @@ impl FractionalNFT for Contract {
         transfer_nft(nft, Identity::ContractId(contract_id()), token_id);
         mint_to(supply, msg_sender().unwrap());
 
-        log(Deposited {nft, owner, supply, token_id});
+        log(Deposited {
+            nft,
+            owner,
+            supply,
+            token_id,
+        });
     }
 
     #[storage(read)]
@@ -51,7 +62,10 @@ impl FractionalNFT for Contract {
         require(owner.is_some() && msg_sender().unwrap() == owner.unwrap(), AccessError::NotNftOwner);
         storage.owner = new_owner;
 
-        log (OwnerChanged{new_owner, previous_owner: owner.unwrap()});
+        log(OwnerChanged {
+            new_owner,
+            previous_owner: owner.unwrap(),
+        });
     }
 
     #[storage(read)]
@@ -73,6 +87,10 @@ impl FractionalNFT for Contract {
 
         transfer_nft(nft.unwrap(), owner.unwrap(), token_id);
 
-        log (Withdraw {nft: nft.unwrap(), owner: owner.unwrap(), token_id});
+        log(Withdraw {
+            nft: nft.unwrap(),
+            owner: owner.unwrap(),
+            token_id,
+        });
     }
 }

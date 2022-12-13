@@ -8,7 +8,16 @@ dep utils;
 
 use data_structures::{DistributionState, TokenDistribution};
 use errors::{AccessError, AssetError};
-use events::{Canceled, Closed, Created, Purchased, PurchasedReserve, RequestedReturn, Sell, Withdraw};
+use events::{
+    Canceled,
+    Closed,
+    Created,
+    Purchased,
+    PurchasedReserve,
+    RequestedReturn,
+    Sell,
+    Withdraw,
+};
 use interface::TokenDistributor;
 use std::{
     auth::msg_sender,
@@ -171,6 +180,11 @@ impl TokenDistributor for Contract {
             fractional_nft,
             seller: msg_sender().unwrap(),
         });
+    }
+
+    #[storage(read)]
+    fn token_distribution(fractional_nft: ContractId) -> Option<TokenDistribution> {
+        storage.token_distributions.get(fractional_nft)
     }
 
     #[storage(read, write)]
