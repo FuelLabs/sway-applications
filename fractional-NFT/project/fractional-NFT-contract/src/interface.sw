@@ -8,7 +8,7 @@ abi FractionalNFT {
     #[storage(read)]
     fn owner() -> Option<Identity>;
     #[storage(read, write)]
-    fn set_owner(new_owner: Identity);
+    fn set_owner(new_owner: Option<Identity>);
     #[storage(read)]
     fn supply() -> u64;
     #[storage(read, write)]
