@@ -155,7 +155,7 @@ impl Fundraiser for Contract {
         let mut asset_info = storage.asset_info.get(asset);
         if asset_info.is_none() {
             // Update storage for new asset
-            storage.asset_info.insert(asset, Option::Some(AssetInfo::new(0)));
+            storage.asset_info.insert(asset, Option::Some(AssetInfo::new()));
 
             // Increment asset count to keep track of new total
             storage.asset_count += 1;

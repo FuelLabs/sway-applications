@@ -7,7 +7,7 @@ pub struct AssetInfo {
 }
 
 impl AssetInfo {
-    pub fn new(amount: u64) -> Self {
-        Self { amount }
+    pub fn new() -> Self {
+        Self { amount: 0 }
     }
 }
