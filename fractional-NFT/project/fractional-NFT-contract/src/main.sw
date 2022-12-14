@@ -54,7 +54,7 @@ impl FractionalNFT for Contract {
         let nft_info = storage.nft_info;
         require(nft_info.is_some(), "No NFT deposited");
         let mut nft_info = nft_info.unwrap();
-        
+
         require(nft_info.owner.is_some() && msg_sender().unwrap() == nft_info.owner.unwrap(), AccessError::NotNftOwner);
         
         let previous_owner = nft_info.owner;
@@ -83,7 +83,6 @@ impl FractionalNFT for Contract {
 
         let owner = nft_info.owner;
         nft_info.owner = Option::None();
-
         storage.nft_info = Option::Some(nft_info);
 
         transfer_nft(nft_info.nft, owner.unwrap(), nft_info.token_id);
