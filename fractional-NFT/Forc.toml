@@ -1,4 +1,5 @@
 members = [
   "./project/fractional-NFT-contract",
+  "./project/fractional-NFT-contract/tests/artifacts/NFT",
   "./project/token-distributor-contract",
 ]
