@@ -332,18 +332,13 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn asset_info_by_id(asset: ContractId) -> Option<AssetInfo> {
-        storage.asset_info.get(asset)
-    }
-
-    #[storage(read)]
     fn asset_info_by_count(index: u64) -> Option<AssetInfo> {
         storage.asset_info.get(storage.asset_index.get(index))
     }
 
     #[storage(read)]
-    fn campaign(id: u64, user: Identity) -> Option<Campaign> {
-        storage.campaign_history.get((user, id))
+    fn asset_info_by_id(asset: ContractId) -> Option<AssetInfo> {
+        storage.asset_info.get(asset)
     }
 
     #[storage(read)]
@@ -352,13 +347,18 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn pledged(pledge_history_index: u64, user: Identity) -> Option<Pledge> {
-        storage.pledge_history.get((user, pledge_history_index))
+    fn campaign(id: u64, user: Identity) -> Option<Campaign> {
+        storage.campaign_history.get((user, id))
     }
 
     #[storage(read)]
     fn pledge_count(user: Identity) -> u64 {
         storage.pledge_count.get(user)
+    }
+
+    #[storage(read)]
+    fn pledged(pledge_history_index: u64, user: Identity) -> Option<Pledge> {
+        storage.pledge_history.get((user, pledge_history_index))
     }
 
     #[storage(read)]

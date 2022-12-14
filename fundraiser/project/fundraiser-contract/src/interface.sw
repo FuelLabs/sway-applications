@@ -110,15 +110,6 @@ abi Info {
     /// Returns information about the specificed asset, specifically if it has been added and the
     /// pledged amount
     ///
-    /// # Arguments
-    ///
-    /// * `asset` - Uniquie identifier that identifies the asset
-    #[storage(read)]
-    fn asset_info_by_id(asset: ContractId) -> Option<AssetInfo>;
-
-    /// Returns information about the specificed asset, specifically if it has been added and the
-    /// pledged amount
-    ///
     /// The user interface will not know all possible assets that the contract contains therefore
     /// this helper method allows the interface to iterate over the asset_count to discover all assets
     ///
@@ -128,13 +119,14 @@ abi Info {
     #[storage(read)]
     fn asset_info_by_count(index: u64) -> Option<AssetInfo>;
 
-    /// Returns information about the specified campaign for the campaign author
+    /// Returns information about the specificed asset, specifically if it has been added and the
+    /// pledged amount
     ///
     /// # Arguments
     ///
-    /// * `id` - Unique identifier which is a number starting from 1...storage.user_campaign_count
+    /// * `asset` - Uniquie identifier that identifies the asset
     #[storage(read)]
-    fn campaign(campaign_history_index: u64, user: Identity) -> Option<Campaign>;
+    fn asset_info_by_id(asset: ContractId) -> Option<AssetInfo>;
 
     /// Returns information about the specified campaign
     ///
@@ -144,6 +136,18 @@ abi Info {
     #[storage(read)]
     fn campaign_info(id: u64) -> Option<CampaignInfo>;
 
+    /// Returns information about the specified campaign for the campaign author
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Unique identifier which is a number starting from 1...storage.user_campaign_count
+    #[storage(read)]
+    fn campaign(campaign_history_index: u64, user: Identity) -> Option<Campaign>;
+
+    /// Returns the number of campaigns that the user has pledged to
+    #[storage(read)]
+    fn pledge_count(user: Identity) -> u64;
+
     /// Returns information about the specified pledge for the user
     ///
     /// # Arguments
@@ -152,10 +156,6 @@ abi Info {
     /// * `user` - The user that has pledged to a campaign
     #[storage(read)]
     fn pledged(pledge_history_index: u64, user: Identity) -> Option<Pledge>;
-
-    /// Returns the number of campaigns that the user has pledged to
-    #[storage(read)]
-    fn pledge_count(user: Identity) -> u64;
 
     /// Returns the total number of campaigns that have been created by all users
     #[storage(read)]
