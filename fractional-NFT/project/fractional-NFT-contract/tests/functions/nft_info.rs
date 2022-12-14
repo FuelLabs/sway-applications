@@ -31,11 +31,21 @@ mod success {
         let nft_struct = nft_info(&owner1.f_nft).await;
         assert_eq!(nft_struct, None);
 
-        deposit(&owner1.f_nft, nft_contract.clone(), Some(owner_identity.clone()), token_supply, 0).await;
+        deposit(
+            &owner1.f_nft,
+            nft_contract.clone(),
+            Some(owner_identity.clone()),
+            token_supply,
+            0,
+        )
+        .await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
         assert!(nft_struct.is_some());
         assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
-        assert_eq!(nft_struct.clone().unwrap().owner, Some(owner_identity.clone()));
+        assert_eq!(
+            nft_struct.clone().unwrap().owner,
+            Some(owner_identity.clone())
+        );
     }
 }

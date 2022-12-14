@@ -67,7 +67,13 @@ pub mod fractional_nft_abi_calls {
     }
 
     pub async fn withdraw(contract: &FractionalNFT, nft: ContractId) -> CallResponse<()> {
-        contract.methods().withdraw().set_contracts(&[Bech32ContractId::from(nft.clone())]).call().await.unwrap()
+        contract
+            .methods()
+            .withdraw()
+            .set_contracts(&[Bech32ContractId::from(nft.clone())])
+            .call()
+            .await
+            .unwrap()
     }
 }
 
@@ -106,7 +112,10 @@ pub mod nft_abi_calls {
 pub mod test_helpers {
 
     use super::*;
-    use paths::{FRACTIONAL_NFT_CONTRACT_BINARY_PATH, FRACTIONAL_NFT_CONTRACT_STORAGE_PATH, NFT_CONTRACT_BINARY_PATH, NFT_CONTRACT_STORAGE_PATH};
+    use paths::{
+        FRACTIONAL_NFT_CONTRACT_BINARY_PATH, FRACTIONAL_NFT_CONTRACT_STORAGE_PATH,
+        NFT_CONTRACT_BINARY_PATH, NFT_CONTRACT_STORAGE_PATH,
+    };
 
     pub async fn defaults() -> u64 {
         let supply = 10;
@@ -172,6 +181,12 @@ pub mod test_helpers {
             wallet: wallet3,
         };
 
-        (deploy_wallet, owner1, owner2, f_nft_id.into(), nft_id.into())
+        (
+            deploy_wallet,
+            owner1,
+            owner2,
+            f_nft_id.into(),
+            nft_id.into(),
+        )
     }
 }

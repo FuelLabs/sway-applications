@@ -22,13 +22,15 @@ pub struct Metadata {
 }
 
 pub mod paths {
-    pub const FRACTIONAL_NFT_CONTRACT_BINARY_PATH: &str = "../fractional-NFT-contract/out/debug/fractional-NFT-contract.bin";
+    pub const FRACTIONAL_NFT_CONTRACT_BINARY_PATH: &str =
+        "../fractional-NFT-contract/out/debug/fractional-NFT-contract.bin";
     pub const FRACTIONAL_NFT_CONTRACT_STORAGE_PATH: &str =
         "../fractional-NFT-contract/out/debug/fractional-NFT-contract-storage_slots.json";
     pub const NFT_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT.bin";
     pub const NFT_CONTRACT_STORAGE_PATH: &str =
         "./tests/artifacts/NFT/out/debug/NFT-storage_slots.json";
-    pub const TOKEN_DISTRIBUTOR_CONTRACT_BINARY_PATH: &str = "./out/debug/token-distributor-contract.bin";
+    pub const TOKEN_DISTRIBUTOR_CONTRACT_BINARY_PATH: &str =
+        "./out/debug/token-distributor-contract.bin";
     pub const TOKEN_DISTRIBUTOR_CONTRACT_STORAGE_PATH: &str =
         "./out/debug/token-distributor-contract-storage_slots.json";
 }
@@ -45,7 +47,10 @@ pub mod token_distibutor_abi_calls {
         contract
             .methods()
             .cancel(f_nft.clone())
-            .set_contracts(&[Bech32ContractId::from(f_nft.clone()), Bech32ContractId::from(nft.clone())])
+            .set_contracts(&[
+                Bech32ContractId::from(f_nft.clone()),
+                Bech32ContractId::from(nft.clone()),
+            ])
             .append_variable_outputs(1)
             .call()
             .await
@@ -60,7 +65,10 @@ pub mod token_distibutor_abi_calls {
         contract
             .methods()
             .close(f_nft.clone())
-            .set_contracts(&[Bech32ContractId::from(f_nft.clone()), Bech32ContractId::from(nft.clone())])
+            .set_contracts(&[
+                Bech32ContractId::from(f_nft.clone()),
+                Bech32ContractId::from(nft.clone()),
+            ])
             .call()
             .await
             .unwrap()
@@ -79,8 +87,20 @@ pub mod token_distibutor_abi_calls {
     ) -> CallResponse<()> {
         contract
             .methods()
-            .create(external_asset.clone(), f_nft.clone(), nft.clone(), owner.clone(), reserve_price.clone(), token_price, token_supply, token_id)
-            .set_contracts(&[Bech32ContractId::from(f_nft.clone()), Bech32ContractId::from(nft.clone())])
+            .create(
+                external_asset.clone(),
+                f_nft.clone(),
+                nft.clone(),
+                owner.clone(),
+                reserve_price.clone(),
+                token_price,
+                token_supply,
+                token_id,
+            )
+            .set_contracts(&[
+                Bech32ContractId::from(f_nft.clone()),
+                Bech32ContractId::from(nft.clone()),
+            ])
             .append_variable_outputs(1)
             .call()
             .await
@@ -118,14 +138,11 @@ pub mod token_distibutor_abi_calls {
         external_asset: ContractId,
         f_nft: ContractId,
         owner: Option<Identity>,
-        reserve: Option<u64>
+        reserve: Option<u64>,
     ) -> CallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
-        let call_params = CallParameters::new(
-            Some(amount),
-            Some(AssetId::from(*external_asset)),
-            None,
-        );
+        let call_params =
+            CallParameters::new(Some(amount), Some(AssetId::from(*external_asset)), None);
 
         contract
             .methods()
@@ -146,11 +163,8 @@ pub mod token_distibutor_abi_calls {
         token_price: u64,
     ) -> CallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
-        let call_params = CallParameters::new(
-            Some(amount),
-            Some(AssetId::from(*external_asset)),
-            None,
-        );
+        let call_params =
+            CallParameters::new(Some(amount), Some(AssetId::from(*external_asset)), None);
 
         contract
             .methods()
@@ -169,11 +183,7 @@ pub mod token_distibutor_abi_calls {
         f_nft: ContractId,
     ) -> CallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
-        let call_params = CallParameters::new(
-            Some(amount),
-            Some(AssetId::from(*f_nft)),
-            None,
-        );
+        let call_params = CallParameters::new(Some(amount), Some(AssetId::from(*f_nft)), None);
 
         contract
             .methods()
@@ -186,14 +196,20 @@ pub mod token_distibutor_abi_calls {
             .unwrap()
     }
 
-    pub async fn token_distribution(contract: &TokenDistributor, f_nft: ContractId,) -> Option<TokenDistribution> {
-        contract.methods().token_distribution(f_nft.clone()).call().await.unwrap().value
-    }
-
-    pub async fn withdraw(
+    pub async fn token_distribution(
         contract: &TokenDistributor,
         f_nft: ContractId,
-    ) -> CallResponse<()> {
+    ) -> Option<TokenDistribution> {
+        contract
+            .methods()
+            .token_distribution(f_nft.clone())
+            .call()
+            .await
+            .unwrap()
+            .value
+    }
+
+    pub async fn withdraw(contract: &TokenDistributor, f_nft: ContractId) -> CallResponse<()> {
         contract
             .methods()
             .withdraw(f_nft.clone())
@@ -239,14 +255,25 @@ pub mod nft_abi_calls {
 pub mod test_helpers {
 
     use super::*;
-    use paths::{FRACTIONAL_NFT_CONTRACT_BINARY_PATH, FRACTIONAL_NFT_CONTRACT_STORAGE_PATH, NFT_CONTRACT_BINARY_PATH, NFT_CONTRACT_STORAGE_PATH,TOKEN_DISTRIBUTOR_CONTRACT_BINARY_PATH,TOKEN_DISTRIBUTOR_CONTRACT_STORAGE_PATH};
+    use paths::{
+        FRACTIONAL_NFT_CONTRACT_BINARY_PATH, FRACTIONAL_NFT_CONTRACT_STORAGE_PATH,
+        NFT_CONTRACT_BINARY_PATH, NFT_CONTRACT_STORAGE_PATH,
+        TOKEN_DISTRIBUTOR_CONTRACT_BINARY_PATH, TOKEN_DISTRIBUTOR_CONTRACT_STORAGE_PATH,
+    };
 
     pub async fn defaults() -> u64 {
         let supply = 10;
         supply
     }
 
-    pub async fn setup() -> (Metadata, Metadata, Metadata, ContractId, ContractId, ContractId) {
+    pub async fn setup() -> (
+        Metadata,
+        Metadata,
+        Metadata,
+        ContractId,
+        ContractId,
+        ContractId,
+    ) {
         let num_wallets = 3;
         let coins_per_wallet = 1;
         let amount_per_coin = 1_000_000;
@@ -319,6 +346,13 @@ pub mod test_helpers {
             wallet: wallet3,
         };
 
-        (deploy_wallet, owner1, owner2, token_distributor_id.into(), f_nft_id.into(), nft_id.into())
+        (
+            deploy_wallet,
+            owner1,
+            owner2,
+            token_distributor_id.into(),
+            f_nft_id.into(),
+            nft_id.into(),
+        )
     }
 }

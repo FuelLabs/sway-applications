@@ -21,19 +21,46 @@ mod success {
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
-        assert_eq!(owner1.wallet.get_asset_balance(&AssetId::new(*fractional_nft_contract)).await.unwrap(), 0);
+        assert_eq!(
+            owner1
+                .wallet
+                .get_asset_balance(&AssetId::new(*fractional_nft_contract))
+                .await
+                .unwrap(),
+            0
+        );
         assert_eq!(owner_of(&owner1.nft, 0).await, Some(owner_identity.clone()));
         assert_eq!(nft_struct, None);
         assert_eq!(supply(&owner1.f_nft).await, 0);
 
-        deposit(&owner1.f_nft, nft_contract.clone(), Some(owner_identity.clone()), token_supply, 0).await;
+        deposit(
+            &owner1.f_nft,
+            nft_contract.clone(),
+            Some(owner_identity.clone()),
+            token_supply,
+            0,
+        )
+        .await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
-        assert_eq!(owner1.wallet.get_asset_balance(&AssetId::new(*fractional_nft_contract)).await.unwrap(), token_supply);
-        assert_eq!(owner_of(&owner1.nft, 0).await, Some(fractional_nft_identity.clone()));
+        assert_eq!(
+            owner1
+                .wallet
+                .get_asset_balance(&AssetId::new(*fractional_nft_contract))
+                .await
+                .unwrap(),
+            token_supply
+        );
+        assert_eq!(
+            owner_of(&owner1.nft, 0).await,
+            Some(fractional_nft_identity.clone())
+        );
         assert!(nft_struct.is_some());
         assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
-        assert_eq!(nft_struct.clone().unwrap().owner, Some(owner_identity.clone()));
+        assert_eq!(
+            nft_struct.clone().unwrap().owner,
+            Some(owner_identity.clone())
+        );
         assert_eq!(supply(&owner1.f_nft).await, token_supply);
     }
 
@@ -49,7 +76,14 @@ mod success {
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
-        assert_eq!(owner1.wallet.get_asset_balance(&AssetId::new(*fractional_nft_contract)).await.unwrap(), 0);
+        assert_eq!(
+            owner1
+                .wallet
+                .get_asset_balance(&AssetId::new(*fractional_nft_contract))
+                .await
+                .unwrap(),
+            0
+        );
         assert_eq!(owner_of(&owner1.nft, 0).await, Some(owner_identity.clone()));
         assert_eq!(nft_struct, None);
         assert_eq!(supply(&owner1.f_nft).await, 0);
@@ -57,8 +91,18 @@ mod success {
         deposit(&owner1.f_nft, nft_contract.clone(), None, token_supply, 0).await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
-        assert_eq!(owner1.wallet.get_asset_balance(&AssetId::new(*fractional_nft_contract)).await.unwrap(), token_supply);
-        assert_eq!(owner_of(&owner1.nft, 0).await, Some(fractional_nft_identity.clone()));
+        assert_eq!(
+            owner1
+                .wallet
+                .get_asset_balance(&AssetId::new(*fractional_nft_contract))
+                .await
+                .unwrap(),
+            token_supply
+        );
+        assert_eq!(
+            owner_of(&owner1.nft, 0).await,
+            Some(fractional_nft_identity.clone())
+        );
         assert!(nft_struct.is_some());
         assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
         assert_eq!(nft_struct.clone().unwrap().owner, None);
@@ -82,7 +126,21 @@ mod revert {
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
 
-        deposit(&owner1.f_nft, nft_contract.clone(), Some(owner_identity.clone()), token_supply, 0).await;
-        deposit(&owner1.f_nft, nft_contract.clone(), Some(owner_identity.clone()), token_supply, 0).await;
+        deposit(
+            &owner1.f_nft,
+            nft_contract.clone(),
+            Some(owner_identity.clone()),
+            token_supply,
+            0,
+        )
+        .await;
+        deposit(
+            &owner1.f_nft,
+            nft_contract.clone(),
+            Some(owner_identity.clone()),
+            token_supply,
+            0,
+        )
+        .await;
     }
 }

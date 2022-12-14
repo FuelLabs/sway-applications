@@ -22,7 +22,14 @@ mod success {
 
         assert_eq!(supply(&owner1.f_nft).await, 0);
 
-        deposit(&owner1.f_nft, nft_contract.clone(), Some(owner_identity.clone()), token_supply, 0).await;
+        deposit(
+            &owner1.f_nft,
+            nft_contract.clone(),
+            Some(owner_identity.clone()),
+            token_supply,
+            0,
+        )
+        .await;
 
         assert_eq!(supply(&owner1.f_nft).await, token_supply);
     }

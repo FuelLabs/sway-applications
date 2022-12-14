@@ -3,7 +3,11 @@ use crate::utils::{
     nft_abi_calls::{approve, mint, owner_of},
     test_helpers::{defaults, setup},
 };
-use fuels::{prelude::{Bech32ContractId, Identity, TxParameters}, signers::Signer, tx::AssetId};
+use fuels::{
+    prelude::{Bech32ContractId, Identity, TxParameters},
+    signers::Signer,
+    tx::AssetId,
+};
 
 mod success {
 
@@ -19,18 +23,53 @@ mod success {
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
-        deposit(&owner1.f_nft, nft_contract.clone(), Some(owner_identity.clone()), token_supply, 0).await;
+        deposit(
+            &owner1.f_nft,
+            nft_contract.clone(),
+            Some(owner_identity.clone()),
+            token_supply,
+            0,
+        )
+        .await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
-        assert_eq!(owner1.wallet.get_asset_balance(&AssetId::new(*fractional_nft_contract)).await.unwrap(), token_supply);
-        assert_eq!(owner_of(&owner1.nft, 0).await, Some(fractional_nft_identity.clone()));
-        assert_eq!(nft_struct.clone().unwrap().owner, Some(owner_identity.clone()));
-        
-        let _ = owner1.wallet.force_transfer_to_contract(&Bech32ContractId::from(fractional_nft_contract.clone()), token_supply, AssetId::new(*fractional_nft_contract.clone()), TxParameters::default()).await;
+        assert_eq!(
+            owner1
+                .wallet
+                .get_asset_balance(&AssetId::new(*fractional_nft_contract))
+                .await
+                .unwrap(),
+            token_supply
+        );
+        assert_eq!(
+            owner_of(&owner1.nft, 0).await,
+            Some(fractional_nft_identity.clone())
+        );
+        assert_eq!(
+            nft_struct.clone().unwrap().owner,
+            Some(owner_identity.clone())
+        );
+
+        let _ = owner1
+            .wallet
+            .force_transfer_to_contract(
+                &Bech32ContractId::from(fractional_nft_contract.clone()),
+                token_supply,
+                AssetId::new(*fractional_nft_contract.clone()),
+                TxParameters::default(),
+            )
+            .await;
         withdraw(&owner1.f_nft, nft_contract.clone()).await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
-        assert_eq!(owner1.wallet.get_asset_balance(&AssetId::new(*fractional_nft_contract)).await.unwrap(), 0);
+        assert_eq!(
+            owner1
+                .wallet
+                .get_asset_balance(&AssetId::new(*fractional_nft_contract))
+                .await
+                .unwrap(),
+            0
+        );
         assert_eq!(owner_of(&owner1.nft, 0).await, Some(owner_identity.clone()));
         assert_eq!(nft_struct.clone().unwrap().owner, None);
     }
@@ -44,7 +83,7 @@ mod revert {
     #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_not_deposited() {
         let (_deployer, owner1, _owner2, _fractional_nft_contract, nft_contract) = setup().await;
-        
+
         withdraw(&owner1.f_nft, nft_contract.clone()).await;
     }
 
@@ -59,9 +98,24 @@ mod revert {
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
-        deposit(&owner1.f_nft, nft_contract.clone(), Some(owner_identity.clone()), token_supply, 0).await;
-        
-        let _ = owner1.wallet.force_transfer_to_contract(&Bech32ContractId::from(fractional_nft_contract.clone()), token_supply, AssetId::new(*fractional_nft_contract.clone()), TxParameters::default()).await;
+        deposit(
+            &owner1.f_nft,
+            nft_contract.clone(),
+            Some(owner_identity.clone()),
+            token_supply,
+            0,
+        )
+        .await;
+
+        let _ = owner1
+            .wallet
+            .force_transfer_to_contract(
+                &Bech32ContractId::from(fractional_nft_contract.clone()),
+                token_supply,
+                AssetId::new(*fractional_nft_contract.clone()),
+                TxParameters::default(),
+            )
+            .await;
         withdraw(&owner2.f_nft, nft_contract.clone()).await;
     }
 
@@ -77,8 +131,16 @@ mod revert {
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         deposit(&owner1.f_nft, nft_contract.clone(), None, token_supply, 0).await;
-        
-        let _ = owner1.wallet.force_transfer_to_contract(&Bech32ContractId::from(fractional_nft_contract.clone()), token_supply, AssetId::new(*fractional_nft_contract.clone()), TxParameters::default()).await;
+
+        let _ = owner1
+            .wallet
+            .force_transfer_to_contract(
+                &Bech32ContractId::from(fractional_nft_contract.clone()),
+                token_supply,
+                AssetId::new(*fractional_nft_contract.clone()),
+                TxParameters::default(),
+            )
+            .await;
         withdraw(&owner1.f_nft, nft_contract.clone()).await;
     }
 
@@ -93,8 +155,15 @@ mod revert {
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
-        deposit(&owner1.f_nft, nft_contract.clone(), Some(owner_identity.clone()), token_supply, 0).await;
-        
+        deposit(
+            &owner1.f_nft,
+            nft_contract.clone(),
+            Some(owner_identity.clone()),
+            token_supply,
+            0,
+        )
+        .await;
+
         withdraw(&owner1.f_nft, nft_contract.clone()).await;
     }
 }
