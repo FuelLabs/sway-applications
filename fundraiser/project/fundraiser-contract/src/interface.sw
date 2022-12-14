@@ -133,10 +133,6 @@ abi Info {
     /// # Arguments
     ///
     /// * `id` - Unique identifier which is a number starting from 1...storage.user_campaign_count
-    ///
-    /// # Reverts
-    ///
-    /// * When the `id` is either 0 or greater than the total number of campaigns created by the author
     #[storage(read)]
     fn campaign(campaign_history_index: u64, user: Identity) -> Option<Campaign>;
 
@@ -145,10 +141,6 @@ abi Info {
     /// # Arguments
     ///
     /// * `id` - Unique campaign identifier which is a number from the storage.total_campaigns range
-    ///
-    /// # Reverts
-    ///
-    /// * When the `id` is either 0 or greater than the total number of campaigns created
     #[storage(read)]
     fn campaign_info(id: u64) -> Option<CampaignInfo>;
 
@@ -157,18 +149,11 @@ abi Info {
     /// # Arguments
     ///
     /// * `pledge_history_index` - Unique identifier which is a number starting from 1...storage.pledge_count
-    ///
-    /// # Reverts
-    ///
-    /// * When the `pledge_history_index` is either 0 or greater than the total number of pledges made by the user
+    /// * `user` - The user that has pledged to a campaign
     #[storage(read)]
     fn pledged(pledge_history_index: u64, user: Identity) -> Option<Pledge>;
 
     /// Returns the number of campaigns that the user has pledged to
-    ///
-    /// # Reverts
-    ///
-    /// * When an AuthError is generated
     #[storage(read)]
     fn pledge_count(user: Identity) -> u64;
 
