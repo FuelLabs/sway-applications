@@ -1,10 +1,12 @@
 contract;
 
+dep data_structures;
 dep errors;
 dep events;
 dep interface;
 dep utils;
 
+use data_structures::NFTInfo;
 use errors::{AccessError, AssetError};
 use events::{Deposited, OwnerChanged, Withdraw};
 use interface::FractionalNFT;
@@ -18,22 +20,18 @@ use std::{
 use utils::transfer_nft;
 
 storage {
-    nft: Option<ContractId> = Option::None,
-    owner: Option<Identity> = Option::None,
+    nft_info: Option<NFTInfo> = Option::None,
     supply: u64 = 0,
-    token_id: u64 = 0,
 }
 
 impl FractionalNFT for Contract {
     // Set price, set reserve, 
     #[storage(read, write)]
-    fn deposit(nft: ContractId, owner: Identity, supply: u64, token_id: u64) {
-        require(storage.owner.is_none(), AccessError::AlreadyInitialized);
+    fn deposit(nft: ContractId, owner: Option<Identity>, supply: u64, token_id: u64) {
+        require(storage.nft_info.is_none(), AccessError::AlreadyInitialized);
 
-        storage.nft = Option::Some(nft);
-        storage.owner = Option::Some(owner);
+        storage.nft_info = Option::Some(NFTInfo::new(nft, owner, token_id));
         storage.supply = supply;
-        storage.token_id = token_id;
 
         transfer_nft(nft, Identity::ContractId(contract_id()), token_id);
         mint_to(supply, msg_sender().unwrap());
@@ -47,24 +45,24 @@ impl FractionalNFT for Contract {
     }
 
     #[storage(read)]
-    fn nft() -> (Option<ContractId>, u64) {
-        (storage.nft, storage.token_id)
-    }
-
-    #[storage(read)]
-    fn owner() -> Option<Identity> {
-        storage.owner
+    fn nft_info() -> Option<NFTInfo> {
+        storage.nft_info
     }
 
     #[storage(read, write)]
     fn set_owner(new_owner: Option<Identity>) {
-        let owner = storage.owner;
-        require(owner.is_some() && msg_sender().unwrap() == owner.unwrap(), AccessError::NotNftOwner);
-        storage.owner = new_owner;
+        let nft_info = storage.nft_info;
+        require(nft_info.is_some(), "No NFT deposited");
+        let mut nft_info = nft_info.unwrap();
+        require(nft_info.owner.is_some() && msg_sender().unwrap() == nft_info.owner.unwrap(), AccessError::NotNftOwner);
+        
+        let previous_owner = nft_info.owner;
+        nft_info.owner = new_owner;
+        storage.nft_info = Option::Some(nft_info);
 
         log(OwnerChanged {
             new_owner,
-            previous_owner: owner.unwrap(),
+            previous_owner: previous_owner.unwrap(),
         });
     }
 
@@ -75,22 +73,24 @@ impl FractionalNFT for Contract {
 
     #[storage(read, write)]
     fn withdraw() {
-        require(storage.owner.is_some() && msg_sender().unwrap() == storage.owner.unwrap(), AccessError::NotNftOwner);
+        let nft_info = storage.nft_info;
+        require(nft_info.is_some(), "No NFT deposited");
+        let mut nft_info = nft_info.unwrap();
+
+        require(nft_info.owner.is_some() && msg_sender().unwrap() == nft_info.owner.unwrap(), AccessError::NotNftOwner);
         require(this_balance(contract_id()) == storage.supply, AssetError::SupplyNotReturned);
 
-        let nft = storage.nft;
-        let owner = storage.owner;
-        let token_id = storage.token_id;
+        let owner = nft_info.owner;
+        nft_info.owner = Option::None();
 
-        storage.nft = Option::None();
-        storage.owner = Option::None();
+        storage.nft_info = Option::Some(nft_info);
 
-        transfer_nft(nft.unwrap(), owner.unwrap(), token_id);
+        transfer_nft(nft_info.nft, owner.unwrap(), nft_info.token_id);
 
         log(Withdraw {
-            nft: nft.unwrap(),
+            nft: nft_info.nft,
             owner: owner.unwrap(),
-            token_id,
+            token_id: nft_info.token_id,
         });
     }
 }

@@ -2,7 +2,7 @@ library events;
 
 pub struct Deposited {
     nft: ContractId,
-    owner: Identity,
+    owner: Option<Identity>,
     supply: u64,
     token_id: u64,
 }
