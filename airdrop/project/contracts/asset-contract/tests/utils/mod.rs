@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*};
+use fuels::{contract::call_response::FuelCallResponse, prelude::*};
 
 abigen!(
     SimpleAsset,
@@ -24,7 +24,7 @@ pub mod abi_calls {
         asset_supply: u64,
         contract: &SimpleAsset,
         minter: Identity,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .constructor(asset_supply, minter)
@@ -33,7 +33,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn mint_to(amount: u64, contract: &SimpleAsset, to: Identity) -> CallResponse<()> {
+    pub async fn mint_to(amount: u64, contract: &SimpleAsset, to: Identity) -> FuelCallResponse<()> {
         contract
             .methods()
             .mint_to(amount, to)
