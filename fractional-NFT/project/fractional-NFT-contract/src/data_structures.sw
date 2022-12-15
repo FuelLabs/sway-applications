@@ -11,7 +11,7 @@ impl NFTInfo {
         NFTInfo {
             nft,
             owner,
-            token_id
+            token_id,
         }
     }
 }

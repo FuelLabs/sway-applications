@@ -15,7 +15,7 @@ pub fn create_fractional_nft(
     token_id: u64,
 ) {
     let f_nft_abi = abi(FractionalNFT, fractional_nft.value);
-    f_nft_abi.deposit(nft, owner, supply, token_id);
+    f_nft_abi.deposit(nft, Option::Some(owner), supply, token_id);
 }
 
 pub fn fractional_nft_supply(fractional_nft: ContractId) -> u64 {

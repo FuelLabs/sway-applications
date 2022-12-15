@@ -2,7 +2,7 @@ library interface;
 
 dep data_structures;
 
-use data_structures::TokenDistribution;
+use data_structures::{NFTInfo, TokenDistribution};
 
 abi TokenDistributor {
     #[storage(read, write)]
@@ -27,13 +27,11 @@ abi TokenDistributor {
 
 abi FractionalNFT {
     #[storage(read, write)]
-    fn deposit(nft: ContractId, owner: Identity, supply: u64, token_id: u64);
+    fn deposit(nft: ContractId, owner: Option<Identity>, supply: u64, token_id: u64);
     #[storage(read)]
-    fn nft() -> (Option<ContractId>, u64);
-    #[storage(read)]
-    fn owner() -> Option<Identity>;
+    fn nft_info() -> Option<NFTInfo>;
     #[storage(read, write)]
-    fn set_owner(new_owner: Identity);
+    fn set_owner(new_owner: Option<Identity>);
     #[storage(read)]
     fn supply() -> u64;
     #[storage(read, write)]

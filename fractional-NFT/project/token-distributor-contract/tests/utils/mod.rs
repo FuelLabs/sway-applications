@@ -3,7 +3,7 @@ use fuels::{contract::contract::CallResponse, prelude::*};
 // Load abi from json
 abigen!(
     TokenDistributor,
-    "./project/token-distributor-contract/out/debug/token-distibutor-contract-abi.json"
+    "./project/token-distributor-contract/out/debug/token-distributor-contract-abi.json"
 );
 abigen!(
     FractionalNFT,
@@ -13,8 +13,13 @@ abigen!(
     Nft,
     "./project/token-distributor-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"
 );
+abigen!(
+    Asset,
+    "./project/token-distributor-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+);
 
 pub struct Metadata {
+    pub asset: Asset,
     pub f_nft: FractionalNFT,
     pub nft: Nft,
     pub token_distributor: TokenDistributor,
@@ -22,6 +27,7 @@ pub struct Metadata {
 }
 
 pub mod paths {
+    pub const ASSET_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
     pub const FRACTIONAL_NFT_CONTRACT_BINARY_PATH: &str =
         "../fractional-NFT-contract/out/debug/fractional-NFT-contract.bin";
     pub const FRACTIONAL_NFT_CONTRACT_STORAGE_PATH: &str =
@@ -35,7 +41,35 @@ pub mod paths {
         "./out/debug/token-distributor-contract-storage_slots.json";
 }
 
-pub mod token_distibutor_abi_calls {
+pub mod asset_abi_calls {
+
+    use super::*;
+
+    pub async fn mint_and_send_to_address(
+        amount: u64,
+        contract: &Asset,
+        recipient: Address,
+    ) -> CallResponse<()> {
+        contract
+            .methods()
+            .mint_and_send_to_address(amount, recipient)
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+    }
+}
+
+pub mod fractional_nft_abi_calls {
+
+    use super::*;
+
+    pub async fn nft_info(contract: &FractionalNFT) -> Option<NFTInfo> {
+        contract.methods().nft_info().call().await.unwrap().value
+    }
+}
+
+pub mod token_distributor_abi_calls {
 
     use super::*;
 
@@ -256,20 +290,23 @@ pub mod test_helpers {
 
     use super::*;
     use paths::{
-        FRACTIONAL_NFT_CONTRACT_BINARY_PATH, FRACTIONAL_NFT_CONTRACT_STORAGE_PATH,
-        NFT_CONTRACT_BINARY_PATH, NFT_CONTRACT_STORAGE_PATH,
+        ASSET_CONTRACT_BINARY_PATH, FRACTIONAL_NFT_CONTRACT_BINARY_PATH,
+        FRACTIONAL_NFT_CONTRACT_STORAGE_PATH, NFT_CONTRACT_BINARY_PATH, NFT_CONTRACT_STORAGE_PATH,
         TOKEN_DISTRIBUTOR_CONTRACT_BINARY_PATH, TOKEN_DISTRIBUTOR_CONTRACT_STORAGE_PATH,
     };
 
-    pub async fn defaults() -> u64 {
+    pub async fn defaults() -> (u64, u64, u64) {
+        let price = 1;
         let supply = 10;
-        supply
+        let reserve = 10;
+        (price, reserve, supply)
     }
 
     pub async fn setup() -> (
         Metadata,
         Metadata,
         Metadata,
+        ContractId,
         ContractId,
         ContractId,
         ContractId,
@@ -325,7 +362,17 @@ pub mod test_helpers {
         .await
         .unwrap();
 
+        let asset_id = Contract::deploy(
+            ASSET_CONTRACT_BINARY_PATH,
+            &wallet1,
+            TxParameters::default(),
+            StorageConfiguration::default(),
+        )
+        .await
+        .unwrap();
+
         let deploy_wallet = Metadata {
+            asset: Asset::new(asset_id.clone(), wallet1.clone()),
             f_nft: FractionalNFT::new(f_nft_id.clone(), wallet1.clone()),
             nft: Nft::new(nft_id.clone(), wallet1.clone()),
             token_distributor: TokenDistributor::new(token_distributor_id.clone(), wallet1.clone()),
@@ -333,6 +380,7 @@ pub mod test_helpers {
         };
 
         let owner1 = Metadata {
+            asset: Asset::new(asset_id.clone(), wallet2.clone()),
             f_nft: FractionalNFT::new(f_nft_id.clone(), wallet2.clone()),
             nft: Nft::new(nft_id.clone(), wallet2.clone()),
             token_distributor: TokenDistributor::new(token_distributor_id.clone(), wallet2.clone()),
@@ -340,6 +388,7 @@ pub mod test_helpers {
         };
 
         let owner2 = Metadata {
+            asset: Asset::new(asset_id.clone(), wallet3.clone()),
             f_nft: FractionalNFT::new(f_nft_id.clone(), wallet3.clone()),
             nft: Nft::new(nft_id.clone(), wallet3.clone()),
             token_distributor: TokenDistributor::new(token_distributor_id.clone(), wallet3.clone()),
@@ -353,6 +402,7 @@ pub mod test_helpers {
             token_distributor_id.into(),
             f_nft_id.into(),
             nft_id.into(),
+            asset_id.into(),
         )
     }
 }

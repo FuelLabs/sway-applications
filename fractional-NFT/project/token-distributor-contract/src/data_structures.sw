@@ -23,6 +23,12 @@ impl core::ops::Eq for DistributionState {
     }
 }
 
+pub struct NFTInfo {
+    nft: ContractId,
+    owner: Option<Identity>,
+    token_id: u64,
+}
+
 pub struct TokenDistribution {
     external_asset: ContractId,
     external_deposits: u64,
