@@ -295,11 +295,13 @@ pub mod test_helpers {
         TOKEN_DISTRIBUTOR_CONTRACT_BINARY_PATH, TOKEN_DISTRIBUTOR_CONTRACT_STORAGE_PATH,
     };
 
-    pub async fn defaults() -> (u64, u64, u64) {
+    pub async fn defaults() -> (u64, u64, u64, u64, u64) {
+        let asset_supply = 100;
         let price = 1;
+        let purchase_amount = 2;
         let supply = 10;
         let reserve = 10;
-        (price, reserve, supply)
+        (price, reserve, supply, purchase_amount, asset_supply)
     }
 
     pub async fn setup() -> (

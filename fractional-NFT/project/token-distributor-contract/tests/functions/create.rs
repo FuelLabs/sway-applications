@@ -26,7 +26,8 @@ mod succes {
             nft_contract,
             asset_contract,
         ) = setup().await;
-        let (reserve_price, token_price, token_supply) = defaults().await;
+        let (reserve_price, token_price, token_supply, _purchase_amount, _asset_supply) =
+            defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
         let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
@@ -129,7 +130,8 @@ mod succes {
             nft_contract,
             asset_contract,
         ) = setup().await;
-        let (reserve_price, token_price, token_supply) = defaults().await;
+        let (reserve_price, token_price, token_supply, _purchase_amount, _asset_supply) =
+            defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
         let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
@@ -229,7 +231,8 @@ mod succes {
             nft_contract,
             asset_contract,
         ) = setup().await;
-        let (_reserve_price, token_price, token_supply) = defaults().await;
+        let (_reserve_price, token_price, token_supply, _purchase_amount, _asset_supply) =
+            defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
         let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
@@ -338,7 +341,8 @@ mod revert {
             nft_contract,
             asset_contract,
         ) = setup().await;
-        let (reserve_price, token_price, token_supply) = defaults().await;
+        let (reserve_price, token_price, token_supply, _purchase_amount, _asset_supply) =
+            defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
         let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
