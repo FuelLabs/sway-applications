@@ -225,6 +225,7 @@ pub mod token_distributor_abi_calls {
             .tx_params(tx_params)
             .call_params(call_params)
             .append_variable_outputs(1)
+            .set_contracts(&[Bech32ContractId::from(f_nft.clone())])
             .call()
             .await
             .unwrap()
