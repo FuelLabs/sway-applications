@@ -56,7 +56,7 @@ impl TokenDistributor for Contract {
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
         transfer(this_balance(fractional_nft), fractional_nft, Identity::ContractId(fractional_nft));
-        withdraw_fractional_nft(fractional_nft);
+        withdraw_fractional_nft(fractional_nft, token_distribution.owner.unwrap());
 
         log(Canceled { fractional_nft });
     }
@@ -69,7 +69,7 @@ impl TokenDistributor for Contract {
         token_distribution.state = DistributionState::Closed;
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
-        withdraw_fractional_nft(fractional_nft);
+        withdraw_fractional_nft(fractional_nft, token_distribution.owner.unwrap());
 
         log(Closed { fractional_nft });
     }

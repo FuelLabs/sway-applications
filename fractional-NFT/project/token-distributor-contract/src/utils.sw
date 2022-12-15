@@ -30,7 +30,7 @@ pub fn require_fractional_nft_exists(
     fractional_nft.unwrap()
 }
 
-pub fn withdraw_fractional_nft(fractional_nft: ContractId) {
+pub fn withdraw_fractional_nft(fractional_nft: ContractId, to: Identity) {
     let f_nft_abi = abi(FractionalNFT, fractional_nft.value);
-    f_nft_abi.withdraw();
+    f_nft_abi.withdraw(to);
 }

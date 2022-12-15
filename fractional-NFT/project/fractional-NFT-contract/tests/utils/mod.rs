@@ -66,10 +66,14 @@ pub mod fractional_nft_abi_calls {
         contract.methods().supply().call().await.unwrap().value
     }
 
-    pub async fn withdraw(contract: &FractionalNFT, nft: ContractId) -> CallResponse<()> {
+    pub async fn withdraw(
+        contract: &FractionalNFT,
+        nft: ContractId,
+        to: Identity,
+    ) -> CallResponse<()> {
         contract
             .methods()
-            .withdraw()
+            .withdraw(to)
             .set_contracts(&[Bech32ContractId::from(nft.clone())])
             .call()
             .await

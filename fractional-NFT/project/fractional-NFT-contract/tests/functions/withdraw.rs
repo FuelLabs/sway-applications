@@ -59,7 +59,7 @@ mod success {
                 TxParameters::default(),
             )
             .await;
-        withdraw(&owner1.f_nft, nft_contract.clone()).await;
+        withdraw(&owner1.f_nft, nft_contract.clone(), owner_identity.clone()).await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
         assert_eq!(
@@ -84,7 +84,9 @@ mod revert {
     async fn when_not_deposited() {
         let (_deployer, owner1, _owner2, _fractional_nft_contract, nft_contract) = setup().await;
 
-        withdraw(&owner1.f_nft, nft_contract.clone()).await;
+        let owner_identity = Identity::Address(owner1.wallet.address().into());
+
+        withdraw(&owner1.f_nft, nft_contract.clone(), owner_identity.clone()).await;
     }
 
     #[tokio::test]
@@ -116,7 +118,7 @@ mod revert {
                 TxParameters::default(),
             )
             .await;
-        withdraw(&owner2.f_nft, nft_contract.clone()).await;
+        withdraw(&owner2.f_nft, nft_contract.clone(), owner_identity.clone()).await;
     }
 
     #[tokio::test]
@@ -141,7 +143,7 @@ mod revert {
                 TxParameters::default(),
             )
             .await;
-        withdraw(&owner1.f_nft, nft_contract.clone()).await;
+        withdraw(&owner1.f_nft, nft_contract.clone(), owner_identity.clone()).await;
     }
 
     #[tokio::test]
@@ -164,6 +166,6 @@ mod revert {
         )
         .await;
 
-        withdraw(&owner1.f_nft, nft_contract.clone()).await;
+        withdraw(&owner1.f_nft, nft_contract.clone(), owner_identity.clone()).await;
     }
 }

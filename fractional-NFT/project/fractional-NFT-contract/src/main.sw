@@ -78,7 +78,7 @@ impl FractionalNFT for Contract {
     }
 
     #[storage(read, write)]
-    fn withdraw() {
+    fn withdraw(to: Identity) {
         let nft_info = storage.nft_info;
         require(nft_info.is_some(), "No NFT deposited");
         let mut nft_info = nft_info.unwrap();
@@ -90,11 +90,11 @@ impl FractionalNFT for Contract {
         nft_info.owner = Option::None();
         storage.nft_info = Option::Some(nft_info);
 
-        transfer_nft(nft_info.nft, owner.unwrap(), nft_info.token_id);
+        transfer_nft(nft_info.nft, to, nft_info.token_id);
 
         log(Withdraw {
             nft: nft_info.nft,
-            owner: owner.unwrap(),
+            owner: to,
             token_id: nft_info.token_id,
         });
     }

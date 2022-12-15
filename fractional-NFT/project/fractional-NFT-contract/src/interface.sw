@@ -14,5 +14,5 @@ abi FractionalNFT {
     #[storage(read)]
     fn supply() -> u64;
     #[storage(read, write)]
-    fn withdraw();
+    fn withdraw(to: Identity);
 }
