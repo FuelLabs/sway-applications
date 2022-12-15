@@ -15,8 +15,9 @@ mod success {
             &acc.identity(),
         )
         .await;
-        let log = instance
-            .logs_with_type::<NameRegisteredEvent>(&response.0.receipts)
+        let log = response
+            .0
+            .get_logs_with_type::<NameRegisteredEvent>()
             .unwrap();
 
         assert_eq!(

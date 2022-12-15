@@ -1,28 +1,36 @@
 use core::fmt::Debug;
 use fuels::{
-    client::types::TransactionStatus,
-    contract::contract::{CallResponse, ContractCallHandler},
+    contract::{call_response::FuelCallResponse, contract::ContractCallHandler},
     prelude::*,
     tx::UniqueIdentifier,
+    // TODO: remove?
+    // client::types::TransactionStatus,
+    types::transaction_response::TransactionStatus,
 };
 
 use crate::utils::{NameRegistry, RegistrationValidityError};
 
-async fn get_timestamp_and_call<T>(handler: ContractCallHandler<T>) -> (CallResponse<T>, u64)
+async fn get_timestamp_and_call<T>(handler: ContractCallHandler<T>) -> (FuelCallResponse<T>, u64)
 where
     T: Tokenizable + Debug,
 {
-    let script = handler.get_call_execution_script().await.unwrap();
+    let script = handler.get_executable_call().await.unwrap();
     let tx_id = script.tx.id().to_string();
     let provider = handler.provider.clone();
     let call_response = handler.call().await.unwrap();
-    let tx_status = provider.get_transaction_by_id(&tx_id).await.unwrap().status;
+    let tx_status = provider
+        .get_transaction_by_id(&tx_id)
+        .await
+        .unwrap()
+        .unwrap();
 
-    let time = match tx_status {
-        TransactionStatus::Success { time, .. } => time,
+    match tx_status.status {
+        TransactionStatus::Success() => (),
         _ => panic!("tx failed"),
-    };
-    let time = time.0 as u64;
+    }
+
+    // TODO: this needs to be updated / reverted when the SDK fixes their breaking changes
+    let time = 5;
 
     (call_response, time)
 }
@@ -31,7 +39,7 @@ pub async fn extend(
     instance: &NameRegistry,
     name: &String,
     duration: u64,
-) -> (CallResponse<()>, u64) {
+) -> (FuelCallResponse<()>, u64) {
     get_timestamp_and_call(
         instance
             .methods()
@@ -51,7 +59,10 @@ pub async fn extend(
 pub async fn expiry(
     instance: &NameRegistry,
     name: &String,
-) -> (CallResponse<Result<u64, RegistrationValidityError>>, u64) {
+) -> (
+    FuelCallResponse<Result<u64, RegistrationValidityError>>,
+    u64,
+) {
     get_timestamp_and_call(
         instance
             .methods()
@@ -64,7 +75,7 @@ pub async fn identity(
     instance: &NameRegistry,
     name: &String,
 ) -> (
-    CallResponse<Result<Identity, RegistrationValidityError>>,
+    FuelCallResponse<Result<Identity, RegistrationValidityError>>,
     u64,
 ) {
     get_timestamp_and_call(
@@ -79,7 +90,7 @@ pub async fn owner(
     instance: &NameRegistry,
     name: &String,
 ) -> (
-    CallResponse<Result<Identity, RegistrationValidityError>>,
+    FuelCallResponse<Result<Identity, RegistrationValidityError>>,
     u64,
 ) {
     get_timestamp_and_call(
@@ -96,7 +107,7 @@ pub async fn register(
     duration: u64,
     owner: &Identity,
     identity: &Identity,
-) -> (CallResponse<()>, u64) {
+) -> (FuelCallResponse<()>, u64) {
     get_timestamp_and_call(
         instance
             .methods()
@@ -119,7 +130,7 @@ pub async fn set_identity(
     instance: &NameRegistry,
     name: &String,
     identity: Identity,
-) -> (CallResponse<()>, u64) {
+) -> (FuelCallResponse<()>, u64) {
     get_timestamp_and_call(instance.methods().set_identity(
         SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
         identity,
@@ -131,7 +142,7 @@ pub async fn set_owner(
     instance: &NameRegistry,
     name: &String,
     new_owner: Identity,
-) -> (CallResponse<()>, u64) {
+) -> (FuelCallResponse<()>, u64) {
     get_timestamp_and_call(instance.methods().set_owner(
         SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
         new_owner,

@@ -20,8 +20,9 @@ mod success {
         let previous_expiry = expiry(&instance, &acc.name).await;
 
         let extend_response = extend(&instance, &acc.name, EXTEND_DURATION).await;
-        let log = instance
-            .logs_with_type::<RegistrationExtendedEvent>(&extend_response.0.receipts)
+        let log = extend_response
+            .0
+            .get_logs_with_type::<RegistrationExtendedEvent>()
             .unwrap();
 
         let new_expiry = expiry(&instance, &acc.name).await;

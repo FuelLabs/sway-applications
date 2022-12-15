@@ -29,8 +29,9 @@ mod success {
 
         assert_eq!(new_owner.0.value.unwrap(), wallet_identity2);
 
-        let log = instance
-            .logs_with_type::<OwnerChangedEvent>(&response.0.receipts)
+        let log = response
+            .0
+            .get_logs_with_type::<OwnerChangedEvent>()
             .unwrap();
         assert_eq!(
             log,
