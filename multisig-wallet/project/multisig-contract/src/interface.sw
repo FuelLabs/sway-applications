@@ -43,6 +43,7 @@ abi MultiSignatureWallet {
     /// # Reverts
     ///
     /// - When the constructor has not been called to initialize the contract.
+    /// - When the amount of the asset being sent is greater than the balance in the contract.
     /// - When the public key cannot be recovered from a signature.
     /// - When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// - When the total approval count is less than the required threshold for execution.
