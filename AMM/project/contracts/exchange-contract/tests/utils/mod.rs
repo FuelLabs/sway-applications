@@ -1,16 +1,18 @@
 use fuels::prelude::*;
 use test_utils::{
-    abi::{exchange::balance, Exchange},
+    abi::{
+        exchange::{balance, deposit},
+        Exchange,
+    },
     data_structures::{
         ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
         WalletAssetConfiguration,
     },
     setup::common::{
         deploy_and_construct_exchange, deploy_exchange, deposit_and_add_liquidity,
-        deposit_both_assets, setup_wallet_and_provider,
+        setup_wallet_and_provider,
     },
 };
-
 pub struct ContractBalances {
     pub asset_a: u64,
     pub asset_b: u64,
@@ -22,9 +24,16 @@ pub struct WalletBalances {
     pub liquidity_pool_asset: u64,
 }
 
+pub struct Assets {
+    pub liquidity_pool_asset: AssetId,
+    pub asset_1: AssetId,
+    pub asset_2: AssetId,
+    pub asset_3: AssetId,
+}
+
 pub async fn contract_balances(exchange: &ExchangeContract) -> ContractBalances {
-    let asset_a = balance(&exchange.instance, exchange.pair.0).await.value;
-    let asset_b = balance(&exchange.instance, exchange.pair.1).await.value;
+    let asset_a = balance(&exchange.instance, exchange.pair.0).await;
+    let asset_b = balance(&exchange.instance, exchange.pair.1).await;
     ContractBalances { asset_a, asset_b }
 }
 
@@ -45,8 +54,8 @@ pub async fn wallet_balances(
     }
 }
 
-pub async fn setup() -> (Exchange, WalletUnlocked, AssetId, AssetId, AssetId, AssetId) {
-    let (wallet, asset_ids, _provider) =
+pub async fn setup() -> (Exchange, WalletUnlocked, Assets, u64) {
+    let (wallet, asset_ids, provider) =
         setup_wallet_and_provider(&WalletAssetConfiguration::default()).await;
 
     let (exchange_id, exchange_instance) = deploy_exchange(
@@ -55,18 +64,20 @@ pub async fn setup() -> (Exchange, WalletUnlocked, AssetId, AssetId, AssetId, As
     )
     .await;
 
-    (
-        exchange_instance,
-        wallet,
-        AssetId::from(*exchange_id),
-        asset_ids[0],
-        asset_ids[1],
-        asset_ids[2],
-    )
+    let assets = Assets {
+        liquidity_pool_asset: AssetId::from(*exchange_id),
+        asset_1: asset_ids[0],
+        asset_2: asset_ids[1],
+        asset_3: asset_ids[2],
+    };
+
+    let deadline = provider.latest_block_height().await.unwrap() + 5;
+
+    (exchange_instance, wallet, assets, deadline)
 }
 
 pub async fn setup_and_construct(
-    deposit: bool,
+    deposit_both: bool,
     add_liquidity: bool,
 ) -> (
     ExchangeContract,
@@ -74,7 +85,7 @@ pub async fn setup_and_construct(
     LiquidityParameters,
     AssetId,
 ) {
-    let (wallet, asset_ids, _provider) =
+    let (wallet, asset_ids, provider) =
         setup_wallet_and_provider(&WalletAssetConfiguration::default()).await;
 
     let exchange = deploy_and_construct_exchange(
@@ -83,12 +94,28 @@ pub async fn setup_and_construct(
     )
     .await;
 
-    let liquidity_parameters = LiquidityParameters::default();
+    let liquidity_parameters = LiquidityParameters::new(
+        Some((10000, 40000)),
+        Some(provider.latest_block_height().await.unwrap() + 20),
+        Some(20000),
+    );
 
-    if deposit && add_liquidity {
-        deposit_and_add_liquidity(&liquidity_parameters, &exchange).await;
-    } else if deposit {
-        deposit_both_assets(&liquidity_parameters, &exchange).await;
+    if deposit_both && add_liquidity {
+        deposit_and_add_liquidity(&liquidity_parameters, &exchange, None).await;
+    } else if deposit_both {
+        deposit(
+            &exchange.instance,
+            liquidity_parameters.amounts.0,
+            exchange.pair.0,
+        )
+        .await;
+
+        deposit(
+            &exchange.instance,
+            liquidity_parameters.amounts.1,
+            exchange.pair.1,
+        )
+        .await;
     }
 
     (exchange, wallet, liquidity_parameters, asset_ids[2])
