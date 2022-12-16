@@ -2,7 +2,7 @@ use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     nft_abi_calls::{approve, mint},
     test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{create, purchase, request_return, token_distribution},
+    token_distributor_abi_calls::{buyback, create, purchase, token_distribution},
     tokendistributor_mod::DistributionState,
 };
 use fuels::{
@@ -16,7 +16,7 @@ mod success {
     use super::*;
 
     #[tokio::test]
-    async fn starts_return() {
+    async fn starts_buyback() {
         let (
             deployer,
             owner1,
@@ -82,10 +82,10 @@ mod success {
         );
         assert_eq!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Distributing()
+            DistributionState::Distributed()
         );
 
-        request_return(
+        buyback(
             purchase_amount * token_price,
             &owner1.token_distributor,
             asset_contract.clone(),
@@ -108,7 +108,7 @@ mod success {
         );
         assert_eq!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Returning()
+            DistributionState::Buyback()
         );
     }
 
@@ -179,10 +179,10 @@ mod success {
         );
         assert_eq!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Distributing()
+            DistributionState::Distributed()
         );
 
-        request_return(
+        buyback(
             purchase_amount * (token_price + 1),
             &owner1.token_distributor,
             asset_contract.clone(),
@@ -205,7 +205,7 @@ mod success {
         );
         assert_eq!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Returning()
+            DistributionState::Buyback()
         );
     }
 }
@@ -236,7 +236,7 @@ mod revert {
         )
         .await;
 
-        request_return(
+        buyback(
             purchase_amount * token_price,
             &owner1.token_distributor,
             asset_contract.clone(),
@@ -299,7 +299,7 @@ mod revert {
         )
         .await;
 
-        request_return(
+        buyback(
             purchase_amount * token_price,
             &owner1.token_distributor,
             asset_contract.clone(),
@@ -362,7 +362,7 @@ mod revert {
         )
         .await;
 
-        request_return(
+        buyback(
             (purchase_amount - 1) * token_price,
             &owner1.token_distributor,
             asset_contract.clone(),

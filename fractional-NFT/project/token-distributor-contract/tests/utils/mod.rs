@@ -72,37 +72,24 @@ pub mod fractional_nft_abi_calls {
 pub mod token_distributor_abi_calls {
 
     use super::*;
-
-    pub async fn cancel(
+    
+    pub async fn buyback(
+        amount: u64,
         contract: &TokenDistributor,
+        external_asset: ContractId,
         f_nft: ContractId,
-        nft: ContractId,
+        token_price: u64,
     ) -> CallResponse<()> {
+        let tx_params = TxParameters::new(None, Some(1_000_000), None);
+        let call_params =
+            CallParameters::new(Some(amount), Some(AssetId::from(*external_asset)), None);
+
         contract
             .methods()
-            .cancel(f_nft.clone())
-            .set_contracts(&[
-                Bech32ContractId::from(f_nft.clone()),
-                Bech32ContractId::from(nft.clone()),
-            ])
-            .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn close(
-        contract: &TokenDistributor,
-        f_nft: ContractId,
-        nft: ContractId,
-    ) -> CallResponse<()> {
-        contract
-            .methods()
-            .close(f_nft.clone())
-            .set_contracts(&[
-                Bech32ContractId::from(f_nft.clone()),
-                Bech32ContractId::from(nft.clone()),
-            ])
+            .buyback(f_nft.clone(), token_price)
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .set_contracts(&[Bech32ContractId::from(f_nft.clone())])
             .call()
             .await
             .unwrap()
@@ -141,6 +128,23 @@ pub mod token_distributor_abi_calls {
             .unwrap()
     }
 
+    pub async fn end(
+        contract: &TokenDistributor,
+        f_nft: ContractId,
+        nft: ContractId,
+    ) -> CallResponse<()> {
+        contract
+            .methods()
+            .end(f_nft.clone())
+            .set_contracts(&[
+                Bech32ContractId::from(f_nft.clone()),
+                Bech32ContractId::from(nft.clone()),
+            ])
+            .call()
+            .await
+            .unwrap()
+    }
+
     pub async fn purchase(
         amount: u64,
         contract: &TokenDistributor,
@@ -166,7 +170,7 @@ pub mod token_distributor_abi_calls {
             .unwrap()
     }
 
-    pub async fn purchase_reserve(
+    pub async fn purchase_ownership(
         amount: u64,
         contract: &TokenDistributor,
         external_asset: ContractId,
@@ -180,32 +184,10 @@ pub mod token_distributor_abi_calls {
 
         contract
             .methods()
-            .purchase_reserve(f_nft.clone(), owner, reserve)
+            .purchase_ownership(f_nft.clone(), owner, reserve)
             .tx_params(tx_params)
             .call_params(call_params)
             .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn request_return(
-        amount: u64,
-        contract: &TokenDistributor,
-        external_asset: ContractId,
-        f_nft: ContractId,
-        token_price: u64,
-    ) -> CallResponse<()> {
-        let tx_params = TxParameters::new(None, Some(1_000_000), None);
-        let call_params =
-            CallParameters::new(Some(amount), Some(AssetId::from(*external_asset)), None);
-
-        contract
-            .methods()
-            .request_return(f_nft.clone(), token_price)
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .set_contracts(&[Bech32ContractId::from(f_nft.clone())])
             .call()
             .await
             .unwrap()

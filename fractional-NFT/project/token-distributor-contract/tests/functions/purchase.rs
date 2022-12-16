@@ -2,7 +2,7 @@ use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     nft_abi_calls::{approve, mint},
     test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{cancel, create, purchase, token_distribution},
+    token_distributor_abi_calls::{create, end, purchase, token_distribution},
 };
 use fuels::{
     prelude::{Address, CallParameters, Identity, TxParameters},
@@ -272,7 +272,7 @@ mod revert {
         )
         .await;
 
-        cancel(
+        end(
             &owner1.token_distributor,
             fractional_nft_contract.clone(),
             nft_contract.clone(),

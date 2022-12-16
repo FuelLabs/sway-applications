@@ -1,42 +1,44 @@
 library data_structures;
 
 pub enum DistributionState {
-    Created: (),
-    Closed: (),
-    Distributing: (),
-    Returning: (),
+    Buyback: (),
+    Distributed: (),
+    Ended: (),
+    Started: (),
 }
 
 impl core::ops::Eq for DistributionState {
     fn eq(self, other: Self) -> bool {
         match (self, other) {
-            (DistributionState::Created, DistributionState::Created) => true,
-            (DistributionState::Closed, DistributionState::Closed) => true,
+            (DistributionState::Buyback, DistributionState::Buyback) => true,
+            (DistributionState::Distributed, DistributionState::Distributed) => true,
             (
 
-                DistributionState::Distributing,
-                DistributionState::Distributing,
+                DistributionState::Ended,
+                DistributionState::Ended,
             ) => true,
-            (DistributionState::Returning, DistributionState::Returning) => true,
+            (DistributionState::Started, DistributionState::Started) => true,
             _ => false,
         }
     }
 }
 
-pub struct NFTInfo {
-    nft: ContractId,
-    owner: Option<Identity>,
-    token_id: u64,
-}
-
 pub struct TokenDistribution {
+    /// The asset that is accepted as payment in exchange for fractionalized NFT tokens.
     external_asset: ContractId,
+    /// The total amount of the `external_asset` that is available to withdraw by the owner.
     external_deposits: u64,
+    /// The contract which manages the NFT held by the fractionalized NFT.
     nft: ContractId,
+    /// The user which may withdraw payments, start a buyback, and withdraw the NFT.
     owner: Option<Identity>,
+    /// The price at which ownership of the NFT may be sold.
     reserve_price: Option<u64>,
+    /// The current state of the distribution.
     state: DistributionState,
+    /// The id of the NFT which is held by the fractionalized NFT.
     token_id: u64,
+    /// The price for a single fractionalized NFT token.
     token_price: u64,
 }
 
@@ -55,7 +57,7 @@ impl TokenDistribution {
             nft,
             owner,
             reserve_price,
-            state: DistributionState::Created,
+            state: DistributionState::Started,
             token_id,
             token_price,
         }

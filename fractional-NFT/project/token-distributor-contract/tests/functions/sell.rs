@@ -2,7 +2,7 @@ use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     nft_abi_calls::{approve, mint},
     test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{create, purchase, request_return, sell},
+    token_distributor_abi_calls::{buyback, create, purchase, sell},
 };
 use fuels::{
     prelude::{Address, Bech32ContractId, CallParameters, Identity, TxParameters},
@@ -66,7 +66,7 @@ mod success {
             token_price,
         )
         .await;
-        request_return(
+        buyback(
             purchase_amount * token_price,
             &owner1.token_distributor,
             asset_contract.clone(),
@@ -188,7 +188,7 @@ mod success {
             token_price,
         )
         .await;
-        request_return(
+        buyback(
             purchase_amount * token_price,
             &owner1.token_distributor,
             asset_contract.clone(),
@@ -387,7 +387,7 @@ mod revert {
             token_price,
         )
         .await;
-        request_return(
+        buyback(
             purchase_amount * token_price,
             &owner1.token_distributor,
             asset_contract.clone(),

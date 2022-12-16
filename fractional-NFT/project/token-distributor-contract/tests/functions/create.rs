@@ -110,7 +110,7 @@ mod success {
         );
         assert_eq!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Created()
+            DistributionState::Started()
         );
         assert_eq!(token_distribution_struct.clone().unwrap().token_id, 0);
         assert_eq!(
@@ -211,7 +211,7 @@ mod success {
         );
         assert_eq!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Created()
+            DistributionState::Started()
         );
         assert_eq!(token_distribution_struct.clone().unwrap().token_id, 0);
         assert_eq!(
@@ -315,7 +315,7 @@ mod success {
         );
         assert_eq!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Created()
+            DistributionState::Started()
         );
         assert_eq!(token_distribution_struct.clone().unwrap().token_id, 0);
         assert_eq!(
