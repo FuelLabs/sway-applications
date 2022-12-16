@@ -11,12 +11,12 @@ impl core::ops::Eq for DistributionState {
     fn eq(self, other: Self) -> bool {
         match (self, other) {
             (DistributionState::Buyback, DistributionState::Buyback) => true,
-            (DistributionState::Distributed, DistributionState::Distributed) => true,
             (
 
-                DistributionState::Ended,
-                DistributionState::Ended,
+                DistributionState::Distributed,
+                DistributionState::Distributed,
             ) => true,
+            (DistributionState::Ended, DistributionState::Ended) => true,
             (DistributionState::Started, DistributionState::Started) => true,
             _ => false,
         }

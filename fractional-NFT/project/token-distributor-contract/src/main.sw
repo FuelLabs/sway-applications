@@ -15,7 +15,9 @@ use events::{
     Created,
     Purchased,
     PurchasedOwnership,
+    Reserve,
     Sell,
+    TokenPrice,
     Withdraw,
 };
 use interface::TokenDistributor;
@@ -177,6 +179,37 @@ impl TokenDistributor for Contract {
         log(Sell {
             fractional_nft,
             seller: msg_sender().unwrap(),
+        });
+    }
+
+    #[storage(read, write)]
+    fn set_token_price(fractional_nft: ContractId, token_price: u64) {
+        let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+
+        require(token_distribution.owner.is_some() && token_distribution.owner.unwrap() == msg_sender().unwrap(), AccessError::NotFNftOwner);
+        require(token_distribution.state == DistributionState::Started || token_distribution.state == DistributionState::Distributed, AccessError::InvalidState);
+
+        token_distribution.token_price = token_price;
+        storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
+
+        log(TokenPrice {
+            fractional_nft,
+            token_price,
+        });
+    }
+
+    #[storage(read, write)]
+    fn set_reserve(fractional_nft: ContractId, reserve: Option<u64>) {
+        let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+
+        require(token_distribution.owner.is_some() && token_distribution.owner.unwrap() == msg_sender().unwrap(), AccessError::NotFNftOwner);
+
+        token_distribution.reserve_price = reserve;
+        storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
+
+        log(Reserve {
+            fractional_nft,
+            reserve,
         });
     }
 

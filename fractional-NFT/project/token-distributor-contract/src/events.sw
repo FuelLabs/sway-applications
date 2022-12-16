@@ -53,6 +53,20 @@ pub struct Sell {
     seller: Identity,
 }
 
+pub struct Reserve {
+    /// The token contract that holds the NFT.
+    fractional_nft: ContractId,
+    /// The new reserve price at which ownership may be purchased.
+    reserve: Option<u64>,
+}
+
+pub struct TokenPrice {
+    /// The token contract that holds the NFT.
+    fractional_nft: ContractId,
+    /// The new token price at which fractionalized NFT tokens may be purchased.
+    token_price: u64,
+}
+
 pub struct Withdraw {
     /// The amount of the `external_asset` which has been withdraw from the contract.
     amount: u64,

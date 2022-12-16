@@ -4,5 +4,7 @@ mod end;
 mod purchase;
 mod purchase_ownership;
 mod sell;
+mod set_reserve;
+mod set_token_price;
 mod token_distribution;
 mod withdraw;

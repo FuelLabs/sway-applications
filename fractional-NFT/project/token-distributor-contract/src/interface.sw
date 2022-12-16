@@ -49,7 +49,7 @@ abi TokenDistributor {
     /// # Reverts
     ///
     /// * When the `fractional_nft` does not map to an existing token distribution.
-    /// * When the sendeer is not the owner of the distribution.
+    /// * When the sender is not the owner of the distribution.
     /// * When not all tokens can be returned to the fractionalized NFT contract.
     #[storage(read, write)]
     fn end(fractional_nft: ContractId);
@@ -100,6 +100,35 @@ abi TokenDistributor {
     /// * When not sending fractionalized NFT tokens.
     #[storage(read)]
     fn sell(fractional_nft: ContractId);
+
+    /// Allows for the owner to change the price at which fractionalize NFT tokens are sold.
+    ///
+    /// # Arguments
+    ///
+    /// * `fractional_nft` - The token contract that holds the NFT.
+    /// * `token_price` - The price at which ownership may be purchased.
+    ///
+    /// # Reverts
+    ///
+    /// * When `fractional_nft` does not map to an existing token distribution.
+    /// * When the sender is not the owner of the token distribution.
+    /// * When the token distribution is not in the started or distributed state.
+    #[storage(read, write)]
+    fn set_token_price(fractional_nft: ContractId, token_price: u64);
+
+    /// Allows for the owner to change the price at which ownership may be bought outright.
+    ///
+    /// # Arguments
+    ///
+    /// * `fractional_nft` - The token contract that holds the NFT.
+    /// * `reserve` - The price at which ownership may be purchased.
+    ///
+    /// # Reverts
+    ///
+    /// * When `fractional_nft` does not map to an existing token distribution.
+    /// * When the sender is not the owner of the token distribution.
+    #[storage(read, write)]
+    fn set_reserve(fractional_nft: ContractId, reserve: Option<u64>);
 
     /// Returns the information on a fractionalized NFT token distribution.
     ///

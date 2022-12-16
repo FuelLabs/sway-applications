@@ -72,7 +72,7 @@ pub mod fractional_nft_abi_calls {
 pub mod token_distributor_abi_calls {
 
     use super::*;
-    
+
     pub async fn buyback(
         amount: u64,
         contract: &TokenDistributor,
@@ -208,6 +208,32 @@ pub mod token_distributor_abi_calls {
             .call_params(call_params)
             .append_variable_outputs(1)
             .set_contracts(&[Bech32ContractId::from(f_nft.clone())])
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn set_token_price(
+        contract: &TokenDistributor,
+        f_nft: ContractId,
+        token_price: u64,
+    ) -> CallResponse<()> {
+        contract
+            .methods()
+            .set_token_price(f_nft.clone(), token_price)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn set_reserve(
+        contract: &TokenDistributor,
+        f_nft: ContractId,
+        reserve: Option<u64>,
+    ) -> CallResponse<()> {
+        contract
+            .methods()
+            .set_reserve(f_nft.clone(), reserve)
             .call()
             .await
             .unwrap()
