@@ -25,7 +25,6 @@ storage {
 }
 
 impl FractionalNFT for Contract {
-    // Set price, set reserve, 
     #[storage(read, write)]
     fn deposit(
         nft: ContractId,
@@ -57,7 +56,7 @@ impl FractionalNFT for Contract {
     #[storage(read, write)]
     fn set_owner(new_owner: Option<Identity>) {
         let nft_info = storage.nft_info;
-        require(nft_info.is_some(), "No NFT deposited");
+        require(nft_info.is_some(), AccessError::NoNftDeposited);
         let mut nft_info = nft_info.unwrap();
 
         require(nft_info.owner.is_some() && msg_sender().unwrap() == nft_info.owner.unwrap(), AccessError::NotNftOwner);
@@ -80,7 +79,7 @@ impl FractionalNFT for Contract {
     #[storage(read, write)]
     fn withdraw(to: Identity) {
         let nft_info = storage.nft_info;
-        require(nft_info.is_some(), "No NFT deposited");
+        require(nft_info.is_some(), AccessError::NoNftDeposited);
         let mut nft_info = nft_info.unwrap();
 
         require(nft_info.owner.is_some() && msg_sender().unwrap() == nft_info.owner.unwrap(), AccessError::NotNftOwner);

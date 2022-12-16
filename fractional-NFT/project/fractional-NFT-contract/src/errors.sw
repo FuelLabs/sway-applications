@@ -3,6 +3,7 @@ library errors;
 pub enum AccessError {
     AlreadyInitialized: (),
     NFTTransferNotApproved: (),
+    NoNftDeposited: (),
     NotNftOwner: (),
 }
 
