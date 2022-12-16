@@ -1,7 +1,7 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{auction_info, bid, create, deposit_balance},
-    englishauction_mod::{Auction, AuctionAsset, State},
+    english_auction_mod::{Auction, AuctionAsset, State},
     nft_abi_calls::{approve, mint, set_approval_for_all},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
@@ -513,7 +513,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionDoesNotExist")]
     async fn when_auction_id_does_not_map_to_existing_auction() {
         let (_, _, buyer1, _, _, _, _, buy_token_contract_id, _) = setup().await;
         let (_, initial_price, reserve_price, _) = defaults_token().await;
@@ -526,7 +526,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "BidderIsSeller")]
     async fn when_sender_is_the_seller() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -556,7 +556,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionIsNotOpen")]
     async fn when_auction_has_closed() {
         let (_, seller, buyer1, buyer2, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -590,7 +590,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionIsNotOpen")]
     async fn when_bidding_period_has_ended() {
         let (deployer, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -617,13 +617,13 @@ mod revert {
         )
         .await;
 
-        let _result = provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1, Option::None).await;
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "IncorrectAssetProvided")]
     async fn when_asset_provided_not_accepted() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -653,7 +653,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "3sdfsd")]
     async fn when_bidder_does_not_own_nft() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, _, buy_nft_contract_id) =
             setup().await;
@@ -682,7 +682,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "sgd4")]
     async fn when_auction_contract_does_not_have_permission_to_transfer_nft() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, _, buy_nft_contract_id) =
             setup().await;
@@ -713,7 +713,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "IncorrectAssetProvided")]
     async fn when_asset_type_and_struct_mismatch() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -758,7 +758,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "IncorrectAmountProvided")]
     async fn when_asset_amount_and_struct_mismatch() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -803,7 +803,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InitialPriceNotMet")]
     async fn when_bid_is_less_than_initial_price() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -833,7 +833,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "IncorrectAmountProvided")]
     async fn when_bid_is_less_than_last_bid() {
         let (_, seller, buyer1, buyer2, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -869,7 +869,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "IncorrectAmountProvided")]
     async fn when_bid_is_greater_than_reserve_price() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
