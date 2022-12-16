@@ -14,15 +14,16 @@ mod success {
 
     #[tokio::test]
     async fn transfers() {
-        let (private_key, contract, deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let (receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
 
-        deployer_wallet
+        deployer
+            .wallet
             .force_transfer_to_contract(
-                contract.get_contract_id(),
+                deployer.contract.get_contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),
@@ -31,19 +32,22 @@ mod success {
             .unwrap();
 
         // Check balances pre-transfer
-        let initial_contract_balance = balance(&contract, base_asset_contract_id()).await.value;
+        let initial_contract_balance = balance(&deployer.contract, base_asset_contract_id())
+            .await
+            .value;
 
-        let initial_receiver_balance = deployer_wallet
+        let initial_receiver_balance = deployer
+            .wallet
             .get_provider()
             .unwrap()
             .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
             .await
             .unwrap();
 
-        let nonce = nonce(&contract).await.value;
+        let nonce = nonce(&deployer.contract).await.value;
 
         let tx_hash = transaction_hash(
-            &contract,
+            &deployer.contract,
             receiver.clone(),
             DEFAULT_TRANSFER_AMOUNT,
             data,
@@ -57,7 +61,7 @@ mod success {
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
         transfer(
-            &contract,
+            &deployer.contract,
             receiver,
             base_asset_contract_id(),
             DEFAULT_TRANSFER_AMOUNT,
@@ -67,9 +71,12 @@ mod success {
         .await;
 
         // check balances post-transfer
-        let final_contract_balance = balance(&contract, base_asset_contract_id()).await.value;
+        let final_contract_balance = balance(&deployer.contract, base_asset_contract_id())
+            .await
+            .value;
 
-        let final_receiver_balance = deployer_wallet
+        let final_receiver_balance = deployer
+            .wallet
             .get_provider()
             .unwrap()
             .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
@@ -89,15 +96,16 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "NotInitialized")]
     async fn not_initialized() {
-        let (private_key, contract, deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        deployer_wallet
+        deployer
+            .wallet
             .force_transfer_to_contract(
-                contract.get_contract_id(),
+                deployer.contract.get_contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),
@@ -105,10 +113,10 @@ mod revert {
             .await
             .unwrap();
 
-        let nonce = nonce(&contract).await.value;
+        let nonce = nonce(&deployer.contract).await.value;
 
         let tx_hash = transaction_hash(
-            &contract,
+            &deployer.contract,
             receiver.clone(),
             DEFAULT_TRANSFER_AMOUNT,
             data,
@@ -122,7 +130,7 @@ mod revert {
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
         transfer(
-            &contract,
+            &deployer.contract,
             receiver,
             base_asset_contract_id(),
             DEFAULT_TRANSFER_AMOUNT,
@@ -133,18 +141,18 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "InsufficientAssetAmount")]
     async fn insufficient_asset_amount() {
-        let (private_key, contract, _deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
 
-        let nonce = nonce(&contract).await.value;
+        let nonce = nonce(&deployer.contract).await.value;
 
         let tx_hash = transaction_hash(
-            &contract,
+            &deployer.contract,
             receiver.clone(),
             DEFAULT_TRANSFER_AMOUNT,
             data,
@@ -158,7 +166,7 @@ mod revert {
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
         transfer(
-            &contract,
+            &deployer.contract,
             receiver,
             base_asset_contract_id(),
             DEFAULT_TRANSFER_AMOUNT,
@@ -169,17 +177,18 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "IncorrectSignerOrdering")]
     async fn incorrect_signer_ordering() {
-        let (private_key, contract, deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
 
-        deployer_wallet
+        deployer
+            .wallet
             .force_transfer_to_contract(
-                contract.get_contract_id(),
+                deployer.contract.get_contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),
@@ -187,10 +196,10 @@ mod revert {
             .await
             .unwrap();
 
-        let nonce = nonce(&contract).await.value;
+        let nonce = nonce(&deployer.contract).await.value;
 
         let tx_hash = transaction_hash(
-            &contract,
+            &deployer.contract,
             receiver.clone(),
             DEFAULT_TRANSFER_AMOUNT,
             data,
@@ -205,7 +214,7 @@ mod revert {
         let incorrectly_ordered_signatures = vec![signatures[1].clone(), signatures[0].clone()];
 
         transfer(
-            &contract,
+            &deployer.contract,
             receiver,
             base_asset_contract_id(),
             DEFAULT_TRANSFER_AMOUNT,
@@ -216,17 +225,18 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "InsufficientApprovals")]
     async fn insufficient_approvals() {
-        let (private_key, contract, deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
 
-        deployer_wallet
+        deployer
+            .wallet
             .force_transfer_to_contract(
-                contract.get_contract_id(),
+                deployer.contract.get_contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),
@@ -234,10 +244,10 @@ mod revert {
             .await
             .unwrap();
 
-        let nonce = nonce(&contract).await.value;
+        let nonce = nonce(&deployer.contract).await.value;
 
         let tx_hash = transaction_hash(
-            &contract,
+            &deployer.contract,
             receiver.clone(),
             DEFAULT_TRANSFER_AMOUNT,
             data,
@@ -252,7 +262,7 @@ mod revert {
         signatures.remove(0);
 
         transfer(
-            &contract,
+            &deployer.contract,
             receiver,
             base_asset_contract_id(),
             DEFAULT_TRANSFER_AMOUNT,

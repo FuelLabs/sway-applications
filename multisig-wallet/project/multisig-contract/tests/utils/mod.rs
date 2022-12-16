@@ -1,5 +1,5 @@
 use fuels::{
-    contract::contract::CallResponse,
+    contract::call_response::FuelCallResponse,
     prelude::*,
     signers::fuel_crypto::{Message, SecretKey, Signature},
     tx::{Bytes32, Bytes64},
@@ -23,11 +23,16 @@ pub mod paths {
         "./out/debug/multisig-contract-storage_slots.json";
 }
 
+pub struct Caller {
+    pub contract: MultiSigContract,
+    pub wallet: WalletUnlocked,
+}
+
 pub mod abi_calls {
 
     use super::*;
 
-    pub async fn cancel_transaction(contract: &MultiSigContract) -> CallResponse<()> {
+    pub async fn cancel_transaction(contract: &MultiSigContract) -> FuelCallResponse<()> {
         contract
             .methods()
             .cancel_transaction()
@@ -40,7 +45,7 @@ pub mod abi_calls {
         contract: &MultiSigContract,
         users: Vec<User>,
         threshold: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .constructor(threshold, users)
@@ -55,7 +60,7 @@ pub mod abi_calls {
         value: u64,
         data: Bits256,
         signatures_data: Vec<SignatureInfo>,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .execute_transaction(data, signatures_data, to, value)
@@ -72,7 +77,7 @@ pub mod abi_calls {
         value: u64,
         data: Bits256,
         signatures_data: Vec<SignatureInfo>,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .transfer(asset_id, data, signatures_data, to, value)
@@ -82,11 +87,14 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn nonce(contract: &MultiSigContract) -> CallResponse<u64> {
+    pub async fn nonce(contract: &MultiSigContract) -> FuelCallResponse<u64> {
         contract.methods().nonce().call().await.unwrap()
     }
 
-    pub async fn balance(contract: &MultiSigContract, asset_id: ContractId) -> CallResponse<u64> {
+    pub async fn balance(
+        contract: &MultiSigContract,
+        asset_id: ContractId,
+    ) -> FuelCallResponse<u64> {
         contract.methods().balance(asset_id).call().await.unwrap()
     }
 
@@ -96,7 +104,7 @@ pub mod abi_calls {
         value: u64,
         data: Bits256,
         nonce: u64,
-    ) -> CallResponse<Bits256> {
+    ) -> FuelCallResponse<Bits256> {
         contract
             .methods()
             .transaction_hash(data, nonce, to, value)
@@ -114,30 +122,33 @@ pub mod test_helpers {
     pub const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
     pub const DEFAULT_THRESHOLD: u64 = 5;
 
-    pub async fn setup_env(
-        private_key: &str,
-    ) -> Result<(SecretKey, MultiSigContract, WalletUnlocked), Error> {
+    pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller), Error> {
         let private_key: SecretKey = private_key.parse().unwrap();
+        let mut deployer_wallet = WalletUnlocked::new_from_private_key(private_key, None);
 
-        let mut wallet = WalletUnlocked::new_from_private_key(private_key, None);
+        let mut non_owner_wallet = WalletUnlocked::new_random(None);
 
-        let number_of_assets = 1;
-        let coins_per_asset = 10;
-        let amount_per_coin = 200;
-        let (coins, _asset_ids) = setup_multiple_assets_coins(
-            wallet.address(),
-            number_of_assets,
-            coins_per_asset,
-            amount_per_coin,
-        );
+        let number_of_coins = 1;
+        let amount_per_coin = 1_000_000;
+        let all_coins = vec![deployer_wallet.clone(), non_owner_wallet.clone()]
+            .iter()
+            .flat_map(|wallet| {
+                setup_single_asset_coins(
+                    wallet.address(),
+                    BASE_ASSET_ID,
+                    number_of_coins,
+                    amount_per_coin,
+                )
+            })
+            .collect::<Vec<_>>();
 
-        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None, None).await;
+        let (provider, _socket_addr) = setup_test_provider(all_coins, vec![], None, None).await;
+        deployer_wallet.set_provider(provider.clone());
+        non_owner_wallet.set_provider(provider);
 
-        wallet.set_provider(provider);
-
-        let contract_id = Contract::deploy(
+        let multisig_contract_id = Contract::deploy(
             MULTISIG_CONTRACT_BINARY_PATH,
-            &wallet,
+            &deployer_wallet,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(
                 MULTISIG_CONTRACT_STORAGE_PATH.to_string(),
@@ -145,9 +156,17 @@ pub mod test_helpers {
         )
         .await?;
 
-        let contract_instance = MultiSigContract::new(contract_id, wallet.clone());
+        let deployer = Caller {
+            contract: MultiSigContract::new(multisig_contract_id.clone(), deployer_wallet.clone()),
+            wallet: deployer_wallet,
+        };
 
-        Ok((private_key, contract_instance, wallet))
+        let non_owner = Caller {
+            contract: MultiSigContract::new(multisig_contract_id, non_owner_wallet.clone()),
+            wallet: non_owner_wallet,
+        };
+
+        Ok((private_key, deployer, non_owner))
     }
 
     pub fn constructor_users() -> Vec<User> {

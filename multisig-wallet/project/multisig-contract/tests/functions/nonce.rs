@@ -10,13 +10,13 @@ mod success {
 
     #[tokio::test]
     async fn gets_nonce() {
-        let (_private_key, contract, _deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        let initial_nonce = nonce(&contract).await.value;
+        let initial_nonce = nonce(&deployer.contract).await.value;
 
-        constructor(&contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
 
-        let final_nonce = nonce(&contract).await.value;
+        let final_nonce = nonce(&deployer.contract).await.value;
 
         assert_eq!(initial_nonce, 0);
         assert_eq!(final_nonce, 1);

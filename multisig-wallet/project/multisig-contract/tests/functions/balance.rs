@@ -12,13 +12,16 @@ mod success {
 
     #[tokio::test]
     async fn gets_balance() {
-        let (_private_key, contract, deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        let initial_balance = balance(&contract, base_asset_contract_id()).await.value;
+        let initial_balance = balance(&deployer.contract, base_asset_contract_id())
+            .await
+            .value;
 
-        deployer_wallet
+        deployer
+            .wallet
             .force_transfer_to_contract(
-                contract.get_contract_id(),
+                deployer.contract.get_contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),
@@ -26,7 +29,9 @@ mod success {
             .await
             .unwrap();
 
-        let final_balance = balance(&contract, base_asset_contract_id()).await.value;
+        let final_balance = balance(&deployer.contract, base_asset_contract_id())
+            .await
+            .value;
 
         assert_eq!(initial_balance, 0);
         assert_eq!(final_balance, DEFAULT_TRANSFER_AMOUNT);

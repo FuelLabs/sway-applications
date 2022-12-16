@@ -28,20 +28,20 @@ mod success {
 
     #[tokio::test]
     async fn gets_transaction_hash() {
-        let (_private_key, contract, deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         // Set parameters
-        let to = Identity::Address(deployer_wallet.address().try_into().unwrap());
+        let to = Identity::Address(deployer.wallet.address().try_into().unwrap());
 
         let mut rng = StdRng::seed_from_u64(1000);
         let data: Bytes32 = rng.gen();
         let data = Bits256(*data);
 
-        let nonce = nonce(&contract).await.value;
+        let nonce = nonce(&deployer.contract).await.value;
 
         // Recreate Transaction instance
         let tx = Transaction {
-            contract_identifier: contract.get_contract_id().try_into().unwrap(),
+            contract_identifier: deployer.contract.get_contract_id().try_into().unwrap(),
             data,
             destination: to.clone(),
             nonce,
@@ -56,14 +56,22 @@ mod success {
         let data_token = Token::B256(tx.data.0);
 
         let destination_variants = EnumVariants::new(vec![
-            ParamType::Struct {
-                fields: vec![ParamType::B256],
-                generics: vec![],
-            },
-            ParamType::Struct {
-                fields: vec![ParamType::B256],
-                generics: vec![],
-            },
+            (
+                String::from("Address"),
+                ParamType::Struct {
+                    name: String::from("Address"),
+                    fields: vec![(String::from("value"), ParamType::B256)],
+                    generics: vec![],
+                },
+            ),
+            (
+                String::from("ContractId"),
+                ParamType::Struct {
+                    name: String::from("ContractId"),
+                    fields: vec![(String::from("value"), ParamType::B256)],
+                    generics: vec![],
+                },
+            ),
         ])
         .unwrap();
         let destination_enum_selector = Box::new((
@@ -92,9 +100,10 @@ mod success {
 
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
-        let response = transaction_hash(&contract, to, DEFAULT_TRANSFER_AMOUNT, data, nonce)
-            .await
-            .value;
+        let response =
+            transaction_hash(&deployer.contract, to, DEFAULT_TRANSFER_AMOUNT, data, nonce)
+                .await
+                .value;
 
         assert_eq!(Bits256(expected_hash.into()), response);
     }

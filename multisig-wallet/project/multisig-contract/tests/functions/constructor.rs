@@ -12,11 +12,11 @@ mod success {
 
     #[tokio::test]
     async fn setup_with_constructor() {
-        let (_private_key, contract, _deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        constructor(&contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
 
-        assert_eq!(nonce(&contract).await.value, 1);
+        assert_eq!(nonce(&deployer.contract).await.value, 1);
     }
 }
 
@@ -25,19 +25,19 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "CannotReinitialize")]
     async fn cannot_reinitialize() {
-        let (_private_key, contract, _deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        constructor(&contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
 
-        constructor(&contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "AddressCannotBeZero")]
     async fn address_cannot_be_zero() {
-        let (_private_key, contract, _deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let mut users = constructor_users();
         users[0] = User {
@@ -48,21 +48,21 @@ mod revert {
             weight: 3,
         };
 
-        constructor(&contract, users, DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, users, DEFAULT_THRESHOLD).await;
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "ThresholdCannotBeZero")]
     async fn threshold_cannot_be_zero() {
-        let (_private_key, contract, _deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        constructor(&contract, constructor_users(), 0).await;
+        constructor(&deployer.contract, constructor_users(), 0).await;
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "WeightingCannotBeZero")]
     async fn weighting_cannot_be_zero() {
-        let (_private_key, contract, _deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let mut users = constructor_users();
         users[0] = User {
@@ -73,14 +73,14 @@ mod revert {
             weight: 0,
         };
 
-        constructor(&contract, users, DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, users, DEFAULT_THRESHOLD).await;
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "TotalWeightCannotBeLessThanThreshold")]
     async fn total_weight_cannot_be_less_than_threshold() {
-        let (_private_key, contract, _deployer_wallet) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        constructor(&contract, constructor_users(), 100).await;
+        constructor(&deployer.contract, constructor_users(), 100).await;
     }
 }
