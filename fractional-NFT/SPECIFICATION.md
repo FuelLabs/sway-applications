@@ -1,3 +1,33 @@
+Table of Contents
+- [Overview](#overview)
+- [Use Cases](#use-cases)
+    - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
+        - [Fractional NFT Core Functionality](#fractional-nft-core-fnctionality)
+            - [`deposit()`](#deposit)
+            - [`set_owner()`](#set_owner)
+            - [`withdraw()`](#withdraw)
+        - [Fractional NFT State Checks](#fractional-nft-state-checks)
+            - [`nft_info()`](#nft-info)
+            - [`supply()`](#supply)
+        - [Fractional NFT Sequence Diagram](#fractional-nft-sequence-diagram)
+        - [Token Distributor NFT Owner Core Functionality](#token-distributor-nft-owner-core-functionality)
+            - [`create()`](#create)
+            - [`withdraw()`](#withdraw)
+            - [`buyback()`](#buyback)
+            - [`end()`](#end)
+            - [`set_token_price()`](#set-token-price)
+            - [`set_reserve()`](#set-reserve)
+        - [Token Distributor Token Purchaser Core Functionality](#token-distributor-token--purchaser-core-functionality)
+            - [`purchase()`](#purchase)
+            - [`sell()`](#sell)
+            - [`purchase_ownership()`](#purchase-ownership)
+            - [`end()`](#end)
+            - [`set_token_price()`](#set-token-price)
+            - [`set_reserve()`](#set-reserve)
+        - [Token Distributor State Checks](#token-distributor-state-checks)
+            - [`token_distribution()`](#token-distribution)
+        - [Token Distributor Sequence Diagram](#token-distributor-sequence-diagram)
+
 # Overview
 
 This document provides an overview of the application.
@@ -14,7 +44,7 @@ If you are interested in a functional overview then this is the section for you.
 
 This sub-section details what a user is able to do e.g. click a button and "x, y, z" happens.
 
-### Fractional-NFT Core Functionality
+### FractionalNFT Core Functionality
 
 #### `deposit()`
 
@@ -30,17 +60,17 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 1. Allows for the owner to unlock and regain ownership of the NFT if
     1. All fractionalized tokens are sent to and owned by the Fractional-NFT contract
 
-### Fractional-NFT State Checks
+### Fractional NFT State Checks
 
 #### `nft_info()`
 
 1. Returns information on the NFT held by the Fractional-NFT contract
 
-#### `supply()`
+#### `()`
 
 1.  Returns the total circulating supply of fractionalized tokens
 
-## Fractional NFT Sequence Diagram
+### Fractional NFT Sequence Diagram
 
 ![Fractional NFT Sequence Diagram](.docs/f-NFT.png)
 
@@ -100,6 +130,6 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 1.  Returns infomation on a fractionalized token distribution
 
-## Token Distributor Sequence Diagram
+### Token Distributor Sequence Diagram
 
 ![Token Distributor Sequence Diagram](.docs/token-distribution.png)
