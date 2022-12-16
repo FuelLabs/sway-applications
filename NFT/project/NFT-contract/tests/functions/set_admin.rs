@@ -33,7 +33,7 @@ mod reverts {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NoContractAdmin")]
     async fn when_not_initalized() {
         let (_deploy_wallet, owner1, _owner2) = setup().await;
 
@@ -42,7 +42,7 @@ mod reverts {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "SenderNotAdmin")]
     async fn when_not_admin_identity() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
