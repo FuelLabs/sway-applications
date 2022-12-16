@@ -12,22 +12,20 @@ mod success {
     async fn gets_approval_for_approved() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
-        // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address().into());
-        constructor(true, &deploy_wallet.contract, &admin, 1).await;
+        constructor(None, &deploy_wallet.contract, Some(1)).await;
 
         let owner = Identity::Address(owner1.wallet.address().into());
         let operator = Identity::Address(owner2.wallet.address().into());
 
         assert_eq!(
-            is_approved_for_all(&owner1.contract, &operator, &owner).await,
+            is_approved_for_all(&owner1.contract, operator.clone(), owner.clone()).await,
             false
         );
 
-        set_approval_for_all(true, &owner1.contract, &operator).await;
+        set_approval_for_all(true, &owner1.contract, operator.clone()).await;
 
         assert_eq!(
-            is_approved_for_all(&owner1.contract, &operator, &owner).await,
+            is_approved_for_all(&owner1.contract, operator.clone(), owner.clone()).await,
             true
         );
     }
@@ -36,16 +34,14 @@ mod success {
     async fn gets_approval_for_unapproved() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
-        // constructor(false, &deploy_wallet.contract, &Option::None(), 1).await;
-        let admin = Identity::Address(owner1.wallet.address().into());
-        constructor(true, &deploy_wallet.contract, &admin, 1).await;
+        constructor(None, &deploy_wallet.contract, Some(1)).await;
 
         let owner = Identity::Address(owner1.wallet.address().into());
         let operator = Identity::Address(owner2.wallet.address().into());
-        set_approval_for_all(true, &owner1.contract, &operator).await;
+        set_approval_for_all(true, &owner1.contract, operator.clone()).await;
 
         assert_eq!(
-            is_approved_for_all(&owner1.contract, &owner, &operator).await,
+            is_approved_for_all(&owner1.contract, owner.clone(), operator.clone()).await,
             false
         );
     }

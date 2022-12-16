@@ -29,13 +29,8 @@ mod success {
             CallParameters::new(
                 Some(liquidity_to_remove),
                 Some(exchange.liquidity_pool_asset),
-                Some(100_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             a_to_remove,
             b_to_remove,
             amounts.deadline,
@@ -95,13 +90,8 @@ mod success {
             CallParameters::new(
                 Some(liquidity_to_remove),
                 Some(exchange.liquidity_pool_asset),
-                Some(100_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             a_to_remove,
             b_to_remove,
             amounts.deadline,
@@ -161,13 +151,8 @@ mod success {
             CallParameters::new(
                 Some(liquidity_to_remove),
                 Some(exchange.liquidity_pool_asset),
-                Some(100_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             a_to_remove,
             b_to_remove,
             amounts.deadline,
@@ -227,13 +212,8 @@ mod success {
             CallParameters::new(
                 Some(liquidity_to_remove),
                 Some(exchange.liquidity_pool_asset),
-                Some(100_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             a_to_remove,
             b_to_remove,
             amounts.deadline,
@@ -296,13 +276,8 @@ mod revert {
                 // Normally, this also causes Revert(18446744073709486080),
                 // but this test condition (not initialized contract) reverts before that.
                 None,
-                Some(10_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 10_000_000,
-                maturity: 0,
-            },
             a_to_remove,
             b_to_remove,
             deadline,
@@ -325,13 +300,8 @@ mod revert {
                 Some(amounts.liquidity),
                 // sending an asset other than pool asset
                 Some(exchange.asset_a),
-                Some(10_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 10_000_000,
-                maturity: 0,
-            },
             a_to_remove,
             b_to_remove,
             amounts.deadline,
@@ -352,13 +322,8 @@ mod revert {
             CallParameters::new(
                 Some(amounts.liquidity),
                 Some(exchange.liquidity_pool_asset),
-                Some(100_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             // passing 0 as min_asset_a
             0,
             b_to_remove,
@@ -380,13 +345,8 @@ mod revert {
             CallParameters::new(
                 Some(amounts.liquidity),
                 Some(exchange.liquidity_pool_asset),
-                Some(100_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             a_to_remove,
             // passing 0 as min_asset_b
             0,
@@ -409,13 +369,8 @@ mod revert {
             CallParameters::new(
                 Some(amounts.liquidity),
                 Some(exchange.liquidity_pool_asset),
-                Some(100_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             a_to_remove,
             b_to_remove,
             // passing 0 as deadline
@@ -439,13 +394,8 @@ mod revert {
                 // sending 0 msg_amount
                 Some(0),
                 Some(exchange.liquidity_pool_asset),
-                Some(100_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             a_to_remove,
             b_to_remove,
             amounts.deadline,
@@ -470,13 +420,8 @@ mod revert {
                 // Normally, this also causes Revert(18446744073709486080),
                 // but this test condition (zero liquidity) reverts before that.
                 None,
-                Some(100_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             a_to_remove,
             b_to_remove,
             amounts.deadline,
@@ -502,13 +447,8 @@ mod revert {
             CallParameters::new(
                 Some(amounts.liquidity),
                 Some(exchange.liquidity_pool_asset),
-                Some(100_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             // setting min_asset_a to be higher than what can be removed
             asset_a_amount_to_remove + 10,
             b_to_remove,
@@ -535,13 +475,8 @@ mod revert {
             CallParameters::new(
                 Some(amounts.liquidity),
                 Some(exchange.liquidity_pool_asset),
-                Some(100_000_000),
+                None,
             ),
-            TxParameters {
-                gas_price: 0,
-                gas_limit: 100_000_000,
-                maturity: 0,
-            },
             a_to_remove,
             // setting min_asset_b to be higher than what can be removed
             asset_b_amount_to_remove + 10,
