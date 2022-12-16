@@ -33,7 +33,11 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn mint_to(amount: u64, contract: &SimpleAsset, to: Identity) -> FuelCallResponse<()> {
+    pub async fn mint_to(
+        amount: u64,
+        contract: &SimpleAsset,
+        to: Identity,
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .mint_to(amount, to)
