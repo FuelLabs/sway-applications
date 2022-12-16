@@ -6,7 +6,7 @@ use crate::utils::{
 };
 use fuels::{prelude::Identity, signers::Signer};
 
-mod succes {
+mod success {
 
     use super::*;
 

@@ -190,9 +190,7 @@ impl TokenDistributor for Contract {
     #[storage(read, write)]
     fn withdraw(fractional_nft: ContractId) {
         let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
-
-        require(token_distribution.owner.is_some() && token_distribution.owner.unwrap() == msg_sender().unwrap(), AccessError::NotFNftOwner);
-
+        
         let amount = token_distribution.external_deposits;
         token_distribution.external_deposits = 0;
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));

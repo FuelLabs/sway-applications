@@ -11,7 +11,7 @@ use fuels::{
     tx::AssetId,
 };
 
-mod succes {
+mod success {
 
     use super::*;
 
