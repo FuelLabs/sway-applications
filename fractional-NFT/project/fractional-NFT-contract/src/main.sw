@@ -34,9 +34,11 @@ impl FractionalNFT for Contract {
     ) {
         require(storage.nft_info.is_none(), AccessError::AlreadyInitialized);
 
+        // Store information on this fractionalized NFT
         storage.nft_info = Option::Some(NFTInfo::new(nft, owner, token_id));
         storage.supply = supply;
 
+        // Take ownership of the NFT and mint tokens to the sender
         transfer_nft(nft, Identity::ContractId(contract_id()), token_id);
         mint_to(supply, msg_sender().unwrap());
 
@@ -61,6 +63,7 @@ impl FractionalNFT for Contract {
 
         require(nft_info.owner.is_some() && msg_sender().unwrap() == nft_info.owner.unwrap(), AccessError::NotNftOwner);
 
+        // Store the new owner
         let previous_owner = nft_info.owner;
         nft_info.owner = new_owner;
         storage.nft_info = Option::Some(nft_info);
@@ -85,10 +88,12 @@ impl FractionalNFT for Contract {
         require(nft_info.owner.is_some() && msg_sender().unwrap() == nft_info.owner.unwrap(), AccessError::NotNftOwner);
         require(this_balance(contract_id()) == storage.supply, AssetError::SupplyNotReturned);
 
+        // Set the contract to have no owner such that it becomes locked
         let owner = nft_info.owner;
         nft_info.owner = Option::None();
         storage.nft_info = Option::Some(nft_info);
 
+        // Change ownership of the NFT to the `to` identity
         transfer_nft(nft_info.nft, to, nft_info.token_id);
 
         log(Withdraw {

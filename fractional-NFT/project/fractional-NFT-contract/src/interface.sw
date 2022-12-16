@@ -19,7 +19,7 @@ abi FractionalNFT {
     /// * When the contract has already been initialized.
     #[storage(read, write)]
     fn deposit(nft: ContractId, owner: Option<Identity>, supply: u64, token_id: u64);
-    
+
     /// Returns the information on the NFT locked in the contract.
     #[storage(read)]
     fn nft_info() -> Option<NFTInfo>;
