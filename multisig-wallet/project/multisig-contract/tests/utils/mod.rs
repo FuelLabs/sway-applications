@@ -15,7 +15,7 @@ abigen!(
 );
 
 pub const VALID_SIGNER_PK: &str =
-    "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301";
+    "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301"; // Test-only private key
 
 pub mod paths {
     pub const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
@@ -119,8 +119,8 @@ pub mod test_helpers {
     use super::*;
     use paths::{MULTISIG_CONTRACT_BINARY_PATH, MULTISIG_CONTRACT_STORAGE_PATH};
 
-    pub const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
     pub const DEFAULT_THRESHOLD: u64 = 5;
+    pub const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
 
     pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller), Error> {
         let private_key: SecretKey = private_key.parse().unwrap();
