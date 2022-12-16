@@ -1,1 +1,2 @@
+[workspace]
 members = ["./project/swap-predicate"]
