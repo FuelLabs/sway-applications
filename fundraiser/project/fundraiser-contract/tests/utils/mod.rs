@@ -1,5 +1,5 @@
 use fuels::{
-    contract::contract::CallResponse,
+    contract::call_response::FuelCallResponse,
     prelude::*,
     tx::{AssetId, ContractId, Salt},
 };
@@ -50,7 +50,7 @@ pub mod abi_calls {
     pub async fn asset_info_by_id(
         contract: &Fundraiser,
         asset: &ContractId,
-    ) -> CallResponse<AssetInfo> {
+    ) -> FuelCallResponse<AssetInfo> {
         contract
             .methods()
             .asset_info_by_id(*asset)
@@ -59,7 +59,10 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn asset_info_by_count(contract: &Fundraiser, id: u64) -> CallResponse<AssetInfo> {
+    pub async fn asset_info_by_count(
+        contract: &Fundraiser,
+        id: u64,
+    ) -> FuelCallResponse<AssetInfo> {
         contract
             .methods()
             .asset_info_by_count(id)
@@ -72,19 +75,19 @@ pub mod abi_calls {
         contract: &Fundraiser,
         id: u64,
         user: Identity,
-    ) -> CallResponse<Campaign> {
+    ) -> FuelCallResponse<Campaign> {
         contract.methods().campaign(id, user).call().await.unwrap()
     }
 
-    pub async fn campaign_info(contract: &Fundraiser, id: u64) -> CallResponse<CampaignInfo> {
+    pub async fn campaign_info(contract: &Fundraiser, id: u64) -> FuelCallResponse<CampaignInfo> {
         contract.methods().campaign_info(id).call().await.unwrap()
     }
 
-    pub async fn cancel_campaign(contract: &Fundraiser, id: u64) -> CallResponse<()> {
+    pub async fn cancel_campaign(contract: &Fundraiser, id: u64) -> FuelCallResponse<()> {
         contract.methods().cancel_campaign(id).call().await.unwrap()
     }
 
-    pub async fn claim_pledges(contract: &Fundraiser, id: u64) -> CallResponse<()> {
+    pub async fn claim_pledges(contract: &Fundraiser, id: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .claim_pledges(id)
@@ -100,7 +103,7 @@ pub mod abi_calls {
         beneficiary: &Identity,
         deadline: u64,
         target_amount: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .create_campaign(asset.clone(), beneficiary.clone(), deadline, target_amount)
@@ -114,7 +117,7 @@ pub mod abi_calls {
         id: u64,
         asset: &MetaAsset,
         amount: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params = CallParameters::new(Some(amount), Some(AssetId::from(*asset.id)), None);
 
@@ -128,7 +131,11 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn pledged(contract: &Fundraiser, id: u64, user: Identity) -> CallResponse<Pledge> {
+    pub async fn pledged(
+        contract: &Fundraiser,
+        id: u64,
+        user: Identity,
+    ) -> FuelCallResponse<Pledge> {
         contract.methods().pledged(id, user).call().await.unwrap()
     }
 
@@ -152,7 +159,7 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn unpledge(contract: &Fundraiser, id: u64, amount: u64) -> CallResponse<()> {
+    pub async fn unpledge(contract: &Fundraiser, id: u64, amount: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .unpledge(id, amount)

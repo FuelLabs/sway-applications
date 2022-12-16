@@ -329,7 +329,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_zero() {
         let (author, user, asset, _, defaults) = setup().await;
 
@@ -353,7 +353,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_greater_than_number_of_campaigns() {
         let (author, user, asset, _, defaults) = setup().await;
 
@@ -378,7 +378,7 @@ mod revert {
 
     #[tokio::test]
     #[ignore]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "CampaignEnded")]
     async fn when_pledging_after_deadline() {
         let (author, user, asset, _, defaults) = setup().await;
         let deadline = 5;
@@ -406,7 +406,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "IncorrectAssetSent")]
     async fn when_pledging_incorrect_asset() {
         let (author, user, _, asset2, defaults) = setup().await;
 
@@ -431,7 +431,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AmountCannotBeZero")]
     async fn when_pledging_zero_amount() {
         let (author, user, asset, _, defaults) = setup().await;
 
@@ -456,10 +456,10 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "CampaignHasBeenCancelled")]
     async fn when_pledging_to_cancelled_campaign() {
         let (author, user, asset, _, defaults) = setup().await;
-        let deadline = 5;
+        let deadline = 8;
 
         mint(
             &asset.contract,
