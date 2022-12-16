@@ -23,9 +23,10 @@ Table of Contents
         - [State Checks](#state-checks-1)
             - [`balance()`](#balance)
             - [`pool_info()`](#pool_info)
-    - [Atomic Add Liquidity Script](#atomic-add-liquidity-script)
-    - [Swap Exact Input Script](#swap-exact-input-script)
-    - [Swap Exact Output Script](#swap-exact-output-script)
+    - [Scripts](#scripts)
+        - [Atomic Add Liquidity](#atomic-add-liquidity)
+        - [Swap Exact Input](#swap-exact-input)
+        - [Swap Exact Output](#swap-exact-output)
 - [Sequence Diagram](#sequence-diagram)
 
 # Overview
@@ -168,13 +169,15 @@ If you are interested in a functional overview then this is the section for you.
 1. Returns the pool info, i.e., the identifiers and amounts of assets and the liquidity pool asset amount 
     1. If the asset pair of the pool is set
 
-## Atomic Add Liquidity Script
+## Scripts
+
+### `atomic-add-liquidity`
 
 1. Deposits pool assets and adds liquidity
     1. If desired liquidity is more than 0
     2. If [`deposit`](#deposit) and [`add_liquidity`](#add_liquidity) conditions are met
 
-## Swap Exact Input Script
+### `swap-exact-input`
 
 1. Swaps assets along a route by specifying exact input for each swap
     1. If the route has at least 2 assets
@@ -182,7 +185,7 @@ If you are interested in a functional overview then this is the section for you.
     3. If the AMM has a pool for each subsequent asset pair in route
     4. If [`swap_exact_input`](#swap_exact_input) conditions are met
 
-## Swap Exact Output Script
+### `swap-exact-output`
 
 1. Swaps assets along a route by specifying exact output for each swap
     1. If the route has at least 2 assets

@@ -1,5 +1,4 @@
 use crate::utils::{setup, setup_and_construct, wallet_balances};
-use fuels::prelude::*;
 use test_utils::abi::exchange::{pool_info, preview_swap_exact_output, swap_exact_output};
 
 mod success {
@@ -12,25 +11,25 @@ mod success {
 
         let output_amount = 10;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let max_input =
-            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1)
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1, true)
                 .await
-                .value
                 .amount;
 
         let input_amount = swap_exact_output(
             &exchange.instance,
-            CallParameters::new(Some(max_input), Some(exchange.pair.0), Some(10_000_000)),
+            exchange.pair.0,
+            max_input,
             output_amount,
             liquidity_parameters.deadline,
+            true,
         )
-        .await
-        .value;
+        .await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
@@ -60,30 +59,26 @@ mod success {
         let output_amount = 10;
         let forward_extra = 100;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let max_input =
-            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1)
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1, true)
                 .await
-                .value
                 .amount;
         let forward_amount = max_input + forward_extra;
 
         let input_amount = swap_exact_output(
             &exchange.instance,
-            CallParameters::new(
-                Some(forward_amount),
-                Some(exchange.pair.0),
-                Some(10_000_000),
-            ),
+            exchange.pair.0,
+            forward_amount,
             output_amount,
             liquidity_parameters.deadline,
+            true,
         )
-        .await
-        .value;
+        .await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
@@ -112,25 +107,25 @@ mod success {
 
         let output_amount = 10;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let max_input =
-            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0)
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
                 .await
-                .value
                 .amount;
 
         let input_amount = swap_exact_output(
             &exchange.instance,
-            CallParameters::new(Some(max_input), Some(exchange.pair.1), Some(10_000_000)),
+            exchange.pair.1,
+            max_input,
             output_amount,
             liquidity_parameters.deadline,
+            true,
         )
-        .await
-        .value;
+        .await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
@@ -160,30 +155,26 @@ mod success {
         let output_amount = 10;
         let forward_extra = 100;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let max_input =
-            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0)
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
                 .await
-                .value
                 .amount;
         let forward_amount = max_input + forward_extra;
 
         let input_amount = swap_exact_output(
             &exchange.instance,
-            CallParameters::new(
-                Some(forward_amount),
-                Some(exchange.pair.1),
-                Some(10_000_000),
-            ),
+            exchange.pair.1,
+            forward_amount,
             output_amount,
             liquidity_parameters.deadline,
+            true,
         )
-        .await
-        .value;
+        .await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(input_amount <= max_input, true);
@@ -213,16 +204,16 @@ mod revert {
     #[should_panic(expected = "AssetPairNotSet")]
     async fn when_uninitialized() {
         // call setup instead of setup_and_initialize
-        let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, assets, deadline) = setup().await;
         let output_amount = 10;
-        let deadline = 1000;
 
         swap_exact_output(
             &exchange_instance,
-            CallParameters::new(Some(1), Some(AssetId::new(*asset_a_id)), Some(10_000_000)),
+            assets.asset_1,
+            1,
             output_amount,
             deadline,
+            false,
         )
         .await;
     }
@@ -237,10 +228,11 @@ mod revert {
 
         swap_exact_output(
             &exchange.instance,
-            // forwarding invalid asset
-            CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), Some(10_000_000)),
+            asset_c_id, // forwarding invalid asset
+            1,
             output_amount,
             liquidity_parameters.deadline,
+            false,
         )
         .await;
     }
@@ -255,10 +247,11 @@ mod revert {
 
         swap_exact_output(
             &exchange.instance,
-            CallParameters::new(Some(1), Some(exchange.pair.0), Some(10_000_000)),
+            exchange.pair.0,
+            1,
             output_amount,
-            // passing 0 deadline
-            0,
+            0, // passing 0 deadline
+            false,
         )
         .await;
     }
@@ -271,10 +264,11 @@ mod revert {
 
         swap_exact_output(
             &exchange.instance,
-            CallParameters::new(Some(1), Some(exchange.pair.0), Some(10_000_000)),
-            // passing 0 amount
-            0,
+            exchange.pair.0,
+            1,
+            0, // passing 0 amount
             liquidity_parameters.deadline,
+            false,
         )
         .await;
     }
@@ -289,10 +283,11 @@ mod revert {
 
         swap_exact_output(
             &exchange.instance,
-            // forwarding 0 as msg_amount
-            CallParameters::new(Some(0), Some(exchange.pair.0), Some(10_000_000)),
+            exchange.pair.0,
+            0, // forwarding 0 as msg_amount
             output_amount,
             liquidity_parameters.deadline,
+            false,
         )
         .await;
     }
@@ -305,21 +300,18 @@ mod revert {
 
         let output_amount = 10;
         let forward_amount =
-            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0)
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
                 .await
-                .value
                 .amount;
 
         swap_exact_output(
             &exchange.instance,
-            CallParameters::new(
-                Some(forward_amount),
-                Some(exchange.pair.0),
-                Some(10_000_000),
-            ),
+            exchange.pair.0,
+            forward_amount,
             // requesting an output amount that is more than what the contract has in its reserves
             liquidity_parameters.amounts.0 + 1000000,
             liquidity_parameters.deadline,
+            false,
         )
         .await;
     }
@@ -333,22 +325,20 @@ mod revert {
         let output_amount = 10;
 
         let preview_amount =
-            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1)
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1, true)
                 .await
-                .value
                 .amount;
+
         // forwarding insufficient amount
         let forward_amount = preview_amount - 1;
 
         swap_exact_output(
             &exchange.instance,
-            CallParameters::new(
-                Some(forward_amount),
-                Some(exchange.pair.0),
-                Some(10_000_000),
-            ),
+            exchange.pair.0,
+            forward_amount,
             output_amount,
             liquidity_parameters.deadline,
+            true,
         )
         .await;
     }
@@ -362,22 +352,20 @@ mod revert {
         let output_amount = 10;
 
         let preview_amount =
-            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0)
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
                 .await
-                .value
                 .amount;
+
         // forwarding insufficient amount
         let forward_amount = preview_amount - 1;
 
         swap_exact_output(
             &exchange.instance,
-            CallParameters::new(
-                Some(forward_amount),
-                Some(exchange.pair.1),
-                Some(10_000_000),
-            ),
+            exchange.pair.1,
+            forward_amount,
             output_amount,
             liquidity_parameters.deadline,
+            true,
         )
         .await;
     }

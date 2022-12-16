@@ -1,4 +1,4 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*};
+use fuels::prelude::*;
 
 abigen!(
     AMM,
@@ -25,26 +25,22 @@ script_abigen!(
     "./project/scripts/swap-exact-output/out/debug/swap-exact-output-abi.json"
 );
 
+pub const SCRIPT_GAS_LIMIT: u64 = 100_000_000; // TODO: hardcoded until scripts have gas estimation
+const GAS_TOLERANCE: f64 = 20.0; // TODO: this should be closer to 0.0. gas estimation issue is under investigation
+
 pub mod amm {
     use super::*;
 
-    pub async fn initialize(
-        contract: &AMM,
-        exchange_bytecode_root: ContractId,
-    ) -> FuelCallResponse<()> {
+    pub async fn initialize(contract: &AMM, exchange_bytecode_root: ContractId) {
         contract
             .methods()
             .initialize(exchange_bytecode_root)
             .call()
             .await
-            .unwrap()
+            .unwrap();
     }
 
-    pub async fn add_pool(
-        contract: &AMM,
-        asset_pair: (AssetId, AssetId),
-        pool: ContractId,
-    ) -> FuelCallResponse<()> {
+    pub async fn add_pool(contract: &AMM, asset_pair: (AssetId, AssetId), pool: ContractId) {
         contract
             .methods()
             .add_pool(
@@ -57,7 +53,7 @@ pub mod amm {
             .set_contracts(&[pool.into()])
             .call()
             .await
-            .unwrap()
+            .unwrap();
     }
 
     pub async fn pool(contract: &AMM, asset_pair: (AssetId, AssetId)) -> Option<ContractId> {
@@ -79,29 +75,33 @@ pub mod exchange {
 
     pub async fn add_liquidity(
         contract: &Exchange,
-        call_params: CallParameters,
-        tx_params: TxParameters,
         desired_liquidity: u64,
         deadline: u64,
-    ) -> FuelCallResponse<u64> {
-        contract
+        override_gas_limit: bool,
+    ) -> u64 {
+        let mut call_handler = contract
             .methods()
             .add_liquidity(desired_liquidity, deadline)
-            .call_params(call_params)
             // `add_liquidity` adds liquidity by using up at least one of the assets
             // one variable output is for the minted liquidity pool asset
             // the other variable output is for the asset that is not used up
-            .append_variable_outputs(2)
-            .tx_params(tx_params)
-            .call()
-            .await
-            .unwrap()
+            .append_variable_outputs(2);
+
+        if override_gas_limit {
+            let estimated_gas = call_handler
+                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .await
+                .unwrap()
+                .gas_used;
+
+            call_handler =
+                call_handler.tx_params(TxParameters::new(None, Some(estimated_gas), None));
+        }
+
+        call_handler.call().await.unwrap().value
     }
 
-    pub async fn constructor(
-        contract: &Exchange,
-        asset_pair: (AssetId, AssetId),
-    ) -> FuelCallResponse<()> {
+    pub async fn constructor(contract: &Exchange, asset_pair: (AssetId, AssetId)) {
         contract
             .methods()
             .constructor((
@@ -110,140 +110,209 @@ pub mod exchange {
             ))
             .call()
             .await
-            .unwrap()
+            .unwrap();
     }
 
-    pub async fn deposit(contract: &Exchange, call_params: CallParameters) -> FuelCallResponse<()> {
+    pub async fn deposit(contract: &Exchange, amount: u64, asset: AssetId) {
         contract
             .methods()
             .deposit()
-            .call_params(call_params)
+            .call_params(CallParameters::new(Some(amount), Some(asset), None))
             .call()
             .await
-            .unwrap()
+            .unwrap();
     }
 
     pub async fn remove_liquidity(
         contract: &Exchange,
-        call_params: CallParameters,
+        exchange_id: ContractId,
+        amount: u64,
         min_asset_a: u64,
         min_asset_b: u64,
         deadline: u64,
-    ) -> FuelCallResponse<RemoveLiquidityInfo> {
-        contract
+        override_gas_limit: bool,
+    ) -> RemoveLiquidityInfo {
+        let mut call_handler = contract
             .methods()
             .remove_liquidity(min_asset_a, min_asset_b, deadline)
-            .call_params(call_params)
-            .tx_params(TxParameters::new(None, Some(10_000_000), None))
-            .append_variable_outputs(2)
-            .call()
-            .await
-            .unwrap()
+            .call_params(CallParameters::new(
+                Some(amount),
+                Some(AssetId::new(*exchange_id)),
+                None,
+            ))
+            .append_variable_outputs(2);
+
+        if override_gas_limit {
+            let estimated_gas = call_handler
+                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .await
+                .unwrap()
+                .gas_used;
+
+            call_handler =
+                call_handler.tx_params(TxParameters::new(None, Some(estimated_gas), None));
+        }
+
+        call_handler.call().await.unwrap().value
     }
 
     pub async fn swap_exact_input(
         contract: &Exchange,
-        call_params: CallParameters,
+        input_asset: AssetId,
+        input_amount: u64,
         min_output: Option<u64>,
         deadline: u64,
-    ) -> FuelCallResponse<u64> {
-        contract
+        override_gas_limit: bool,
+    ) -> u64 {
+        let mut call_handler = contract
             .methods()
             .swap_exact_input(min_output, deadline)
-            .call_params(call_params)
-            .tx_params(TxParameters::new(None, Some(10_000_000), None))
-            .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
+            .call_params(CallParameters::new(
+                Some(input_amount),
+                Some(input_asset),
+                None,
+            ))
+            .append_variable_outputs(1);
+
+        if override_gas_limit {
+            let estimated_gas = call_handler
+                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .await
+                .unwrap()
+                .gas_used;
+
+            call_handler =
+                call_handler.tx_params(TxParameters::new(None, Some(estimated_gas), None));
+        }
+
+        call_handler.call().await.unwrap().value
     }
 
     pub async fn swap_exact_output(
         contract: &Exchange,
-        call_params: CallParameters,
+        input_asset: AssetId,
+        input_amount: u64,
         output: u64,
         deadline: u64,
-    ) -> FuelCallResponse<u64> {
-        contract
+        override_gas_limit: bool,
+    ) -> u64 {
+        let mut call_handler = contract
             .methods()
             .swap_exact_output(output, deadline)
-            .call_params(call_params)
-            .tx_params(TxParameters::new(None, Some(10_000_000), None))
-            .append_variable_outputs(2)
-            .call()
-            .await
-            .unwrap()
+            .call_params(CallParameters::new(
+                Some(input_amount),
+                Some(input_asset),
+                None,
+            ))
+            .append_variable_outputs(2);
+
+        if override_gas_limit {
+            let estimated_gas = call_handler
+                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .await
+                .unwrap()
+                .gas_used;
+
+            call_handler =
+                call_handler.tx_params(TxParameters::new(None, Some(estimated_gas), None));
+        }
+
+        call_handler.call().await.unwrap().value
     }
 
-    pub async fn withdraw(
-        contract: &Exchange,
-        amount: u64,
-        asset: AssetId,
-    ) -> FuelCallResponse<()> {
+    pub async fn withdraw(contract: &Exchange, amount: u64, asset: AssetId) {
         contract
             .methods()
             .withdraw(amount, ContractId::new(*asset))
             .append_variable_outputs(1)
             .call()
             .await
-            .unwrap()
+            .unwrap();
     }
 
-    pub async fn balance(contract: &Exchange, asset: AssetId) -> FuelCallResponse<u64> {
+    pub async fn balance(contract: &Exchange, asset: AssetId) -> u64 {
         contract
             .methods()
             .balance(ContractId::new(*asset))
             .call()
             .await
             .unwrap()
+            .value
     }
 
-    pub async fn pool_info(contract: &Exchange) -> FuelCallResponse<PoolInfo> {
-        contract.methods().pool_info().call().await.unwrap()
+    pub async fn pool_info(contract: &Exchange) -> PoolInfo {
+        contract.methods().pool_info().call().await.unwrap().value
     }
 
     pub async fn preview_add_liquidity(
         contract: &Exchange,
-        call_params: CallParameters,
-        tx_params: TxParameters,
         amount: u64,
         asset: AssetId,
-    ) -> FuelCallResponse<PreviewAddLiquidityInfo> {
-        contract
+        override_gas_limit: bool,
+    ) -> PreviewAddLiquidityInfo {
+        let mut call_handler = contract
             .methods()
-            .preview_add_liquidity(amount, ContractId::new(*asset))
-            .call_params(call_params)
-            .tx_params(tx_params)
-            .call()
-            .await
-            .unwrap()
+            .preview_add_liquidity(amount, ContractId::new(*asset));
+
+        if override_gas_limit {
+            let estimated_gas = call_handler
+                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .await
+                .unwrap()
+                .gas_used;
+
+            call_handler =
+                call_handler.tx_params(TxParameters::new(None, Some(estimated_gas), None));
+        }
+
+        call_handler.call().await.unwrap().value
     }
 
     pub async fn preview_swap_exact_input(
         contract: &Exchange,
         exact_input: u64,
         input_asset: AssetId,
-    ) -> FuelCallResponse<PreviewSwapInfo> {
-        contract
+        override_gas_limit: bool,
+    ) -> PreviewSwapInfo {
+        let mut call_handler = contract
             .methods()
-            .preview_swap_exact_input(exact_input, ContractId::new(*input_asset))
-            .tx_params(TxParameters::new(None, Some(10_000_000), None))
-            .call()
-            .await
-            .unwrap()
+            .preview_swap_exact_input(exact_input, ContractId::new(*input_asset));
+
+        if override_gas_limit {
+            let estimated_gas = call_handler
+                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .await
+                .unwrap()
+                .gas_used;
+
+            call_handler =
+                call_handler.tx_params(TxParameters::new(None, Some(estimated_gas), None));
+        }
+
+        call_handler.call().await.unwrap().value
     }
 
     pub async fn preview_swap_exact_output(
         contract: &Exchange,
         exact_output: u64,
         output_asset: AssetId,
-    ) -> FuelCallResponse<PreviewSwapInfo> {
-        contract
+        override_gas_limit: bool,
+    ) -> PreviewSwapInfo {
+        let mut call_handler = contract
             .methods()
-            .preview_swap_exact_output(exact_output, ContractId::new(*output_asset))
-            .tx_params(TxParameters::new(None, Some(10_000_000), None))
-            .call()
-            .await
-            .unwrap()
+            .preview_swap_exact_output(exact_output, ContractId::new(*output_asset));
+
+        if override_gas_limit {
+            let estimated_gas = call_handler
+                .estimate_transaction_cost(Some(GAS_TOLERANCE))
+                .await
+                .unwrap()
+                .gas_used;
+
+            call_handler =
+                call_handler.tx_params(TxParameters::new(None, Some(estimated_gas), None));
+        }
+
+        call_handler.call().await.unwrap().value
     }
 }

@@ -7,14 +7,13 @@ mod success {
 
     #[tokio::test]
     async fn constructs() {
-        let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, assets, _deadline) = setup().await;
 
-        constructor(&exchange_instance, (asset_a_id, asset_b_id)).await;
-        let pool_info = pool_info(&exchange_instance).await.value;
+        constructor(&exchange_instance, (assets.asset_1, assets.asset_2)).await;
+        let pool_info = pool_info(&exchange_instance).await;
 
-        assert_eq!(pool_info.asset_a, ContractId::new(*asset_a_id));
-        assert_eq!(pool_info.asset_b, ContractId::new(*asset_b_id));
+        assert_eq!(pool_info.asset_a, ContractId::new(*assets.asset_1));
+        assert_eq!(pool_info.asset_b, ContractId::new(*assets.asset_2));
     }
 }
 
@@ -24,19 +23,18 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "AssetPairAlreadySet")]
     async fn when_reinitialized() {
-        let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, assets, _deadline) = setup().await;
 
-        constructor(&exchange_instance, (asset_a_id, asset_b_id)).await;
-        constructor(&exchange_instance, (asset_a_id, asset_b_id)).await;
+        constructor(&exchange_instance, (assets.asset_1, assets.asset_2)).await;
+
+        constructor(&exchange_instance, (assets.asset_1, assets.asset_2)).await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "IdenticalAssets")]
     async fn when_assets_in_pair_are_identical() {
-        let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, assets, _deadline) = setup().await;
 
-        constructor(&exchange_instance, (asset_a_id, asset_a_id)).await;
+        constructor(&exchange_instance, (assets.asset_1, assets.asset_1)).await;
     }
 }

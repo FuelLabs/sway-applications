@@ -65,16 +65,6 @@ impl ExchangeContractConfiguration {
     }
 }
 
-impl Default for LiquidityParameters {
-    fn default() -> Self {
-        Self {
-            amounts: DEPOSIT_AMOUNTS,
-            deadline: DEADLINE,
-            liquidity: LIQUIDITY,
-        }
-    }
-}
-
 impl LiquidityParameters {
     pub fn new(amounts: Option<(u64, u64)>, deadline: Option<u64>, liquidity: Option<u64>) -> Self {
         Self {
@@ -91,20 +81,6 @@ impl Default for WalletAssetConfiguration {
             num_assets: NUM_ASSETS,
             coins_per_asset: COINS_PER_ASSET,
             amount_per_coin: AMOUNT_PER_COIN,
-        }
-    }
-}
-
-impl WalletAssetConfiguration {
-    pub fn new(
-        num_assets: Option<u64>,
-        coins_per_asset: Option<u64>,
-        amount_per_coin: Option<u64>,
-    ) -> Self {
-        Self {
-            num_assets: num_assets.unwrap_or(NUM_ASSETS),
-            coins_per_asset: coins_per_asset.unwrap_or(COINS_PER_ASSET),
-            amount_per_coin: amount_per_coin.unwrap_or(AMOUNT_PER_COIN),
         }
     }
 }

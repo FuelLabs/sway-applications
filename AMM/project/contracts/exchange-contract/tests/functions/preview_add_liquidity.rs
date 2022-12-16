@@ -18,13 +18,11 @@ mod success {
 
         let preview = preview_add_liquidity(
             &exchange.instance,
-            CallParameters::default(),
-            TxParameters::default(),
             liquidity_parameters.amounts.0,
             exchange.pair.0,
+            false,
         )
-        .await
-        .value;
+        .await;
 
         assert_eq!(preview.other_asset_amount_to_add, expected_b_to_add);
         assert_eq!(
@@ -43,13 +41,11 @@ mod success {
 
         let preview = preview_add_liquidity(
             &exchange.instance,
-            CallParameters::default(),
-            TxParameters::default(),
             liquidity_parameters.amounts.1,
             exchange.pair.0,
+            false,
         )
-        .await
-        .value;
+        .await;
 
         assert_eq!(preview.other_asset_amount_to_add, expected_a_to_add);
         assert_eq!(
@@ -69,15 +65,9 @@ mod success {
         let expected_liquidity_asset_amount_to_receive =
             preview_amount_a * liquidity_parameters.liquidity / liquidity_parameters.amounts.0;
 
-        let preview = preview_add_liquidity(
-            &exchange.instance,
-            CallParameters::default(),
-            TxParameters::new(None, Some(100_000_000), None),
-            preview_amount_a,
-            exchange.pair.0,
-        )
-        .await
-        .value;
+        let preview =
+            preview_add_liquidity(&exchange.instance, preview_amount_a, exchange.pair.0, true)
+                .await;
 
         assert_eq!(preview.other_asset_amount_to_add, expected_b_to_add);
         assert_eq!(
@@ -107,17 +97,11 @@ mod success {
             * override_liquidity_parameters.liquidity
             / override_liquidity_parameters.amounts.1;
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
 
-        let preview = preview_add_liquidity(
-            &exchange.instance,
-            CallParameters::default(),
-            TxParameters::new(None, Some(100_000_000), None),
-            preview_amount_a,
-            exchange.pair.0,
-        )
-        .await
-        .value;
+        let preview =
+            preview_add_liquidity(&exchange.instance, preview_amount_a, exchange.pair.0, true)
+                .await;
 
         assert_eq!(preview.other_asset_amount_to_add, expected_b_to_add);
         assert_eq!(
@@ -147,17 +131,11 @@ mod success {
             * override_liquidity_parameters.liquidity
             / override_liquidity_parameters.amounts.0;
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
 
-        let preview = preview_add_liquidity(
-            &exchange.instance,
-            CallParameters::default(),
-            TxParameters::new(None, Some(100_000_000), None),
-            preview_amount_b,
-            exchange.pair.1,
-        )
-        .await
-        .value;
+        let preview =
+            preview_add_liquidity(&exchange.instance, preview_amount_b, exchange.pair.1, true)
+                .await;
 
         assert_eq!(preview.other_asset_amount_to_add, expected_a_to_add);
         assert_eq!(
@@ -187,17 +165,11 @@ mod success {
             * override_liquidity_parameters.liquidity
             / override_liquidity_parameters.amounts.1;
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
 
-        let preview = preview_add_liquidity(
-            &exchange.instance,
-            CallParameters::default(),
-            TxParameters::new(None, Some(100_000_000), None),
-            preview_amount_b,
-            exchange.pair.1,
-        )
-        .await
-        .value;
+        let preview =
+            preview_add_liquidity(&exchange.instance, preview_amount_b, exchange.pair.1, true)
+                .await;
 
         assert_eq!(preview.other_asset_amount_to_add, expected_a_to_add);
         assert_eq!(
@@ -214,15 +186,13 @@ mod revert {
     #[should_panic(expected = "AssetPairNotSet")]
     async fn when_uninitialized() {
         // call setup instead of setup_and_construct
-        let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, assets, _deadline) = setup().await;
 
         preview_add_liquidity(
             &exchange_instance,
-            CallParameters::default(),
-            TxParameters::default(),
             100,
-            AssetId::new(*asset_a_id),
+            AssetId::new(*assets.asset_1),
+            false,
         )
         .await;
     }

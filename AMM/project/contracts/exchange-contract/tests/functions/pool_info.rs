@@ -9,7 +9,7 @@ mod success {
     async fn returns_empty_pool_info() {
         let (exchange, _wallet, _liquidity_parameters, _asset_c_id) =
             setup_and_construct(false, false).await;
-        let pool_info = pool_info(&exchange.instance).await.value;
+        let pool_info = pool_info(&exchange.instance).await;
 
         assert_eq!(pool_info.asset_a, ContractId::new(*exchange.pair.0));
         assert_eq!(pool_info.asset_a_reserve, 0);
@@ -23,11 +23,11 @@ mod success {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(false, false).await;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
 
-        deposit_and_add_liquidity(&liquidity_parameters, &exchange).await;
+        deposit_and_add_liquidity(&liquidity_parameters, &exchange, false).await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
 
         assert_eq!(initial_pool_info.asset_a, ContractId::new(*exchange.pair.0));
         assert_eq!(initial_pool_info.asset_a_reserve, 0);
@@ -58,8 +58,7 @@ mod revert {
     #[should_panic(expected = "AssetPairNotSet")]
     async fn when_uninitialized() {
         // call setup instead of setup_and_construct
-        let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, _asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, _assets, _deadline) = setup().await;
 
         pool_info(&exchange_instance).await;
     }

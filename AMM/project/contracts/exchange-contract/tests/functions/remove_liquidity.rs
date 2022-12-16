@@ -17,24 +17,21 @@ mod success {
         let expected_a_removed = liquidity_parameters.amounts.0;
         let expected_b_removed = liquidity_parameters.amounts.1;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let remove_liquidity_info = remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                Some(liquidity_to_remove),
-                Some(AssetId::new(*exchange.id)),
-                None,
-            ),
+            exchange.id,
+            liquidity_to_remove,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
+            true,
         )
-        .await
-        .value;
+        .await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
@@ -78,24 +75,21 @@ mod success {
         let expected_a_removed = liquidity_parameters.amounts.0;
         let expected_b_removed = liquidity_parameters.amounts.1;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let remove_liquidity_info = remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                Some(liquidity_to_remove),
-                Some(AssetId::new(*exchange.id)),
-                None,
-            ),
+            exchange.id,
+            liquidity_to_remove,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
+            true,
         )
-        .await
-        .value;
+        .await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
@@ -139,24 +133,21 @@ mod success {
         let expected_a_removed = liquidity_parameters.amounts.0;
         let expected_b_removed = liquidity_parameters.amounts.1;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let remove_liquidity_info = remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                Some(liquidity_to_remove),
-                Some(AssetId::new(*exchange.id)),
-                None,
-            ),
+            exchange.id,
+            liquidity_to_remove,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
+            true,
         )
-        .await
-        .value;
+        .await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
@@ -200,24 +191,21 @@ mod success {
         let expected_a_removed = liquidity_parameters.amounts.0 / 2;
         let expected_b_removed = liquidity_parameters.amounts.1 / 2;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let remove_liquidity_info = remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                Some(liquidity_to_remove),
-                Some(AssetId::new(*exchange.id)),
-                None,
-            ),
+            exchange.id,
+            liquidity_to_remove,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
+            true,
         )
-        .await
-        .value;
+        .await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
@@ -257,24 +245,18 @@ mod revert {
     #[should_panic(expected = "AssetPairNotSet")]
     async fn when_uninitialized() {
         // call setup instead of setup_and_initialize
-        let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, _asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, assets, deadline) = setup().await;
         let a_to_remove = 1;
         let b_to_remove = 1;
-        let deadline = 1000;
 
         remove_liquidity(
             &exchange_instance,
-            CallParameters::new(
-                Some(1),
-                // Sending `None` instead of `Some(AssetId::new(*pool_asset_id))`
-                // because liquidity pool asset does not exist yet.
-                None,
-                None,
-            ),
+            ContractId::new(*assets.asset_3), // passing another asset since liquidity pool asset does not exist yet
+            1,
             a_to_remove,
             b_to_remove,
             deadline,
+            false,
         )
         .await;
     }
@@ -283,23 +265,19 @@ mod revert {
     #[should_panic(expected = "NoLiquidityToRemove")]
     async fn when_liquidity_is_zero() {
         // not adding liquidity to contract before attempting to remove
-        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+        let (exchange, _wallet, liquidity_parameters, asset_c_id) =
             setup_and_construct(true, false).await;
         let a_to_remove = 1;
         let b_to_remove = 1;
 
         remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                Some(1),
-                // Sending `None` instead of `Some(AssetId::new(*exchange.id))`
-                // because liquidity pool asset does not exist yet.
-                None,
-                None,
-            ),
+            ContractId::new(*asset_c_id), // passing another asset since liquidity does not exist yet
+            1,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
+            false,
         )
         .await;
     }
@@ -315,15 +293,12 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                Some(liquidity_parameters.liquidity),
-                // forwarding an asset other than pool asset
-                Some(exchange.pair.0),
-                None,
-            ),
+            ContractId::new(*exchange.pair.0), // forwarding an asset other than pool asset
+            liquidity_parameters.liquidity,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
+            false,
         )
         .await;
     }
@@ -338,15 +313,12 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                Some(liquidity_parameters.liquidity),
-                Some(AssetId::new(*exchange.id)),
-                None,
-            ),
-            // passing 0 as min_asset_a
-            0,
+            exchange.id,
+            liquidity_parameters.liquidity,
+            0, // passing 0 as min_asset_a
             b_to_remove,
             liquidity_parameters.deadline,
+            false,
         )
         .await;
     }
@@ -361,15 +333,12 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                Some(liquidity_parameters.liquidity),
-                Some(AssetId::new(*exchange.id)),
-                None,
-            ),
+            exchange.id,
+            liquidity_parameters.liquidity,
             a_to_remove,
-            // passing 0 as min_asset_b
-            0,
+            0, // passing 0 as min_asset_b
             liquidity_parameters.deadline,
+            false,
         )
         .await;
     }
@@ -385,15 +354,12 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                Some(liquidity_parameters.liquidity),
-                Some(AssetId::new(*exchange.id)),
-                None,
-            ),
+            exchange.id,
+            liquidity_parameters.liquidity,
             a_to_remove,
             b_to_remove,
-            // passing 0 as deadline
-            0,
+            0, // passing 0 as deadline
+            false,
         )
         .await;
     }
@@ -409,15 +375,12 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                // forwarding 0 as msg_amount
-                Some(0),
-                Some(AssetId::new(*exchange.id)),
-                None,
-            ),
+            exchange.id,
+            0, // forwarding 0 as msg_amount
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
+            false,
         )
         .await;
     }
@@ -430,7 +393,7 @@ mod revert {
 
         let b_to_remove = 1;
 
-        let pool_info = pool_info(&exchange.instance).await.value;
+        let pool_info = pool_info(&exchange.instance).await;
         let asset_a_reserve = pool_info.asset_a_reserve;
         let liquidity = pool_info.liquidity;
         let asset_a_amount_to_remove =
@@ -438,15 +401,12 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                Some(liquidity_parameters.liquidity),
-                Some(AssetId::new(*exchange.id)),
-                None,
-            ),
-            // setting min_asset_a to be higher than what can be removed
-            asset_a_amount_to_remove + 10,
+            exchange.id,
+            liquidity_parameters.liquidity,
+            asset_a_amount_to_remove + 10, // setting min_asset_a to be higher than what can be removed
             b_to_remove,
             liquidity_parameters.deadline,
+            true,
         )
         .await;
     }
@@ -459,7 +419,7 @@ mod revert {
 
         let a_to_remove = 1;
 
-        let pool_info = pool_info(&exchange.instance).await.value;
+        let pool_info = pool_info(&exchange.instance).await;
         let asset_b_reserve = pool_info.asset_b_reserve;
         let liquidity = pool_info.liquidity;
         let asset_b_amount_to_remove =
@@ -467,15 +427,12 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            CallParameters::new(
-                Some(liquidity_parameters.liquidity),
-                Some(AssetId::new(*exchange.id)),
-                None,
-            ),
+            exchange.id,
+            liquidity_parameters.liquidity,
             a_to_remove,
-            // setting min_asset_b to be higher than what can be removed
-            asset_b_amount_to_remove + 10,
+            asset_b_amount_to_remove + 10, // setting min_asset_b to be higher than what can be removed
             liquidity_parameters.deadline,
+            true,
         )
         .await;
     }

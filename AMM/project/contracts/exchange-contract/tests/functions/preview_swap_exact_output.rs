@@ -19,9 +19,8 @@ mod success {
         let expected_sufficient_reserve = output_amount < liquidity_parameters.amounts.1;
 
         let preview_swap_info =
-            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1)
-                .await
-                .value;
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1, true)
+                .await;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
@@ -45,9 +44,8 @@ mod success {
         let expected_sufficient_reserve = output_amount <= liquidity_parameters.amounts.0;
 
         let preview_swap_info =
-            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0)
-                .await
-                .value;
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
+                .await;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
@@ -71,9 +69,8 @@ mod success {
         let expected_sufficient_reserve = output_amount < liquidity_parameters.amounts.1;
 
         let preview_swap_info =
-            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1)
-                .await
-                .value;
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1, true)
+                .await;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
@@ -97,9 +94,8 @@ mod success {
         let expected_sufficient_reserve = output_amount < liquidity_parameters.amounts.0;
 
         let preview_swap_info =
-            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0)
-                .await
-                .value;
+            preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
+                .await;
 
         assert_eq!(preview_swap_info.amount, expected_max_input_amount);
         assert_eq!(
@@ -116,10 +112,9 @@ mod revert {
     #[should_panic(expected = "AssetPairNotSet")]
     async fn when_uninitialized() {
         // call setup instead of setup_and_construct
-        let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, assets, _deadline) = setup().await;
 
-        preview_swap_exact_output(&exchange_instance, 10, asset_b_id).await;
+        preview_swap_exact_output(&exchange_instance, 10, assets.asset_1, false).await;
     }
 
     #[tokio::test]
@@ -133,6 +128,7 @@ mod revert {
             10,
             // passing invalid asset
             asset_c_id,
+            false,
         )
         .await;
     }
@@ -145,7 +141,7 @@ mod revert {
 
         let output_amount = liquidity_parameters.amounts.1 + 1;
 
-        preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1).await;
+        preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1, false).await;
     }
 
     #[tokio::test]
@@ -156,6 +152,6 @@ mod revert {
 
         let output_amount = liquidity_parameters.amounts.0 + 1;
 
-        preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0).await;
+        preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, false).await;
     }
 }

@@ -1,29 +1,29 @@
 script;
 
 use libraries::{AMM, Exchange};
-use std::block::height;
 
 enum InputError {
     RouteTooShort: (),
-    SwapAmountsNotExact: (),
 }
 
 enum SwapError {
+    ExcessiveSlippage: u64,
     PairExchangeNotRegistered: (ContractId, ContractId),
 }
 
 fn main(
     amm_contract_address: ContractId,
     assets: Vec<ContractId>,
-    amounts: Vec<u64>,
+    input_amount: u64,
+    minimum_output_amount: Option<u64>,
+    deadline: u64,
 ) -> u64 {
     require(assets.len() >= 2, InputError::RouteTooShort);
-    require(amounts.len() == assets.len(), InputError::SwapAmountsNotExact);
 
     let amm_contract = abi(AMM, amm_contract_address.into());
 
-    let mut latest_bought = amounts.get(1).unwrap();
-    let deadline = height() + 5;
+    let mut latest_bought = input_amount;
+    let intermediate_minimum_amount: Option<u64> = Option::None;
 
     // start swapping by selling the first asset in the route
     let mut sold_asset_index = 0;
@@ -42,16 +42,18 @@ fn main(
 
         let exchange_contract = abi(Exchange, exchange_contract_id.unwrap().into());
 
-        let minimum_buy_amount = Option::Some(latest_bought);
-
         // swap by specifying the exact amount to sell
         latest_bought = exchange_contract.swap_exact_input {
             gas: 10_000_000,
-            coins: amounts.get(sold_asset_index).unwrap(), // forwarding coins of asset to sell
+            coins: latest_bought, // forwarding coins of asset to sell
             asset_id: asset_pair.0.into(), // identifier of asset to sell
-        }(minimum_buy_amount, deadline);
+        }(intermediate_minimum_amount, deadline);
 
         sold_asset_index += 1;
+    }
+
+    if minimum_output_amount.is_some() {
+        require(latest_bought >= minimum_output_amount.unwrap(), SwapError::ExcessiveSlippage(latest_bought));
     }
 
     latest_bought

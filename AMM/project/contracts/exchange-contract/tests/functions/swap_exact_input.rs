@@ -1,5 +1,4 @@
 use crate::utils::{setup, setup_and_construct, wallet_balances};
-use fuels::prelude::*;
 use test_utils::abi::exchange::{pool_info, preview_swap_exact_input, swap_exact_input};
 
 mod success {
@@ -12,25 +11,25 @@ mod success {
 
         let input_amount = 10;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let min_output =
-            preview_swap_exact_input(&exchange.instance, input_amount, exchange.pair.0)
+            preview_swap_exact_input(&exchange.instance, input_amount, exchange.pair.0, true)
                 .await
-                .value
                 .amount;
 
         let output_amount = swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.pair.0), None),
+            exchange.pair.0,
+            input_amount,
             Some(min_output),
             liquidity_parameters.deadline,
+            true,
         )
-        .await
-        .value;
+        .await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(output_amount >= min_output, true);
@@ -59,25 +58,25 @@ mod success {
 
         let input_amount = 10;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let min_output =
-            preview_swap_exact_input(&exchange.instance, input_amount, exchange.pair.1)
+            preview_swap_exact_input(&exchange.instance, input_amount, exchange.pair.1, true)
                 .await
-                .value
                 .amount;
 
         let output_amount = swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.pair.1), None),
+            exchange.pair.1,
+            input_amount,
             Some(min_output),
             liquidity_parameters.deadline,
+            true,
         )
-        .await
-        .value;
+        .await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(output_amount >= min_output, true);
@@ -106,19 +105,20 @@ mod success {
 
         let input_amount = 10;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         let output_amount = swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.pair.0), None),
+            exchange.pair.0,
+            input_amount,
             None,
             liquidity_parameters.deadline,
+            true,
         )
-        .await
-        .value;
+        .await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(
@@ -147,18 +147,9 @@ mod revert {
     #[should_panic(expected = "AssetPairNotSet")]
     async fn when_uninitialized() {
         // call setup instead of setup_and_initialize
-        let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, assets, deadline) = setup().await;
 
-        let deadline = 1000;
-
-        swap_exact_input(
-            &exchange_instance,
-            CallParameters::new(Some(1), Some(AssetId::new(*asset_a_id)), None),
-            None,
-            deadline,
-        )
-        .await;
+        swap_exact_input(&exchange_instance, assets.asset_1, 1, None, deadline, false).await;
     }
 
     #[tokio::test]
@@ -169,10 +160,11 @@ mod revert {
 
         swap_exact_input(
             &exchange.instance,
-            // forwarding invalid asset
-            CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), None),
+            asset_c_id,
+            1,
             None,
             liquidity_parameters.deadline,
+            false,
         )
         .await;
     }
@@ -185,10 +177,11 @@ mod revert {
 
         swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(1), Some(exchange.pair.0), None),
+            exchange.pair.0,
+            1,
             None,
-            // passing 0 deadline
-            0,
+            0, // passing 0 deadline
+            false,
         )
         .await;
     }
@@ -201,10 +194,11 @@ mod revert {
 
         swap_exact_input(
             &exchange.instance,
-            // forwarding 0 as msg_amount
-            CallParameters::new(Some(0), Some(exchange.pair.0), None),
+            exchange.pair.0,
+            0, // forwarding 0 as msg_amount
             None,
             liquidity_parameters.deadline,
+            false,
         )
         .await;
     }
@@ -218,17 +212,17 @@ mod revert {
         let input_amount = 10;
 
         let preview_amount =
-            preview_swap_exact_input(&exchange.instance, input_amount, exchange.pair.0)
+            preview_swap_exact_input(&exchange.instance, input_amount, exchange.pair.0, true)
                 .await
-                .value
                 .amount;
 
         swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.pair.0), None),
-            // setting min too high
-            Some(preview_amount + 1),
+            exchange.pair.0,
+            input_amount,
+            Some(preview_amount + 1), // setting min too high
             liquidity_parameters.deadline,
+            true,
         )
         .await;
     }

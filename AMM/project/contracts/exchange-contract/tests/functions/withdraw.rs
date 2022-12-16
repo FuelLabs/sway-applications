@@ -1,5 +1,4 @@
 use crate::utils::{setup, setup_and_construct};
-use fuels::prelude::*;
 use test_utils::abi::exchange::{balance, deposit, withdraw};
 
 mod success {
@@ -12,18 +11,14 @@ mod success {
         let deposit_amount = 100;
         let withdraw_amount = deposit_amount;
 
-        deposit(
-            &exchange.instance,
-            CallParameters::new(Some(deposit_amount), Some(exchange.pair.0), None),
-        )
-        .await;
+        deposit(&exchange.instance, deposit_amount, exchange.pair.0).await;
 
-        let initial_contract_balance = balance(&exchange.instance, exchange.pair.0).await.value;
+        let initial_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let initial_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
         withdraw(&exchange.instance, deposit_amount, exchange.pair.0).await;
 
-        let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await.value;
+        let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let final_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
         assert_eq!(
@@ -43,18 +38,14 @@ mod success {
         let deposit_amount = 100;
         let withdraw_amount = 50;
 
-        deposit(
-            &exchange.instance,
-            CallParameters::new(Some(deposit_amount), Some(exchange.pair.0), None),
-        )
-        .await;
+        deposit(&exchange.instance, deposit_amount, exchange.pair.0).await;
 
-        let initial_contract_balance = balance(&exchange.instance, exchange.pair.0).await.value;
+        let initial_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let initial_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
         withdraw(&exchange.instance, withdraw_amount, exchange.pair.0).await;
 
-        let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await.value;
+        let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let final_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
         assert_eq!(
@@ -75,10 +66,9 @@ mod revert {
     #[should_panic(expected = "AssetPairNotSet")]
     async fn on_unitialized() {
         // call setup instead of setup_and_construct
-        let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, assets, _deadline) = setup().await;
 
-        withdraw(&exchange_instance, 0, asset_a_id).await;
+        withdraw(&exchange_instance, 0, assets.asset_1).await;
     }
 
     #[tokio::test]
@@ -88,11 +78,7 @@ mod revert {
             setup_and_construct(false, false).await;
         let deposit_amount = 100;
 
-        deposit(
-            &exchange.instance,
-            CallParameters::new(Some(deposit_amount), Some(exchange.pair.0), None),
-        )
-        .await;
+        deposit(&exchange.instance, deposit_amount, exchange.pair.0).await;
 
         // passing invalid asset
         withdraw(&exchange.instance, 0, asset_c_id).await;
@@ -105,11 +91,7 @@ mod revert {
             setup_and_construct(false, false).await;
         let deposit_amount = 100;
 
-        deposit(
-            &exchange.instance,
-            CallParameters::new(Some(deposit_amount), Some(exchange.pair.0), None),
-        )
-        .await;
+        deposit(&exchange.instance, deposit_amount, exchange.pair.0).await;
 
         // attempting to withdraw more than deposit amount
         withdraw(&exchange.instance, deposit_amount + 1, exchange.pair.0).await;

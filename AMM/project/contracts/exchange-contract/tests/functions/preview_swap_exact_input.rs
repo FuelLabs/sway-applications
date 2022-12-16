@@ -19,9 +19,7 @@ mod success {
             expected_min_output_amount <= liquidity_parameters.amounts.1;
 
         let preview_swap_info =
-            preview_swap_exact_input(&exchange.instance, input_amount, exchange.pair.0)
-                .await
-                .value;
+            preview_swap_exact_input(&exchange.instance, input_amount, exchange.pair.0, true).await;
 
         assert_eq!(preview_swap_info.amount, expected_min_output_amount);
         assert_eq!(
@@ -44,9 +42,7 @@ mod success {
             expected_min_output_amount <= liquidity_parameters.amounts.0;
 
         let preview_swap_info =
-            preview_swap_exact_input(&exchange.instance, input_amount, exchange.pair.1)
-                .await
-                .value;
+            preview_swap_exact_input(&exchange.instance, input_amount, exchange.pair.1, true).await;
 
         assert_eq!(preview_swap_info.amount, expected_min_output_amount);
         assert_eq!(
@@ -63,10 +59,9 @@ mod revert {
     #[should_panic(expected = "AssetPairNotSet")]
     async fn when_uninitialized() {
         // call setup instead of setup_and_construct
-        let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, assets, _deadline) = setup().await;
 
-        preview_swap_exact_input(&exchange_instance, 10, asset_a_id).await;
+        preview_swap_exact_input(&exchange_instance, 10, assets.asset_1, false).await;
     }
 
     #[tokio::test]
@@ -80,6 +75,7 @@ mod revert {
             10,
             // passing invalid asset
             asset_c_id,
+            false,
         )
         .await;
     }

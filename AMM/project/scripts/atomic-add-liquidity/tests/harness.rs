@@ -2,7 +2,7 @@ use fuels::prelude::*;
 use test_utils::{
     abi::{
         exchange::{deposit, preview_add_liquidity, withdraw},
-        AtomicAddLiquidityScript,
+        AtomicAddLiquidityScript, SCRIPT_GAS_LIMIT,
     },
     data_structures::{
         ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
@@ -23,23 +23,18 @@ async fn expected_liquidity(
 ) -> u64 {
     deposit(
         &exchange.instance,
-        CallParameters::new(
-            Some(liquidity_parameters.amounts.0),
-            Some(exchange.pair.0),
-            None,
-        ),
+        liquidity_parameters.amounts.0,
+        exchange.pair.0,
     )
     .await;
 
     let preview_add_liquidity_info = preview_add_liquidity(
         &exchange.instance,
-        CallParameters::default(),
-        TxParameters::new(None, Some(100_000_000), None),
         liquidity_parameters.amounts.1,
         exchange.pair.1,
+        true,
     )
-    .await
-    .value;
+    .await;
 
     withdraw(
         &exchange.instance,
@@ -52,8 +47,14 @@ async fn expected_liquidity(
 }
 
 async fn setup(
-    liquidity_parameters: &LiquidityParameters,
-) -> (WalletUnlocked, ExchangeContract, TransactionParameters) {
+    deposit_amounts: (u64, u64),
+    liquidity: u64,
+) -> (
+    WalletUnlocked,
+    ExchangeContract,
+    LiquidityParameters,
+    TransactionParameters,
+) {
     let (wallet, asset_ids, provider) =
         setup_wallet_and_provider(&WalletAssetConfiguration::default()).await;
 
@@ -62,6 +63,12 @@ async fn setup(
         &ExchangeContractConfiguration::new(Some((asset_ids[0], asset_ids[1])), None, None, None),
     )
     .await;
+
+    let liquidity_parameters = LiquidityParameters::new(
+        Some(deposit_amounts),
+        Some(provider.latest_block_height().await.unwrap() + 10),
+        Some(liquidity),
+    );
 
     let transaction_parameters = transaction_inputs_outputs(
         &wallet,
@@ -75,7 +82,12 @@ async fn setup(
     )
     .await;
 
-    (wallet, exchange, transaction_parameters)
+    (
+        wallet,
+        exchange,
+        liquidity_parameters,
+        transaction_parameters,
+    )
 }
 
 mod success {
@@ -83,10 +95,8 @@ mod success {
 
     #[tokio::test]
     async fn adds_initial_liquidity_with_equal_deposit_amounts() {
-        let liquidity_parameters =
-            LiquidityParameters::new(Some((1000, 1000)), Some(1000), Some(1000));
-
-        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
+        let (wallet, exchange, liquidity_parameters, transaction_parameters) =
+            setup((1000, 1000), 1000).await;
 
         let script_instance =
             AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
@@ -105,10 +115,11 @@ mod success {
                     liquidity_parameters.amounts.1,
                 ),
                 expected_liquidity,
+                liquidity_parameters.deadline,
             )
             .with_inputs(transaction_parameters.inputs)
             .with_outputs(transaction_parameters.outputs)
-            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
             .call()
             .await
             .unwrap()
@@ -119,10 +130,8 @@ mod success {
 
     #[tokio::test]
     async fn adds_initial_liquidity_to_make_a_more_valuable() {
-        let liquidity_parameters =
-            LiquidityParameters::new(Some((1000, 2000)), Some(1000), Some(1000));
-
-        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
+        let (wallet, exchange, liquidity_parameters, transaction_parameters) =
+            setup((1000, 2000), 1000).await;
 
         let script_instance =
             AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
@@ -141,10 +150,11 @@ mod success {
                     liquidity_parameters.amounts.1,
                 ),
                 expected_liquidity,
+                liquidity_parameters.deadline,
             )
             .with_inputs(transaction_parameters.inputs)
             .with_outputs(transaction_parameters.outputs)
-            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
             .call()
             .await
             .unwrap()
@@ -155,10 +165,8 @@ mod success {
 
     #[tokio::test]
     async fn adds_initial_liquidity_to_make_b_more_valuable() {
-        let liquidity_parameters =
-            LiquidityParameters::new(Some((2000, 1000)), Some(1000), Some(1000));
-
-        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
+        let (wallet, exchange, liquidity_parameters, transaction_parameters) =
+            setup((2000, 1000), 1000).await;
 
         let script_instance =
             AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
@@ -177,10 +185,11 @@ mod success {
                     liquidity_parameters.amounts.1,
                 ),
                 expected_liquidity,
+                liquidity_parameters.deadline,
             )
             .with_inputs(transaction_parameters.inputs)
             .with_outputs(transaction_parameters.outputs)
-            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
             .call()
             .await
             .unwrap()
@@ -191,13 +200,15 @@ mod success {
 
     #[tokio::test]
     async fn adds_further_liquidity_without_extra_deposit_when_a_is_more_valuable() {
-        let initial_liquidity_parameters =
-            LiquidityParameters::new(Some((1000, 4000)), Some(1000), Some(2000));
+        let (wallet, exchange, liquidity_parameters, transaction_parameters) =
+            setup((1000, 4000), 2000).await;
 
-        let liquidity_parameters = LiquidityParameters::new(Some((50, 200)), Some(1000), Some(100));
-
-        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
-        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
+        let initial_liquidity_parameters = LiquidityParameters::new(
+            Some((1000, 4000)),
+            Some(liquidity_parameters.deadline),
+            Some(2000),
+        );
+        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange, false).await;
 
         let script_instance =
             AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
@@ -216,10 +227,11 @@ mod success {
                     liquidity_parameters.amounts.1,
                 ),
                 expected_liquidity,
+                liquidity_parameters.deadline,
             )
             .with_inputs(transaction_parameters.inputs)
             .with_outputs(transaction_parameters.outputs)
-            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
             .call()
             .await
             .unwrap()
@@ -230,14 +242,15 @@ mod success {
 
     #[tokio::test]
     async fn adds_further_liquidity_with_extra_a_deposit_when_a_is_more_valuable() {
-        let initial_liquidity_parameters =
-            LiquidityParameters::new(Some((1000, 4000)), Some(1000), Some(2000));
+        let (wallet, exchange, liquidity_parameters, transaction_parameters) =
+            setup((200, 200), 100).await;
 
-        let liquidity_parameters =
-            LiquidityParameters::new(Some((200, 200)), Some(1000), Some(100));
-
-        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
-        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
+        let initial_liquidity_parameters = LiquidityParameters::new(
+            Some((1000, 4000)),
+            Some(liquidity_parameters.deadline),
+            Some(2000),
+        );
+        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange, false).await;
 
         let script_instance =
             AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
@@ -256,10 +269,11 @@ mod success {
                     liquidity_parameters.amounts.1,
                 ),
                 expected_liquidity,
+                liquidity_parameters.deadline,
             )
             .with_inputs(transaction_parameters.inputs)
             .with_outputs(transaction_parameters.outputs)
-            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
             .call()
             .await
             .unwrap()
@@ -270,13 +284,15 @@ mod success {
 
     #[tokio::test]
     async fn adds_further_liquidity_without_extra_deposit_when_b_is_more_valuable() {
-        let initial_liquidity_parameters =
-            LiquidityParameters::new(Some((4000, 1000)), Some(1000), Some(2000));
+        let (wallet, exchange, liquidity_parameters, transaction_parameters) =
+            setup((400, 50), 100).await;
 
-        let liquidity_parameters = LiquidityParameters::new(Some((400, 50)), Some(1000), Some(100));
-
-        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
-        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
+        let initial_liquidity_parameters = LiquidityParameters::new(
+            Some((4000, 1000)),
+            Some(liquidity_parameters.deadline),
+            Some(2000),
+        );
+        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange, false).await;
 
         let script_instance =
             AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
@@ -295,10 +311,11 @@ mod success {
                     liquidity_parameters.amounts.1,
                 ),
                 expected_liquidity,
+                liquidity_parameters.deadline,
             )
             .with_inputs(transaction_parameters.inputs)
             .with_outputs(transaction_parameters.outputs)
-            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
             .call()
             .await
             .unwrap()
@@ -309,13 +326,15 @@ mod success {
 
     #[tokio::test]
     async fn adds_further_liquidity_with_extra_a_deposit_when_b_is_more_valuable() {
-        let initial_liquidity_parameters =
-            LiquidityParameters::new(Some((4000, 1000)), Some(1000), Some(2000));
+        let (wallet, exchange, liquidity_parameters, transaction_parameters) =
+            setup((200, 50), 100).await;
 
-        let liquidity_parameters = LiquidityParameters::new(Some((200, 50)), Some(1000), Some(100));
-
-        let (wallet, exchange, transaction_parameters) = setup(&liquidity_parameters).await;
-        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
+        let initial_liquidity_parameters = LiquidityParameters::new(
+            Some((4000, 1000)),
+            Some(liquidity_parameters.deadline),
+            Some(2000),
+        );
+        deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange, false).await;
 
         let script_instance =
             AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
@@ -334,10 +353,11 @@ mod success {
                     liquidity_parameters.amounts.1,
                 ),
                 expected_liquidity,
+                liquidity_parameters.deadline,
             )
             .with_inputs(transaction_parameters.inputs)
             .with_outputs(transaction_parameters.outputs)
-            .tx_params(TxParameters::new(None, Some(100_000_000), None))
+            .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
             .call()
             .await
             .unwrap()
@@ -353,15 +373,11 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "DesiredLiquidityZero")]
     async fn when_desired_liquidity_zero() {
-        let liquidity_parameters =
-            LiquidityParameters::new(Some((1000, 1000)), Some(1000), Some(1000));
-
-        let (wallet, exchange, _transaction_parameters) = setup(&liquidity_parameters).await;
+        let (wallet, exchange, liquidity_parameters, _transaction_parameters) =
+            setup((1000, 1000), 1000).await;
 
         let script_instance =
             AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
-
-        let desired_liquidity = 0;
 
         script_instance
             .main(
@@ -374,8 +390,43 @@ mod revert {
                     liquidity_parameters.amounts.0,
                     liquidity_parameters.amounts.1,
                 ),
-                desired_liquidity,
+                0, // desired liquidity is 0
+                liquidity_parameters.deadline,
             )
+            .call()
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
+    // the contract call in the script fails with "DesiredAmountTooHigh" but that message is not propagated
+    async fn when_desired_liquidity_too_high() {
+        let (wallet, exchange, liquidity_parameters, transaction_parameters) =
+            setup((1000, 1000), 1000).await;
+
+        let script_instance =
+            AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
+
+        let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
+
+        script_instance
+            .main(
+                exchange.id,
+                (
+                    ContractId::new(*exchange.pair.0),
+                    ContractId::new(*exchange.pair.1),
+                ),
+                (
+                    liquidity_parameters.amounts.0,
+                    liquidity_parameters.amounts.1,
+                ),
+                expected_liquidity + 1, //desired liquidity is too high
+                liquidity_parameters.deadline,
+            )
+            .with_inputs(transaction_parameters.inputs)
+            .with_outputs(transaction_parameters.outputs)
+            .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
             .call()
             .await
             .unwrap();

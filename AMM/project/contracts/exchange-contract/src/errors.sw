@@ -9,15 +9,15 @@ pub enum InitError {
 pub enum InputError {
     CannotAddLessThanMinimumLiquidity: u64,
     DeadlinePassed: u64,
-    ExpectedNonZeroAmount: (),
-    ExpectedNonZeroParameter: (),
+    ExpectedNonZeroAmount: ContractId,
+    ExpectedNonZeroParameter: ContractId,
     ExpectedZeroAmount: (),
     InvalidAsset: (),
 }
 
 pub enum TransactionError {
     DesiredAmountTooHigh: u64,
-    ExpectedNonZeroDeposit: (),
-    InsufficientReserve: (),
+    ExpectedNonZeroDeposit: ContractId,
+    InsufficientReserve: ContractId,
     NoLiquidityToRemove: (),
 }

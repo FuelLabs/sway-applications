@@ -77,8 +77,8 @@ impl Exchange for Contract {
         let mut added_liquidity = 0;
 
         // checking this because this will either result in a math error or adding no liquidity at all
-        require(asset_a_in_deposit != 0, TransactionError::ExpectedNonZeroDeposit);
-        require(asset_b_in_deposit != 0, TransactionError::ExpectedNonZeroDeposit);
+        require(asset_a_in_deposit != 0, TransactionError::ExpectedNonZeroDeposit(asset_a_id));
+        require(asset_b_in_deposit != 0, TransactionError::ExpectedNonZeroDeposit(asset_b_id));
 
         // adding liquidity for the first time
         // use up all the deposited amounts of assets to determine the ratio
@@ -187,12 +187,13 @@ impl Exchange for Contract {
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
 
         require(msg_asset_id() == contract_id(), InputError::InvalidAsset);
-        require(min_asset_a > 0 && min_asset_b > 0, InputError::ExpectedNonZeroParameter);
+        require(min_asset_a > 0, InputError::ExpectedNonZeroParameter(asset_a_id));
+        require(min_asset_b > 0, InputError::ExpectedNonZeroParameter(asset_b_id));
         require(deadline > height(), InputError::DeadlinePassed(deadline));
 
         let amount = msg_amount();
 
-        require(amount > 0, InputError::ExpectedNonZeroAmount);
+        require(amount > 0, InputError::ExpectedNonZeroAmount(msg_asset_id()));
 
         let sender = msg_sender().unwrap();
         let asset_a_in_reserve = storage.reserves.get(asset_a_id);
@@ -231,7 +232,7 @@ impl Exchange for Contract {
         require(deadline >= height(), InputError::DeadlinePassed(deadline));
 
         let exact_input = msg_amount();
-        require(exact_input > 0, InputError::ExpectedNonZeroAmount);
+        require(exact_input > 0, InputError::ExpectedNonZeroAmount(input_asset));
 
         let sender = msg_sender().unwrap();
         let input_asset_in_reserve = storage.reserves.get(input_asset);
@@ -263,16 +264,16 @@ impl Exchange for Contract {
         let output_asset = determine_output_asset(input_asset, storage.pair);
 
         require(deadline > height(), InputError::DeadlinePassed(deadline));
-        require(output > 0, InputError::ExpectedNonZeroParameter);
+        require(output > 0, InputError::ExpectedNonZeroParameter(output_asset));
 
         let input_amount = msg_amount();
-        require(input_amount > 0, InputError::ExpectedNonZeroAmount);
+        require(input_amount > 0, InputError::ExpectedNonZeroAmount(input_asset));
 
         let sender = msg_sender().unwrap();
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
 
-        require(output <= output_asset_in_reserve, TransactionError::InsufficientReserve);
+        require(output <= output_asset_in_reserve, TransactionError::InsufficientReserve(output_asset));
 
         let sold = maximum_input_for_exact_output(output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
 

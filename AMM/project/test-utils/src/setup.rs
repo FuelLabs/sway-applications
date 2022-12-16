@@ -54,7 +54,9 @@ pub mod common {
         config: &ExchangeContractConfiguration,
     ) -> ExchangeContract {
         let (id, instance) = deploy_exchange(&wallet, &config).await;
+
         constructor(&instance, config.pair).await;
+
         ExchangeContract {
             bytecode_root: if config.compute_bytecode_root {
                 Some(exchange_bytecode_root().await)
@@ -112,35 +114,29 @@ pub mod common {
     pub async fn deposit_and_add_liquidity(
         liquidity_parameters: &LiquidityParameters,
         exchange: &ExchangeContract,
+        override_gas_limit: bool,
     ) -> u64 {
-        deposit_both_assets(&liquidity_parameters, &exchange).await;
+        deposit(
+            &exchange.instance,
+            liquidity_parameters.amounts.0,
+            exchange.pair.0,
+        )
+        .await;
+
+        deposit(
+            &exchange.instance,
+            liquidity_parameters.amounts.1,
+            exchange.pair.1,
+        )
+        .await;
 
         add_liquidity(
             &exchange.instance,
-            CallParameters::new(Some(0), None, None),
-            TxParameters::new(None, Some(100_000_000), None),
             liquidity_parameters.liquidity,
             liquidity_parameters.deadline,
+            override_gas_limit,
         )
         .await
-        .value
-    }
-
-    pub async fn deposit_both_assets(
-        parameters: &LiquidityParameters,
-        exchange: &ExchangeContract,
-    ) {
-        deposit(
-            &exchange.instance,
-            CallParameters::new(Some(parameters.amounts.0), Some(exchange.pair.0), None),
-        )
-        .await;
-
-        deposit(
-            &exchange.instance,
-            CallParameters::new(Some(parameters.amounts.1), Some(exchange.pair.1), None),
-        )
-        .await;
     }
 
     pub async fn exchange_bytecode_root() -> ContractId {
@@ -186,13 +182,14 @@ pub mod scripts {
     ) -> ExchangeContract {
         let exchange = deploy_and_construct_exchange(&wallet, &exchange_config).await;
 
-        deposit_and_add_liquidity(&liquidity_parameters, &exchange).await;
+        deposit_and_add_liquidity(&liquidity_parameters, &exchange, false).await;
 
         exchange
     }
 
     pub async fn setup_exchange_contracts(
         wallet: &WalletUnlocked,
+        provider: &Provider,
         amm: &mut AMMContract,
         asset_ids: &Vec<AssetId>,
     ) -> () {
@@ -214,7 +211,7 @@ pub mod scripts {
                 ),
                 &LiquidityParameters::new(
                     Some((100_000, 100_000 * (exchange_index as u64 + 1) * 3)),
-                    None,
+                    Some(provider.latest_block_height().await.unwrap() + 10),
                     Some(100_000),
                 ),
             )

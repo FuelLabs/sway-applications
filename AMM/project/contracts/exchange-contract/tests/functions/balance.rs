@@ -1,5 +1,4 @@
 use crate::utils::{setup, setup_and_construct};
-use fuels::prelude::*;
 use test_utils::abi::exchange::{balance, deposit};
 
 mod success {
@@ -10,7 +9,7 @@ mod success {
         let (exchange, _wallet, _liquidity_parameters, _asset_c_id) =
             setup_and_construct(false, false).await;
 
-        let balance = balance(&exchange.instance, exchange.pair.0).await.value;
+        let balance = balance(&exchange.instance, exchange.pair.0).await;
 
         assert_eq!(balance, 0);
     }
@@ -19,15 +18,13 @@ mod success {
     async fn returns_non_zero() {
         let (exchange, _wallet, _liquidity_parameters, _asset_c_id) =
             setup_and_construct(false, false).await;
-        let initial_balance = balance(&exchange.instance, exchange.pair.0).await.value;
+        let initial_balance = balance(&exchange.instance, exchange.pair.0).await;
+
         let deposit_amount = 10;
 
-        deposit(
-            &exchange.instance,
-            CallParameters::new(Some(deposit_amount), Some(exchange.pair.0), None),
-        )
-        .await;
-        let balance = balance(&exchange.instance, exchange.pair.0).await.value;
+        deposit(&exchange.instance, deposit_amount, exchange.pair.0).await;
+
+        let balance = balance(&exchange.instance, exchange.pair.0).await;
 
         assert_eq!(initial_balance, 0);
         assert_eq!(balance, deposit_amount);
@@ -41,10 +38,9 @@ mod revert {
     #[should_panic(expected = "AssetPairNotSet")]
     async fn when_uninitialized() {
         // call setup instead of setup_and_construct
-        let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
-            setup().await;
+        let (exchange_instance, _wallet, assets, _deadline) = setup().await;
 
-        balance(&exchange_instance, asset_a_id).await;
+        balance(&exchange_instance, assets.asset_1).await;
     }
 
     #[tokio::test]
