@@ -35,8 +35,10 @@ mod success {
 mod revert {
     use crate::utils::{abi::register, setup, REGISTER_DURATION};
 
+    // TODO: missing test
+
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NameNotExpired")]
     async fn cant_repeat_register() {
         let (instance, acc, _wallet2) = setup().await;
 
@@ -59,7 +61,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "NameNotExpired")]
     async fn cant_register_max_duration() {
         let (instance, acc, _wallet2) = setup().await;
 

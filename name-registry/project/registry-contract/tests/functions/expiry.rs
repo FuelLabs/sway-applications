@@ -33,7 +33,7 @@ mod revert {
     use crate::utils::{abi::expiry, setup};
 
     #[tokio::test]
-    #[should_panic(expected = "`Result::unwrap()` on an `Err` value")]
+    #[should_panic(expected = "NameNotRegistered")]
     async fn cant_get_expiry() {
         let (instance, acc, _wallet2) = setup().await;
 

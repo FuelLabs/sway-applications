@@ -51,8 +51,10 @@ mod revert {
     };
     use fuels::prelude::*;
 
+    // TODO: missing tests
+
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "SenderNotOwner")]
     async fn cant_set_owner() {
         let (instance, acc1, wallet2) = setup().await;
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));

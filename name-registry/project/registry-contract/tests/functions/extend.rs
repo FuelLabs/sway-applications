@@ -48,8 +48,10 @@ mod revert {
         setup, EXTEND_DURATION, REGISTER_DURATION,
     };
 
+    // TODO: missing test for incorrect asset
+
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "InsufficientPayment")]
     async fn cant_extend_insufficient_payment() {
         let (instance, acc, _wallet2) = setup().await;
 
@@ -66,7 +68,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NameNotRegistered")]
     async fn cant_extend_name_not_registered() {
         let (instance, acc, _wallet2) = setup().await;
 
