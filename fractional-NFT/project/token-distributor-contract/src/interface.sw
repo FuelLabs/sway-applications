@@ -147,6 +147,7 @@ abi TokenDistributor {
     /// # Reverts
     ///
     /// * When `fractional_nft` does not map to an existing token distribution.
+    /// * When the sender is not the owner of the token distribution.
     #[storage(read, write)]
     fn withdraw(fractional_nft: ContractId);
 }
