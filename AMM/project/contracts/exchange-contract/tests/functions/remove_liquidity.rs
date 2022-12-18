@@ -417,7 +417,7 @@ mod revert {
                 Some(1),
                 // Sending `None` instead of `Some(exchange.liquidity_pool_asset)`
                 // because liquidity pool asset does not exist yet.
-                // Normally, this also causes ,
+                // Normally, this also causes Revert(18446744073709486080),
                 // but this test condition (zero liquidity) reverts before that.
                 None,
                 None,
