@@ -804,7 +804,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[ignore]
     // TODO: test is not set up to hit the error properly
     // #[should_panic(expected = "NFTTransferNotApproved")]
     async fn when_auction_not_approved_for_transfer() {
