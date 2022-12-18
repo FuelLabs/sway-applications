@@ -21,16 +21,15 @@ mod success {
 
         let previous_identity = identity(&instance, &acc1.name).await;
 
-        assert_eq!(previous_identity.0.value.unwrap(), acc1.identity(),);
+        assert_eq!(previous_identity.value.unwrap(), acc1.identity(),);
 
         let response = set_identity(&instance, &acc1.name, wallet_identity2.clone()).await;
 
         let new_identity = identity(&instance, &acc1.name).await;
 
-        assert_eq!(new_identity.0.value.unwrap(), wallet_identity2);
+        assert_eq!(new_identity.value.unwrap(), wallet_identity2);
 
         let log = response
-            .0
             .get_logs_with_type::<IdentityChangedEvent>()
             .unwrap();
         assert_eq!(
