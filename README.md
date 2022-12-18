@@ -9,8 +9,8 @@
     <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
         <img src="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml/badge.svg" />
     </a>
-    <a href="https://crates.io/crates/forc/0.32.1" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.32.1-orange" />
+    <a href="https://crates.io/crates/forc/0.32.2" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.32.2-orange" />
     </a>
     <a href="./LICENSE" alt="forc">
         <img src="https://img.shields.io/github/license/FuelLabs/sway-applications" />
@@ -68,7 +68,7 @@ If you wish to run any of the projects then clone this repository and go through
 Any instructions related to running a specific project should be found within the README.md of that project.
 
 > **Note**
-> All projects currently use `forc 0.32.1`, and `fuel-core 0.15.1`.
+> All projects currently use `forc 0.32.2`, and `fuel-core 0.15.1`.
 
 ## Contributing
 
