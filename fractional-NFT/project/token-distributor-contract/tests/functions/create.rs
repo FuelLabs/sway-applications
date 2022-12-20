@@ -3,7 +3,7 @@ use crate::utils::{
     nft_abi_calls::{approve, mint, owner_of},
     test_helpers::{defaults, setup},
     token_distributor_abi_calls::{create, token_distribution},
-    tokendistributor_mod::DistributionState,
+    token_distributor_mod::DistributionState,
 };
 use fuels::{
     prelude::{Bech32ContractId, Identity},
@@ -326,7 +326,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DistributionAlreadyExists")]
     async fn when_initalized_twice() {
         let (
             _deployer,

@@ -245,7 +245,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DistributionDoesNotExist")]
     async fn when_token_distribution_does_not_exist() {
         let (
             _deployer,
@@ -275,7 +275,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidState")]
     async fn when_not_accepting_returns() {
         let (
             _deployer,
@@ -336,7 +336,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidAssetTransfer")]
     async fn when_incorrect_asset_type() {
         let (
             _deployer,

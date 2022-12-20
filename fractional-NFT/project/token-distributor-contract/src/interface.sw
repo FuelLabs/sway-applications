@@ -101,6 +101,20 @@ abi TokenDistributor {
     #[storage(read)]
     fn sell(fractional_nft: ContractId);
 
+    /// Allows for the admin to change the price at which admin rights may be bought outright.
+    ///
+    /// # Arguments
+    ///
+    /// * `fractional_nft` - The token contract that holds the NFT.
+    /// * `reserve` - The price at which admin rights may be purchased.
+    ///
+    /// # Reverts
+    ///
+    /// * When `fractional_nft` does not map to an existing token distribution.
+    /// * When the sender is not the admin of the token distribution.
+    #[storage(read, write)]
+    fn set_reserve(fractional_nft: ContractId, reserve: Option<u64>);
+
     /// Allows for the admin to change the price at which fractionalize NFT tokens are sold.
     ///
     /// # Arguments
@@ -115,20 +129,6 @@ abi TokenDistributor {
     /// * When the token distribution is not in the started or distributed state.
     #[storage(read, write)]
     fn set_token_price(fractional_nft: ContractId, token_price: u64);
-
-    /// Allows for the admin to change the price at which admin rights may be bought outright.
-    ///
-    /// # Arguments
-    ///
-    /// * `fractional_nft` - The token contract that holds the NFT.
-    /// * `reserve` - The price at which admin rights may be purchased.
-    ///
-    /// # Reverts
-    ///
-    /// * When `fractional_nft` does not map to an existing token distribution.
-    /// * When the sender is not the admin of the token distribution.
-    #[storage(read, write)]
-    fn set_reserve(fractional_nft: ContractId, reserve: Option<u64>);
 
     /// Returns the information on a fractionalized NFT token distribution.
     ///

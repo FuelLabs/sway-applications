@@ -115,7 +115,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AlreadyInitialized")]
     async fn when_already_deposited() {
         let (_deployer, owner1, _owner2, fractional_nft_contract, nft_contract) = setup().await;
         let token_supply = defaults().await;

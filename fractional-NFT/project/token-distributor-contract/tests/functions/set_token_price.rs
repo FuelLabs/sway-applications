@@ -141,7 +141,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DistributionDoesNotExist")]
     async fn when_token_distribution_does_not_exist() {
         let (
             _deployer,
@@ -164,7 +164,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NotTokenAdmin")]
     async fn when_not_owner() {
         let (
             _deployer,
@@ -205,7 +205,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidState")]
     async fn when_not_in_distributing_state() {
         let (
             _deployer,

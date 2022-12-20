@@ -191,6 +191,22 @@ impl TokenDistributor for Contract {
     }
 
     #[storage(read, write)]
+    fn set_reserve(fractional_nft: ContractId, reserve: Option<u64>) {
+        require(storage.token_distributions.get(fractional_nft).is_some(), AccessError::DistributionDoesNotExist);
+        let mut token_distribution = storage.token_distributions.get(fractional_nft).unwrap();
+
+        require(token_distribution.admin.is_some() && token_distribution.admin.unwrap() == msg_sender().unwrap(), AccessError::NotTokenAdmin);
+
+        token_distribution.reserve_price = reserve;
+        storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
+
+        log(ReserveEvent {
+            fractional_nft,
+            reserve,
+        });
+    }
+
+    #[storage(read, write)]
     fn set_token_price(fractional_nft: ContractId, token_price: u64) {
         require(storage.token_distributions.get(fractional_nft).is_some(), AccessError::DistributionDoesNotExist);
         let mut token_distribution = storage.token_distributions.get(fractional_nft).unwrap();
@@ -204,22 +220,6 @@ impl TokenDistributor for Contract {
         log(TokenPriceEvent {
             fractional_nft,
             token_price,
-        });
-    }
-
-    #[storage(read, write)]
-    fn set_reserve(fractional_nft: ContractId, reserve: Option<u64>) {
-        require(storage.token_distributions.get(fractional_nft).is_some(), AccessError::DistributionDoesNotExist);
-        let mut token_distribution = storage.token_distributions.get(fractional_nft).unwrap();
-
-        require(token_distribution.admin.is_some() && token_distribution.admin.unwrap() == msg_sender().unwrap(), AccessError::NotTokenAdmin);
-
-        token_distribution.reserve_price = reserve;
-        storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
-
-        log(ReserveEvent {
-            fractional_nft,
-            reserve,
         });
     }
 

@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*};
+use fuels::{contract::call_response::FuelCallResponse, prelude::*};
 
 // Load abi from json
 abigen!(
@@ -35,7 +35,7 @@ pub mod fractional_nft_abi_calls {
         nft: ContractId,
         supply: u64,
         token_id: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .deposit(admin.clone(), nft.clone(), supply, token_id)
@@ -53,7 +53,7 @@ pub mod fractional_nft_abi_calls {
     pub async fn set_admin(
         contract: &FractionalNFT,
         new_admin: Option<Identity>,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .set_admin(new_admin.clone())
@@ -70,7 +70,7 @@ pub mod fractional_nft_abi_calls {
         contract: &FractionalNFT,
         nft: ContractId,
         to: Identity,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .withdraw(to)
@@ -89,7 +89,7 @@ pub mod nft_abi_calls {
         approved: Option<Identity>,
         contract: &Nft,
         token_id: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .approve(approved, token_id)
@@ -98,7 +98,7 @@ pub mod nft_abi_calls {
             .unwrap()
     }
 
-    pub async fn mint(amount: u64, contract: &Nft, owner: Identity) -> CallResponse<()> {
+    pub async fn mint(amount: u64, contract: &Nft, owner: Identity) -> FuelCallResponse<()> {
         contract.methods().mint(amount, owner).call().await.unwrap()
     }
 

@@ -2,7 +2,7 @@ use crate::utils::{
     nft_abi_calls::{approve, mint},
     test_helpers::{defaults, setup},
     token_distributor_abi_calls::{create, token_distribution},
-    tokendistributor_mod::DistributionState,
+    token_distributor_mod::DistributionState,
 };
 use fuels::{prelude::Identity, signers::Signer};
 

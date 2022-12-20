@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*};
+use fuels::{contract::call_response::FuelCallResponse, prelude::*};
 
 // Load abi from json
 abigen!(
@@ -49,7 +49,7 @@ pub mod asset_abi_calls {
         amount: u64,
         contract: &Asset,
         recipient: Address,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .mint_and_send_to_address(amount, recipient)
@@ -79,7 +79,7 @@ pub mod token_distributor_abi_calls {
         external_asset: ContractId,
         f_nft: ContractId,
         token_price: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params =
             CallParameters::new(Some(amount), Some(AssetId::from(*external_asset)), None);
@@ -105,7 +105,7 @@ pub mod token_distributor_abi_calls {
         token_price: u64,
         token_supply: u64,
         token_id: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .create(
@@ -132,7 +132,7 @@ pub mod token_distributor_abi_calls {
         contract: &TokenDistributor,
         f_nft: ContractId,
         nft: ContractId,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .end(f_nft.clone())
@@ -151,7 +151,7 @@ pub mod token_distributor_abi_calls {
         external_asset: ContractId,
         f_nft: ContractId,
         price: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params = CallParameters::new(
             Some(amount * price),
@@ -177,7 +177,7 @@ pub mod token_distributor_abi_calls {
         external_asset: ContractId,
         f_nft: ContractId,
         reserve: Option<u64>,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params =
             CallParameters::new(Some(amount), Some(AssetId::from(*external_asset)), None);
@@ -197,7 +197,7 @@ pub mod token_distributor_abi_calls {
         amount: u64,
         contract: &TokenDistributor,
         f_nft: ContractId,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params = CallParameters::new(Some(amount), Some(AssetId::from(*f_nft)), None);
 
@@ -217,7 +217,7 @@ pub mod token_distributor_abi_calls {
         contract: &TokenDistributor,
         f_nft: ContractId,
         token_price: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .set_token_price(f_nft.clone(), token_price)
@@ -230,7 +230,7 @@ pub mod token_distributor_abi_calls {
         contract: &TokenDistributor,
         f_nft: ContractId,
         reserve: Option<u64>,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .set_reserve(f_nft.clone(), reserve)
@@ -252,7 +252,7 @@ pub mod token_distributor_abi_calls {
             .value
     }
 
-    pub async fn withdraw(contract: &TokenDistributor, f_nft: ContractId) -> CallResponse<()> {
+    pub async fn withdraw(contract: &TokenDistributor, f_nft: ContractId) -> FuelCallResponse<()> {
         contract
             .methods()
             .withdraw(f_nft.clone())
@@ -271,7 +271,7 @@ pub mod nft_abi_calls {
         approved: Option<Identity>,
         contract: &Nft,
         token_id: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .approve(approved, token_id)
@@ -280,7 +280,7 @@ pub mod nft_abi_calls {
             .unwrap()
     }
 
-    pub async fn mint(amount: u64, contract: &Nft, owner: Identity) -> CallResponse<()> {
+    pub async fn mint(amount: u64, contract: &Nft, owner: Identity) -> FuelCallResponse<()> {
         contract.methods().mint(amount, owner).call().await.unwrap()
     }
 

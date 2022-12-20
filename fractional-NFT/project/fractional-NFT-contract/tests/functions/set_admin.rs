@@ -97,7 +97,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NoNftDeposited")]
     async fn when_not_deposited() {
         let (_deployer, owner1, owner2, _fractional_nft_contract, _nft_contract) = setup().await;
 
@@ -107,7 +107,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NotNftAdmin")]
     async fn when_not_admin() {
         let (_deployer, owner1, owner2, fractional_nft_contract, nft_contract) = setup().await;
         let token_supply = defaults().await;

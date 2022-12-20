@@ -6,7 +6,7 @@ use crate::utils::{
     token_distributor_abi_calls::{
         buyback, create, end, purchase, purchase_admin, sell, token_distribution,
     },
-    tokendistributor_mod::DistributionState,
+    token_distributor_mod::DistributionState,
 };
 use fuels::{
     prelude::{Address, Bech32ContractId, Identity},
@@ -207,7 +207,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DistributionDoesNotExist")]
     async fn when_token_distribution_does_not_exist() {
         let (
             _deployer,
@@ -230,7 +230,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NotTokenAdmin")]
     async fn when_no_owner() {
         let (
             _deployer,
@@ -314,7 +314,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidState")]
     async fn when_not_in_returning_state() {
         let (
             _deployer,
@@ -375,6 +375,8 @@ mod revert {
     }
 
     #[tokio::test]
+    // TODO: This test expects an error from another contract, upstream error messages not yet supported
+    // #[should_panic(expected = "SupplyNotReturned")]
     #[should_panic(expected = "Revert(18446744073709486080)")]
     async fn when_not_all_assets_returned() {
         let (

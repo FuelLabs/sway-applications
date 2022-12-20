@@ -16,8 +16,8 @@ Table of Contents
                 - [`withdraw()`](#withdraw-1)
                 - [`buyback()`](#buyback)
                 - [`end()`](#end)
-                - [`set_token_price()`](#set_token_price)
                 - [`set_reserve()`](#set_reserve)
+                - [`set_token_price()`](#set_token_price)
             - [Token Purchaser](#token-purchaser)
                 - [`purchase()`](#purchase)
                 - [`sell()`](#sell)
@@ -97,14 +97,14 @@ If you are interested in a functional overview then this is the section for you.
 1. Allows the token admin to unlock and regain ownership of the NFT if
     1. All sold fractionalized tokens have been sold back to the contract
 
+##### `set_reserve()`
+
+1. Allows the token admin to change the price to buy admin rights of the underlying NFT
+
 ##### `set_token_price()`
 
 1. Allows the token admin to change the price for a single fractionalized NFT token if
     1. The distribution has not ended
-
-##### `set_reserve()`
-
-1. Allows the token admin to change the price to buy admin rights of the underlying NFT
 
 #### Token Purchaser
 
