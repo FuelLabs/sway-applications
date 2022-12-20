@@ -20,7 +20,9 @@ use std::{
 use utils::transfer_nft;
 
 storage {
+    /// Stores the relevant information on the NFT that is locked in the contract.
     nft_info: Option<NFTInfo> = Option::None,
+    /// The total number of tokens that shall ever be minted.
     supply: u64 = 0,
 }
 

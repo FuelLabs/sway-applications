@@ -1,32 +1,35 @@
 Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
-    - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
-        - [Fractional NFT Core Functionality](#fractional-nft-core-fnctionality)
+    - [Fractional NFT Contract](#fractional-nft-contract)
+        - [Core Functionality](#core-functionality)
             - [`deposit()`](#deposit)
             - [`set_owner()`](#set_owner)
             - [`withdraw()`](#withdraw)
-        - [Fractional NFT State Checks](#fractional-nft-state-checks)
-            - [`nft_info()`](#nft-info)
+        - [State Checks](#state-checks)
+            - [`nft_info()`](#nft_info)
             - [`supply()`](#supply)
-        - [Fractional NFT Sequence Diagram](#fractional-nft-sequence-diagram)
-        - [Token Distributor NFT Owner Core Functionality](#token-distributor-nft-owner-core-functionality)
-            - [`create()`](#create)
-            - [`withdraw()`](#withdraw)
-            - [`buyback()`](#buyback)
-            - [`end()`](#end)
-            - [`set_token_price()`](#set-token-price)
-            - [`set_reserve()`](#set-reserve)
-        - [Token Distributor Token Purchaser Core Functionality](#token-distributor-token--purchaser-core-functionality)
-            - [`purchase()`](#purchase)
-            - [`sell()`](#sell)
-            - [`purchase_ownership()`](#purchase-ownership)
-            - [`end()`](#end)
-            - [`set_token_price()`](#set-token-price)
-            - [`set_reserve()`](#set-reserve)
-        - [Token Distributor State Checks](#token-distributor-state-checks)
-            - [`token_distribution()`](#token-distribution)
-        - [Token Distributor Sequence Diagram](#token-distributor-sequence-diagram)
+    - [Token Distributor Contract](#token-distributor-contract)
+        - [Core Functionality](#core-functionality-1)
+            - [Token Creator](#token-creator)
+                - [`create()`](#create)
+                - [`withdraw()`](#withdraw-1)
+                - [`buyback()`](#buyback)
+                - [`end()`](#end)
+                - [`set_token_price()`](#set_token_price)
+                - [`set_reserve()`](#set_reserve)
+            - [Token Purchaser](#token-purchaser)
+                - [`purchase()`](#purchase)
+                - [`sell()`](#sell)
+                - [`purchase_ownership()`](#purchase_ownership)
+                - [`end()`](#end-1)
+                - [`set_token_price()`](#set_token_price-1)
+                - [`set_reserve()`](#set_reserve-1)
+        - [State Checks](#state-checks-1)
+            - [`token_distribution()`](#token_distribution)
+- [Sequence Diagrams](#sequence-diagrams)
+    - [Fractional NFT](#fractional-nft)
+    - [Token Distributor](#token-distributor)
 
 # Overview
 
@@ -40,11 +43,9 @@ This section contains general information about the functionality of the applica
 
 If you are interested in a functional overview then this is the section for you.
 
-## Actions that users are able to perform
+## Fractional NFT Contract
 
-This sub-section details what a user is able to do e.g. click a button and "x, y, z" happens.
-
-### FractionalNFT Core Functionality
+### Core Functionality
 
 #### `deposit()`
 
@@ -53,83 +54,89 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 #### `set_owner()`
 
-1. Allows for the owner to change the owner of the NFT
+1. Allows for the contract owner to change the user which may withdraw the underlying NFT
 
 #### `withdraw()`
 
-1. Allows for the owner to unlock and regain ownership of the NFT if
+1. Allows for the contract owner to unlock and regain ownership of the NFT if
     1. All fractionalized tokens are sent to and owned by the Fractional-NFT contract
 
-### Fractional NFT State Checks
+### State Checks
 
 #### `nft_info()`
 
 1. Returns information on the NFT held by the Fractional-NFT contract
 
-#### `()`
+#### `supply()`
 
 1.  Returns the total circulating supply of fractionalized tokens
 
-### Fractional NFT Sequence Diagram
+## Token Distributor Contract
 
-![Fractional NFT Sequence Diagram](.docs/f-NFT.png)
+### Core Functionality
 
-### Token Distributor NFT Owner Core Functionality
+#### Token Creator
 
-#### `create()`
+##### `create()`
 
 1. Allows for a user to lock their NFT, mint fractionalized tokens, and start a distribution if
     1. The contract is approved to transfer the NFT
 
-#### `withdraw()`
+##### `withdraw()`
 
-1. Allows the owner to withdraw the payments made by token purchasers
+1. Allows the token creator to withdraw the payments made by token purchasers
 
-#### `buyback()`
+##### `buyback()`
 
-1. Allows the owner to start a buyback of tokens at a set price if
+1. Allows the token creator to start a buyback of tokens at a set price if
     1. The payment for all tokens that have been sold is provided
     2. Some tokens have already been sold
 
-#### `end()`
+##### `end()`
 
-1. Allows the owner to unlock and regain ownership of the NFT if
+1. Allows the token creator to unlock and regain ownership of the NFT if
     1. All sold fractionalized tokens have been sold back to the contract
 
-#### `set_token_price()`
+##### `set_token_price()`
 
-1. Allows the owner to change the price for a single fractionalized NFT token if
+1. Allows the token creator to change the price for a single fractionalized NFT token if
     1. The distribution has not ended
 
-#### `set_reserve()`
+##### `set_reserve()`
 
-1. Allows the owner to change the price to buy ownership of the underlying NFT
+1. Allows the token creator to change the price to buy ownership of the underlying NFT
 
-### Token Distributor Token Purchaser Core Functionality
+#### Token Purchaser
 
-#### `purchase()`
+##### `purchase()`
 
 1. Allows for a user to purchase fractionalized tokens at a set price if
     1. The correct payment type and amount is provided
     2. The distribution has not ended
 
-#### `sell()`
+##### `sell()`
 
 1. Allows for a user to sell their fractionalized tokens back to the contract if
     1. A buyback has been initiated
 
-#### `purchase_ownership()`
+##### `purchase_ownership()`
 
 1. Allows for a user to purchase the underlying fractionalized NFT if
     1. The correct payment type and amount is provided
     2. The distribution has not ended
 
-### Token Distributor State Checks
+### State Checks
 
 #### `token_distribution()`
 
 1.  Returns infomation on a fractionalized token distribution
 
-### Token Distributor Sequence Diagram
+# Sequence Diagrams
+
+## Fractional NFT
+
+![Fractional NFT Sequence Diagram](.docs/f-NFT.png)
+
+## Token Distributor
 
 ![Token Distributor Sequence Diagram](.docs/token-distribution.png)

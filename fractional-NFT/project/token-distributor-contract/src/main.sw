@@ -43,6 +43,8 @@ use utils::{
 };
 
 storage {
+    /// Maintains a mapping of information on every token distribution started using this contract.
+    /// Mapping(Token Contract -> Token Distribution Information)
     token_distributions: StorageMap<ContractId, Option<TokenDistribution>> = StorageMap {},
 }
 
