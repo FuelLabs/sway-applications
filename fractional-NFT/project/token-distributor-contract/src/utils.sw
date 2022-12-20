@@ -5,29 +5,21 @@ dep interface;
 
 use data_structures::TokenDistribution;
 use interface::FractionalNFT;
-use sway_libs::nft::NFT;
 
 pub fn create_fractional_nft(
+    admin: Option<Identity>,
     fractional_nft: ContractId,
     nft: ContractId,
-    owner: Identity,
     supply: u64,
     token_id: u64,
 ) {
     let f_nft_abi = abi(FractionalNFT, fractional_nft.value);
-    f_nft_abi.deposit(nft, Option::Some(owner), supply, token_id);
+    f_nft_abi.deposit(admin, nft, supply, token_id);
 }
 
 pub fn fractional_nft_supply(fractional_nft: ContractId) -> u64 {
     let f_nft_abi = abi(FractionalNFT, fractional_nft.value);
     f_nft_abi.supply()
-}
-
-pub fn require_fractional_nft_exists(
-    fractional_nft: Option<TokenDistribution>,
-) -> TokenDistribution {
-    require(fractional_nft.is_some(), "Fractional NFT distribution doesn't exist");
-    fractional_nft.unwrap()
 }
 
 pub fn withdraw_fractional_nft(fractional_nft: ContractId, to: Identity) {

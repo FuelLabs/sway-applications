@@ -2,7 +2,6 @@ library utils;
 
 dep errors;
 
-use errors::AccessError;
 use sway_libs::nft::NFT;
 
 /// Transfers an NFT from one `Identity` to another.

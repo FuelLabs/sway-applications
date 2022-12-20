@@ -40,8 +40,8 @@ mod success {
             asset_contract.clone(),
             fractional_nft_contract.clone(),
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             Some(reserve_price),
+            Some(owner_identity.clone()),
             token_price,
             token_supply,
             0,
@@ -63,7 +63,7 @@ mod success {
             nft_contract.clone()
         );
         assert_eq!(
-            token_distribution_struct.clone().unwrap().owner,
+            token_distribution_struct.clone().unwrap().admin,
             Some(owner_identity.clone())
         );
         assert_eq!(

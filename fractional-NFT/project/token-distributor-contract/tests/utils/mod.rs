@@ -100,8 +100,8 @@ pub mod token_distributor_abi_calls {
         external_asset: ContractId,
         f_nft: ContractId,
         nft: ContractId,
-        owner: Option<Identity>,
         reserve_price: Option<u64>,
+        token_owner: Option<Identity>,
         token_price: u64,
         token_supply: u64,
         token_id: u64,
@@ -112,8 +112,8 @@ pub mod token_distributor_abi_calls {
                 external_asset.clone(),
                 f_nft.clone(),
                 nft.clone(),
-                owner.clone(),
                 reserve_price.clone(),
+                token_owner.clone(),
                 token_price,
                 token_supply,
                 token_id,
@@ -170,12 +170,12 @@ pub mod token_distributor_abi_calls {
             .unwrap()
     }
 
-    pub async fn purchase_ownership(
+    pub async fn purchase_admin(
+        admin: Option<Identity>,
         amount: u64,
         contract: &TokenDistributor,
         external_asset: ContractId,
         f_nft: ContractId,
-        owner: Option<Identity>,
         reserve: Option<u64>,
     ) -> CallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
@@ -184,7 +184,7 @@ pub mod token_distributor_abi_calls {
 
         contract
             .methods()
-            .purchase_ownership(f_nft.clone(), owner, reserve)
+            .purchase_admin(admin, f_nft.clone(), reserve)
             .tx_params(tx_params)
             .call_params(call_params)
             .append_variable_outputs(1)

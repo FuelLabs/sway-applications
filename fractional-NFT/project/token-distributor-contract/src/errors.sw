@@ -2,9 +2,10 @@ library errors;
 
 pub enum AccessError {
     DistributionAlreadyExists: (),
+    DistributionDoesNotExist: (),
     InvalidState: (),
     NoReserveAvailable: (),
-    NotFNftOwner: (),
+    NotTokenAdmin: (),
 }
 
 pub enum AssetError {

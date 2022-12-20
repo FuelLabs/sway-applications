@@ -2,7 +2,7 @@ use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     nft_abi_calls::{approve, mint},
     test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{create, end, purchase, purchase_ownership, token_distribution},
+    token_distributor_abi_calls::{create, end, purchase, purchase_admin, token_distribution},
 };
 use fuels::{
     prelude::{Address, Identity},
@@ -39,8 +39,8 @@ mod success {
             asset_contract.clone(),
             fractional_nft_contract.clone(),
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             Some(reserve_price),
+            Some(owner_identity.clone()),
             token_price,
             token_supply,
             0,
@@ -72,16 +72,16 @@ mod success {
             0
         );
         assert_eq!(
-            token_distribution_struct.clone().unwrap().owner,
+            token_distribution_struct.clone().unwrap().admin,
             Some(owner_identity.clone())
         );
 
-        purchase_ownership(
+        purchase_admin(
+            Some(owner2_identity.clone()),
             reserve_price,
             &owner2.token_distributor,
             asset_contract.clone(),
             fractional_nft_contract.clone(),
-            Some(owner2_identity.clone()),
             Some(reserve_price * 2),
         )
         .await;
@@ -97,7 +97,7 @@ mod success {
             reserve_price
         );
         assert_eq!(
-            token_distribution_struct.clone().unwrap().owner,
+            token_distribution_struct.clone().unwrap().admin,
             Some(owner2_identity.clone())
         );
     }
@@ -130,12 +130,12 @@ mod revert {
         )
         .await;
 
-        purchase_ownership(
+        purchase_admin(
+            Some(owner2_identity.clone()),
             reserve_price,
             &owner2.token_distributor,
             asset_contract.clone(),
             fractional_nft_contract.clone(),
-            Some(owner2_identity.clone()),
             Some(reserve_price * 2),
         )
         .await;
@@ -167,8 +167,8 @@ mod revert {
             asset_contract.clone(),
             fractional_nft_contract.clone(),
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             None,
+            Some(owner_identity.clone()),
             token_price,
             token_supply,
             0,
@@ -189,12 +189,12 @@ mod revert {
         )
         .await;
 
-        purchase_ownership(
+        purchase_admin(
+            Some(owner2_identity.clone()),
             reserve_price,
             &owner2.token_distributor,
             asset_contract.clone(),
             fractional_nft_contract.clone(),
-            Some(owner2_identity.clone()),
             Some(reserve_price * 2),
         )
         .await;
@@ -226,8 +226,8 @@ mod revert {
             asset_contract.clone(),
             fractional_nft_contract.clone(),
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             Some(reserve_price),
+            Some(owner_identity.clone()),
             token_price,
             token_supply,
             0,
@@ -246,12 +246,12 @@ mod revert {
         )
         .await;
 
-        purchase_ownership(
+        purchase_admin(
+            Some(owner2_identity.clone()),
             reserve_price,
             &owner2.token_distributor,
             asset_contract.clone(),
             fractional_nft_contract.clone(),
-            Some(owner2_identity.clone()),
             Some(reserve_price * 2),
         )
         .await;
@@ -283,8 +283,8 @@ mod revert {
             asset_contract.clone(),
             fractional_nft_contract.clone(),
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             Some(reserve_price),
+            Some(owner_identity.clone()),
             token_price,
             token_supply,
             0,
@@ -305,12 +305,12 @@ mod revert {
         )
         .await;
 
-        purchase_ownership(
+        purchase_admin(
+            Some(owner2_identity.clone()),
             reserve_price - 1,
             &owner2.token_distributor,
             asset_contract.clone(),
             fractional_nft_contract.clone(),
-            Some(owner2_identity.clone()),
             Some(reserve_price * 2),
         )
         .await;

@@ -9,16 +9,16 @@ dep utils;
 use data_structures::{DistributionState, TokenDistribution};
 use errors::{AccessError, AssetError};
 use events::{
-    Buyback,
-    Canceled,
-    Closed,
-    Created,
-    Purchased,
-    PurchasedOwnership,
-    Reserve,
-    Sell,
-    TokenPrice,
-    Withdraw,
+    BuybackEvent,
+    CancelEvent,
+    CloseEvent,
+    CreateEvent,
+    PurchaseEvent,
+    PurchaseAdminEvent,
+    ReserveEvent,
+    SellEvent,
+    TokenPriceEvent,
+    WithdrawEvent,
 };
 use interface::TokenDistributor;
 use std::{
@@ -32,13 +32,11 @@ use std::{
         this_balance,
     },
     logging::log,
-    storage::StorageMap,
     token::transfer,
 };
 use utils::{
     create_fractional_nft,
     fractional_nft_supply,
-    require_fractional_nft_exists,
     withdraw_fractional_nft,
 };
 
@@ -51,9 +49,10 @@ storage {
 impl TokenDistributor for Contract {
     #[storage(read, write)]
     fn buyback(fractional_nft: ContractId, token_price: u64) {
-        let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+        require(storage.token_distributions.get(fractional_nft).is_some(), AccessError::DistributionDoesNotExist);
+        let mut token_distribution = storage.token_distributions.get(fractional_nft).unwrap();
 
-        require(token_distribution.owner.is_some() && token_distribution.owner.unwrap() == msg_sender().unwrap(), AccessError::NotFNftOwner);
+        require(token_distribution.admin.is_some() && token_distribution.admin.unwrap() == msg_sender().unwrap(), AccessError::NotTokenAdmin);
         require(token_distribution.state == DistributionState::Distributed, AccessError::InvalidState);
 
         // Ensure the seller is only providing the amount to buyback the number of tokens that have been sold
@@ -65,7 +64,7 @@ impl TokenDistributor for Contract {
         token_distribution.state = DistributionState::Buyback;
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
-        log(Buyback {
+        log(BuybackEvent {
             fractional_nft,
             token_price,
         });
@@ -76,21 +75,28 @@ impl TokenDistributor for Contract {
         external_asset: ContractId,
         fractional_nft: ContractId,
         nft: ContractId,
-        owner: Option<Identity>,
         reserve_price: Option<u64>,
+        token_admin: Option<Identity>,
         token_price: u64,
         token_supply: u64,
         nft_token_id: u64,
     ) {
         require(storage.token_distributions.get(fractional_nft).is_none(), AccessError::DistributionAlreadyExists);
-
-        create_fractional_nft(fractional_nft, nft, Identity::ContractId(contract_id()), token_supply, nft_token_id);
+        
+        match token_admin {
+            Option::Some(admin) => {
+                create_fractional_nft(Option::Some(Identity::ContractId(contract_id())), fractional_nft, nft, token_supply, nft_token_id);
+            },
+            Option::None(admin) => {
+                create_fractional_nft(Option::None::<Identity>(), fractional_nft, nft, token_supply, nft_token_id);
+            }
+        }
 
         // Store the newly created token distribution information
-        let token_distribution = TokenDistribution::new(external_asset, nft, owner, reserve_price, nft_token_id, token_price);
+        let token_distribution = TokenDistribution::new(token_admin, external_asset, nft, reserve_price, nft_token_id, token_price);
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
-        log(Created {
+        log(CreateEvent {
             fractional_nft,
             token_distribution,
         });
@@ -98,25 +104,27 @@ impl TokenDistributor for Contract {
 
     #[storage(read, write)]
     fn end(fractional_nft: ContractId) {
-        let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+        require(storage.token_distributions.get(fractional_nft).is_some(), AccessError::DistributionDoesNotExist);
+        let mut token_distribution = storage.token_distributions.get(fractional_nft).unwrap();
 
-        require(token_distribution.owner.is_some() && token_distribution.owner.unwrap() == msg_sender().unwrap(), AccessError::NotFNftOwner);
+        require(token_distribution.admin.is_some() && token_distribution.admin.unwrap() == msg_sender().unwrap(), AccessError::NotTokenAdmin);
         require(token_distribution.state == DistributionState::Buyback || token_distribution.state == DistributionState::Started, AccessError::InvalidState);
 
         // Update distribution state
         token_distribution.state = DistributionState::Ended;
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
-        // Send the remaining tokens to the fractionalized NFT contract and transfer ownership of the NFT to the owner
+        // Send the remaining tokens to the fractionalized NFT contract and transfer ownership of the NFT to the admin
         transfer(this_balance(fractional_nft), fractional_nft, Identity::ContractId(fractional_nft));
-        withdraw_fractional_nft(fractional_nft, token_distribution.owner.unwrap());
+        withdraw_fractional_nft(fractional_nft, token_distribution.admin.unwrap());
 
-        log(Closed { fractional_nft });
+        log(CloseEvent { fractional_nft });
     }
 
     #[storage(read, write)]
     fn purchase(amount: u64, fractional_nft: ContractId) {
-        let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+        require(storage.token_distributions.get(fractional_nft).is_some(), AccessError::DistributionDoesNotExist);
+        let mut token_distribution = storage.token_distributions.get(fractional_nft).unwrap();
 
         // Make sure we are in purchasing state and if this is the first purchase change the state to distributing
         require(token_distribution.state == DistributionState::Started || token_distribution.state == DistributionState::Distributed, AccessError::InvalidState);
@@ -132,7 +140,7 @@ impl TokenDistributor for Contract {
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
         transfer(amount, fractional_nft, msg_sender().unwrap());
 
-        log(Purchased {
+        log(PurchaseEvent {
             amount,
             buyer: msg_sender().unwrap(),
             fractional_nft,
@@ -140,36 +148,38 @@ impl TokenDistributor for Contract {
     }
 
     #[storage(read, write)]
-    fn purchase_ownership(
+    fn purchase_admin(
+        admin: Option<Identity>,
         fractional_nft: ContractId,
-        owner: Option<Identity>,
         reserve: Option<u64>,
     ) {
-        let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+        require(storage.token_distributions.get(fractional_nft).is_some(), AccessError::DistributionDoesNotExist);
+        let mut token_distribution = storage.token_distributions.get(fractional_nft).unwrap();
 
-        require(token_distribution.reserve_price.is_some() && token_distribution.owner.is_some(), AccessError::NoReserveAvailable);
+        require(token_distribution.reserve_price.is_some() && token_distribution.admin.is_some(), AccessError::NoReserveAvailable);
         require(token_distribution.state != DistributionState::Ended, AccessError::InvalidState);
         require(msg_asset_id() == token_distribution.external_asset && msg_amount() == token_distribution.reserve_price.unwrap(), AssetError::InvalidAssetTransfer);
 
-        // Store the new owner and reserve information
-        let previous_owner = token_distribution.owner;
+        // Store the new admin and reserve information
+        let previous_admin = token_distribution.admin;
         token_distribution.reserve_price = reserve;
-        token_distribution.owner = owner;
+        token_distribution.admin = admin;
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
-        // Send the payment to the old owner
-        transfer(msg_amount(), token_distribution.external_asset, previous_owner.unwrap());
+        // Send the payment to the old admin
+        transfer(msg_amount(), token_distribution.external_asset, previous_admin.unwrap());
 
-        log(PurchasedOwnership {
+        log(PurchaseAdminEvent {
+            admin,
             fractional_nft,
-            owner,
             reserve,
         });
     }
 
     #[storage(read)]
     fn sell(fractional_nft: ContractId) {
-        let token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+        require(storage.token_distributions.get(fractional_nft).is_some(), AccessError::DistributionDoesNotExist);
+        let mut token_distribution = storage.token_distributions.get(fractional_nft).unwrap();
 
         require(token_distribution.state == DistributionState::Buyback, AccessError::InvalidState);
         require(msg_asset_id() == fractional_nft, AssetError::InvalidAssetTransfer);
@@ -178,7 +188,7 @@ impl TokenDistributor for Contract {
         transfer(msg_amount() * token_distribution.token_price, token_distribution.external_asset, msg_sender().unwrap());
         transfer(msg_amount(), fractional_nft, Identity::ContractId(fractional_nft));
 
-        log(Sell {
+        log(SellEvent {
             fractional_nft,
             seller: msg_sender().unwrap(),
         });
@@ -186,15 +196,16 @@ impl TokenDistributor for Contract {
 
     #[storage(read, write)]
     fn set_token_price(fractional_nft: ContractId, token_price: u64) {
-        let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+        require(storage.token_distributions.get(fractional_nft).is_some(), AccessError::DistributionDoesNotExist);
+        let mut token_distribution = storage.token_distributions.get(fractional_nft).unwrap();
 
-        require(token_distribution.owner.is_some() && token_distribution.owner.unwrap() == msg_sender().unwrap(), AccessError::NotFNftOwner);
+        require(token_distribution.admin.is_some() && token_distribution.admin.unwrap() == msg_sender().unwrap(), AccessError::NotTokenAdmin);
         require(token_distribution.state == DistributionState::Started || token_distribution.state == DistributionState::Distributed, AccessError::InvalidState);
 
         token_distribution.token_price = token_price;
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
-        log(TokenPrice {
+        log(TokenPriceEvent {
             fractional_nft,
             token_price,
         });
@@ -202,14 +213,15 @@ impl TokenDistributor for Contract {
 
     #[storage(read, write)]
     fn set_reserve(fractional_nft: ContractId, reserve: Option<u64>) {
-        let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+        require(storage.token_distributions.get(fractional_nft).is_some(), AccessError::DistributionDoesNotExist);
+        let mut token_distribution = storage.token_distributions.get(fractional_nft).unwrap();
 
-        require(token_distribution.owner.is_some() && token_distribution.owner.unwrap() == msg_sender().unwrap(), AccessError::NotFNftOwner);
+        require(token_distribution.admin.is_some() && token_distribution.admin.unwrap() == msg_sender().unwrap(), AccessError::NotTokenAdmin);
 
         token_distribution.reserve_price = reserve;
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
-        log(Reserve {
+        log(ReserveEvent {
             fractional_nft,
             reserve,
         });
@@ -222,18 +234,19 @@ impl TokenDistributor for Contract {
 
     #[storage(read, write)]
     fn withdraw(fractional_nft: ContractId) {
-        let mut token_distribution = require_fractional_nft_exists(storage.token_distributions.get(fractional_nft));
+        require(storage.token_distributions.get(fractional_nft).is_some(), AccessError::DistributionDoesNotExist);
+        let mut token_distribution = storage.token_distributions.get(fractional_nft).unwrap();
 
-        require(token_distribution.owner.is_some() && token_distribution.owner.unwrap() == msg_sender().unwrap(), AccessError::NotFNftOwner);
+        require(token_distribution.admin.is_some() && token_distribution.admin.unwrap() == msg_sender().unwrap(), AccessError::NotTokenAdmin);
 
-        // Update the amount available to withdraw to zero and send the owner his tokens
+        // Update the amount available to withdraw to zero and send the admin their tokens
         let amount = token_distribution.external_deposits;
         token_distribution.external_deposits = 0;
         storage.token_distributions.insert(fractional_nft, Option::Some(token_distribution));
 
-        transfer(amount, token_distribution.external_asset, token_distribution.owner.unwrap());
+        transfer(amount, token_distribution.external_asset, token_distribution.admin.unwrap());
 
-        log(Withdraw {
+        log(WithdrawEvent {
             amount,
             external_asset: token_distribution.external_asset,
             fractional_nft,

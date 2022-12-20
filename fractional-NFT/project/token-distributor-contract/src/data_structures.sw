@@ -24,15 +24,15 @@ impl core::ops::Eq for DistributionState {
 }
 
 pub struct TokenDistribution {
+    /// The user which may withdraw payments, start a buyback, and withdraw the NFT.
+    admin: Option<Identity>,
     /// The asset that is accepted as payment in exchange for fractionalized NFT tokens.
     external_asset: ContractId,
-    /// The total amount of the `external_asset` that is available to withdraw by the owner.
+    /// The total amount of the `external_asset` that is available to withdraw by the admin.
     external_deposits: u64,
     /// The contract which manages the NFT held by the fractionalized NFT.
     nft: ContractId,
-    /// The user which may withdraw payments, start a buyback, and withdraw the NFT.
-    owner: Option<Identity>,
-    /// The price at which ownership of the NFT may be sold.
+    /// The price at which admin rights of the token distribution may be sold.
     reserve_price: Option<u64>,
     /// The current state of the distribution.
     state: DistributionState,
@@ -44,18 +44,18 @@ pub struct TokenDistribution {
 
 impl TokenDistribution {
     pub fn new(
+        admin: Option<Identity>,
         external_asset: ContractId,
         nft: ContractId,
-        owner: Option<Identity>,
         reserve_price: Option<u64>,
         token_id: u64,
         token_price: u64,
     ) -> Self {
-        TokenDistribution {
+        Self {
+            admin,
             external_asset,
             external_deposits: 0,
             nft,
-            owner,
             reserve_price,
             state: DistributionState::Started,
             token_id,

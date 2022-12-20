@@ -58,8 +58,8 @@ mod success {
             asset_contract.clone(),
             fractional_nft_contract.clone(),
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             Some(reserve_price),
+            Some(owner_identity.clone()),
             token_price,
             token_supply,
             0,
@@ -101,7 +101,7 @@ mod success {
             nft_contract.clone()
         );
         assert_eq!(
-            token_distribution_struct.clone().unwrap().owner,
+            token_distribution_struct.clone().unwrap().admin,
             Some(owner_identity.clone())
         );
         assert_eq!(
@@ -135,7 +135,6 @@ mod success {
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
         let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
-        let token_distributor_identity = Identity::ContractId(token_distributor_contract.into());
         let provider = deployer.wallet.get_provider().unwrap();
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
@@ -162,8 +161,8 @@ mod success {
             asset_contract.clone(),
             fractional_nft_contract.clone(),
             nft_contract.clone(),
-            None,
             Some(reserve_price),
+            None,
             token_price,
             token_supply,
             0,
@@ -190,7 +189,7 @@ mod success {
         assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
         assert_eq!(
             nft_struct.clone().unwrap().admin,
-            Some(token_distributor_identity.clone())
+            None
         );
         assert_eq!(
             token_distribution_struct.clone().unwrap().external_asset,
@@ -204,7 +203,7 @@ mod success {
             token_distribution_struct.clone().unwrap().nft,
             nft_contract.clone()
         );
-        assert_eq!(token_distribution_struct.clone().unwrap().owner, None);
+        assert_eq!(token_distribution_struct.clone().unwrap().admin, None);
         assert_eq!(
             token_distribution_struct.clone().unwrap().reserve_price,
             Some(reserve_price)
@@ -263,8 +262,8 @@ mod success {
             asset_contract.clone(),
             fractional_nft_contract.clone(),
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             None,
+            Some(owner_identity.clone()),
             token_price,
             token_supply,
             0,
@@ -306,7 +305,7 @@ mod success {
             nft_contract.clone()
         );
         assert_eq!(
-            token_distribution_struct.clone().unwrap().owner,
+            token_distribution_struct.clone().unwrap().admin,
             Some(owner_identity.clone())
         );
         assert_eq!(
@@ -355,8 +354,8 @@ mod revert {
             asset_contract.clone(),
             fractional_nft_contract.clone(),
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             Some(reserve_price),
+            Some(owner_identity.clone()),
             token_price,
             token_supply,
             0,
@@ -368,8 +367,8 @@ mod revert {
             asset_contract.clone(),
             fractional_nft_contract.clone(),
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             Some(reserve_price),
+            Some(owner_identity.clone()),
             token_price,
             token_supply,
             0,

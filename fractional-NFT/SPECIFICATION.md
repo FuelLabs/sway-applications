@@ -4,7 +4,7 @@ Table of Contents
     - [Fractional NFT Contract](#fractional-nft-contract)
         - [Core Functionality](#core-functionality)
             - [`deposit()`](#deposit)
-            - [`set_owner()`](#set_owner)
+            - [`set_admin()`](#set_admin)
             - [`withdraw()`](#withdraw)
         - [State Checks](#state-checks)
             - [`nft_info()`](#nft_info)
@@ -21,7 +21,7 @@ Table of Contents
             - [Token Purchaser](#token-purchaser)
                 - [`purchase()`](#purchase)
                 - [`sell()`](#sell)
-                - [`purchase_ownership()`](#purchase_ownership)
+                - [`purchase_admin()`](#purchase_admin)
                 - [`end()`](#end-1)
                 - [`set_token_price()`](#set_token_price-1)
                 - [`set_reserve()`](#set_reserve-1)
@@ -52,13 +52,13 @@ If you are interested in a functional overview then this is the section for you.
 1. Allows for a user to lock their NFT and mint fractionalized tokens if
     1. The contract is approved to transfer the NFT
 
-#### `set_owner()`
+#### `set_admin()`
 
-1. Allows for the contract owner to change the user which may withdraw the underlying NFT
+1. Allows for the contract admin to change the user which may withdraw the underlying NFT
 
 #### `withdraw()`
 
-1. Allows for the contract owner to unlock and regain ownership of the NFT if
+1. Allows for the contract admin to unlock and regain ownership of the NFT if
     1. All fractionalized tokens are sent to and owned by the Fractional-NFT contract
 
 ### State Checks
@@ -75,7 +75,7 @@ If you are interested in a functional overview then this is the section for you.
 
 ### Core Functionality
 
-#### Token Creator
+#### Token Admin
 
 ##### `create()`
 
@@ -84,27 +84,27 @@ If you are interested in a functional overview then this is the section for you.
 
 ##### `withdraw()`
 
-1. Allows the token creator to withdraw the payments made by token purchasers
+1. Allows the token admin to withdraw the payments made by token purchasers
 
 ##### `buyback()`
 
-1. Allows the token creator to start a buyback of tokens at a set price if
+1. Allows the token admin to start a buyback of tokens at a set price if
     1. The payment for all tokens that have been sold is provided
     2. Some tokens have already been sold
 
 ##### `end()`
 
-1. Allows the token creator to unlock and regain ownership of the NFT if
+1. Allows the token admin to unlock and regain ownership of the NFT if
     1. All sold fractionalized tokens have been sold back to the contract
 
 ##### `set_token_price()`
 
-1. Allows the token creator to change the price for a single fractionalized NFT token if
+1. Allows the token admin to change the price for a single fractionalized NFT token if
     1. The distribution has not ended
 
 ##### `set_reserve()`
 
-1. Allows the token creator to change the price to buy ownership of the underlying NFT
+1. Allows the token admin to change the price to buy admin rights of the underlying NFT
 
 #### Token Purchaser
 
@@ -119,11 +119,12 @@ If you are interested in a functional overview then this is the section for you.
 1. Allows for a user to sell their fractionalized tokens back to the contract if
     1. A buyback has been initiated
 
-##### `purchase_ownership()`
+##### `purchase_admin()`
 
-1. Allows for a user to purchase the token creator role for the token distribution if:
-    1. The correct payment type and amount is provided
-    2. The distribution has not ended
+1. Allows for a user to purchase token admin rights for the token distribution if:
+    1. A reserve price exists
+    2. The correct payment type and amount is provided
+    3. The distribution has not ended
 
 ### State Checks
 
