@@ -33,7 +33,7 @@ impl NFT for Contract {
     fn is_approved_for_all(operator: Identity, owner: Identity) -> bool {
         is_approved_for_all(operator, owner)
     }
-    
+
     #[storage(read, write)]
     fn mint(amount: u64, to: Identity) {
         mint(amount, to);
@@ -48,12 +48,12 @@ impl NFT for Contract {
     fn set_approval_for_all(approval: bool, operator: Identity) {
         set_approval_for_all(approval, operator);
     }
-    
+
     #[storage(read)]
     fn tokens_minted() -> u64 {
         tokens_minted()
     }
-    
+
     #[storage(read, write)]
     fn transfer(to: Identity, token_id: u64) {
         transfer(to, token_id);

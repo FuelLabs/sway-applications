@@ -13,8 +13,8 @@ use events::{
     CancelEvent,
     CloseEvent,
     CreateEvent,
-    PurchaseEvent,
     PurchaseAdminEvent,
+    PurchaseEvent,
     ReserveEvent,
     SellEvent,
     TokenPriceEvent,
@@ -34,11 +34,7 @@ use std::{
     logging::log,
     token::transfer,
 };
-use utils::{
-    create_fractional_nft,
-    fractional_nft_supply,
-    withdraw_fractional_nft,
-};
+use utils::{create_fractional_nft, fractional_nft_supply, withdraw_fractional_nft};
 
 storage {
     /// Maintains a mapping of information on every token distribution started using this contract.
@@ -82,7 +78,7 @@ impl TokenDistributor for Contract {
         nft_token_id: u64,
     ) {
         require(storage.token_distributions.get(fractional_nft).is_none(), AccessError::DistributionAlreadyExists);
-        
+
         match token_admin {
             Option::Some(admin) => {
                 create_fractional_nft(Option::Some(Identity::ContractId(contract_id())), fractional_nft, nft, token_supply, nft_token_id);

@@ -53,7 +53,7 @@ impl NFT for Contract {
     fn tokens_minted() -> u64 {
         tokens_minted()
     }
-    
+
     #[storage(read, write)]
     fn transfer(to: Identity, token_id: u64) {
         transfer(to, token_id);

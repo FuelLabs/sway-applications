@@ -88,7 +88,7 @@ impl FractionalNFT for Contract {
         require(nft_info.admin.is_some() && msg_sender().unwrap() == nft_info.admin.unwrap(), AccessError::NotNftAdmin);
         require(this_balance(contract_id()) == storage.supply, AssetError::SupplyNotReturned);
 
-        // Set the contract to have no owner such that it becomes locked
+        // Set the contract to have no admin such that it becomes locked
         nft_info.admin = Option::None;
         storage.nft_info = Option::Some(nft_info);
 

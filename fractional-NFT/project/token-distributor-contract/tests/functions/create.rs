@@ -187,10 +187,7 @@ mod success {
             Some(fractional_nft_identity.clone())
         );
         assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
-        assert_eq!(
-            nft_struct.clone().unwrap().admin,
-            None
-        );
+        assert_eq!(nft_struct.clone().unwrap().admin, None);
         assert_eq!(
             token_distribution_struct.clone().unwrap().external_asset,
             asset_contract.clone()
