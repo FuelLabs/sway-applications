@@ -6,7 +6,7 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-fuels = { version = "0.32.1", features = ["fuel-core-lib"] }
+fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", branch = "hal3e/revert-log-log", features = ["fuel-core-lib"] }
 
 [lib]
 doctest = false
