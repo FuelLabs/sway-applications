@@ -32,9 +32,9 @@ mod success {
         assert_eq!(nft_struct, None);
 
         deposit(
+            Some(owner_identity.clone()),
             &owner1.f_nft,
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             token_supply,
             0,
         )
@@ -44,7 +44,7 @@ mod success {
         assert!(nft_struct.is_some());
         assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
         assert_eq!(
-            nft_struct.clone().unwrap().owner,
+            nft_struct.clone().unwrap().admin,
             Some(owner_identity.clone())
         );
     }

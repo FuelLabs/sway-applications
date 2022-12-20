@@ -121,7 +121,7 @@ If you are interested in a functional overview then this is the section for you.
 
 ##### `purchase_ownership()`
 
-1. Allows for a user to purchase the underlying fractionalized NFT if
+1. Allows for a user to purchase the token creator role for the token distribution if:
     1. The correct payment type and amount is provided
     2. The distribution has not ended
 

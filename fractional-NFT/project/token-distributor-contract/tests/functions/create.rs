@@ -85,7 +85,7 @@ mod success {
         );
         assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
         assert_eq!(
-            nft_struct.clone().unwrap().owner,
+            nft_struct.clone().unwrap().admin,
             Some(token_distributor_identity.clone())
         );
         assert_eq!(
@@ -189,7 +189,7 @@ mod success {
         );
         assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
         assert_eq!(
-            nft_struct.clone().unwrap().owner,
+            nft_struct.clone().unwrap().admin,
             Some(token_distributor_identity.clone())
         );
         assert_eq!(
@@ -290,7 +290,7 @@ mod success {
         );
         assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
         assert_eq!(
-            nft_struct.clone().unwrap().owner,
+            nft_struct.clone().unwrap().admin,
             Some(token_distributor_identity.clone())
         );
         assert_eq!(

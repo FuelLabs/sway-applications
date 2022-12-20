@@ -34,9 +34,9 @@ mod success {
         assert_eq!(supply(&owner1.f_nft).await, 0);
 
         deposit(
+            Some(owner_identity.clone()),
             &owner1.f_nft,
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             token_supply,
             0,
         )
@@ -58,7 +58,7 @@ mod success {
         assert!(nft_struct.is_some());
         assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
         assert_eq!(
-            nft_struct.clone().unwrap().owner,
+            nft_struct.clone().unwrap().admin,
             Some(owner_identity.clone())
         );
         assert_eq!(supply(&owner1.f_nft).await, token_supply);
@@ -88,7 +88,7 @@ mod success {
         assert_eq!(nft_struct, None);
         assert_eq!(supply(&owner1.f_nft).await, 0);
 
-        deposit(&owner1.f_nft, nft_contract.clone(), None, token_supply, 0).await;
+        deposit(None, &owner1.f_nft, nft_contract.clone(), token_supply, 0).await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
         assert_eq!(
@@ -105,7 +105,7 @@ mod success {
         );
         assert!(nft_struct.is_some());
         assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
-        assert_eq!(nft_struct.clone().unwrap().owner, None);
+        assert_eq!(nft_struct.clone().unwrap().admin, None);
         assert_eq!(supply(&owner1.f_nft).await, token_supply);
     }
 }
@@ -127,17 +127,17 @@ mod revert {
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
 
         deposit(
+            Some(owner_identity.clone()),
             &owner1.f_nft,
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             token_supply,
             0,
         )
         .await;
         deposit(
+            Some(owner_identity.clone()),
             &owner1.f_nft,
             nft_contract.clone(),
-            Some(owner_identity.clone()),
             token_supply,
             0,
         )

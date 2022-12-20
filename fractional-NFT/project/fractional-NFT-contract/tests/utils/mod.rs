@@ -30,15 +30,15 @@ pub mod fractional_nft_abi_calls {
     use super::*;
 
     pub async fn deposit(
+        admin: Option<Identity>,
         contract: &FractionalNFT,
         nft: ContractId,
-        owner: Option<Identity>,
         supply: u64,
         token_id: u64,
     ) -> CallResponse<()> {
         contract
             .methods()
-            .deposit(nft.clone(), owner.clone(), supply, token_id)
+            .deposit(admin.clone(), nft.clone(), supply, token_id)
             .set_contracts(&[Bech32ContractId::from(nft.clone())])
             .append_variable_outputs(1)
             .call()
@@ -50,13 +50,13 @@ pub mod fractional_nft_abi_calls {
         contract.methods().nft_info().call().await.unwrap().value
     }
 
-    pub async fn set_owner(
+    pub async fn set_admin(
         contract: &FractionalNFT,
-        new_owner: Option<Identity>,
+        new_admin: Option<Identity>,
     ) -> CallResponse<()> {
         contract
             .methods()
-            .set_owner(new_owner.clone())
+            .set_admin(new_admin.clone())
             .call()
             .await
             .unwrap()

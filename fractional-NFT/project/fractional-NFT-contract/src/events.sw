@@ -1,24 +1,24 @@
 library events;
 
-pub struct Deposited {
+pub struct AdminEvent {
+    /// The new identity which may unlock the contract and change the admin.
+    new_admin: Option<Identity>,
+    /// The old identity which has given up admin rights of this contract.
+    previous_admin: Identity,
+}
+
+pub struct DepositEvent {
     /// The contract which manages the NFT.
     nft: ContractId,
     /// The user with permission to unlock the NFT from the contract.
-    owner: Option<Identity>,
+    admin: Option<Identity>,
     /// The total number of tokens that may ever be minted.
     supply: u64,
     /// The id of the NFT locked in the contract.
     token_id: u64,
 }
 
-pub struct OwnerChanged {
-    /// The new identity which may unlock the contract.
-    new_owner: Option<Identity>,
-    /// The old identity which has given up ownership of this contract.
-    previous_owner: Identity,
-}
-
-pub struct Withdraw {
+pub struct WithdrawEvent {
     /// The contract which manages the NFT.
     nft: ContractId,
     /// The identity which ownership of the NFT has been sent to.
