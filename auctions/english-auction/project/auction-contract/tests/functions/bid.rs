@@ -653,8 +653,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[ignore]
-    // TODO: test is not set up to hit the error properly
+    #[should_panic(expected = "Revert(18446744073709486080)")]
+    // TODO: test is not set up to hit the error properly: https://github.com/FuelLabs/sway-applications/issues/330
     // #[should_panic(expected = "NFTTransferNotApproved")]
     async fn when_bidder_does_not_own_nft() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, _, buy_nft_contract_id) =
@@ -684,8 +684,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[ignore]
-    // TODO: test is not set up to hit the error properly
+    #[should_panic(expected = "Revert(18446744073709486080)")]
+    // TODO: test is not set up to hit the error properly: https://github.com/FuelLabs/sway-applications/issues/330
     // #[should_panic(expected = "NFTTransferNotApproved")]
     async fn when_auction_contract_does_not_have_permission_to_transfer_nft() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, _, buy_nft_contract_id) =

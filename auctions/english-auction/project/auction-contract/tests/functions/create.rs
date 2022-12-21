@@ -804,8 +804,8 @@ mod revert {
     }
 
     #[tokio::test]
-    #[ignore]
-    // TODO: test is not set up to hit the error properly
+    #[should_panic(expected = "Revert(18446744073709486080)")]
+    // TODO: test is not set up to hit the error properly: https://github.com/FuelLabs/sway-applications/issues/330
     // #[should_panic(expected = "NFTTransferNotApproved")]
     async fn when_auction_not_approved_for_transfer() {
         let (_, seller, _, _, _, _, sell_nft_contract_id, _, buy_nft_contract_id) = setup().await;
