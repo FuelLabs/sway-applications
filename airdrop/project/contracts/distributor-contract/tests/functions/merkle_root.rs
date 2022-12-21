@@ -32,7 +32,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NotInitalized")]
     async fn when_not_initalized() {
         let (deploy_wallet, _, _, _, _) = setup().await;
 

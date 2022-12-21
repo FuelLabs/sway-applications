@@ -24,7 +24,7 @@ use std::{
     },
 };
 
-use core::num::*;
+use core::primitives::*;
 
 // Our library imports
 use contract_abi::MultiSignatureWallet;

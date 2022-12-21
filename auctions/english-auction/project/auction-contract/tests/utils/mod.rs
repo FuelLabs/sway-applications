@@ -1,5 +1,5 @@
 use fuels::{
-    contract::contract::CallResponse,
+    contract::call_response::FuelCallResponse,
     prelude::*,
     tx::{ContractId, Salt},
 };
@@ -43,7 +43,7 @@ pub mod asset_abi_calls {
         amount: u64,
         contract: &MyAsset,
         recipient: Address,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .mint_and_send_to_address(amount, recipient)
@@ -72,7 +72,7 @@ pub mod english_auction_abi_calls {
         auction_id: u64,
         bid_asset: AuctionAsset,
         contract: &EnglishAuction,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         match bid_asset {
             AuctionAsset::NFTAsset(bid_asset) => contract
                 .methods()
@@ -101,7 +101,7 @@ pub mod english_auction_abi_calls {
         }
     }
 
-    pub async fn cancel(auction_id: u64, contract: &EnglishAuction) -> CallResponse<()> {
+    pub async fn cancel(auction_id: u64, contract: &EnglishAuction) -> FuelCallResponse<()> {
         contract.methods().cancel(auction_id).call().await.unwrap()
     }
 
@@ -178,7 +178,7 @@ pub mod english_auction_abi_calls {
         auction_id: u64,
         contract: &EnglishAuction,
         withdrawing_asset: AuctionAsset,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         match withdrawing_asset {
             AuctionAsset::NFTAsset(withdrawing_asset) => contract
                 .methods()
@@ -216,7 +216,7 @@ pub mod nft_abi_calls {
         approved: Option<Identity>,
         contract: &Nft,
         token_id: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .approve(approved, token_id)
@@ -225,7 +225,7 @@ pub mod nft_abi_calls {
             .unwrap()
     }
 
-    pub async fn mint(amount: u64, contract: &Nft, owner: Identity) -> CallResponse<()> {
+    pub async fn mint(amount: u64, contract: &Nft, owner: Identity) -> FuelCallResponse<()> {
         contract.methods().mint(amount, owner).call().await.unwrap()
     }
 
@@ -243,7 +243,7 @@ pub mod nft_abi_calls {
         approve: bool,
         contract: &Nft,
         operator: Identity,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .set_approval_for_all(approve, operator)

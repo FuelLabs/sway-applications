@@ -214,14 +214,14 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidId")]
     async fn on_invalid_proposal_id() {
         let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
         unlock_votes(&user.dao_voting, 0).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "ProposalStillActive")]
     pub async fn on_active_proposal() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;

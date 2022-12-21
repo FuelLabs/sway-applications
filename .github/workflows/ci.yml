@@ -14,9 +14,9 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  RUST_VERSION: 1.64.0
-  FORC_VERSION: 0.31.1
-  CORE_VERSION: 0.14.1
+  RUST_VERSION: 1.66.0
+  FORC_VERSION: 0.32.2
+  CORE_VERSION: 0.15.1
   PATH_TO_SCRIPTS: .github/scripts
 
 jobs:
@@ -116,4 +116,3 @@ jobs:
 
       - name: Build Sway
         run: forc build --path ${{ matrix.project }}
-

@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*, signers::wallet::Wallet};
+use fuels::{contract::call_response::FuelCallResponse, prelude::*, signers::wallet::Wallet};
 
 abigen!(
     Oracle,
@@ -26,7 +26,7 @@ pub mod abi_calls {
         contract.methods().price().call().await.unwrap().value
     }
 
-    pub async fn set_price(contract: &Oracle, new_price: u64) -> CallResponse<()> {
+    pub async fn set_price(contract: &Oracle, new_price: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .set_price(new_price)

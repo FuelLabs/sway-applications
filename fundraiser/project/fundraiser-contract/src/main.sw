@@ -9,7 +9,13 @@ dep utils;
 use interface::Fundraiser;
 use data_structures::{AssetInfo, Campaign, CampaignInfo, Pledge};
 use errors::{CampaignError, CreationError, UserError};
-use events::{CancelledCampaignEvent, ClaimedEvent, CreatedCampaignEvent, PledgedEvent, UnpledgedEvent};
+use events::{
+    CancelledCampaignEvent,
+    ClaimedEvent,
+    CreatedCampaignEvent,
+    PledgedEvent,
+    UnpledgedEvent,
+};
 use std::{
     auth::msg_sender,
     block::height,
@@ -25,57 +31,32 @@ use utils::validate_id;
 storage {
     /// Total number of unique assets used across all campaigns
     asset_count: u64 = 0,
-
     /// Direct look-up for asset data if the user wants to check via a known ID
-    asset_info: StorageMap<ContractId,
-    AssetInfo> = StorageMap {
-    },
-    
+    asset_info: StorageMap<ContractId, AssetInfo> = StorageMap {},
     /// O(1) look-up to allow searching via asset_count
     /// Map(1...asset_count => asset)
-    asset_index: StorageMap<u64,
-    ContractId> = StorageMap {
-    },
-    
+    asset_index: StorageMap<u64, ContractId> = StorageMap {},
     /// The total number of unique campaigns that a user has created
     /// This should only be incremented
     /// Cancelling / Claiming should not affect this number
-    user_campaign_count: StorageMap<Identity,
-    u64> = StorageMap {
-    },
-    
+    user_campaign_count: StorageMap<Identity, u64> = StorageMap {},
     /// Campaigns that have been created by a user
     /// Map(Identity => Map(1...user_campaign_count => Campaign)
-    campaign_history: StorageMap<(Identity,
-    u64), Campaign> = StorageMap {
-    },
-    
+    campaign_history: StorageMap<(Identity, u64), Campaign> = StorageMap {},
     /// Data describing the content of a campaign
     /// Map(Campaign ID => CampaignInfo)
-    campaign_info: StorageMap<u64,
-    CampaignInfo> = StorageMap {
-    },
-    
+    campaign_info: StorageMap<u64, CampaignInfo> = StorageMap {},
     /// The total number of unique campaigns that a user has pledged to
     /// This should only be incremented.
     /// Unpledging should not affect this number
-    pledge_count: StorageMap<Identity,
-    u64> = StorageMap {
-    },
-    
+    pledge_count: StorageMap<Identity, u64> = StorageMap {},
     /// Record of how much a user has pledged to a specific campaign
     /// Locked after the deadline
     /// Map(Identity => Map(1...pledge_count => Pledge))
-    pledge_history: StorageMap<(Identity,
-    u64), Pledge> = StorageMap {
-    },
-    
+    pledge_history: StorageMap<(Identity, u64), Pledge> = StorageMap {},
     /// O(1) look-up to prevent iterating over pledge_history
     /// Map(Identity => Map(Campaign ID => Pledge History Index))
-    pledge_history_index: StorageMap<(Identity,
-    u64), u64> = StorageMap {
-    },
-    
+    pledge_history_index: StorageMap<(Identity, u64), u64> = StorageMap {},
     /// The number of campaigns created by all users
     total_campaigns: u64 = 0,
 }
@@ -135,9 +116,7 @@ impl Fundraiser for Contract {
         storage.campaign_info.insert(id, campaign_info);
 
         // We have updated the state of a campaign therefore we must log it
-        log(CancelledCampaignEvent {
-            id
-        });
+        log(CancelledCampaignEvent { id });
     }
 
     #[storage(read, write)]
@@ -174,13 +153,16 @@ impl Fundraiser for Contract {
         transfer(campaign_info.total_pledge, campaign_info.asset, campaign_info.beneficiary);
 
         // We have updated the state of a campaign therefore we must log it
-        log(ClaimedEvent {
-            id
-        });
+        log(ClaimedEvent { id });
     }
 
     #[storage(read, write)]
-    fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64) {
+    fn create_campaign(
+        asset: ContractId,
+        beneficiary: Identity,
+        deadline: u64,
+        target_amount: u64,
+    ) {
         // Users cannot interact with a campaign that has already ended (is in the past)
         require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
 
@@ -191,13 +173,13 @@ impl Fundraiser for Contract {
 
         // Create an internal representation of a campaign
         let campaign_info = CampaignInfo {
-            asset, 
+            asset,
             author: user,
-            beneficiary, 
+            beneficiary,
             cancelled: false,
             claimed: false,
-            deadline, 
-            target_amount, 
+            deadline,
+            target_amount,
             total_pledge: 0,
         };
 
@@ -229,12 +211,14 @@ impl Fundraiser for Contract {
         // they have just created so that data can be easily retrieved without duplicating data
         storage.user_campaign_count.insert(user, user_campaign_count + 1);
         storage.campaign_history.insert((user, user_campaign_count + 1), Campaign {
-            id: storage.total_campaigns
+            id: storage.total_campaigns,
         });
 
         // We have changed the state by adding a new data structure therefore we log it
         log(CreatedCampaignEvent {
-            author: user, campaign_info, id: storage.total_campaigns
+            author: user,
+            campaign_info,
+            id: storage.total_campaigns,
         });
     }
 
@@ -287,7 +271,8 @@ impl Fundraiser for Contract {
             // track how much they have pledged so that they can withdraw the correct amount.
             // Moreover, this can be used to show the user how much they have pledged to any campaign
             storage.pledge_history.insert((user, pledge_count + 1), Pledge {
-                amount: msg_amount(), id
+                amount: msg_amount(),
+                id,
             });
 
             // Since we use the campaign ID to interact with the contract use the ID as a key for
@@ -311,7 +296,9 @@ impl Fundraiser for Contract {
 
         // We have updated the state of a campaign therefore we must log it
         log(PledgedEvent {
-            amount: msg_amount(), id, user
+            amount: msg_amount(),
+            id,
+            user,
         });
     }
 
@@ -358,7 +345,6 @@ impl Fundraiser for Contract {
         // User has pledged therefore retrieve the total that they have pledged
         let mut pledge = storage.pledge_history.get((user, pledge_history_index));
         let mut amount = amount; // workaround until `mut` is able to be set as a param
-
         // If the user is attempting to unpledge more than they have pledged then reset the amount
         // they are withdrawing to the maximum that they have pledged to this campaign
         if pledge.amount < amount {
@@ -389,7 +375,9 @@ impl Fundraiser for Contract {
 
         // We have updated the state of a campaign therefore we must log it
         log(UnpledgedEvent {
-            amount, id, user
+            amount,
+            id,
+            user,
         });
     }
 
