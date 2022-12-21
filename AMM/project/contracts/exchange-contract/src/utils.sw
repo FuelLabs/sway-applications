@@ -2,7 +2,7 @@ library utils;
 
 dep errors;
 
-use core::num::*;
+use core::primitives::*;
 use errors::{InitError, InputError};
 use std::u128::U128;
 

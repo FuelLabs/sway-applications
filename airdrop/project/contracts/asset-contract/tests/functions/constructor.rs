@@ -19,7 +19,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AlreadyInitialized")]
     async fn when_initalized_twice() {
         let (deployer, _, total_supply) = setup().await;
 
@@ -29,7 +29,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AssetSupplyCannotBeZero")]
     async fn when_asset_supply_zero() {
         let (deployer, _, _) = setup().await;
 

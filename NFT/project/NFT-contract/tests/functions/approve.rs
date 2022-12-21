@@ -76,7 +76,7 @@ mod reverts {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "TokenDoesNotExist")]
     async fn when_token_does_not_map_to_existing_token() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
@@ -87,7 +87,7 @@ mod reverts {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NoContractAdmin")]
     async fn when_sender_is_not_owner() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 

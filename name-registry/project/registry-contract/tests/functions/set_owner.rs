@@ -21,17 +21,14 @@ mod success {
 
         let previous_owner = owner(&instance, &acc1.name).await;
 
-        assert_eq!(previous_owner.0.value.unwrap(), acc1.identity());
+        assert_eq!(previous_owner.value.unwrap(), acc1.identity());
 
         let response = set_owner(&instance, &acc1.name, wallet_identity2.clone()).await;
-
         let new_owner = owner(&instance, &acc1.name).await;
 
-        assert_eq!(new_owner.0.value.unwrap(), wallet_identity2);
+        assert_eq!(new_owner.value.unwrap(), wallet_identity2);
 
-        let log = instance
-            .logs_with_type::<OwnerChangedEvent>(&response.0.receipts)
-            .unwrap();
+        let log = response.get_logs_with_type::<OwnerChangedEvent>().unwrap();
         assert_eq!(
             log,
             vec![OwnerChangedEvent {
@@ -50,8 +47,10 @@ mod revert {
     };
     use fuels::prelude::*;
 
+    // TODO: missing tests
+
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "SenderNotOwner")]
     async fn cant_set_owner() {
         let (instance, acc1, wallet2) = setup().await;
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));

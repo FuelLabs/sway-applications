@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*, tx::ContractId};
+use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::ContractId};
 
 abigen!(
     DaoVoting,
@@ -28,7 +28,7 @@ pub mod abi_calls {
 
     use super::*;
 
-    pub async fn constructor(contract: &DaoVoting, token: ContractId) -> CallResponse<()> {
+    pub async fn constructor(contract: &DaoVoting, token: ContractId) -> FuelCallResponse<()> {
         contract.methods().constructor(token).call().await.unwrap()
     }
 
@@ -37,7 +37,7 @@ pub mod abi_calls {
         acceptance_percentage: u64,
         deadline: u64,
         proposal: Proposal,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .create_proposal(acceptance_percentage, deadline, proposal)
@@ -46,7 +46,10 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn deposit(contract: &DaoVoting, call_params: CallParameters) -> CallResponse<()> {
+    pub async fn deposit(
+        contract: &DaoVoting,
+        call_params: CallParameters,
+    ) -> FuelCallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         contract
             .methods()
@@ -58,7 +61,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn withdraw(contract: &DaoVoting, amount: u64) -> CallResponse<()> {
+    pub async fn withdraw(contract: &DaoVoting, amount: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .withdraw(amount)
@@ -73,7 +76,7 @@ pub mod abi_calls {
         approve: bool,
         proposal_id: u64,
         vote_amount: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .vote(approve, proposal_id, vote_amount)
@@ -82,11 +85,11 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn execute(contract: &DaoVoting, id: u64) -> CallResponse<()> {
+    pub async fn execute(contract: &DaoVoting, id: u64) -> FuelCallResponse<()> {
         contract.methods().execute(id).call().await.unwrap()
     }
 
-    pub async fn unlock_votes(contract: &DaoVoting, id: u64) -> CallResponse<()> {
+    pub async fn unlock_votes(contract: &DaoVoting, id: u64) -> FuelCallResponse<()> {
         contract.methods().unlock_votes(id).call().await.unwrap()
     }
 
