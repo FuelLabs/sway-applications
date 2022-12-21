@@ -1,4 +1,4 @@
-use super::abi::{Exchange, AMM};
+use super::interface::{Exchange, AMM};
 use fuels::{
     prelude::*,
     tx::{Input, Output},

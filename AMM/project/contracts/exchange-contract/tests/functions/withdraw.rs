@@ -1,5 +1,5 @@
 use crate::utils::{setup, setup_and_construct};
-use test_utils::abi::exchange::{balance, deposit, withdraw};
+use test_utils::interface::exchange::{balance, deposit, withdraw};
 
 mod success {
     use super::*;

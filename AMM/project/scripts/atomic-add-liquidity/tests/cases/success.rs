@@ -1,8 +1,8 @@
 use crate::utils::{expected_liquidity, setup};
 use fuels::prelude::*;
 use test_utils::{
-    abi::{AtomicAddLiquidityScript, SCRIPT_GAS_LIMIT},
     data_structures::LiquidityParameters,
+    interface::{AtomicAddLiquidityScript, SCRIPT_GAS_LIMIT},
     paths::ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH,
     setup::common::deposit_and_add_liquidity,
 };

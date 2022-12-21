@@ -1,8 +1,8 @@
 use crate::utils::{contract_balances, setup, setup_and_construct, wallet_balances};
 use fuels::prelude::CallParameters;
 use test_utils::{
-    abi::exchange::{add_liquidity, deposit, pool_info},
     data_structures::LiquidityParameters,
+    interface::exchange::{add_liquidity, deposit, pool_info},
     setup::common::deposit_and_add_liquidity,
 };
 

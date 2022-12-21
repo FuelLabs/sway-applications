@@ -1,7 +1,7 @@
 use fuels::prelude::*;
 use test_utils::{
-    abi::AMM,
     data_structures::WalletAssetConfiguration,
+    interface::AMM,
     setup::common::{deploy_amm, deploy_and_initialize_amm, setup_wallet_and_provider},
 };
 

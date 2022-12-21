@@ -1,7 +1,7 @@
 use crate::utils::setup;
 use test_utils::{
-    abi::amm::{add_pool, pool},
     data_structures::ExchangeContractConfiguration,
+    interface::amm::{add_pool, pool},
     setup::common::deploy_and_construct_exchange,
 };
 

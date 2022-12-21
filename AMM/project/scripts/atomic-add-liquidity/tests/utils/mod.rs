@@ -1,10 +1,10 @@
 use fuels::prelude::*;
 use test_utils::{
-    abi::exchange::{deposit, preview_add_liquidity, withdraw},
     data_structures::{
         ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
         TransactionParameters, WalletAssetConfiguration,
     },
+    interface::exchange::{deposit, preview_add_liquidity, withdraw},
     setup::{
         common::{deploy_and_construct_exchange, setup_wallet_and_provider},
         scripts::transaction_inputs_outputs,

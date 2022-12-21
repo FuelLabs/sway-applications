@@ -1,5 +1,5 @@
 use crate::utils::{setup, setup_and_construct, wallet_balances};
-use test_utils::abi::exchange::{pool_info, preview_swap_exact_input, swap_exact_input};
+use test_utils::interface::exchange::{pool_info, preview_swap_exact_input, swap_exact_input};
 
 mod success {
     use super::*;

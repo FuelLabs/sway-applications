@@ -1,12 +1,12 @@
 use super::{
-    abi::{
-        amm::{add_pool, initialize},
-        exchange::{add_liquidity, constructor, deposit},
-        Exchange, AMM,
-    },
     data_structures::{
         AMMContract, ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
         TransactionParameters, WalletAssetConfiguration,
+    },
+    interface::{
+        amm::{add_pool, initialize},
+        exchange::{add_liquidity, constructor, deposit},
+        Exchange, AMM,
     },
     paths::{
         AMM_CONTRACT_BINARY_PATH, AMM_CONTRACT_STORAGE_PATH, EXCHANGE_CONTRACT_BINARY_PATH,

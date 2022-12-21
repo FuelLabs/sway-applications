@@ -1,12 +1,12 @@
 use fuels::prelude::*;
 use test_utils::{
-    abi::{
-        exchange::{balance, deposit},
-        Exchange,
-    },
     data_structures::{
         ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
         WalletAssetConfiguration,
+    },
+    interface::{
+        exchange::{balance, deposit},
+        Exchange,
     },
     setup::common::{
         deploy_and_construct_exchange, deploy_exchange, deposit_and_add_liquidity,

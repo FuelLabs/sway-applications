@@ -1,6 +1,6 @@
 use crate::utils::setup;
 use fuels::prelude::*;
-use test_utils::abi::exchange::{constructor, pool_info};
+use test_utils::interface::exchange::{constructor, pool_info};
 
 mod success {
     use super::*;

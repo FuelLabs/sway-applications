@@ -1,7 +1,7 @@
 use fuels::prelude::*;
 use test_utils::{
-    abi::{exchange::preview_swap_exact_output, SwapExactOutputScript, SCRIPT_GAS_LIMIT},
     data_structures::{AMMContract, TransactionParameters, WalletAssetConfiguration},
+    interface::{exchange::preview_swap_exact_output, SwapExactOutputScript, SCRIPT_GAS_LIMIT},
     paths::SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH,
     setup::{
         common::{deploy_and_initialize_amm, setup_wallet_and_provider},

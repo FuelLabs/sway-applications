@@ -1,7 +1,7 @@
 use crate::utils::{setup, setup_and_construct};
 use fuels::prelude::*;
 use test_utils::{
-    abi::exchange::preview_add_liquidity, data_structures::LiquidityParameters,
+    data_structures::LiquidityParameters, interface::exchange::preview_add_liquidity,
     setup::common::deposit_and_add_liquidity,
 };
 

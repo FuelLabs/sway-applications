@@ -1,7 +1,7 @@
 use crate::utils::setup;
 use test_utils::{
-    abi::amm::initialize,
     data_structures::ExchangeContractConfiguration,
+    interface::amm::initialize,
     setup::common::{deploy_and_construct_exchange, exchange_bytecode_root},
 };
 

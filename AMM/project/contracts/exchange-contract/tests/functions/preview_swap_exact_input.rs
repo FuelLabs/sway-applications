@@ -1,5 +1,5 @@
 use crate::utils::{setup, setup_and_construct};
-use test_utils::abi::exchange::preview_swap_exact_input;
+use test_utils::interface::exchange::preview_swap_exact_input;
 
 mod success {
     use super::*;

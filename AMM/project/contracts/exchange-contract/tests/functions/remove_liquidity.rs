@@ -1,6 +1,6 @@
 use crate::utils::{setup, setup_and_construct, wallet_balances};
 use fuels::prelude::*;
-use test_utils::abi::exchange::{pool_info, remove_liquidity};
+use test_utils::interface::exchange::{pool_info, remove_liquidity};
 
 mod success {
     use super::*;

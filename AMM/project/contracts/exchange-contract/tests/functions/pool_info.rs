@@ -1,6 +1,6 @@
 use crate::utils::{setup, setup_and_construct};
 use fuels::prelude::*;
-use test_utils::{abi::exchange::pool_info, setup::common::deposit_and_add_liquidity};
+use test_utils::{interface::exchange::pool_info, setup::common::deposit_and_add_liquidity};
 
 mod success {
     use super::*;
