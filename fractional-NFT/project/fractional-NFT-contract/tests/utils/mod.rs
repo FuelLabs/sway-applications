@@ -7,7 +7,7 @@ abigen!(
 );
 abigen!(
     Nft,
-    "./project/fractional-NFT-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"
+    "./project/fractional-NFT-contract/tests/artifacts/NFT/out/debug/NFT-1-abi.json"
 );
 
 pub struct Metadata {
@@ -20,9 +20,9 @@ pub mod paths {
     pub const FRACTIONAL_NFT_CONTRACT_BINARY_PATH: &str = "./out/debug/fractional-NFT-contract.bin";
     pub const FRACTIONAL_NFT_CONTRACT_STORAGE_PATH: &str =
         "./out/debug/fractional-NFT-contract-storage_slots.json";
-    pub const NFT_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT.bin";
+    pub const NFT_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT-1.bin";
     pub const NFT_CONTRACT_STORAGE_PATH: &str =
-        "./tests/artifacts/NFT/out/debug/NFT-storage_slots.json";
+        "./tests/artifacts/NFT/out/debug/NFT-1-storage_slots.json";
 }
 
 pub mod fractional_nft_abi_calls {
