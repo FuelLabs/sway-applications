@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*};
+use fuels::{contract::call_response::FuelCallResponse, prelude::*};
 
 abigen!(
     Nft,
@@ -27,7 +27,7 @@ pub mod abi_calls {
         approved: Option<Identity>,
         contract: &Nft,
         token_id: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .approve(approved.clone(), token_id)
@@ -56,7 +56,7 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn burn(contract: &Nft, token_id: u64) -> CallResponse<()> {
+    pub async fn burn(contract: &Nft, token_id: u64) -> FuelCallResponse<()> {
         contract.methods().burn(token_id).call().await.unwrap()
     }
 
@@ -64,7 +64,7 @@ pub mod abi_calls {
         admin: Option<Identity>,
         contract: &Nft,
         token_supply: Option<u64>,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .constructor(admin.clone(), token_supply.clone())
@@ -87,7 +87,7 @@ pub mod abi_calls {
         contract.methods().max_supply().call().await.unwrap().value
     }
 
-    pub async fn mint(amount: u64, contract: &Nft, owner: Identity) -> CallResponse<()> {
+    pub async fn mint(amount: u64, contract: &Nft, owner: Identity) -> FuelCallResponse<()> {
         contract
             .methods()
             .mint(amount, owner.clone())
@@ -110,7 +110,7 @@ pub mod abi_calls {
         approve: bool,
         contract: &Nft,
         operator: Identity,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .set_approval_for_all(approve, operator.clone())
@@ -119,7 +119,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn set_admin(contract: &Nft, minter: Option<Identity>) -> CallResponse<()> {
+    pub async fn set_admin(contract: &Nft, minter: Option<Identity>) -> FuelCallResponse<()> {
         contract
             .methods()
             .set_admin(minter.clone())
@@ -148,7 +148,7 @@ pub mod abi_calls {
             .value
     }
 
-    pub async fn transfer(contract: &Nft, to: Identity, token_id: u64) -> CallResponse<()> {
+    pub async fn transfer(contract: &Nft, to: Identity, token_id: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .transfer(to.clone(), token_id)

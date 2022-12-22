@@ -1,7 +1,7 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{auction_info, bid, create},
-    englishauction_mod::State,
+    english_auction_mod::State,
     test_helpers::{create_auction_copy, defaults_token, setup, token_asset},
 };
 use fuels::prelude::Identity;

@@ -21,7 +21,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "BytecodeRootAlreadySet")]
     async fn when_already_initialized() {
         let (wallet, amm_instance, asset_pairs) = setup_and_initialize().await;
 

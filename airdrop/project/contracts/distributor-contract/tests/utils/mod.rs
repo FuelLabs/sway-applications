@@ -2,7 +2,7 @@ use fuel_merkle::{
     binary::in_memory::MerkleTree,
     common::{empty_sum_sha256, Bytes32},
 };
-use fuels::{contract::contract::CallResponse, core::types::Bits256, prelude::*};
+use fuels::{contract::call_response::FuelCallResponse, core::types::Bits256, prelude::*};
 use sha2::{Digest, Sha256};
 
 abigen!(
@@ -46,7 +46,7 @@ pub mod airdrop_distributor_abi_calls {
         num_leaves: u64,
         proof: Vec<Bits256>,
         to: Identity,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .claim(amount, key, num_leaves, proof, to)
@@ -72,7 +72,7 @@ pub mod airdrop_distributor_abi_calls {
         claim_time: u64,
         contract: &AirdropDistributor,
         merkle_root: Bits256,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .constructor(asset, claim_time, merkle_root)
@@ -98,7 +98,7 @@ pub mod simple_asset_abi_calls {
         asset_supply: u64,
         contract: &SimpleAsset,
         minter: Identity,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .constructor(asset_supply, minter)
