@@ -30,23 +30,23 @@ impl FractionalNFT for Contract {
     #[storage(read, write)]
     fn deposit(
         admin: Option<Identity>,
-        nft: ContractId,
+        asset_id: ContractId,
         supply: u64,
         token_id: u64,
     ) {
         require(storage.nft_info.is_none(), AccessError::AlreadyInitialized);
 
         // Store information on this fractionalized NFT
-        storage.nft_info = Option::Some(NFTInfo::new(admin, nft, token_id));
+        storage.nft_info = Option::Some(NFTInfo::new(admin, asset_id, token_id));
         storage.supply = supply;
 
         // Take ownership of the NFT and mint tokens to the sender
-        transfer_nft(nft, Identity::ContractId(contract_id()), token_id);
+        transfer_nft(asset_id, Identity::ContractId(contract_id()), token_id);
         mint_to(supply, msg_sender().unwrap());
 
         log(DepositEvent {
-            nft,
             admin,
+            asset_id,
             supply,
             token_id,
         });
@@ -64,8 +64,8 @@ impl FractionalNFT for Contract {
 
         require(nft_info.admin.is_some() && msg_sender().unwrap() == nft_info.admin.unwrap(), AccessError::NotNftAdmin);
 
-        // Store the new admin
         let previous_admin = nft_info.admin;
+        // Store the new admin
         nft_info.admin = new_admin;
         storage.nft_info = Option::Some(nft_info);
 
@@ -93,10 +93,10 @@ impl FractionalNFT for Contract {
         storage.nft_info = Option::Some(nft_info);
 
         // Change ownership of the NFT to the `to` identity
-        transfer_nft(nft_info.nft, to, nft_info.token_id);
+        transfer_nft(nft_info.asset_id, to, nft_info.token_id);
 
         log(WithdrawEvent {
-            nft: nft_info.nft,
+            asset_id: nft_info.asset_id,
             owner: to,
             token_id: nft_info.token_id,
         });

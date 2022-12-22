@@ -42,7 +42,7 @@ mod success {
 
         let nft_struct = nft_info(&owner1.f_nft).await;
         assert!(nft_struct.is_some());
-        assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
+        assert_eq!(nft_struct.clone().unwrap().asset_id, nft_contract.clone());
         assert_eq!(
             nft_struct.clone().unwrap().admin,
             Some(owner_identity.clone())

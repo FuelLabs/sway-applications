@@ -56,7 +56,7 @@ mod success {
             Some(fractional_nft_identity.clone())
         );
         assert!(nft_struct.is_some());
-        assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
+        assert_eq!(nft_struct.clone().unwrap().asset_id, nft_contract.clone());
         assert_eq!(
             nft_struct.clone().unwrap().admin,
             Some(owner_identity.clone())
@@ -104,7 +104,7 @@ mod success {
             Some(fractional_nft_identity.clone())
         );
         assert!(nft_struct.is_some());
-        assert_eq!(nft_struct.clone().unwrap().nft, nft_contract.clone());
+        assert_eq!(nft_struct.clone().unwrap().asset_id, nft_contract.clone());
         assert_eq!(nft_struct.clone().unwrap().admin, None);
         assert_eq!(supply(&owner1.f_nft).await, token_supply);
     }

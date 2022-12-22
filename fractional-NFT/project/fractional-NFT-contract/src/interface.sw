@@ -10,15 +10,15 @@ abi FractionalNFT {
     /// # Arguments
     ///
     /// * `admin` - The identity which will have the ability to withdraw.
-    /// * `nft` - The contract that manages the deposited NFT.
+    /// * `asset_id` - The contract that manages the deposited NFT.
     /// * `supply` - The number of fractionalized tokens that will be minted.
     /// * `token_id` - The id of the NFT that is being deposited.
     ///
     /// # Reverts
     ///
-    /// * When the contract has already been initialized.
+    /// * When there has already been a deposit.
     #[storage(read, write)]
-    fn deposit(admin: Option<Identity>, nft: ContractId, supply: u64, token_id: u64);
+    fn deposit(admin: Option<Identity>, asset_id: ContractId, supply: u64, token_id: u64);
 
     /// Returns the information of the NFT locked in the contract.
     #[storage(read)]
@@ -28,7 +28,7 @@ abi FractionalNFT {
     ///
     /// # Arguments
     ///
-    /// * `new_admin` - The identity which will now controls the contract.
+    /// * `new_admin` - The identity which will take control over the contract.
     ///
     /// # Reverts
     ///
@@ -37,7 +37,7 @@ abi FractionalNFT {
     #[storage(read, write)]
     fn set_admin(new_admin: Option<Identity>);
 
-    /// Returns the total circulating supply of fractionalized tokens.
+    /// Returns the total supply of fractionalized tokens.
     #[storage(read)]
     fn supply() -> u64;
 
