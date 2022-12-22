@@ -59,7 +59,7 @@ mod success {
             0
         );
         assert_eq!(
-            token_distribution_struct.clone().unwrap().nft,
+            token_distribution_struct.clone().unwrap().nft_asset_id,
             nft_contract.clone()
         );
         assert_eq!(

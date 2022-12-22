@@ -109,9 +109,9 @@ pub mod token_distributor_abi_calls {
         contract
             .methods()
             .create(
+                nft.clone(),
                 external_asset.clone(),
                 f_nft.clone(),
-                nft.clone(),
                 reserve_price.clone(),
                 token_owner.clone(),
                 token_price,

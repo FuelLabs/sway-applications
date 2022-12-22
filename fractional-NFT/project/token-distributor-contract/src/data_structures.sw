@@ -31,7 +31,7 @@ pub struct TokenDistribution {
     /// The total amount of the `external_asset` that is available to withdraw by the admin.
     external_deposits: u64,
     /// The contract which manages the NFT held by the fractionalized NFT.
-    nft: ContractId,
+    nft_asset_id: ContractId,
     /// The price at which admin rights of the token distribution may be sold.
     reserve_price: Option<u64>,
     /// The current state of the distribution.
@@ -46,7 +46,7 @@ impl TokenDistribution {
     pub fn new(
         admin: Option<Identity>,
         external_asset: ContractId,
-        nft: ContractId,
+        nft_asset_id: ContractId,
         reserve_price: Option<u64>,
         token_id: u64,
         token_price: u64,
@@ -55,7 +55,7 @@ impl TokenDistribution {
             admin,
             external_asset,
             external_deposits: 0,
-            nft,
+            nft_asset_id,
             reserve_price,
             state: DistributionState::Started,
             token_id,
