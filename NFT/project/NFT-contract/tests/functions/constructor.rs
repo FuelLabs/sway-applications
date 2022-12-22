@@ -76,7 +76,7 @@ mod reverts {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "CannotReinitialize")]
     async fn when_initalized_twice() {
         let (deploy_wallet, _owner1, _owner2) = setup().await;
 

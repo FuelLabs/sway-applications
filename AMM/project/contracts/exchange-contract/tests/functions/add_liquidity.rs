@@ -215,7 +215,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NotInitialized")]
     async fn when_unitialized() {
         // call setup instead of setup_and_initialize
         let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, _asset_b_id, _asset_c_id) =
@@ -234,7 +234,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DeadlinePassed")]
     async fn when_deadline_has_passed() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
@@ -249,7 +249,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AmountMustBeZero")]
     async fn when_msg_amount_is_not_zero() {
         let (exchange, _wallet, amounts, _asset_c_id) =
             setup_initialize_and_deposit_but_do_not_add_liquidity().await;
@@ -270,7 +270,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AmountTooLow")]
     async fn when_desired_liquidity_is_less_than_minimum_liquidity() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
@@ -285,7 +285,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DepositCannotBeZero")]
     async fn when_deposited_a_is_zero() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
@@ -300,7 +300,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DepositCannotBeZero")]
     async fn when_deposited_b_is_zero() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
@@ -315,7 +315,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_liquidity_is_zero_but_desired_liquidity_is_too_high() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
@@ -330,7 +330,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_liquidity_exists_but_desired_liquidity_is_too_high_based_on_a() {
         let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
@@ -346,7 +346,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_liquidity_exists_but_desired_liquidity_is_too_high_based_on_b() {
         let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
