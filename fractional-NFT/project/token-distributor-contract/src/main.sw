@@ -113,7 +113,9 @@ impl TokenDistributor for Contract {
         transfer(this_balance(fractional_nft_id), fractional_nft_id, Identity::ContractId(fractional_nft_id));
         withdraw_fractional_nft(fractional_nft_id, token_distribution.admin.unwrap());
 
-        log(EndEvent { fractional_nft_id });
+        log(EndEvent {
+            fractional_nft_id,
+        });
     }
 
     #[storage(read, write)]
