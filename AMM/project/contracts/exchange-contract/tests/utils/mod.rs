@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*};
+use fuels::{contract::call_response::FuelCallResponse, prelude::*};
 
 abigen!(
     Exchange,
@@ -43,7 +43,7 @@ pub mod abi_calls {
         tx_params: TxParameters,
         desired_liquidity: u64,
         deadline: u64,
-    ) -> CallResponse<u64> {
+    ) -> FuelCallResponse<u64> {
         contract
             .methods()
             .add_liquidity(desired_liquidity, deadline)
@@ -58,7 +58,10 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn constructor(contract: &Exchange, pair: (AssetId, AssetId)) -> CallResponse<()> {
+    pub async fn constructor(
+        contract: &Exchange,
+        pair: (AssetId, AssetId),
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .constructor((ContractId::new(*pair.0), ContractId::new(*pair.1)))
@@ -67,7 +70,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn deposit(contract: &Exchange, call_params: CallParameters) -> CallResponse<()> {
+    pub async fn deposit(contract: &Exchange, call_params: CallParameters) -> FuelCallResponse<()> {
         contract
             .methods()
             .deposit()
@@ -83,7 +86,7 @@ pub mod abi_calls {
         min_asset_a: u64,
         min_asset_b: u64,
         deadline: u64,
-    ) -> CallResponse<RemoveLiquidityInfo> {
+    ) -> FuelCallResponse<RemoveLiquidityInfo> {
         contract
             .methods()
             .remove_liquidity(min_asset_a, min_asset_b, deadline)
@@ -100,7 +103,7 @@ pub mod abi_calls {
         call_params: CallParameters,
         min_output: Option<u64>,
         deadline: u64,
-    ) -> CallResponse<u64> {
+    ) -> FuelCallResponse<u64> {
         contract
             .methods()
             .swap_exact_input(min_output, deadline)
@@ -117,7 +120,7 @@ pub mod abi_calls {
         call_params: CallParameters,
         output: u64,
         deadline: u64,
-    ) -> CallResponse<u64> {
+    ) -> FuelCallResponse<u64> {
         contract
             .methods()
             .swap_exact_output(output, deadline)
@@ -129,7 +132,11 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn withdraw(contract: &Exchange, amount: u64, asset: AssetId) -> CallResponse<()> {
+    pub async fn withdraw(
+        contract: &Exchange,
+        amount: u64,
+        asset: AssetId,
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .withdraw(amount, ContractId::new(*asset))
@@ -139,7 +146,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn balance(contract: &Exchange, asset: AssetId) -> CallResponse<u64> {
+    pub async fn balance(contract: &Exchange, asset: AssetId) -> FuelCallResponse<u64> {
         contract
             .methods()
             .balance(ContractId::new(*asset))
@@ -148,7 +155,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn pool_info(contract: &Exchange) -> CallResponse<PoolInfo> {
+    pub async fn pool_info(contract: &Exchange) -> FuelCallResponse<PoolInfo> {
         contract.methods().pool_info().call().await.unwrap()
     }
 
@@ -158,7 +165,7 @@ pub mod abi_calls {
         tx_params: TxParameters,
         amount: u64,
         asset: AssetId,
-    ) -> CallResponse<PreviewAddLiquidityInfo> {
+    ) -> FuelCallResponse<PreviewAddLiquidityInfo> {
         contract
             .methods()
             .preview_add_liquidity(amount, ContractId::new(*asset))
@@ -173,7 +180,7 @@ pub mod abi_calls {
         contract: &Exchange,
         exact_input: u64,
         input_asset: AssetId,
-    ) -> CallResponse<PreviewSwapInfo> {
+    ) -> FuelCallResponse<PreviewSwapInfo> {
         contract
             .methods()
             .preview_swap_exact_input(exact_input, ContractId::new(*input_asset))
@@ -187,7 +194,7 @@ pub mod abi_calls {
         contract: &Exchange,
         exact_output: u64,
         output_asset: AssetId,
-    ) -> CallResponse<PreviewSwapInfo> {
+    ) -> FuelCallResponse<PreviewSwapInfo> {
         contract
             .methods()
             .preview_swap_exact_output(exact_output, ContractId::new(*output_asset))

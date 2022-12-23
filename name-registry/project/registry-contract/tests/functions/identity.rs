@@ -21,25 +21,26 @@ mod success {
 
         let previous_identity = identity(&instance, &acc1.name).await;
 
-        assert_eq!(previous_identity.0.value.unwrap(), acc1.identity());
-
         set_identity(&instance, &acc1.name, wallet_identity2.clone()).await;
 
         let new_identity = identity(&instance, &acc1.name).await;
 
-        assert_eq!(new_identity.0.value.unwrap(), wallet_identity2);
+        assert_eq!(previous_identity.value.unwrap(), acc1.identity());
+        assert_eq!(new_identity.value.unwrap(), wallet_identity2);
     }
 }
 
 mod revert {
     use crate::utils::{abi::identity, setup};
 
+    // TODO: missing test
+
     #[tokio::test]
-    #[should_panic(expected = "`Result::unwrap()` on an `Err` value")]
+    #[should_panic(expected = "NameNotRegistered")]
     async fn cant_get_identity_when_not_registered() {
         let (instance, acc, _wallet2) = setup().await;
 
         let identity = identity(&instance, &acc.name).await;
-        identity.0.value.unwrap();
+        identity.value.unwrap();
     }
 }

@@ -1,7 +1,7 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{auction_info, bid, cancel, create},
-    englishauction_mod::State,
+    english_auction_mod::State,
     test_helpers::{defaults_token, setup, token_asset},
 };
 use fuels::prelude::Identity;
@@ -139,7 +139,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionDoesNotExist")]
     async fn when_auction_does_not_exist() {
         let (_, seller, _, _, _, _, _, _, _) = setup().await;
 
@@ -147,7 +147,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionIsNotOpen")]
     async fn when_auction_bid_period_has_ended() {
         let (deployer, seller, _, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -171,13 +171,13 @@ mod revert {
         )
         .await;
 
-        let _result = provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1, Option::None).await;
 
         cancel(auction_id, &seller.auction).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionIsNotOpen")]
     async fn when_auction_has_closed() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -209,7 +209,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionIsNotOpen")]
     async fn when_auction_already_canceled() {
         let (_, seller, _, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -237,7 +237,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "SenderIsNotSeller")]
     async fn when_sender_is_not_seller() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;

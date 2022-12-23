@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*};
+use fuels::{contract::call_response::FuelCallResponse, prelude::*};
 
 abigen!(
     Escrow,
@@ -33,7 +33,7 @@ pub mod abi_calls {
 
     use super::*;
 
-    pub async fn accept_arbiter(contract: &Escrow, identifier: u64) -> CallResponse<()> {
+    pub async fn accept_arbiter(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .accept_arbiter(identifier)
@@ -51,7 +51,7 @@ pub mod abi_calls {
         buyer: &Bech32Address,
         contract: &Escrow,
         deadline: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params =
             CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(1_000_000));
@@ -76,7 +76,7 @@ pub mod abi_calls {
         asset: &ContractId,
         contract: &Escrow,
         identifier: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params =
             CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(1_000_000));
@@ -91,7 +91,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn dispute(contract: &Escrow, identifier: u64) -> CallResponse<()> {
+    pub async fn dispute(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
         contract.methods().dispute(identifier).call().await.unwrap()
     }
 
@@ -99,7 +99,7 @@ pub mod abi_calls {
         arbiter: Arbiter,
         contract: &Escrow,
         identifier: u64,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         let tx_params = TxParameters::new(None, Some(1_000_000), None);
         let call_params = CallParameters::new(
             Some(arbiter.fee_amount),
@@ -123,7 +123,7 @@ pub mod abi_calls {
         identifier: u64,
         payment_amount: u64,
         user: &Bech32Address,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .resolve_dispute(identifier, payment_amount, Identity::Address(user.into()))
@@ -133,7 +133,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn return_deposit(contract: &Escrow, identifier: u64) -> CallResponse<()> {
+    pub async fn return_deposit(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .return_deposit(identifier)
@@ -143,7 +143,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn take_payment(contract: &Escrow, identifier: u64) -> CallResponse<()> {
+    pub async fn take_payment(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .take_payment(identifier)
@@ -153,7 +153,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn transfer_to_seller(contract: &Escrow, identifier: u64) -> CallResponse<()> {
+    pub async fn transfer_to_seller(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .transfer_to_seller(identifier)
@@ -163,7 +163,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn withdraw_collateral(contract: &Escrow, identifier: u64) -> CallResponse<()> {
+    pub async fn withdraw_collateral(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .withdraw_collateral(identifier)

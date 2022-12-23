@@ -21,16 +21,16 @@ mod success {
 
         let previous_identity = identity(&instance, &acc1.name).await;
 
-        assert_eq!(previous_identity.0.value.unwrap(), acc1.identity(),);
+        assert_eq!(previous_identity.value.unwrap(), acc1.identity(),);
 
         let response = set_identity(&instance, &acc1.name, wallet_identity2.clone()).await;
 
         let new_identity = identity(&instance, &acc1.name).await;
 
-        assert_eq!(new_identity.0.value.unwrap(), wallet_identity2);
+        assert_eq!(new_identity.value.unwrap(), wallet_identity2);
 
-        let log = instance
-            .logs_with_type::<IdentityChangedEvent>(&response.0.receipts)
+        let log = response
+            .get_logs_with_type::<IdentityChangedEvent>()
             .unwrap();
         assert_eq!(
             log,
@@ -50,8 +50,10 @@ mod revert {
     };
     use fuels::prelude::*;
 
+    // TODO: missing tests
+
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "SenderNotOwner")]
     async fn cant_set_identity() {
         let (instance, acc1, wallet2) = setup().await;
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
