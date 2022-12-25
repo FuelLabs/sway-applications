@@ -6,7 +6,6 @@ abigen!(
     "./project/timelock-contract/out/debug/timelock-contract-abi.json"
 );
 
-
 pub async fn setup() -> (Timelock, WalletUnlocked, WalletUnlocked) {
     // Launch a local network and deploy the contract
     let mut wallets = launch_custom_provider_and_get_wallets(
