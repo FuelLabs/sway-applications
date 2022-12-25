@@ -44,7 +44,6 @@ impl Timelock for Contract {
 
         require(!storage.queue.get(id), Error::DuplicateTransaction);
 
-
         // TODO: check timestamp is valid
         // require(timestamp_is_valid, Error::InvalidTimestamp);
         storage.queue.insert(id, true);
