@@ -16,7 +16,7 @@ The project consists of a smart contract.
 <!--Only show most important files e.g. script to run, build etc.-->
 
 ```
-timelock/
+Timelock/
 ├── project/
 |   └── timelock-contract/
 |       ├── src/main.sw
