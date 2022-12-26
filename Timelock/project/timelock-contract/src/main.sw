@@ -17,6 +17,7 @@ use utils::create_hash;
 const ADMIN: Identity = Identity::Address(Address::from(OWNER));
 
 storage {
+    /// Mapping transaction hash to time range of available execution
     queue: StorageMap<b256, Option<ExecutionRange>> = StorageMap {},
 }
 
