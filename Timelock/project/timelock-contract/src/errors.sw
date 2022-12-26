@@ -8,5 +8,4 @@ pub enum TransactionError {
     DuplicateTransaction: b256,
     InvalidTransaction: b256,
     TimestampNotInRange: (u64, u64, u64),
-    TransactionExpired: (u64, u64),
 }

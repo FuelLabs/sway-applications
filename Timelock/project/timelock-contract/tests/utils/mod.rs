@@ -1,1 +1,2 @@
-mod setup;
+pub mod interface;
+pub mod setup;

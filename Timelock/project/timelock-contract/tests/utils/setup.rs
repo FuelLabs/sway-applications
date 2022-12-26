@@ -1,5 +1,7 @@
 use fuels::prelude::*;
 
+// TODO: do setup instead of copy/pasted code with minor adjustments
+
 // Load abi from json
 abigen!(
     Timelock,

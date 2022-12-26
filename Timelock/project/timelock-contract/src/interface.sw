@@ -1,5 +1,8 @@
 library interface;
 
+dep data_structures;
+
+use data_structures::ExecutionRange;
 use std::bytes::Bytes;
 
 abi Timelock {
@@ -15,7 +18,7 @@ abi Timelock {
 
 abi Info {
     #[storage(read)]
-    fn queued(id: b256) -> bool;
+    fn queued(id: b256) -> Option<ExecutionRange>;
 
     fn transaction_hash(recipient: Identity, value: u64, data: Bytes, timestamp: u64) -> b256;
 }
