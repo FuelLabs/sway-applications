@@ -33,7 +33,7 @@ TODO: UI does not currently exist
 
 ### Tests
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/timelock/<you are here>`
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/Timelock/<you are here>`
 
 Build the contracts:
 
