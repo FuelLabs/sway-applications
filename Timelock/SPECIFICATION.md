@@ -10,7 +10,9 @@ Table of Contents
     - [`delays()`](#delays)
     - [`queued()`](#queued)
     - [`transaction_hash()`](#transaction_hash)
-  - [Sequence diagram](#sequence-diagram)
+  - [Diagrams](#diagrams)
+    - [Sequence Diagram](#sequence-diagram)
+    - [Timestamp Validity](#timestamp-validity)
 
 # Overview
 
@@ -65,6 +67,15 @@ Returns an optional struct containing the valid execution time range for a trans
 
 Returns the hash (`id`) of the transaction arguments
 
-## Sequence diagram
+## Diagrams
+
+### Sequence Diagram
 
 ![Timelock Sequence Diagram](.docs/timelock-sequence-diagram.png)
+
+### Timestamp Validity
+
+1. When submitting a transaction into a [`queue()`](#queue) the timestamp must fall between the `MINIMUM_DELAY` and `MAXIMUM_DELAY`.
+2. To [`execute()`](#execute) the transaction the current time `t` must be greater than or equal to the submitted timestamp; however, it must be no greater than the `MAXIMUM_DELAY` time.
+
+![Timelock Timestamp Diagram](.docs/timelock-timestamp-validity.png)
