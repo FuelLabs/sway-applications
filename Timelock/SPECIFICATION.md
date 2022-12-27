@@ -12,7 +12,6 @@ Table of Contents
     - [`transaction_hash()`](#transaction_hash)
   - [Sequence diagram](#sequence-diagram)
 
-
 # Overview
 
 This document provides an overview of the application.
@@ -46,7 +45,7 @@ The admin should be able to execute a queued transaction
 The admin should be able to add a transaction into a queue for execution
 
 1. If the `id` of the transaction is not currently in the queue
-2. If the transaction timestamp is in the valid time range of (MINIMUM_DELAY, MAXIMUM_DELAY)
+2. If the transaction timestamp is in the valid time range of (`MINIMUM_DELAY`, `MAXIMUM_DELAY`)
 
 ## Miscellaneous Information
 
@@ -56,7 +55,7 @@ Returns the amount of a specified asset in the contract
 
 ### `delays()`
 
-Returns the (MINIMUM_DELAY, MAXIMUM_DELAY) variables used for timestamp validity
+Returns the (`MINIMUM_DELAY`, `MAXIMUM_DELAY`) variables used for timestamp validity
 
 ### `queued()`
 
