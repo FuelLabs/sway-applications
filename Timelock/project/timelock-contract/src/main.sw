@@ -13,7 +13,6 @@ use interface::{Info, Timelock};
 use std::{auth::msg_sender, block::timestamp as now, bytes::Bytes, logging::log};
 use utils::create_hash;
 
-// TODO: reconsider the semantics of using "timestamp" and the logic
 const ADMIN: Identity = Identity::Address(Address::from(OWNER));
 
 storage {
@@ -40,11 +39,11 @@ impl Timelock for Contract {
         let transaction = storage.queue.get(id);
 
         require(transaction.is_some(), TransactionError::InvalidTransaction(id));
-        require(transaction.unwrap().start <= now() && now() <= transaction.unwrap().end, TransactionError::TimestampNotInRange((
-            transaction.unwrap().start,
-            transaction.unwrap().end,
-            now(),
-        )));
+
+        // Timestamp is guarenteed to be in the range because of `fn queue()`
+        // Therefore, the lower bound can be the timestamp itself; but, we must place an upper bound
+        // to prevent going over the MAXIMUM_DELAY
+        require(timestamp <= now() && now() <= transaction.unwrap().end, TransactionError::TimestampNotInRange((timestamp, transaction.unwrap().end, now())));
 
         storage.queue.insert(id, Option::None::<ExecutionRange>());
 
@@ -66,12 +65,13 @@ impl Timelock for Contract {
         let transaction = storage.queue.get(id);
 
         require(transaction.is_none(), TransactionError::DuplicateTransaction(id));
-        require(now() + MINIMUM_DELAY <= timestamp && timestamp <= now() + MAXIMUM_DELAY, TransactionError::TimestampNotInRange((now() + MINIMUM_DELAY, now() + MAXIMUM_DELAY, timestamp)));
 
-        storage.queue.insert(id, Option::Some(ExecutionRange {
-            start: now() + timestamp + MINIMUM_DELAY,
-            end: now() + timestamp + MAXIMUM_DELAY,
-        }));
+        let start = now() + MINIMUM_DELAY;
+        let end = now() + MAXIMUM_DELAY;
+
+        require(start <= timestamp && timestamp <= end, TransactionError::TimestampNotInRange((start, end, timestamp)));
+
+        storage.queue.insert(id, Option::Some(ExecutionRange { start, end }));
 
         log(QueueEvent {
             data,
