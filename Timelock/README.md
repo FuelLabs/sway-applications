@@ -7,6 +7,10 @@
 
 ## Overview
 
+The purpose of a timelock is to restrict the execution of a transaction to some window of time. The transaction usually involves a transfer of funds e.g. via an escrow, vesting schedule, deferred payment etc. however, it may also be used for valueless execution i.e. calls to a contract to perform computation.
+
+The transaction arguments are hashed and stored in a queue awaiting a subsequent call for execution. A user may choose to execute the transaction during the window of time or cancel the transaction by removing it from the queue.
+
 More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Project Structure
