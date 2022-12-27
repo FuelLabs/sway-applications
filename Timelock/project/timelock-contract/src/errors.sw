@@ -5,7 +5,6 @@ pub enum AccessControlError {
 }
 
 pub enum FundingError {
-    IncorrectAmountSent: (u64, u64),
     InsufficientContractBalance: u64,
 }
 

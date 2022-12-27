@@ -15,10 +15,7 @@ use std::{
     block::timestamp as now,
     bytes::Bytes,
     call_frames::msg_asset_id,
-    context::{
-        msg_amount,
-        this_balance,
-    },
+    context::this_balance,
     logging::log,
 };
 use utils::create_hash;
@@ -42,10 +39,16 @@ impl Timelock for Contract {
     }
 
     #[storage(read, write)]
-    fn execute(recipient: Identity, value: u64, data: Bytes, timestamp: u64) {
+    fn execute(
+        recipient: Identity,
+        value: Option<u64>,
+        asset_id: Option<ContractId>,
+        data: Bytes,
+        timestamp: u64,
+    ) {
         require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
 
-        let id = create_hash(recipient, value, data, timestamp);
+        let id = create_hash(recipient, value, asset_id, data, timestamp);
         let transaction = storage.queue.get(id);
 
         require(transaction.is_some(), TransactionError::InvalidTransaction(id));
@@ -54,13 +57,17 @@ impl Timelock for Contract {
         // Therefore, the lower bound can be the timestamp itself; but, we must place an upper bound
         // to prevent going over the MAXIMUM_DELAY
         require(timestamp <= now() && now() <= transaction.unwrap().end, TransactionError::TimestampNotInRange((timestamp, transaction.unwrap().end, now())));
-        require(value <= this_balance(msg_asset_id()), FundingError::InsufficientContractBalance((this_balance(msg_asset_id()))));
-        require(value == msg_amount(), FundingError::IncorrectAmountSent((value, msg_amount())));
+
+        // If either is not None then both should be not None
+        if value.is_some() || asset_id.is_some() {
+            require(value.unwrap() <= this_balance(asset_id.unwrap()), FundingError::InsufficientContractBalance((this_balance(asset_id.unwrap()))));
+        }
 
         storage.queue.insert(id, Option::None::<ExecutionRange>());
 
         // TODO: execute arbitrary call...
         log(ExecuteEvent {
+            asset_id,
             data,
             id,
             recipient,
@@ -70,10 +77,16 @@ impl Timelock for Contract {
     }
 
     #[storage(read, write)]
-    fn queue(recipient: Identity, value: u64, data: Bytes, timestamp: u64) {
+    fn queue(
+        recipient: Identity,
+        value: Option<u64>,
+        asset_id: Option<ContractId>,
+        data: Bytes,
+        timestamp: u64,
+    ) {
         require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
 
-        let id = create_hash(recipient, value, data, timestamp);
+        let id = create_hash(recipient, value, asset_id, data, timestamp);
         let transaction = storage.queue.get(id);
 
         require(transaction.is_none(), TransactionError::DuplicateTransaction(id));
@@ -86,6 +99,7 @@ impl Timelock for Contract {
         storage.queue.insert(id, Option::Some(ExecutionRange { start, end }));
 
         log(QueueEvent {
+            asset_id,
             data,
             id,
             recipient,
@@ -109,7 +123,13 @@ impl Info for Contract {
         storage.queue.get(id)
     }
 
-    fn transaction_hash(recipient: Identity, value: u64, data: Bytes, timestamp: u64) -> b256 {
-        create_hash(recipient, value, data, timestamp)
+    fn transaction_hash(
+        recipient: Identity,
+        value: Option<u64>,
+        asset_id: Option<ContractId>,
+        data: Bytes,
+        timestamp: u64,
+    ) -> b256 {
+        create_hash(recipient, value, asset_id, data, timestamp)
     }
 }
