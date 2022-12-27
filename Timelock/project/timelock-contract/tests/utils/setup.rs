@@ -8,6 +8,9 @@ abigen!(
     "./project/timelock-contract/out/debug/timelock-contract-abi.json"
 );
 
+const TIMELOCK_CONTRACT_BINARY_PATH: &str = "./out/debug/timelock-contract.bin";
+const TIMELOCK_CONTRACT_STORAGE_PATH: &str = "./out/debug/timelock-contract-storage_slots.json";
+
 pub async fn setup() -> (Timelock, WalletUnlocked, WalletUnlocked) {
     // Launch a local network and deploy the contract
     let mut wallets = launch_custom_provider_and_get_wallets(
@@ -25,11 +28,11 @@ pub async fn setup() -> (Timelock, WalletUnlocked, WalletUnlocked) {
     let wallet2 = wallets.pop().unwrap();
 
     let id = Contract::deploy(
-        "./out/debug/timelock-contract.bin",
+        TIMELOCK_CONTRACT_BINARY_PATH,
         &wallet,
         TxParameters::default(),
         StorageConfiguration::with_storage_path(Some(
-            "./out/debug/timelock-contract-storage_slots.json".to_string(),
+            TIMELOCK_CONTRACT_STORAGE_PATH.to_string()
         )),
     )
     .await
