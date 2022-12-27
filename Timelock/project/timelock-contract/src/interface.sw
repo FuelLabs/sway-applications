@@ -58,6 +58,9 @@ abi Info {
     fn balance(asset_id: ContractId) -> u64;
 
     ///
+    fn delays() -> (u64, u64);
+
+    ///
     ///
     /// # Arguments
     ///

@@ -100,6 +100,10 @@ impl Info for Contract {
         this_balance(asset_id)
     }
 
+    fn delays() -> (u64, u64) {
+        (MINIMUM_DELAY, MAXIMUM_DELAY)
+    }
+
     #[storage(read)]
     fn queued(id: b256) -> Option<ExecutionRange> {
         storage.queue.get(id)
