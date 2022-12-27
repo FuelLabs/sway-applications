@@ -14,7 +14,11 @@ use std::{
     auth::msg_sender,
     block::timestamp as now,
     bytes::Bytes,
-    context::this_balance,
+    call_frames::msg_asset_id,
+    context::{
+        msg_amount,
+        this_balance,
+    },
     logging::log,
 };
 use utils::create_hash;
@@ -50,6 +54,8 @@ impl Timelock for Contract {
         // Therefore, the lower bound can be the timestamp itself; but, we must place an upper bound
         // to prevent going over the MAXIMUM_DELAY
         require(timestamp <= now() && now() <= transaction.unwrap().end, TransactionError::TimestampNotInRange((timestamp, transaction.unwrap().end, now())));
+        require(value <= this_balance(msg_asset_id()), TransactionError::InsufficientContractBalance((this_balance(msg_asset_id()))));
+        require(value == msg_amount(), TransactionError::IncorrectAmountSent((value, msg_amount())));
 
         storage.queue.insert(id, Option::None::<ExecutionRange>());
 

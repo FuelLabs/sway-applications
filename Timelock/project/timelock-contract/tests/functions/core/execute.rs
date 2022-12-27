@@ -36,4 +36,12 @@ mod revert {
     #[should_panic(expected = "TimestampNotInRange")]
     async fn when_timestamp_after_end_time() {}
 
+    #[tokio::test]
+    #[should_panic(expected = "InsufficientContractBalance")]
+    async fn when_asset_balance_is_too_low_in_contract() {}
+
+    #[tokio::test]
+    #[should_panic(expected = "IncorrectAmountSent")]
+    async fn when_amount_sent_does_not_match_value() {}
+
 }
