@@ -10,7 +10,13 @@ use data_structures::ExecutionRange;
 use errors::{AccessControlError, TransactionError};
 use events::{CancelEvent, ExecuteEvent, QueueEvent};
 use interface::{Info, Timelock};
-use std::{auth::msg_sender, block::timestamp as now, bytes::Bytes, logging::log};
+use std::{
+    auth::msg_sender,
+    block::timestamp as now,
+    bytes::Bytes,
+    context::this_balance,
+    logging::log,
+};
 use utils::create_hash;
 
 const ADMIN: Identity = Identity::Address(Address::from(OWNER));
@@ -84,6 +90,10 @@ impl Timelock for Contract {
 }
 
 impl Info for Contract {
+    fn balance(asset_id: ContractId) -> u64 {
+        this_balance(asset_id)
+    }
+
     #[storage(read)]
     fn queued(id: b256) -> Option<ExecutionRange> {
         storage.queue.get(id)

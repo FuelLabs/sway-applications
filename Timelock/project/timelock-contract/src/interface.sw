@@ -54,6 +54,13 @@ abi Info {
     ///
     /// # Arguments
     ///
+    /// - `asset_id`:
+    fn balance(asset_id: ContractId) -> u64;
+
+    ///
+    ///
+    /// # Arguments
+    ///
     /// - `id`:
     #[storage(read)]
     fn queued(id: b256) -> Option<ExecutionRange>;
