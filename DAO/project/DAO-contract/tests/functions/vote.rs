@@ -124,14 +124,14 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidId")]
     async fn on_invalid_proposal_id() {
         let (_gov_token, _gov_token_id, _deployer, user, _asset_amount) = setup().await;
         vote(&user.dao_voting, true, 0, 10).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "VoteAmountCannotBeZero")]
     async fn on_zero_vote_amount() {
         let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
@@ -142,7 +142,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "ProposalExpired")]
     async fn on_expired_proposal() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
@@ -167,13 +167,13 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InsufficientBalance")]
     async fn on_vote_amount_greater_than_balance() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
         create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
-        vote(&user.dao_voting, true, 10, asset_amount).await;
+        vote(&user.dao_voting, true, 0, asset_amount).await;
     }
 }

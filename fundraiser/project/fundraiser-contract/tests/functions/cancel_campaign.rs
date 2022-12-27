@@ -86,7 +86,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_zero() {
         let (author, _, _, _, defaults) = setup().await;
 
@@ -104,7 +104,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_greater_than_number_of_campaigns() {
         let (author, _, _, _, _) = setup().await;
 
@@ -113,10 +113,10 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "UnauthorizedUser")]
     async fn when_sender_is_not_author() {
         let (author, user, _, _, defaults) = setup().await;
-        let deadline = 4;
+        let deadline = 5;
 
         create_campaign(
             &author.contract,
@@ -132,10 +132,10 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "CampaignEnded")]
     async fn when_calling_after_deadline() {
         let (author, _, _, _, defaults) = setup().await;
-        let deadline = 3;
+        let deadline = 5;
 
         create_campaign(
             &author.contract,
@@ -151,7 +151,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "CampaignHasBeenCancelled")]
     async fn when_calling_after_already_cancelled() {
         let (author, _, _, _, defaults) = setup().await;
 
