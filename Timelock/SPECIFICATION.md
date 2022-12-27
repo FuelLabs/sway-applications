@@ -63,7 +63,7 @@ Returns an optional struct containing the valid execution time range for a trans
 
 ### `transaction_hash()`
 
-Returns the hash (id) of the transaction arguments
+Returns the hash (`id`) of the transaction arguments
 
 ## Sequence diagram
 
