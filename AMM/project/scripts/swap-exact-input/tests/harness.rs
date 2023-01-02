@@ -46,7 +46,6 @@ async fn expected_and_actual_output(swap_parameters: SwapParameters) -> SwapResu
 
     let actual = script_instance
         .main(
-            amm.id,
             route
                 .into_iter()
                 .map(|asset_id| ContractId::new(*asset_id))
@@ -195,7 +194,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "PairExchangeNotRegistered")]
     async fn when_pair_exchange_not_registered() {
-        let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
+        let (script_instance, _amm, asset_ids, transaction_parameters, deadline) = setup().await;
 
         let mut route = asset_ids;
         let input_amount = 60;
@@ -207,7 +206,6 @@ mod revert {
 
         script_instance
             .main(
-                amm.id,
                 route
                     .into_iter()
                     .map(|asset_id| ContractId::new(*asset_id))
@@ -236,7 +234,6 @@ mod revert {
 
         script_instance
             .main(
-                amm.id,
                 route
                     .into_iter()
                     .map(|asset_id| ContractId::new(*asset_id))
@@ -265,7 +262,6 @@ mod revert {
 
         script_instance
             .main(
-                amm.id,
                 route
                     .into_iter()
                     .map(|asset_id| ContractId::new(*asset_id))

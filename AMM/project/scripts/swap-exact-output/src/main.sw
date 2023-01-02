@@ -12,7 +12,6 @@ enum SwapError {
 }
 
 fn main(
-    amm_contract_address: ContractId,
     assets: Vec<ContractId>,
     output_amount: u64,
     maximum_input_amount: u64,
@@ -20,7 +19,7 @@ fn main(
 ) -> u64 {
     require(assets.len() >= 2, InputError::RouteTooShort);
 
-    let amm_contract = abi(AMM, amm_contract_address.into());
+    let amm_contract = abi(AMM, AMM_ID);
 
     let mut latest_sold = output_amount;
 

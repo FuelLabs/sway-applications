@@ -6,3 +6,6 @@ name = "swap-exact-input"
 
 [dependencies]
 libraries = { path = "../../libraries" }
+
+[constants]
+AMM_ID = { type = "b256", value = "0x7c1420f4d30178fdff677e7b718ab20fdf4c0dbca78d3b9602ee8cabe50349cb" }

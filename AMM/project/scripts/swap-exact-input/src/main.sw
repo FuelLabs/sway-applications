@@ -12,7 +12,6 @@ enum SwapError {
 }
 
 fn main(
-    amm_contract_address: ContractId,
     assets: Vec<ContractId>,
     input_amount: u64,
     minimum_output_amount: Option<u64>,
@@ -20,10 +19,9 @@ fn main(
 ) -> u64 {
     require(assets.len() >= 2, InputError::RouteTooShort);
 
-    let amm_contract = abi(AMM, amm_contract_address.into());
+    let amm_contract = abi(AMM, AMM_ID);
 
     let mut latest_bought = input_amount;
-    let intermediate_minimum_amount: Option<u64> = Option::None;
 
     // start swapping by selling the first asset in the route
     let mut sold_asset_index = 0;
@@ -47,7 +45,7 @@ fn main(
             gas: 10_000_000,
             coins: latest_bought, // forwarding coins of asset to sell
             asset_id: asset_pair.0.into(), // identifier of asset to sell
-        }(intermediate_minimum_amount, deadline);
+        }(Option::None::<u64>(), deadline);
 
         sold_asset_index += 1;
     }

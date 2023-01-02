@@ -181,16 +181,16 @@ If you are interested in a functional overview then this is the section for you.
 
 1. Swaps assets along a route by specifying exact input for each swap
     1. If the route has at least 2 assets
-    2. If the exact input amount is specified for each swap
-    3. If the AMM has a pool for each subsequent asset pair in route
+    2. If the AMM has a pool for each subsequent asset pair in route
+    3. If the bought amount of the last asset is more than the optional minimum output amount 
     4. If [`swap_exact_input`](#swap_exact_input) conditions are met
 
 ### `swap-exact-output`
 
 1. Swaps assets along a route by specifying exact output for each swap
     1. If the route has at least 2 assets
-    2. If the exact output amount is specified for each swap
     3. If the AMM has a pool for each subsequent asset pair in route
+    3. If the sold amount of the first asset is less than the specified maximum input amount 
     4. If [`swap_exact_output`](#swap_exact_output) conditions are met
 
 # Sequence Diagram
