@@ -31,8 +31,10 @@ export const AuctionAssetDropdown = ({
 
   // Set the initial asset text and icon
   useEffect(() => {
-    const text = getAssetText();
+    const text = getAssetText(!!assets && assets.length === 0);
+    const iconText = getAssetIconText();
     setAssetText(text);
+    setAssetIcon(iconText);
   }, [assets]);
 
   const handleTokenTypeSelection = (newTokenType: string) => {
@@ -54,7 +56,7 @@ export const AuctionAssetDropdown = ({
   };
 
   const getAssetIconText = (isNFT: boolean = false) => {
-    if (isNFT || !assets) {
+    if (isNFT || !assets || (!!assets && assets.length === 0)) {
       return "Image";
     }
     return "Coin";

@@ -6,8 +6,7 @@ import { useFuelWeb3 } from './useFuelWeb3';
 export const useWallet = () => {
   const [fuelWeb3] = useFuelWeb3();
 
-  // TODO throw error
-  // if (!fuelWeb3) return null;
+  if (!fuelWeb3) throw new Error('Error fuelWeb3 instance is not defined');
   // Auto connect application
   fuelWeb3.connect();
 

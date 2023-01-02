@@ -7,11 +7,11 @@ export const useAssets = () => {
   const { data: balances } = useQuery(
     ['balances'],
     async () => {
-      const temp = await wallet!.getBalances();
-      return temp;
+      // eslint-disable-next-line @typescript-eslint/return-await
+      return await wallet?.getBalances();
     },
     {
-      enabled: !!wallet?.address.toString(),
+      enabled: !!wallet && !!wallet.address,
     }
   );
   return balances;

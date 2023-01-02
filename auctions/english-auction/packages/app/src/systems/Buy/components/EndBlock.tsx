@@ -1,5 +1,6 @@
 import { Flex, Heading } from "@fuel-ui/react";
 import type { BN } from "fuels";
+import { bn } from "fuels";
 import { useEffect, useState } from "react";
 
 import { useLatestBlockHeight } from "~/systems/Core/hooks/useLatestBlockHeight";
@@ -13,16 +14,16 @@ export const EndBlock = ({ endBlock, onChange }: EndBlockProps) => {
   const [curBlocksAway, setCurBlocksAway] = useState<BN>();
   const latestBlockHeight = useLatestBlockHeight();
 
-  const calcBlocksAway = (blockHeight0: BN, blockHeight1: BN) => {
+  const calcBlocksAway = (blockHeight0: BN, blockHeight1: BN): BN => {
     const result = blockHeight0.sub(blockHeight1);
     if (blockHeight0.lt(blockHeight1)) {
-      return result.ineg();
+      return bn(result.ineg());
     }
     return result;
   };
 
   useEffect(() => {
-    const blocksAway = calcBlocksAway(endBlock, latestBlockHeight);
+    const blocksAway: BN = calcBlocksAway(endBlock, latestBlockHeight);
     setCurBlocksAway(blocksAway);
     onChange(blocksAway.isNeg()!);
   }, [latestBlockHeight]);
