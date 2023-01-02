@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
-import type { JsonAbi, Wallet } from 'fuels';
 import { ContractFactory } from 'fuels';
+import type { JsonAbi, WalletUnlocked } from 'fuels';
 import path from 'path';
 import { log } from 'src/log';
 import type { DeployContractOptions } from 'src/types';
@@ -16,7 +16,7 @@ function getABIName(contractPath: string) {
 }
 
 export async function deployContractBinary(
-  wallet: Wallet,
+  wallet: WalletUnlocked,
   binaryPath: string,
   options?: DeployContractOptions
 ) {

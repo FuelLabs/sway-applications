@@ -23,6 +23,7 @@
     "contracts": "pnpm exec english-auction-scripts run",
     "contracts:build": "pnpm exec english-auction-scripts build",
     "contracts:deploy": "pnpm exec english-auction-scripts deploy",
+    "contracts:deploy-testnet": "NODE_ENV=testnet OUTPUT_ENV=.env run-s contracts:deploy",
     "dev": "turbo run dev --parallel",
     "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "pnpm lint:check --fix",

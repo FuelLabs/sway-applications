@@ -7,8 +7,8 @@ import { buildTypes } from './buildTypes';
 import { prettifyContracts } from './prettifyContracts';
 
 export async function buildContracts(config: Config) {
-  for (const { path } of config.contracts) {
-    await buildContract(path);
+  for (const { buildPath } of config.contracts) {
+    await buildContract(buildPath);
   }
   await buildTypes(config);
   await prettifyContracts(config);

@@ -4,7 +4,13 @@ import { createConfig, replaceEventOnEnv } from 'english-auction-scripts';
 const { NODE_ENV, OUTPUT_ENV } = process.env;
 
 function getEnvName() {
-  return NODE_ENV === 'test' ? '.env.test' : '.env';
+  if (NODE_ENV === 'test') {
+    return '.env.test';
+  }
+  if (NODE_ENV === 'testnet') {
+    return '.env.testnet';
+  }
+  return '.env';
 }
 
 dotenv.config({
@@ -23,12 +29,21 @@ export default createConfig({
   contracts: [
     {
       name: 'VITE_TOKEN_ID',
-      path: './packages/contracts/english-auction',
+      buildPath: './packages/contracts',
+      deployPath:
+        './packages/contracts/english-auction/project/auction-contract/tests/artifacts/asset',
       options: getDeployOptions(),
     },
     {
       name: 'VITE_CONTRACT_ID',
-      path: './packages/contracts/english-auction/tests/artifacts/asset',
+      buildPath: './packages/contracts',
+      deployPath: './packages/contracts/english-auction/project/auction-contract',
+      options: getDeployOptions(),
+    },
+    {
+      name: 'VITE_NFT_ID',
+      buildPath: './packages/contracts',
+      deployPath: '../../NFT/project/NFT-contract',
       options: getDeployOptions(),
     },
   ],

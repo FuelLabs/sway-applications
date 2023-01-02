@@ -8,7 +8,7 @@ export async function deployContracts(config: Config) {
   const wallet = await getWalletInstance();
   const contracts: Array<ContractDeployed> = [];
 
-  for (const { name, path, options } of config.contracts) {
+  for (const { name, buildPath, deployPath, options } of config.contracts) {
     let contractOptions: DeployContractOptions | undefined;
 
     if (typeof options === 'function') {
@@ -19,7 +19,7 @@ export async function deployContracts(config: Config) {
 
     contracts.push({
       name,
-      contractId: await deployContractBinary(wallet, path, contractOptions),
+      contractId: await deployContractBinary(wallet, deployPath ?? buildPath, contractOptions),
     });
   }
 
