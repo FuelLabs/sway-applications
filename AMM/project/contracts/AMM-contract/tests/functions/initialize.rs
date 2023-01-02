@@ -1,12 +1,9 @@
 use crate::utils::setup;
-use test_utils::{
-    data_structures::ExchangeContractConfiguration,
-    interface::amm::initialize,
-    setup::common::{deploy_and_construct_exchange, exchange_bytecode_root},
-};
+use test_utils::interface::amm::initialize;
 
 mod success {
     use super::*;
+    use test_utils::setup::common::exchange_bytecode_root;
 
     #[tokio::test]
     async fn initializes() {
@@ -19,6 +16,10 @@ mod success {
 
 mod revert {
     use super::*;
+    use test_utils::{
+        data_structures::ExchangeContractConfiguration,
+        setup::common::deploy_and_construct_exchange,
+    };
 
     #[tokio::test]
     #[should_panic(expected = "BytecodeRootAlreadySet")]

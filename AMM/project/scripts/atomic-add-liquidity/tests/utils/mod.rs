@@ -1,10 +1,13 @@
-use fuels::prelude::*;
 use test_utils::{
     data_structures::{
         ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
         TransactionParameters, WalletAssetConfiguration,
     },
-    interface::exchange::{deposit, preview_add_liquidity, withdraw},
+    interface::{
+        exchange::{deposit, preview_add_liquidity, withdraw},
+        AtomicAddLiquidityScript,
+    },
+    paths::ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH,
     setup::{
         common::{deploy_and_construct_exchange, setup_wallet_and_provider},
         scripts::transaction_inputs_outputs,
@@ -14,26 +17,51 @@ use test_utils::{
 pub async fn expected_liquidity(
     exchange: &ExchangeContract,
     liquidity_parameters: &LiquidityParameters,
+    override_asset: bool,
 ) -> u64 {
     deposit(
         &exchange.instance,
-        liquidity_parameters.amounts.0,
-        exchange.pair.0,
+        if override_asset {
+            liquidity_parameters.amounts.1
+        } else {
+            liquidity_parameters.amounts.0
+        },
+        if override_asset {
+            exchange.pair.1
+        } else {
+            exchange.pair.0
+        },
     )
     .await;
 
     let preview_add_liquidity_info = preview_add_liquidity(
         &exchange.instance,
-        liquidity_parameters.amounts.1,
-        exchange.pair.1,
+        if override_asset {
+            liquidity_parameters.amounts.0
+        } else {
+            liquidity_parameters.amounts.1
+        },
+        if override_asset {
+            exchange.pair.0
+        } else {
+            exchange.pair.1
+        },
         true,
     )
     .await;
 
     withdraw(
         &exchange.instance,
-        liquidity_parameters.amounts.0,
-        exchange.pair.0,
+        if override_asset {
+            liquidity_parameters.amounts.1
+        } else {
+            liquidity_parameters.amounts.0
+        },
+        if override_asset {
+            exchange.pair.1
+        } else {
+            exchange.pair.0
+        },
     )
     .await;
 
@@ -44,7 +72,7 @@ pub async fn setup(
     deposit_amounts: (u64, u64),
     liquidity: u64,
 ) -> (
-    WalletUnlocked,
+    AtomicAddLiquidityScript,
     ExchangeContract,
     LiquidityParameters,
     TransactionParameters,
@@ -76,8 +104,11 @@ pub async fn setup(
     )
     .await;
 
+    let script_instance =
+        AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
+
     (
-        wallet,
+        script_instance,
         exchange,
         liquidity_parameters,
         transaction_parameters,

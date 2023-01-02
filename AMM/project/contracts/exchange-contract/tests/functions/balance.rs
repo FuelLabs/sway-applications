@@ -1,8 +1,9 @@
-use crate::utils::{setup, setup_and_construct};
-use test_utils::interface::exchange::{balance, deposit};
+use crate::utils::setup_and_construct;
+use test_utils::interface::exchange::balance;
 
 mod success {
     use super::*;
+    use test_utils::interface::exchange::deposit;
 
     #[tokio::test]
     async fn returns_zero() {
@@ -33,6 +34,7 @@ mod success {
 
 mod revert {
     use super::*;
+    use crate::utils::setup;
 
     #[tokio::test]
     #[should_panic(expected = "AssetPairNotSet")]

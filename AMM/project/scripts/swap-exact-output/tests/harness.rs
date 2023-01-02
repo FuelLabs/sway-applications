@@ -26,7 +26,7 @@ async fn expected_swap_input(amm: &AMMContract, output_amount: u64, route: &Vec<
 }
 
 async fn setup() -> (
-    WalletUnlocked,
+    SwapExactOutputScript,
     AMMContract,
     Vec<AssetId>,
     TransactionParameters,
@@ -47,7 +47,15 @@ async fn setup() -> (
 
     let deadline = provider.latest_block_height().await.unwrap() + 10;
 
-    (wallet, amm, asset_ids, transaction_parameters, deadline)
+    let script_instance = SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
+
+    (
+        script_instance,
+        amm,
+        asset_ids,
+        transaction_parameters,
+        deadline,
+    )
 }
 
 mod success {
@@ -55,11 +63,9 @@ mod success {
 
     #[tokio::test]
     async fn can_swap_exact_output_along_route() {
-        let (wallet, amm, asset_ids, transaction_parameters, deadline) = setup().await;
+        let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
 
         let route = asset_ids;
-        let script_instance =
-            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
         let output_amount = 10_000;
 
         let expected_result = expected_swap_input(&amm, output_amount, &route).await;
@@ -88,12 +94,10 @@ mod success {
 
     #[tokio::test]
     async fn can_swap_exact_output_two_assets() {
-        let (wallet, amm, asset_ids, transaction_parameters, deadline) = setup().await;
+        let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
 
         // route consists of two assets. this is a direct swap
         let route = vec![*asset_ids.get(0).unwrap(), *asset_ids.get(1).unwrap()];
-        let script_instance =
-            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
         let output_amount = 10_000;
 
         let expected_result = expected_swap_input(&amm, output_amount, &route).await;
@@ -127,14 +131,12 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "RouteTooShort")]
     async fn when_route_length_is_zero() {
-        let (wallet, amm, _asset_ids, _transaction_parameters, deadline) = setup().await;
+        let (script_instance, amm, _asset_ids, _transaction_parameters, deadline) = setup().await;
 
         // route length is zero
         let route: Vec<AssetId> = vec![];
         let output_amount = 0;
         let maximum_input_amount = 0;
-        let script_instance =
-            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
 
         script_instance
             .main(
@@ -155,14 +157,12 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "RouteTooShort")]
     async fn when_route_length_is_one() {
-        let (wallet, amm, asset_ids, _transaction_parameters, deadline) = setup().await;
+        let (script_instance, amm, asset_ids, _transaction_parameters, deadline) = setup().await;
 
         // route length is one
         let route: Vec<AssetId> = vec![*asset_ids.get(0).unwrap()];
         let output_amount = 60;
         let maximum_input_amount = 0;
-        let script_instance =
-            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
 
         script_instance
             .main(
@@ -183,11 +183,9 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "PairExchangeNotRegistered")]
     async fn when_pair_exchange_not_registered() {
-        let (wallet, amm, asset_ids, transaction_parameters, deadline) = setup().await;
+        let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
 
         let mut route = asset_ids;
-        let script_instance =
-            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
         let output_amount = 10_000;
         let maximum_input_amount = 0;
 
@@ -218,11 +216,9 @@ mod revert {
     #[should_panic(expected = "Revert(18446744073709486080)")]
     // the contract call in the script fails with "DeadlinePassed" but that message is not propagated
     async fn when_deadline_passed() {
-        let (wallet, amm, asset_ids, transaction_parameters, _deadline) = setup().await;
+        let (script_instance, amm, asset_ids, transaction_parameters, _deadline) = setup().await;
 
         let route = asset_ids;
-        let script_instance =
-            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
         let output_amount = 10_000;
         let maximum_input_amount = expected_swap_input(&amm, output_amount, &route).await;
 
@@ -248,11 +244,9 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "ExcessiveSlippage")]
     async fn when_maximum_input_not_satisfied() {
-        let (wallet, amm, asset_ids, transaction_parameters, deadline) = setup().await;
+        let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
 
         let route = asset_ids;
-        let script_instance =
-            SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
         let output_amount = 10_000;
         let maximum_input_amount = expected_swap_input(&amm, output_amount, &route).await;
 

@@ -1,8 +1,10 @@
-use crate::utils::{setup, setup_and_construct, wallet_balances};
-use test_utils::interface::exchange::{pool_info, preview_swap_exact_input, swap_exact_input};
+use crate::utils::setup_and_construct;
+use test_utils::interface::exchange::{preview_swap_exact_input, swap_exact_input};
 
 mod success {
     use super::*;
+    use crate::utils::wallet_balances;
+    use test_utils::interface::exchange::pool_info;
 
     #[tokio::test]
     async fn swaps_a_for_b() {
@@ -144,6 +146,7 @@ mod success {
 
 mod revert {
     use super::*;
+    use crate::utils::setup;
 
     #[tokio::test]
     #[should_panic(expected = "AssetPairNotSet")]

@@ -1,9 +1,10 @@
-use crate::utils::{setup, setup_and_construct};
-use fuels::prelude::*;
-use test_utils::{interface::exchange::pool_info, setup::common::deposit_and_add_liquidity};
+use test_utils::interface::exchange::pool_info;
 
 mod success {
     use super::*;
+    use crate::utils::setup_and_construct;
+    use fuels::prelude::ContractId;
+    use test_utils::setup::common::deposit_and_add_liquidity;
 
     #[tokio::test]
     async fn returns_empty_pool_info() {
@@ -65,6 +66,7 @@ mod success {
 
 mod revert {
     use super::*;
+    use crate::utils::setup;
 
     #[tokio::test]
     #[should_panic(expected = "AssetPairNotSet")]

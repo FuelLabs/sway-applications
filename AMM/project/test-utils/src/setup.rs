@@ -1,31 +1,24 @@
-use super::{
-    data_structures::{
-        AMMContract, ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
-        TransactionParameters, WalletAssetConfiguration,
-    },
-    interface::{
-        amm::{add_pool, initialize},
-        exchange::{add_liquidity, constructor, deposit},
-        Exchange, AMM,
-    },
-    paths::{
-        AMM_CONTRACT_BINARY_PATH, AMM_CONTRACT_STORAGE_PATH, EXCHANGE_CONTRACT_BINARY_PATH,
-        EXCHANGE_CONTRACT_STORAGE_PATH, MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH,
-        MALICIOUS_EXCHANGE_CONTRACT_STORAGE_PATH,
-    },
-    transaction::{
-        transaction_input_coin, transaction_input_contract, transaction_output_contract,
-        transaction_output_variable,
-    },
+use super::data_structures::{
+    AMMContract, ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
 };
-use fuels::{
-    prelude::*,
-    tx::{Contract as TxContract, Input, Output},
-};
-use std::collections::HashMap;
+use fuels::{prelude::*, tx::Contract as TxContract};
 
 pub mod common {
     use super::*;
+    use crate::{
+        data_structures::WalletAssetConfiguration,
+        interface::{
+            amm::initialize,
+            exchange::{add_liquidity, constructor, deposit},
+            Exchange, AMM,
+        },
+        paths::{
+            AMM_CONTRACT_BINARY_PATH, AMM_CONTRACT_STORAGE_PATH, EXCHANGE_CONTRACT_BINARY_PATH,
+            EXCHANGE_CONTRACT_STORAGE_PATH, MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH,
+            MALICIOUS_EXCHANGE_CONTRACT_STORAGE_PATH,
+        },
+    };
+    use std::collections::HashMap;
 
     pub async fn deploy_amm(wallet: &WalletUnlocked) -> AMMContract {
         let contract_id = Contract::deploy(
@@ -171,7 +164,16 @@ pub mod common {
 
 pub mod scripts {
     use super::*;
+    use crate::{
+        data_structures::TransactionParameters,
+        interface::amm::add_pool,
+        transaction::{
+            transaction_input_coin, transaction_input_contract, transaction_output_contract,
+            transaction_output_variable,
+        },
+    };
     use common::{deploy_and_construct_exchange, deposit_and_add_liquidity};
+    use fuels::tx::{Input, Output};
 
     pub const MAXIMUM_INPUT_AMOUNT: u64 = 1_000_000;
 
@@ -196,6 +198,8 @@ pub mod scripts {
         let mut exchange_index = 0;
 
         while exchange_index < asset_ids.len() - 1 {
+            // set exchanges so that there are pools for
+            // (asset 1, asset 2), (asset 2, asset 3), (asset 3, asset 4) and so on
             let asset_pair = (
                 *asset_ids.get(exchange_index).unwrap(),
                 *asset_ids.get(exchange_index + 1).unwrap(),
@@ -207,11 +211,16 @@ pub mod scripts {
                     Some(asset_pair),
                     None,
                     None,
-                    Some([(exchange_index as u8 + 2); 32]),
+                    // deploy identical contracts for different pools with salt
+                    Some([(exchange_index as u8); 32]),
                 ),
                 &LiquidityParameters::new(
-                    Some((100_000, 100_000 * (exchange_index as u64 + 1) * 3)),
+                    // add initial liquidity to exchanges to have ratios such as
+                    // 1:1, 1:2, 1:3 and so on
+                    Some((100_000, 100_000 * (exchange_index as u64 + 1))),
+                    // a reasonable deadline for adding liquidity
                     Some(provider.latest_block_height().await.unwrap() + 10),
+                    // liquidity that will be added is greater than or equal to the lowest deposit
                     Some(100_000),
                 ),
             )
@@ -231,8 +240,8 @@ pub mod scripts {
         assets: &Vec<AssetId>,
         amounts: Option<&Vec<u64>>,
     ) -> TransactionParameters {
-        let mut input_contracts: Vec<Input> = vec![];
-        let mut output_contracts: Vec<Output> = vec![];
+        let mut input_contracts: Vec<Input> = Vec::with_capacity(contracts.len());
+        let mut output_contracts: Vec<Output> = Vec::with_capacity(contracts.len());
 
         contracts
             .into_iter()
@@ -242,8 +251,8 @@ pub mod scripts {
                 output_contracts.push(transaction_output_contract(index as u8));
             });
 
-        let mut input_coins: Vec<Input> = vec![];
-        let mut output_variables: Vec<Output> = vec![];
+        let mut input_coins: Vec<Input> = vec![]; // capacity depends on wallet resources
+        let mut output_variables: Vec<Output> = Vec::with_capacity(assets.len());
 
         let mut asset_index = 0;
         while asset_index < assets.len() {

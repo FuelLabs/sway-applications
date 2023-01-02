@@ -42,10 +42,9 @@ use std::{
 };
 use utils::{
     determine_assets,
-    div_multiply,
     maximum_input_for_exact_output,
     minimum_output_given_exact_input,
-    multiply_div,
+    multiply_divide,
 };
 
 storage {
@@ -66,16 +65,17 @@ impl Exchange for Contract {
         require(MINIMUM_LIQUIDITY <= desired_liquidity, InputError::CannotAddLessThanMinimumLiquidity(desired_liquidity));
 
         let sender = msg_sender().unwrap();
-        let total_liquidity = storage.liquidity_pool_supply;
         let reserves = storage.pair.unwrap();
         let deposits = AssetPair::of(Asset::new(reserves.a.id, storage.deposits.get((sender, reserves.a.id))), Asset::new(reserves.b.id, storage.deposits.get((sender, reserves.b.id))));
-
-        let mut added_assets = AssetPair::of(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
-        let mut added_liquidity = 0;
 
         // checking this because this will either result in a math error or adding no liquidity at all
         require(deposits.a.amount != 0, TransactionError::ExpectedNonZeroDeposit(deposits.a.id));
         require(deposits.b.amount != 0, TransactionError::ExpectedNonZeroDeposit(deposits.b.id));
+
+        let total_liquidity = storage.liquidity_pool_supply;
+
+        let mut added_assets = AssetPair::of(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
+        let mut added_liquidity = 0;
 
         // adding liquidity for the first time
         // use up all the deposited amounts of assets to determine the ratio
@@ -94,17 +94,17 @@ impl Exchange for Contract {
             transfer(added_liquidity, contract_id(), sender);
         } else { // adding further liquidity based on current ratio
             // attempt to add liquidity by using up the deposited asset A amount
-            let b_to_attempt = multiply_div(deposits.a.amount, reserves.b.amount, reserves.a.amount);
+            let b_to_attempt = multiply_divide(deposits.a.amount, reserves.b.amount, reserves.a.amount);
 
             // continue adding based on asset A if deposited asset B amount is sufficient
             if b_to_attempt <= deposits.b.amount {
-                added_liquidity = multiply_div(b_to_attempt, total_liquidity, reserves.b.amount);
+                added_liquidity = multiply_divide(b_to_attempt, total_liquidity, reserves.b.amount);
                 require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
                 added_assets.a.amount = deposits.a.amount;
                 added_assets.b.amount = b_to_attempt;
             } else { // attempt to add liquidity by using up the deposited asset B amount
-                let a_to_attempt = multiply_div(deposits.b.amount, reserves.a.amount, reserves.b.amount);
-                added_liquidity = multiply_div(a_to_attempt, total_liquidity, reserves.a.amount);
+                let a_to_attempt = multiply_divide(deposits.b.amount, reserves.a.amount, reserves.b.amount);
+                added_liquidity = multiply_divide(a_to_attempt, total_liquidity, reserves.a.amount);
                 require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
                 added_assets.a.amount = a_to_attempt;
                 added_assets.b.amount = deposits.b.amount;
@@ -181,18 +181,18 @@ impl Exchange for Contract {
 
         let reserves = storage.pair.unwrap();
 
-        require(msg_asset_id() == contract_id(), InputError::InvalidAsset);
         require(min_asset_a > 0, InputError::ExpectedNonZeroParameter(reserves.a.id));
         require(min_asset_b > 0, InputError::ExpectedNonZeroParameter(reserves.b.id));
         require(deadline > height(), InputError::DeadlinePassed(deadline));
 
-        let mut burned_liquidity = Asset::new(contract_id(), msg_amount());
+        let burned_liquidity = Asset::new(contract_id(), msg_amount());
 
-        require(burned_liquidity.amount > 0, InputError::ExpectedNonZeroAmount(msg_asset_id()));
+        require(burned_liquidity.id == msg_asset_id(), InputError::InvalidAsset);
+        require(burned_liquidity.amount > 0, InputError::ExpectedNonZeroAmount(burned_liquidity.id));
 
         let mut removed_assets = AssetPair::of(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
-        removed_assets.a.amount = multiply_div(burned_liquidity.amount, reserves.a.amount, total_liquidity);
-        removed_assets.b.amount = multiply_div(burned_liquidity.amount, reserves.b.amount, total_liquidity);
+        removed_assets.a.amount = multiply_divide(burned_liquidity.amount, reserves.a.amount, total_liquidity);
+        removed_assets.b.amount = multiply_divide(burned_liquidity.amount, reserves.b.amount, total_liquidity);
 
         require(removed_assets.a.amount >= min_asset_a, TransactionError::DesiredAmountTooHigh(min_asset_a));
         require(removed_assets.b.amount >= min_asset_b, TransactionError::DesiredAmountTooHigh(min_asset_b));
@@ -253,17 +253,16 @@ impl Exchange for Contract {
 
         require(deadline > height(), InputError::DeadlinePassed(deadline));
         require(output > 0, InputError::ExpectedNonZeroParameter(output_asset.id));
+        require(output <= output_asset.amount, TransactionError::InsufficientReserve(output_asset.id));
 
         let input_amount = msg_amount();
         require(input_amount > 0, InputError::ExpectedNonZeroAmount(input_asset.id));
 
-        let sender = msg_sender().unwrap();
-
-        require(output <= output_asset.amount, TransactionError::InsufficientReserve(output_asset.id));
-
         let sold = maximum_input_for_exact_output(output, input_asset.amount, output_asset.amount, LIQUIDITY_MINER_FEE);
 
         require(input_amount >= sold, TransactionError::DesiredAmountTooHigh(input_amount));
+
+        let sender = msg_sender().unwrap();
 
         let refund = input_amount - sold;
         if refund > 0 {
@@ -350,12 +349,12 @@ impl Exchange for Contract {
         } else {
             if asset.id == reserves.a.id {
                 added_assets.a.amount = asset.amount;
-                added_assets.b.amount = multiply_div(asset.amount, reserves.b.amount, reserves.a.amount);
+                added_assets.b.amount = multiply_divide(asset.amount, reserves.b.amount, reserves.a.amount);
             } else {
-                added_assets.a.amount = multiply_div(asset.amount, reserves.a.amount, reserves.b.amount);
+                added_assets.a.amount = multiply_divide(asset.amount, reserves.a.amount, reserves.b.amount);
                 added_assets.b.amount = asset.amount;
             }
-            added_liquidity = multiply_div(added_assets.b.amount, total_liquidity, reserves.b.amount);
+            added_liquidity = multiply_divide(added_assets.b.amount, total_liquidity, reserves.b.amount);
         }
 
         PreviewAddLiquidityInfo {

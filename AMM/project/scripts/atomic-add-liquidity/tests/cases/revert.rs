@@ -1,21 +1,15 @@
 use crate::utils::{expected_liquidity, setup};
 use fuels::prelude::*;
-use test_utils::{
-    interface::{
-        atomic_add_liquidity_script_mod::{Asset, AssetPair},
-        AtomicAddLiquidityScript, LiquidityParameters, SCRIPT_GAS_LIMIT,
-    },
-    paths::ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH,
+use test_utils::interface::{
+    atomic_add_liquidity_script_mod::{Asset, AssetPair},
+    LiquidityParameters, SCRIPT_GAS_LIMIT,
 };
 
 #[tokio::test]
 #[should_panic(expected = "DesiredLiquidityZero")]
 async fn when_desired_liquidity_zero() {
-    let (wallet, exchange, liquidity_parameters, _transaction_parameters) =
+    let (script_instance, exchange, liquidity_parameters, _transaction_parameters) =
         setup((1000, 1000), 1000).await;
-
-    let script_instance =
-        AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
 
     script_instance
         .main(
@@ -44,13 +38,10 @@ async fn when_desired_liquidity_zero() {
 #[should_panic(expected = "Revert(18446744073709486080)")]
 // the contract call in the script fails with "DesiredAmountTooHigh" but that message is not propagated
 async fn when_desired_liquidity_too_high() {
-    let (wallet, exchange, liquidity_parameters, transaction_parameters) =
+    let (script_instance, exchange, liquidity_parameters, transaction_parameters) =
         setup((1000, 1000), 1000).await;
 
-    let script_instance =
-        AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
-
-    let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters).await;
+    let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters, false).await;
 
     script_instance
         .main(
@@ -81,11 +72,8 @@ async fn when_desired_liquidity_too_high() {
 #[tokio::test]
 #[should_panic(expected = "Revert(18446744073709486080)")]
 async fn when_one_deposit_is_zero() {
-    let (wallet, exchange, liquidity_parameters, transaction_parameters) =
+    let (script_instance, exchange, liquidity_parameters, transaction_parameters) =
         setup((1000, 1000), 1000).await;
-
-    let script_instance =
-        AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
 
     script_instance
         .main(
@@ -116,11 +104,8 @@ async fn when_one_deposit_is_zero() {
 #[tokio::test]
 #[should_panic(expected = "Revert(18446744073709486080)")]
 async fn when_both_deposits_are_zero() {
-    let (wallet, exchange, liquidity_parameters, transaction_parameters) =
+    let (script_instance, exchange, liquidity_parameters, transaction_parameters) =
         setup((1000, 1000), 1000).await;
-
-    let script_instance =
-        AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
 
     script_instance
         .main(

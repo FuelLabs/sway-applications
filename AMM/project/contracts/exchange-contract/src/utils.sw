@@ -12,12 +12,6 @@ fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
     amount - fee
 }
 
-pub fn div_multiply(a: u64, b: u64, c: u64) -> u64 {
-    let calculation = (U128::from((0, a)) / U128::from((0, b)));
-    let result_wrapped = (calculation * U128::from((0, c))).as_u64();
-    result_wrapped.unwrap()
-}
-
 /// Returns the maximum required amount of the input asset to get exactly ` output_amount ` of the output asset
 pub fn maximum_input_for_exact_output(
     output_amount: u64,
@@ -55,7 +49,7 @@ pub fn minimum_output_given_exact_input(
     result_wrapped.unwrap()
 }
 
-pub fn multiply_div(a: u64, b: u64, c: u64) -> u64 {
+pub fn multiply_divide(a: u64, b: u64, c: u64) -> u64 {
     let calculation = (U128::from((0, a)) * U128::from((0, b)));
     let result_wrapped = (calculation / U128::from((0, c))).as_u64();
     result_wrapped.unwrap()

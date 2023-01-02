@@ -1,9 +1,10 @@
 use crate::utils::setup;
-use fuels::prelude::*;
-use test_utils::interface::exchange::{constructor, pool_info};
+use test_utils::interface::exchange::constructor;
 
 mod success {
     use super::*;
+    use fuels::prelude::ContractId;
+    use test_utils::interface::exchange::pool_info;
 
     #[tokio::test]
     async fn constructs() {

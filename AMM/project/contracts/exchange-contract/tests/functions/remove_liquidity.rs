@@ -1,9 +1,9 @@
-use crate::utils::{setup, setup_and_construct, wallet_balances};
-use fuels::prelude::*;
+use crate::utils::setup_and_construct;
 use test_utils::interface::exchange::{pool_info, remove_liquidity};
 
 mod success {
     use super::*;
+    use crate::utils::wallet_balances;
 
     #[tokio::test]
     async fn removes_all_liquidity_passing_exact_a_and_b_values() {
@@ -276,6 +276,8 @@ mod success {
 
 mod revert {
     use super::*;
+    use crate::utils::setup;
+    use fuels::prelude::ContractId;
 
     #[tokio::test]
     #[should_panic(expected = "AssetPairNotSet")]

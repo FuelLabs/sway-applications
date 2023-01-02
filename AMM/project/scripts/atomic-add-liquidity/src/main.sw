@@ -1,10 +1,11 @@
 script;
 
-use libraries::{data_structures::{Asset, LiquidityParameters}, Exchange};
+use libraries::{data_structures::LiquidityParameters, Exchange};
 
 enum InputError {
     DesiredLiquidityZero: (),
 }
+
 fn main(
     exchange_contract_id: ContractId,
     liquidity_parameters: LiquidityParameters,

@@ -1,9 +1,9 @@
-use crate::utils::{setup, setup_and_construct};
-use fuels::tx::AssetId;
+use crate::utils::setup_and_construct;
 use test_utils::interface::exchange::preview_swap_exact_input;
 
 mod success {
     use super::*;
+    use fuels::prelude::AssetId;
 
     #[tokio::test]
     async fn previews_swap_of_a() {
@@ -69,6 +69,7 @@ mod success {
 
 mod revert {
     use super::*;
+    use crate::utils::setup;
 
     #[tokio::test]
     #[should_panic(expected = "AssetPairNotSet")]

@@ -1,12 +1,12 @@
 use crate::utils::setup;
 use test_utils::{
-    data_structures::ExchangeContractConfiguration,
-    interface::amm::{add_pool, pool},
+    data_structures::ExchangeContractConfiguration, interface::amm::add_pool,
     setup::common::deploy_and_construct_exchange,
 };
 
 mod success {
     use super::*;
+    use test_utils::interface::amm::pool;
 
     #[tokio::test]
     async fn adds_when_asset_pair_is_in_same_order() {

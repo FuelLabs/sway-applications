@@ -1,13 +1,13 @@
-use crate::utils::{contract_balances, setup, setup_and_construct, wallet_balances};
-use fuels::prelude::CallParameters;
+use crate::utils::setup_and_construct;
 use test_utils::{
-    data_structures::LiquidityParameters,
-    interface::exchange::{add_liquidity, deposit, pool_info},
+    data_structures::LiquidityParameters, interface::exchange::add_liquidity,
     setup::common::deposit_and_add_liquidity,
 };
 
 mod success {
     use super::*;
+    use crate::utils::{contract_balances, wallet_balances};
+    use test_utils::interface::exchange::{deposit, pool_info};
 
     #[tokio::test]
     async fn adds_when_liquidity_is_zero() {
@@ -236,6 +236,8 @@ mod success {
 
 mod revert {
     use super::*;
+    use crate::utils::setup;
+    use fuels::prelude::CallParameters;
 
     #[tokio::test]
     #[should_panic(expected = "AssetPairNotSet")]

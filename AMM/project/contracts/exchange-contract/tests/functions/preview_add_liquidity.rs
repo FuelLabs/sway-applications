@@ -1,12 +1,11 @@
-use crate::utils::{setup, setup_and_construct};
-use fuels::prelude::*;
-use test_utils::{
-    data_structures::LiquidityParameters, interface::exchange::preview_add_liquidity,
-    setup::common::deposit_and_add_liquidity,
-};
+use test_utils::interface::exchange::preview_add_liquidity;
 
 mod success {
     use super::*;
+    use crate::utils::setup_and_construct;
+    use test_utils::{
+        data_structures::LiquidityParameters, setup::common::deposit_and_add_liquidity,
+    };
 
     #[tokio::test]
     async fn previews_adding_a_when_liquidity_is_zero() {
@@ -181,6 +180,8 @@ mod success {
 
 mod revert {
     use super::*;
+    use crate::utils::setup;
+    use fuels::prelude::AssetId;
 
     #[tokio::test]
     #[should_panic(expected = "AssetPairNotSet")]
