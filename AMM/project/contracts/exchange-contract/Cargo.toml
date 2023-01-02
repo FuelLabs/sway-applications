@@ -6,7 +6,7 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", branch = "hal3e/revert-log-log", features = ["fuel-core-lib"] }
+fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", features = ["fuel-core-lib"] }
 test-utils = { path = "../../test-utils" }
 tokio = { version = "1.21.0", features = ["rt", "macros"] }
 
