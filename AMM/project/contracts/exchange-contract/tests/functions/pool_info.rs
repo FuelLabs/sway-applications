@@ -11,10 +11,10 @@ mod success {
             setup_and_construct(false, false).await;
         let pool_info = pool_info(&exchange.instance).await;
 
-        assert_eq!(pool_info.asset_a, ContractId::new(*exchange.pair.0));
-        assert_eq!(pool_info.asset_a_reserve, 0);
-        assert_eq!(pool_info.asset_b, ContractId::new(*exchange.pair.1));
-        assert_eq!(pool_info.asset_b_reserve, 0);
+        assert_eq!(pool_info.reserves.a.id, ContractId::new(*exchange.pair.0));
+        assert_eq!(pool_info.reserves.a.amount, 0);
+        assert_eq!(pool_info.reserves.b.id, ContractId::new(*exchange.pair.1));
+        assert_eq!(pool_info.reserves.b.amount, 0);
         assert_eq!(pool_info.liquidity, 0);
     }
 
@@ -29,19 +29,31 @@ mod success {
 
         let final_pool_info = pool_info(&exchange.instance).await;
 
-        assert_eq!(initial_pool_info.asset_a, ContractId::new(*exchange.pair.0));
-        assert_eq!(initial_pool_info.asset_a_reserve, 0);
-        assert_eq!(initial_pool_info.asset_b, ContractId::new(*exchange.pair.1));
-        assert_eq!(initial_pool_info.asset_b_reserve, 0);
-        assert_eq!(initial_pool_info.liquidity, 0);
-        assert_eq!(final_pool_info.asset_a, ContractId::new(*exchange.pair.0));
         assert_eq!(
-            final_pool_info.asset_a_reserve,
+            initial_pool_info.reserves.a.id,
+            ContractId::new(*exchange.pair.0)
+        );
+        assert_eq!(initial_pool_info.reserves.a.amount, 0);
+        assert_eq!(
+            initial_pool_info.reserves.b.id,
+            ContractId::new(*exchange.pair.1)
+        );
+        assert_eq!(initial_pool_info.reserves.b.amount, 0);
+        assert_eq!(initial_pool_info.liquidity, 0);
+        assert_eq!(
+            final_pool_info.reserves.a.id,
+            ContractId::new(*exchange.pair.0)
+        );
+        assert_eq!(
+            final_pool_info.reserves.a.amount,
             liquidity_parameters.amounts.0
         );
-        assert_eq!(final_pool_info.asset_b, ContractId::new(*exchange.pair.1));
         assert_eq!(
-            final_pool_info.asset_b_reserve,
+            final_pool_info.reserves.b.id,
+            ContractId::new(*exchange.pair.1)
+        );
+        assert_eq!(
+            final_pool_info.reserves.b.amount,
             liquidity_parameters.amounts.1
         );
         assert_eq!(

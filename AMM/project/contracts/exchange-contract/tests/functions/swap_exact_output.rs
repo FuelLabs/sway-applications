@@ -17,6 +17,7 @@ mod success {
         let max_input =
             preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1, true)
                 .await
+                .other_asset
                 .amount;
 
         let input_amount = swap_exact_output(
@@ -42,12 +43,12 @@ mod success {
             initial_wallet_balances.asset_b + output_amount
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
-            initial_pool_info.asset_a_reserve + input_amount
+            final_pool_info.reserves.a.amount,
+            initial_pool_info.reserves.a.amount + input_amount
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
-            initial_pool_info.asset_b_reserve - output_amount
+            final_pool_info.reserves.b.amount,
+            initial_pool_info.reserves.b.amount - output_amount
         );
     }
 
@@ -65,6 +66,7 @@ mod success {
         let max_input =
             preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1, true)
                 .await
+                .other_asset
                 .amount;
         let forward_amount = max_input + forward_extra;
 
@@ -91,12 +93,12 @@ mod success {
             initial_wallet_balances.asset_b + output_amount
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
-            initial_pool_info.asset_a_reserve + input_amount
+            final_pool_info.reserves.a.amount,
+            initial_pool_info.reserves.a.amount + input_amount
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
-            initial_pool_info.asset_b_reserve - output_amount
+            final_pool_info.reserves.b.amount,
+            initial_pool_info.reserves.b.amount - output_amount
         );
     }
 
@@ -113,6 +115,7 @@ mod success {
         let max_input =
             preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
                 .await
+                .other_asset
                 .amount;
 
         let input_amount = swap_exact_output(
@@ -138,12 +141,12 @@ mod success {
             initial_wallet_balances.asset_a + output_amount
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
-            initial_pool_info.asset_b_reserve + input_amount
+            final_pool_info.reserves.b.amount,
+            initial_pool_info.reserves.b.amount + input_amount
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
-            initial_pool_info.asset_a_reserve - output_amount
+            final_pool_info.reserves.a.amount,
+            initial_pool_info.reserves.a.amount - output_amount
         );
     }
 
@@ -161,6 +164,7 @@ mod success {
         let max_input =
             preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
                 .await
+                .other_asset
                 .amount;
         let forward_amount = max_input + forward_extra;
 
@@ -187,12 +191,12 @@ mod success {
             initial_wallet_balances.asset_a + output_amount
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
-            initial_pool_info.asset_b_reserve + input_amount
+            final_pool_info.reserves.b.amount,
+            initial_pool_info.reserves.b.amount + input_amount
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
-            initial_pool_info.asset_a_reserve - output_amount
+            final_pool_info.reserves.a.amount,
+            initial_pool_info.reserves.a.amount - output_amount
         );
     }
 }
@@ -302,6 +306,7 @@ mod revert {
         let forward_amount =
             preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
                 .await
+                .other_asset
                 .amount;
 
         swap_exact_output(
@@ -327,6 +332,7 @@ mod revert {
         let preview_amount =
             preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1, true)
                 .await
+                .other_asset
                 .amount;
 
         // forwarding insufficient amount
@@ -354,6 +360,7 @@ mod revert {
         let preview_amount =
             preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
                 .await
+                .other_asset
                 .amount;
 
         // forwarding insufficient amount

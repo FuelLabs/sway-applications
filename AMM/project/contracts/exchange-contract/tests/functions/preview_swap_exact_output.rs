@@ -1,4 +1,5 @@
 use crate::utils::{setup, setup_and_construct};
+use fuels::tx::AssetId;
 use test_utils::interface::exchange::preview_swap_exact_output;
 
 mod success {
@@ -22,7 +23,14 @@ mod success {
             preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1, true)
                 .await;
 
-        assert_eq!(preview_swap_info.amount, expected_max_input_amount);
+        assert_eq!(
+            AssetId::new(*preview_swap_info.other_asset.id),
+            exchange.pair.0
+        );
+        assert_eq!(
+            preview_swap_info.other_asset.amount,
+            expected_max_input_amount
+        );
         assert_eq!(
             preview_swap_info.sufficient_reserve,
             expected_sufficient_reserve
@@ -47,7 +55,14 @@ mod success {
             preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
                 .await;
 
-        assert_eq!(preview_swap_info.amount, expected_max_input_amount);
+        assert_eq!(
+            AssetId::new(*preview_swap_info.other_asset.id),
+            exchange.pair.1
+        );
+        assert_eq!(
+            preview_swap_info.other_asset.amount,
+            expected_max_input_amount
+        );
         assert_eq!(
             preview_swap_info.sufficient_reserve,
             expected_sufficient_reserve
@@ -72,7 +87,14 @@ mod success {
             preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.1, true)
                 .await;
 
-        assert_eq!(preview_swap_info.amount, expected_max_input_amount);
+        assert_eq!(
+            AssetId::new(*preview_swap_info.other_asset.id),
+            exchange.pair.0
+        );
+        assert_eq!(
+            preview_swap_info.other_asset.amount,
+            expected_max_input_amount
+        );
         assert_eq!(
             preview_swap_info.sufficient_reserve,
             expected_sufficient_reserve
@@ -97,7 +119,14 @@ mod success {
             preview_swap_exact_output(&exchange.instance, output_amount, exchange.pair.0, true)
                 .await;
 
-        assert_eq!(preview_swap_info.amount, expected_max_input_amount);
+        assert_eq!(
+            AssetId::new(*preview_swap_info.other_asset.id),
+            exchange.pair.1
+        );
+        assert_eq!(
+            preview_swap_info.other_asset.amount,
+            expected_max_input_amount
+        );
         assert_eq!(
             preview_swap_info.sufficient_reserve,
             expected_sufficient_reserve

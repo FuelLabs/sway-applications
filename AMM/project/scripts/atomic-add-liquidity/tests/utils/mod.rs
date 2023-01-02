@@ -37,7 +37,7 @@ pub async fn expected_liquidity(
     )
     .await;
 
-    preview_add_liquidity_info.liquidity_asset_amount_to_receive
+    preview_add_liquidity_info.liquidity_asset_to_receive.amount
 }
 
 pub async fn setup(

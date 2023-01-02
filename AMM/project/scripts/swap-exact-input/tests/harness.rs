@@ -18,6 +18,7 @@ async fn expected_swap_output(amm: &AMMContract, input_amount: u64, route: &Vec<
         let exchange = &amm.pools.get(&pair).unwrap().instance;
         latest_output = preview_swap_exact_input(&exchange, latest_output, pair.0, true)
             .await
+            .other_asset
             .amount;
         i += 1;
     }

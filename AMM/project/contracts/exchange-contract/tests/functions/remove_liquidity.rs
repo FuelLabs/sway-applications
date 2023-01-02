@@ -34,9 +34,18 @@ mod success {
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
-        assert_eq!(remove_liquidity_info.asset_b_amount, expected_b_removed);
-        assert_eq!(remove_liquidity_info.liquidity, expected_liquidity_removed);
+        assert_eq!(
+            remove_liquidity_info.removed_amounts.a.amount,
+            expected_a_removed
+        );
+        assert_eq!(
+            remove_liquidity_info.removed_amounts.b.amount,
+            expected_b_removed
+        );
+        assert_eq!(
+            remove_liquidity_info.burned_liquidity.amount,
+            expected_liquidity_removed
+        );
         assert_eq!(
             final_wallet_balances.asset_a,
             initial_wallet_balances.asset_a + expected_a_removed
@@ -50,12 +59,12 @@ mod success {
             initial_wallet_balances.liquidity_pool_asset - expected_liquidity_removed
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
-            initial_pool_info.asset_a_reserve - expected_a_removed
+            final_pool_info.reserves.a.amount,
+            initial_pool_info.reserves.a.amount - expected_a_removed
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
-            initial_pool_info.asset_b_reserve - expected_b_removed
+            final_pool_info.reserves.b.amount,
+            initial_pool_info.reserves.b.amount - expected_b_removed
         );
         assert_eq!(
             final_pool_info.liquidity,
@@ -92,9 +101,18 @@ mod success {
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
-        assert_eq!(remove_liquidity_info.asset_b_amount, expected_b_removed);
-        assert_eq!(remove_liquidity_info.liquidity, expected_liquidity_removed);
+        assert_eq!(
+            remove_liquidity_info.removed_amounts.a.amount,
+            expected_a_removed
+        );
+        assert_eq!(
+            remove_liquidity_info.removed_amounts.b.amount,
+            expected_b_removed
+        );
+        assert_eq!(
+            remove_liquidity_info.burned_liquidity.amount,
+            expected_liquidity_removed
+        );
         assert_eq!(
             final_wallet_balances.asset_a,
             initial_wallet_balances.asset_a + expected_a_removed
@@ -108,12 +126,12 @@ mod success {
             initial_wallet_balances.liquidity_pool_asset - expected_liquidity_removed
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
-            initial_pool_info.asset_a_reserve - expected_a_removed
+            final_pool_info.reserves.a.amount,
+            initial_pool_info.reserves.a.amount - expected_a_removed
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
-            initial_pool_info.asset_b_reserve - expected_b_removed
+            final_pool_info.reserves.b.amount,
+            initial_pool_info.reserves.b.amount - expected_b_removed
         );
         assert_eq!(
             final_pool_info.liquidity,
@@ -150,9 +168,18 @@ mod success {
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
-        assert_eq!(remove_liquidity_info.asset_b_amount, expected_b_removed);
-        assert_eq!(remove_liquidity_info.liquidity, expected_liquidity_removed);
+        assert_eq!(
+            remove_liquidity_info.removed_amounts.a.amount,
+            expected_a_removed
+        );
+        assert_eq!(
+            remove_liquidity_info.removed_amounts.b.amount,
+            expected_b_removed
+        );
+        assert_eq!(
+            remove_liquidity_info.burned_liquidity.amount,
+            expected_liquidity_removed
+        );
         assert_eq!(
             final_wallet_balances.asset_a,
             initial_wallet_balances.asset_a + expected_a_removed
@@ -166,12 +193,12 @@ mod success {
             initial_wallet_balances.liquidity_pool_asset - expected_liquidity_removed
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
-            initial_pool_info.asset_a_reserve - expected_a_removed
+            final_pool_info.reserves.a.amount,
+            initial_pool_info.reserves.a.amount - expected_a_removed
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
-            initial_pool_info.asset_b_reserve - expected_b_removed
+            final_pool_info.reserves.b.amount,
+            initial_pool_info.reserves.b.amount - expected_b_removed
         );
         assert_eq!(
             final_pool_info.liquidity,
@@ -208,9 +235,18 @@ mod success {
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(remove_liquidity_info.asset_a_amount, expected_a_removed);
-        assert_eq!(remove_liquidity_info.asset_b_amount, expected_b_removed);
-        assert_eq!(remove_liquidity_info.liquidity, expected_liquidity_removed);
+        assert_eq!(
+            remove_liquidity_info.removed_amounts.a.amount,
+            expected_a_removed
+        );
+        assert_eq!(
+            remove_liquidity_info.removed_amounts.b.amount,
+            expected_b_removed
+        );
+        assert_eq!(
+            remove_liquidity_info.burned_liquidity.amount,
+            expected_liquidity_removed
+        );
         assert_eq!(
             final_wallet_balances.asset_a,
             initial_wallet_balances.asset_a + expected_a_removed
@@ -224,12 +260,12 @@ mod success {
             initial_wallet_balances.liquidity_pool_asset - expected_liquidity_removed
         );
         assert_eq!(
-            final_pool_info.asset_a_reserve,
-            initial_pool_info.asset_a_reserve - expected_a_removed
+            final_pool_info.reserves.a.amount,
+            initial_pool_info.reserves.a.amount - expected_a_removed
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
-            initial_pool_info.asset_b_reserve - expected_b_removed
+            final_pool_info.reserves.b.amount,
+            initial_pool_info.reserves.b.amount - expected_b_removed
         );
         assert_eq!(
             final_pool_info.liquidity,
@@ -394,7 +430,7 @@ mod revert {
         let b_to_remove = 1;
 
         let pool_info = pool_info(&exchange.instance).await;
-        let asset_a_reserve = pool_info.asset_a_reserve;
+        let asset_a_reserve = pool_info.reserves.a.amount;
         let liquidity = pool_info.liquidity;
         let asset_a_amount_to_remove =
             (liquidity_parameters.liquidity * asset_a_reserve) / liquidity;
@@ -420,7 +456,7 @@ mod revert {
         let a_to_remove = 1;
 
         let pool_info = pool_info(&exchange.instance).await;
-        let asset_b_reserve = pool_info.asset_b_reserve;
+        let asset_b_reserve = pool_info.reserves.b.amount;
         let liquidity = pool_info.liquidity;
         let asset_b_amount_to_remove =
             (liquidity_parameters.liquidity * asset_b_reserve) / liquidity;

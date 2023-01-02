@@ -46,8 +46,8 @@ mod success {
         let wallet_balances_after_adding_liquidity = wallet_balances(&exchange, &wallet).await;
         let contract_balances_after_adding_liquidity = contract_balances(&exchange).await;
 
-        assert_eq!(initial_pool_info.asset_a_reserve, 0);
-        assert_eq!(initial_pool_info.asset_b_reserve, 0);
+        assert_eq!(initial_pool_info.reserves.a.amount, 0);
+        assert_eq!(initial_pool_info.reserves.b.amount, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
         assert_eq!(initial_contract_balances.asset_a, 0);
         assert_eq!(initial_contract_balances.asset_b, 0);
@@ -61,11 +61,11 @@ mod success {
         );
         assert_eq!(added_liquidity, liquidity_parameters.liquidity);
         assert_eq!(
-            pool_info_after_adding_liquidity.asset_a_reserve,
+            pool_info_after_adding_liquidity.reserves.a.amount,
             liquidity_parameters.amounts.0
         );
         assert_eq!(
-            pool_info_after_adding_liquidity.asset_b_reserve,
+            pool_info_after_adding_liquidity.reserves.b.amount,
             liquidity_parameters.amounts.1
         );
         assert_eq!(pool_info_after_adding_liquidity.liquidity, added_liquidity);
@@ -114,8 +114,8 @@ mod success {
         let final_contract_balances = contract_balances(&exchange).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(initial_pool_info.asset_a_reserve, 0);
-        assert_eq!(initial_pool_info.asset_b_reserve, 0);
+        assert_eq!(initial_pool_info.reserves.a.amount, 0);
+        assert_eq!(initial_pool_info.reserves.b.amount, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
         assert_eq!(initial_contract_balances.asset_a, 0);
         assert_eq!(initial_contract_balances.asset_b, 0);
@@ -129,11 +129,11 @@ mod success {
         );
         assert_eq!(added_liquidity, second_liquidity_parameters.liquidity);
         assert_eq!(
-            final_pool_info.asset_a_reserve,
+            final_pool_info.reserves.a.amount,
             liquidity_parameters.amounts.0 + second_liquidity_parameters.amounts.0
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
+            final_pool_info.reserves.b.amount,
             liquidity_parameters.amounts.1 + (second_liquidity_parameters.amounts.1 / 2)
         );
         assert_eq!(
@@ -188,8 +188,8 @@ mod success {
         let final_contract_balances = contract_balances(&exchange).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(initial_pool_info.asset_a_reserve, 0);
-        assert_eq!(initial_pool_info.asset_b_reserve, 0);
+        assert_eq!(initial_pool_info.reserves.a.amount, 0);
+        assert_eq!(initial_pool_info.reserves.b.amount, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
         assert_eq!(initial_contract_balances.asset_a, 0);
         assert_eq!(initial_contract_balances.asset_b, 0);
@@ -203,11 +203,11 @@ mod success {
         );
         assert_eq!(added_liquidity, second_liquidity_parameters.liquidity);
         assert_eq!(
-            final_pool_info.asset_a_reserve,
+            final_pool_info.reserves.a.amount,
             liquidity_parameters.amounts.0 + (second_liquidity_parameters.amounts.0 / 2)
         );
         assert_eq!(
-            final_pool_info.asset_b_reserve,
+            final_pool_info.reserves.b.amount,
             liquidity_parameters.amounts.1 + second_liquidity_parameters.amounts.1
         );
         assert_eq!(

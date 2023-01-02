@@ -1,6 +1,6 @@
 script;
 
-use libraries::{AMM, Exchange};
+use libraries::{AMM, data_structures::Asset, Exchange};
 
 enum InputError {
     RouteTooShort: (),
@@ -41,8 +41,8 @@ fn main(
 
         let exchange_contract = abi(Exchange, exchange_contract_id.unwrap().into());
 
-        let preview = exchange_contract.preview_swap_exact_output(latest_sold, asset_pair.1);
-        let sell_amount = preview.amount;
+        let preview = exchange_contract.preview_swap_exact_output(Asset::new(asset_pair.1, latest_sold));
+        let sell_amount = preview.other_asset.amount;
 
         // swap by specifying the exact amount to buy
         latest_sold = exchange_contract.swap_exact_output {

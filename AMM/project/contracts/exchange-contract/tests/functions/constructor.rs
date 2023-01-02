@@ -12,8 +12,8 @@ mod success {
         constructor(&exchange_instance, (assets.asset_1, assets.asset_2)).await;
         let pool_info = pool_info(&exchange_instance).await;
 
-        assert_eq!(pool_info.asset_a, ContractId::new(*assets.asset_1));
-        assert_eq!(pool_info.asset_b, ContractId::new(*assets.asset_2));
+        assert_eq!(pool_info.reserves.a.id, ContractId::new(*assets.asset_1));
+        assert_eq!(pool_info.reserves.b.id, ContractId::new(*assets.asset_2));
     }
 }
 

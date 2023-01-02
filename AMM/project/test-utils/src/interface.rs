@@ -104,10 +104,10 @@ pub mod exchange {
     pub async fn constructor(contract: &Exchange, asset_pair: (AssetId, AssetId)) {
         contract
             .methods()
-            .constructor((
+            .constructor(
                 ContractId::new(*asset_pair.0),
                 ContractId::new(*asset_pair.1),
-            ))
+            )
             .call()
             .await
             .unwrap();
@@ -223,7 +223,10 @@ pub mod exchange {
     pub async fn withdraw(contract: &Exchange, amount: u64, asset: AssetId) {
         contract
             .methods()
-            .withdraw(amount, ContractId::new(*asset))
+            .withdraw(Asset {
+                id: ContractId::new(*asset),
+                amount,
+            })
             .append_variable_outputs(1)
             .call()
             .await
@@ -250,9 +253,10 @@ pub mod exchange {
         asset: AssetId,
         override_gas_limit: bool,
     ) -> PreviewAddLiquidityInfo {
-        let mut call_handler = contract
-            .methods()
-            .preview_add_liquidity(amount, ContractId::new(*asset));
+        let mut call_handler = contract.methods().preview_add_liquidity(Asset {
+            id: ContractId::new(*asset),
+            amount,
+        });
 
         if override_gas_limit {
             let estimated_gas = call_handler
@@ -274,9 +278,10 @@ pub mod exchange {
         input_asset: AssetId,
         override_gas_limit: bool,
     ) -> PreviewSwapInfo {
-        let mut call_handler = contract
-            .methods()
-            .preview_swap_exact_input(exact_input, ContractId::new(*input_asset));
+        let mut call_handler = contract.methods().preview_swap_exact_input(Asset {
+            id: ContractId::new(*input_asset),
+            amount: exact_input,
+        });
 
         if override_gas_limit {
             let estimated_gas = call_handler
@@ -298,9 +303,10 @@ pub mod exchange {
         output_asset: AssetId,
         override_gas_limit: bool,
     ) -> PreviewSwapInfo {
-        let mut call_handler = contract
-            .methods()
-            .preview_swap_exact_output(exact_output, ContractId::new(*output_asset));
+        let mut call_handler = contract.methods().preview_swap_exact_output(Asset {
+            id: ContractId::new(*output_asset),
+            amount: exact_output,
+        });
 
         if override_gas_limit {
             let estimated_gas = call_handler

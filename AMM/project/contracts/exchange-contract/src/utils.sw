@@ -3,6 +3,7 @@ library utils;
 dep errors;
 
 use core::primitives::*;
+use libraries::data_structures::{Asset, AssetPair};
 use errors::{InitError, InputError};
 use std::u128::U128;
 
@@ -60,16 +61,12 @@ pub fn multiply_div(a: u64, b: u64, c: u64) -> u64 {
     result_wrapped.unwrap()
 }
 
-pub fn determine_output_asset(
-    input_asset: ContractId,
-    pair: Option<(ContractId, ContractId)>,
-) -> ContractId {
+pub fn determine_assets(input_asset_id: ContractId, pair: Option<AssetPair>) -> (Asset, Asset) {
     require(pair.is_some(), InitError::AssetPairNotSet);
-    let (asset_a_id, asset_b_id) = pair.unwrap();
-    require(input_asset == asset_a_id || input_asset == asset_b_id, InputError::InvalidAsset);
-    if input_asset == asset_a_id {
-        asset_b_id
-    } else {
-        asset_a_id
-    }
+    let pair = pair.unwrap();
+    require(input_asset_id == pair.a.id || input_asset_id == pair.b.id, InputError::InvalidAsset);
+    (
+        pair.this_asset(input_asset_id),
+        pair.other_asset(input_asset_id),
+    )
 }

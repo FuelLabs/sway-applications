@@ -13,7 +13,7 @@ mod success {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(false, false).await;
         let expected_b_to_add = liquidity_parameters.amounts.0;
-        let expected_liquidity_asset_amount_to_receive_squared =
+        let expected_liquidity_asset_to_receive_squared =
             liquidity_parameters.amounts.0 * expected_b_to_add;
 
         let preview = preview_add_liquidity(
@@ -24,10 +24,10 @@ mod success {
         )
         .await;
 
-        assert_eq!(preview.other_asset_amount_to_add, expected_b_to_add);
+        assert_eq!(preview.other_asset_to_add.amount, expected_b_to_add);
         assert_eq!(
-            preview.liquidity_asset_amount_to_receive * preview.liquidity_asset_amount_to_receive,
-            expected_liquidity_asset_amount_to_receive_squared
+            preview.liquidity_asset_to_receive.amount * preview.liquidity_asset_to_receive.amount,
+            expected_liquidity_asset_to_receive_squared
         );
     }
 
@@ -36,7 +36,7 @@ mod success {
         let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
             setup_and_construct(false, false).await;
         let expected_a_to_add = liquidity_parameters.amounts.1;
-        let expected_liquidity_asset_amount_to_receive_squared =
+        let expected_liquidity_asset_to_receive_squared =
             liquidity_parameters.amounts.1 * expected_a_to_add;
 
         let preview = preview_add_liquidity(
@@ -47,10 +47,10 @@ mod success {
         )
         .await;
 
-        assert_eq!(preview.other_asset_amount_to_add, expected_a_to_add);
+        assert_eq!(preview.other_asset_to_add.amount, expected_a_to_add);
         assert_eq!(
-            preview.liquidity_asset_amount_to_receive * preview.liquidity_asset_amount_to_receive,
-            expected_liquidity_asset_amount_to_receive_squared
+            preview.liquidity_asset_to_receive.amount * preview.liquidity_asset_to_receive.amount,
+            expected_liquidity_asset_to_receive_squared
         );
     }
 
@@ -62,17 +62,17 @@ mod success {
         let preview_amount_a = 100;
         let expected_b_to_add =
             preview_amount_a * liquidity_parameters.amounts.1 / liquidity_parameters.amounts.0;
-        let expected_liquidity_asset_amount_to_receive =
+        let expected_liquidity_asset_to_receive =
             preview_amount_a * liquidity_parameters.liquidity / liquidity_parameters.amounts.0;
 
         let preview =
             preview_add_liquidity(&exchange.instance, preview_amount_a, exchange.pair.0, true)
                 .await;
 
-        assert_eq!(preview.other_asset_amount_to_add, expected_b_to_add);
+        assert_eq!(preview.other_asset_to_add.amount, expected_b_to_add);
         assert_eq!(
-            preview.liquidity_asset_amount_to_receive,
-            expected_liquidity_asset_amount_to_receive
+            preview.liquidity_asset_to_receive.amount,
+            expected_liquidity_asset_to_receive
         );
     }
 
@@ -93,7 +93,7 @@ mod success {
         let preview_amount_a = 100;
         let expected_b_to_add = preview_amount_a * override_liquidity_parameters.amounts.1
             / override_liquidity_parameters.amounts.0;
-        let expected_liquidity_asset_amount_to_receive = expected_b_to_add
+        let expected_liquidity_asset_to_receive = expected_b_to_add
             * override_liquidity_parameters.liquidity
             / override_liquidity_parameters.amounts.1;
 
@@ -103,10 +103,10 @@ mod success {
             preview_add_liquidity(&exchange.instance, preview_amount_a, exchange.pair.0, true)
                 .await;
 
-        assert_eq!(preview.other_asset_amount_to_add, expected_b_to_add);
+        assert_eq!(preview.other_asset_to_add.amount, expected_b_to_add);
         assert_eq!(
-            preview.liquidity_asset_amount_to_receive,
-            expected_liquidity_asset_amount_to_receive
+            preview.liquidity_asset_to_receive.amount,
+            expected_liquidity_asset_to_receive
         );
     }
 
@@ -127,7 +127,7 @@ mod success {
         let preview_amount_b = 100;
         let expected_a_to_add = preview_amount_b * override_liquidity_parameters.amounts.0
             / override_liquidity_parameters.amounts.1;
-        let expected_liquidity_asset_amount_to_receive = expected_a_to_add
+        let expected_liquidity_asset_to_receive = expected_a_to_add
             * override_liquidity_parameters.liquidity
             / override_liquidity_parameters.amounts.0;
 
@@ -137,10 +137,10 @@ mod success {
             preview_add_liquidity(&exchange.instance, preview_amount_b, exchange.pair.1, true)
                 .await;
 
-        assert_eq!(preview.other_asset_amount_to_add, expected_a_to_add);
+        assert_eq!(preview.other_asset_to_add.amount, expected_a_to_add);
         assert_eq!(
-            preview.liquidity_asset_amount_to_receive,
-            expected_liquidity_asset_amount_to_receive
+            preview.liquidity_asset_to_receive.amount,
+            expected_liquidity_asset_to_receive
         );
     }
 
@@ -161,7 +161,7 @@ mod success {
         let preview_amount_b = 100;
         let expected_a_to_add = preview_amount_b * override_liquidity_parameters.amounts.0
             / override_liquidity_parameters.amounts.1;
-        let expected_liquidity_asset_amount_to_receive = preview_amount_b
+        let expected_liquidity_asset_to_receive = preview_amount_b
             * override_liquidity_parameters.liquidity
             / override_liquidity_parameters.amounts.1;
 
@@ -171,10 +171,10 @@ mod success {
             preview_add_liquidity(&exchange.instance, preview_amount_b, exchange.pair.1, true)
                 .await;
 
-        assert_eq!(preview.other_asset_amount_to_add, expected_a_to_add);
+        assert_eq!(preview.other_asset_to_add.amount, expected_a_to_add);
         assert_eq!(
-            preview.liquidity_asset_amount_to_receive,
-            expected_liquidity_asset_amount_to_receive
+            preview.liquidity_asset_to_receive.amount,
+            expected_liquidity_asset_to_receive
         );
     }
 }
