@@ -13,6 +13,7 @@ use test_utils::{
         setup_wallet_and_provider,
     },
 };
+
 pub struct ContractBalances {
     pub asset_a: u64,
     pub asset_b: u64,
@@ -25,10 +26,10 @@ pub struct WalletBalances {
 }
 
 pub struct Assets {
-    pub liquidity_pool_asset: AssetId,
     pub asset_1: AssetId,
     pub asset_2: AssetId,
     pub asset_3: AssetId,
+    pub liquidity_pool_asset: AssetId,
 }
 
 pub async fn contract_balances(exchange: &ExchangeContract) -> ContractBalances {
@@ -65,10 +66,10 @@ pub async fn setup() -> (Exchange, WalletUnlocked, Assets, u64) {
     .await;
 
     let assets = Assets {
-        liquidity_pool_asset: AssetId::from(*exchange_id),
         asset_1: asset_ids[0],
         asset_2: asset_ids[1],
         asset_3: asset_ids[2],
+        liquidity_pool_asset: AssetId::from(*exchange_id),
     };
 
     let deadline = provider.latest_block_height().await.unwrap() + 5;

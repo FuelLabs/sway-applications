@@ -59,7 +59,7 @@ mod success {
         let route = asset_ids;
         let script_instance =
             SwapExactInputScript::new(wallet, SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH);
-        let input_amount: u64 = 60;
+        let input_amount = 60;
 
         let expected_result = expected_swap_output(&amm, input_amount, &route).await;
 
@@ -93,7 +93,7 @@ mod success {
         let route = vec![*asset_ids.get(0).unwrap(), *asset_ids.get(1).unwrap()];
         let script_instance =
             SwapExactInputScript::new(wallet, SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH);
-        let input_amount: u64 = 60;
+        let input_amount = 60;
 
         let expected_result = expected_swap_output(&amm, input_amount, &route).await;
 
@@ -186,7 +186,7 @@ mod revert {
 
         let script_instance =
             SwapExactInputScript::new(wallet, SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH);
-        let input_amount: u64 = 60;
+        let input_amount = 60;
 
         // make sure that the first asset in the route does not have a pool
         let not_registered_asset_id = AssetId::from([1u8; 32]);
@@ -220,7 +220,7 @@ mod revert {
         let route = asset_ids;
         let script_instance =
             SwapExactInputScript::new(wallet, SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH);
-        let input_amount: u64 = 60;
+        let input_amount = 60;
 
         let expected_result = expected_swap_output(&amm, input_amount, &route).await;
 
@@ -251,7 +251,7 @@ mod revert {
         let route = asset_ids;
         let script_instance =
             SwapExactInputScript::new(wallet, SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH);
-        let input_amount: u64 = 60;
+        let input_amount = 60;
 
         let expected_result = expected_swap_output(&amm, input_amount, &route).await;
 

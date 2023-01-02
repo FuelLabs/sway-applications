@@ -156,7 +156,7 @@ pub mod common {
 
         let (coins, asset_ids) = setup_multiple_assets_coins(
             wallet.address(),
-            asset_parameters.num_assets,
+            asset_parameters.number_of_assets,
             asset_parameters.coins_per_asset,
             asset_parameters.amount_per_coin,
         );

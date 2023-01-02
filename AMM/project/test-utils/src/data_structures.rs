@@ -5,12 +5,12 @@ use fuels::{
 };
 use std::collections::HashMap;
 
-const DEPOSIT_AMOUNTS: (u64, u64) = (10000, 40000);
-const DEADLINE: u64 = 1000;
-const LIQUIDITY: u64 = 20000;
-const NUM_ASSETS: u64 = 5;
-const COINS_PER_ASSET: u64 = 100;
 const AMOUNT_PER_COIN: u64 = 1_000_000;
+const COINS_PER_ASSET: u64 = 100;
+const DEADLINE: u64 = 1000;
+const DEPOSIT_AMOUNTS: (u64, u64) = (10000, 40000);
+const LIQUIDITY: u64 = 20000;
+const NUMBER_OF_ASSETS: u64 = 5;
 
 pub struct AMMContract {
     pub id: ContractId,
@@ -44,7 +44,7 @@ pub struct TransactionParameters {
 }
 
 pub struct WalletAssetConfiguration {
-    pub num_assets: u64,
+    pub number_of_assets: u64,
     pub coins_per_asset: u64,
     pub amount_per_coin: u64,
 }
@@ -78,7 +78,7 @@ impl LiquidityParameters {
 impl Default for WalletAssetConfiguration {
     fn default() -> Self {
         Self {
-            num_assets: NUM_ASSETS,
+            number_of_assets: NUMBER_OF_ASSETS,
             coins_per_asset: COINS_PER_ASSET,
             amount_per_coin: AMOUNT_PER_COIN,
         }
