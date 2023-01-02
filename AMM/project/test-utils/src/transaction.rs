@@ -20,7 +20,7 @@ pub async fn transaction_input_coin(
         .map(|coin| {
             let (coin_utxo_id, coin_amount) = match coin {
                 Resource::Coin(coin) => (coin.utxo_id.clone(), coin.amount.clone()),
-                _ => panic!(),
+                _ => panic!("Resource type does not match"),
             };
             Input::CoinSigned {
                 utxo_id: coin_utxo_id.into(),
