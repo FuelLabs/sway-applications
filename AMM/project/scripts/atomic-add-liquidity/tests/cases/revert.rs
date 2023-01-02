@@ -1,7 +1,10 @@
 use crate::utils::{expected_liquidity, setup};
 use fuels::prelude::*;
 use test_utils::{
-    interface::{AtomicAddLiquidityScript, SCRIPT_GAS_LIMIT},
+    interface::{
+        atomic_add_liquidity_script_mod::{Asset, AssetPair},
+        AtomicAddLiquidityScript, LiquidityParameters, SCRIPT_GAS_LIMIT,
+    },
     paths::ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH,
 };
 
@@ -17,16 +20,20 @@ async fn when_desired_liquidity_zero() {
     script_instance
         .main(
             exchange.id,
-            (
-                ContractId::new(*exchange.pair.0),
-                ContractId::new(*exchange.pair.1),
-            ),
-            (
-                liquidity_parameters.amounts.0,
-                liquidity_parameters.amounts.1,
-            ),
-            0, // desired liquidity is 0
-            liquidity_parameters.deadline,
+            LiquidityParameters {
+                deposits: AssetPair {
+                    a: Asset {
+                        id: ContractId::new(*exchange.pair.0),
+                        amount: liquidity_parameters.amounts.0,
+                    },
+                    b: Asset {
+                        id: ContractId::new(*exchange.pair.1),
+                        amount: liquidity_parameters.amounts.1,
+                    },
+                },
+                liquidity: 0, // desired liquidity is 0
+                deadline: liquidity_parameters.deadline,
+            },
         )
         .call()
         .await
@@ -48,16 +55,20 @@ async fn when_desired_liquidity_too_high() {
     script_instance
         .main(
             exchange.id,
-            (
-                ContractId::new(*exchange.pair.0),
-                ContractId::new(*exchange.pair.1),
-            ),
-            (
-                liquidity_parameters.amounts.0,
-                liquidity_parameters.amounts.1,
-            ),
-            expected_liquidity + 1, //desired liquidity is too high
-            liquidity_parameters.deadline,
+            LiquidityParameters {
+                deposits: AssetPair {
+                    a: Asset {
+                        id: ContractId::new(*exchange.pair.0),
+                        amount: liquidity_parameters.amounts.0,
+                    },
+                    b: Asset {
+                        id: ContractId::new(*exchange.pair.1),
+                        amount: liquidity_parameters.amounts.1,
+                    },
+                },
+                liquidity: expected_liquidity + 1, //desired liquidity is too high
+                deadline: liquidity_parameters.deadline,
+            },
         )
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
@@ -76,26 +87,30 @@ async fn when_one_deposit_is_zero() {
     let script_instance =
         AtomicAddLiquidityScript::new(wallet, ATOMIC_ADD_LIQUIDITY_SCRIPT_BINARY_PATH);
 
-    let receipts = script_instance
+    script_instance
         .main(
             exchange.id,
-            (
-                ContractId::new(*exchange.pair.0),
-                ContractId::new(*exchange.pair.1),
-            ),
-            (0, liquidity_parameters.amounts.1),
-            1, // if desired liquidity is zero, script will revert with "DesiredLiquidityZero" error
-            liquidity_parameters.deadline,
+            LiquidityParameters {
+                deposits: AssetPair {
+                    a: Asset {
+                        id: ContractId::new(*exchange.pair.0),
+                        amount: 0, // deposit amount is 0
+                    },
+                    b: Asset {
+                        id: ContractId::new(*exchange.pair.1),
+                        amount: liquidity_parameters.amounts.1,
+                    },
+                },
+                liquidity: 1, // if desired liquidity is zero, script will revert with "DesiredLiquidityZero" error
+                deadline: liquidity_parameters.deadline,
+            },
         )
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
         .call()
-        .await;
-
-    dbg!(&receipts);
-
-    receipts.unwrap();
+        .await
+        .unwrap();
 }
 
 #[tokio::test]
@@ -110,13 +125,20 @@ async fn when_both_deposits_are_zero() {
     script_instance
         .main(
             exchange.id,
-            (
-                ContractId::new(*exchange.pair.0),
-                ContractId::new(*exchange.pair.1),
-            ),
-            (0, 0),
-            1, // if desired liquidity is zero, script will revert with "DesiredLiquidityZero" error
-            liquidity_parameters.deadline,
+            LiquidityParameters {
+                deposits: AssetPair {
+                    a: Asset {
+                        id: ContractId::new(*exchange.pair.0),
+                        amount: 0, // deposit amount is 0
+                    },
+                    b: Asset {
+                        id: ContractId::new(*exchange.pair.1),
+                        amount: 0, // deposit amount is 0
+                    },
+                },
+                liquidity: 1, // if desired liquidity is zero, script will revert with "DesiredLiquidityZero" error
+                deadline: liquidity_parameters.deadline,
+            },
         )
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
