@@ -10,7 +10,7 @@ const COINS_PER_ASSET: u64 = 100;
 const DEADLINE: u64 = 1000;
 const DEPOSIT_AMOUNTS: (u64, u64) = (10000, 40000);
 const LIQUIDITY: u64 = 20000;
-const NUMBER_OF_ASSETS: u64 = 5;
+pub const NUMBER_OF_ASSETS: u64 = 5;
 
 pub struct AMMContract {
     pub id: ContractId,
@@ -73,6 +73,16 @@ impl LiquidityParameters {
             liquidity: liquidity.unwrap_or(LIQUIDITY),
         }
     }
+}
+
+pub struct SwapParameters {
+    pub amount: u64,
+    pub route_length: u64,
+}
+
+pub struct SwapResult {
+    pub actual: u64,
+    pub expected: Option<u64>,
 }
 
 impl Default for WalletAssetConfiguration {

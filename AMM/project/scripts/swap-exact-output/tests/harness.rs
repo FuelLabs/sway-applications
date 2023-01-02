@@ -1,6 +1,9 @@
 use fuels::prelude::*;
 use test_utils::{
-    data_structures::{AMMContract, TransactionParameters, WalletAssetConfiguration},
+    data_structures::{
+        AMMContract, SwapParameters, SwapResult, TransactionParameters, WalletAssetConfiguration,
+        NUMBER_OF_ASSETS,
+    },
     interface::{exchange::preview_swap_exact_output, SwapExactOutputScript, SCRIPT_GAS_LIMIT},
     paths::SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH,
     setup::{
@@ -23,6 +26,44 @@ async fn expected_swap_input(amm: &AMMContract, output_amount: u64, route: &Vec<
         i -= 1;
     }
     latest_input
+}
+
+async fn expected_and_actual_input(swap_parameters: SwapParameters) -> SwapResult {
+    let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
+
+    let mut route = Vec::with_capacity(swap_parameters.route_length as usize);
+    let mut asset_index = 0;
+    while asset_index < swap_parameters.route_length {
+        route.push(*asset_ids.get(asset_index as usize).unwrap());
+        asset_index += 1;
+    }
+
+    let expected = if swap_parameters.route_length >= 2 {
+        Some(expected_swap_input(&amm, swap_parameters.amount, &route).await)
+    } else {
+        None
+    };
+
+    let actual = script_instance
+        .main(
+            amm.id,
+            route
+                .into_iter()
+                .map(|asset_id| ContractId::new(*asset_id))
+                .collect(),
+            swap_parameters.amount,
+            expected.unwrap_or(0),
+            deadline,
+        )
+        .with_inputs(transaction_parameters.inputs)
+        .with_outputs(transaction_parameters.outputs)
+        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .call()
+        .await
+        .unwrap()
+        .value;
+
+    SwapResult { actual, expected }
 }
 
 async fn setup() -> (
@@ -63,65 +104,24 @@ mod success {
 
     #[tokio::test]
     async fn can_swap_exact_output_along_route() {
-        let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
+        let swap_result = expected_and_actual_input(SwapParameters {
+            amount: 10_000,
+            route_length: NUMBER_OF_ASSETS,
+        })
+        .await;
 
-        let route = asset_ids;
-        let output_amount = 10_000;
-
-        let expected_result = expected_swap_input(&amm, output_amount, &route).await;
-
-        let result = script_instance
-            .main(
-                amm.id,
-                route
-                    .into_iter()
-                    .map(|asset_id| ContractId::new(*asset_id))
-                    .collect(),
-                output_amount,
-                expected_result,
-                deadline,
-            )
-            .with_inputs(transaction_parameters.inputs)
-            .with_outputs(transaction_parameters.outputs)
-            .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
-            .call()
-            .await
-            .unwrap()
-            .value;
-
-        assert_eq!(expected_result, result);
+        assert_eq!(swap_result.expected.unwrap(), swap_result.actual);
     }
 
     #[tokio::test]
     async fn can_swap_exact_output_two_assets() {
-        let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
+        let swap_result = expected_and_actual_input(SwapParameters {
+            amount: 10_000,
+            route_length: 2,
+        })
+        .await;
 
-        // route consists of two assets. this is a direct swap
-        let route = vec![*asset_ids.get(0).unwrap(), *asset_ids.get(1).unwrap()];
-        let output_amount = 10_000;
-
-        let expected_result = expected_swap_input(&amm, output_amount, &route).await;
-
-        let result = script_instance
-            .main(
-                amm.id,
-                route
-                    .into_iter()
-                    .map(|asset_id| ContractId::new(*asset_id))
-                    .collect(),
-                output_amount,
-                expected_result,
-                deadline,
-            )
-            .with_inputs(transaction_parameters.inputs)
-            .with_outputs(transaction_parameters.outputs)
-            .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
-            .call()
-            .await
-            .unwrap()
-            .value;
-
-        assert_eq!(expected_result, result);
+        assert_eq!(swap_result.expected.unwrap(), swap_result.actual);
     }
 }
 
@@ -131,53 +131,21 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "RouteTooShort")]
     async fn when_route_length_is_zero() {
-        let (script_instance, amm, _asset_ids, _transaction_parameters, deadline) = setup().await;
-
-        // route length is zero
-        let route: Vec<AssetId> = vec![];
-        let output_amount = 0;
-        let maximum_input_amount = 0;
-
-        script_instance
-            .main(
-                amm.id,
-                route
-                    .into_iter()
-                    .map(|asset_id| ContractId::new(*asset_id))
-                    .collect(),
-                output_amount,
-                maximum_input_amount,
-                deadline,
-            )
-            .call()
-            .await
-            .unwrap();
+        expected_and_actual_input(SwapParameters {
+            amount: 0,
+            route_length: 0,
+        })
+        .await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "RouteTooShort")]
     async fn when_route_length_is_one() {
-        let (script_instance, amm, asset_ids, _transaction_parameters, deadline) = setup().await;
-
-        // route length is one
-        let route: Vec<AssetId> = vec![*asset_ids.get(0).unwrap()];
-        let output_amount = 60;
-        let maximum_input_amount = 0;
-
-        script_instance
-            .main(
-                amm.id,
-                route
-                    .into_iter()
-                    .map(|asset_id| ContractId::new(*asset_id))
-                    .collect(),
-                output_amount,
-                maximum_input_amount,
-                deadline,
-            )
-            .call()
-            .await
-            .unwrap();
+        expected_and_actual_input(SwapParameters {
+            amount: 0,
+            route_length: 1,
+        })
+        .await;
     }
 
     #[tokio::test]
