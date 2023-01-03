@@ -2,6 +2,6 @@
 authors = ["Ruben Amar"]
 entry = "main.sw"
 license = "Apache-2.0"
-name = "TicTacToe2"
+name = "TicTacToe"
 
 [dependencies]
