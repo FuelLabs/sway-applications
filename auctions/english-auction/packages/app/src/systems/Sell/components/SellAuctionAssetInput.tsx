@@ -37,7 +37,6 @@ export const SellAuctionAssetInput = ({
     }
   };
 
-  // TODO refactor: change outer flex to stack
   return (
     <DropdownContainer onChange={handleAssetChange} assets={assets}>
       {isNFT ? (

@@ -31,7 +31,7 @@ export const AddressInput = ({
     setSlicedWalletAddress(
       wallet && getSlicedAddress(wallet.address.toString()!)
     );
-  }, [wallet]);
+  }, [wallet?.address]);
 
   return (
     <Flex>
