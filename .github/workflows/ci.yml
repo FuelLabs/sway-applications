@@ -8,6 +8,10 @@ on:
   release:
     types: [published]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   CARGO_TERM_COLOR: always
   REGISTRY: ghcr.io
@@ -15,16 +19,7 @@ env:
   PATH_TO_SCRIPTS: .github/scripts
 
 jobs:
-  cancel-previous-runs:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-
   lint-toml-files:
-    needs: cancel-previous-runs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -35,17 +30,16 @@ jobs:
         uses: baptiste0928/cargo-install@v1
         with:
           crate: cargo-toml-lint
-          version: "0.1"
+          version: '0.1'
       - name: Run Cargo.toml linter
         run: git ls-files | grep Cargo.toml$ | xargs --verbose -n 1 cargo-toml-lint
 
   build:
-    needs: cancel-previous-runs
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        project: ["escrow", "multisig-wallet"]
+        project: ['dao-voting', 'escrow', 'fundraiser', 'games/TicTacToe/contract', 'multisig-wallet']
 
     steps:
       - name: Checkout repository
@@ -60,17 +54,17 @@ jobs:
 
       - name: Init cache
         uses: Swatinem/rust-cache@v1
-      
+
       - name: Install a modern linker (mold)
         uses: rui314/setup-mold@v1
 
       - name: Force Rust to use mold globally for compilation
         run: |
-                touch ~/.cargo/config.toml
-                echo "[target.x86_64-unknown-linux-gnu]" > ~/.cargo/config.toml
-                echo 'linker = "clang"' >> ~/.cargo/config.toml
-                echo 'rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/mold"]' >> ~/.cargo/config.toml
-      
+          touch ~/.cargo/config.toml
+          echo "[target.x86_64-unknown-linux-gnu]" > ~/.cargo/config.toml
+          echo 'linker = "clang"' >> ~/.cargo/config.toml
+          echo 'rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/mold"]' >> ~/.cargo/config.toml
+
       - name: Install rustfmt
         run: rustup component add rustfmt
 
@@ -84,7 +78,7 @@ jobs:
         run: |
           cd ${{ matrix.project }}
           cargo fmt --verbose --check
-      
+
       - name: Build Sway
         run: sh ${{ env.PATH_TO_SCRIPTS }}/build.sh ${{ matrix.project }}
 

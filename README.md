@@ -1,5 +1,8 @@
 <p align="center">
-    <img src="./.docs/logo.png" height="120">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/sway-apps-logo-dark-theme.png">
+        <img alt="SwayApps logo" width="400px" src=".docs/sway-apps-logo-light-theme.png">
+    </picture>
 </p>
 
 <p align="center">
@@ -47,7 +50,11 @@ sway-applications/
 
 ### Projects
 
+- [Decentralized Autonomous Organization (DAO)](./dao-voting) is an organization where users get to vote on governance proposals using governance tokens
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
+- [Fundraiser](./fundraiser) is a program allowing users to pledge towards a goal
+- [Games](./games)
+    - [TicTacToe](./games/TicTacToe) is an on-chain TicTacToe game to play alone or with a friend
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
 
 ## Running a project
