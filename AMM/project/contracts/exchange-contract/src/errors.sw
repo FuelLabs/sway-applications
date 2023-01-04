@@ -17,6 +17,7 @@ pub enum InputError {
 
 pub enum TransactionError {
     DesiredAmountTooHigh: u64,
+    DesiredAmountTooLow: u64,
     ExpectedNonZeroDeposit: ContractId,
     InsufficientReserve: ContractId,
     NoLiquidityToRemove: (),

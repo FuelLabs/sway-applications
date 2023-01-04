@@ -280,6 +280,16 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(18446744073709486080)")]
+    async fn when_input_is_zero() {
+        expected_and_actual_output(SwapParameters {
+            amount: 0,
+            route_length: 2,
+        })
+        .await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Revert(18446744073709486080)")]
     // fails because starting with the second swap, the swap input is 0 which is not allowed
     async fn when_input_is_one_and_route_has_more_than_two_assets() {
         expected_and_actual_output(SwapParameters {

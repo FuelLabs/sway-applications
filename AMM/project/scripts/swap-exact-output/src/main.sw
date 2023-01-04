@@ -7,8 +7,8 @@ enum InputError {
 }
 
 enum SwapError {
-    PairExchangeNotRegistered: (ContractId, ContractId),
     ExcessiveSlippage: u64,
+    PairExchangeNotRegistered: (ContractId, ContractId),
 }
 
 fn main(

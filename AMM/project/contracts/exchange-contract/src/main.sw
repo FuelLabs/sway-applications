@@ -260,6 +260,7 @@ impl Exchange for Contract {
 
         let sold = maximum_input_for_exact_output(output, input_asset.amount, output_asset.amount, LIQUIDITY_MINER_FEE);
 
+        require(sold > 0, TransactionError::DesiredAmountTooLow(output));
         require(input_amount >= sold, TransactionError::DesiredAmountTooHigh(input_amount));
 
         let sender = msg_sender().unwrap();
@@ -387,6 +388,7 @@ impl Exchange for Contract {
         require(exact_output_asset.amount <= output_asset.amount, TransactionError::DesiredAmountTooHigh(exact_output_asset.amount));
 
         input_asset.amount = maximum_input_for_exact_output(exact_output_asset.amount, input_asset.amount, output_asset.amount, LIQUIDITY_MINER_FEE);
+        require(input_asset.amount > 0, TransactionError::DesiredAmountTooLow(exact_output_asset.amount));
         let sufficient_reserve = exact_output_asset.amount <= output_asset.amount;
 
         PreviewSwapInfo {

@@ -12,7 +12,7 @@ fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
     amount - fee
 }
 
-/// Returns the maximum required amount of the input asset to get exactly ` output_amount ` of the output asset
+/// Returns the maximum required amount of the input asset to get exactly `output_amount` of the output asset
 pub fn maximum_input_for_exact_output(
     output_amount: u64,
     input_reserve: u64,
@@ -28,13 +28,13 @@ pub fn maximum_input_for_exact_output(
     let result_wrapped = (numerator / denominator).as_u64();
 
     if denominator > numerator {
-        u64::max()
+        0 // 0 < result < 1, round the result down since there are no floating points
     } else {
         result_wrapped.unwrap() + 1
     }
 }
 
-/// Given exactly ` input_amount ` of the input asset, returns the minimum resulting amount of the output asset
+/// Given exactly `input_amount` of the input asset, returns the minimum resulting amount of the output asset
 pub fn minimum_output_given_exact_input(
     input_amount: u64,
     input_reserve: u64,
