@@ -1,4 +1,4 @@
-import type { BN } from 'fuels';
+import type { BN, CoinQuantityLike } from 'fuels';
 import { useMutation } from 'react-query';
 
 import { useContract } from '~/systems/Core/hooks/useContract';
@@ -18,7 +18,12 @@ export const useBid = ({ auctionId, auctionAsset }: UseBidProps) => {
     async () => {
       if (!contract) throw new Error('Contract not connected');
 
-      const { transactionResult } = await contract.functions.bid(auctionId, auctionAsset).call();
+      const callParams: CoinQuantityLike | undefined = auctionAsset.TokenAsset ?? undefined;
+
+      const { transactionResult } = await contract.functions
+        .bid(auctionId, auctionAsset)
+        .callParams({ forward: callParams })
+        .call();
 
       return transactionResult;
     },

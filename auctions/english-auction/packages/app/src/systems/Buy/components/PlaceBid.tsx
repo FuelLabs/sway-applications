@@ -1,5 +1,6 @@
 import { Card, Stack, Button, toast, Text, Icon, Flex } from "@fuel-ui/react";
 import type { BN } from "fuels";
+import { bn, DECIMAL_UNITS } from "fuels";
 import { useEffect, useState } from "react";
 
 import { useBid } from "../hooks/useBid";
@@ -7,31 +8,39 @@ import { useBid } from "../hooks/useBid";
 import { AssetAmountInput } from "~/systems/Core/components/AssetAmountInput";
 import { useWallet } from "~/systems/Core/hooks/useWallet";
 import type {
-  ContractIdOutput,
+  AuctionAssetOutput,
   IdentityOutput,
 } from "~/types/contracts/AuctionContractAbi";
-import type { AuctionAssetInput } from "~/types/contracts/EnglishAuctionAbi";
 
 interface PlaceBidProps {
   auctionId: BN;
-  auctionAssetAddress: ContractIdOutput;
+  auctionAsset: AuctionAssetOutput;
   seller: IdentityOutput;
 }
 
 export const PlaceBid = ({
   auctionId,
-  auctionAssetAddress,
+  auctionAsset,
   seller,
 }: PlaceBidProps) => {
   const [assetAmount, setAssetAmount] = useState("");
   const [identityOutput, setIdentityOutput] = useState<string>();
-  const auctionAsset: AuctionAssetInput = {
-    TokenAsset: {
-      amount: assetAmount,
-      asset_id: { value: auctionAssetAddress.toString() },
-    },
-  };
-  const bidMutation = useBid({ auctionId, auctionAsset });
+  const bidMutation = useBid({
+    auctionId,
+    auctionAsset: !auctionAsset.NFTAsset
+      ? {
+          TokenAsset: {
+            amount: bn.parseUnits(assetAmount, DECIMAL_UNITS),
+            asset_id: { value: auctionAsset.TokenAsset!.asset_id.value },
+          },
+        }
+      : {
+          NFTAsset: {
+            token_id: auctionAsset.NFTAsset.token_id,
+            asset_id: auctionAsset.NFTAsset.asset_id,
+          },
+        },
+  });
   const wallet = useWallet();
 
   if (!wallet) toast.error("Wallet not detected");
@@ -58,7 +67,7 @@ export const PlaceBid = ({
               assetAmountLabel="Place Bid"
               assetAmountValue={assetAmount}
               objKey="placeBidAmount"
-              onChange={setAssetAmount}
+              onChange={(_, val) => setAssetAmount(val)}
             />
             <Button onPress={() => bidMutation.mutate()}>Bid on Auction</Button>
           </Stack>

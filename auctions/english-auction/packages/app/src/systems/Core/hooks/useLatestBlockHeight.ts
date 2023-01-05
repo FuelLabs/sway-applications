@@ -1,17 +1,16 @@
 import { useQuery } from 'react-query';
 
-import { useFuelWeb3 } from './useFuelWeb3';
+import { useFuel } from './useFuel';
 
 export const useLatestBlockHeight = () => {
-  const [fuelWeb3] = useFuelWeb3();
+  const [fuel] = useFuel();
 
-  if (!fuelWeb3) {
-    throw Error(`ERROR: fuel web3 is: ${fuelWeb3}`);
+  if (!fuel) {
+    throw Error(`ERROR: fuel web3 is: ${fuel}`);
   }
 
   const { data: latestBlockHeight } = useQuery(['latestBlockHeight'], async () => {
-    // TODO remove eslint-disable-line comment once we have wallet type info
-    return await fuelWeb3.getProvider().getBlockNumber(); // eslint-disable-line @typescript-eslint/return-await
+    return await fuel.getProvider().getBlockNumber(); // eslint-disable-line @typescript-eslint/return-await
   });
 
   return latestBlockHeight;

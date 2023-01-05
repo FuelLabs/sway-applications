@@ -1,26 +1,25 @@
 import { Wallet } from 'fuels';
 import { useQuery } from 'react-query';
 
-import { useFuelWeb3 } from './useFuelWeb3';
+import { useFuel } from './useFuel';
 
 export const useWallet = () => {
-  const [fuelWeb3] = useFuelWeb3();
+  const [fuel] = useFuel();
 
-  if (!fuelWeb3) throw new Error('Error fuelWeb3 instance is not defined');
+  if (!fuel) throw new Error('Error fuelWeb3 instance is not defined');
   // Auto connect application
   // TODO: check if connected to instance
   // https://github.com/FuelLabs/fuels-wallet/pull/413
-  fuelWeb3.connect();
+  fuel.connect();
 
   const { data: wallet } = useQuery(
     ['wallet'],
     async () => {
-      const accounts = await fuelWeb3.accounts();
-      // TODO don't hardcode accounts[0]
-      return Wallet.fromAddress(accounts[0], fuelWeb3.getProvider());
+      const selectedAccount = (await fuel.getSelectedAccount()) as string;
+      return Wallet.fromAddress(selectedAccount, fuel.getProvider());
     },
     {
-      enabled: !!fuelWeb3,
+      enabled: !!fuel,
     }
   );
 
