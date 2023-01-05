@@ -8,6 +8,8 @@ export const useWallet = () => {
 
   if (!fuelWeb3) throw new Error('Error fuelWeb3 instance is not defined');
   // Auto connect application
+  // TODO: check if connected to instance
+  // https://github.com/FuelLabs/fuels-wallet/pull/413
   fuelWeb3.connect();
 
   const { data: wallet } = useQuery(

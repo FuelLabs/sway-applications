@@ -6,7 +6,8 @@
     "rootDir": ".",
     "paths": {
       "~/*": ["./src/*"]
-    }
+    },
+    "types": ["@fuel-wallet/sdk"]
   },
   "include": ["./src"],
   "references": [{ "path": "./tsconfig.node.json" }]

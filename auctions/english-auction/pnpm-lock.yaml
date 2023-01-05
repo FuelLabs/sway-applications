@@ -66,6 +66,7 @@ importers:
       '@fontsource/raleway': ^4.5.9
       '@fuel-ui/css': ^0.9.3
       '@fuel-ui/react': ^0.9.3
+      '@fuel-wallet/sdk': 0.3.0-next-a12ba85
       '@headlessui/react': ^1.6.5
       '@playwright/test': ^1.28.1
       '@radix-ui/react-accordion': ^0.1.6
@@ -146,6 +147,7 @@ importers:
       '@fontsource/raleway': 4.5.11
       '@fuel-ui/css': 0.9.3
       '@fuel-ui/react': 0.9.3_kb4gp5zybjkbkuvc7baikakbme
+      '@fuel-wallet/sdk': 0.3.0-next-a12ba85_fuels@0.22.2
       '@headlessui/react': 1.7.7_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-accordion': 0.1.6_react@18.2.0
       '@radix-ui/react-alert-dialog': 0.1.7_ib3m5ricvtkl2cll7qpr2f6lvq
@@ -2426,6 +2428,22 @@ packages:
       - ts-node
       - typescript
       - utf-8-validate
+    dev: false
+
+  /@fuel-wallet/sdk/0.3.0-next-a12ba85_fuels@0.22.2:
+    resolution: {integrity: sha512-AAX5QhKEwO3Ew3lmpR8odo0iu9ePMpyieDjW8tWSHIVXiMmiI4KIUcNFFl3OPyJE/g1xqMvKfZe5jAKa8FXUAw==}
+    peerDependencies:
+      fuels: '>=0.27.0'
+    dependencies:
+      '@types/chrome': 0.0.204
+      dexie-observable: 4.0.0-beta.13
+      events: 3.3.0
+      fuels: 0.22.2
+      json-rpc-2.0: 1.4.2
+      uuid: 9.0.0
+      xstate: 4.35.1
+    transitivePeerDependencies:
+      - dexie
     dev: false
 
   /@graphql-typed-document-node/core/3.1.1_graphql@16.6.0:
@@ -6253,6 +6271,13 @@ packages:
       '@types/node': 18.11.18
     dev: false
 
+  /@types/chrome/0.0.204:
+    resolution: {integrity: sha512-EvnHfxMHUWP5EAlRMK66uIEUiy36t72vg5RwmzQv9tdIl2ZmAp92NwvmEZJKpbRnIMTEc2BmSmtrFiEISUJ0Sw==}
+    dependencies:
+      '@types/filesystem': 0.0.32
+      '@types/har-format': 1.2.10
+    dev: false
+
   /@types/debug/4.1.7:
     resolution: {integrity: sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==}
     dependencies:
@@ -6271,6 +6296,16 @@ packages:
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
     dev: true
 
+  /@types/filesystem/0.0.32:
+    resolution: {integrity: sha512-Yuf4jR5YYMR2DVgwuCiP11s0xuVRyPKmz8vo6HBY3CGdeMj8af93CFZX+T82+VD1+UqHOxTq31lO7MI7lepBtQ==}
+    dependencies:
+      '@types/filewriter': 0.0.29
+    dev: false
+
+  /@types/filewriter/0.0.29:
+    resolution: {integrity: sha512-BsPXH/irW0ht0Ji6iw/jJaK8Lj3FJemon2gvEqHKpCdDCeemHa+rI3WBGq5z7cDMZgoLjY40oninGxqk+8NzNQ==}
+    dev: false
+
   /@types/glob/7.2.0:
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
     dependencies:
@@ -6282,6 +6317,10 @@ packages:
     resolution: {integrity: sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==}
     dependencies:
       '@types/node': 17.0.45
+
+  /@types/har-format/1.2.10:
+    resolution: {integrity: sha512-o0J30wqycjF5miWDKYKKzzOU1ZTLuA42HZ4HE7/zqTOc/jTLdQ5NhYWvsRQo45Nfi1KHoRdNhteSI4BAxTF1Pg==}
+    dev: false
 
   /@types/istanbul-lib-coverage/2.0.4:
     resolution: {integrity: sha512-z/QT1XN4K4KYuslS23k62yDIDLwLFkzxOuMplDtObz0+y7VqJCaO2o+SPwHCvLFZh7xazvvoor2tA/hPz9ee7g==}
@@ -8354,6 +8393,12 @@ packages:
       acorn-node: 1.8.2
       defined: 1.0.1
       minimist: 1.2.7
+
+  /dexie-observable/4.0.0-beta.13:
+    resolution: {integrity: sha512-p1/0W8Dx+KNrm2TF2JppBuRrE9I6k8/1mBZ6OgTqW85O+FQJu7zBh7k6YwK0FmjP7eBcK+AbxdlvfD5DKXLPag==}
+    peerDependencies:
+      dexie: ^3.0.2 || ^4.0.0-alpha.1
+    dev: false
 
   /didyoumean/1.2.2:
     resolution: {integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==}
@@ -12768,6 +12813,10 @@ packages:
   /json-parse-even-better-errors/2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
 
+  /json-rpc-2.0/1.4.2:
+    resolution: {integrity: sha512-oqiMRhWN4Q+2ySitZR5GA9vtiNOK19GTDDad0yn8/T/ND+Ap81QP6+3UMl738H4bmRbCEwhQkkBruNqx7EXfUQ==}
+    dev: false
+
   /json-schema-traverse/0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
 
@@ -16540,6 +16589,11 @@ packages:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
     dev: true
+
+  /uuid/9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
+    hasBin: true
+    dev: false
 
   /v8-compile-cache-lib/3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}

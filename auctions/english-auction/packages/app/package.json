@@ -16,6 +16,7 @@
     "@fontsource/raleway": "^4.5.9",
     "@fuel-ui/css": "^0.9.3",
     "@fuel-ui/react": "^0.9.3",
+    "@fuel-wallet/sdk": "0.3.0-next-a12ba85",
     "@headlessui/react": "^1.6.5",
     "@radix-ui/react-accordion": "^0.1.6",
     "@radix-ui/react-alert-dialog": "^0.1.7",
