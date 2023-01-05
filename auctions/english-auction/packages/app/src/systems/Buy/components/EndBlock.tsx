@@ -14,6 +14,9 @@ export const EndBlock = ({ endBlock, onChange }: EndBlockProps) => {
   const [curBlocksAway, setCurBlocksAway] = useState<BN>();
   const latestBlockHeight = useLatestBlockHeight();
 
+  if (!latestBlockHeight)
+    throw new Error("Could not fetch latest block height");
+
   const calcBlocksAway = (blockHeight0: BN, blockHeight1: BN): BN => {
     const result = blockHeight0.sub(blockHeight1);
     if (blockHeight0.lt(blockHeight1)) {

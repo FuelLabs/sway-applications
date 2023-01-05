@@ -3,6 +3,7 @@ import { bn } from "fuels";
 import { useState } from "react";
 
 import { CancelAuctionButton } from "./CancelAuctionButton";
+import { WithdrawButton } from "./WithdrawButton";
 
 import { PlaceBid, EndBlock } from "~/systems/Buy/components";
 import { AssetOutput, AssetIdOutput } from "~/systems/Core/components";
@@ -58,18 +59,14 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
                 heading="Seller"
               />
 
-              {auction.highest_bidder && (
-                <AssetIdOutput
-                  assetId={
-                    (auction.highest_bidder!.Address!.value &&
-                      getSlicedAddress(
-                        auction!.highest_bidder!.Address!.value
-                      )) ||
-                    "None"
-                  }
-                  heading="Highest Bidder"
-                />
-              )}
+              <AssetIdOutput
+                assetId={
+                  (auction.highest_bidder &&
+                    getSlicedAddress(auction.highest_bidder.Address!.value)) ||
+                  "None"
+                }
+                heading="Highest Bidder"
+              />
             </Flex>
 
             {auction?.state.Closed ? (
@@ -82,8 +79,10 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
                 onChange={setAuctionExpired}
               />
             )}
-            {!auctionExpired && !auction?.state.Closed && (
+            {!auctionExpired && !auction?.state.Closed ? (
               <CancelAuctionButton index={index} seller={auction!.seller!} />
+            ) : (
+              <WithdrawButton auctionId={bn(index)} />
             )}
           </Stack>
         </Card>
