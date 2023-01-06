@@ -55,6 +55,7 @@
     "react-dom": "^18.2.0",
     "react-error-boundary": "^3.1.4",
     "react-google-recaptcha": "^2.1.0",
+    "react-hook-form": "^7.41.5",
     "react-hot-toast": "^2.2.0",
     "react-icons": "^4.4.0",
     "react-number-format": "^4.9.3",

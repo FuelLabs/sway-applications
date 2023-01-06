@@ -128,6 +128,7 @@ importers:
       react-dom: ^18.2.0
       react-error-boundary: ^3.1.4
       react-google-recaptcha: ^2.1.0
+      react-hook-form: ^7.41.5
       react-hot-toast: ^2.2.0
       react-icons: ^4.4.0
       react-number-format: ^4.9.3
@@ -186,6 +187,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-error-boundary: 3.1.4_react@18.2.0
       react-google-recaptcha: 2.1.0_react@18.2.0
+      react-hook-form: 7.41.5_react@18.2.0
       react-hot-toast: 2.4.0_owo25xnefcwdq3zjgtohz6dbju
       react-icons: 4.7.1_react@18.2.0
       react-number-format: 4.9.4_biqbaboplfbrettd7655fr4n2y
@@ -14274,6 +14276,18 @@ packages:
       prop-types: 15.8.1
       react: 18.2.0
       react-async-script: 1.2.0_react@18.2.0
+    dev: false
+
+  /react-hook-form/7.41.5_react@18.2.0:
+    resolution: {integrity: sha512-DAKjSJ7X9f16oQrP3TW2/eD9N6HOgrmIahP4LOdFphEWVfGZ2LulFd6f6AQ/YS/0cx/5oc4j8a1PXxuaurWp/Q==}
+    engines: {node: '>=12.22.0'}
+    peerDependencies:
+      react: '*'
+    peerDependenciesMeta:
+      react:
+        optional: true
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-hot-toast/2.4.0_owo25xnefcwdq3zjgtohz6dbju:
