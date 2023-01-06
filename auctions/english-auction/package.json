@@ -4,7 +4,8 @@
   "author": "Fuel Labs <contact@fuel.sh> (https://fuel.network/)",
   "private": true,
   "engines": {
-    "node": ">=16"
+    "node": ">=16",
+    "pnpm": ">=7"
   },
   "homepage": "https://github.com/FuelLabs/sway-applications#readme",
   "repository": {
@@ -16,10 +17,11 @@
     "url": "https://github.com/FuelLabs/sway-applications/issues"
   },
   "workspaces": [
-    "packages/*"
+    "./packages/*"
   ],
   "scripts": {
     "build": "turbo run build",
+    "build:app": "turbo run build --filter=english-auction-app",
     "contracts": "pnpm exec english-auction-scripts run",
     "contracts:build": "pnpm exec english-auction-scripts build",
     "contracts:deploy": "pnpm exec english-auction-scripts deploy",
@@ -34,7 +36,8 @@
     "services:clean": "make -C docker services-clean",
     "services:setup": "run-s scripts:setup services:run contracts",
     "services:run": "make -C docker services-run",
-    "services:reset": "run-s services:clean services:setup"
+    "services:reset": "run-s services:clean services:setup",
+    "storybook": "pnpm -r --filter=english-auction-app storybook"
   },
   "devDependencies": {
     "@babel/core": "^7.19.0",
