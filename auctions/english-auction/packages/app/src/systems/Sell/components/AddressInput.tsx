@@ -9,7 +9,7 @@ import { getSlicedAddress } from "~/systems/Core/utils";
 interface AddressInputProps {
   onChange: (field: string, value: string) => void;
   identityValue: string;
-  objKey: string;
+  objKey?: string;
   label: string;
 }
 
