@@ -1,0 +1,30 @@
+sequenceDiagram
+    participant P as Predicate
+    actor W as PlayerWhite
+    actor B as PlayerBlack
+    participant UI as Front End
+    participant C as Contract
+    participant Clock as Game Clock
+    W--)P: Send bond for game.
+    B--)P: Send bond for game.
+    note over W, B: Initialize new game
+    W->>UI: Initialize new game
+    UI->>C: Initialize new game
+    C->>Clock: Start the game clock
+    loop Every turn
+        note left of UI: Players sign over the new board state(+ move counter + timestamp) each turn.
+        W->>UI: Make a move
+        opt Invalid Move Detected
+            B->>P: Unlock predicate with fraud proof to claim entire bond
+        end
+        opt Win Detected
+            W->>P: Unlock predicate with validity proof + position evaluation to claim bond
+        end
+        B->>UI: Make a move
+        opt Invalid Move Detected
+            W->>P: Unlock predicate with fraud proof to claim bond
+        end
+        opt Win Detected
+            B->>P: Unlock predicate with validity proof + position evaluation to claim bond
+        end
+    end
