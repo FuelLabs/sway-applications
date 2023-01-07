@@ -60,7 +60,7 @@ export function useCreateAuctionForm(opts: UseCreateAuctionOpts = {}) {
 
   useEffect(() => {
     opts.defaultValues && form.reset(opts.defaultValues);
-  }, [opts.defaultValues?.name, opts.defaultValues?.url]);
+  }, [opts.defaultValues?.sellerAddress, opts.defaultValues?.sellAssetAmount]);
 
   return form;
 }
