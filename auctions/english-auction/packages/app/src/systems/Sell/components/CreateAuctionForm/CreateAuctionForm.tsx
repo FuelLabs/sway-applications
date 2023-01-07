@@ -3,6 +3,7 @@ import type { CoinQuantity } from "fuels";
 
 import type { UseCreateAuctionFormReturn } from "../../hooks/useCreateAuctionForm";
 import { AddressFormInput } from "../AddressFormInput";
+import { BidAassetFormInput } from "../BidAssetFormInput";
 import { ReservePriceInput } from "../ReservePriceInput";
 import { SellAssetFormInput } from "../SellAssetFormInput";
 
@@ -54,6 +55,11 @@ export const CreateAuctionForm = ({
       />
 
       <ReservePriceInput control={control} formState={formState} />
+      <BidAassetFormInput
+        assets={assets}
+        control={control}
+        formState={formState}
+      />
     </Stack>
   );
 };
