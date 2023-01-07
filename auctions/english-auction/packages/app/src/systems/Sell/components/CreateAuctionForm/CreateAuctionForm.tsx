@@ -60,6 +60,24 @@ export const CreateAuctionForm = ({
         control={control}
         formState={formState}
       />
+
+      <ControlledField
+        control={control}
+        name="duration"
+        label="Duration"
+        isRequired
+        isInvalid={Boolean(formState.errors.duration)}
+        render={({ field }) => (
+          <Input>
+            <Input.Number
+              {...field}
+              arial-label="Duration"
+              placeholder="0"
+              allowNegative={false}
+            />
+          </Input>
+        )}
+      />
     </Stack>
   );
 };
