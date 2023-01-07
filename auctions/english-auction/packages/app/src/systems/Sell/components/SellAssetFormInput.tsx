@@ -25,26 +25,59 @@ export const SellAssetFormInput = ({
   return (
     <DropdownContainerForm onChange={setIsNFT} assets={assets}>
       {!isNFT ? (
-        <Stack css={{ minWidth: "%100" }}>
+        <ControlledField
+          control={control}
+          name="sellAssetAmount"
+          label="Sell Asset Amount"
+          isRequired
+          isInvalid={Boolean(formState.errors.sellAssetAmount)}
+          render={({ field }) => (
+            <Input>
+              <Input.Number
+                {...field}
+                aria-label="Sell asset amount"
+                placeholder="0.0"
+                allowNegative={false}
+              />
+            </Input>
+          )}
+        />
+      ) : (
+        <Stack css={{ minWidth: "100%" }}>
           <ControlledField
             control={control}
-            name=""
-            label=""
+            name="sellNFTTokenId"
+            label="Sell NFT Id"
             isRequired
-            isInvalid={Boolean(formState.errors.sellAssetAmount)}
+            isInvalid={Boolean(formState.errors.sellNFTTokenId)}
             render={({ field }) => (
               <Input>
                 <Input.Number
                   {...field}
-                  aria-label="Sell asset amount"
-                  placeholder="0.0"
+                  aria-label="Sell nft token id"
+                  placeholder="0"
+                  allowNegative={false}
+                />
+              </Input>
+            )}
+          />
+          <ControlledField
+            control={control}
+            name="sellNFTAssetId"
+            label="Sell NFT Asset Id"
+            isRequired
+            isInvalid={Boolean(formState.errors.sellNFTAssetId)}
+            render={({ field }) => (
+              <Input>
+                <Input.Field
+                  {...field}
+                  aria-label="Sell nft asset id"
+                  placeholder="0x000...000"
                 />
               </Input>
             )}
           />
         </Stack>
-      ) : (
-        <div>temp</div>
       )}
     </DropdownContainerForm>
   );

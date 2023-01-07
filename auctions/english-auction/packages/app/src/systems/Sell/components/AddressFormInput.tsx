@@ -30,7 +30,7 @@ export const AddressFormInput = ({
     <ControlledField
       control={control}
       name="sellerAddress"
-      label="SellerAddress"
+      label="Seller Address"
       isRequired
       isInvalid={Boolean(formState.errors.sellerAddress)}
       render={({ field }) => (
