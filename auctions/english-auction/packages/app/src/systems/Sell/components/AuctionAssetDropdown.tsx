@@ -29,9 +29,10 @@ export const AuctionAssetDropdown = ({
     );
   });
 
-  // Set the initial asset text and icon
+  // Set the initial asset text and icon, and asset id
   useEffect(() => {
-    const text = getAssetText(!!assets && assets.length === 0);
+    const hasInitialAsset = assets.length !== 0;
+    const text = getAssetText(!hasInitialAsset);
     const iconText = getAssetIconText();
     setAssetText(text);
     setAssetIcon(iconText);

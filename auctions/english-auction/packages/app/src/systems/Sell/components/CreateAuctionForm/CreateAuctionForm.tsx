@@ -1,5 +1,6 @@
 import { Input, Stack } from "@fuel-ui/react";
 import type { CoinQuantity } from "fuels";
+import { useEffect } from "react";
 
 import type { UseCreateAuctionFormReturn } from "../../hooks/useCreateAuctionForm";
 import { AddressFormInput } from "../AddressFormInput";
@@ -20,10 +21,17 @@ export const CreateAuctionForm = ({
   walletAddress,
   assets,
 }: CreateAuctionFormProps) => {
-  const { control, formState, watch } = form;
+  const { control, formState, watch, setValue } = form;
   const watchHasReservePrice = watch("hasReservePrice", false);
   const watchIsSellAssetNft = watch("isSellAssetNft", false);
   const watchIsBidAssetNft = watch("isBidAssetNft", false);
+
+  useEffect(() => {
+    if (assets.length !== 0) {
+      setValue("sellAssetId", assets[0].assetId);
+      setValue("bidAssetId", assets[0].assetId);
+    }
+  }, [assets]);
 
   return (
     <Stack css={{ width: "%100" }} gap="$4">
@@ -38,6 +46,7 @@ export const CreateAuctionForm = ({
         formState={formState}
         assets={assets}
         isSellAssetNft={watchIsSellAssetNft}
+        setValue={setValue}
       />
 
       <ControlledField
