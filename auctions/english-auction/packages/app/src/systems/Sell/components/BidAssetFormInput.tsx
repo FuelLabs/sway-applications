@@ -23,32 +23,34 @@ export const BidAassetFormInput = ({
   const [isNFT, setIsNFT] = useState(false);
 
   return (
-    <DropdownContainerForm onChange={setIsNFT} assets={assets}>
-      <>
-        <Stack>
-          <Form.Control>
-            <Form.Label>Bid Asset</Form.Label>
-          </Form.Control>
+    <Stack css={{ minWidth: "100%" }}>
+      <Form.Control>
+        <Form.Label>Bid Asset</Form.Label>
+      </Form.Control>
+      <DropdownContainerForm onChange={setIsNFT} assets={assets}>
+        <>
           {isNFT && (
-            <ControlledField
-              control={control}
-              name="bidNFTAssetId"
-              label="Bid NFT Asset Id"
-              isRequired
-              isInvalid={Boolean(formState.errors.bidNFTAssetId)}
-              render={({ field }) => (
-                <Input>
-                  <Input.Field
-                    {...field}
-                    aria-label="Bid nft asset id"
-                    placeholder="0x000...000"
-                  />
-                </Input>
-              )}
-            />
+            <Stack css={{ width: "100%" }}>
+              <ControlledField
+                control={control}
+                name="bidNFTAssetId"
+                label="Bid NFT Asset Id"
+                isRequired
+                isInvalid={Boolean(formState.errors.bidNFTAssetId)}
+                render={({ field }) => (
+                  <Input>
+                    <Input.Field
+                      {...field}
+                      aria-label="Bid nft asset id"
+                      placeholder="0x000...000"
+                    />
+                  </Input>
+                )}
+              />
+            </Stack>
           )}
-        </Stack>
-      </>
-    </DropdownContainerForm>
+        </>
+      </DropdownContainerForm>
+    </Stack>
   );
 };

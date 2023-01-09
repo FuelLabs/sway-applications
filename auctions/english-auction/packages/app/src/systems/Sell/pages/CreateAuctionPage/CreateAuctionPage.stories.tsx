@@ -7,9 +7,6 @@ import { Providers } from "~/systems/Core";
 export default {
   component: CreateAuctionPage,
   title: "Auction/pages/CreateAuctionPage",
-  parameters: {
-    layout: "fullscreen",
-  },
 } as Meta;
 
 export const Usage = () => {

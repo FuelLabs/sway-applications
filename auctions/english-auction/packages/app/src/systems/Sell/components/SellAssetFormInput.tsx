@@ -25,25 +25,27 @@ export const SellAssetFormInput = ({
   return (
     <DropdownContainerForm onChange={setIsNFT} assets={assets}>
       {!isNFT ? (
-        <ControlledField
-          control={control}
-          name="sellAssetAmount"
-          label="Sell Asset Amount"
-          isRequired
-          isInvalid={Boolean(formState.errors.sellAssetAmount)}
-          render={({ field }) => (
-            <Input>
-              <Input.Number
-                {...field}
-                aria-label="Sell asset amount"
-                placeholder="0.0"
-                allowNegative={false}
-              />
-            </Input>
-          )}
-        />
-      ) : (
         <Stack css={{ minWidth: "100%" }}>
+          <ControlledField
+            control={control}
+            name="sellAssetAmount"
+            label="Sell Asset Amount"
+            isRequired
+            isInvalid={Boolean(formState.errors.sellAssetAmount)}
+            render={({ field }) => (
+              <Input css={{ minWidth: "100%" }}>
+                <Input.Number
+                  {...field}
+                  aria-label="Sell asset amount"
+                  placeholder="0.0"
+                  allowNegative={false}
+                />
+              </Input>
+            )}
+          />
+        </Stack>
+      ) : (
+        <Stack css={{ minWidth: "100%", marginRight: "$2" }}>
           <ControlledField
             control={control}
             name="sellNFTTokenId"
@@ -57,6 +59,7 @@ export const SellAssetFormInput = ({
                   aria-label="Sell nft token id"
                   placeholder="0"
                   allowNegative={false}
+                  autoComplete="off"
                 />
               </Input>
             )}

@@ -1,3 +1,4 @@
+import { Stack } from "@fuel-ui/react";
 import type { ReactNode } from "react";
 
 import { Header } from "./Header";
@@ -10,7 +11,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <>
       <Header />
-      {children}
+      <Stack align="center">{children}</Stack>
     </>
   );
 }

@@ -3,7 +3,10 @@ import { useQuery } from 'react-query';
 import { useWallet } from './useWallet';
 
 export const useAssets = () => {
-  const wallet = useWallet();
+  const { wallet, isLoading, isError } = useWallet();
+
+  if (isError) throw new Error('Error: fetching wallet');
+
   const { data: balances } = useQuery(
     ['balances'],
     async () => {
@@ -11,7 +14,7 @@ export const useAssets = () => {
       return await wallet?.getBalances();
     },
     {
-      enabled: !!wallet && !!wallet.address,
+      enabled: !isLoading && !isError && !!wallet,
     }
   );
   return balances;

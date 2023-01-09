@@ -17,7 +17,10 @@ export const DropdownContainerForm = ({
   return (
     <Flex>
       <Flex grow={2}>{children}</Flex>
-      <Flex align="start" css={{ marginTop: "$1" }}>
+      <Flex
+        align="start"
+        css={{ marginTop: "$9", marginLeft: "$2", marginRight: "$2" }}
+      >
         <AuctionAssetDropdown onChange={onChange} assets={assets} />
       </Flex>
     </Flex>

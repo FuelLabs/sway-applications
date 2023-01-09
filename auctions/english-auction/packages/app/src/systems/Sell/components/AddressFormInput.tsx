@@ -36,7 +36,7 @@ export const AddressFormInput = ({
       render={({ field }) => (
         <Flex>
           <Flex grow={2}>
-            <Input>
+            <Input css={{ width: "100%", marginRight: "$2" }}>
               <Input.Field
                 {...field}
                 aria-label="Seller address"
@@ -44,7 +44,7 @@ export const AddressFormInput = ({
               />
             </Input>
           </Flex>
-          <Flex align="start" css={{ marginTop: "$1" }}>
+          <Flex align="start" css={{ marginTop: "$1", marginRight: "$2" }}>
             <Button onPress={() => field.onChange(walletAddress)}>
               {slicedWalletAddress}
             </Button>
