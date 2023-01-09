@@ -6,7 +6,8 @@ import { CONTRACT_ID } from '~/config';
 import { AuctionContractAbi__factory } from '~/types/contracts';
 
 export const useContract = () => {
-  const wallet = useWallet();
+  const { wallet, isLoading, isError } = useWallet();
+
   const { data: contract } = useQuery(
     ['contract'],
     () => {
@@ -15,7 +16,7 @@ export const useContract = () => {
       return AuctionContractAbi__factory.connect(CONTRACT_ID, wallet!);
     },
     {
-      enabled: !!wallet,
+      enabled: !isLoading && !isError && !!wallet,
     }
   );
 

@@ -13,7 +13,7 @@ export const CreateAuctionPage = () => {
   const { wallet, isLoading, isError } = useWallet();
   if (isError) throw new Error("Error: no wallet connected");
   const assets = useAssets() || [];
-  const createAuctionMutation = useCreateAuction();
+  const createAuctionMutation = useCreateAuction(form);
 
   function onSubmit(formValues: CreateAuctionFormValues) {
     createAuctionMutation.mutate({
@@ -50,7 +50,6 @@ export const CreateAuctionPage = () => {
           },
       duration: formValues.duration,
     });
-    form.reset();
   }
 
   // TODO feat: add loaders to components
@@ -70,7 +69,7 @@ export const CreateAuctionPage = () => {
               type="submit"
               color="accent"
               isDisabled={!form.formState.isValid}
-              isLoading={isLoading}
+              isLoading={isLoading || createAuctionMutation.isLoading}
               leftIcon={Icon.is("Plus")}
             >
               Create Auction

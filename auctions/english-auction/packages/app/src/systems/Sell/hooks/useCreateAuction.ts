@@ -1,6 +1,9 @@
 import { Address } from 'fuels';
 import type { BigNumberish, CoinQuantityLike } from 'fuels';
+import type { UseFormReturn } from 'react-hook-form';
 import { useMutation } from 'react-query';
+
+import type { CreateAuctionFormValues } from './useCreateAuctionForm';
 
 import { useContract } from '~/systems/Core/hooks/useContract';
 import { handleError } from '~/systems/Core/utils';
@@ -20,7 +23,7 @@ export type UseCreateAuctionProps = {
   sellAsset: AuctionAssetInput;
 };
 
-export function useCreateAuction() {
+export function useCreateAuction(form: UseFormReturn<CreateAuctionFormValues>) {
   const contract = useContract();
   const mutation = useMutation(
     async ({
@@ -49,9 +52,8 @@ export function useCreateAuction() {
     }
   );
 
-  // TODO clear form inputs on success
   function handleSuccess() {
-    console.log('auction created successfully');
+    form.reset();
   }
 
   return mutation;
