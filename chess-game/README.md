@@ -7,8 +7,7 @@
 
 ## Overview
 
-This is an on-chain implementation of the classic game of chess.
-While a chess engine could possibly be added in the future, the game is currently meant for two players. However, there's nothing stopping one or both of the "players" from being a multisig contract, an off-chain chess engine, or even a fully on-chain chess engine in a contract.
+This is an on-chain implementation of the classic game of chess for two players.
 
 The game can be played either fully on-chain, one move at a time, or "optimistically" via a fraud-provable [state-channel](https://www.jeffcoleman.ca/state-channels/) mechanism.
 
@@ -17,10 +16,12 @@ The game can be played either fully on-chain, one move at a time, or "optimistic
 >–Jeff Coleman, 2015
 
 
-Where the firt mode requires a transaction for each move made, optimistic mode allows moves to be
+Where the first mode requires a transaction for each move made, optimistic mode allows moves to be
 made by exchanging signed states between the players via an off-chain communication channel.
 At any point, the current signed game-state and move can be submitted to the contract for validation. A successfully validated move will cause the contract to update the stored state for the current game.
 Taken to the extreme, with the exception of game initialization and verification of the final move, the entire game can be played off-chain while still remaining trustless and verifiable.
+
+While a chess engine could possibly be added in the future, the game is currently meant for two players. However, there's nothing stopping one or both of the "players" from being a multisig contract, an off-chain chess engine, or even a fully on-chain chess engine in a contract.
 
 ## Project Structure
 The project consists of both a smart contract and a predicate.
