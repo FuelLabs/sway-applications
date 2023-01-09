@@ -2,6 +2,8 @@ contract;
 
 use libraries::{
     data_structures::{
+        Asset,
+        AssetPair,
         PoolInfo,
         PreviewAddLiquidityInfo,
         PreviewSwapInfo,
@@ -9,10 +11,10 @@ use libraries::{
     },
     Exchange,
 };
-use std::constants::BASE_ASSET_ID;
+use std::{call_frames::contract_id, constants::BASE_ASSET_ID};
 
 storage {
-    pair: Option<(ContractId, ContractId)> = Option::None,
+    pair: Option<AssetPair> = Option::None,
 }
 
 impl Exchange for Contract {
@@ -22,8 +24,8 @@ impl Exchange for Contract {
     }
 
     #[storage(read, write)]
-    fn constructor(pair: (ContractId, ContractId)) {
-        storage.pair = Option::Some(pair);
+    fn constructor(asset_a: ContractId, asset_b: ContractId) {
+        storage.pair = Option::Some(AssetPair::new(Asset::new(asset_a, 0), Asset::new(asset_b, 0)));
     }
 
     #[storage(read, write)]
@@ -32,9 +34,8 @@ impl Exchange for Contract {
     #[storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo {
         RemoveLiquidityInfo {
-            asset_a_amount: 0,
-            asset_b_amount: 0,
-            liquidity: 0,
+            removed_amounts: storage.pair.unwrap(),
+            burned_liquidity: Asset::new(contract_id(), 0),
         }
     }
 
@@ -49,49 +50,41 @@ impl Exchange for Contract {
     }
 
     #[storage(read, write)]
-    fn withdraw(amount: u64, asset: ContractId) {}
+    fn withdraw(asset: Asset) {}
 
     #[storage(read)]
-    fn balance(asset: ContractId) -> u64 {
+    fn balance(asset_id: ContractId) -> u64 {
         0
     }
 
     #[storage(read)]
     fn pool_info() -> PoolInfo {
-        let pair = if storage.pair.is_some() {
-            storage.pair.unwrap()
-        } else {
-            (BASE_ASSET_ID, BASE_ASSET_ID)
-        };
         PoolInfo {
-            asset_a: pair.0,
-            asset_b: pair.1,
-            asset_a_reserve: 0,
-            asset_b_reserve: 0,
+            reserves: storage.pair.unwrap_or(AssetPair::new(Asset::new(BASE_ASSET_ID, 0), Asset::new(BASE_ASSET_ID, 0))),
             liquidity: 0,
         }
     }
 
     #[storage(read)]
-    fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo {
+    fn preview_add_liquidity(asset: Asset) -> PreviewAddLiquidityInfo {
         PreviewAddLiquidityInfo {
-            other_asset_amount_to_add: 0,
-            liquidity_asset_amount_to_receive: 0,
+            other_asset_to_add: storage.pair.unwrap().other_asset(asset.id),
+            liquidity_asset_to_receive: Asset::new(contract_id(), 0),
         }
     }
 
     #[storage(read)]
-    fn preview_swap_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo {
+    fn preview_swap_exact_input(exact_input_asset: Asset) -> PreviewSwapInfo {
         PreviewSwapInfo {
-            amount: 0,
+            other_asset: storage.pair.unwrap().other_asset(exact_input_asset.id),
             sufficient_reserve: false,
         }
     }
 
     #[storage(read)]
-    fn preview_swap_exact_output(exact_output: u64, input_asset: ContractId) -> PreviewSwapInfo {
+    fn preview_swap_exact_output(exact_output_asset: Asset) -> PreviewSwapInfo {
         PreviewSwapInfo {
-            amount: 0,
+            other_asset: storage.pair.unwrap().other_asset(exact_output_asset.id),
             sufficient_reserve: false,
         }
     }

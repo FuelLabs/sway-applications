@@ -29,17 +29,27 @@ The contracts are designed to
 ```
 AMM/
 ├── project/
-|   └── contracts/
+|   ├── contracts/
 |   |   ├── AMM-contract/
-|   |   |   ├── src/main.sw
-|   |   |   └── tests/harness.rs
 |   |   └── exchange-contract/
-|   |       ├── src/main.sw
-|   |       └── tests/harness.rs
-|   └── libraries/
-|       └── src/interface.sw
+|   ├── scripts/
+|   |   ├── atomic-add-liquidity/
+|   |   ├── swap-exact-input/
+|   |   └── swap-exact-output/
+|   ├── libraries/
+|   |   └── src/interface.sw
+|   └── test-utils/
+|       └── src/lib.rs
 ├── README.md
 └── SPECIFICATION.md
+```
+
+All contracts and scripts have the structure:
+
+```
+contract or script/
+├── src/main.sw
+└── tests/harness.rs
 ```
 
 ## Running the project
