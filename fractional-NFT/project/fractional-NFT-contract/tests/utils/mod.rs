@@ -38,8 +38,8 @@ pub mod fractional_nft_abi_calls {
     ) -> FuelCallResponse<()> {
         contract
             .methods()
-            .deposit(admin.clone(), nft.clone(), supply, token_id)
-            .set_contracts(&[Bech32ContractId::from(nft.clone())])
+            .deposit(admin, nft, supply, token_id)
+            .set_contracts(&[Bech32ContractId::from(nft)])
             .append_variable_outputs(1)
             .call()
             .await
@@ -56,7 +56,7 @@ pub mod fractional_nft_abi_calls {
     ) -> FuelCallResponse<()> {
         contract
             .methods()
-            .set_admin(new_admin.clone())
+            .set_admin(new_admin)
             .call()
             .await
             .unwrap()
@@ -74,7 +74,7 @@ pub mod fractional_nft_abi_calls {
         contract
             .methods()
             .withdraw(to)
-            .set_contracts(&[Bech32ContractId::from(nft.clone())])
+            .set_contracts(&[Bech32ContractId::from(nft)])
             .call()
             .await
             .unwrap()
@@ -127,13 +127,13 @@ pub mod test_helpers {
     }
 
     pub async fn setup() -> (Metadata, Metadata, Metadata, ContractId, ContractId) {
-        let num_wallets = 3;
+        let number_of_wallets = 3;
         let coins_per_wallet = 1;
         let amount_per_coin = 1_000_000;
 
         let mut wallets = launch_custom_provider_and_get_wallets(
             WalletsConfig::new(
-                Some(num_wallets),
+                Some(number_of_wallets),
                 Some(coins_per_wallet),
                 Some(amount_per_coin),
             ),
