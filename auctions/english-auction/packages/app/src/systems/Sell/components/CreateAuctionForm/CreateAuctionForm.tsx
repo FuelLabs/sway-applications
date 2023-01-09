@@ -20,7 +20,8 @@ export const CreateAuctionForm = ({
   walletAddress,
   assets,
 }: CreateAuctionFormProps) => {
-  const { control, formState } = form;
+  const { control, formState, watch } = form;
+  const watchHasReservePrice = watch("hasReservePrice", false);
 
   return (
     <Stack css={{ width: "%100" }} gap="$4">
@@ -54,7 +55,11 @@ export const CreateAuctionForm = ({
         )}
       />
 
-      <ReservePriceInput control={control} formState={formState} />
+      <ReservePriceInput
+        control={control}
+        formState={formState}
+        hasReservePrice={watchHasReservePrice}
+      />
       <BidAassetFormInput
         assets={assets}
         control={control}

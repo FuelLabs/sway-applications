@@ -20,17 +20,17 @@ export type UseCreateAuctionProps = {
   sellAsset: AuctionAssetInput;
 };
 
-export function useCreateAuction({
-  bidAsset,
-  duration,
-  initialPrice,
-  reservePrice,
-  sellerAddress,
-  sellAsset,
-}: UseCreateAuctionProps) {
+export function useCreateAuction() {
   const contract = useContract();
   const mutation = useMutation(
-    async () => {
+    async ({
+      bidAsset,
+      duration,
+      initialPrice,
+      reservePrice,
+      sellerAddress,
+      sellAsset,
+    }: UseCreateAuctionProps) => {
       if (!contract) throw Error('Contract not connected');
       const callParams: CoinQuantityLike | undefined = sellAsset.TokenAsset ?? undefined;
       const seller: IdentityInput = {

@@ -1,6 +1,8 @@
 import { Button, Icon, Stack } from "@fuel-ui/react";
+import { DECIMAL_UNITS, bn } from "fuels";
 
 import { CreateAuctionForm } from "../../components/CreateAuctionForm";
+import { useCreateAuction } from "../../hooks/useCreateAuction";
 import { useCreateAuctionForm } from "../../hooks/useCreateAuctionForm";
 import type { CreateAuctionFormValues } from "../../hooks/useCreateAuctionForm";
 
@@ -11,8 +13,43 @@ export const CreateAuctionPage = () => {
   const { wallet, isLoading, isError } = useWallet();
   if (isError) throw new Error("Error: no wallet connected");
   const assets = useAssets() || [];
+  const createAuctionMutation = useCreateAuction();
 
-  function onSubmit(_: CreateAuctionFormValues) {
+  function onSubmit(formValues: CreateAuctionFormValues) {
+    createAuctionMutation.mutate({
+      sellerAddress: formValues.sellerAddress,
+      sellAsset: !formValues.isSellAssetNft
+        ? {
+            TokenAsset: {
+              amount: bn.parseUnits(formValues.sellAssetAmount, DECIMAL_UNITS),
+              asset_id: { value: formValues.sellAssetId },
+            },
+          }
+        : {
+            NFTAsset: {
+              token_id: formValues.sellNFTTokenId,
+              asset_id: { value: formValues.sellNFTAssetId },
+            },
+          },
+      initialPrice: bn.parseUnits(formValues.initialPrice, DECIMAL_UNITS),
+      reservePrice: formValues.hasReservePrice
+        ? formValues.reservePrice
+        : undefined,
+      bidAsset: !formValues.isBidAssetNft
+        ? {
+            TokenAsset: {
+              amount: bn(0),
+              asset_id: { value: formValues.bidAssetId },
+            },
+          }
+        : {
+            NFTAsset: {
+              token_id: bn(0),
+              asset_id: { value: formValues.bidNFTAssetId },
+            },
+          },
+      duration: formValues.duration,
+    });
     form.reset();
   }
 
