@@ -1,2 +1,5 @@
 [workspace]
-members = []
+members = [
+    "./project/chess-contract",
+    "./project/arbiter-predicate"
+]
