@@ -22,7 +22,6 @@ Table of Contents
                 - [`purchase()`](#purchase)
                 - [`sell()`](#sell)
                 - [`purchase_admin()`](#purchase_admin)
-                - [`end()`](#end)
         - [State Checks](#state-checks-1)
             - [`token_distribution()`](#token_distribution)
 - [Sequence Diagrams](#sequence-diagrams)
