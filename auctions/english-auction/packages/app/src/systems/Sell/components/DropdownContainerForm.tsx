@@ -1,18 +1,24 @@
 import { Flex } from "@fuel-ui/react";
 import type { CoinQuantity } from "fuels";
+import { Controller } from "react-hook-form";
+import type { Control } from "react-hook-form";
+
+import type { CreateAuctionFormValues } from "../hooks/useCreateAuctionForm";
 
 import { AuctionAssetDropdown } from "./AuctionAssetDropdown";
 
 interface DropdownContainerProps {
-  onChange: (isNFT: boolean) => void;
   children: JSX.Element;
   assets: CoinQuantity[];
+  formFieldName: "isSellAssetNft" | "isBidAssetNft";
+  control: Control<CreateAuctionFormValues>;
 }
 
 export const DropdownContainerForm = ({
   children,
   assets,
-  onChange,
+  formFieldName,
+  control,
 }: DropdownContainerProps) => {
   return (
     <Flex>
@@ -21,7 +27,15 @@ export const DropdownContainerForm = ({
         align="start"
         css={{ marginTop: "$9", marginLeft: "$2", marginRight: "$2" }}
       >
-        <AuctionAssetDropdown onChange={onChange} assets={assets} />
+        <Controller
+          name={formFieldName}
+          control={control}
+          render={({ field }) => {
+            return (
+              <AuctionAssetDropdown onChange={field.onChange} assets={assets} />
+            );
+          }}
+        />
       </Flex>
     </Flex>
   );

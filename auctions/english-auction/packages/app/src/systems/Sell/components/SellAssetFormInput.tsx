@@ -1,6 +1,5 @@
 import { Input, Stack } from "@fuel-ui/react";
 import type { CoinQuantity } from "fuels";
-import { useState } from "react";
 import type { Control, FormState } from "react-hook-form";
 
 import type { CreateAuctionFormValues } from "../hooks/useCreateAuctionForm";
@@ -13,18 +12,24 @@ interface SellAuctionAssetFormInputProps {
   control: Control<CreateAuctionFormValues>;
   formState: FormState<CreateAuctionFormValues>;
   assets: CoinQuantity[];
+  isSellAssetNft: boolean;
 }
 
 export const SellAssetFormInput = ({
   control,
   formState,
   assets,
+  isSellAssetNft,
 }: SellAuctionAssetFormInputProps) => {
-  const [isNFT, setIsNFT] = useState(false);
+  // const [isNFT, setIsNFT] = useState(false);
 
   return (
-    <DropdownContainerForm onChange={setIsNFT} assets={assets}>
-      {!isNFT ? (
+    <DropdownContainerForm
+      assets={assets}
+      formFieldName="isSellAssetNft"
+      control={control}
+    >
+      {!isSellAssetNft ? (
         <Stack css={{ minWidth: "100%" }}>
           <ControlledField
             control={control}

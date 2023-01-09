@@ -22,6 +22,8 @@ export const CreateAuctionForm = ({
 }: CreateAuctionFormProps) => {
   const { control, formState, watch } = form;
   const watchHasReservePrice = watch("hasReservePrice", false);
+  const watchIsSellAssetNft = watch("isSellAssetNft", false);
+  const watchIsBidAssetNft = watch("isBidAssetNft", false);
 
   return (
     <Stack css={{ width: "%100" }} gap="$4">
@@ -35,6 +37,7 @@ export const CreateAuctionForm = ({
         control={control}
         formState={formState}
         assets={assets}
+        isSellAssetNft={watchIsSellAssetNft}
       />
 
       <ControlledField
@@ -60,10 +63,12 @@ export const CreateAuctionForm = ({
         formState={formState}
         hasReservePrice={watchHasReservePrice}
       />
+
       <BidAassetFormInput
         assets={assets}
         control={control}
         formState={formState}
+        isBidAssetNft={watchIsBidAssetNft}
       />
 
       <ControlledField
