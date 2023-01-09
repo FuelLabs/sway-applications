@@ -26,13 +26,13 @@ First bit denotes the colour: Black == 0, White == 1.
 Remaining 3 bits specify the piece type.
 */
 
-pub const EMPTY: u8 = 0x0;   // 000
-pub const PAWN: u8 = 0x1;   // 001
-pub const BISHOP: u8 = 0x2; // 010
-pub const KNIGHT: u8 = 0x3; // 011
-pub const ROOK: u8 = 0x4;   // 100
-pub const QUEEN: u8 = 0x5;  // 101
-pub const KING: u8 = 0x6;   // 110
+pub const EMPTY: u8 = 0u8;   // 000
+pub const PAWN: u8 = 1u8;   // 001
+pub const BISHOP: u8 = 2u8; // 010
+pub const KNIGHT: u8 = 3u8; // 011
+pub const ROOK: u8 = 4u8;   // 100
+pub const QUEEN: u8 = 5u8;  // 101
+pub const KING: u8 = 6u8;   // 110
 
 
 // 4 bits to represent piece on each square, * 64 squares = 256bits to store all pieces.
