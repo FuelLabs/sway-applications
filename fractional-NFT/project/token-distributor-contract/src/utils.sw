@@ -1,6 +1,5 @@
 library utils;
 
-dep data_structures;
 dep interface;
 
 use interface::FractionalNFT;
