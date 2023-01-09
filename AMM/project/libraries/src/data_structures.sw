@@ -19,7 +19,7 @@ pub struct AssetPair {
 }
 
 impl AssetPair {
-    pub fn of(a: Asset, b: Asset) -> Self {
+    pub fn new(a: Asset, b: Asset) -> Self {
         Self { a, b }
     }
 

@@ -73,15 +73,15 @@ abi Exchange {
     ///
     /// # Arguments
     ///
-    /// - `asset_a_id` - unique identifier of one asset
-    /// - `asset_b_id` - unique identifier of the other asset
+    /// - `asset_a` - unique identifier of one asset
+    /// - `asset_b` - unique identifier of the other asset
     ///
     /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     /// * When the passed pair describes identical assets
     #[storage(read, write)]
-    fn constructor(asset_a_id: ContractId, asset_b_id: ContractId);
+    fn constructor(asset_a: ContractId, asset_b: ContractId);
 
     /// Deposit asset to later add to the liquidity pool or withdraw.
     ///

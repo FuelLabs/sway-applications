@@ -66,7 +66,7 @@ impl Exchange for Contract {
 
         let sender = msg_sender().unwrap();
         let reserves = storage.pair.unwrap();
-        let deposits = AssetPair::of(Asset::new(reserves.a.id, storage.deposits.get((sender, reserves.a.id))), Asset::new(reserves.b.id, storage.deposits.get((sender, reserves.b.id))));
+        let deposits = AssetPair::new(Asset::new(reserves.a.id, storage.deposits.get((sender, reserves.a.id))), Asset::new(reserves.b.id, storage.deposits.get((sender, reserves.b.id))));
 
         // checking this because this will either result in a math error or adding no liquidity at all
         require(deposits.a.amount != 0, TransactionError::ExpectedNonZeroDeposit(deposits.a.id));
@@ -74,7 +74,7 @@ impl Exchange for Contract {
 
         let total_liquidity = storage.liquidity_pool_supply;
 
-        let mut added_assets = AssetPair::of(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
+        let mut added_assets = AssetPair::new(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
         let mut added_liquidity = 0;
 
         // adding liquidity for the first time
@@ -142,14 +142,14 @@ impl Exchange for Contract {
     }
 
     #[storage(read, write)]
-    fn constructor(asset_a_id: ContractId, asset_b_id: ContractId) {
+    fn constructor(asset_a: ContractId, asset_b: ContractId) {
         require(storage.pair.is_none(), InitError::AssetPairAlreadySet);
-        require(asset_a_id != asset_b_id, InitError::IdenticalAssets);
+        require(asset_a != asset_b, InitError::IdenticalAssets);
 
-        storage.pair = Option::Some(AssetPair::of(Asset::new(asset_a_id, 0), Asset::new(asset_b_id, 0)));
+        storage.pair = Option::Some(AssetPair::new(Asset::new(asset_a, 0), Asset::new(asset_b, 0)));
         log(DefineAssetPairEvent {
-            asset_a_id,
-            asset_b_id,
+            asset_a_id: asset_a,
+            asset_b_id: asset_b,
         });
     }
 
@@ -190,7 +190,7 @@ impl Exchange for Contract {
         require(burned_liquidity.id == msg_asset_id(), InputError::InvalidAsset);
         require(burned_liquidity.amount > 0, InputError::ExpectedNonZeroAmount(burned_liquidity.id));
 
-        let mut removed_assets = AssetPair::of(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
+        let mut removed_assets = AssetPair::new(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
         removed_assets.a.amount = multiply_divide(burned_liquidity.amount, reserves.a.amount, total_liquidity);
         removed_assets.b.amount = multiply_divide(burned_liquidity.amount, reserves.b.amount, total_liquidity);
 
@@ -236,7 +236,7 @@ impl Exchange for Contract {
 
         input_asset.amount = input_asset.amount + exact_input;
         output_asset.amount = output_asset.amount - bought;
-        storage.pair = Option::Some(AssetPair::of(input_asset, output_asset).sort(reserves.unwrap()));
+        storage.pair = Option::Some(AssetPair::new(input_asset, output_asset).sort(reserves.unwrap()));
 
         log(SwapEvent {
             input: input_asset,
@@ -274,7 +274,7 @@ impl Exchange for Contract {
 
         input_asset.amount = input_asset.amount + sold;
         output_asset.amount = output_asset.amount - output;
-        storage.pair = Option::Some(AssetPair::of(input_asset, output_asset).sort(reserves.unwrap()));
+        storage.pair = Option::Some(AssetPair::new(input_asset, output_asset).sort(reserves.unwrap()));
 
         log(SwapEvent {
             input: input_asset,
@@ -330,9 +330,9 @@ impl Exchange for Contract {
         let sender = msg_sender().unwrap();
         let total_liquidity = storage.liquidity_pool_supply;
         let reserves = storage.pair.unwrap();
-        let deposits = AssetPair::of(Asset::new(reserves.a.id, storage.deposits.get((sender, reserves.a.id))), Asset::new(reserves.b.id, storage.deposits.get((sender, reserves.b.id))));
+        let deposits = AssetPair::new(Asset::new(reserves.a.id, storage.deposits.get((sender, reserves.a.id))), Asset::new(reserves.b.id, storage.deposits.get((sender, reserves.b.id))));
 
-        let mut added_assets = AssetPair::of(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
+        let mut added_assets = AssetPair::new(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
         let mut added_liquidity = 0;
 
         if total_liquidity == 0 {

@@ -24,8 +24,8 @@ impl Exchange for Contract {
     }
 
     #[storage(read, write)]
-    fn constructor(asset_a_id: ContractId, asset_b_id: ContractId) {
-        storage.pair = Option::Some(AssetPair::of(Asset::new(asset_a_id, 0), Asset::new(asset_b_id, 0)));
+    fn constructor(asset_a: ContractId, asset_b: ContractId) {
+        storage.pair = Option::Some(AssetPair::new(Asset::new(asset_a, 0), Asset::new(asset_b, 0)));
     }
 
     #[storage(read, write)]
@@ -60,7 +60,7 @@ impl Exchange for Contract {
     #[storage(read)]
     fn pool_info() -> PoolInfo {
         PoolInfo {
-            reserves: storage.pair.unwrap_or(AssetPair::of(Asset::new(BASE_ASSET_ID, 0), Asset::new(BASE_ASSET_ID, 0))),
+            reserves: storage.pair.unwrap_or(AssetPair::new(Asset::new(BASE_ASSET_ID, 0), Asset::new(BASE_ASSET_ID, 0))),
             liquidity: 0,
         }
     }
