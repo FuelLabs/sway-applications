@@ -12,7 +12,11 @@ export const useWallet = () => {
   // https://github.com/FuelLabs/fuels-wallet/pull/413
   fuel.connect();
 
-  const { data: wallet } = useQuery(
+  const {
+    data: wallet,
+    isLoading,
+    isError,
+  } = useQuery(
     ['wallet'],
     async () => {
       const selectedAccount = (await fuel.getSelectedAccount()) as string;
@@ -23,5 +27,5 @@ export const useWallet = () => {
     }
   );
 
-  return wallet;
+  return { wallet, isLoading, isError };
 };

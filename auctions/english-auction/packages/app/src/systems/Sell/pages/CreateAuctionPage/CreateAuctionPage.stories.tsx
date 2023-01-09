@@ -9,9 +9,6 @@ export default {
   title: "Auction/pages/CreateAuctionPage",
   parameters: {
     layout: "fullscreen",
-    viewport: {
-      defaultViewport: "chromeExtension",
-    },
   },
 } as Meta;
 
