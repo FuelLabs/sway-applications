@@ -119,9 +119,32 @@ pub struct Square {
     index: u8,
 }
 
+pub enum Piece {
+    Pawn: (),
+    Knight: (),
+    Bishop: (),
+    Rook: (),
+    Queen: (),
+    King: (),
+}
+
+impl Piece {
+    fn to_numeric_repr(self) -> u8 {
+        match self {
+            Piece::Pawn => PAWN,
+            Piece::Knight => KNIGHT,
+            Piece::Bishop => BISHOP,
+            Piece::Rook => ROOK,
+            Piece::Queen => QUEEN,
+            Piece::King => KING,
+        }
+    }
+}
+
 pub struct Move {
     source: Square,
     dest: Square,
+    promotion: Option<Piece>,
 }
 
 
@@ -130,6 +153,5 @@ pub enum GameStatus {
     Active: (),
     Stalemate: (),
     Checkmate: (),
-    // DrawProposed ?
 }
 
