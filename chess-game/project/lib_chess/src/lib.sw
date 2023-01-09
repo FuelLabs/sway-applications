@@ -19,7 +19,7 @@ First bit denotes the colour: Black == 0, White == 1.
 Remaining 3 bits specify the piece type.
 */
 
-const EMPTY: u8 = 0x0   // 000 
+const EMPTY: u8 = 0x0;   // 000 
 const PAWN: u8 = 0x1;   // 001
 const BISHOP: u8 = 0x2; // 010
 const KNIGHT: u8 = 0x3; // 011
@@ -46,6 +46,19 @@ Inital binary board state:
 // the HEX equivalent of the above binary board state
 const INITIAL_BOARD_STATE: b256 = 0x34256243111111110000000000000000000000000000000099999999BCADEACB;
 
+
+pub struct Bitboard {
+    bits: u64,
+}
+
+impl Bitboard {
+    fn from_u64(value: u64) -> Bitboard {
+        Bitboard {
+            bits: value
+        }
+    }
+}
+
 // Primary Bitmaps
 pub const INITIAL_WHITE_PAWNS: u64 = 0x000000000000FF00;
 pub const INITIAL_WHITE_ROOKS: u64 = 0x0000000000000081;
@@ -57,14 +70,14 @@ pub const INITIAL_WHITE_KING: u64 = 0x0000000000000010;
 pub const INITIAL_BLACK_PAWNS: u64 = 0x00FF000000000000;
 pub const INITIAL_BLACK_ROOKS: u64 = 0x8100000000000000;
 pub const INITIAL_BLACK_KNIGHTS: u64 = 0x4200000000000000;
-pub const INITIAL_BLACK_BISHOPS: u64 = 0x2400000000000000
+pub const INITIAL_BLACK_BISHOPS: u64 = 0x2400000000000000;
 pub const INITIAL_BLACK_QUEEN: u64 = 0x0800000000000000;
 pub const INITIAL_BLACK_KING: u64 = 0x1000000000000000;
 
-// Composite Bitmaps
-pub const INITIAL_WHITE_PIECES: u64 = WHITE_PAWNS & WHITE_ROOKS & WHITE_KNIGHTS & WHITE_BISHOPS & WHITE_QUEEN & WHITE_KING;
-pub const INITIAL_BLACK_PIECES: u64 = BLACK_PAWNS & BLACK_ROOKS & BLACK_KNIGHTS & BLACK_BISHOPS & BLACK_QUEEN & BLACK_KING;
-pub const INITIAL_ALL_PIECES: u64 = INITIAL_WHITE_PIECES & INITIAL_BLACK_PIECES;
+// Bitboards
+pub const INITIAL_WHITE_PIECES: Bitboard = Bitboard::from_u64(INITIAL_WHITE_PAWNS & INITIAL_WHITE_ROOKS & INITIAL_WHITE_KNIGHTS & INITIAL_WHITE_BISHOPS & INITIAL_WHITE_QUEEN & INITIAL_WHITE_KING);
+pub const INITIAL_BLACK_PIECES: Bitboard = Bitboard::from_u64(INITIAL_BLACK_PAWNS & INITIAL_BLACK_ROOKS & INITIAL_BLACK_KNIGHTS & INITIAL_BLACK_BISHOPS & INITIAL_BLACK_QUEEN & INITIAL_BLACK_KING);
+pub const INITIAL_ALL_PIECES: Bitboard = Bitboard::from_u64(INITIAL_WHITE_PIECES.bits & INITIAL_BLACK_PIECES.bits);
 
 // Utility Bitmaps
 pub const RANK_1: u64 = 0x00000000000000FF;
@@ -100,7 +113,6 @@ pub struct Game {}
 
 pub struct Board {}
 
-pub struct Bitboard {}
 
 pub struct Square {
     index: u8,
