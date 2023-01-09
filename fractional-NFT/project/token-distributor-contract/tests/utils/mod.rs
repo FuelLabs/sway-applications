@@ -89,7 +89,7 @@ pub mod token_distributor_abi_calls {
             .buyback(f_nft.clone(), token_price)
             .tx_params(tx_params)
             .call_params(call_params)
-            .set_contracts(&[Bech32ContractId::from(f_nft.clone())])
+            .set_contracts(&[Bech32ContractId::from(f_nft)])
             .call()
             .await
             .unwrap()
@@ -110,18 +110,15 @@ pub mod token_distributor_abi_calls {
             .methods()
             .create(
                 nft.clone(),
-                external_asset.clone(),
+                external_asset,
                 f_nft.clone(),
-                reserve_price.clone(),
-                token_owner.clone(),
+                reserve_price,
+                token_owner,
                 token_price,
                 token_supply,
                 token_id,
             )
-            .set_contracts(&[
-                Bech32ContractId::from(f_nft.clone()),
-                Bech32ContractId::from(nft.clone()),
-            ])
+            .set_contracts(&[Bech32ContractId::from(f_nft), Bech32ContractId::from(nft)])
             .append_variable_outputs(1)
             .call()
             .await
@@ -136,10 +133,7 @@ pub mod token_distributor_abi_calls {
         contract
             .methods()
             .end(f_nft.clone())
-            .set_contracts(&[
-                Bech32ContractId::from(f_nft.clone()),
-                Bech32ContractId::from(nft.clone()),
-            ])
+            .set_contracts(&[Bech32ContractId::from(f_nft), Bech32ContractId::from(nft)])
             .call()
             .await
             .unwrap()
@@ -161,7 +155,7 @@ pub mod token_distributor_abi_calls {
 
         contract
             .methods()
-            .purchase(amount, f_nft.clone())
+            .purchase(amount, f_nft)
             .tx_params(tx_params)
             .call_params(call_params)
             .append_variable_outputs(1)
@@ -184,7 +178,7 @@ pub mod token_distributor_abi_calls {
 
         contract
             .methods()
-            .purchase_admin(admin, f_nft.clone(), reserve)
+            .purchase_admin(admin, f_nft, reserve)
             .tx_params(tx_params)
             .call_params(call_params)
             .append_variable_outputs(1)
@@ -207,20 +201,7 @@ pub mod token_distributor_abi_calls {
             .tx_params(tx_params)
             .call_params(call_params)
             .append_variable_outputs(1)
-            .set_contracts(&[Bech32ContractId::from(f_nft.clone())])
-            .call()
-            .await
-            .unwrap()
-    }
-
-    pub async fn set_token_price(
-        contract: &TokenDistributor,
-        f_nft: ContractId,
-        token_price: u64,
-    ) -> FuelCallResponse<()> {
-        contract
-            .methods()
-            .set_token_price(f_nft.clone(), token_price)
+            .set_contracts(&[Bech32ContractId::from(f_nft)])
             .call()
             .await
             .unwrap()
@@ -233,7 +214,20 @@ pub mod token_distributor_abi_calls {
     ) -> FuelCallResponse<()> {
         contract
             .methods()
-            .set_reserve(f_nft.clone(), reserve)
+            .set_reserve(f_nft, reserve)
+            .call()
+            .await
+            .unwrap()
+    }
+
+    pub async fn set_token_price(
+        contract: &TokenDistributor,
+        f_nft: ContractId,
+        token_price: u64,
+    ) -> FuelCallResponse<()> {
+        contract
+            .methods()
+            .set_token_price(f_nft, token_price)
             .call()
             .await
             .unwrap()
@@ -245,7 +239,7 @@ pub mod token_distributor_abi_calls {
     ) -> Option<TokenDistribution> {
         contract
             .methods()
-            .token_distribution(f_nft.clone())
+            .token_distribution(f_nft)
             .call()
             .await
             .unwrap()
@@ -255,7 +249,7 @@ pub mod token_distributor_abi_calls {
     pub async fn withdraw(contract: &TokenDistributor, f_nft: ContractId) -> FuelCallResponse<()> {
         contract
             .methods()
-            .withdraw(f_nft.clone())
+            .withdraw(f_nft)
             .append_variable_outputs(1)
             .call()
             .await
@@ -322,13 +316,13 @@ pub mod test_helpers {
         ContractId,
         ContractId,
     ) {
-        let num_wallets = 3;
+        let number_of_wallets = 3;
         let coins_per_wallet = 1;
         let amount_per_coin = 1_000_000;
 
         let mut wallets = launch_custom_provider_and_get_wallets(
             WalletsConfig::new(
-                Some(num_wallets),
+                Some(number_of_wallets),
                 Some(coins_per_wallet),
                 Some(amount_per_coin),
             ),
@@ -415,5 +409,12 @@ pub mod test_helpers {
             nft_id.into(),
             asset_id.into(),
         )
+    }
+
+    pub async fn wallet_balance(asset_contract: ContractId, wallet: &WalletUnlocked) -> u64 {
+        wallet
+            .get_asset_balance(&AssetId::new(*asset_contract))
+            .await
+            .unwrap()
     }
 }

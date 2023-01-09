@@ -1,13 +1,12 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     nft_abi_calls::{approve, mint},
-    test_helpers::{defaults, setup},
+    test_helpers::{defaults, setup, wallet_balance},
     token_distributor_abi_calls::{create, end, purchase, purchase_admin, token_distribution},
 };
 use fuels::{
     prelude::{Address, Identity},
     signers::Signer,
-    tx::AssetId,
 };
 
 mod success {
@@ -64,11 +63,7 @@ mod success {
         let token_distribution_struct =
             token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
         assert_eq!(
-            owner1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset_contract))
-                .await
-                .unwrap(),
+            wallet_balance(asset_contract.clone(), &owner1.wallet).await,
             0
         );
         assert_eq!(
@@ -89,11 +84,7 @@ mod success {
         let token_distribution_struct =
             token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
         assert_eq!(
-            owner1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset_contract))
-                .await
-                .unwrap(),
+            wallet_balance(asset_contract.clone(), &owner1.wallet).await,
             reserve_price
         );
         assert_eq!(

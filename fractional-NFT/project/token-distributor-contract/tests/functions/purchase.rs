@@ -1,7 +1,7 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     nft_abi_calls::{approve, mint},
-    test_helpers::{defaults, setup},
+    test_helpers::{defaults, setup, wallet_balance},
     token_distributor_abi_calls::{create, end, purchase, token_distribution},
 };
 use fuels::{
@@ -55,19 +55,11 @@ mod success {
         let token_distribution_struct =
             token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
         assert_eq!(
-            owner2
-                .wallet
-                .get_asset_balance(&AssetId::new(*fractional_nft_contract))
-                .await
-                .unwrap(),
+            wallet_balance(fractional_nft_contract.clone(), &owner2.wallet).await,
             0
         );
         assert_eq!(
-            owner2
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset_contract))
-                .await
-                .unwrap(),
+            wallet_balance(asset_contract.clone(), &owner2.wallet).await,
             asset_supply
         );
         assert_eq!(
@@ -87,19 +79,11 @@ mod success {
         let token_distribution_struct =
             token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
         assert_eq!(
-            owner2
-                .wallet
-                .get_asset_balance(&AssetId::new(*fractional_nft_contract))
-                .await
-                .unwrap(),
+            wallet_balance(fractional_nft_contract.clone(), &owner2.wallet).await,
             purchase_amount
         );
         assert_eq!(
-            owner2
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset_contract))
-                .await
-                .unwrap(),
+            wallet_balance(asset_contract.clone(), &owner2.wallet).await,
             asset_supply - (purchase_amount * token_price)
         );
         assert_eq!(
@@ -149,19 +133,11 @@ mod success {
         let token_distribution_struct =
             token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
         assert_eq!(
-            owner2
-                .wallet
-                .get_asset_balance(&AssetId::new(*fractional_nft_contract))
-                .await
-                .unwrap(),
+            wallet_balance(fractional_nft_contract.clone(), &owner2.wallet).await,
             0
         );
         assert_eq!(
-            owner2
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset_contract))
-                .await
-                .unwrap(),
+            wallet_balance(asset_contract.clone(), &owner2.wallet).await,
             asset_supply
         );
         assert_eq!(
@@ -181,19 +157,11 @@ mod success {
         let token_distribution_struct =
             token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
         assert_eq!(
-            owner2
-                .wallet
-                .get_asset_balance(&AssetId::new(*fractional_nft_contract))
-                .await
-                .unwrap(),
+            wallet_balance(fractional_nft_contract.clone(), &owner2.wallet).await,
             token_supply
         );
         assert_eq!(
-            owner2
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset_contract))
-                .await
-                .unwrap(),
+            wallet_balance(asset_contract.clone(), &owner2.wallet).await,
             asset_supply - (token_supply * token_price)
         );
         assert_eq!(

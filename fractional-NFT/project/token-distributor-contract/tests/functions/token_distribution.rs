@@ -70,10 +70,10 @@ mod success {
             token_distribution_struct.clone().unwrap().reserve_price,
             Some(reserve_price)
         );
-        assert_eq!(
+        assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
             DistributionState::Started()
-        );
+        ));
         assert_eq!(token_distribution_struct.clone().unwrap().token_id, 0);
         assert_eq!(
             token_distribution_struct.clone().unwrap().token_price,

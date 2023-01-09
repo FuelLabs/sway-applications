@@ -90,10 +90,10 @@ mod success {
             owner_of(&owner1.nft, 0).await,
             Some(fractional_nft_identity.clone())
         );
-        assert_eq!(
+        assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
             DistributionState::Buyback()
-        );
+        ));
 
         end(
             &owner1.token_distributor,
@@ -105,10 +105,10 @@ mod success {
         let token_distribution_struct =
             token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
         assert_eq!(owner_of(&owner1.nft, 0).await, Some(owner_identity.clone()));
-        assert_eq!(
+        assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
             DistributionState::Ended()
-        );
+        ));
     }
 
     #[tokio::test]
@@ -167,10 +167,10 @@ mod success {
             nft_struct.clone().unwrap().admin,
             Some(token_distributor_identity.clone())
         );
-        assert_eq!(
+        assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
             DistributionState::Started()
-        );
+        ));
 
         end(
             &owner1.token_distributor,
@@ -195,10 +195,10 @@ mod success {
         assert_eq!(owner_of(&owner1.nft, 0).await, Some(owner_identity.clone()));
         assert_eq!(nft_struct.clone().unwrap().asset_id, nft_contract.clone());
         assert_eq!(nft_struct.clone().unwrap().admin, None);
-        assert_eq!(
+        assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
             DistributionState::Ended()
-        );
+        ));
     }
 }
 
