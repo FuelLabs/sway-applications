@@ -22,7 +22,7 @@ pub async fn expected_swap_input(
     while i > 0 {
         let pair = (*route.get(i - 1).unwrap(), *route.get(i).unwrap());
         let exchange = &amm.pools.get(&pair).unwrap().instance;
-        latest_input = preview_swap_exact_output(&exchange, latest_input, pair.1, true)
+        latest_input = preview_swap_exact_output(exchange, latest_input, pair.1, true)
             .await
             .other_asset
             .amount;

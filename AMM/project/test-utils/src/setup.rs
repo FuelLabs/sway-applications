@@ -23,7 +23,7 @@ pub mod common {
     pub async fn deploy_amm(wallet: &WalletUnlocked) -> AMMContract {
         let contract_id = Contract::deploy(
             AMM_CONTRACT_BINARY_PATH,
-            &wallet,
+            wallet,
             TxParameters::default(),
             StorageConfiguration {
                 storage_path: Some(AMM_CONTRACT_STORAGE_PATH.to_string()),
@@ -46,7 +46,7 @@ pub mod common {
         wallet: &WalletUnlocked,
         config: &ExchangeContractConfiguration,
     ) -> ExchangeContract {
-        let (id, instance) = deploy_exchange(&wallet, &config).await;
+        let (id, instance) = deploy_exchange(wallet, config).await;
 
         constructor(&instance, config.pair).await;
 
@@ -63,7 +63,7 @@ pub mod common {
     }
 
     pub async fn deploy_and_initialize_amm(wallet: &WalletUnlocked) -> AMMContract {
-        let amm = deploy_amm(&wallet).await;
+        let amm = deploy_amm(wallet).await;
         initialize(&amm.instance, exchange_bytecode_root().await).await;
         amm
     }
@@ -86,7 +86,7 @@ pub mod common {
 
         let contract_id = Contract::deploy_with_parameters(
             binary_path,
-            &wallet,
+            wallet,
             TxParameters::default(),
             StorageConfiguration {
                 storage_path: Some(storage_path),
@@ -187,9 +187,9 @@ pub mod scripts {
         exchange_config: &ExchangeContractConfiguration,
         liquidity_parameters: &LiquidityParameters,
     ) -> ExchangeContract {
-        let exchange = deploy_and_construct_exchange(&wallet, &exchange_config).await;
+        let exchange = deploy_and_construct_exchange(wallet, exchange_config).await;
 
-        deposit_and_add_liquidity(&liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(liquidity_parameters, &exchange, false).await;
 
         exchange
     }
@@ -199,7 +199,7 @@ pub mod scripts {
         provider: &Provider,
         amm: &mut AMMContract,
         asset_ids: &Vec<AssetId>,
-    ) -> () {
+    ) {
         let mut exchange_index = 0;
 
         while exchange_index < asset_ids.len() - 1 {
@@ -291,7 +291,7 @@ pub mod scripts {
         for (asset_index, asset) in assets.iter().enumerate() {
             input_coins.extend(
                 transaction_input_coin(
-                    &provider,
+                    provider,
                     wallet.address(),
                     *asset,
                     if amounts.is_some() {
