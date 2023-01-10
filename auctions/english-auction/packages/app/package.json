@@ -8,7 +8,6 @@
     "build": "tsc && vite build && pnpm create404",
     "build:storybook": "./scripts/build.sh --app=storybook",
     "create404": "cp ./dist/index.html ./dist/404.html",
-    "postinstall": "sh ./scripts/postinstall.sh",
     "preview": "vite preview",
     "test": "playwright test --workers=1",
     "storybook": "start-storybook -p 6006"

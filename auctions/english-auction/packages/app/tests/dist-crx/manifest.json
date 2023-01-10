@@ -1,0 +1,56 @@
+{
+  "manifest_version": 3,
+  "name": "Fuel Wallet",
+  "version": "0.0.1",
+  "icons": {
+    "16": "icons/fuel-logo-16.png",
+    "19": "icons/fuel-logo-19.png",
+    "32": "icons/fuel-logo-32.png",
+    "36": "icons/fuel-logo-36.png",
+    "38": "icons/fuel-logo-38.png",
+    "48": "icons/fuel-logo-48.png",
+    "64": "icons/fuel-logo-64.png",
+    "128": "icons/fuel-logo-128.png",
+    "512": "icons/fuel-logo-512.png"
+  },
+  "action": {
+    "default_title": "Fuel Wallet",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "service-worker-loader.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "assets/content-script-loader.contentScript.ts-88d73701-aecef15c.js"
+      ],
+      "matches": ["<all_urls>"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "clipboardWrite",
+    "notifications",
+    "scripting",
+    "storage",
+    "unlimitedStorage",
+    "webRequest",
+    "contextMenus"
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": ["<all_urls>"],
+      "resources": [
+        "assets/index-ba02b8c1.js",
+        "assets/constants-97362116.js",
+        "assets/pageScript-8aea6675.js",
+        "assets/contentScript.ts-88d73701.js"
+      ],
+      "use_dynamic_url": true
+    }
+  ]
+}

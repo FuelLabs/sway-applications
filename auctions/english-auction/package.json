@@ -37,7 +37,8 @@
     "services:setup": "run-s scripts:setup services:run contracts",
     "services:run": "make -C docker services-run",
     "services:reset": "run-s services:clean services:setup",
-    "storybook": "pnpm -r --filter=english-auction-app storybook"
+    "storybook": "pnpm -r --filter=english-auction-app storybook",
+    "test": "pnpm -r --filter=english-auction-app test"
   },
   "devDependencies": {
     "@babel/core": "^7.19.0",
