@@ -3,6 +3,7 @@ use fuels::prelude::*;
 use test_utils::{
     data_structures::{SwapParameters, NUMBER_OF_ASSETS},
     interface::SCRIPT_GAS_LIMIT,
+    setup::scripts::contract_instances,
 };
 
 #[tokio::test]
@@ -28,7 +29,7 @@ async fn when_route_length_is_one() {
 #[tokio::test]
 #[should_panic(expected = "PairExchangeNotRegistered")]
 async fn when_pair_exchange_not_registered() {
-    let (script_instance, _amm, asset_ids, transaction_parameters, deadline) = setup().await;
+    let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
 
     let mut route = asset_ids;
     let input_amount = 60;
@@ -48,6 +49,7 @@ async fn when_pair_exchange_not_registered() {
             None,
             deadline,
         )
+        .set_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .call()
@@ -56,8 +58,7 @@ async fn when_pair_exchange_not_registered() {
 }
 
 #[tokio::test]
-#[should_panic(expected = "Revert(18446744073709486080)")]
-// the contract call in the script fails with "DeadlinePassed" but that message is not propagated
+#[should_panic(expected = "DeadlinePassed")]
 async fn when_deadline_passed() {
     let (script_instance, amm, asset_ids, transaction_parameters, _deadline) = setup().await;
 
@@ -76,6 +77,7 @@ async fn when_deadline_passed() {
             Some(expected_result),
             0, // deadline is 0
         )
+        .set_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -104,6 +106,7 @@ async fn when_minimum_output_not_satisfied() {
             Some(expected_result + 1), // setting the minimum to be higher than what it can be
             deadline,
         )
+        .set_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -113,7 +116,7 @@ async fn when_minimum_output_not_satisfied() {
 }
 
 #[tokio::test]
-#[should_panic(expected = "Revert(18446744073709486080)")]
+#[should_panic(expected = "ExpectedNonZeroAmount")]
 async fn when_input_is_zero() {
     expected_and_actual_output(SwapParameters {
         amount: 0,
@@ -123,7 +126,7 @@ async fn when_input_is_zero() {
 }
 
 #[tokio::test]
-#[should_panic(expected = "Revert(18446744073709486080)")]
+#[should_panic(expected = "ExpectedNonZeroAmount")]
 // fails because starting with the second swap, the swap input is 0 which is not allowed
 async fn when_input_is_one_and_route_has_more_than_two_assets() {
     expected_and_actual_output(SwapParameters {

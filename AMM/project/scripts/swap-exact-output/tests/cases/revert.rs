@@ -3,6 +3,7 @@ use fuels::prelude::*;
 use test_utils::{
     data_structures::{SwapParameters, NUMBER_OF_ASSETS},
     interface::SCRIPT_GAS_LIMIT,
+    setup::scripts::contract_instances,
 };
 
 #[tokio::test]
@@ -28,7 +29,7 @@ async fn when_route_length_is_one() {
 #[tokio::test]
 #[should_panic(expected = "PairExchangeNotRegistered")]
 async fn when_pair_exchange_not_registered() {
-    let (script_instance, _amm, asset_ids, transaction_parameters, deadline) = setup().await;
+    let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
 
     let mut route = asset_ids;
     let output_amount = 10_000;
@@ -49,6 +50,7 @@ async fn when_pair_exchange_not_registered() {
             maximum_input_amount,
             deadline,
         )
+        .set_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .call()
@@ -57,8 +59,7 @@ async fn when_pair_exchange_not_registered() {
 }
 
 #[tokio::test]
-#[should_panic(expected = "Revert(18446744073709486080)")]
-// the contract call in the script fails with "DeadlinePassed" but that message is not propagated
+#[should_panic(expected = "DeadlinePassed")]
 async fn when_deadline_passed() {
     let (script_instance, amm, asset_ids, transaction_parameters, _deadline) = setup().await;
 
@@ -76,6 +77,7 @@ async fn when_deadline_passed() {
             maximum_input_amount,
             0, // deadline is 0
         )
+        .set_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -103,6 +105,7 @@ async fn when_maximum_input_not_satisfied() {
             maximum_input_amount - 1, // setting the maximum to be lower than what it can be
             deadline,
         )
+        .set_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))

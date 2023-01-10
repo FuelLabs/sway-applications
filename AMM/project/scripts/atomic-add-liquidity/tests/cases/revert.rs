@@ -35,8 +35,7 @@ async fn when_desired_liquidity_zero() {
 }
 
 #[tokio::test]
-#[should_panic(expected = "Revert(18446744073709486080)")]
-// the contract call in the script fails with "DesiredAmountTooHigh" but that message is not propagated
+#[should_panic(expected = "DesiredAmountTooHigh")]
 async fn when_desired_liquidity_too_high() {
     let (script_instance, exchange, liquidity_parameters, transaction_parameters) =
         setup((1000, 1000), 1000).await;
@@ -61,6 +60,7 @@ async fn when_desired_liquidity_too_high() {
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -70,7 +70,7 @@ async fn when_desired_liquidity_too_high() {
 }
 
 #[tokio::test]
-#[should_panic(expected = "Revert(18446744073709486080)")]
+#[should_panic(expected = "CannotAddLessThanMinimumLiquidity")]
 async fn when_one_deposit_is_zero() {
     let (script_instance, exchange, liquidity_parameters, transaction_parameters) =
         setup((1000, 1000), 1000).await;
@@ -93,6 +93,7 @@ async fn when_one_deposit_is_zero() {
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -102,7 +103,7 @@ async fn when_one_deposit_is_zero() {
 }
 
 #[tokio::test]
-#[should_panic(expected = "Revert(18446744073709486080)")]
+#[should_panic(expected = "CannotAddLessThanMinimumLiquidity")]
 async fn when_both_deposits_are_zero() {
     let (script_instance, exchange, liquidity_parameters, transaction_parameters) =
         setup((1000, 1000), 1000).await;
@@ -125,6 +126,7 @@ async fn when_both_deposits_are_zero() {
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))

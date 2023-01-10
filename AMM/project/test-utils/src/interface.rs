@@ -50,7 +50,7 @@ pub mod amm {
                 ),
                 pool,
             )
-            .set_contracts(&[pool.into()])
+            .set_contract_ids(&[pool.into()])
             .call()
             .await
             .unwrap();
