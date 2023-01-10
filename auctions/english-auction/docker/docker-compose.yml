@@ -15,6 +15,23 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+  faucet:
+    container_name: "english-auction_faucet-${ENVIRONMENT:-development}"
+    environment:
+      MIN_GAS_PRICE: ${GAS_PRICE}
+      WALLET_SECRET_KEY: ${WALLET_SECRET}
+      DISPENSE_AMOUNT: ${DISPENSE_AMOUNT}
+      FUEL_NODE_URL: http://english-auction-fuel-core-${ENVIRONMENT:-development}:4000/graphql
+    # Other configurations can be found at;
+    # https://github.com/FuelLabs/faucet#configuration
+    image: ghcr.io/fuellabs/faucet:v0.2.0
+    ports:
+      - "${FUEL_FAUCET_PORT:-4040}:3000"
+    links:
+      - fuel-core
+    depends_on:
+      fuel-core:
+        condition: service_healthy
 
 volumes:
   english-auction-fuel-core-db:
