@@ -34,3 +34,5 @@ test.use({
     use(context);
   },
 });
+
+export const expect = test.expect;
