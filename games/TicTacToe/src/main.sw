@@ -4,11 +4,13 @@ dep interface;
 dep events;
 dep errors;
 dep utils;
+dep data_structures;
 
 use interface::Game;
 use events::{GameDrawnEvent, GameWonEvent, NewGameEvent};
 use errors::Errors;
 use utils::{draw, win_check};
+use data_structures::State;
 use core::ops::Eq;
 use std::{auth::msg_sender, logging::log};
 
@@ -31,11 +33,13 @@ storage {
     // Stores move counter
     player_turn: Option<Identity> = Option::None,
     move_counter: u64 = 0,
+    state: State = State::Ended,
 }
 
 impl Game for Contract {
-    #[storage(write)]
+    #[storage(read, write)]
     fn new_game(player_one: Identity, player_two: Identity) {
+        require(storage.state == State::Ended, Errors::GameHasNotEnded);
         storage.player_one = Option::Some(player_one);
         storage.player_two = Option::Some(player_two);
 
@@ -46,6 +50,7 @@ impl Game for Contract {
             position += 1;
         }
         storage.move_counter = 0;
+        storage.state = State::Playing;
         log(NewGameEvent {
             player_one,
             player_two,
@@ -54,6 +59,7 @@ impl Game for Contract {
 
     #[storage(read, write)]
     fn move(position: u64) {
+        require(storage.state == State::Playing, Errors::GameHasEnded);
         // check if game hasn't ended, if the cell is empty and that the right player is making the move
         require(storage.player_turn.unwrap() == msg_sender().unwrap(), Errors::IncorrectPlayerTurn);
         require(position < 9, Errors::InvalidPosition);
@@ -70,11 +76,13 @@ impl Game for Contract {
             }
             if (win_check(board, storage.player_turn)) {
                 storage.player_turn = Option::None;
+                storage.state = State::Ended;
                 log(GameWonEvent {
                     player: msg_sender().unwrap(),
                 });
             } else if draw(board, storage.player_one, storage.player_two) {
                 storage.player_turn = Option::None;
+                storage.state = State::Ended;
                 log(GameDrawnEvent {
                     player_one: storage.player_one.unwrap(),
                     player_two: storage.player_two.unwrap(),

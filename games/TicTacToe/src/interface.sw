@@ -1,7 +1,7 @@
 library interface;
 
 abi Game {
-    #[storage(write)]
+    #[storage(read, write)]
     fn new_game(player_one: Identity, player_two: Identity);
 
     #[storage(read, write)]
