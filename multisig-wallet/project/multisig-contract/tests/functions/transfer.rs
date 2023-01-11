@@ -83,11 +83,14 @@ mod success {
             .await
             .unwrap();
 
-        assert_eq!(initial_contract_balance, 200);
+        assert_eq!(initial_contract_balance, DEFAULT_TRANSFER_AMOUNT);
         assert_eq!(initial_receiver_balance, 0);
 
         assert_eq!(final_contract_balance, 0);
-        assert_eq!(final_receiver_balance, 200);
+        assert_eq!(final_receiver_balance, DEFAULT_TRANSFER_AMOUNT);
+
+        assert!(final_contract_balance < initial_contract_balance);
+        assert!(final_receiver_balance > initial_receiver_balance);
     }
 }
 
