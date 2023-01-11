@@ -1,8 +1,8 @@
 use crate::utils::{
     abi_calls::{balance, constructor, nonce, transaction_hash, transfer},
     test_helpers::{
-        base_asset_contract_id, constructor_users, setup_env, transfer_parameters,
-        transfer_signatures, DEFAULT_THRESHOLD, DEFAULT_TRANSFER_AMOUNT,
+        base_asset_contract_id, default_users, setup_env, transfer_parameters, transfer_signatures,
+        DEFAULT_THRESHOLD, DEFAULT_TRANSFER_AMOUNT,
     },
     VALID_SIGNER_PK,
 };
@@ -18,7 +18,7 @@ mod success {
 
         let (receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
 
         deployer
             .wallet
@@ -139,7 +139,7 @@ mod revert {
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
 
         let nonce = nonce(&deployer.contract).await.value;
 
@@ -175,7 +175,7 @@ mod revert {
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
 
         deployer
             .wallet
@@ -223,7 +223,7 @@ mod revert {
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
 
         deployer
             .wallet

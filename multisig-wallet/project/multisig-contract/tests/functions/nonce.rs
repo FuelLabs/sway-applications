@@ -1,6 +1,6 @@
 use crate::utils::{
     abi_calls::{constructor, nonce},
-    test_helpers::{constructor_users, setup_env, DEFAULT_THRESHOLD},
+    test_helpers::{default_users, setup_env, DEFAULT_THRESHOLD},
     VALID_SIGNER_PK,
 };
 
@@ -14,7 +14,7 @@ mod success {
 
         let initial_nonce = nonce(&deployer.contract).await.value;
 
-        constructor(&deployer.contract, constructor_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
 
         let final_nonce = nonce(&deployer.contract).await.value;
 

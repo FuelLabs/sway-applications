@@ -169,7 +169,7 @@ pub mod test_helpers {
         Ok((private_key, deployer, non_owner))
     }
 
-    pub fn constructor_users() -> Vec<User> {
+    pub fn default_users() -> Vec<User> {
         let fuel_user_1 = User {
             address: Bits256::from_hex_str(
                 "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
