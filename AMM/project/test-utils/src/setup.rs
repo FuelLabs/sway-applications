@@ -167,18 +167,18 @@ pub mod scripts {
     use crate::{data_structures::TransactionParameters, interface::amm::add_pool};
     use common::{deploy_and_construct_exchange, deposit_and_add_liquidity};
     use fuels::{
-        contract::contract::SetableContract,
+        contract::contract::SettableContract,
         tx::{Input, Output, TxPointer},
         types::resource::Resource,
     };
 
     pub const MAXIMUM_INPUT_AMOUNT: u64 = 1_000_000;
 
-    pub fn contract_instances(amm: &AMMContract) -> Vec<&dyn SetableContract> {
+    pub fn contract_instances(amm: &AMMContract) -> Vec<&dyn SettableContract> {
         amm.pools
             .iter()
-            .map(|((_, _), exchange)| &exchange.instance as &dyn SetableContract)
-            .chain(std::iter::once(&amm.instance as &dyn SetableContract))
+            .map(|((_, _), exchange)| &exchange.instance as &dyn SettableContract)
+            .chain(std::iter::once(&amm.instance as &dyn SettableContract))
             .collect()
     }
 
