@@ -2,18 +2,16 @@ Table of Contents
 
 - [Overview](#overview)
 - [Use Cases](#use-cases)
-  - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
-    - [Multisig Wallet Contract](#multisig-wallet-contract)
-      - [Core Functionality](#core-functionality)
-        - [`cancel_transaction()`](#cancel_transaction)
-        - [`constructor()`](#constructor)
-        - [`execute_transaction()`](#execute_transaction)
-        - [`transfer()`](#transfer)
-      - [State Checks](#state-checks)
-        - [`nonce()`](#nonce)
-        - [`balance()`](#balance)
-      - [Utilities](#Utilities)
-        - [`transaction_hash()`](#transaction_hash)
+  - [Core Functionality](#core-functionality)
+    - [`cancel_transaction()`](#cancel_transaction)
+    - [`constructor()`](#constructor)
+    - [`execute_transaction()`](#execute_transaction)
+    - [`transfer()`](#transfer)
+  - [State Checks](#state-checks)
+    - [`nonce()`](#nonce)
+    - [`balance()`](#balance)
+  - [Utilities](#Utilities)
+    - [`transaction_hash()`](#transaction_hash)
 - [Sequence Diagram](#sequence-diagram)
 
 # Overview
@@ -27,12 +25,6 @@ It outlines the use cases, i.e., desirable functionality, in addition to require
 This section contains general information about the functionality of the application and thus does not touch upon any technical aspects.
 
 If you are interested in a functional overview then this is the section for you.
-
-## Actions that users are able to perform
-
-This sub-section details what a user is able to do, e.g., click a button and "x, y, z" happens.
-
-### Multisig Wallet Contract
 
 #### Core Functionality
 
