@@ -105,17 +105,6 @@ mod revert {
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        deployer
-            .wallet
-            .force_transfer_to_contract(
-                deployer.contract.get_contract_id(),
-                DEFAULT_TRANSFER_AMOUNT,
-                BASE_ASSET_ID,
-                TxParameters::default(),
-            )
-            .await
-            .unwrap();
-
         let nonce = nonce(&deployer.contract).await.value;
 
         let tx_hash = transaction_hash(
