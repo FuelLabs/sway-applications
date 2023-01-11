@@ -21,7 +21,7 @@ mod success {
         let final_nonce = nonce(&deployer.contract).await.value;
 
         assert_eq!(initial_nonce, 1);
-        assert_eq!(final_nonce, 2);
+        assert_eq!(final_nonce, initial_nonce + 1);
     }
 }
 
