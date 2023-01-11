@@ -116,7 +116,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "SenderNotPermittedToMint")]
     async fn when_sender_not_minter() {
         let (deployer, false_minter, total_supply) = setup().await;
 
@@ -139,7 +139,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "GreaterThanMaximumSupply")]
     async fn when_mint_more_than_supply() {
         let (deployer, _, total_supply) = setup().await;
 
@@ -150,7 +150,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "SenderNotPermittedToMint")]
     async fn when_not_initalized() {
         let (deployer, _, total_supply) = setup().await;
 
