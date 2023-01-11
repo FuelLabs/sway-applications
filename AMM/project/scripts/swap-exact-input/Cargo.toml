@@ -6,7 +6,7 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dev-dependencies]
-fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", branch = "hal3e/contract-logs-in-scripts", features = ["fuel-core-lib"] }
+fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", features = ["fuel-core-lib"] }
 test-utils = { path = "../../test-utils" }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
