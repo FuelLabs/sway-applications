@@ -35,6 +35,14 @@ mod revert {
     }
 
     #[tokio::test]
+    #[should_panic(expected = "ThresholdCannotBeZero")]
+    async fn threshold_cannot_be_zero() {
+        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+        constructor(&deployer.contract, constructor_users(), 0).await;
+    }
+
+    #[tokio::test]
     #[should_panic(expected = "AddressCannotBeZero")]
     async fn address_cannot_be_zero() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
@@ -49,14 +57,6 @@ mod revert {
         };
 
         constructor(&deployer.contract, users, DEFAULT_THRESHOLD).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "ThresholdCannotBeZero")]
-    async fn threshold_cannot_be_zero() {
-        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
-
-        constructor(&deployer.contract, constructor_users(), 0).await;
     }
 
     #[tokio::test]
