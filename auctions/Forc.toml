@@ -1,3 +1,4 @@
+[workspace]
 members = [
   "./english-auction/project/auction-contract",
   "./english-auction/project/auction-contract/tests/artifacts/asset",

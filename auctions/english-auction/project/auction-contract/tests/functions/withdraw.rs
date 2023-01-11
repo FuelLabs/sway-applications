@@ -40,7 +40,7 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let _result = provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1, Option::None).await;
 
         assert_eq!(
             deposit_balance(auction_id, &seller.auction, buyer1_identity.clone())
@@ -309,7 +309,7 @@ mod success {
         )
         .await;
 
-        let _result = provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1, Option::None).await;
 
         assert_eq!(
             deposit_balance(auction_id, &seller.auction, seller_identity.clone())
@@ -495,7 +495,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionDoesNotExist")]
     async fn when_auction_id_does_not_exist() {
         let (_, _, buyer1, _, _, sell_token_contract_id, _, _, _) = setup().await;
         let (sell_amount, _, _, _) = defaults_token().await;
@@ -505,7 +505,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionIsNotClosed")]
     async fn when_auction_has_not_ended() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -537,7 +537,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "UserHasAlreadyWithdrawn")]
     async fn when_sender_withdraws_twice() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -570,7 +570,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "UserHasAlreadyWithdrawn")]
     async fn when_sender_did_not_deposit_balance() {
         let (_, seller, buyer1, buyer2, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;

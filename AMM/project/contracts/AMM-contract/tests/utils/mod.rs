@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*, tx::Contract as TxContract};
+use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::Contract as TxContract};
 
 abigen!(
     AMM,
@@ -29,7 +29,7 @@ pub mod exchange_abi_calls {
     pub async fn constructor(
         contract: &Exchange,
         pair: (ContractId, ContractId),
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         let receipt = contract.methods().constructor(pair).call().await;
         receipt.unwrap()
     }
@@ -41,7 +41,7 @@ pub mod amm_abi_calls {
     pub async fn initialize(
         contract: &AMM,
         exchange_bytecode_root: ContractId,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .initialize(exchange_bytecode_root)
@@ -54,7 +54,7 @@ pub mod amm_abi_calls {
         contract: &AMM,
         asset_pair: (ContractId, ContractId),
         pool: ContractId,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .add_pool(asset_pair, pool)

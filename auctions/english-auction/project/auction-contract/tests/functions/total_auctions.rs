@@ -111,7 +111,7 @@ mod success {
 
         assert_eq!(1, total_auctions(&seller.auction).await);
 
-        let _result = provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1, Option::None).await;
 
         assert_eq!(1, total_auctions(&seller.auction).await);
     }

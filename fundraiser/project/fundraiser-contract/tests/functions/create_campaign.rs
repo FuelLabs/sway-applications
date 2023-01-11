@@ -177,7 +177,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DeadlineMustBeInTheFuture")]
     async fn when_deadline_is_in_the_past() {
         let (author, _, _, _, defaults) = setup().await;
         let deadline = 0;
@@ -194,7 +194,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "TargetAmountCannotBeZero")]
     async fn when_target_amount_is_zero() {
         let (author, _, _, _, defaults) = setup().await;
         let target_amount = 0;

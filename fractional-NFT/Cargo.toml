@@ -1,0 +1,6 @@
+[workspace]
+resolver = "2"
+members = [
+    "./project/fractional-NFT-contract",
+    "./project/token-distributor-contract",
+]

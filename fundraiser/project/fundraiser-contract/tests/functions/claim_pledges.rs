@@ -59,7 +59,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_zero() {
         let (author, _, _, _, defaults) = setup().await;
 
@@ -77,7 +77,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidID")]
     async fn when_id_is_greater_than_number_of_campaigns() {
         let (author, _, _, _, defaults) = setup().await;
 
@@ -95,7 +95,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "UnauthorizedUser")]
     async fn when_sender_is_not_author() {
         let (author, user, _, _, defaults) = setup().await;
 
@@ -114,7 +114,7 @@ mod revert {
 
     #[tokio::test]
     #[ignore]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DeadlineNotReached")]
     async fn when_claiming_before_deadline() {
         let (author, user, asset, _, defaults) = setup().await;
         let deadline = 5;
@@ -142,10 +142,10 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "TargetNotReached")]
     async fn when_target_amount_is_not_reached() {
         let (author, _, _, _, defaults) = setup().await;
-        let deadline = 1;
+        let deadline = 5;
 
         create_campaign(
             &author.contract,
@@ -161,10 +161,10 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AlreadyClaimed")]
     async fn when_claiming_more_than_once() {
         let (author, user, asset, _, defaults) = setup().await;
-        let deadline = 5;
+        let deadline = 7;
 
         mint(
             &asset.contract,
@@ -188,10 +188,10 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "CampaignHasBeenCancelled")]
     async fn when_cancelled() {
         let (author, user, asset, _, defaults) = setup().await;
-        let deadline = 6;
+        let deadline = 8;
 
         mint(
             &asset.contract,
