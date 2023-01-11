@@ -81,6 +81,13 @@ mod revert {
     async fn total_weight_cannot_be_less_than_threshold() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        constructor(&deployer.contract, constructor_users(), 100).await;
+        let default_users = constructor_users();
+
+        let mut default_total_weight = 0;
+        for user in default_users.iter() {
+            default_total_weight += user.weight;
+        }
+
+        constructor(&deployer.contract, default_users, default_total_weight + 1).await;
     }
 }
