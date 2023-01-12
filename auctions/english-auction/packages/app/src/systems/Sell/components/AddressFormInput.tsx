@@ -45,7 +45,11 @@ export const AddressFormInput = ({
             </Input>
           </Flex>
           <Flex align="start" css={{ marginTop: "$1", marginRight: "$2" }}>
-            <Button onPress={() => field.onChange(walletAddress)}>
+            <Button
+              name="Fill seller address"
+              aria-label="Fill seller address"
+              onPress={() => field.onChange(walletAddress)}
+            >
               {slicedWalletAddress}
             </Button>
           </Flex>
