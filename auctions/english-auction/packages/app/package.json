@@ -5,6 +5,7 @@
   "author": "Fuel Labs <contact@fuel.sh> (https://fuel.network/)",
   "scripts": {
     "dev": "vite",
+    "dev-test": "vite --port 9000",
     "build": "tsc && vite build && pnpm create404",
     "build:storybook": "./scripts/build.sh --app=storybook",
     "create404": "cp ./dist/index.html ./dist/404.html",
