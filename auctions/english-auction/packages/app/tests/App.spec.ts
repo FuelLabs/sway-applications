@@ -52,10 +52,11 @@ test.describe('e2e', () => {
     const connectPage = await connectPagePromise;
     await connectPage.waitForLoadState();
     const connectButton = connectPage.locator('button').getByText('Connect');
+    await connectPage.screenshot({ path: './screenshots/pic0.png', fullPage: true });
     await connectButton.click();
-    await connectPage.close();
 
     await appPage.goto('/sell');
+    await appPage.reload();
 
     await appPage.screenshot({ path: './screenshots/pic1.png', fullPage: true });
 
@@ -64,12 +65,7 @@ test.describe('e2e', () => {
     expect(createAuctionButton).toBeDisabled();
 
     await appPage.screenshot({ path: './screenshots/pic2.png', fullPage: true });
-    // TODO fix test the below assertion should work
-    // await expect(createAuctionButton).toBeDisabled();
 
-    // const sellerAddressInput = appPage.locator(`input[name="sellerAddress"]`);
-    // TODO figure out if I need this
-    // await expect(sellerAddressInput).toBeFocused();
     const fillSellerAddressButton = appPage.locator('button').getByText('fuel...apex');
     expect(fillSellerAddressButton).toBeDefined();
     await appPage.screenshot({ path: './screenshots/pic3.png', fullPage: true });
@@ -91,17 +87,16 @@ test.describe('e2e', () => {
     const approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
+    await appPage.screenshot({ path: './screenshots/pic5.png', fullPage: true });
+
     const approvePage = await approvePagePromise;
     await approvePage.waitForLoadState();
-    const approveButton = approvePage.locator('button').getByText('Approve');
-    const enterPasswordPagePromise = context.waitForEvent('page');
+    const approveButton = approvePage.locator('button').getByText('Confirm');
     await approveButton.click();
 
-    const enterPasswordPage = await enterPasswordPagePromise;
-    await enterPasswordPage.waitForLoadState();
-    const enterPasswordInput = enterPasswordPage.locator(`aria-label=["Your Password"]`);
+    const enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
     await enterPasswordInput.fill(WALLET_PASSWORD);
-    const confirmButton = enterPasswordPage.locator('button').getByText('Confirm Transaction');
+    const confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
     await confirmButton.click();
 
     // Expect transaction to be successful
