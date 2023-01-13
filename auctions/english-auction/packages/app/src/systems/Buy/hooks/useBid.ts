@@ -16,14 +16,20 @@ export const useBid = ({ auctionId, auctionAsset }: UseBidProps) => {
 
   const mutation = useMutation(
     async () => {
+      console.log('ASDFASDFASDFASDF');
       if (!contract) throw new Error('Contract not connected');
-
+      console.log('cur address', contract.wallet?.address.toString());
       const callParams: CoinQuantityLike | undefined = auctionAsset.TokenAsset ?? undefined;
 
+      console.log('call params: ', callParams);
+      console.log('id: ', auctionId);
+      console.log('auction asset', auctionAsset);
       const { transactionResult } = await contract.functions
         .bid(auctionId, auctionAsset)
         .callParams({ forward: callParams })
         .call();
+
+      console.log('res', transactionResult);
 
       return transactionResult;
     },

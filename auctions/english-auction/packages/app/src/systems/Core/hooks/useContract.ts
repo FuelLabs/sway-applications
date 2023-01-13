@@ -13,7 +13,7 @@ export const useContract = () => {
     isLoading: isContractLoading,
     isError: isContractError,
   } = useQuery(
-    ['contract'],
+    ['contract', wallet],
     () => {
       // Connects our contract instance to the deployed contract
       // using the given wallet.

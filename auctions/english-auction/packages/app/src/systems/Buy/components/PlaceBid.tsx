@@ -54,7 +54,7 @@ export const PlaceBid = ({
     <Card>
       <Card.Body>
         {identityOutput === seller.Address?.value ? (
-          <Text>
+          <Text aria-label="Seller cannot bid">
             <Flex gap="$4">
               <Icon icon="X" color="tomato10" />
               Error sellers cannot bid on their own auctions. Change your wallet

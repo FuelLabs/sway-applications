@@ -1,5 +1,3 @@
-import { sleep } from 'fuels';
-
 import { test, expect } from './fixtures';
 
 const WORDS = 'monkey advice bacon rival fitness flip inspire public yard depart thank also';
@@ -50,6 +48,7 @@ test.describe('e2e', () => {
 
     const connectPagePromise = context.waitForEvent('page');
 
+    // G0 back to app page and connect wallet
     await appPage.goto('/sell');
 
     // CONNECT TO WALLET
@@ -82,18 +81,18 @@ test.describe('e2e', () => {
     await appPage.screenshot({ path: './screenshots/pic4.png', fullPage: true });
 
     await expect(createAuctionButton).toBeEnabled();
-    const approvePagePromise = context.waitForEvent('page');
+    let approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
     // Handle transaction approval in web wallet
-    const approvePage = await approvePagePromise;
+    let approvePage = await approvePagePromise;
     await approvePage.waitForLoadState();
-    const approveButton = approvePage.locator('button').getByText('Confirm');
+    let approveButton = approvePage.locator('button').getByText('Confirm');
     await approveButton.click();
 
-    const enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
+    let enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
     await enterPasswordInput.fill(WALLET_PASSWORD);
-    const confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
+    let confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
     await confirmButton.click();
 
     // Expect transaction to be successful
@@ -103,7 +102,63 @@ test.describe('e2e', () => {
     // ACCOUNT 2 BIDS ON AUCTION
     await appPage.goto('/buy');
 
-    await sleep(30000);
+    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').first();
+    await expect(errorText).toContainText(
+      'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
+    );
+
+    // Switch to account 2
+    await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
+
+    // First we have to add a second account
+    const accountsButton = walletPage.locator('[aria-label="Accounts"]');
+    await accountsButton.click();
+
+    const addAccountButton = walletPage.locator('[aria-label="Add account"]');
+    await addAccountButton.click();
+
+    const accountNameInput = walletPage.locator('[aria-label="Account Name"]');
+    await accountNameInput.fill('Account 2');
+
+    const accountFormSubmitButton = walletPage.locator('button').getByText('Create');
+    await accountFormSubmitButton.click();
+
+    const passwordInput = walletPage.locator('[aria-label="Your Password"]');
+    await passwordInput.fill(WALLET_PASSWORD);
+    const accountConfirmButton = walletPage.locator('button').getByText('Add Account');
+    await accountConfirmButton.click();
+
+    await appPage.goto('/buy');
+    await appPage.reload();
+    await appPage.waitForLoadState();
+
+    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').first();
+    await expect(cancelErrorText).toContainText(
+      'Error only the seller of the auction can cancel it.'
+    );
+
+    // Now we can bid on the auction
+    const bidAmountInput = appPage.getByPlaceholder('0.0').first();
+    await bidAmountInput.fill('0.001');
+    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').first();
+    await expect(placeBidButton).toBeEnabled();
+    approvePagePromise = context.waitForEvent('page');
+    await placeBidButton.click();
+
+    // Handle transaction approval in web wallet
+    approvePage = await approvePagePromise;
+    await approvePage.waitForLoadState();
+    approveButton = approvePage.locator('button').getByText('Confirm');
+    await approveButton.click();
+
+    enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
+    await enterPasswordInput.fill(WALLET_PASSWORD);
+    confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
+    await confirmButton.click();
+
+    // Expect transaction to be successful
+    const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
+    await bidTransactionMessage.waitFor();
 
     // ACCOUNT 1 CANCELS AUCTION
 
