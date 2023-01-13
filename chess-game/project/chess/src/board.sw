@@ -58,7 +58,7 @@ pub const EN_PASSANT_CLEARING_MASK: u64 = 0xFFFFFFFFFF00FFFF;
 // bitstacks are calculated from the piecemap
 pub struct Board {
     piece_map: b256,
-    // side to move, en passant target square, halfmove clock, fullmove counter, castling ability
+    bitstack: BitStack,
     metadata: u64,
 }
 
@@ -66,15 +66,17 @@ impl Board {
     pub fn new() -> Board {
         Board {
             piece_map: STARTING_POSITIONS,
+            bitstack: BitStack::new(),
             metadata: STARTING_METADATA,
         }
     }
 }
 
 impl Board {
-    pub fn build(pieces: b256, data: u64) -> Board {
+    pub fn build(pieces: b256, bits: BitStack, data: u64) -> Board {
         Board {
             piece_map: pieces,
+            bitstack: bits,
             metadata: data,
         }
     }
@@ -180,7 +182,8 @@ impl Board {
         self.metadata = self.metadata & FULL_MOVE_CLEARING_MASK;
     }
 
-    pub fn write_square_to_piecemap(mut self, piece: Piece, dest: Square) {
+    // TODO: what about color in piece code?
+    pub fn write_square_to_piecemap(mut self, color: u64, piece: Piece, dest: Square) {
         self.clear_square(dest);
         let mut index = dest.to_index();
         let mut piece_code = compose((0, 0, 0, (piece.to_u64())));
@@ -191,10 +194,8 @@ impl Board {
 
         }
     }
-}
 
-impl Board {
-     // TODO: move to Square::occupant() ?
+    // TODO: move to Square::occupant() ?
     // needs the piece map though...
     pub fn read_square(self, square_index: u64) -> (u64, Piece) {
         let mut index = square_index;
@@ -210,19 +211,24 @@ impl Board {
         let piece = Piece::from_u64(piece_code).unwrap();
         (color, piece)
     }
+}
+
+impl Board {
+
 
     // wraps Square::clear() & Square::set() ??                  REVIEW !
-    pub fn move_piece(mut self, src: Square, dest: Square, piece: Piece) {
+    pub fn move_piece(mut self, src: Square, dest: Square) {
         // let mut index_1 = src.to_index();
         // let mut index_2 = dest.to_index();
         // let piece_code = piece.to_u64();
-
+        let (color, piece) = self.read_square(src.to_index());
         // clear src
         self.clear_square(src);
-        // clear dest
+        // clear dest if !color
         self.clear_square(dest);
         // set src
-        self.write_square_to_piecemap(piece, dest);
+        // TODO: add color
+        self.write_square_to_piecemap(color, piece, dest);
     }
 
     pub fn side_to_move(self) -> u64 {
@@ -252,10 +258,18 @@ impl Board {
 }
 
 impl Board {
-    // pub fn read_from_bitstack(board: Board) -> Board {
+    pub fn read_from_bitstack(board: Board) -> Board {
         // write piece_map, not sure about metadata yet...
-    //     let board = Board::new()
-    // }
+        let board = Board::new();
+        // loop over each index of bitstack, getting color and piece
+        // set in piecemap with board.write_square_to_piecemap()
+        let mut i = 0;
+        while i < 64 {
+            let bit = query_bit(board.bitstack.all.bits, i);
+
+        }
+        Board::new()
+    }
 
     pub fn write_to_bitstack(self, board: Board) -> BitStack {
         let mut bitstack = BitStack::new();
@@ -338,7 +352,7 @@ impl Board {
         // read the piece on src square
         let piece = self.square(move.source);
         // set the piece on dest and clear src
-        self.move_piece(move.src, move.dest, piece);
+        self.move_piece(move.src, move.dest, color, piece);
         */
 
 
@@ -498,7 +512,7 @@ fn test_new_board() {
 
 #[test()]
 fn test_transition_side_to_move() {
-    let mut p1 = Board::build(STARTING_POSITIONS, STARTING_METADATA);
+    let mut p1 = Board::build(STARTING_POSITIONS, BitStack::new(), STARTING_METADATA);
     let m1 = Move::build(Square::a3, Square::a4, Option::None);
     p1.transition(m1);
     assert(p1.side_to_move() == BLACK);
@@ -509,7 +523,7 @@ fn test_transition_side_to_move() {
 
 #[test()]
 fn test_transition_half_move_increment() {
-    let mut p1 = Board::build(STARTING_POSITIONS, STARTING_METADATA);
+    let mut p1 = Board::build(STARTING_POSITIONS, BitStack::new(),STARTING_METADATA);
     let m1 = Move::build(Square::a2, Square::a3, Option::None);
     p1.transition(m1);
     assert(p1.half_move_counter() == 1);
@@ -518,7 +532,7 @@ fn test_transition_half_move_increment() {
 #[test()]
 fn test_increment_full_move_counter() {
     let metadata = 0b00000000_00000000_00000000_00000000_00001111_00000000_00000000_00000001;
-    let mut p1 = Board::build(STARTING_POSITIONS, metadata);
+    let mut p1 = Board::build(STARTING_POSITIONS, BitStack::new(), metadata);
     let m1 = Move::build(Square::a2, Square::a3, Option::None);
 
     p1.transition(m1);

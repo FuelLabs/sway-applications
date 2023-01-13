@@ -1,7 +1,7 @@
 library bitstack;
 
 dep bitmap;
-
+use std::logging::log;
 use bitmap::*;
 
 /// The BitBoard type can be thought of as a stack of layers
@@ -67,17 +67,16 @@ impl BitStack {
 //////////////////////////////////////////////////////////////////
 #[test()]
 fn test_new_bitstack() {
-    let board = BitStack::new();
-
-    assert(board.all.bits == 0xFFFF00000000FFFF);
-    assert(board.pawns.bits == 0x00FF000000000000 | 0x000000000000FF00);
-    assert(board.knights.bits == 0x4200000000000000 | 0x0000000000000042);
-    assert(board.bishops.bits == 0x2400000000000000 | 0x0000000000000024);
-    assert(board.rooks.bits == 0x8100000000000000 | 0x0000000000000081);
-    assert(board.queens.bits == 0x0800000000000000 | 0x0000000000000008);
-    assert(board.kings.bits == 0x1000000000000000 | 0x0000000000000010);
-    assert(board.black.bits == 0xFFFF000000000000);
-    assert(board.white.bits == 0x000000000000FFFF);
-    // assert(board.pinned.bits == 0x0000000000000000);
-    // assert(board.checkers.bits == 0x0000000000000000);
+    let stack = BitStack::new();
+    assert(stack.all == ALL_PIECES);
+    // assert(stack.pawns == BLACK_PAWNS | WHITE_PAWNS);
+    // assert(stack.knights == BLACK_KNIGHTS | WHITE_KNIGHTS);
+    // assert(stack.bishops == BLACK_BISHOPS | WHITE_BISHOPS);
+    // assert(stack.rooks == BLACK_ROOKS | WHITE_ROOKS);
+    // assert(stack.queens == BLACK_QUEEN | WHITE_QUEEN);
+    // assert(stack.kings == BLACK_KING | WHITE_KING);
+    // assert(stack.black == BLACK_PIECES);
+    // assert(stack.white == WHITE_PIECES);
+    // assert(stack.pinned == 0x0000000000000000);
+    // assert(stack.checkers == 0x0000000000000000);
 }

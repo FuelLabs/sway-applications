@@ -12,8 +12,8 @@ pub fn decompose(val: b256) -> (u64, u64, u64, u64) {
 }
 
 // Bitwise operations helpers
-
 const MAX_BINARY_U64: u64 = 0b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111;
+const MAX_B256: b256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
 /// Set the nth bit of a bitmap to `0`.
 pub fn turn_off_bit(bitmap: u64, n: u64) -> u64 {
@@ -56,47 +56,38 @@ pub fn multi_bit_mask(n: u64) -> u64 {
     (1 << n) - 1
 }
 
-// used to generate a mask for clearing a nibble, eg:
-// 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFFFFFFFFFFFFFFFFFFF;
+// used to generate a mask for clearing a nibble, eg: b256_multimask(3) returns:
+// 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFF;
 pub fn b256_multimask(n: u64) -> b256 {
-    let LSB_ONES: b256 = 0x0000000000000000000000000000000000000000000000001111111111111111;
-    let mut mask_part_1 = ZERO_B256;
-    let mut mask_part_2 = ZERO_B256;
     assert(n < 64);
-    let mut nibble_index = n * 4;
-
-    let mut left_mask_size = 256 - nibble_index - 4;
-    let words_left_of_target = left_mask_size / 64;
-    let remainder_l = left_mask_size % 64;
-    let remainder_l_mask = compose((0, 0, 0, remainder_l));
-
-    let words_right_of_target = nibble_index / 4;
-    let remainder_r = nibble_index % 64;
-    let remainder_r_mask = compose((0, 0, 0, remainder_r));
-
-    let mut i = 0;
-    while i < words_left_of_target {
-        let shift = (i + 1) * 64;
-        mask_part_1 = mask_part_1 | (LSB_ONES << 256 - shift);
-        i += 1;
-    };
-    mask_part_1 = mask_part_1 | (remainder_l_mask << ((words_right_of_target * 64) + 64 - remainder_l));
-
-    i = 0;
-    while i < words_right_of_target {
-        let shift = (i + 1) * 64;
-        mask_part_2 = mask_part_2 | (LSB_ONES << shift);
-        i += 1;
-    };
-    mask_part_2 = mask_part_2 | (remainder_r_mask << words_right_of_target * 64);
-
+    let mut mask_part_1 = MAX_B256;
+    let mut mask_part_2 = MAX_B256;
+    mask_part_1 = mask_part_1 << (n * 4 + 4);
+    mask_part_2 = mask_part_2 >> (256 - n * 4);
     mask_part_1 | mask_part_2
 }
+
+// pub fn b256_set_bit()
 
 /// Get a bitmask with a single `1` at the nth position.
 pub fn single_bit_mask(n: u64) -> u64 {
     // TODO: fix bug ! when n == 0
     1 << n
+}
+
+#[test()]
+fn test_multimask() {
+    let m0 = b256_multimask(0);
+    let m1 = b256_multimask(1);
+    let m11 = b256_multimask(11);
+    let m42 = b256_multimask(42);
+    let m63 = b256_multimask(63);
+
+    assert(m0 == 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0);
+    assert(m1 == 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0F);
+    assert(m11 == 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFFFFFFFFFF);
+    assert(m42 == 0xFFFFFFFFFFFFFFFFFFFFF0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+    assert(m63 == 0x0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
 }
 
 
