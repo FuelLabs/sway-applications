@@ -1,4 +1,3 @@
-import { Wallet } from 'fuels';
 import { useQuery } from 'react-query';
 
 import { useFuel } from './useFuel';
@@ -7,10 +6,6 @@ export const useWallet = () => {
   const [fuel] = useFuel();
 
   if (!fuel) throw new Error('Error fuelWeb3 instance is not defined');
-  // Auto connect application
-  // TODO: check if connected to instance
-  // https://github.com/FuelLabs/fuels-wallet/pull/413
-  fuel.connect();
 
   const {
     data: wallet,
@@ -19,8 +14,11 @@ export const useWallet = () => {
   } = useQuery(
     ['wallet'],
     async () => {
+      // TODO fix: don't hardcode
+      await fuel.connect({ url: 'http://localhost:4000/graphql' });
       const selectedAccount = (await fuel.getSelectedAccount()) as string;
-      return Wallet.fromAddress(selectedAccount, fuel.getProvider());
+      const selectedWallet = await fuel.getWallet(selectedAccount);
+      return selectedWallet;
     },
     {
       enabled: !!fuel,
