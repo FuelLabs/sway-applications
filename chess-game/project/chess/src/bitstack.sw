@@ -1,13 +1,24 @@
 library bitstack;
 
 dep bitmap;
+
 use bitmap::*;
 
 /// The BitBoard type can be thought of as a stack of layers
 /// which can be selectively combined to query the location of pieces.
 pub struct BitStack {
-    all: BitMap,
-    // empty: BitMap,
+    black_pawns: BitMap,
+    black_bishops: BitMap,
+    black_rooks: BitMap,
+    black_knights: BitMap,
+    black_queen: BitMap,
+    black_king: BitMap,
+    white_pawns: BitMap,
+    white_bishops: BitMap,
+    white_rooks: BitMap,
+    white_knights: BitMap,
+    white_queen: BitMap,
+    white_king: BitMap,
     pawns: BitMap,
     knights: BitMap,
     bishops: BitMap,
@@ -16,25 +27,37 @@ pub struct BitStack {
     kings: BitMap,
     black: BitMap,
     white: BitMap,
-    pinned: BitMap,   //     REVIEW !
-    checkers: BitMap, //     REVIEW !
+    all: BitMap,
+    // pinned: BitMap,   //     REVIEW !
+    // checkers: BitMap, //     REVIEW !
 }
 
 impl BitStack {
     pub fn new() -> BitStack {
         BitStack {
+            black_pawns: BLACK_PAWNS,
+            black_bishops: BLACK_BISHOPS,
+            black_rooks: BLACK_ROOKS,
+            black_knights: BLACK_KNIGHTS,
+            black_queen: BLACK_QUEEN,
+            black_king: BLACK_KING,
+            white_pawns: WHITE_PAWNS,
+            white_bishops: WHITE_BISHOPS,
+            white_rooks: WHITE_ROOKS,
+            white_knights: WHITE_KNIGHTS,
+            white_queen: WHITE_QUEEN,
+            white_king: WHITE_KING,
             all: ALL_PIECES,
-            // empty: ~ALL_PIECES, need to impl BitwiseNot
             pawns: BLACK_PAWNS | WHITE_PAWNS,
             knights: BLACK_KNIGHTS | WHITE_KNIGHTS,
             bishops: BLACK_BISHOPS | WHITE_BISHOPS,
             rooks: BLACK_ROOKS | WHITE_ROOKS,
             queens: BLACK_QUEEN | WHITE_QUEEN,
             kings: BLACK_KING | WHITE_KING,
-            black: BLACK_PIECES, // build from ALL_PIECES ^ WHITE_PIECES
+            black: BLACK_PIECES,
             white: WHITE_PIECES,
-            pinned: BitMap::new(),
-            checkers: BitMap::new(),
+            // pinned: BitMap::new(),
+            // checkers: BitMap::new(),
         }
     }
 }
@@ -55,6 +78,6 @@ fn test_new_bitstack() {
     assert(board.kings.bits == 0x1000000000000000 | 0x0000000000000010);
     assert(board.black.bits == 0xFFFF000000000000);
     assert(board.white.bits == 0x000000000000FFFF);
-    assert(board.pinned.bits == 0x0000000000000000);
-    assert(board.checkers.bits == 0x0000000000000000);
+    // assert(board.pinned.bits == 0x0000000000000000);
+    // assert(board.checkers.bits == 0x0000000000000000);
 }

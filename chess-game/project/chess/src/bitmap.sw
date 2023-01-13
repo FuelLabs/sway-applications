@@ -50,6 +50,13 @@ impl core::ops::BitwiseXor for BitMap {
         }
     }
 }
+
+impl BitMap {
+    pub fn set_bit(mut self, bit_offset: u64) {
+        self = self | BitMap::from_u64(1 << bit_offset);
+    }
+}
+
 // TODO review & remove unused.
 // Primary BitMaps
 pub const BLACK_PAWNS: BitMap = BitMap::from_u64(0x00FF000000000000);

@@ -1,14 +1,13 @@
 library chess;
 
-dep utils;
 dep errors;
 dep bitmap;
+dep piece;
 dep bitstack;
 dep board;
-dep piece;
 dep special;
 dep square;
-dep events;
 dep move;
+dep events;
 
 use std::constants::ZERO_B256;

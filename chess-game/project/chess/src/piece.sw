@@ -13,7 +13,7 @@ pub const WHITE: u8 = 1u8; // true
 
 /**
 4 bits to represent piece on each square:
-First bit denotes the colour: Black == 0, White == 1.
+First bit denotes the color: Black == 0, White == 1.
 Remaining 3 bits specify the piece type.
 */
 pub const EMPTY: u64 = 0;  // 000
@@ -43,9 +43,9 @@ const INITIAL_BOARD_STATE: b256 = 0x34256243111111110000000000000000000000000000
 
 pub enum Piece {
     Pawn: (),
-    Knight: (),
     Bishop: (),
     Rook: (),
+    Knight: (),
     Queen: (),
     King: (),
 }
@@ -54,18 +54,18 @@ impl Piece {
     pub fn to_u64(self) -> u64 {
         match self {
             Piece::Pawn => PAWN,
-            Piece::Knight => KNIGHT,
             Piece::Bishop => BISHOP,
             Piece::Rook => ROOK,
+            Piece::Knight => KNIGHT,
             Piece::Queen => QUEEN,
             Piece::King => KING,
         }
     }
 
     pub fn from_u64(piece_code: u64) -> Result<Piece, ChessError> {
-        let piece_colour_mask = 0b0111;
-        let colourless_piece = piece_code & piece_colour_mask;
-        match colourless_piece {
+        let piece_color_mask = 0b0111;
+        let colorless_piece = piece_code & piece_color_mask;
+        match colorless_piece {
             PAWN => Result::Ok(Piece::Pawn),
             KNIGHT => Result::Ok(Piece::Knight),
             BISHOP => Result::Ok(Piece::Bishop),
