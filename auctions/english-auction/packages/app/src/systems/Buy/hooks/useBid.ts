@@ -12,7 +12,7 @@ interface UseBidProps {
 }
 
 export const useBid = ({ auctionId, auctionAsset }: UseBidProps) => {
-  const contract = useContract();
+  const { contract } = useContract();
 
   const mutation = useMutation(
     async () => {

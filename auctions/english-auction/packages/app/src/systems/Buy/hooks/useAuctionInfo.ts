@@ -5,7 +5,7 @@ import { useQuery } from 'react-query';
 import { useContract } from '~/systems/Core/hooks/useContract';
 
 export const useAuctionInfo = (totalAuctions: BN | undefined) => {
-  const contract = useContract();
+  const { contract, isLoading, isError } = useContract();
 
   const { data: auctionInfo } = useQuery(
     ['auctionInfo'],
@@ -16,7 +16,7 @@ export const useAuctionInfo = (totalAuctions: BN | undefined) => {
       }
       return Promise.all(auctionInfoPromises!);
     },
-    { enabled: !!contract && !!totalAuctions }
+    { enabled: !isLoading && !isError && !!contract && !!totalAuctions }
   );
 
   return auctionInfo?.map((auction) => {

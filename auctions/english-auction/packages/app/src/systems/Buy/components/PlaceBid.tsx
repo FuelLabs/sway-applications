@@ -41,12 +41,12 @@ export const PlaceBid = ({
           },
         },
   });
-  const wallet = useWallet();
+  const { wallet } = useWallet();
 
   if (!wallet) toast.error("Wallet not detected");
 
   useEffect(() => {
-    const result = wallet?.address.toHexString();
+    const result = wallet!.address.toHexString();
     setIdentityOutput(result);
   }, [wallet]);
 

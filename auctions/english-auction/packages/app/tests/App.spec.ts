@@ -1,3 +1,5 @@
+import { sleep } from 'fuels';
+
 import { test, expect } from './fixtures';
 
 const WORDS = 'monkey advice bacon rival fitness flip inspire public yard depart thank also';
@@ -13,6 +15,7 @@ test.describe('e2e', () => {
   test('Test auction expires', async () => {});
 
   test('Test auction is canceled', async ({ context, extensionId }) => {
+    // WALLET SETUP
     const walletPage = await context.newPage();
     await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
     const signupPage = await context.waitForEvent('page', {
@@ -49,26 +52,21 @@ test.describe('e2e', () => {
 
     await appPage.goto('/sell');
 
+    // CONNECT TO WALLET
     const connectPage = await connectPagePromise;
     await connectPage.waitForLoadState();
     const connectButton = connectPage.locator('button').getByText('Connect');
-    await connectPage.screenshot({ path: './screenshots/pic0.png', fullPage: true });
     await connectButton.click();
 
     await appPage.goto('/sell');
     await appPage.reload();
 
-    await appPage.screenshot({ path: './screenshots/pic1.png', fullPage: true });
-
-    // Create auction button should be initially disabled
+    // ACCOUNT 1 CREATES AUCTION
     const createAuctionButton = appPage.locator('button').getByText('Create Auction');
     expect(createAuctionButton).toBeDisabled();
 
-    await appPage.screenshot({ path: './screenshots/pic2.png', fullPage: true });
-
     const fillSellerAddressButton = appPage.locator('button').getByText('fuel...apex');
     expect(fillSellerAddressButton).toBeDefined();
-    await appPage.screenshot({ path: './screenshots/pic3.png', fullPage: true });
     await expect(fillSellerAddressButton).toBeEnabled();
     await fillSellerAddressButton.click();
 
@@ -87,8 +85,7 @@ test.describe('e2e', () => {
     const approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
-    await appPage.screenshot({ path: './screenshots/pic5.png', fullPage: true });
-
+    // Handle transaction approval in web wallet
     const approvePage = await approvePagePromise;
     await approvePage.waitForLoadState();
     const approveButton = approvePage.locator('button').getByText('Confirm');
@@ -102,5 +99,14 @@ test.describe('e2e', () => {
     // Expect transaction to be successful
     const transactionMessage = appPage.locator('text="Auction created successfully!"');
     await transactionMessage.waitFor();
+
+    // ACCOUNT 2 BIDS ON AUCTION
+    await appPage.goto('/buy');
+
+    await sleep(30000);
+
+    // ACCOUNT 1 CANCELS AUCTION
+
+    // BOTH ACCOUNTS WITHDRAW
   });
 });

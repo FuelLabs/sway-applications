@@ -24,7 +24,7 @@ export type UseCreateAuctionProps = {
 };
 
 export function useCreateAuction(form: UseFormReturn<CreateAuctionFormValues>) {
-  const contract = useContract();
+  const { contract } = useContract();
   const mutation = useMutation(
     async ({
       bidAsset,

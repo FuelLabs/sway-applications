@@ -17,7 +17,7 @@ export const CancelAuctionButton = ({
   seller,
 }: UseCancelAuctionProps) => {
   const cancelAuctionMutation = useCancelAuction({ auctionId: bn(index) });
-  const wallet = useWallet();
+  const { wallet } = useWallet();
   const [identityOutput, setIdentityOutput] = useState<IdentityOutput>();
 
   if (!wallet) throw new Error("wallet not connected");

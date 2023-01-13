@@ -1,17 +1,19 @@
 import { useQuery } from 'react-query';
 
-import { useFuel } from './useFuel';
+import { useWallet } from './useWallet';
 
 export const useLatestBlockHeight = () => {
-  const [fuel] = useFuel();
+  const { wallet, isLoading, isError } = useWallet();
 
-  if (!fuel) {
-    throw Error(`ERROR: fuel web3 is: ${fuel}`);
-  }
-
-  const { data: latestBlockHeight } = useQuery(['latestBlockHeight'], async () => {
-    return await fuel.getProvider().getBlockNumber(); // eslint-disable-line @typescript-eslint/return-await
-  });
+  const { data: latestBlockHeight } = useQuery(
+    ['latestBlockHeight'],
+    async () => {
+      return await wallet!.provider.getBlockNumber(); // eslint-disable-line @typescript-eslint/return-await
+    },
+    {
+      enabled: !isLoading && !isError && !!wallet,
+    }
+  );
 
   return latestBlockHeight;
 };

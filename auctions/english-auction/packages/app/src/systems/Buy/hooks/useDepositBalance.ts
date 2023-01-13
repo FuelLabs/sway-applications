@@ -5,7 +5,7 @@ import { useContract } from '~/systems/Core/hooks/useContract';
 import type { IdentityInput } from '~/types/contracts/EnglishAuctionAbi';
 
 export const useDepositsBalance = (auctionId: BN, identity: IdentityInput) => {
-  const contract = useContract();
+  const { contract, isLoading, isError } = useContract();
 
   const { data: balance } = useQuery(
     ['depositBalance'],
@@ -15,7 +15,7 @@ export const useDepositsBalance = (auctionId: BN, identity: IdentityInput) => {
       return depositBalance;
     },
     {
-      enabled: !!contract,
+      enabled: !isLoading && !isError && !!contract,
     }
   );
 

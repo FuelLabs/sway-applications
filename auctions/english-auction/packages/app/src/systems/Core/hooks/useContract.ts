@@ -8,7 +8,11 @@ import { AuctionContractAbi__factory } from '~/types/contracts';
 export const useContract = () => {
   const { wallet, isLoading, isError } = useWallet();
 
-  const { data: contract } = useQuery(
+  const {
+    data: contract,
+    isLoading: isContractLoading,
+    isError: isContractError,
+  } = useQuery(
     ['contract'],
     () => {
       // Connects our contract instance to the deployed contract
@@ -20,5 +24,5 @@ export const useContract = () => {
     }
   );
 
-  return contract;
+  return { contract, isLoading: isContractLoading, isError: isContractError };
 };

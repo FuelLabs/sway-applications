@@ -12,7 +12,7 @@ interface UseWithdrawButtonProps {
 
 export const WithdrawButton = ({ auctionId }: UseWithdrawButtonProps) => {
   const withdrawMutation = useWithdraw({ auctionId });
-  const wallet = useWallet();
+  const { wallet } = useWallet();
 
   if (!wallet) throw new Error("Error wallet not connected");
 

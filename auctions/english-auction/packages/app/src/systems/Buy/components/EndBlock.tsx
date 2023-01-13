@@ -1,4 +1,4 @@
-import { Flex, Heading } from "@fuel-ui/react";
+import { Flex, Heading, toast } from "@fuel-ui/react";
 import type { BN } from "fuels";
 import { bn } from "fuels";
 import { useEffect, useState } from "react";
@@ -14,8 +14,9 @@ export const EndBlock = ({ endBlock, onChange }: EndBlockProps) => {
   const [curBlocksAway, setCurBlocksAway] = useState<BN>();
   const latestBlockHeight = useLatestBlockHeight();
 
-  if (!latestBlockHeight)
-    throw new Error("Could not fetch latest block height");
+  if (!latestBlockHeight) {
+    toast.error("Could not fetch latest block height");
+  }
 
   const calcBlocksAway = (blockHeight0: BN, blockHeight1: BN): BN => {
     const result = blockHeight0.sub(blockHeight1);
@@ -26,7 +27,9 @@ export const EndBlock = ({ endBlock, onChange }: EndBlockProps) => {
   };
 
   useEffect(() => {
-    const blocksAway: BN = calcBlocksAway(endBlock, latestBlockHeight);
+    const blocksAway: BN = latestBlockHeight
+      ? calcBlocksAway(endBlock, latestBlockHeight)
+      : bn(0);
     setCurBlocksAway(blocksAway);
     onChange(blocksAway.isNeg()!);
   }, [latestBlockHeight]);

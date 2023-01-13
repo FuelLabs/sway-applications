@@ -10,7 +10,7 @@ interface UseCancelAuctionProps {
 }
 
 export const useCancelAuction = ({ auctionId }: UseCancelAuctionProps) => {
-  const contract = useContract();
+  const { contract } = useContract();
 
   const mutation = useMutation(
     async () => {

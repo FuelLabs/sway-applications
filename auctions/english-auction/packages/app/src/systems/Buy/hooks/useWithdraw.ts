@@ -10,7 +10,7 @@ interface UseWithdrawProps {
 }
 
 export const useWithdraw = ({ auctionId }: UseWithdrawProps) => {
-  const contract = useContract();
+  const { contract } = useContract();
 
   const mutation = useMutation(
     async () => {

@@ -5,15 +5,15 @@ import { useAuctionInfo } from './useAuctionInfo';
 import { useContract } from '~/systems/Core/hooks/useContract';
 
 export const useAllAuctionInfo = () => {
-  const contracts = useContract();
+  const { contract, isLoading, isError } = useContract();
 
   const { data: totalAuctions } = useQuery(
     ['totalAuctions'],
     async () => {
-      return (await contracts?.functions.total_auctions().get())?.value;
+      return (await contract?.functions.total_auctions().get())?.value;
     },
     {
-      enabled: !!contracts,
+      enabled: !isLoading && !isError && !!contract,
     }
   );
 
