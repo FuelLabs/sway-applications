@@ -13,7 +13,7 @@ pub struct Move {
 }
 
 impl Move {
-    fn build(src: Square, dest: Square, promotion: Option<Piece>) -> Move {
+    pub fn build(src: Square, dest: Square, promotion: Option<Piece>) -> Move {
         Move {
             source: src,
             dest: dest,

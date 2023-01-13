@@ -1,5 +1,6 @@
 library chess;
 
+dep utils;
 dep errors;
 dep bitmap;
 dep bitstack;

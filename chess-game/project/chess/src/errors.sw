@@ -1,6 +1,6 @@
 library errors;
 
 pub enum ChessError {
-    Default: (),
+    Unimplemented: (),
     OutOfBounds: (),
 }

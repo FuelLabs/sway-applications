@@ -1,5 +1,10 @@
 library piece;
 
+dep errors;
+
+use errors::ChessError;
+
+
 pub const NUM_PIECE_TYPES: u8 = 6u8;
 pub const NUM_COLOURS: u8 = 2u8;
 // TODO: consider using bools true & false to represent color
@@ -11,13 +16,13 @@ pub const WHITE: u8 = 1u8; // true
 First bit denotes the colour: Black == 0, White == 1.
 Remaining 3 bits specify the piece type.
 */
-pub const EMPTY: u8 = 0u8;   // 000
-pub const PAWN: u8 = 1u8;   // 001
-pub const BISHOP: u8 = 2u8; // 010
-pub const ROOK: u8 = 3u8;   // 011
-pub const KNIGHT: u8 = 4u8; // 100
-pub const QUEEN: u8 = 5u8;  // 101
-pub const KING: u8 = 6u8;   // 110
+pub const EMPTY: u64 = 0;  // 000
+pub const PAWN: u64 = 1;   // 001
+pub const BISHOP: u64 = 2; // 010
+pub const ROOK: u64 = 3;   // 011
+pub const KNIGHT: u64 = 4; // 100
+pub const QUEEN: u64 = 5;  // 101
+pub const KING: u64 = 6;   // 110
 
 /**
 Initial binary board state:
@@ -46,7 +51,7 @@ pub enum Piece {
 }
 
 impl Piece {
-    fn to_u8(self) -> u8 {
+    pub fn to_u64(self) -> u64 {
         match self {
             Piece::Pawn => PAWN,
             Piece::Knight => KNIGHT,
@@ -54,6 +59,20 @@ impl Piece {
             Piece::Rook => ROOK,
             Piece::Queen => QUEEN,
             Piece::King => KING,
+        }
+    }
+
+    pub fn from_u64(piece_code: u64) -> Result<Piece, ChessError> {
+        let piece_colour_mask = 0b0111;
+        let colourless_piece = piece_code & piece_colour_mask;
+        match colourless_piece {
+            PAWN => Result::Ok(Piece::Pawn),
+            KNIGHT => Result::Ok(Piece::Knight),
+            BISHOP => Result::Ok(Piece::Bishop),
+            ROOK => Result::Ok(Piece::Rook),
+            QUEEN => Result::Ok(Piece::Queen),
+            KING => Result::Ok(Piece::King),
+            _ => Result::Err(ChessError::Unimplemented),
         }
     }
 }
@@ -70,10 +89,10 @@ fn test_to_u8() {
     let p5 = Piece::Queen;
     let p6 = Piece::King;
 
-    assert(p1.to_u8() == 1u8);
-    assert(p2.to_u8() == 2u8);
-    assert(p3.to_u8() == 3u8);
-    assert(p4.to_u8() == 4u8);
-    assert(p5.to_u8() == 5u8);
-    assert(p6.to_u8() == 6u8);
+    assert(p1.to_u64() == 1);
+    assert(p2.to_u64() == 2);
+    assert(p3.to_u64() == 3);
+    assert(p4.to_u64() == 4);
+    assert(p5.to_u64() == 5);
+    assert(p6.to_u64() == 6);
 }

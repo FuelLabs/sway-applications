@@ -1,5 +1,8 @@
 library bitmap;
 
+// consider removing for simplicity
+// nice for typesafety though, and adds context
+
 /// A wrapper around a u64 for type safety & readability.
 pub struct BitMap {
     bits: u64,
