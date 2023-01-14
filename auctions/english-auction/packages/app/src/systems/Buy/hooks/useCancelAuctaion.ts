@@ -2,7 +2,7 @@ import type { BN } from 'fuels';
 import { useMutation } from 'react-query';
 
 import { useContract } from '~/systems/Core/hooks/useContract';
-import { handleError } from '~/systems/Core/utils';
+import { handleError, queryClient } from '~/systems/Core/utils';
 import { txFeedback } from '~/systems/Core/utils/feedback';
 
 interface UseCancelAuctionProps {
@@ -27,6 +27,7 @@ export const useCancelAuction = ({ auctionId }: UseCancelAuctionProps) => {
   );
 
   function handleSuccess() {
+    queryClient.invalidateQueries({ queryKey: ['totalAuctions'] });
     console.log('auction cancelled successfully');
   }
 

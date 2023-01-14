@@ -6,7 +6,7 @@ import { useAllAuctionInfo } from "../hooks/useAllAuctionInfo";
 import { MainLayout } from "~/systems/Core/components/MainLayout";
 
 export function BuyPage() {
-  const auctionInfo = useAllAuctionInfo();
+  const auctionInfo = useAllAuctionInfo() || [];
 
   return (
     <MainLayout>
@@ -16,7 +16,7 @@ export function BuyPage() {
         </Card>
 
         <Stack gap="$5">
-          <AuctionInfo auctions={auctionInfo!} />
+          <AuctionInfo auctions={auctionInfo} />
         </Stack>
       </Stack>
     </MainLayout>
