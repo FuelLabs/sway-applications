@@ -11,10 +11,11 @@ interface EndBlockProps {
 }
 
 export const EndBlock = ({ endBlock, onChange }: EndBlockProps) => {
-  const [curBlocksAway, setCurBlocksAway] = useState<BN>();
-  const latestBlockHeight = useLatestBlockHeight();
+  // const [curBlocksAway, setCurBlocksAway] = useState<BN>();
+  const [endText, setEndText] = useState<string>("");
+  const { latestBlockHeight, isLoading, isError } = useLatestBlockHeight();
 
-  if (!latestBlockHeight) {
+  if (!isLoading && (!latestBlockHeight || isError)) {
     toast.error("Could not fetch latest block height");
   }
 
@@ -30,19 +31,22 @@ export const EndBlock = ({ endBlock, onChange }: EndBlockProps) => {
     const blocksAway: BN = latestBlockHeight
       ? calcBlocksAway(endBlock, latestBlockHeight)
       : bn(0);
-    setCurBlocksAway(blocksAway);
+    const newEndText = blocksAway?.isNeg()
+      ? "Auction Ended"
+      : `Auction ends in ${blocksAway?.toString()} blocks at block height ${endBlock.toString()}`;
+    setEndText(newEndText);
     onChange(blocksAway.isNeg()!);
   }, [latestBlockHeight]);
 
-  const endText = curBlocksAway?.isNeg()
-    ? "Auction Ended"
-    : `Auction ends in ${curBlocksAway?.toString()} blocks at block height ${endBlock.toString()}`;
-
   return (
     <Flex>
-      <Heading as="h5" css={{ marginLeft: "$5" }}>
-        {endText}
-      </Heading>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <Heading as="h5" css={{ marginLeft: "$5" }}>
+          {endText}
+        </Heading>
+      )}
     </Flex>
   );
 };
