@@ -25,8 +25,6 @@ export const useBid = ({ auctionId, auctionAsset, setAssetAmount }: UseBidProps)
         .callParams({ forward: callParams })
         .call();
 
-      console.log('res', transactionResult);
-
       return transactionResult;
     },
     {
