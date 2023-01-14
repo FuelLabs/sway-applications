@@ -57,7 +57,10 @@ pub const EN_PASSANT_CLEARING_MASK: u64 = 0xFFFFFFFFFF00FFFF;
 // struct for internal state representation.
 // bitstacks are calculated from the piecemap
 pub struct Board {
-    piece_map: b256,
+    // complete loactaion and type data for the board at a given point in time. Efficient transport, but not efficient to query, i.e: "give me all non-pinned white pawns", etc...
+    piecemap: b256,
+    // Great for answering queries, but less efficient for transport.
+    // less efficient at answering the question: "what color/type is the piece on square f7?"
     bitstack: BitStack,
     metadata: u64,
 }
@@ -65,7 +68,7 @@ pub struct Board {
 impl Board {
     pub fn new() -> Board {
         Board {
-            piece_map: STARTING_POSITIONS,
+            piecemap: STARTING_POSITIONS,
             bitstack: BitStack::new(),
             metadata: STARTING_METADATA,
         }
@@ -75,7 +78,7 @@ impl Board {
 impl Board {
     pub fn build(pieces: b256, bits: BitStack, data: u64) -> Board {
         Board {
-            piece_map: pieces,
+            piecemap: pieces,
             bitstack: bits,
             metadata: data,
         }
@@ -91,23 +94,22 @@ impl Board {
         self.metadata = self.metadata & EN_PASSANT_CLEARING_MASK;
     }
 
-     // clear 1 nibble corresponding to a specific square's index from a piece_map
+     // clear 1 nibble corresponding to a specific square's index from a piecemap
     pub fn clear_square(mut self, square: Square) {
         let mut index = square.to_index();
         // create a mask of all 1's except 4 0's on the target nibble.
         if index == 0 {
             let first_nibble_mask = b256_multimask(252);
-            self.piece_map = self.piece_map & first_nibble_mask;
+            self.piecemap = self.piecemap & first_nibble_mask;
         } else {
             // eg: index = 42, * 4 = 168th bit
             // part 1: need 256 - 168 - 4 `1`s, << 168 + 4 bits.
             // part 2: need 168 `1`s
             // mask = part 1 | part 2
             let nibble_index = index * 4;
-            // TODO: generate b256 mask for all bits except target nibble
             let mask_part_1 = b256_multimask((256 - (nibble_index) - 4) << nibble_index);
             let mask_part_2 = b256_multimask(nibble_index);
-            self.piece_map = self.piece_map & (mask_part_1 | mask_part_2);
+            self.piecemap = self.piecemap & (mask_part_1 | mask_part_2);
         }
     }
 }
@@ -182,30 +184,39 @@ impl Board {
         self.metadata = self.metadata & FULL_MOVE_CLEARING_MASK;
     }
 
-    // TODO: what about color in piece code?
     pub fn write_square_to_piecemap(mut self, color: u64, piece: Piece, dest: Square) {
         self.clear_square(dest);
         let mut index = dest.to_index();
-        let mut piece_code = compose((0, 0, 0, (piece.to_u64())));
+        let colored_piece = piece.to_u64() | (color << 4);
+        let mut piece_code = compose((0, 0, 0, (colored_piece)));
 
         if index == 0 {
-            self.piece_map = self.piece_map | piece_code;
+            self.piecemap = self.piecemap | piece_code;
         } else {
-
+            // TODO
         }
     }
 
-    // TODO: move to Square::occupant() ?
-    // needs the piece map though...
+    // convert bitstack to piecemap
+    pub fn generate_piecemap() {
+        // make a mask of target bit
+        // use mask & bitmap to teest for inclusion
+        // binary search? :
+        // mask & Empty
+        // mask & pawns
+        // mask & bishops, etc..
+        // finally, mask & black to determine color.
+    }
+
     pub fn read_square(self, square_index: u64) -> (u64, Piece) {
         let mut index = square_index;
         let mut mask = compose((0, 0, 0, multi_bit_mask(4)));
         let piece_code = if index == 0 {
-            decompose(self.piece_map & mask).3
+            decompose(self.piecemap & mask).3
         } else {
             index *= 4;
             let mask = compose((0, 0, 0, multi_bit_mask(index) << index));
-            decompose((self.piece_map & mask) >> index).3
+            decompose((self.piecemap & mask) >> index).3
         };
         let color = piece_code >> 4;
         let piece = Piece::from_u64(piece_code).unwrap();
@@ -218,16 +229,12 @@ impl Board {
 
     // wraps Square::clear() & Square::set() ??                  REVIEW !
     pub fn move_piece(mut self, src: Square, dest: Square) {
-        // let mut index_1 = src.to_index();
-        // let mut index_2 = dest.to_index();
-        // let piece_code = piece.to_u64();
         let (color, piece) = self.read_square(src.to_index());
         // clear src
         self.clear_square(src);
-        // clear dest if !color
+        // TODO: clear dest if !color
         self.clear_square(dest);
         // set src
-        // TODO: add color
         self.write_square_to_piecemap(color, piece, dest);
     }
 
@@ -259,7 +266,7 @@ impl Board {
 
 impl Board {
     pub fn read_from_bitstack(board: Board) -> Board {
-        // write piece_map, not sure about metadata yet...
+        // write piecemap, not sure about metadata yet...
         let board = Board::new();
         // loop over each index of bitstack, getting color and piece
         // set in piecemap with board.write_square_to_piecemap()
@@ -346,7 +353,7 @@ impl Board {
 
         // these are likely needed in validate_move()
         // let mut bitstack = self.generate_bitstack();
-        // self.write_piece_map(bitstack);
+        // self.write_piecemap(bitstack);
 
         /**
         // read the piece on src square
@@ -506,7 +513,7 @@ impl Board {
 #[test()]
 fn test_new_board() {
     let board = Board::new();
-    assert(board.piece_map == STARTING_POSITIONS);
+    assert(board.piecemap == STARTING_POSITIONS);
     assert(board.metadata == STARTING_METADATA);
 }
 
@@ -538,12 +545,15 @@ fn test_increment_full_move_counter() {
     p1.transition(m1);
     assert(p1.half_move_counter() == 1);
     assert(p1.full_move_counter() == 0);
+
     p1.transition(m1);
     assert(p1.half_move_counter() == 2);
     assert(p1.full_move_counter() == 1);
+
     p1.transition(m1);
     assert(p1.half_move_counter() == 3);
     assert(p1.full_move_counter() == 1);
+
     p1.transition(m1);
     assert(p1.half_move_counter() == 4);
     assert(p1.full_move_counter() == 2);
