@@ -28,7 +28,7 @@ export const useCancelAuction = ({ auctionId }: UseCancelAuctionProps) => {
 
   function handleSuccess() {
     queryClient.invalidateQueries({ queryKey: ['totalAuctions'] });
-    console.log('auction cancelled successfully');
+    queryClient.invalidateQueries({ queryKey: ['auctionInfo'] });
   }
 
   return mutation;
