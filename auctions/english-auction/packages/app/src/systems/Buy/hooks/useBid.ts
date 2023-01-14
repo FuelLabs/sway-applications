@@ -2,28 +2,24 @@ import type { BN, CoinQuantityLike } from 'fuels';
 import { useMutation } from 'react-query';
 
 import { useContract } from '~/systems/Core/hooks/useContract';
-import { handleError } from '~/systems/Core/utils';
+import { handleError, queryClient } from '~/systems/Core/utils';
 import { txFeedback } from '~/systems/Core/utils/feedback';
 import type { AuctionAssetInput } from '~/types/contracts/EnglishAuctionAbi';
 
 interface UseBidProps {
   auctionId: BN;
   auctionAsset: AuctionAssetInput;
+  setAssetAmount: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const useBid = ({ auctionId, auctionAsset }: UseBidProps) => {
+export const useBid = ({ auctionId, auctionAsset, setAssetAmount }: UseBidProps) => {
   const { contract } = useContract();
 
   const mutation = useMutation(
     async () => {
-      console.log('ASDFASDFASDFASDF');
       if (!contract) throw new Error('Contract not connected');
-      console.log('cur address', contract.wallet?.address.toString());
       const callParams: CoinQuantityLike | undefined = auctionAsset.TokenAsset ?? undefined;
 
-      console.log('call params: ', callParams);
-      console.log('id: ', auctionId);
-      console.log('auction asset', auctionAsset);
       const { transactionResult } = await contract.functions
         .bid(auctionId, auctionAsset)
         .callParams({ forward: callParams })
@@ -40,7 +36,9 @@ export const useBid = ({ auctionId, auctionAsset }: UseBidProps) => {
   );
 
   function handleSuccess() {
-    console.log('bid success');
+    queryClient.invalidateQueries({ queryKey: ['auctionInfo'] });
+    queryClient.invalidateQueries({ queryKey: ['totalAuctions'] });
+    setAssetAmount('');
   }
 
   return mutation;

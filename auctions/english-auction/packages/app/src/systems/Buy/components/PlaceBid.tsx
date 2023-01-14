@@ -40,6 +40,7 @@ export const PlaceBid = ({
             asset_id: auctionAsset.NFTAsset.asset_id,
           },
         },
+    setAssetAmount,
   });
   const { wallet } = useWallet();
 
