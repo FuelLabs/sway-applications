@@ -34,7 +34,10 @@ export const CancelAuctionButton = ({
   return (
     <>
       {identityOutput?.Address?.value !== seller.Address?.value ? (
-        <Text aria-label="Buyer cannot cancel">
+        <Text
+          aria-label="Buyer cannot cancel"
+          css={{ marginBottom: "$3", marginLeft: "$2" }}
+        >
           <Flex gap="$4">
             <Icon icon="X" color="tomato10" />
             Error only the seller of the auction can cancel it.
