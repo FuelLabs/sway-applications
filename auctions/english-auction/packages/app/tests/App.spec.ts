@@ -78,8 +78,6 @@ test.describe('e2e', () => {
     const durationInput = appPage.locator(`input[name="duration"]`);
     await durationInput.fill('1000');
 
-    await appPage.screenshot({ path: './screenshots/pic4.png', fullPage: true });
-
     await expect(createAuctionButton).toBeEnabled();
     let approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
@@ -111,7 +109,7 @@ test.describe('e2e', () => {
     await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
 
     // First we have to add a second account
-    const accountsButton = walletPage.locator('[aria-label="Accounts"]');
+    let accountsButton = walletPage.locator('[aria-label="Accounts"]');
     await accountsButton.click();
 
     const addAccountButton = walletPage.locator('[aria-label="Add account"]');
@@ -128,9 +126,9 @@ test.describe('e2e', () => {
     const accountConfirmButton = walletPage.locator('button').getByText('Add Account');
     await accountConfirmButton.click();
 
-    await appPage.goto('/buy');
+    // await appPage.goto('/buy');
+    // await appPage.waitForLoadState();
     await appPage.reload();
-    await appPage.waitForLoadState();
 
     const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').first();
     await expect(cancelErrorText).toContainText(
@@ -142,7 +140,9 @@ test.describe('e2e', () => {
     await bidAmountInput.fill('0.001');
     const placeBidButton = appPage.locator('button').getByText('Bid on Auction').first();
     await expect(placeBidButton).toBeEnabled();
+
     approvePagePromise = context.waitForEvent('page');
+
     await placeBidButton.click();
 
     // Handle transaction approval in web wallet
@@ -162,6 +162,88 @@ test.describe('e2e', () => {
 
     // ACCOUNT 1 CANCELS AUCTION
 
+    // Switch to account 1
+    await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
+    accountsButton = walletPage.locator('[aria-label="Accounts"]');
+    await accountsButton.click();
+    const account1Button = walletPage.locator('[aria-label="Account 1"]');
+    await account1Button.click();
+
+    // await appPage.goto('/buy');
+    // await appPage.waitForLoadState();
+    await appPage.reload();
+
+    const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction');
+    await expect(cancelAuctionButton).toBeEnabled();
+
+    approvePagePromise = context.waitForEvent('page');
+
+    await cancelAuctionButton.click();
+
+    // Handle transaction approval in web wallet
+    approvePage = await approvePagePromise;
+    await approvePage.waitForLoadState();
+    approveButton = approvePage.locator('button').getByText('Confirm');
+    await approveButton.click();
+
+    enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
+    await enterPasswordInput.fill(WALLET_PASSWORD);
+    confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
+    await confirmButton.click();
+
+    // Expect transaction to be successful
+    const cancelTransactionMessage = appPage.locator('text="Auction cancelled successfully!"');
+    await cancelTransactionMessage.waitFor();
+
     // BOTH ACCOUNTS WITHDRAW
+    // Account 1 withdraws
+    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction');
+    await expect(withdrawButton).toBeEnabled();
+
+    approvePagePromise = context.waitForEvent('page');
+
+    await withdrawButton.click();
+
+    // Handle transaction approval in web wallet
+    approvePage = await approvePagePromise;
+    await approvePage.waitForLoadState();
+    approveButton = approvePage.locator('button').getByText('Confirm');
+    await approveButton.click();
+
+    enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
+    await enterPasswordInput.fill(WALLET_PASSWORD);
+    confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
+    await confirmButton.click();
+
+    // Expect transaction to be successful
+    const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
+    await withdrawTransactionMessage.waitFor();
+
+    // Switch to account 2
+    await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
+    accountsButton = walletPage.locator('[aria-label="Accounts"]');
+    await accountsButton.click();
+    const account2Button = walletPage.locator('[aria-label="Account 2"]');
+    await account2Button.click();
+
+    await appPage.reload();
+
+    approvePagePromise = context.waitForEvent('page');
+
+    await withdrawButton.click();
+
+    // Handle transaction approval in web wallet
+    approvePage = await approvePagePromise;
+    await approvePage.waitForLoadState();
+    approveButton = approvePage.locator('button').getByText('Confirm');
+    await approveButton.click();
+
+    enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
+    await enterPasswordInput.fill(WALLET_PASSWORD);
+    confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
+    await confirmButton.click();
+
+    // Expect transaction to be successful
+    await withdrawTransactionMessage.waitFor();
   });
 });
