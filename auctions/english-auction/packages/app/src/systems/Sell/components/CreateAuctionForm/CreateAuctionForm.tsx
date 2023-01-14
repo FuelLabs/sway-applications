@@ -1,4 +1,4 @@
-import { Input, Stack } from "@fuel-ui/react";
+import { Heading, Input, Stack } from "@fuel-ui/react";
 import type { CoinQuantity } from "fuels";
 import { useEffect } from "react";
 
@@ -35,6 +35,7 @@ export const CreateAuctionForm = ({
 
   return (
     <Stack css={{ width: "%100" }} gap="$4">
+      <Heading>Create Auction</Heading>
       <AddressFormInput
         control={control}
         formState={formState}
