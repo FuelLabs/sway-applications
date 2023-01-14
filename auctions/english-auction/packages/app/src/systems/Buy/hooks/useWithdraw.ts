@@ -2,7 +2,7 @@ import type { BN } from 'fuels';
 import { useMutation } from 'react-query';
 
 import { useContract } from '~/systems/Core/hooks/useContract';
-import { handleError } from '~/systems/Core/utils';
+import { handleError, queryClient } from '~/systems/Core/utils';
 import { txFeedback } from '~/systems/Core/utils/feedback';
 
 interface UseWithdrawProps {
@@ -26,7 +26,8 @@ export const useWithdraw = ({ auctionId }: UseWithdrawProps) => {
   );
 
   function handleSuccess() {
-    console.log('Withdraw success');
+    queryClient.invalidateQueries({ queryKey: ['totalAuctions'] });
+    queryClient.invalidateQueries({ queryKey: ['auctionInfo'] });
   }
 
   return mutation;
