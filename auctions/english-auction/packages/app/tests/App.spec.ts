@@ -173,7 +173,7 @@ test.describe('e2e', () => {
     // await appPage.waitForLoadState();
     await appPage.reload();
 
-    const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction');
+    const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').first();
     await expect(cancelAuctionButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
