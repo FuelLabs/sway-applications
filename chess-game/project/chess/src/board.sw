@@ -25,8 +25,20 @@ Initial board state:
 // HEX equivalent of the above starting board state
 pub const INITIAL_PIECEMAP: b256 = 0x34256243111111110000000000000000000000000000000099999999BCADEACB;
 
-// struct for data transport, as well as internal use.
+
+
+
+// struct for data transport
 // replacement for FEN, unless can find way to encode all in single b256
+
+// piecemap: b256
+// metadata: u64,
+// statehash: b256, ?
+
+
+
+// struct for internal state representation.
+// bitstacks are calculated from the piecemap
 pub struct Board {
     piecemap: b256,
     bitboard: BitStack,

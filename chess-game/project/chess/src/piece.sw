@@ -2,8 +2,9 @@ library piece;
 
 pub const NUM_PIECE_TYPES: u8 = 6u8;
 pub const NUM_COLOURS: u8 = 2u8;
-pub const BLACK: u8 = 0u8;
-pub const WHITE: u8 = 1u8;
+// TODO: consider using bools true & false to represent color
+pub const BLACK: u8 = 0u8; // false
+pub const WHITE: u8 = 1u8; // true
 
 /**
 4 bits to represent piece on each square:

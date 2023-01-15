@@ -10,17 +10,20 @@ use game::Status;
 pub struct Game {
     player_1: Address,
     player_2: Address,
+    game_nonce: u64,
+    // this is the current state
     board: Board,
-    game_id: Option<u64>,
     status: Status,
 }
 
+// TODO: add methods to conver to & from a status code, i.e:
+// 0, 1, 2, 3
 pub enum Status {
-    Ready: (),
     Active: (),
     Stalemate: (),
     Checkmate: (),
 }
+
 
 //////////////////////////////////////////////////////////////////
 /// TESTS
