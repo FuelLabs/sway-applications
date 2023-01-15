@@ -366,39 +366,6 @@ impl Board {
 
 
     }
-
-    pub fn set_castling_rights(mut self, rights: (CastleRights, CastleRights)) {
-        self.clear_castling_rights();
-        let value = match rights {
-            (CastleRights::NoRights, CastleRights::NoRights) => 0x0,
-            (CastleRights::NoRights, CastleRights::KingSide) => 0x1,
-            (CastleRights::NoRights, CastleRights::QueenSide) => 0x2,
-            (CastleRights::NoRights, CastleRights::Both) => 0x3,
-            (CastleRights::KingSide, CastleRights::NoRights) => 0x4,
-            (CastleRights::KingSide, CastleRights::KingSide) => 0x5,
-            (CastleRights::KingSide, CastleRights::QueenSide) => 0x6,
-            (CastleRights::KingSide, CastleRights::Both) => 0x7,
-            (CastleRights::QueenSide, CastleRights::NoRights) => 0x8,
-            (CastleRights::QueenSide, CastleRights::KingSide) => 0x9,
-            (CastleRights::QueenSide, CastleRights::QueenSide) => 0xA,
-            (CastleRights::QueenSide, CastleRights::Both) => 0xB,
-            (CastleRights::Both, CastleRights::NoRights) => 0xC,
-            (CastleRights::Both, CastleRights::KingSide) => 0xD,
-            (CastleRights::Both, CastleRights::QueenSide) => 0xE,
-            (CastleRights::Both, CastleRights::Both) => 0xF,
-        };
-
-        self.metadata = self.metadata | (value << 24);
-
-    }
-
-    pub fn reset_half_move(mut self) {
-        self.metadata = self.metadata & HALF_MOVE_CLEARING_MASK;
-    }
-
-    pub fn clear_full_move(mut self) {
-        self.metadata = self.metadata & FULL_MOVE_CLEARING_MASK;
-    }
 }
 
 impl Board {
@@ -417,92 +384,10 @@ impl Board {
         (colour, piece)
     }
 
-    pub fn side_to_move(self) -> u64 {
-        query_bit(self.metadata, 0)
-    }
-
-    pub fn toggle_side_to_move(mut self) {
-        self.metadata = toggle_bit(self.metadata, 0);
-    }
-
-    pub fn increment_half_move_counter(mut self) {
-        let value = self.half_move_counter();
-        self.reset_half_move();
-        self.metadata = self.metadata | ((value + 1) << 8);
-    }
-
-    pub fn increment_full_move_counter(mut self) {
-        let value = self.full_move_counter();
-        self.clear_full_move();
-        self.metadata = self.metadata | ((value + 1) << 32);
-    }
-
-    pub fn set_en_passant(mut self, target: Square) {
-        self.clear_en_passant();
-        self.metadata = self.metadata | target.to_index() << 16;
-    }
-
     pub fn generate_bitstack(self) -> BitStack {
         BitStack::new()
     }
     pub fn write_piecemap(self, bitstack: BitStack) {
-
-    }
-}
-
-impl Board {
-    // TODO: consider making this a method on Board
-    // this method assumes that the Board and the Move have already been validated !
-    pub fn transition(mut self, move: Move) {
-        // update metadata:
-        self.toggle_side_to_move();
-        let turn =
-        self.increment_half_move_counter();
-        let half_move = self.half_move_counter();
-        if  half_move > 0 && half_move % 2 == 0 {
-            self.increment_full_move_counter();
-        };
-        // update en_passant if needed
-        if move.dest.to_index() == self.en_passant_target().to_index() {
-            self.clear_en_passant();
-        };
-
-        /**
-        let (allowed, maybe_square) = move.allows_en_passant();
-        if allowed {
-            self.set_en_passant(maybe_square.unwrap())
-        }
-        */
-
-        /**
-        // update castling_rights if needed
-        if move.is_castling() {
-            let mut rights = self.castling_rights();
-            let whose_turn = self.side_to_move();
-            match whose_turn {
-                Colour::Black => {
-                    self.set_castling_rights((CastleRights::NoRights, rights[1].unwrap()));
-                },
-                Coulour::White => {
-                    self.set_castling_rights((rights[0].unwrap(), CastleRights::NoRights));
-                },
-            };
-        }
-        */
-
-        // these are likely needed in validate_move()
-        // let mut bitstack = self.generate_bitstack();
-        // self.write_piecemap(bitstack);
-
-        /**
-        // read the piece on src square
-        let piece = self.square(move.source);
-        // set the piece on dest and clear src
-        self.move_piece(move.src, move.dest, piece);
-        */
-
-
-
 
     }
 }
