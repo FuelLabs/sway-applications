@@ -4,7 +4,7 @@ dep data_structures/asset_info;
 dep data_structures/campaign_info;
 dep data_structures/campaign;
 dep data_structures/pledge;
-dep data_structures/state;
+dep data_structures/campaign_state;
 dep errors;
 dep events;
 dep interface;
@@ -22,7 +22,7 @@ use events::{
     UnpledgedEvent,
 };
 use pledge::Pledge;
-use state::State;
+use campaign_state::CampaignState;
 use std::{
     auth::msg_sender,
     block::height,
@@ -84,10 +84,10 @@ impl Fundraiser for Contract {
 
         // User cannot cancel a campaign that has already been cancelled
         // Given the logic below this is unnecessary aside from ignoring event spam
-        require(campaign_info.state != State::Cancelled, CampaignError::CampaignHasBeenCancelled);
+        require(campaign_info.state != CampaignState::Cancelled, CampaignError::CampaignHasBeenCancelled);
 
         // Mark the campaign as cancelled
-        campaign_info.state = State::Cancelled;
+        campaign_info.state = CampaignState::Cancelled;
 
         // Overwrite the previous campaign (which has not been cancelled) with the updated version
         storage.campaign_info.insert(id, Option::Some(campaign_info));
@@ -116,14 +116,14 @@ impl Fundraiser for Contract {
         require(campaign_info.target_amount <= campaign_info.total_pledge, CampaignError::TargetNotReached);
 
         // The author can only claim once to prevent the entire contract from being drained
-        require(campaign_info.state != State::Claimed, UserError::AlreadyClaimed);
+        require(campaign_info.state != CampaignState::Claimed, UserError::AlreadyClaimed);
 
         // The author cannot claim after they have cancelled the campaign regardless of any other
         // checks
-        require(campaign_info.state != State::Cancelled, CampaignError::CampaignHasBeenCancelled);
+        require(campaign_info.state != CampaignState::Cancelled, CampaignError::CampaignHasBeenCancelled);
 
         // Mark the campaign as claimed and overwrite the previous state with the updated version
-        campaign_info.state = State::Claimed;
+        campaign_info.state = CampaignState::Claimed;
         storage.campaign_info.insert(id, Option::Some(campaign_info));
 
         // Transfer the total pledged to this campaign to the beneficiary
@@ -206,7 +206,7 @@ impl Fundraiser for Contract {
 
         // The user should not be able to continue to pledge if the campaign has been cancelled
         // Given the logic below it's unnecessary but it makes sense to stop them
-        require(campaign_info.state != State::Cancelled, CampaignError::CampaignHasBeenCancelled);
+        require(campaign_info.state != CampaignState::Cancelled, CampaignError::CampaignHasBeenCancelled);
 
         // Use the user's pledges as an ID / way to index this new pledge
         let user = msg_sender().unwrap();
@@ -276,7 +276,7 @@ impl Fundraiser for Contract {
         // A user should be able to unpledge at any point except if the deadline has been reached
         // and the author has claimed
         if campaign_info.deadline <= height() {
-            require(campaign_info.state != State::Claimed, UserError::AlreadyClaimed);
+            require(campaign_info.state != CampaignState::Claimed, UserError::AlreadyClaimed);
         }
 
         // Check if the user has pledged to the campaign they are attempting to unpledge from

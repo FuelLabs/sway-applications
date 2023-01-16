@@ -1,8 +1,8 @@
 library campaign_info;
 
-dep state;
+dep campaign_state;
 
-use state::State;
+use campaign_state::CampaignState;
 
 /// General data structure containing information about a campaign
 pub struct CampaignInfo {
@@ -13,7 +13,7 @@ pub struct CampaignInfo {
     /// The user to whom the funds will be sent to upon a successful campaign
     beneficiary: Identity,
     // Whether the campaign is currently: Funding, Claimed, Cancelled
-    state: State,
+    state: CampaignState,
     /// The end time for the campaign after which it becomes locked
     deadline: u64,
     /// The amount needed to deem the campaign a success
@@ -34,7 +34,7 @@ impl CampaignInfo {
             asset,
             author,
             beneficiary,
-            state: State::Funding,
+            state: CampaignState::Funding,
             deadline,
             target_amount,
             total_pledge: 0,

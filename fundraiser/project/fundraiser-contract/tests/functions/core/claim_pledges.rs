@@ -8,7 +8,7 @@ mod success {
     use super::*;
     use crate::utils::{
         interface::info::campaign_info,
-        setup::{identity, ClaimedEvent, State},
+        setup::{identity, CampaignState, ClaimedEvent},
     };
     use fuels::tx::AssetId;
 
@@ -63,7 +63,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            State::Claimed()
+            CampaignState::Claimed()
         ));
     }
 }

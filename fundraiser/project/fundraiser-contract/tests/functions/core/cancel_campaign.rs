@@ -8,7 +8,7 @@ mod success {
     use super::*;
     use crate::utils::{
         interface::info::campaign_info,
-        setup::{CancelledCampaignEvent, State},
+        setup::{CampaignState, CancelledCampaignEvent},
     };
 
     #[tokio::test]
@@ -30,7 +30,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            State::Funding()
+            CampaignState::Funding()
         ));
 
         let response = cancel_campaign(&author.contract, 1).await;
@@ -46,7 +46,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            State::Cancelled()
+            CampaignState::Cancelled()
         ));
     }
 
@@ -77,7 +77,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            State::Funding()
+            CampaignState::Funding()
         ));
         assert!(matches!(
             campaign_info(&author.contract, 2)
@@ -85,7 +85,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            State::Funding()
+            CampaignState::Funding()
         ));
 
         let response1 = cancel_campaign(&author.contract, 1).await;
@@ -109,7 +109,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            State::Cancelled()
+            CampaignState::Cancelled()
         ));
         assert!(matches!(
             campaign_info(&author.contract, 2)
@@ -117,7 +117,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            State::Cancelled()
+            CampaignState::Cancelled()
         ));
     }
 }
