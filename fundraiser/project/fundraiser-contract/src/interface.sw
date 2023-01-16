@@ -96,7 +96,7 @@ abi Fundraiser {
     /// # Reverts
     ///
     /// * When the `id` is either 0 or greater than the total number of campaigns created
-    /// * When the user attempts to unpledge after the deadline and `target_amount` have been reached
+    /// * When the user attempts to unpledge after the deadline and `target_amount` has been reached
     /// * When the user has not pledged to the campaign represented by the `id`
     #[storage(read, write)]
     fn unpledge(id: u64, amount: u64);
