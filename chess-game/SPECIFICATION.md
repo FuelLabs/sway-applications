@@ -50,9 +50,9 @@ In both modes, the players must deposit a bond into a contract(TODO: or a Predic
 This sub-section details what a user is able to do, e.g., click a button and "x, y, z" happens.
 
 ### Chess Contract
-
+WIP
 #### Core Functionality
-
-# Sequence Diagram
+WIP
+# Sequence Diagram: WIP
 
 ![Chess Sequence Diagram](.docs/chess-sequence-diagram.png)
