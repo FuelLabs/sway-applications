@@ -13,11 +13,12 @@ use errors::*;
 use move::Move;
 use piece::{
     BISHOP,
+    BLACK,
+    EMPTY,
     ROOK,
     KNIGHT,
     KING,
     QUEEN,
-    BLACK,
     PAWN,
     Piece,
     WHITE};
@@ -225,51 +226,47 @@ impl Board {
         let mut i = 0;
         let mut mask = 1;
         let mut color = 0;
+        let mut piece = EMPTY;
         while i < 64 {
             let occupied = mask & self.bitstack.all.bits;
             if occupied == 0 {
                 i += 1;
             } else {
-                let color = if mask & self.bitstack.black.bits == 0 {
-                    BLACK
-                } else {
-                    WHITE
-                };
                 let pawn = mask & self.bitstack.pawns.bits;
                 if pawn == 1 {
-                    // TODO refactor. set var piece and only call self.write_square_to_piecemap once !
-                    self.write_square_to_piecemap(color, Piece::from_u64(PAWN).unwrap(), Square::from_index(i).unwrap());
-                    i += 1;
+                    piece = PAWN;
                 } else {
                     let bishop = mask & self.bitstack.bishops.bits;
                     if bishop == 1 {
-                        self.write_square_to_piecemap(color, Piece::from_u64(BISHOP).unwrap(), Square::from_index(i).unwrap());
-                        i += 1;
+                        piece = BISHOP;
                     } else {
                         let rook = mask & self.bitstack.rooks.bits;
                         if rook == 1 {
-                            self.write_square_to_piecemap(color, Piece::from_u64(ROOK).unwrap(), Square::from_index(i).unwrap());
-                            i += 1;
+                            piece = ROOK;
                         } else {
                             let knight = mask & self.bitstack.knights.bits;
                             if knight == 1 {
-                                self.write_square_to_piecemap(color, Piece::from_u64(KNIGHT).unwrap(), Square::from_index(i).unwrap());
-                                i += 1;
+                                piece = KNIGHT;
                             } else {
                                 let queen = mask & self.bitstack.queens.bits;
                                 if queen == 1 {
-                                    self.write_square_to_piecemap(color, Piece::from_u64(QUEEN).unwrap(), Square::from_index(i).unwrap());
-                                    i += 1;
+                                    piece = QUEEN;
                                 } else {
-                                    self.write_square_to_piecemap(color, Piece::from_u64(KING).unwrap(), Square::from_index(i).unwrap());
-                                    i += 1;
+                                    piece = KING;
                                 }
                             }
                         }
                     };
                 }
-            }
-        }
+            };
+            let color = if mask & self.bitstack.black.bits == 0 {
+                BLACK
+            } else {
+                WHITE
+            };
+            self.write_square_to_piecemap(color, Piece::from_u64(piece).unwrap(), Square::from_index(i).unwrap());
+            i += 1;
+        };
     }
 
     // wraps Square::clear() & Square::set() ??                  REVIEW !
