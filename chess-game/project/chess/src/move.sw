@@ -6,6 +6,22 @@ dep piece;
 use square::Square;
 use piece::Piece;
 
+// TODO::data consider expanding Move to encompass Proposal.
+// this would become the "message" signed by a player in state channel mode.
+/**
+i.e:
+pub struct Move {
+    target: ContractId,
+    game_id: b256,
+    // previous state to apply move to, already attested to by opponent.
+    piecemap: b256,
+    // previous state to apply move to, already attested to by opponent.
+    metadata: u64,
+    source: Square,
+    dest: Square,
+    promotion: Option<Piece>
+}
+*/
 pub struct Move {
     source: Square,
     dest: Square,

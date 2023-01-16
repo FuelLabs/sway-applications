@@ -10,10 +10,15 @@ use game::Status;
 pub struct Game {
     player_1: Address,
     player_2: Address,
-    game_nonce: u64,
-    // this is the current state
     board: Board,
     status: Status,
+    // last known state: hash(piecemap, metadata)
+    // stored after a valid Move is applied to previous state.
+    // piecemap & metadata are updated, stored along with bitstack, and logged.
+    // TODO: determine if metadata.full_move_counter already gives us this property, i.e: check the move counter on the proposed move is the stored counter + 1 ?
+    statehash: b256,
+    // used to prevent signed message replays
+    nonce: u64, // https://programtheblockchain.com/posts/2018/05/11/state-channels-for-two-player-games/
 }
 
 // TODO: add methods to conver to & from a status code, i.e:

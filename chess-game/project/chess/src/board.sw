@@ -11,7 +11,16 @@ dep utils;
 use bitstack::BitStack;
 use errors::*;
 use move::Move;
-use piece::{BLACK, Piece, WHITE};
+use piece::{
+    BISHOP,
+    ROOK,
+    KNIGHT,
+    KING,
+    QUEEN,
+    BLACK,
+    PAWN,
+    Piece,
+    WHITE};
 use special::CastleRights;
 use square::Square;
 use utils::{compose, decompose, query_bit, set_bit, toggle_bit, multi_bit_mask, b256_multimask};
@@ -115,6 +124,16 @@ impl Board {
 }
 
 impl Board {
+    pub fn write_square_to_piecemap(mut self, color: u64, piece: Piece, dest: Square) {
+        self.clear_square(dest);
+        let mut index = dest.to_index();
+        // set the "color" bit in the piece code
+        let colored_piece = piece.to_u64() | (color << 4);
+        let mut piece_code = compose((0, 0, 0, (colored_piece)));
+        let shifted = piece_code << index;
+        self.piecemap = self.piecemap | shifted;
+    }
+
     pub fn half_move_counter(self) -> u64 {
         (self.metadata & HALF_MOVE_MASK) >> 8
     }
@@ -184,30 +203,6 @@ impl Board {
         self.metadata = self.metadata & FULL_MOVE_CLEARING_MASK;
     }
 
-    pub fn write_square_to_piecemap(mut self, color: u64, piece: Piece, dest: Square) {
-        self.clear_square(dest);
-        let mut index = dest.to_index();
-        let colored_piece = piece.to_u64() | (color << 4);
-        let mut piece_code = compose((0, 0, 0, (colored_piece)));
-
-        if index == 0 {
-            self.piecemap = self.piecemap | piece_code;
-        } else {
-            // TODO
-        }
-    }
-
-    // convert bitstack to piecemap
-    pub fn generate_piecemap() {
-        // make a mask of target bit
-        // use mask & bitmap to teest for inclusion
-        // binary search? :
-        // mask & Empty
-        // mask & pawns
-        // mask & bishops, etc..
-        // finally, mask & black to determine color.
-    }
-
     pub fn read_square(self, square_index: u64) -> (u64, Piece) {
         let mut index = square_index;
         let mut mask = compose((0, 0, 0, multi_bit_mask(4)));
@@ -225,7 +220,57 @@ impl Board {
 }
 
 impl Board {
-
+    // convert bitstack to piecemap
+    pub fn generate_piecemap(mut self) {
+        let mut i = 0;
+        let mut mask = 1;
+        let mut color = 0;
+        while i < 64 {
+            let occupied = mask & self.bitstack.all.bits;
+            if occupied == 0 {
+                i += 1;
+            } else {
+                let color = if mask & self.bitstack.black.bits == 0 {
+                    BLACK
+                } else {
+                    WHITE
+                };
+                let pawn = mask & self.bitstack.pawns.bits;
+                if pawn == 1 {
+                    // TODO refactor. set var piece and only call self.write_square_to_piecemap once !
+                    self.write_square_to_piecemap(color, Piece::from_u64(PAWN).unwrap(), Square::from_index(i).unwrap());
+                    i += 1;
+                } else {
+                    let bishop = mask & self.bitstack.bishops.bits;
+                    if bishop == 1 {
+                        self.write_square_to_piecemap(color, Piece::from_u64(BISHOP).unwrap(), Square::from_index(i).unwrap());
+                        i += 1;
+                    } else {
+                        let rook = mask & self.bitstack.rooks.bits;
+                        if rook == 1 {
+                            self.write_square_to_piecemap(color, Piece::from_u64(ROOK).unwrap(), Square::from_index(i).unwrap());
+                            i += 1;
+                        } else {
+                            let knight = mask & self.bitstack.knights.bits;
+                            if knight == 1 {
+                                self.write_square_to_piecemap(color, Piece::from_u64(KNIGHT).unwrap(), Square::from_index(i).unwrap());
+                                i += 1;
+                            } else {
+                                let queen = mask & self.bitstack.queens.bits;
+                                if queen == 1 {
+                                    self.write_square_to_piecemap(color, Piece::from_u64(QUEEN).unwrap(), Square::from_index(i).unwrap());
+                                    i += 1;
+                                } else {
+                                    self.write_square_to_piecemap(color, Piece::from_u64(KING).unwrap(), Square::from_index(i).unwrap());
+                                    i += 1;
+                                }
+                            }
+                        }
+                    };
+                }
+            }
+        }
+    }
 
     // wraps Square::clear() & Square::set() ??                  REVIEW !
     pub fn move_piece(mut self, src: Square, dest: Square) {
@@ -270,9 +315,15 @@ impl Board {
         let board = Board::new();
         // loop over each index of bitstack, getting color and piece
         // set in piecemap with board.write_square_to_piecemap()
+        // TODO: this is not complete yet
         let mut i = 0;
         while i < 64 {
+            // binary seach:
+            // is square occupied?
+            // is piece a pawn ? etc...
+            // is piece BLACK ?
             let bit = query_bit(board.bitstack.all.bits, i);
+
 
         }
         Board::new()
@@ -314,6 +365,8 @@ impl Board {
 
     // TODO: consider making this a method on Board
     // this method assumes that the Board and the Move have already been validated !
+    // TODO: move all validation to validate_proposed_move()
+    // transition should just apply the move and update data structures accordingly.
     pub fn transition(mut self, move: Move) {
         // update metadata:
         self.toggle_side_to_move();
