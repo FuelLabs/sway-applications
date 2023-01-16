@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset=".docs/chess-logo-dark-theme.png">
-        <img alt="chess logo" width="400px" src=".docs/chess-logo-light-theme.png">
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/chess_logo-dark-theme.png">
+        <img alt="chess logo" width="400px" src=".docs/chess_logo-light-theme.png">
     </picture>
 </p>
 
