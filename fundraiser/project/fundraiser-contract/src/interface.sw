@@ -57,7 +57,6 @@ abi Fundraiser {
     ///
     /// # Reverts
     ///
-    /// * When `asset` is the BASE_ASSET
     /// * When the `deadline` is not ahead of the current block height
     /// * When the `target_amount` is 0
     #[storage(read, write)]
