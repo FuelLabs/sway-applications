@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset=".docs/escrow-logo-dark-theme.png">
-        <img alt="escrow logo" width="400px" src=".docs/escrow-logo-light-theme.png">
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/chess_logo-dark-theme.png">
+        <img alt="chess logo" width="400px" src=".docs/chess_logo-light-theme.png">
     </picture>
 </p>
 
@@ -21,30 +21,19 @@ made by exchanging signed states between the players via an off-chain communicat
 At any point, the current signed game-state and move can be submitted to the contract for validation. A successfully validated move will cause the contract to update the stored state for the current game.
 Taken to the extreme, with the exception of game initialization and verification of the final move, the entire game can be played off-chain while still remaining trustless and verifiable.
 
-While a chess engine could possibly be added in the future, the game is currently meant for two players. However, there's nothing stopping one or both of the "players" from being a multisig contract, an off-chain chess engine, or even a fully on-chain chess engine in a contract.
+This game is currently meant for two players. However, there's nothing stopping one or both of the "players" from being a multisig contract, an off-chain chess engine, or even a fully on-chain chess engine in a contract.
 
 ## Project Structure
-The project consists of both a smart contract and a predicate.
+WIP: The project consists of a library and a contract.
 
 <!--Only show most important files e.g. script to run, build etc.-->
 
 ```
 chess_game
-├── Forc.lock
-├── Forc.toml
 ├── README.md
 ├── SPECIFICATION.md
-├── game_flow.mmd
+├── SEQUENCE.mmd
 └── project
-    ├── arbiter_predicate
-    │   ├── Forc.toml
-    │   ├── out
-    │   │   └── debug
-    │   │       ├── arbiter_predicate-abi.json
-    │   │       ├── arbiter_predicate-bin-root
-    │   │       └── arbiter_predicate.bin
-    │   └── src
-    │       └── main.sw
     ├── chess_contract
     │   ├── Forc.toml
     │   ├── out
@@ -54,11 +43,11 @@ chess_game
     │   │       └── chess_contract.bin
     │   └── src
     │       └── main.sw
-    └── lib_chess
+    └── chess
         ├── Forc.toml
         ├── out
         │   └── debug
-        │       └── lib_chess.bin
+        │       └── chess.bin
         └── src
             └── lib.sw
 ```
