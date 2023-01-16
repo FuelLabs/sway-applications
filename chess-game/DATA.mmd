@@ -2,10 +2,10 @@ classDiagram
     class Board {
         <<struct>>
         +b256 piecemap
-        +BitStack bitStack
+        +BitBoard bitboard
         +u64 metadata
     }
-    class Bitstack {
+    class BitBoard {
         <<struct>>
         +u64 black_pawns
         +u64 black_bishops
@@ -91,7 +91,7 @@ classDiagram
 
     class game_id {
         <<hash>>
-        +b256 hash(player1, player2, game_number)
+        +b256 hash(player1,player2,game_number)
     }
     class piecemap {
         <<bitmap>>
@@ -101,16 +101,22 @@ classDiagram
         <<bitmap>>
         +b256 bits(side_to_move, en_passant, half_move, castling_rights, full_move)
     }
+    class statehash {
+        <<hash>>
+        +b256 hash(piecemap,metadata)
+    }
 
     CastlingRights <.. Player
     Piece <.. Move: depends
     Square <.. Move: depends
     Board <.. Game: depends
-    BitStack <.. Board: depends
+    BitBoard <.. Board: depends
     Status <.. Game: depends
     Player <.. Game: depends
     game_id <.. Move: depends
     piecemap <.. Move: depends
     metadata <.. Move: depends
+    piecemap <.. statehash: depends
+    metadata <.. statehash: depends
 
 
