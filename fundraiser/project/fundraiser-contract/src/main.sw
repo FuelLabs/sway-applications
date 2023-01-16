@@ -69,12 +69,12 @@ storage {
 
 impl Fundraiser for Contract {
     #[storage(read, write)]
-    fn cancel_campaign(id: u64) {
+    fn cancel_campaign(campaign_id: u64) {
         // User cannot interact with a non-existent campaign
-        validate_campaign_id(id, storage.total_campaigns);
+        validate_campaign_id(campaign_id, storage.total_campaigns);
 
         // Retrieve the campaign in order to check its data / update it
-        let mut campaign_info = storage.campaign_info.get(id).unwrap();
+        let mut campaign_info = storage.campaign_info.get(campaign_id).unwrap();
 
         // Only the creator (author) of the campaign can cancel it
         require(campaign_info.author == msg_sender().unwrap(), UserError::UnauthorizedUser);
@@ -90,19 +90,19 @@ impl Fundraiser for Contract {
         campaign_info.state = CampaignState::Cancelled;
 
         // Overwrite the previous campaign (which has not been cancelled) with the updated version
-        storage.campaign_info.insert(id, Option::Some(campaign_info));
+        storage.campaign_info.insert(campaign_id, Option::Some(campaign_info));
 
         // We have updated the state of a campaign therefore we must log it
-        log(CancelledCampaignEvent { id });
+        log(CancelledCampaignEvent { campaign_id });
     }
 
     #[storage(read, write)]
-    fn claim_pledges(id: u64) {
+    fn claim_pledges(campaign_id: u64) {
         // User cannot interact with a non-existent campaign
-        validate_campaign_id(id, storage.total_campaigns);
+        validate_campaign_id(campaign_id, storage.total_campaigns);
 
         // Retrieve the campaign in order to check its data / update it
-        let mut campaign_info = storage.campaign_info.get(id).unwrap();
+        let mut campaign_info = storage.campaign_info.get(campaign_id).unwrap();
 
         // Only the creator (author) of the campaign can initiate the claiming process
         require(campaign_info.author == msg_sender().unwrap(), UserError::UnauthorizedUser);
@@ -124,13 +124,13 @@ impl Fundraiser for Contract {
 
         // Mark the campaign as claimed and overwrite the previous state with the updated version
         campaign_info.state = CampaignState::Claimed;
-        storage.campaign_info.insert(id, Option::Some(campaign_info));
+        storage.campaign_info.insert(campaign_id, Option::Some(campaign_info));
 
         // Transfer the total pledged to this campaign to the beneficiary
         transfer(campaign_info.total_pledge, campaign_info.asset, campaign_info.beneficiary);
 
         // We have updated the state of a campaign therefore we must log it
-        log(ClaimedEvent { id });
+        log(ClaimedEvent { campaign_id });
     }
 
     #[storage(read, write)]
@@ -181,17 +181,17 @@ impl Fundraiser for Contract {
         log(CreatedCampaignEvent {
             author,
             campaign_info,
-            id: storage.total_campaigns,
+            campaign_id: storage.total_campaigns,
         });
     }
 
     #[storage(read, write)]
-    fn pledge(id: u64) {
+    fn pledge(campaign_id: u64) {
         // User cannot interact with a non-existent campaign
-        validate_campaign_id(id, storage.total_campaigns);
+        validate_campaign_id(campaign_id, storage.total_campaigns);
 
         // Retrieve the campaign in order to check its data / update it
-        let mut campaign_info = storage.campaign_info.get(id).unwrap();
+        let mut campaign_info = storage.campaign_info.get(campaign_id).unwrap();
 
         // The users should only have the ability to pledge to campaigns that have not reached their
         // deadline (ended naturally - not been cancelled)
@@ -214,7 +214,7 @@ impl Fundraiser for Contract {
 
         // Fetch the index to see if the user has pledged to this campaign before or if this is a
         // pledge to a new campaign
-        let pledge_history_index = storage.pledge_history_index.get((user, id));
+        let pledge_history_index = storage.pledge_history_index.get((user, campaign_id));
 
         // Pledging to a campaign that they have already pledged to
         if pledge_history_index != 0 {
@@ -233,11 +233,11 @@ impl Fundraiser for Contract {
             // Store the data structure required to look up the campaign they have pledged to, also
             // track how much they have pledged so that they can withdraw the correct amount.
             // Moreover, this can be used to show the user how much they have pledged to any campaign
-            storage.pledge_history.insert((user, pledge_count + 1), Option::Some(Pledge::new(msg_amount(), id)));
+            storage.pledge_history.insert((user, pledge_count + 1), Option::Some(Pledge::new(msg_amount(), campaign_id)));
 
             // Since we use the campaign ID to interact with the contract use the ID as a key for
             // a reverse look-up. Value is the 1st pledge (count)
-            storage.pledge_history_index.insert((user, id), pledge_count + 1);
+            storage.pledge_history_index.insert((user, campaign_id), pledge_count + 1);
         }
 
         // The user has pledged therefore we increment the total amount that this campaign has
@@ -245,7 +245,7 @@ impl Fundraiser for Contract {
         campaign_info.total_pledge += msg_amount();
 
         // Campaign state has been updated therefore overwrite the previous version with the new
-        storage.campaign_info.insert(id, Option::Some(campaign_info));
+        storage.campaign_info.insert(campaign_id, Option::Some(campaign_info));
 
         // Update the asset amount to track the addition of the new pledge
         let mut asset_info = storage.asset_info.get(campaign_info.asset).unwrap();
@@ -257,21 +257,21 @@ impl Fundraiser for Contract {
         // We have updated the state of a campaign therefore we must log it
         log(PledgedEvent {
             amount: msg_amount(),
-            id,
+            campaign_id,
             user,
         });
     }
 
     #[storage(read, write)]
-    fn unpledge(id: u64, amount: u64) {
+    fn unpledge(campaign_id: u64, amount: u64) {
         // User cannot interact with a non-existent campaign
-        validate_campaign_id(id, storage.total_campaigns);
+        validate_campaign_id(campaign_id, storage.total_campaigns);
 
         // Prevent a user from unpledging 0 since it does not make sense to do so
         require(amount != 0, UserError::AmountCannotBeZero);
 
         // Retrieve the campaign in order to check its data / update it
-        let mut campaign_info = storage.campaign_info.get(id).unwrap();
+        let mut campaign_info = storage.campaign_info.get(campaign_id).unwrap();
 
         // A user should be able to unpledge at any point except if the deadline has been reached
         // and the author has claimed
@@ -281,7 +281,7 @@ impl Fundraiser for Contract {
 
         // Check if the user has pledged to the campaign they are attempting to unpledge from
         let user = msg_sender().unwrap();
-        let pledge_history_index = storage.pledge_history_index.get((user, id));
+        let pledge_history_index = storage.pledge_history_index.get((user, campaign_id));
 
         require(pledge_history_index != 0, UserError::UserHasNotPledged);
 
@@ -304,7 +304,7 @@ impl Fundraiser for Contract {
         storage.pledge_history.insert((user, pledge_history_index), Option::Some(pledge));
 
         // Update the campaign state with the updated version as well
-        storage.campaign_info.insert(id, Option::Some(campaign_info));
+        storage.campaign_info.insert(campaign_id, Option::Some(campaign_info));
 
         // Update the asset amount to track the removal of the amount
         let mut asset_info = storage.asset_info.get(campaign_info.asset).unwrap();
@@ -319,7 +319,7 @@ impl Fundraiser for Contract {
         // We have updated the state of a campaign therefore we must log it
         log(UnpledgedEvent {
             amount,
-            id,
+            campaign_id,
             user,
         });
     }
@@ -342,13 +342,13 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn campaign_info(id: u64) -> Option<CampaignInfo> {
-        storage.campaign_info.get(id)
+    fn campaign_info(campaign_id: u64) -> Option<CampaignInfo> {
+        storage.campaign_info.get(campaign_id)
     }
 
     #[storage(read)]
-    fn campaign(id: u64, user: Identity) -> Option<Campaign> {
-        storage.campaign_history.get((user, id))
+    fn campaign(campaign_id: u64, user: Identity) -> Option<Campaign> {
+        storage.campaign_history.get((user, campaign_id))
     }
 
     #[storage(read)]
