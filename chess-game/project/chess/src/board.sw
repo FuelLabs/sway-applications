@@ -222,11 +222,13 @@ impl Board {
 
 impl Board {
     // convert bitstack to piecemap
+    // TODO: do I ever need to perform all these steps, or can I always just use the latest Move to update 2 nibbles in the piecemap?
     pub fn generate_piecemap(mut self) {
         let mut i = 0;
         let mut mask = 1;
         let mut color = 0;
         let mut piece = EMPTY;
+        // TODO: see if I can use match to clean this up
         while i < 64 {
             let occupied = mask & self.bitstack.all.bits;
             if occupied == 0 {
