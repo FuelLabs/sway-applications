@@ -73,7 +73,7 @@ mod success {
             *event,
             UnpledgedEvent {
                 amount: defaults.target_amount,
-                id: 1,
+                campaign_id: 1,
                 user: identity(user.wallet.address()).await
             }
         );
@@ -155,7 +155,7 @@ mod success {
             .await
             .value
             .unwrap();
-        assert_eq!(1, info.id);
+        assert_eq!(1, info.campaign_id);
         assert_eq!(defaults.target_amount, info.amount);
 
         assert_eq!(
@@ -182,7 +182,7 @@ mod success {
             *event,
             UnpledgedEvent {
                 amount: defaults.target_amount - 1,
-                id: 1,
+                campaign_id: 1,
                 user: identity(user.wallet.address()).await
             }
         );
@@ -206,7 +206,7 @@ mod success {
             .await
             .value
             .unwrap();
-        assert_eq!(1, info.id);
+        assert_eq!(1, info.campaign_id);
         assert_eq!(1, info.amount);
     }
 
@@ -305,8 +305,8 @@ mod success {
             .value
             .unwrap();
 
-        assert_eq!(1, info1.id);
-        assert_eq!(2, info2.id);
+        assert_eq!(1, info1.campaign_id);
+        assert_eq!(2, info2.campaign_id);
         assert_eq!(defaults.target_amount, info1.amount);
         assert_eq!(defaults.target_amount, info2.amount);
         assert_eq!(
@@ -336,7 +336,7 @@ mod success {
             *event1,
             UnpledgedEvent {
                 amount: defaults.target_amount,
-                id: 1,
+                campaign_id: 1,
                 user: identity(user.wallet.address()).await
             }
         );
@@ -344,7 +344,7 @@ mod success {
             *event2,
             UnpledgedEvent {
                 amount: defaults.target_amount,
-                id: 2,
+                campaign_id: 2,
                 user: identity(user.wallet.address()).await
             }
         );
@@ -399,8 +399,8 @@ mod success {
             .value
             .unwrap();
 
-        assert_eq!(1, info1.id);
-        assert_eq!(2, info2.id);
+        assert_eq!(1, info1.campaign_id);
+        assert_eq!(2, info2.campaign_id);
         assert_eq!(0, info1.amount);
         assert_eq!(0, info2.amount);
     }
@@ -480,7 +480,7 @@ mod success {
             *event,
             UnpledgedEvent {
                 amount: defaults.target_amount,
-                id: 1,
+                campaign_id: 1,
                 user: identity(user.wallet.address()).await
             }
         );

@@ -70,7 +70,7 @@ mod success {
             *event,
             PledgedEvent {
                 amount: defaults.target_amount,
-                id: 1,
+                campaign_id: 1,
                 user: identity(user.wallet.address()).await
             }
         );
@@ -96,7 +96,7 @@ mod success {
             .value
             .unwrap();
 
-        assert_eq!(1, info.id);
+        assert_eq!(1, info.campaign_id);
         assert_eq!(defaults.target_amount, info.amount);
     }
 
@@ -158,7 +158,7 @@ mod success {
             *event,
             PledgedEvent {
                 amount: defaults.target_amount,
-                id: 1,
+                campaign_id: 1,
                 user: identity(user.wallet.address()).await
             }
         );
@@ -184,7 +184,7 @@ mod success {
             .value
             .unwrap();
 
-        assert_eq!(1, info.id);
+        assert_eq!(1, info.campaign_id);
         assert_eq!(defaults.target_amount, info.amount);
 
         let response2 = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
@@ -203,7 +203,7 @@ mod success {
             *event,
             PledgedEvent {
                 amount: defaults.target_amount,
-                id: 1,
+                campaign_id: 1,
                 user: identity(user.wallet.address()).await
             }
         );
@@ -229,7 +229,7 @@ mod success {
             .value
             .unwrap();
 
-        assert_eq!(1, info.id);
+        assert_eq!(1, info.campaign_id);
         assert_eq!(defaults.target_amount * 2, info.amount);
     }
 
@@ -322,7 +322,7 @@ mod success {
             *event1,
             PledgedEvent {
                 amount: defaults.target_amount,
-                id: 1,
+                campaign_id: 1,
                 user: identity(user.wallet.address()).await
             }
         );
@@ -330,7 +330,7 @@ mod success {
             *event2,
             PledgedEvent {
                 amount: defaults.target_amount,
-                id: 2,
+                campaign_id: 2,
                 user: identity(user.wallet.address()).await
             }
         );
@@ -381,7 +381,7 @@ mod success {
                 .await
                 .value
                 .unwrap()
-                .id
+                .campaign_id
         );
         assert_eq!(
             2,
@@ -389,7 +389,7 @@ mod success {
                 .await
                 .value
                 .unwrap()
-                .id
+                .campaign_id
         );
         assert_eq!(
             defaults.target_amount,

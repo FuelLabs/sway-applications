@@ -48,7 +48,7 @@ mod success {
         let log = response.get_logs_with_type::<ClaimedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
-        assert_eq!(*event, ClaimedEvent { id: 1 });
+        assert_eq!(*event, ClaimedEvent { campaign_id: 1 });
         assert_eq!(
             defaults.target_amount,
             author

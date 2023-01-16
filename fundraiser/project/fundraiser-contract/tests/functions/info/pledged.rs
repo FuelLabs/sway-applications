@@ -44,7 +44,7 @@ mod success {
             .await
             .value
             .unwrap();
-        assert_eq!(1, info.id);
+        assert_eq!(1, info.campaign_id);
         assert_eq!(defaults.target_amount, info.amount);
     }
 }

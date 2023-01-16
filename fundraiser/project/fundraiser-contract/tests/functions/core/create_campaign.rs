@@ -42,7 +42,7 @@ mod success {
             CreatedCampaignEvent {
                 author: identity(author.wallet.address()).await,
                 campaign_info: info.clone(),
-                id: 1
+                campaign_id: 1
             }
         );
         assert_eq!(0, asset_info.value.unwrap().amount);
@@ -117,7 +117,7 @@ mod success {
             CreatedCampaignEvent {
                 author: identity(author.wallet.address()).await,
                 campaign_info: info1.clone(),
-                id: 1
+                campaign_id: 1
             }
         );
         assert_eq!(
@@ -125,7 +125,7 @@ mod success {
             CreatedCampaignEvent {
                 author: identity(author.wallet.address()).await,
                 campaign_info: info2.clone(),
-                id: 2
+                campaign_id: 2
             }
         );
 
@@ -192,7 +192,7 @@ mod success {
             CreatedCampaignEvent {
                 author: identity(author.wallet.address()).await,
                 campaign_info: info1.clone(),
-                id: 1
+                campaign_id: 1
             }
         );
         assert_eq!(
@@ -200,7 +200,7 @@ mod success {
             CreatedCampaignEvent {
                 author: identity(author.wallet.address()).await,
                 campaign_info: info2.clone(),
-                id: 2
+                campaign_id: 2
             }
         );
 

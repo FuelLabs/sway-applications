@@ -39,7 +39,7 @@ mod success {
             .unwrap();
         let event = log.get(0).unwrap();
 
-        assert_eq!(*event, CancelledCampaignEvent { id: 1 });
+        assert_eq!(*event, CancelledCampaignEvent { campaign_id: 1 });
         assert!(matches!(
             campaign_info(&author.contract, 1)
                 .await
@@ -100,8 +100,8 @@ mod success {
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();
 
-        assert_eq!(*event1, CancelledCampaignEvent { id: 1 });
-        assert_eq!(*event2, CancelledCampaignEvent { id: 2 });
+        assert_eq!(*event1, CancelledCampaignEvent { campaign_id: 1 });
+        assert_eq!(*event2, CancelledCampaignEvent { campaign_id: 2 });
 
         assert!(matches!(
             campaign_info(&author.contract, 1)
