@@ -5,8 +5,8 @@ Table of Contents
     - [Modes of Play](#modes-of-play)
     - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
         - [Chess Contract](#chess)
-            - [Core Functionality](#core-functionality)
-              - [Sequence Diagram](#sequence-diagram)
+    - [Core Functionality](#core-functionality)
+- [Sequence Diagram](#sequence-diagram)
 
 # Overview
 
