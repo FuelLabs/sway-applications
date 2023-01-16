@@ -5,8 +5,8 @@ Table of Contents
     - [Modes of Play](#modes-of-play)
     - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
         - [Chess Contract](#chess)
-            - [Core Functionality](#core-functionality)
-              - [Sequence Diagram](#sequence-diagram)
+    - [Core Functionality](#core-functionality)
+- [Sequence Diagram](#sequence-diagram)
 
 # Overview
 
@@ -50,9 +50,9 @@ In both modes, the players must deposit a bond into a contract(TODO: or a Predic
 This sub-section details what a user is able to do, e.g., click a button and "x, y, z" happens.
 
 ### Chess Contract
-
+WIP
 #### Core Functionality
+WIP
+# Sequence Diagram: WIP
 
-## Sequence Diagram
-
-![AMM Sequence Diagram](.docs/amm-sequence-diagram.png)
+![Chess Sequence Diagram](.docs/chess-sequence-diagram.png)
