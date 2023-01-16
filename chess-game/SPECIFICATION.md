@@ -53,6 +53,6 @@ This sub-section details what a user is able to do, e.g., click a button and "x,
 
 #### Core Functionality
 
-## Sequence Diagram
+# Sequence Diagram
 
-![AMM Sequence Diagram](.docs/amm-sequence-diagram.png)
+![Chess Sequence Diagram](.docs/chess-sequence-diagram.png)
