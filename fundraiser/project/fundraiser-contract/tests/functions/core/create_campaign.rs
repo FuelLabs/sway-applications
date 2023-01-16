@@ -89,7 +89,7 @@ mod success {
             defaults.target_amount,
         )
         .await;
-        let resposne2 = create_campaign(
+        let response2 = create_campaign(
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
@@ -106,7 +106,7 @@ mod success {
         let log1 = response1
             .get_logs_with_type::<CreatedCampaignEvent>()
             .unwrap();
-        let log2 = resposne2
+        let log2 = response2
             .get_logs_with_type::<CreatedCampaignEvent>()
             .unwrap();
         let event1 = log1.get(0).unwrap();
@@ -164,7 +164,7 @@ mod success {
             defaults.target_amount,
         )
         .await;
-        let resposne2 = create_campaign(
+        let response2 = create_campaign(
             &author.contract,
             &asset_id,
             &defaults.beneficiary,
@@ -181,7 +181,7 @@ mod success {
         let log1 = response1
             .get_logs_with_type::<CreatedCampaignEvent>()
             .unwrap();
-        let log2 = resposne2
+        let log2 = response2
             .get_logs_with_type::<CreatedCampaignEvent>()
             .unwrap();
         let event1 = log1.get(0).unwrap();
