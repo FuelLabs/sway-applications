@@ -32,7 +32,7 @@ use std::{
     token::transfer,
 };
 use interface::{Fundraiser, Info};
-use utils::validate_id;
+use utils::validate_campaign_id;
 
 storage {
     /// Total number of unique assets used across all campaigns
@@ -71,7 +71,7 @@ impl Fundraiser for Contract {
     #[storage(read, write)]
     fn cancel_campaign(id: u64) {
         // User cannot interact with a non-existent campaign
-        validate_id(id, storage.total_campaigns);
+        validate_campaign_id(id, storage.total_campaigns);
 
         // Retrieve the campaign in order to check its data / update it
         let mut campaign_info = storage.campaign_info.get(id).unwrap();
@@ -99,7 +99,7 @@ impl Fundraiser for Contract {
     #[storage(read, write)]
     fn claim_pledges(id: u64) {
         // User cannot interact with a non-existent campaign
-        validate_id(id, storage.total_campaigns);
+        validate_campaign_id(id, storage.total_campaigns);
 
         // Retrieve the campaign in order to check its data / update it
         let mut campaign_info = storage.campaign_info.get(id).unwrap();
@@ -188,7 +188,7 @@ impl Fundraiser for Contract {
     #[storage(read, write)]
     fn pledge(id: u64) {
         // User cannot interact with a non-existent campaign
-        validate_id(id, storage.total_campaigns);
+        validate_campaign_id(id, storage.total_campaigns);
 
         // Retrieve the campaign in order to check its data / update it
         let mut campaign_info = storage.campaign_info.get(id).unwrap();
@@ -265,7 +265,7 @@ impl Fundraiser for Contract {
     #[storage(read, write)]
     fn unpledge(id: u64, amount: u64) {
         // User cannot interact with a non-existent campaign
-        validate_id(id, storage.total_campaigns);
+        validate_campaign_id(id, storage.total_campaigns);
 
         // Prevent a user from unpledging 0 since it does not make sense to do so
         require(amount != 0, UserError::AmountCannotBeZero);
