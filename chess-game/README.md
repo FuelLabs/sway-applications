@@ -30,26 +30,35 @@ WIP: The project consists of a library and a contract.
 
 ```
 chess_game
+├── DATA_STRUCTURES.mmd
+├── Forc.lock
+├── Forc.toml
 ├── README.md
-├── SPECIFICATION.md
 ├── SEQUENCE.mmd
+├── SPECIFICATION.md
 └── project
-    ├── chess_contract
+    ├── chess
     │   ├── Forc.toml
     │   ├── out
     │   │   └── debug
-    │   │       ├── chess_contract-abi.json
-    │   │       ├── chess_contract-storage_slots.json
-    │   │       └── chess_contract.bin
+    │   │       └── chess.bin
     │   └── src
-    │       └── main.sw
-    └── chess
+    │       ├── bitboard.sw
+    │       ├── bitmaps.sw
+    │       ├── board.sw
+    │       ├── errors.sw
+    │       ├── events.sw
+    │       ├── game.sw
+    │       ├── lib.sw
+    │       ├── move.sw
+    │       ├── piece.sw
+    │       ├── special.sw
+    │       ├── square.sw
+    │       └── utils.sw
+    └── chess_contract
         ├── Forc.toml
-        ├── out
-        │   └── debug
-        │       └── chess.bin
         └── src
-            └── lib.sw
+            └── main.sw
 ```
 
 ## Running the Project
