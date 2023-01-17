@@ -21,7 +21,7 @@ pub struct Move {
 }
 
 impl Move {
-    fn build(target: ContractId, nonce: u64, game_id: b256, piecemap: b256, metadata: u64, src: Square, dest: Square, promotion: Option<Piece>, seq: u64) -> Move {
+    pub fn build(target: ContractId, nonce: u64, game_id: b256, piecemap: b256, metadata: u64, src: Square, dest: Square, promotion: Option<Piece>, seq: u64) -> Move {
         Move {
             target: target,
             nonce: nonce,

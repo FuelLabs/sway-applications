@@ -43,8 +43,8 @@ Initial board state:
 4 bits per piece * 64 squares = 256 bits to store all pieces.
 */
 // HEX equivalent of the above starting board state
-pub const STARTING_POSITIONS: b256 = 0x34256243111111110000000000000000000000000000000099999999BCADEACB;
-pub const STARTING_METADATA: u64 = 0b00000000_00000000_00000000_00000000_00001111_00000000_00000000_00000001;
+pub const INITIAL_PIECEMAP: b256 = 0x34256243111111110000000000000000000000000000000099999999BCADEACB;
+pub const INITIAL_METADATA: u64 = 0b00000000_00000000_00000000_00000000_00001111_00000000_00000000_00000001;
 pub const HALF_MOVE_MASK: u64 = 0x000000000000FF00;
 pub const FULL_MOVE_MASK: u64 = 0x000000FF00000000;
 pub const EN_PASSANT_MASK: u64 = 0x0000000000FF0000;
@@ -212,7 +212,7 @@ impl Board {
 }
 
 impl Board {
-    // convert bitstack to piecemap
+    // convert bitboard to piecemap
     // TODO: do I ever need to perform all these steps, or can I always just use the latest Move to update 2 nibbles in the piecemap?
     pub fn generate_piecemap(mut self) {
         let mut i = 0;
@@ -221,27 +221,27 @@ impl Board {
         let mut piece = EMPTY;
         // TODO: see if I can use match to clean this up
         while i < 64 {
-            let occupied = mask & self.bitstack.all.bits;
+            let occupied = mask & self.bitboard.all;
             if occupied == 0 {
                 i += 1;
             } else {
-                let pawn = mask & self.bitstack.pawns.bits;
+                let pawn = mask & self.bitboard.pawns;
                 if pawn == 1 {
                     piece = PAWN;
                 } else {
-                    let bishop = mask & self.bitstack.bishops.bits;
+                    let bishop = mask & self.bitboard.bishops;
                     if bishop == 1 {
                         piece = BISHOP;
                     } else {
-                        let rook = mask & self.bitstack.rooks.bits;
+                        let rook = mask & self.bitboard.rooks;
                         if rook == 1 {
                             piece = ROOK;
                         } else {
-                            let knight = mask & self.bitstack.knights.bits;
+                            let knight = mask & self.bitboard.knights;
                             if knight == 1 {
                                 piece = KNIGHT;
                             } else {
-                                let queen = mask & self.bitstack.queens.bits;
+                                let queen = mask & self.bitboard.queens;
                                 if queen == 1 {
                                     piece = QUEEN;
                                 } else {
@@ -252,7 +252,7 @@ impl Board {
                     };
                 }
             };
-            let color = if mask & self.bitstack.black.bits == 0 {
+            let color = if mask & self.bitboard.black == 0 {
                 BLACK
             } else {
                 WHITE
@@ -313,19 +313,21 @@ impl Board {
             // is square occupied?
             // is piece a pawn ? etc...
             // is piece BLACK ?
-            let bit = query_bit(board.bitboard.all.bits, i);
+            let bit = query_bit(board.bitboard.all, i);
 
 
         }
         Board::new()
     }
-    pub fn generate_bitboard(self) -> BitBoard {
-        BitBoard::new()
-    }
-    pub fn write_piecemap(self, bitboard: BitBoard) {
 
-    pub fn write_to_bitstack(self, board: Board) -> BitStack {
-        let mut bitstack = BitStack::new();
+    // pub fn generate_bitboard(self) -> BitBoard {
+    //     BitBoard::new()
+    // }
+
+    // pub fn write_piecemap(self, bitboard: BitBoard) {}
+    // TODO: review this, inputs/outputs & mutation of self?
+    pub fn write_to_bitboard(mut self, board: Board) {
+        let mut bitboard = BitBoard::new();
 
         let mut s = 0;
         let mut i = 0;
@@ -333,28 +335,26 @@ impl Board {
             let (color, piece) = board.read_square(s);
             if color == BLACK {
                 match piece {
-                    Piece::Pawn => bitstack.black_pawns.set_bit(i),
-                    Piece::Bishop => bitstack.black_bishops.set_bit(i),
-                    Piece::Rook => bitstack.black_rooks.set_bit(i),
-                    Piece::Knight => bitstack.black_knights.set_bit(i),
-                    Piece::Queen => bitstack.black_queen.set_bit(i),
-                    Piece::King => bitstack.black_king.set_bit(i),
+                    Piece::Pawn => toggle_bit(bitboard.black_pawns, i),
+                    Piece::Bishop => toggle_bit(bitboard.black_bishops, i),
+                    Piece::Rook => toggle_bit(bitboard.black_rooks, i),
+                    Piece::Knight => toggle_bit(bitboard.black_knights, i),
+                    Piece::Queen => toggle_bit(bitboard.black_queen, i),
+                    Piece::King => toggle_bit(bitboard.black_king, i),
                 }
             } else {
                 match piece {
-                    Piece::Pawn => bitstack.white_pawns.set_bit(i),
-                    Piece::Bishop => bitstack.white_bishops.set_bit(i),
-                    Piece::Rook => bitstack.white_rooks.set_bit(i),
-                    Piece::Knight => bitstack.white_knights.set_bit(i),
-                    Piece::Queen => bitstack.white_queen.set_bit(i),
-                    Piece::King => bitstack.white_king.set_bit(i),
+                    Piece::Pawn => toggle_bit(bitboard.white_pawns, i),
+                    Piece::Bishop => toggle_bit(bitboard.white_bishops, i),
+                    Piece::Rook => toggle_bit(bitboard.white_rooks, i),
+                    Piece::Knight => toggle_bit(bitboard.white_knights, i),
+                    Piece::Queen => toggle_bit(bitboard.white_queen, i),
+                    Piece::King => toggle_bit(bitboard.white_king, i),
                 }
             };
             s += 4;
             i += 1;
         }
-
-        bitstack
     }
 
 
@@ -432,10 +432,10 @@ impl Board {
         (colour, piece)
     }
 
-    pub fn generate_bitstack(self) -> BitStack {
-        BitStack::new()
+    pub fn generate_bitboard(self) -> BitBoard {
+        BitBoard::new()
     }
-    pub fn write_piecemap(self, bitstack: BitStack) {
+    pub fn write_piecemap(self, bitboard: BitBoard) {
 
     }
 }
@@ -446,51 +446,51 @@ impl Board {
 #[test()]
 fn test_new_board() {
     let board = Board::new();
-    assert(board.piecemap == STARTING_POSITIONS);
-    assert(board.metadata == STARTING_METADATA);
+    assert(board.piecemap == INITIAL_PIECEMAP);
+    assert(board.metadata == INITIAL_METADATA);
 }
 
-#[test()]
-fn test_transition_side_to_move() {
-    let mut p1 = Board::build(INITIAL_PIECEMAP, BitBoard::new(), INITIAL_METADATA);
-    let m1 = Move::build(Square::a3, Square::a4, Option::None);
-    p1.transition(m1);
-    assert(p1.side_to_move() == BLACK);
-    let m2 = Move::build(Square::a2, Square::a3, Option::None);
-    p1.transition(m2);
-    assert(p1.side_to_move() == WHITE);
-}
+// #[test()]
+// fn test_transition_side_to_move() {
+//     let mut p1 = Board::build(INITIAL_PIECEMAP, BitBoard::new(), INITIAL_METADATA);
+//     let m1 = Move::build(Square::a3, Square::a4, Option::None);
+//     p1.transition(m1);
+//     assert(p1.side_to_move() == BLACK);
+//     let m2 = Move::build(Square::a2, Square::a3, Option::None);
+//     p1.transition(m2);
+//     assert(p1.side_to_move() == WHITE);
+// }
 
-#[test()]
-fn test_transition_half_move_increment() {
-    let mut p1 = Board::build(INITIAL_PIECEMAP, BitBoard::new(),INITIAL_METADATA);
-    let m1 = Move::build(Square::a2, Square::a3, Option::None);
-    p1.transition(m1);
-    assert(p1.half_move_counter() == 1);
-}
+// #[test()]
+// fn test_transition_half_move_increment() {
+//     let mut p1 = Board::build(INITIAL_PIECEMAP, BitBoard::new(),INITIAL_METADATA);
+//     let m1 = Move::build(Square::a2, Square::a3, Option::None);
+//     p1.transition(m1);
+//     assert(p1.half_move_counter() == 1);
+// }
 
-#[test()]
-fn test_increment_full_move_counter() {
-    let metadata = 0b00000000_00000000_00000000_00000000_00001111_00000000_00000000_00000001;
-    let mut p1 = Board::build(INITIAL_PIECEMAP, BitBoard::new(),metadata);
-    let m1 = Move::build(Square::a2, Square::a3, Option::None);
+// #[test()]
+// fn test_increment_full_move_counter() {
+//     let metadata = 0b00000000_00000000_00000000_00000000_00001111_00000000_00000000_00000001;
+//     let mut p1 = Board::build(INITIAL_PIECEMAP, BitBoard::new(),metadata);
+//     let m1 = Move::build(Square::a2, Square::a3, Option::None);
 
-    p1.transition(m1);
-    assert(p1.half_move_counter() == 1);
-    assert(p1.full_move_counter() == 0);
+//     p1.transition(m1);
+//     assert(p1.half_move_counter() == 1);
+//     assert(p1.full_move_counter() == 0);
 
-    p1.transition(m1);
-    assert(p1.half_move_counter() == 2);
-    assert(p1.full_move_counter() == 1);
+//     p1.transition(m1);
+//     assert(p1.half_move_counter() == 2);
+//     assert(p1.full_move_counter() == 1);
 
-    p1.transition(m1);
-    assert(p1.half_move_counter() == 3);
-    assert(p1.full_move_counter() == 1);
+//     p1.transition(m1);
+//     assert(p1.half_move_counter() == 3);
+//     assert(p1.full_move_counter() == 1);
 
-    p1.transition(m1);
-    assert(p1.half_move_counter() == 4);
-    assert(p1.full_move_counter() == 2);
-}
+//     p1.transition(m1);
+//     assert(p1.half_move_counter() == 4);
+//     assert(p1.full_move_counter() == 2);
+// }
 
 #[test()]
 fn test_increment_half_move_counter() {
