@@ -23,7 +23,11 @@ export const ReservePriceInput = ({
         name="hasReservePrice"
         render={({ field }) => (
           <Form.Control css={{ flexDirection: "row" }}>
-            <Checkbox onCheckedChange={field.onChange} checked={field.value} />
+            <Checkbox
+              aria-label="Set reserve price"
+              onCheckedChange={field.onChange}
+              checked={field.value}
+            />
             <Form.Label>Set reserve price</Form.Label>
           </Form.Control>
         )}
