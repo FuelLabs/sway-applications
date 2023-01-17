@@ -1,6 +1,6 @@
 library board;
 
-dep bitstack;
+dep bitboard;
 dep errors;
 dep move;
 dep piece;
@@ -8,7 +8,7 @@ dep special;
 dep square;
 dep utils;
 
-use bitstack::BitStack;
+use bitboard::BitBoard;
 use errors::*;
 use move::Move;
 use piece::{BLACK,
@@ -70,10 +70,10 @@ pub const EN_PASSANT_CLEARING_MASK: u64 = 0xFFFFFFFFFF00FFFF;
 
 
 // struct for internal state representation.
-// bitstacks are calculated from the piecemap
+// bitboards are calculated from the piecemap
 pub struct Board {
     piecemap: b256,
-    bitstack: BitStack,
+    bitboard: BitBoard,
     metadata: u64,
 }
 
@@ -81,17 +81,17 @@ impl Board {
     pub fn new() -> Board {
         Board {
             piecemap: INITIAL_PIECEMAP,
-            bitstack: BitStack::new(),
+            bitboard: BitBoard::new(),
             metadata: INITIAL_METADATA,
         }
     }
 }
 
 impl Board {
-    pub fn build(pieces: b256, bits: BitStack, data: u64) -> Board {
+    pub fn build(pieces: b256, bits: BitBoard, data: u64) -> Board {
         Board {
             piecemap: pieces,
-            bitstack: bits,
+            bitboard: bits,
             metadata: data,
         }
     }
@@ -219,10 +219,10 @@ impl Board {
         self.metadata = self.metadata | target.to_index() << 16;
     }
 
-    pub fn generate_bitstack(self) -> BitStack {
-        BitStack::new()
+    pub fn generate_bitboard(self) -> BitBoard {
+        BitBoard::new()
     }
-    pub fn write_piecemap(self, bitstack: BitStack) {
+    pub fn write_piecemap(self, bitboard: BitBoard) {
 
     }
 }
@@ -268,8 +268,8 @@ impl Board {
         */
 
         // these are likely needed in validate_move()
-        // let mut bitstack = self.generate_bitstack();
-        // self.write_piecemap(bitstack);
+        // let mut bitboard = self.generate_bitboard();
+        // self.write_piecemap(bitboard);
 
         /**
         // read the piece on src square
@@ -296,7 +296,7 @@ fn test_new_board() {
 
 #[test()]
 fn test_transition_side_to_move() {
-    let mut p1 = Board::build(INITIAL_PIECEMAP, BitStack::new(), INITIAL_METADATA);
+    let mut p1 = Board::build(INITIAL_PIECEMAP, BitBoard::new(), INITIAL_METADATA);
     let m1 = Move::build(Square::a3, Square::a4, Option::None);
     p1.transition(m1);
     assert(p1.side_to_move() == BLACK);
@@ -307,7 +307,7 @@ fn test_transition_side_to_move() {
 
 #[test()]
 fn test_transition_half_move_increment() {
-    let mut p1 = Board::build(INITIAL_PIECEMAP, BitStack::new(),INITIAL_METADATA);
+    let mut p1 = Board::build(INITIAL_PIECEMAP, BitBoard::new(),INITIAL_METADATA);
     let m1 = Move::build(Square::a2, Square::a3, Option::None);
     p1.transition(m1);
     assert(p1.half_move_counter() == 1);
@@ -316,7 +316,7 @@ fn test_transition_half_move_increment() {
 #[test()]
 fn test_increment_full_move_counter() {
     let metadata = 0b00000000_00000000_00000000_00000000_00001111_00000000_00000000_00000001;
-    let mut p1 = Board::build(INITIAL_PIECEMAP, BitStack::new(),metadata);
+    let mut p1 = Board::build(INITIAL_PIECEMAP, BitBoard::new(),metadata);
     let m1 = Move::build(Square::a2, Square::a3, Option::None);
 
     p1.transition(m1);
