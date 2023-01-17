@@ -1,7 +1,104 @@
+import type { BrowserContext, Page } from '@playwright/test';
+
 import { test, expect } from './fixtures';
 
 const WORDS = 'monkey advice bacon rival fitness flip inspire public yard depart thank also';
 const WALLET_PASSWORD = '123123123';
+
+async function walletSetup(context: BrowserContext, extensionId: string) {
+  // WALLET SETUP
+  const walletPage = await context.newPage();
+  await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
+  const signupPage = await context.waitForEvent('page', {
+    predicate: (page) => page.url().includes('sign-up'),
+  });
+
+  expect(signupPage.url()).toContain('sign-up');
+
+  const button = signupPage.locator('button').getByText('I already have a wallet');
+  await button.click();
+
+  /** Copy words to clipboard area */
+  await signupPage.evaluate(`navigator.clipboard.writeText('${WORDS}')`);
+
+  const pasteButton = signupPage.locator('button').getByText('Paste');
+  await pasteButton.click();
+
+  const nextButton = signupPage.locator('button').getByText('Next');
+  await nextButton.click();
+
+  // Enter password
+  const enterPassword = signupPage.locator(`[aria-label="Your Password"]`);
+  await enterPassword.type(WALLET_PASSWORD);
+  // Confirm password
+  const confirmPassword = signupPage.locator(`[aria-label="Confirm Password"]`);
+  await confirmPassword.type(WALLET_PASSWORD);
+  // Agree to T&S
+  await signupPage.getByRole('checkbox').click();
+  await signupPage.locator('button').getByText('Next').click();
+
+  const appPage = await context.newPage();
+
+  const connectPagePromise = context.waitForEvent('page');
+
+  // Go back to app page and connect wallet
+  await appPage.goto('/sell');
+
+  // CONNECT TO WALLET
+  const connectPage = await connectPagePromise;
+  await connectPage.waitForLoadState();
+  const connectButton = connectPage.locator('button').getByText('Connect');
+  await connectButton.click();
+
+  await appPage.goto('/sell');
+  await appPage.reload();
+
+  return { appPage, walletPage };
+}
+
+async function walletApprove(approvePagePromise: Promise<Page>) {
+  // Handle transaction approval in web wallet
+  const approvePage = await approvePagePromise;
+  await approvePage.waitForLoadState();
+  const approveButton = approvePage.locator('button').getByText('Confirm');
+  await approveButton.click();
+
+  const enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
+  await enterPasswordInput.fill(WALLET_PASSWORD);
+  const confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
+  await confirmButton.click();
+}
+
+async function addWallet(walletPage: Page, extensionId: string) {
+  await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
+
+  // First we have to add a second account
+  const accountsButton = walletPage.locator('[aria-label="Accounts"]');
+  await accountsButton.click();
+
+  const addAccountButton = walletPage.locator('[aria-label="Add account"]');
+  await addAccountButton.click();
+
+  const accountNameInput = walletPage.locator('[aria-label="Account Name"]');
+  await accountNameInput.fill('Account 2');
+
+  const accountFormSubmitButton = walletPage.locator('button').getByText('Create');
+  await accountFormSubmitButton.click();
+
+  const passwordInput = walletPage.locator('[aria-label="Your Password"]');
+  await passwordInput.fill(WALLET_PASSWORD);
+  const accountConfirmButton = walletPage.locator('button').getByText('Add Account');
+  await accountConfirmButton.click();
+}
+
+async function switchWallet(walletPage: Page, extensionId: string, accountName: string) {
+  // Switch to account 1
+  await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
+  const accountsButton = walletPage.locator('[aria-label="Accounts"]');
+  await accountsButton.click();
+  const account1Button = walletPage.locator(`[aria-label="${accountName}"]`);
+  await account1Button.click();
+}
 
 // TODO figure out how to test with extension
 test.describe('e2e', () => {
@@ -12,55 +109,11 @@ test.describe('e2e', () => {
   // TODO this may require block manipulation etc
   test('Test auction expires', async () => {});
 
-  test('Test auction is canceled', async ({ context, extensionId }) => {
-    // WALLET SETUP
-    const walletPage = await context.newPage();
-    await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
-    const signupPage = await context.waitForEvent('page', {
-      predicate: (page) => page.url().includes('sign-up'),
-    });
-
-    expect(signupPage.url()).toContain('sign-up');
-
-    const button = signupPage.locator('button').getByText('I already have a wallet');
-    await button.click();
-
-    /** Copy words to clipboard area */
-    await signupPage.evaluate(`navigator.clipboard.writeText('${WORDS}')`);
-
-    const pasteButton = signupPage.locator('button').getByText('Paste');
-    await pasteButton.click();
-
-    const nextButton = signupPage.locator('button').getByText('Next');
-    await nextButton.click();
-
-    // Enter password
-    const enterPassword = signupPage.locator(`[aria-label="Your Password"]`);
-    await enterPassword.type(WALLET_PASSWORD);
-    // Confirm password
-    const confirmPassword = signupPage.locator(`[aria-label="Confirm Password"]`);
-    await confirmPassword.type(WALLET_PASSWORD);
-    // Agree to T&S
-    await signupPage.getByRole('checkbox').click();
-    await signupPage.locator('button').getByText('Next').click();
-
-    const appPage = await context.newPage();
-
-    const connectPagePromise = context.waitForEvent('page');
-
-    // G0 back to app page and connect wallet
-    await appPage.goto('/sell');
-
-    // CONNECT TO WALLET
-    const connectPage = await connectPagePromise;
-    await connectPage.waitForLoadState();
-    const connectButton = connectPage.locator('button').getByText('Connect');
-    await connectButton.click();
-
-    await appPage.goto('/sell');
-    await appPage.reload();
-
+  test('Test asset auction is canceled', async ({ context, extensionId }) => {
     // ACCOUNT 1 CREATES AUCTION
+
+    const { appPage, walletPage } = await walletSetup(context, extensionId);
+
     const createAuctionButton = appPage.locator('button').getByText('Create Auction');
     expect(createAuctionButton).toBeDisabled();
 
@@ -82,16 +135,7 @@ test.describe('e2e', () => {
     let approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
-    // Handle transaction approval in web wallet
-    let approvePage = await approvePagePromise;
-    await approvePage.waitForLoadState();
-    let approveButton = approvePage.locator('button').getByText('Confirm');
-    await approveButton.click();
-
-    let enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
-    await enterPasswordInput.fill(WALLET_PASSWORD);
-    let confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
-    await confirmButton.click();
+    await walletApprove(approvePagePromise);
 
     // Expect transaction to be successful
     const transactionMessage = appPage.locator('text="Auction created successfully!"');
@@ -105,26 +149,28 @@ test.describe('e2e', () => {
       'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
     );
 
-    // Switch to account 2
-    await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
+    await addWallet(walletPage, extensionId);
 
-    // First we have to add a second account
-    let accountsButton = walletPage.locator('[aria-label="Accounts"]');
-    await accountsButton.click();
+    // // Switch to account 2
+    // await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
 
-    const addAccountButton = walletPage.locator('[aria-label="Add account"]');
-    await addAccountButton.click();
+    // // First we have to add a second account
+    // let accountsButton = walletPage.locator('[aria-label="Accounts"]');
+    // await accountsButton.click();
 
-    const accountNameInput = walletPage.locator('[aria-label="Account Name"]');
-    await accountNameInput.fill('Account 2');
+    // const addAccountButton = walletPage.locator('[aria-label="Add account"]');
+    // await addAccountButton.click();
 
-    const accountFormSubmitButton = walletPage.locator('button').getByText('Create');
-    await accountFormSubmitButton.click();
+    // const accountNameInput = walletPage.locator('[aria-label="Account Name"]');
+    // await accountNameInput.fill('Account 2');
 
-    const passwordInput = walletPage.locator('[aria-label="Your Password"]');
-    await passwordInput.fill(WALLET_PASSWORD);
-    const accountConfirmButton = walletPage.locator('button').getByText('Add Account');
-    await accountConfirmButton.click();
+    // const accountFormSubmitButton = walletPage.locator('button').getByText('Create');
+    // await accountFormSubmitButton.click();
+
+    // const passwordInput = walletPage.locator('[aria-label="Your Password"]');
+    // await passwordInput.fill(WALLET_PASSWORD);
+    // const accountConfirmButton = walletPage.locator('button').getByText('Add Account');
+    // await accountConfirmButton.click();
 
     // await appPage.goto('/buy');
     // await appPage.waitForLoadState();
@@ -145,16 +191,7 @@ test.describe('e2e', () => {
 
     await placeBidButton.click();
 
-    // Handle transaction approval in web wallet
-    approvePage = await approvePagePromise;
-    await approvePage.waitForLoadState();
-    approveButton = approvePage.locator('button').getByText('Confirm');
-    await approveButton.click();
-
-    enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
-    await enterPasswordInput.fill(WALLET_PASSWORD);
-    confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
-    await confirmButton.click();
+    await walletApprove(approvePagePromise);
 
     // Expect transaction to be successful
     const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
@@ -163,11 +200,7 @@ test.describe('e2e', () => {
     // ACCOUNT 1 CANCELS AUCTION
 
     // Switch to account 1
-    await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
-    accountsButton = walletPage.locator('[aria-label="Accounts"]');
-    await accountsButton.click();
-    const account1Button = walletPage.locator('[aria-label="Account 1"]');
-    await account1Button.click();
+    await switchWallet(walletPage, extensionId, 'Account 1');
 
     // await appPage.goto('/buy');
     // await appPage.waitForLoadState();
@@ -180,16 +213,7 @@ test.describe('e2e', () => {
 
     await cancelAuctionButton.click();
 
-    // Handle transaction approval in web wallet
-    approvePage = await approvePagePromise;
-    await approvePage.waitForLoadState();
-    approveButton = approvePage.locator('button').getByText('Confirm');
-    await approveButton.click();
-
-    enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
-    await enterPasswordInput.fill(WALLET_PASSWORD);
-    confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
-    await confirmButton.click();
+    await walletApprove(approvePagePromise);
 
     // Expect transaction to be successful
     const cancelTransactionMessage = appPage.locator('text="Auction cancelled successfully!"');
@@ -204,27 +228,14 @@ test.describe('e2e', () => {
 
     await withdrawButton.click();
 
-    // Handle transaction approval in web wallet
-    approvePage = await approvePagePromise;
-    await approvePage.waitForLoadState();
-    approveButton = approvePage.locator('button').getByText('Confirm');
-    await approveButton.click();
-
-    enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
-    await enterPasswordInput.fill(WALLET_PASSWORD);
-    confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
-    await confirmButton.click();
+    await walletApprove(approvePagePromise);
 
     // Expect transaction to be successful
     const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
     await withdrawTransactionMessage.waitFor();
 
     // Switch to account 2
-    await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
-    accountsButton = walletPage.locator('[aria-label="Accounts"]');
-    await accountsButton.click();
-    const account2Button = walletPage.locator('[aria-label="Account 2"]');
-    await account2Button.click();
+    await switchWallet(walletPage, extensionId, 'Account 2');
 
     await appPage.reload();
 
@@ -232,18 +243,54 @@ test.describe('e2e', () => {
 
     await withdrawButton.click();
 
-    // Handle transaction approval in web wallet
-    approvePage = await approvePagePromise;
-    await approvePage.waitForLoadState();
-    approveButton = approvePage.locator('button').getByText('Confirm');
-    await approveButton.click();
-
-    enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
-    await enterPasswordInput.fill(WALLET_PASSWORD);
-    confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
-    await confirmButton.click();
+    await walletApprove(approvePagePromise);
 
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
+  });
+
+  test.fixme('Test asset auction with reserve is canceled', async ({ context, extensionId }) => {
+    const { appPage } = await walletSetup(context, extensionId);
+
+    const createAuctionButton = appPage.locator('button').getByText('Create Auction');
+    expect(createAuctionButton).toBeDisabled();
+
+    const fillSellerAddressButton = appPage.locator('button').getByText('fuel...apex');
+    expect(fillSellerAddressButton).toBeDefined();
+    await expect(fillSellerAddressButton).toBeEnabled();
+    await fillSellerAddressButton.click();
+
+    const sellAssetAmountInput = appPage.locator(`input[name="sellAssetAmount"]`);
+    await sellAssetAmountInput.fill('0.001');
+
+    const initialPriceInput = appPage.locator(`input[name="initialPrice"]`);
+    await initialPriceInput.fill('0.001');
+
+    const reservePriceButton = appPage.locator('[aria-label="Set reserve price"]');
+    await reservePriceButton.click();
+
+    const reservePriceInput = appPage.locator('[aria-label="Reserve price"]');
+    await reservePriceInput.fill('0.002');
+
+    const durationInput = appPage.locator(`input[name="duration"]`);
+    await durationInput.fill('1000');
+
+    await expect(createAuctionButton).toBeEnabled();
+    const approvePagePromise = context.waitForEvent('page');
+    await createAuctionButton.click();
+
+    await walletApprove(approvePagePromise);
+
+    // Expect transaction to be successful
+    const transactionMessage = appPage.locator('text="Auction created successfully!"');
+    await transactionMessage.waitFor();
+
+    // ACCOUNT 2 BIDS ON AUCTION
+    await appPage.goto('/buy');
+
+    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').first();
+    await expect(errorText).toContainText(
+      'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
+    );
   });
 });
