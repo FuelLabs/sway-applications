@@ -11,20 +11,10 @@ dep utils;
 use bitboard::BitBoard;
 use errors::*;
 use move::Move;
-use piece::{
-    BISHOP,
-    BLACK,
-    EMPTY,
-    ROOK,
-    KNIGHT,
-    KING,
-    QUEEN,
-    PAWN,
-    Piece,
-    WHITE};
+use piece::{BISHOP, BLACK, EMPTY, KING, KNIGHT, PAWN, Piece, QUEEN, ROOK, WHITE};
 use special::CastleRights;
 use square::Square;
-use utils::{compose, decompose, query_bit, set_bit, toggle_bit, multi_bit_mask, b256_multimask};
+use utils::{b256_multimask, compose, decompose, multi_bit_mask, query_bit, set_bit, toggle_bit};
 /**
 
 note: for more detail about how pieces are encoded, see ./piece.sw
@@ -184,7 +174,6 @@ impl Board {
         };
 
         self.metadata = self.metadata | (value << 24);
-
     }
 
     pub fn reset_half_move(mut self) {
@@ -252,11 +241,13 @@ impl Board {
                     };
                 }
             };
+
             let color = if mask & self.bitboard.black == 0 {
                 BLACK
             } else {
                 WHITE
             };
+
             self.write_square_to_piecemap(color, Piece::from_u64(piece).unwrap(), Square::from_index(i).unwrap());
             i += 1;
         };
@@ -267,7 +258,7 @@ impl Board {
         let (color, piece) = self.read_square(src.to_index());
         // clear src
         self.clear_square(src);
-        // TODO: clear dest if !color
+        // TODO: clear dest if !color, and must be legal move
         self.clear_square(dest);
         // set src
         self.write_square_to_piecemap(color, piece, dest);
@@ -300,31 +291,6 @@ impl Board {
 }
 
 impl Board {
-    // TODO: check if generate_piecemap achieves this.
-    pub fn read_from_bitboard(board: Board) -> Board {
-        // write piecemap, not sure about metadata yet...
-        let board = Board::new();
-        // loop over each index of bitbitboardstack, getting color and piece
-        // set in piecemap with board.write_square_to_piecemap()
-        // TODO: this is not complete yet
-        let mut i = 0;
-        while i < 64 {
-            // binary seach:
-            // is square occupied?
-            // is piece a pawn ? etc...
-            // is piece BLACK ?
-            let bit = query_bit(board.bitboard.all, i);
-
-
-        }
-        Board::new()
-    }
-
-    // pub fn generate_bitboard(self) -> BitBoard {
-    //     BitBoard::new()
-    // }
-
-    // pub fn write_piecemap(self, bitboard: BitBoard) {}
     // TODO: review this, inputs/outputs & mutation of self?
     pub fn write_to_bitboard(mut self, board: Board) {
         let mut bitboard = BitBoard::new();
@@ -357,22 +323,22 @@ impl Board {
         }
     }
 
-
     // TODO: consider making this a method on Board
     // this method assumes that the Board and the Move have already been validated !
     // TODO: move all validation to validate_proposed_move()
+    // TODO: rename to apply_transition()
     // transition should just apply the move and update data structures accordingly.
     pub fn transition(mut self, move: Move) {
         // update metadata:
         self.toggle_side_to_move();
-        let turn =
-        self.increment_half_move_counter();
+        let turn = self.increment_half_move_counter();
         let half_move = self.half_move_counter();
-        if  half_move > 0 && half_move % 2 == 0 {
+        if half_move > 0 && half_move % 2 == 0 {
             self.increment_full_move_counter();
         };
         // update en_passant if needed
-        if move.dest.to_index() == self.en_passant_target().to_index() {
+        if move.dest.to_index() == self.en_passant_target().to_index()
+        {
             self.clear_en_passant();
         };
 
@@ -382,61 +348,30 @@ impl Board {
             self.set_en_passant(maybe_square.unwrap())
         }
         */
-
         /**
         // update castling_rights if needed
         if move.is_castling() {
             let mut rights = self.castling_rights();
             let whose_turn = self.side_to_move();
             match whose_turn {
-                Colour::Black => {
+                color::Black => {
                     self.set_castling_rights((CastleRights::NoRights, rights[1].unwrap()));
                 },
-                Coulour::White => {
+                Color::White => {
                     self.set_castling_rights((rights[0].unwrap(), CastleRights::NoRights));
                 },
             };
         }
         */
-
         // these are likely needed in validate_move()
         // let mut bitboard = self.generate_bitboard();
         // self.write_piecemap(bitboard);
-
         /**
         // read the piece on src square
         let piece = self.square(move.source);
         // set the piece on dest and clear src
         self.move_piece(move.src, move.dest, color, piece);
         */
-
-
-
-
-    }
-}
-
-impl Board {
-    pub fn piece(self, square: Square) -> (u64, Piece) {
-        let mut index = square.to_index();
-        let mut mask = compose((0, 0, 0, multi_bit_mask(4)));
-        let piece_code = if index == 0 {
-            decompose(self.piecemap & mask).3
-        } else {
-            index *= 4;
-            let mask = compose((0, 0, 0, multi_bit_mask(index) << index));
-            decompose((self.piecemap & mask) >> index).3
-        };
-        let colour = piece_code >> 4;
-        let piece = Piece::from_u64(piece_code).unwrap();
-        (colour, piece)
-    }
-
-    pub fn generate_bitboard(self) -> BitBoard {
-        BitBoard::new()
-    }
-    pub fn write_piecemap(self, bitboard: BitBoard) {
-
     }
 }
 
@@ -460,7 +395,6 @@ fn test_new_board() {
 //     p1.transition(m2);
 //     assert(p1.side_to_move() == WHITE);
 // }
-
 // #[test()]
 // fn test_transition_half_move_increment() {
 //     let mut p1 = Board::build(INITIAL_PIECEMAP, BitBoard::new(),INITIAL_METADATA);
@@ -468,30 +402,24 @@ fn test_new_board() {
 //     p1.transition(m1);
 //     assert(p1.half_move_counter() == 1);
 // }
-
 // #[test()]
 // fn test_increment_full_move_counter() {
 //     let metadata = 0b00000000_00000000_00000000_00000000_00001111_00000000_00000000_00000001;
 //     let mut p1 = Board::build(INITIAL_PIECEMAP, BitBoard::new(),metadata);
 //     let m1 = Move::build(Square::a2, Square::a3, Option::None);
-
 //     p1.transition(m1);
 //     assert(p1.half_move_counter() == 1);
 //     assert(p1.full_move_counter() == 0);
-
 //     p1.transition(m1);
 //     assert(p1.half_move_counter() == 2);
 //     assert(p1.full_move_counter() == 1);
-
 //     p1.transition(m1);
 //     assert(p1.half_move_counter() == 3);
 //     assert(p1.full_move_counter() == 1);
-
 //     p1.transition(m1);
 //     assert(p1.half_move_counter() == 4);
 //     assert(p1.full_move_counter() == 2);
 // }
-
 #[test()]
 fn test_increment_half_move_counter() {
     let mut p1 = Board::new();
