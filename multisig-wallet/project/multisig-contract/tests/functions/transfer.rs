@@ -4,7 +4,7 @@ use crate::utils::{
         base_asset_contract_id, default_users, setup_env, transfer_parameters, transfer_signatures,
         DEFAULT_THRESHOLD, DEFAULT_TRANSFER_AMOUNT,
     },
-    VALID_SIGNER_PK,
+    TransferEvent, VALID_SIGNER_PK,
 };
 use fuels::{prelude::*, signers::fuel_crypto::Message};
 
@@ -19,6 +19,7 @@ mod success {
         let (receiver_wallet, receiver, data) = transfer_parameters();
 
         constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        let initial_nonce = nonce(&deployer.contract).await.value;
 
         deployer
             .wallet
@@ -60,15 +61,26 @@ mod success {
 
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        transfer(
+        let response = transfer(
             &deployer.contract,
-            receiver,
+            receiver.clone(),
             base_asset_contract_id(),
             DEFAULT_TRANSFER_AMOUNT,
             data,
             signatures,
         )
         .await;
+        let log = response.get_logs_with_type::<TransferEvent>().unwrap();
+        let event = log.get(0).unwrap();
+        assert_eq!(
+            *event,
+            TransferEvent {
+                asset: base_asset_contract_id(),
+                nonce: initial_nonce,
+                to: receiver,
+                value: DEFAULT_TRANSFER_AMOUNT,
+            }
+        );
 
         // check balances post-transfer
         let final_contract_balance = balance(&deployer.contract, base_asset_contract_id())

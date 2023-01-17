@@ -1,10 +1,12 @@
 use crate::utils::{
     interface::{cancel_transaction, constructor, nonce},
     test_helpers::{default_users, setup_env, DEFAULT_THRESHOLD},
-    VALID_SIGNER_PK,
+    CancelEvent, VALID_SIGNER_PK,
 };
 
 mod success {
+
+    use fuels::prelude::Bits256;
 
     use super::*;
 
@@ -16,7 +18,16 @@ mod success {
 
         let initial_nonce = nonce(&deployer.contract).await.value;
 
-        cancel_transaction(&deployer.contract).await;
+        let response = cancel_transaction(&deployer.contract).await;
+        let log = response.get_logs_with_type::<CancelEvent>().unwrap();
+        let event = log.get(0).unwrap();
+        assert_eq!(
+            *event,
+            CancelEvent {
+                cancelled_nonce: initial_nonce,
+                user: Bits256(deployer.wallet.address().hash.try_into().unwrap()),
+            }
+        );
 
         let final_nonce = nonce(&deployer.contract).await.value;
 
