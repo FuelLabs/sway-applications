@@ -1,2 +1,4 @@
 target
-project/contracts/vault-contract/out
+project/vault-contract/out
+project/vault-contract/out/debug/vault-contract-abi.json
+project/vault-contract/out/debug/vault-contract-storage_slots.json
