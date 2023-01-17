@@ -10,7 +10,7 @@ use rand::{rngs::StdRng, Rng, SeedableRng};
 use sha3::{Digest, Keccak256};
 
 abigen!(
-    MultiSigContract,
+    MultiSig,
     "./project/multisig-contract/out/debug/multisig-contract-abi.json"
 );
 
@@ -24,7 +24,7 @@ pub mod paths {
 }
 
 pub struct Caller {
-    pub contract: MultiSigContract,
+    pub contract: MultiSig,
     pub wallet: WalletUnlocked,
 }
 
@@ -32,7 +32,7 @@ pub mod abi_calls {
 
     use super::*;
 
-    pub async fn cancel_transaction(contract: &MultiSigContract) -> FuelCallResponse<()> {
+    pub async fn cancel_transaction(contract: &MultiSig) -> FuelCallResponse<()> {
         contract
             .methods()
             .cancel_transaction()
@@ -42,7 +42,7 @@ pub mod abi_calls {
     }
 
     pub async fn constructor(
-        contract: &MultiSigContract,
+        contract: &MultiSig,
         users: Vec<User>,
         threshold: u64,
     ) -> FuelCallResponse<()> {
@@ -55,7 +55,7 @@ pub mod abi_calls {
     }
 
     pub async fn execute_transaction(
-        contract: &MultiSigContract,
+        contract: &MultiSig,
         to: Identity,
         value: u64,
         data: Bits256,
@@ -71,7 +71,7 @@ pub mod abi_calls {
     }
 
     pub async fn transfer(
-        contract: &MultiSigContract,
+        contract: &MultiSig,
         to: Identity,
         asset_id: ContractId,
         value: u64,
@@ -87,19 +87,16 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn nonce(contract: &MultiSigContract) -> FuelCallResponse<u64> {
+    pub async fn nonce(contract: &MultiSig) -> FuelCallResponse<u64> {
         contract.methods().nonce().call().await.unwrap()
     }
 
-    pub async fn balance(
-        contract: &MultiSigContract,
-        asset_id: ContractId,
-    ) -> FuelCallResponse<u64> {
+    pub async fn balance(contract: &MultiSig, asset_id: ContractId) -> FuelCallResponse<u64> {
         contract.methods().balance(asset_id).call().await.unwrap()
     }
 
     pub async fn transaction_hash(
-        contract: &MultiSigContract,
+        contract: &MultiSig,
         to: Identity,
         value: u64,
         data: Bits256,
@@ -157,12 +154,12 @@ pub mod test_helpers {
         .await?;
 
         let deployer = Caller {
-            contract: MultiSigContract::new(multisig_contract_id.clone(), deployer_wallet.clone()),
+            contract: MultiSig::new(multisig_contract_id.clone(), deployer_wallet.clone()),
             wallet: deployer_wallet,
         };
 
         let non_owner = Caller {
-            contract: MultiSigContract::new(multisig_contract_id, non_owner_wallet.clone()),
+            contract: MultiSig::new(multisig_contract_id, non_owner_wallet.clone()),
             wallet: non_owner_wallet,
         };
 
