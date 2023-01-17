@@ -8,12 +8,13 @@ use board::Board;
 use game::Status;
 
 pub struct Game {
+    // could store players as an array or tuple. Game.players.WHITE, Game.players.BLACK ...
     player_1: Address,
     player_2: Address,
-    game_nonce: u64,
-    // this is the current state
+    game_counter: u64, // tracks games played between P1 & P2.
     board: Board,
     status: Status,
+    statehash: b256,   // TODO: maybe move this to Board ?
 }
 
 // TODO: add methods to conver to & from a status code, i.e:

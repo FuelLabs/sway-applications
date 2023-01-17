@@ -1,8 +1,8 @@
 library board;
 
-dep bitstack;
+dep bitboard;
 
-use bitstack::BitStack;
+use bitboard::BitBoard;
 
 /**
 
@@ -38,10 +38,10 @@ pub const INITIAL_PIECEMAP: b256 = 0x3425624311111111000000000000000000000000000
 
 
 // struct for internal state representation.
-// bitstacks are calculated from the piecemap
+// bitboards are calculated from the piecemap
 pub struct Board {
     piecemap: b256,
-    bitboard: BitStack,
+    bitboard: BitBoard,
     metadata: u64,
 }
 
@@ -49,7 +49,7 @@ impl Board {
     pub fn new() -> Board {
         Board {
             piecemap: INITIAL_PIECEMAP,
-            bitboard: BitStack::new(),
+            bitboard: BitBoard::new(),
             metadata: 0x0000000000000000,
         }
     }
