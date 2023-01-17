@@ -44,15 +44,21 @@ impl BitBoard {
             white_knights: WHITE_KNIGHTS,
             white_queen: WHITE_QUEEN,
             white_king: WHITE_KING,
-            all: ALL_PIECES,
-            pawns: BLACK_PAWNS | WHITE_PAWNS,
-            knights: BLACK_KNIGHTS | WHITE_KNIGHTS,
-            bishops: BLACK_BISHOPS | WHITE_BISHOPS,
-            rooks: BLACK_ROOKS | WHITE_ROOKS,
-            queens: BLACK_QUEEN | WHITE_QUEEN,
-            kings: BLACK_KING | WHITE_KING,
+            pawns: BLACK_PAWNS
+            | WHITE_PAWNS,
+            knights: BLACK_KNIGHTS
+            | WHITE_KNIGHTS,
+            bishops: BLACK_BISHOPS
+            | WHITE_BISHOPS,
+            rooks: BLACK_ROOKS
+            | WHITE_ROOKS,
+            queens: BLACK_QUEEN
+            | WHITE_QUEEN,
+            kings: BLACK_KING
+            | WHITE_KING,
             black: BLACK_PIECES,
             white: WHITE_PIECES,
+            all: ALL_PIECES,
         }
     }
 }

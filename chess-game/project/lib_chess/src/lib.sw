@@ -1,4 +1,4 @@
-library chess;
+library lib_chess;
 
 dep errors;
 dep bitmaps;

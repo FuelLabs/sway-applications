@@ -1,13 +1,7 @@
 contract;
 
-use chess::*;
-
-abi Chess {
-    fn test_function() -> bool;
-}
+use chess_abi::Chess;
+use lib_chess::*;
 
 impl Chess for Contract {
-    fn test_function() -> bool {
-        true
-    }
 }

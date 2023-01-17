@@ -1,5 +1,6 @@
 [workspace]
 members = [
-    "project/chess",
-    "project/chess_contract"
+    "project/lib_chess",
+    "project/chess_contract",
+    "project/chess_abi"
 ]
