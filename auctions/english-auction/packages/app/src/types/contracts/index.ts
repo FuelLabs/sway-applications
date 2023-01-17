@@ -4,7 +4,9 @@
 export type { EnglishAuctionAbi } from './EnglishAuctionAbi';
 export type { AuctionContractAbi } from './AuctionContractAbi';
 export type { AssetAbi } from './AssetAbi';
+export type { NFTContractAbi } from './NFTContractAbi';
 
 export { EnglishAuctionAbi__factory } from './factories/EnglishAuctionAbi__factory';
 export { AuctionContractAbi__factory } from './factories/AuctionContractAbi__factory';
 export { AssetAbi__factory } from './factories/AssetAbi__factory';
+export { NFTContractAbi__factory } from './factories/NFTContractAbi__factory';

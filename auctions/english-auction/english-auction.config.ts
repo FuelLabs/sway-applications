@@ -24,6 +24,7 @@ const getDeployOptions = () => ({
 export default createConfig({
   types: {
     artifacts: './packages/contracts/**/out/debug/**-abi.json',
+    externalArtifacts: '../../NFT/project/NFT-contract/**/out/debug/**-abi.json',
     output: './packages/app/src/types/contracts',
   },
   contracts: [
