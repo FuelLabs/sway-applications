@@ -69,7 +69,7 @@ If you wish to run any of the projects then clone this repository and go through
 Any instructions related to running a specific project should be found within the README.md of that project.
 
 > **Note**
-> All projects currently use `forc 0.32.2`, and `fuel-core 0.15.1`.
+> All projects currently use `forc 0.32.2`, `fuel-core 0.15.1`, and `rust 1.66.0`.
 
 ## Contributing
 
