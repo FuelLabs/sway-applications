@@ -48,6 +48,8 @@ The admin should be able to add a transaction into a queue for execution
 
 1. If the `id` of the transaction is not currently in the queue
 2. If the transaction timestamp is in the valid time range of (`MINIMUM_DELAY`, `MAXIMUM_DELAY`)
+   1. A valid timestamp is inclusive of and falls in between the constants
+   2. To calculate the `DELAY` bounds add the block timestamp to each constant
 
 ## Miscellaneous Information
 
