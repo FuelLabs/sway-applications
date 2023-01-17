@@ -13,6 +13,7 @@ interface DropdownContainerProps {
   formFieldName: "isSellAssetNft" | "isBidAssetNft";
   control: Control<CreateAuctionFormValues>;
   setValue: UseFormSetValue<CreateAuctionFormValues>;
+  setValueLabel: "sellAssetId" | "bidAssetId";
 }
 
 export const DropdownContainerForm = ({
@@ -21,6 +22,7 @@ export const DropdownContainerForm = ({
   formFieldName,
   control,
   setValue,
+  setValueLabel,
 }: DropdownContainerProps) => {
   return (
     <Flex>
@@ -35,7 +37,7 @@ export const DropdownContainerForm = ({
           render={({ field }) => {
             function handleDropdownChange(isNFT: boolean, assetId: string) {
               field.onChange(isNFT);
-              setValue("sellAssetId", assetId);
+              setValue(setValueLabel, assetId);
             }
 
             return (

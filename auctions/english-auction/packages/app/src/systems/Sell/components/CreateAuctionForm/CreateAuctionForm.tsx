@@ -79,6 +79,7 @@ export const CreateAuctionForm = ({
         control={control}
         formState={formState}
         isBidAssetNft={watchIsBidAssetNft}
+        setValue={setValue}
       />
 
       <ControlledField

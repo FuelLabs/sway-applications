@@ -29,6 +29,7 @@ export const SellAssetFormInput = ({
       formFieldName="isSellAssetNft"
       control={control}
       setValue={setValue}
+      setValueLabel="sellAssetId"
     >
       {!isSellAssetNft ? (
         <Stack css={{ minWidth: "100%" }}>

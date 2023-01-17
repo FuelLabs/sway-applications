@@ -72,6 +72,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@fuel-ui/test-utils": "^0.10.1",
     "@playwright/test": "^1.29.1",
     "@react-types/button": "^3.7.0",
     "@react-types/dialog": "^3.4.5",
@@ -109,6 +110,7 @@
     "eslint": "^8.31.0",
     "eslint-plugin-cypress": "^2.12.1",
     "http-server": "^14.1.1",
+    "jest": "^28.1.3",
     "msw": "^0.49.2",
     "msw-storybook-addon": "^1.6.3",
     "postcss": "^8.4.20",

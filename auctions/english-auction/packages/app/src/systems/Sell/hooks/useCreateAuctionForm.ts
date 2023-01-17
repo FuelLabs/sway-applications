@@ -40,10 +40,10 @@ function isValidDuration(duration: any) {
   }
 }
 
-function isReservePriceValid(reservePrice: any) {
+function isReservePriceValid(reservePrice: any, testContext: yup.TestContext) {
   try {
     const bnReservePrice = bn.parseUnits(reservePrice, DECIMAL_UNITS);
-    const bnInitialPrice = bn.parseUnits(this.parent.initialPrice, DECIMAL_UNITS);
+    const bnInitialPrice = bn.parseUnits(testContext.parent.initialPrice as string, DECIMAL_UNITS);
     return bnReservePrice.gt(bnInitialPrice);
   } catch (e) {
     return false;
