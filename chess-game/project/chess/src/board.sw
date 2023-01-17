@@ -14,7 +14,7 @@ use move::Move;
 use piece::{BISHOP, BLACK, EMPTY, KING, KNIGHT, PAWN, Piece, QUEEN, ROOK, WHITE};
 use special::CastleRights;
 use square::Square;
-use utils::{b256_multimask, compose, decompose, multi_bit_mask, query_bit, set_bit, toggle_bit};
+use utils::{b256_multimask, compose, decompose, multi_bit_mask, query_bit, toggle_bit, turn_on_bit};
 /**
 
 note: for more detail about how pieces are encoded, see ./piece.sw
@@ -205,11 +205,12 @@ impl Board {
     // TODO: do I ever need to perform all these steps, or can I always just use the latest Move to update 2 nibbles in the piecemap?
     pub fn generate_piecemap(mut self) {
         let mut i = 0;
-        let mut mask = 1;
+        let mut mask = 0;
         let mut color = 0;
         let mut piece = EMPTY;
-        // TODO: see if I can use match to clean this up
+        // TODO: see if I can use match to clean this up. Add unit tests first so I know it actually works.
         while i < 64 {
+            mask = 1 << i;
             let occupied = mask & self.bitboard.all;
             if occupied == 0 {
                 i += 1;
@@ -301,21 +302,21 @@ impl Board {
             let (color, piece) = board.read_square(s);
             if color == BLACK {
                 match piece {
-                    Piece::Pawn => toggle_bit(bitboard.black_pawns, i),
-                    Piece::Bishop => toggle_bit(bitboard.black_bishops, i),
-                    Piece::Rook => toggle_bit(bitboard.black_rooks, i),
-                    Piece::Knight => toggle_bit(bitboard.black_knights, i),
-                    Piece::Queen => toggle_bit(bitboard.black_queen, i),
-                    Piece::King => toggle_bit(bitboard.black_king, i),
+                    Piece::Pawn => self.bitboard.black_pawns = turn_on_bit(bitboard.black_pawns, i),
+                    Piece::Bishop => self.bitboard.black_bishops = turn_on_bit(bitboard.black_bishops, i),
+                    Piece::Rook => self.bitboard.black_rooks = turn_on_bit(bitboard.black_rooks, i),
+                    Piece::Knight => self.bitboard.black_knights = turn_on_bit(bitboard.black_knights, i),
+                    Piece::Queen => self.bitboard.black_queen = turn_on_bit(bitboard.black_queen, i),
+                    Piece::King => self.bitboard.black_king = turn_on_bit(bitboard.black_king, i),
                 }
             } else {
                 match piece {
-                    Piece::Pawn => toggle_bit(bitboard.white_pawns, i),
-                    Piece::Bishop => toggle_bit(bitboard.white_bishops, i),
-                    Piece::Rook => toggle_bit(bitboard.white_rooks, i),
-                    Piece::Knight => toggle_bit(bitboard.white_knights, i),
-                    Piece::Queen => toggle_bit(bitboard.white_queen, i),
-                    Piece::King => toggle_bit(bitboard.white_king, i),
+                    Piece::Pawn => self.bitboard.white_pawns = turn_on_bit(bitboard.white_pawns, i),
+                    Piece::Bishop => self.bitboard.white_bishops = turn_on_bit(bitboard.white_bishops, i),
+                    Piece::Rook => self.bitboard.white_rooks = turn_on_bit(bitboard.white_rooks, i),
+                    Piece::Knight => self.bitboard.white_knights = turn_on_bit(bitboard.white_knights, i),
+                    Piece::Queen => self.bitboard.white_queen = turn_on_bit(bitboard.white_queen, i),
+                    Piece::King => self.bitboard.white_king = turn_on_bit(bitboard.white_king, i),
                 }
             };
             s += 4;
