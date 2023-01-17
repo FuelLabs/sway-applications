@@ -24,16 +24,24 @@ impl Chess for Contract {
         let match_number = storage.matches.get((player1, player2)) + 1;
         storage.matches.insert((player1, player2), match_number);
 
+        let status = match bond {
+            // free play, no bond required.
+            Option::None => Status::Active,
+            Option::Some(v) => Status::Standby,
+        };
+        // TODO: add winner, maybe to status?
+        // TODO: track bonds payed by each player
         let mut game = Game {
-            player_1: player1,
-            player_2: player2,
+            players: [player2, player1],
+            bonds_payed: [false, false],
             match_number,
             board: Board::new(),
-            status: Status::Active,
+            status: status,
+            winner: Option::None,
             statehash: ZERO_B256,
         };
-        game.statehash = hash_state(game.board.piecemap, game.board.metadata);
-        let game_id = generate_game_id(player1, player2, match_number);
+        game.statehash = game.hash_state();
+        let game_id = game.id();
         storage.games.insert(game_id, game);
 
         game_id
@@ -59,10 +67,11 @@ impl Chess for Contract {
 }
 
 // Private
-fn generate_game_id(player1: Identity, player2: Identity, game_number: u64) -> b256 {
-    keccak256((player1, player2, game_number, contract_id()))
-}
+// fn generate_game_id(player1: Identity, player2: Identity, game_number: u64) -> b256 {
+//     keccak256((player1, player2, game_number, contract_id()))
+// }
 
-fn hash_state(piecemap: b256, metadata: u64,) -> b256 {
-    keccak256((piecemap, metadata))
-}
+// // TODO: decide if this should include game.status by testing adversarially
+// fn hash_state(piecemap: b256, metadata: u64,) -> b256 {
+//     keccak256((piecemap, metadata))
+// }
