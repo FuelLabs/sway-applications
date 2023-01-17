@@ -1,9 +1,8 @@
 library chess;
 
 dep errors;
-dep bitmap;
-dep piece;
-dep bitstack;
+dep bitmaps;
+dep bitboard;
 dep board;
 dep special;
 dep square;

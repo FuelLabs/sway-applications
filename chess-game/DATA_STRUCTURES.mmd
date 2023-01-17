@@ -1,0 +1,122 @@
+classDiagram
+    class Board {
+        <<struct>>
+        +b256 piecemap
+        +BitBoard bitboard
+        +u64 metadata
+    }
+    class BitBoard {
+        <<struct>>
+        +u64 black_pawns
+        +u64 black_bishops
+        +u64 black_rooks
+        +u64 black_knights
+        +u64 black_queen
+        +u64 black_king
+        +u64 white_pawns
+        +u64 white_bishops
+        +u64 white_rooks
+        +u64 white_knights
+        +u64 white_queen
+        +u64 white_king
+        +u64 pawns
+        +u64 bishops
+        +u64 rooks
+        +u64 knights
+        +u64 queens
+        +u64 kings
+        +u64 black
+        +u64 white
+        +u64 all
+    }
+    class Game {
+        <<struct>>
+        +Player player1
+        +Player player2
+        +u64 game_counter
+        +Board board
+        +Status Status
+        +b256 statehash
+    }
+    class Move {
+        <<struct>>
+        +ContractId target
+        +u64 nonce
+        +b256 game_id
+        +b256 piecemap
+        +u64 metadata
+        +Square source
+        +Square source
+        +Option<Piece> promotion
+        +u64 seq
+    }
+    class Piece {
+        <<enum>>
+        +variant Pawn
+        +variant Bishop
+        +variant Rook
+        +variant Knight
+        +variant Queen
+        +variant King
+    }
+    class Square {
+        <<enum>>
+        +variant a1
+        +variant b1
+        +variant c1
+        +variant ...
+        +variant h7
+        +variant h8
+    }
+    class Status {
+        <<enum>>
+        +variant Active
+        +variant Checkmate
+        +variant Stalemate
+    }
+    class CastlingRights {
+        <<enum>>
+        +variant NoRights
+        +variant KingSide
+        +variant QueenSide
+        +variant Both
+    }
+
+    class Player {
+        <<abstract>>
+        +Address address
+        +u64 color
+        +CastlingRights rights
+    }
+
+    class game_id {
+        <<hash>>
+        +b256 hash(player1,player2,game_number)
+    }
+    class piecemap {
+        <<bitmap>>
+        +b256 binary_encoded_pieces_by_square
+    }
+    class metadata {
+        <<bitmap>>
+        +b256 bits(side_to_move, en_passant, half_move, castling_rights, full_move)
+    }
+    class statehash {
+        <<hash>>
+        +b256 hash(piecemap,metadata)
+    }
+
+    CastlingRights <.. Player
+    Piece <.. Move: depends
+    Square <.. Move: depends
+    Board <.. Game: depends
+    BitBoard <.. Board: depends
+    Status <.. Game: depends
+    Player <.. Game: depends
+    game_id <.. Move: depends
+    piecemap <.. Move: depends
+    metadata <.. Move: depends
+    piecemap <.. statehash: depends
+    metadata <.. statehash: depends
+
+
