@@ -2,18 +2,9 @@ import { readFileSync } from 'fs';
 import { ContractFactory } from 'fuels';
 import type { JsonAbi, WalletUnlocked } from 'fuels';
 import path from 'path';
+import { getBinaryName, getABIName } from 'src/helpers/fileNames';
 import { log } from 'src/log';
 import type { DeployContractOptions } from 'src/types';
-
-function getBinaryName(contractPath: string) {
-  const fileName = contractPath.split('/').slice(-1);
-  return `/out/debug/${fileName}.bin`;
-}
-
-function getABIName(contractPath: string) {
-  const fileName = contractPath.split('/').slice(-1);
-  return `/out/debug/${fileName}-abi.json`;
-}
 
 export async function deployContractBinary(
   wallet: WalletUnlocked,

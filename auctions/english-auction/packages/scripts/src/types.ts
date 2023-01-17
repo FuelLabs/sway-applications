@@ -54,6 +54,7 @@ export type Config = {
   };
   types: {
     artifacts: string;
+    externalArtifacts?: string;
     output: string;
   };
   contracts: Array<ContractConfig>;
