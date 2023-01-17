@@ -55,6 +55,7 @@ sway-applications/
 - [English Auction](./auctions/english-auction/) is an auction where users bid up the price of an asset until the bidding period has ended or a reserve has been met.
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
 - [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal.
+- [Fractional-NFT](./fractional-NFT/) allows multiple parties to claim ownership of an NFT directly proportional to the number of tokens they hold.
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction.
 - [Name-Registry](./name-registry/) allows users to perform transactions with human readable names instead of addresses.
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
