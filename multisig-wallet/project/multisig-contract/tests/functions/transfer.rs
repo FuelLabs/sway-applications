@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{balance, constructor, nonce, transaction_hash, transfer},
+    interface::{balance, constructor, nonce, transaction_hash, transfer},
     test_helpers::{
         base_asset_contract_id, default_users, setup_env, transfer_parameters, transfer_signatures,
         DEFAULT_THRESHOLD, DEFAULT_TRANSFER_AMOUNT,

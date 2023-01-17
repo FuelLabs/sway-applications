@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{constructor, nonce},
+    interface::{constructor, nonce},
     test_helpers::{default_users, setup_env, DEFAULT_THRESHOLD},
     User, VALID_SIGNER_PK,
 };

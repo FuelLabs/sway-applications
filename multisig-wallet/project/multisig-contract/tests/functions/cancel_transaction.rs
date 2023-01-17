@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{cancel_transaction, constructor, nonce},
+    interface::{cancel_transaction, constructor, nonce},
     test_helpers::{default_users, setup_env, DEFAULT_THRESHOLD},
     VALID_SIGNER_PK,
 };

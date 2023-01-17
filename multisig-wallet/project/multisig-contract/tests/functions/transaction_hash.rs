@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::{nonce, transaction_hash},
+    interface::{nonce, transaction_hash},
     test_helpers::{setup_env, DEFAULT_TRANSFER_AMOUNT},
     VALID_SIGNER_PK,
 };

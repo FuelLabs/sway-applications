@@ -1,5 +1,5 @@
 use crate::utils::{
-    abi_calls::balance,
+    interface::balance,
     test_helpers::{base_asset_contract_id, setup_env, DEFAULT_TRANSFER_AMOUNT},
     VALID_SIGNER_PK,
 };

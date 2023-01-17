@@ -28,7 +28,7 @@ pub mod paths {
         "./out/debug/multisig-contract-storage_slots.json";
 }
 
-pub mod abi_calls {
+pub mod interface {
 
     use super::*;
 
