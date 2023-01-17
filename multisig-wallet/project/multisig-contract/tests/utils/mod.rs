@@ -17,15 +17,15 @@ abigen!(
 pub const VALID_SIGNER_PK: &str =
     "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301"; // Test-only private key
 
+pub struct Caller {
+    pub contract: MultiSig,
+    pub wallet: WalletUnlocked,
+}
+
 pub mod paths {
     pub const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
     pub const MULTISIG_CONTRACT_STORAGE_PATH: &str =
         "./out/debug/multisig-contract-storage_slots.json";
-}
-
-pub struct Caller {
-    pub contract: MultiSig,
-    pub wallet: WalletUnlocked,
 }
 
 pub mod abi_calls {
