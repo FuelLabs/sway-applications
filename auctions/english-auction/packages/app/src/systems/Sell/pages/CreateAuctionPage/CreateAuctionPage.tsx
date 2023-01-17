@@ -33,7 +33,7 @@ export const CreateAuctionPage = () => {
           },
       initialPrice: bn.parseUnits(formValues.initialPrice, DECIMAL_UNITS),
       reservePrice: formValues.hasReservePrice
-        ? formValues.reservePrice
+        ? bn.parseUnits(formValues.reservePrice, DECIMAL_UNITS)
         : undefined,
       bidAsset: !formValues.isBidAssetNft
         ? {

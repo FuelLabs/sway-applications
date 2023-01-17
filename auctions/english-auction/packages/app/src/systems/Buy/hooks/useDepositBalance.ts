@@ -8,7 +8,7 @@ export const useDepositsBalance = (auctionId: BN, identity: IdentityInput) => {
   const { contract, isLoading, isError } = useContract();
 
   const { data: balance } = useQuery(
-    ['depositBalance'],
+    ['depositBalance', auctionId.toString(), identity],
     async () => {
       const depositBalance = (await contract?.functions.deposit_balance(auctionId, identity).get())
         ?.value;
