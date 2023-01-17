@@ -1,8 +1,8 @@
 contract;
 
 // TODO:
-//      - change the "data" in the Tx hashing from b256 to Bytes type when available.
-//        https://github.com/FuelLabs/sway/pull/3454
+//      - change the "data" in the Tx hashing from b256 to Bytes type when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723.
+//    
 dep data_structures;
 dep errors;
 dep events;

@@ -32,7 +32,7 @@ pub struct Transaction {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
     contract_identifier: ContractId,
-    /// Payload sent to destination  // TODO: change to Bytes when implemented: https://github.com/FuelLabs/sway/pull/3454
+    /// Payload sent to destination  // TODO: change to Bytes when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723
     data: b256,
     /// The recipient (output / contract) regarding the transaction details.
     destination: Identity,
