@@ -4,6 +4,7 @@ dep errors;
 dep bitmaps;
 dep bitboard;
 dep board;
+dep game;
 dep special;
 dep square;
 dep move;

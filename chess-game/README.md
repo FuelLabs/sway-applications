@@ -24,6 +24,7 @@ Taken to the extreme, with the exception of game initialization and verification
 This game is currently meant for two players. However, there's nothing stopping one or both of the "players" from being a multisig contract, an off-chain chess engine, or even a fully on-chain chess engine in a contract.
 
 ## Project Structure
+
 WIP: The project consists of a library and a contract.
 
 <!--Only show most important files e.g. script to run, build etc.-->
