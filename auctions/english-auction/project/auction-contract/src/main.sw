@@ -149,9 +149,11 @@ impl EnglishAuction for Contract {
         match bid_asset {
             AuctionAsset::TokenAsset(asset) => {
                 require(asset.amount() == 0, InitError::BidAssetAmountNotZero);
+                require(initial_price != 0, InitError::InitialPriceCannotBeZero);
             },
             AuctionAsset::NFTAsset(asset) => {
                 require(asset.token_id() == 0, InitError::BidAssetAmountNotZero);
+                require(initial_price == 1, InitError::CannotAcceptMoreThanOneNFT);
             }
         }
 
@@ -161,7 +163,6 @@ impl EnglishAuction for Contract {
                 // Selling tokens
                 // TODO: Move this outside the match statement when StorageVec in structs is supported
                 // This issue can be tracked here: https://github.com/FuelLabs/sway/issues/2465
-                require(initial_price != 0, InitError::InitialPriceCannotBeZero);
                 require(msg_amount() == asset.amount(), InputError::IncorrectAmountProvided);
                 require(msg_asset_id() == asset.asset_id(), InputError::IncorrectAssetProvided);
             },
@@ -170,7 +171,6 @@ impl EnglishAuction for Contract {
                 let sender = msg_sender().unwrap();
                 // TODO: Remove this when StorageVec in structs is supported
                 // This issue can be tracked here: https://github.com/FuelLabs/sway/issues/2465
-                require(initial_price == 1, InitError::CannotAcceptMoreThanOneNFT);
                 transfer_nft(asset, Identity::ContractId(contract_id()));
             }
         }
