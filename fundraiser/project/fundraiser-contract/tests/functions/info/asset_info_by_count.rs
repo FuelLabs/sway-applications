@@ -1,19 +1,19 @@
-use crate::utils::{
-    abi_calls::{asset_info_by_count, create_campaign, pledge},
-    test_helpers::{mint, setup},
-};
-
 mod success {
 
-    use super::*;
+    use crate::utils::{
+        interface::{
+            core::{create_campaign, pledge},
+            info::asset_info_by_count,
+        },
+        setup::{mint, setup, AssetInfo},
+    };
 
     #[tokio::test]
-    async fn returns_asset_does_not_exist_info() {
+    async fn returns_none() {
         let (author, _, _, _, _) = setup().await;
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
-        assert_eq!(0, asset_info.value.amount);
-        assert_eq!(false, asset_info.value.exists);
+        assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
     }
 
     #[tokio::test]
@@ -21,8 +21,7 @@ mod success {
         let (author, user, asset, _, defaults) = setup().await;
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
-        assert_eq!(0, asset_info.value.amount);
-        assert_eq!(false, asset_info.value.exists);
+        assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
 
         mint(
             &asset.contract,
@@ -41,7 +40,6 @@ mod success {
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
-        assert_eq!(defaults.target_amount, asset_info.value.amount);
-        assert_eq!(true, asset_info.value.exists);
+        assert_eq!(defaults.target_amount, asset_info.value.unwrap().amount);
     }
 }

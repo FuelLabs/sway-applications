@@ -1,29 +1,28 @@
-use crate::utils::{
-    abi_calls::{
-        asset_info_by_count, campaign, campaign_info, create_campaign, total_campaigns,
-        user_campaign_count,
-    },
-    test_helpers::{identity, setup},
-};
+use crate::utils::{interface::core::create_campaign, setup::setup};
 
 mod success {
 
     use super::*;
+    use crate::utils::{
+        interface::info::{
+            asset_info_by_count, campaign, campaign_info, total_campaigns, user_campaign_count,
+        },
+        setup::{identity, AssetInfo, CampaignState, CreatedCampaignEvent},
+    };
 
     #[tokio::test]
     async fn creates_a_campaign() {
         let (author, _, _, _, defaults) = setup().await;
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
-        assert_eq!(0, asset_info.value.amount);
-        assert_eq!(false, asset_info.value.exists);
+        assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
         assert_eq!(0, total_campaigns(&author.contract).await);
         assert_eq!(
             0,
             user_campaign_count(&author.contract, identity(author.wallet.address()).await).await
         );
 
-        create_campaign(
+        let response = create_campaign(
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
@@ -31,10 +30,22 @@ mod success {
             defaults.target_amount,
         )
         .await;
-        let info = campaign_info(&author.contract, 1).await.value;
+        let log = response
+            .get_logs_with_type::<CreatedCampaignEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        let info = campaign_info(&author.contract, 1).await.value.unwrap();
         let asset_info = asset_info_by_count(&author.contract, 1).await;
-        assert_eq!(0, asset_info.value.amount);
-        assert_eq!(true, asset_info.value.exists);
+        assert_eq!(
+            *event,
+            CreatedCampaignEvent {
+                author: identity(author.wallet.address()).await,
+                campaign_info: info.clone(),
+                campaign_id: 1
+            }
+        );
+        assert_eq!(0, asset_info.value.unwrap().amount);
 
         assert_eq!(1, total_campaigns(&author.contract).await);
         assert_eq!(
@@ -46,13 +57,13 @@ mod success {
             campaign(&author.contract, 1, identity(author.wallet.address()).await)
                 .await
                 .value
+                .unwrap()
                 .id
         );
         assert_eq!(info.asset, defaults.asset_id);
         assert_eq!(info.author, identity(author.wallet.address()).await);
         assert_eq!(info.beneficiary, defaults.beneficiary);
-        assert_eq!(info.cancelled, false);
-        assert_eq!(info.claimed, false);
+        assert!(matches!(info.state, CampaignState::Funding()));
         assert_eq!(info.deadline, defaults.deadline);
         assert_eq!(info.target_amount, defaults.target_amount);
         assert_eq!(info.total_pledge, 0);
@@ -63,15 +74,14 @@ mod success {
         let (author, _, _, _, defaults) = setup().await;
 
         let asset_info = asset_info_by_count(&author.contract, 1).await;
-        assert_eq!(0, asset_info.value.amount);
-        assert_eq!(false, asset_info.value.exists);
+        assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
         assert_eq!(0, total_campaigns(&author.contract).await);
         assert_eq!(
             0,
             user_campaign_count(&author.contract, identity(author.wallet.address()).await).await
         );
 
-        create_campaign(
+        let response1 = create_campaign(
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
@@ -79,8 +89,7 @@ mod success {
             defaults.target_amount,
         )
         .await;
-
-        create_campaign(
+        let response2 = create_campaign(
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
@@ -91,25 +100,44 @@ mod success {
 
         let asset_info1 = asset_info_by_count(&author.contract, 1).await;
         let asset_info2 = asset_info_by_count(&author.contract, 2).await;
+        let info1 = campaign_info(&author.contract, 1).await.value.unwrap();
+        let info2 = campaign_info(&author.contract, 2).await.value.unwrap();
 
-        assert_eq!(0, asset_info1.value.amount);
-        assert_eq!(0, asset_info2.value.amount);
-        assert_eq!(true, asset_info1.value.exists);
-        assert_eq!(false, asset_info2.value.exists);
+        let log1 = response1
+            .get_logs_with_type::<CreatedCampaignEvent>()
+            .unwrap();
+        let log2 = response2
+            .get_logs_with_type::<CreatedCampaignEvent>()
+            .unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
 
+        assert_eq!(
+            *event1,
+            CreatedCampaignEvent {
+                author: identity(author.wallet.address()).await,
+                campaign_info: info1.clone(),
+                campaign_id: 1
+            }
+        );
+        assert_eq!(
+            *event2,
+            CreatedCampaignEvent {
+                author: identity(author.wallet.address()).await,
+                campaign_info: info2.clone(),
+                campaign_id: 2
+            }
+        );
+
+        assert_eq!(0, asset_info1.value.unwrap().amount);
+        assert!(asset_info2.value.is_none());
         assert_eq!(2, total_campaigns(&author.contract).await);
         assert_eq!(
             2,
             user_campaign_count(&author.contract, identity(author.wallet.address()).await).await
         );
-        assert_eq!(
-            defaults.target_amount,
-            campaign_info(&author.contract, 1).await.value.target_amount
-        );
-        assert_eq!(
-            defaults.target_amount * 2,
-            campaign_info(&author.contract, 2).await.value.target_amount
-        );
+        assert_eq!(defaults.target_amount, info1.target_amount);
+        assert_eq!(defaults.target_amount * 2, info2.target_amount);
     }
 
     #[tokio::test]
@@ -120,17 +148,15 @@ mod success {
         let asset_info1 = asset_info_by_count(&author.contract, 1).await;
         let asset_info2 = asset_info_by_count(&author.contract, 1).await;
 
-        assert_eq!(0, asset_info1.value.amount);
-        assert_eq!(0, asset_info2.value.amount);
-        assert_eq!(false, asset_info1.value.exists);
-        assert_eq!(false, asset_info2.value.exists);
+        assert!(matches!(asset_info1.value, Option::<AssetInfo>::None));
+        assert!(matches!(asset_info2.value, Option::<AssetInfo>::None));
         assert_eq!(0, total_campaigns(&author.contract).await);
         assert_eq!(
             0,
             user_campaign_count(&author.contract, identity(author.wallet.address()).await).await
         );
 
-        create_campaign(
+        let response1 = create_campaign(
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
@@ -138,8 +164,7 @@ mod success {
             defaults.target_amount,
         )
         .await;
-
-        create_campaign(
+        let response2 = create_campaign(
             &author.contract,
             &asset_id,
             &defaults.beneficiary,
@@ -150,25 +175,45 @@ mod success {
 
         let asset_info1 = asset_info_by_count(&author.contract, 1).await;
         let asset_info2 = asset_info_by_count(&author.contract, 2).await;
+        let info1 = campaign_info(&author.contract, 1).await.value.unwrap();
+        let info2 = campaign_info(&author.contract, 2).await.value.unwrap();
 
-        assert_eq!(0, asset_info1.value.amount);
-        assert_eq!(0, asset_info2.value.amount);
-        assert_eq!(true, asset_info1.value.exists);
-        assert_eq!(true, asset_info2.value.exists);
+        let log1 = response1
+            .get_logs_with_type::<CreatedCampaignEvent>()
+            .unwrap();
+        let log2 = response2
+            .get_logs_with_type::<CreatedCampaignEvent>()
+            .unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(
+            *event1,
+            CreatedCampaignEvent {
+                author: identity(author.wallet.address()).await,
+                campaign_info: info1.clone(),
+                campaign_id: 1
+            }
+        );
+        assert_eq!(
+            *event2,
+            CreatedCampaignEvent {
+                author: identity(author.wallet.address()).await,
+                campaign_info: info2.clone(),
+                campaign_id: 2
+            }
+        );
+
+        assert_eq!(0, asset_info1.value.unwrap().amount);
+        assert_eq!(0, asset_info2.value.unwrap().amount);
 
         assert_eq!(2, total_campaigns(&author.contract).await);
         assert_eq!(
             2,
             user_campaign_count(&author.contract, identity(author.wallet.address()).await).await
         );
-        assert_eq!(
-            defaults.target_amount,
-            campaign_info(&author.contract, 1).await.value.target_amount
-        );
-        assert_eq!(
-            defaults.target_amount * 2,
-            campaign_info(&author.contract, 2).await.value.target_amount
-        );
+        assert_eq!(defaults.target_amount, info1.target_amount);
+        assert_eq!(defaults.target_amount * 2, info2.target_amount);
     }
 }
 
