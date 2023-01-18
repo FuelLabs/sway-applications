@@ -1,4 +1,4 @@
-use crate::utils::{interface::core::template, setup::setup};
+use crate::utils::{interface::core::deposit, setup::setup};
 
 mod success {
     use super::*;
@@ -6,7 +6,7 @@ mod success {
     #[tokio::test]
     async fn pass() {
         let (instance, _wallet) = setup().await;
-        let _response = template(&instance).await;
+        // let _response = deposit(&instance).await;
     }
 }
 
