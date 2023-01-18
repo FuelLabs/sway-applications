@@ -17,7 +17,7 @@ abi DutchAuction {
     ///
     /// # Arguments
     ///
-    /// * `auction_id` - The id of the auction of which to fetch the data of
+    /// * `auction_id` - The id of the auction
     ///
     /// # Reverts
     ///
