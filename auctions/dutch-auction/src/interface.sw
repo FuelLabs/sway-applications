@@ -31,7 +31,7 @@ abi DutchAuction {
     /// * `author` - The user which may have started auctions
     #[storage(read)]
     fn auctions_of_author(author: Identity) -> Vec<u64>;
-    /// Returns the auction ids of the auctions some bidder has won
+    /// Returns the auction ids of the auctions some user has won
     ///
     /// # Arguments
     ///
