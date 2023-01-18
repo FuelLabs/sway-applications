@@ -5,11 +5,11 @@ dep data_structures;
 use data_structures::Auction;
 
 abi DutchAuction {
-    /// Returns the auction ids of the active auctions of the author
+    /// Returns the auction ids of the active auctions of any author
     ///
     /// # Argumets
     ///
-    /// * `author` - The author of which to retrieve the number of active auctions of
+    /// * `author` - The user which may have started auctions
     #[storage(read)]
     fn active_auctions_of_author(author: Identity) -> Vec<u64>;
 
@@ -24,25 +24,25 @@ abi DutchAuction {
     /// * When the auction_id is 0 or greater than storage.auction_count
     #[storage(read)]
     fn auction(auction_id: u64) -> Auction;
-    /// Returns the auction ids of the auctions created by author
+    /// Returns the auction ids of the auctions created by any author
     ///
     /// # Arguments
     ///
-    /// * `author` - The Identity of which to check the number of auctions created
+    /// * `author` - The user which may have started auctions
     #[storage(read)]
     fn auctions_of_author(author: Identity) -> Vec<u64>;
     /// Returns the auction ids of the auctions some bidder has won
     ///
     /// # Arguments
     ///
-    /// * `bidder` - The Identity of which to check the number of auctions won
+    /// * `bidder` - The user which may have won auctions
     #[storage(read)]
     fn auctions_won(bidder: Identity) -> Vec<u64>;
     /// Bids on the specified auction
     ///
     /// # Arguments
     ///
-    /// * `auction_id` - The id of the auction on which to
+    /// * `auction_id` - The id of the auction on which to place a bid
     ///
     /// # Reverts
     ///
