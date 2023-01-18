@@ -16,10 +16,10 @@ use utils::{
     calculate_price,
     eq_identity,
     sender_indentity,
-    StorageMapVec,
     transfer_to_identity,
     validate_id,
 };
+use sway_libs::storagemapvec::StorageMapVec;
 
 storage {
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
