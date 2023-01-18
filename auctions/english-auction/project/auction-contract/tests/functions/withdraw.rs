@@ -1,7 +1,7 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{bid, create, deposit_balance, withdraw},
-    nft_abi_calls::{approve, constructor, mint, owner_of},
+    nft_abi_calls::{approve, mint, owner_of},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
 use fuels::prelude::{AssetId, Identity};
@@ -40,7 +40,7 @@ mod success {
 
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
 
-        let _result = provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1, Option::None).await;
 
         assert_eq!(
             deposit_balance(auction_id, &seller.auction, buyer1_identity.clone())
@@ -78,8 +78,7 @@ mod success {
             _,
             buy_nft_contract_id,
         ) = setup().await;
-        let (sell_count, initial_count, reserve_count, duration, access_control) =
-            defaults_nft().await;
+        let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let auction_identity = Identity::ContractId(auction_contract_id.into());
@@ -88,24 +87,10 @@ mod success {
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
         let bid_asset = nft_asset(buy_nft_contract_id, 0).await;
 
-        constructor(
-            access_control,
-            &seller.nft,
-            seller_identity.clone(),
-            sell_count,
-        )
-        .await;
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
-        approve(auction_identity.clone(), &seller.nft, 0).await;
-        constructor(
-            access_control,
-            &buyer1.nft,
-            buyer1_identity.clone(),
-            reserve_count,
-        )
-        .await;
+        approve(Some(auction_identity.clone()), &seller.nft, 0).await;
         mint(reserve_count, &buyer1.nft, buyer1_identity.clone()).await;
-        approve(auction_identity.clone(), &buyer1.nft, 0).await;
+        approve(Some(auction_identity.clone()), &buyer1.nft, 0).await;
 
         let auction_id = create(
             buy_asset.clone(),
@@ -133,7 +118,7 @@ mod success {
             deposit_balance(auction_id, &seller.auction, buyer1_identity.clone()).await,
             None
         );
-        assert_eq!(owner_of(&seller.nft, 0).await, buyer1_identity);
+        assert_eq!(owner_of(&seller.nft, 0).await.unwrap(), buyer1_identity);
     }
 
     #[tokio::test]
@@ -257,8 +242,7 @@ mod success {
             _,
             buy_nft_contract_id,
         ) = setup().await;
-        let (sell_count, initial_count, reserve_count, duration, access_control) =
-            defaults_nft().await;
+        let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let auction_identity = Identity::ContractId(auction_contract_id.into());
@@ -267,24 +251,10 @@ mod success {
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
         let bid_asset = nft_asset(buy_nft_contract_id, 0).await;
 
-        constructor(
-            access_control,
-            &seller.nft,
-            seller_identity.clone(),
-            sell_count,
-        )
-        .await;
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
-        approve(auction_identity.clone(), &seller.nft, 0).await;
-        constructor(
-            access_control,
-            &buyer1.nft,
-            buyer1_identity.clone(),
-            reserve_count,
-        )
-        .await;
+        approve(Some(auction_identity.clone()), &seller.nft, 0).await;
         mint(reserve_count, &buyer1.nft, buyer1_identity.clone()).await;
-        approve(auction_identity.clone(), &buyer1.nft, 0).await;
+        approve(Some(auction_identity.clone()), &buyer1.nft, 0).await;
 
         let auction_id = create(
             buy_asset.clone(),
@@ -312,7 +282,7 @@ mod success {
             deposit_balance(auction_id, &seller.auction, seller_identity.clone()).await,
             None
         );
-        assert_eq!(owner_of(&buyer1.nft, 0).await, seller_identity);
+        assert_eq!(owner_of(&buyer1.nft, 0).await.unwrap(), seller_identity);
     }
 
     #[tokio::test]
@@ -339,7 +309,7 @@ mod success {
         )
         .await;
 
-        let _result = provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1, Option::None).await;
 
         assert_eq!(
             deposit_balance(auction_id, &seller.auction, seller_identity.clone())
@@ -525,7 +495,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionDoesNotExist")]
     async fn when_auction_id_does_not_exist() {
         let (_, _, buyer1, _, _, sell_token_contract_id, _, _, _) = setup().await;
         let (sell_amount, _, _, _) = defaults_token().await;
@@ -535,7 +505,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionIsNotClosed")]
     async fn when_auction_has_not_ended() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -567,7 +537,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "UserHasAlreadyWithdrawn")]
     async fn when_sender_withdraws_twice() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
@@ -600,7 +570,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "UserHasAlreadyWithdrawn")]
     async fn when_sender_did_not_deposit_balance() {
         let (_, seller, buyer1, buyer2, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;

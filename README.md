@@ -9,8 +9,8 @@
     <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
         <img src="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml/badge.svg" />
     </a>
-    <a href="https://crates.io/crates/forc/0.31.1" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.31.1-orange" />
+    <a href="https://crates.io/crates/forc/0.32.2" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.32.2-orange" />
     </a>
     <a href="./LICENSE" alt="forc">
         <img src="https://img.shields.io/github/license/FuelLabs/sway-applications" />
@@ -55,13 +55,12 @@ sway-applications/
 - [English Auction](./auctions/english-auction/) is an auction where users bid up the price of an asset until the bidding period has ended or a reserve has been met.
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
 - [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal.
+- [Fractional-NFT](./fractional-NFT/) allows multiple parties to claim ownership of an NFT directly proportional to the number of tokens they hold.
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction.
 - [Name-Registry](./name-registry/) allows users to perform transactions with human readable names instead of addresses.
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
 - [OTC Swap Predicate](./OTC-swap-predicate) is a predicate that can be used to propose and execute an atomic swap between two parties without requiring any on-chain state.
-
-To see an overview of the progress, and plans, for applications take a look at [APPLICATION_PROGRESS.md](./APPLICATION_PROGRESS.md).
 
 ## Running a project
 
@@ -70,7 +69,7 @@ If you wish to run any of the projects then clone this repository and go through
 Any instructions related to running a specific project should be found within the README.md of that project.
 
 > **Note**
-> All projects currently use `forc 0.31.1`, and `fuel-core 0.14.1`.
+> All projects currently use `forc 0.32.2`, `fuel-core 0.15.1`, and `rust 1.66.0`.
 
 ## Contributing
 

@@ -14,9 +14,9 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  RUST_VERSION: 1.64.0
-  FORC_VERSION: 0.31.1
-  CORE_VERSION: 0.14.1
+  RUST_VERSION: 1.66.0
+  FORC_VERSION: 0.32.2
+  CORE_VERSION: 0.15.1
   PATH_TO_SCRIPTS: .github/scripts
 
 jobs:
@@ -40,7 +40,7 @@ jobs:
 
     strategy:
       matrix:
-        project: ["airdrop", "AMM", "auctions", "DAO", "escrow", "fundraiser", "multisig-wallet", "name-registry", "NFT", "oracle", "OTC-swap-predicate"]
+        project: ["airdrop", "AMM", "auctions", "DAO", "escrow", "fractional-NFT", "fundraiser", "multisig-wallet", "name-registry", "NFT", "oracle", "OTC-swap-predicate", ".template"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -55,15 +55,6 @@ jobs:
       - name: Init cache
         uses: Swatinem/rust-cache@v1
 
-      - name: Install a modern linker (mold)
-        uses: rui314/setup-mold@v1
-
-      - name: Force Rust to use mold globally for compilation
-        run: |
-          touch ~/.cargo/config.toml
-          echo "[target.x86_64-unknown-linux-gnu]" > ~/.cargo/config.toml
-          echo 'linker = "clang"' >> ~/.cargo/config.toml
-          echo 'rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/mold"]' >> ~/.cargo/config.toml
       - name: Install rustfmt
         run: rustup component add rustfmt
 
@@ -110,15 +101,6 @@ jobs:
       - name: Init cache
         uses: Swatinem/rust-cache@v1
 
-      - name: Install a modern linker (mold)
-        uses: rui314/setup-mold@v1
-
-      - name: Force Rust to use mold globally for compilation
-        run: |
-          touch ~/.cargo/config.toml
-          echo "[target.x86_64-unknown-linux-gnu]" > ~/.cargo/config.toml
-          echo 'linker = "clang"' >> ~/.cargo/config.toml
-          echo 'rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/mold"]' >> ~/.cargo/config.toml
       - name: Install rustfmt
         run: rustup component add rustfmt
 

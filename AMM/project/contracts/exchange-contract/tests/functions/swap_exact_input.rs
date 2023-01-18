@@ -25,7 +25,7 @@ mod success {
 
         let output_amount = swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.asset_a), Some(10_000_000)),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_a), None),
             Some(min_output),
             amounts.deadline,
         )
@@ -72,7 +72,7 @@ mod success {
 
         let output_amount = swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.asset_b), Some(10_000_000)),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_b), None),
             Some(min_output),
             amounts.deadline,
         )
@@ -113,7 +113,7 @@ mod success {
 
         let output_amount = swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.asset_a), Some(10_000_000)),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_a), None),
             None,
             amounts.deadline,
         )
@@ -146,7 +146,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NotInitialized")]
     async fn when_unitialized() {
         // call setup instead of setup_and_initialize
         let (exchange_instance, _wallet, _pool_asset_id, asset_a_id, _asset_b_id, _asset_c_id) =
@@ -156,7 +156,7 @@ mod revert {
 
         swap_exact_input(
             &exchange_instance,
-            CallParameters::new(Some(1), Some(AssetId::new(*asset_a_id)), Some(10_000_000)),
+            CallParameters::new(Some(1), Some(AssetId::new(*asset_a_id)), None),
             None,
             deadline,
         )
@@ -164,7 +164,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InvalidAsset")]
     async fn when_msg_asset_id_is_invalid() {
         let (exchange, _wallet, amounts, asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
@@ -172,7 +172,7 @@ mod revert {
         swap_exact_input(
             &exchange.instance,
             // sending invalid asset
-            CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), Some(10_000_000)),
+            CallParameters::new(Some(1), Some(AssetId::new(*asset_c_id)), None),
             None,
             amounts.deadline,
         )
@@ -180,14 +180,14 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DeadlinePassed")]
     async fn when_deadline_has_passed() {
         let (exchange, _wallet, _amounts, _asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
 
         swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(1), Some(exchange.asset_a), Some(10_000_000)),
+            CallParameters::new(Some(1), Some(exchange.asset_a), None),
             None,
             // passing 0 deadline
             0,
@@ -196,7 +196,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AmountCannotBeZero")]
     async fn when_msg_amount_is_zero() {
         let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
@@ -204,7 +204,7 @@ mod revert {
         swap_exact_input(
             &exchange.instance,
             // forwarding 0 as msg_amount
-            CallParameters::new(Some(0), Some(exchange.asset_a), Some(10_000_000)),
+            CallParameters::new(Some(0), Some(exchange.asset_a), None),
             None,
             amounts.deadline,
         )
@@ -212,7 +212,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_minimum_a_constraint_is_too_high() {
         let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
@@ -227,7 +227,7 @@ mod revert {
 
         swap_exact_input(
             &exchange.instance,
-            CallParameters::new(Some(input_amount), Some(exchange.asset_a), Some(10_000_000)),
+            CallParameters::new(Some(input_amount), Some(exchange.asset_a), None),
             // setting min too high
             Some(preview_amount + 1),
             amounts.deadline,

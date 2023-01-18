@@ -39,9 +39,10 @@ use std::{
     },
 };
 use utils::{
+    determine_output_asset,
     div_multiply,
-    get_maximum_input_for_exact_output,
-    get_minimum_output_given_exact_input,
+    maximum_input_for_exact_output,
+    minimum_output_given_exact_input,
     multiply_div,
 };
 
@@ -224,30 +225,26 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64 {
-        require(storage.pair.is_some(), InitError::NotInitialized);
-
-        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
         let input_asset = msg_asset_id();
+        let output_asset = determine_output_asset(input_asset, storage.pair);
 
-        require(input_asset == asset_a_id || input_asset == asset_b_id, InputError::InvalidAsset);
         require(deadline >= height(), InputError::DeadlinePassed);
 
         let exact_input = msg_amount();
         require(exact_input > 0, InputError::AmountCannotBeZero);
 
         let sender = msg_sender().unwrap();
-        let output_asset = if input_asset == asset_a_id {
-            asset_b_id
-        } else {
-            asset_a_id
-        };
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
-        let bought = get_minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
+
+        let bought = minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
+
         require(bought <= output_asset_in_reserve, TransactionError::InsufficientLiquidity);
+
         if min_output.is_some() {
             require(bought >= min_output.unwrap(), TransactionError::DesiredAmountTooHigh(min_output.unwrap()));
         }
+
         transfer(bought, output_asset, sender);
         storage.reserves.insert(input_asset, input_asset_in_reserve + exact_input);
         storage.reserves.insert(output_asset, output_asset_in_reserve - bought);
@@ -264,12 +261,9 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn swap_exact_output(output: u64, deadline: u64) -> u64 {
-        require(storage.pair.is_some(), InitError::NotInitialized);
-
-        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
         let input_asset = msg_asset_id();
+        let output_asset = determine_output_asset(input_asset, storage.pair);
 
-        require(input_asset == asset_a_id || input_asset == asset_b_id, InputError::InvalidAsset);
         require(deadline > height(), InputError::DeadlinePassed);
         require(output > 0, InputError::AmountCannotBeZero);
 
@@ -277,17 +271,12 @@ impl Exchange for Contract {
         require(input_amount > 0, InputError::AmountCannotBeZero);
 
         let sender = msg_sender().unwrap();
-        let output_asset = if input_asset == asset_a_id {
-            asset_b_id
-        } else {
-            asset_a_id
-        };
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
 
         require(output <= output_asset_in_reserve, TransactionError::InsufficientLiquidity);
 
-        let sold = get_maximum_input_for_exact_output(output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
+        let sold = maximum_input_for_exact_output(output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
 
         require(input_amount >= sold, TransactionError::ProvidedAmountTooLow(input_amount));
 
@@ -295,6 +284,7 @@ impl Exchange for Contract {
         if refund > 0 {
             transfer(refund, input_asset, sender);
         };
+
         transfer(output, output_asset, sender);
         storage.reserves.insert(input_asset, input_asset_in_reserve + sold);
         storage.reserves.insert(output_asset, output_asset_in_reserve - output);
@@ -400,20 +390,12 @@ impl Exchange for Contract {
 
     #[storage(read)]
     fn preview_swap_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo {
-        require(storage.pair.is_some(), InitError::NotInitialized);
+        let output_asset = determine_output_asset(input_asset, storage.pair);
 
-        let (asset_a_id, asset_b_id) = storage.pair.unwrap();
-
-        require(input_asset == asset_a_id || input_asset == asset_b_id, InputError::InvalidAsset);
-
-        let output_asset = if input_asset == asset_a_id {
-            asset_b_id
-        } else {
-            asset_a_id
-        };
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
-        let min_output = get_minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
+
+        let min_output = minimum_output_given_exact_input(exact_input, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
         let sufficient_reserve = min_output <= output_asset_in_reserve;
 
         PreviewSwapInfo {
@@ -435,10 +417,13 @@ impl Exchange for Contract {
         } else {
             asset_a_id
         };
+
         let input_asset_in_reserve = storage.reserves.get(input_asset);
         let output_asset_in_reserve = storage.reserves.get(output_asset);
+
         require(exact_output <= output_asset_in_reserve, TransactionError::DesiredAmountTooHigh(exact_output));
-        let max_input = get_maximum_input_for_exact_output(exact_output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
+
+        let max_input = maximum_input_for_exact_output(exact_output, input_asset_in_reserve, output_asset_in_reserve, LIQUIDITY_MINER_FEE);
         let sufficient_reserve = exact_output <= output_asset_in_reserve;
 
         PreviewSwapInfo {

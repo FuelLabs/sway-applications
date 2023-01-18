@@ -1,8 +1,8 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{auction_info, create},
-    englishauction_mod::State,
-    nft_abi_calls::{approve, constructor, mint, set_approval_for_all},
+    english_auction_mod::State,
+    nft_abi_calls::{approve, mint, set_approval_for_all},
     test_helpers::{
         create_auction_copy, defaults_nft, defaults_token, nft_asset, setup, token_asset,
     },
@@ -104,8 +104,7 @@ mod success {
             _,
             buy_nft_contract_id,
         ) = setup().await;
-        let (sell_count, initial_count, reserve_count, duration, access_control) =
-            defaults_nft().await;
+        let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let auction_identity = Identity::ContractId(auction_contract_id.into());
@@ -113,15 +112,8 @@ mod success {
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
         let provider = deployer.wallet.get_provider().unwrap();
 
-        constructor(
-            access_control,
-            &seller.nft,
-            seller_identity.clone(),
-            sell_count,
-        )
-        .await;
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
-        approve(auction_identity.clone(), &seller.nft, 0).await;
+        approve(Some(auction_identity.clone()), &seller.nft, 0).await;
 
         let auction = auction_info(0, &seller.auction).await;
         assert!(auction.is_none());
@@ -168,8 +160,7 @@ mod success {
             _,
             buy_nft_contract_id,
         ) = setup().await;
-        let (sell_count, initial_count, reserve_count, duration, access_control) =
-            defaults_nft().await;
+        let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let auction_identity = Identity::ContractId(auction_contract_id.into());
@@ -178,13 +169,6 @@ mod success {
         let provider = deployer.wallet.get_provider().unwrap();
         let auction = auction_info(0, &seller.auction).await;
 
-        constructor(
-            access_control,
-            &seller.nft,
-            seller_identity.clone(),
-            sell_count,
-        )
-        .await;
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
         set_approval_for_all(true, &seller.nft, auction_identity.clone()).await;
 
@@ -232,8 +216,7 @@ mod success {
             buy_asset_contract_id,
             _,
         ) = setup().await;
-        let (sell_count, initial_count, reserve_count, duration, access_control) =
-            defaults_nft().await;
+        let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let auction_identity = Identity::ContractId(auction_contract_id.into());
@@ -242,15 +225,8 @@ mod success {
         let provider = deployer.wallet.get_provider().unwrap();
         let auction = auction_info(0, &seller.auction).await;
 
-        constructor(
-            access_control,
-            &seller.nft,
-            seller_identity.clone(),
-            sell_count,
-        )
-        .await;
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
-        approve(auction_identity.clone(), &seller.nft, 0).await;
+        approve(Some(auction_identity.clone()), &seller.nft, 0).await;
 
         assert!(auction.is_none());
 
@@ -469,7 +445,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "ReserveLessThanInitialPrice")]
     async fn when_reserve_is_less_than_initial_price() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
@@ -494,7 +470,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "ReserveLessThanInitialPrice")]
     async fn when_reserve_is_zero() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
@@ -519,7 +495,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AuctionDurationNotProvided")]
     async fn when_duration_is_zero() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
@@ -544,7 +520,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "BidAssetAmountNotZero")]
     async fn when_bid_token_amount_not_zero() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
@@ -569,7 +545,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "BidAssetAmountNotZero")]
     async fn when_bid_nft_id_not_zero() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, _, buy_nft_contract_id) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
@@ -593,7 +569,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "InitialPriceCannotBeZero")]
     async fn when_initial_token_price_is_zero() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
@@ -618,7 +594,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "IncorrectAmountProvided")]
     async fn when_token_asset_sent_less_than_sell_struct() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
@@ -656,7 +632,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "IncorrectAmountProvided")]
     async fn when_token_asset_sent_greater_than_sell_struct() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
@@ -699,7 +675,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "IncorrectAmountProvided")]
     async fn when_token_struct_not_correct_type() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
@@ -736,7 +712,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "IncorrectAssetProvided")]
     async fn when_token_sent_not_correct_type() {
         let (_, seller, buyer1, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
@@ -774,26 +750,19 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "ReserveLessThanInitialPrice")]
     async fn when_initial_nft_price_not_one() {
         let (_, seller, _, _, auction_contract_id, _, sell_nft_contract_id, _, buy_nft_contract_id) =
             setup().await;
-        let (sell_count, _, reserve_count, duration, access_control) = defaults_nft().await;
+        let (sell_count, _, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let auction_identity = Identity::ContractId(auction_contract_id.into());
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
 
-        constructor(
-            access_control,
-            &seller.nft,
-            seller_identity.clone(),
-            sell_count,
-        )
-        .await;
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
-        approve(auction_identity.clone(), &seller.nft, 0).await;
+        approve(Some(auction_identity.clone()), &seller.nft, 0).await;
 
         create(
             buy_asset.clone(),
@@ -808,27 +777,19 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "SenderNotOwner")]
     async fn when_sender_does_not_own_nft() {
         let (_, seller, _, _, auction_contract_id, _, sell_nft_contract_id, _, buy_nft_contract_id) =
             setup().await;
-        let (sell_count, initial_count, reserve_count, duration, access_control) =
-            defaults_nft().await;
+        let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let auction_identity = Identity::ContractId(auction_contract_id.into());
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
 
-        constructor(
-            access_control,
-            &seller.nft,
-            seller_identity.clone(),
-            sell_count,
-        )
-        .await;
         mint(sell_count, &seller.nft, auction_identity.clone()).await;
-        approve(auction_identity.clone(), &seller.nft, 0).await;
+        approve(Some(auction_identity.clone()), &seller.nft, 0).await;
 
         create(
             buy_asset.clone(),
@@ -844,22 +805,16 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "Revert(18446744073709486080)")]
+    // TODO: test is not set up to hit the error properly: https://github.com/FuelLabs/sway-applications/issues/330
+    // #[should_panic(expected = "NFTTransferNotApproved")]
     async fn when_auction_not_approved_for_transfer() {
         let (_, seller, _, _, _, _, sell_nft_contract_id, _, buy_nft_contract_id) = setup().await;
-        let (sell_count, initial_count, reserve_count, duration, access_control) =
-            defaults_nft().await;
+        let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
 
-        constructor(
-            access_control,
-            &seller.nft,
-            seller_identity.clone(),
-            sell_count,
-        )
-        .await;
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
 
         create(

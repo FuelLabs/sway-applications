@@ -1,4 +1,4 @@
-use fuels::{contract::contract::CallResponse, prelude::*, tx::Contract as TxContract};
+use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::Contract as TxContract};
 
 abigen!(
     AMM,
@@ -9,7 +9,7 @@ abigen!(
     "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
 );
 
-pub struct MetaExchange {
+pub struct ExchangeContract {
     pub contract_id: ContractId,
     pub bytecode_root: ContractId,
 }
@@ -29,7 +29,7 @@ pub mod exchange_abi_calls {
     pub async fn constructor(
         contract: &Exchange,
         pair: (ContractId, ContractId),
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         let receipt = contract.methods().constructor(pair).call().await;
         receipt.unwrap()
     }
@@ -41,7 +41,7 @@ pub mod amm_abi_calls {
     pub async fn initialize(
         contract: &AMM,
         exchange_bytecode_root: ContractId,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .initialize(exchange_bytecode_root)
@@ -54,7 +54,7 @@ pub mod amm_abi_calls {
         contract: &AMM,
         asset_pair: (ContractId, ContractId),
         pool: ContractId,
-    ) -> CallResponse<()> {
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .add_pool(asset_pair, pool)
@@ -113,7 +113,7 @@ pub mod test_helpers {
         asset_pair: (ContractId, ContractId),
         malicious: Option<bool>,
         index_for_salt: Option<u8>,
-    ) -> MetaExchange {
+    ) -> ExchangeContract {
         let salt = [index_for_salt.unwrap_or(0u8); 32];
 
         let exchange_contract_id = Contract::deploy_with_parameters(
@@ -132,7 +132,7 @@ pub mod test_helpers {
 
         let exchange_instance = Exchange::new(exchange_contract_id.clone(), wallet.clone());
         constructor(&exchange_instance, asset_pair).await;
-        MetaExchange {
+        ExchangeContract {
             contract_id: ContractId::new(*exchange_contract_id.hash()),
             bytecode_root: bytecode_root().await,
         }

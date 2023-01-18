@@ -23,6 +23,7 @@ pub async fn setup() -> (NameRegistry, Account, WalletUnlocked) {
         None,
     )
     .await;
+
     let wallet = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
 
