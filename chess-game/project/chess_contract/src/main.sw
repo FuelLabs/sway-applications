@@ -14,15 +14,15 @@ storage {
     // mapping of game_id => Game. game_ids are globally unique
     games: StorageMap<b256, Game> = StorageMap {},
     // mapping of Player1 => Player2 => match_number
-    matches: StorageMap<(Identity, Identity), u64> = StorageMap {},
+    salts: StorageMap<(Identity, Identity), u64> = StorageMap {},
 }
 
 impl Chess for Contract {
     #[storage(read, write)]
     fn start_new_game(player1: Identity, player2: Identity, bond: Option<u64>) -> b256 {
-        // increment the previous game number
-        let match_number = storage.matches.get((player1, player2)) + 1;
-        storage.matches.insert((player1, player2), match_number);
+        // increment the previous game salt
+        let salt = storage.salts.get((player1, player2)) + 1;
+        storage.salts.insert((player1, player2), salt);
 
         let status = match bond {
             // free play, no bond required.
@@ -34,7 +34,7 @@ impl Chess for Contract {
         let mut game = Game {
             players: [player2, player1],
             bonds_payed: [false, false],
-            match_number,
+            salt,
             board: Board::new(),
             status: status,
             winner: Option::None,

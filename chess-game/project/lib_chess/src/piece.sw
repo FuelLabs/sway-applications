@@ -81,7 +81,7 @@ impl Piece {
 /// TESTS
 //////////////////////////////////////////////////////////////////
 #[test()]
-fn test_to_u8() {
+fn test_piece_to_u8() {
     let p1 = Piece::Pawn;
     let p2 = Piece::Bishop;
     let p3 = Piece::Rook;

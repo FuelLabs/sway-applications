@@ -24,7 +24,7 @@ pub struct Game {
     // This is to allow indexing by the consts BLACK (0) & WHITE (1), i.e: players.BLACK == player2, players. == player1
     players: [Identity; 2],  // (player2, player1)?
     bonds_payed: [bool; 2],
-    match_number: u64, // tracks games played between P1 & P2.
+    salt: u64, // allows multiple games between P1 & P2 to have unique IDs.
     board: Board,
     status: Status,
     winner: Option<Identity>,
@@ -32,13 +32,13 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(p1: Identity, p2: Identity, p1_bond_payed: bool,  p2_bond_payed: bool, match_number: u64, status: Status) -> Game {
+    pub fn new(p1: Identity, p2: Identity, p1_bond_payed: bool,  p2_bond_payed: bool, salt: u64, status: Status) -> Game {
         let board = Board::new();
         let hash = keccak256((board.piecemap, board.metadata));
         Game {
             players: [p2, p1],
             bonds_payed: [p2_bond_payed, p1_bond_payed],
-            match_number: match_number,
+            salt: salt,
             board: Board::new(),
             status: status,
             winner: Option::None,
@@ -47,7 +47,7 @@ impl Game {
     }
 
     pub fn id(self) -> b256 {
-        keccak256((self.players[WHITE], self.players[BLACK], self.match_number, contract_id()))
+        keccak256((self.players[WHITE], self.players[BLACK], self.salt, contract_id()))
     }
 
     pub fn hash_state(mut self) -> b256 {
