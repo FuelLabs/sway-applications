@@ -12,13 +12,7 @@ use interface::DutchAuction;
 use data_structures::Auction;
 use errors::{SetupError, TimeError, UserError};
 use events::{CancelledAuctionEvent, ChangedAsset, CreatedAuctionEvent, WinningBidEvent};
-use utils::{
-    calculate_price,
-    eq_identity,
-    sender_indentity,
-    transfer_to_identity,
-    validate_id,
-};
+use utils::{calculate_price, eq_identity, sender_indentity, transfer_to_identity, validate_id};
 use sway_libs::storagemapvec::StorageMapVec;
 
 storage {
