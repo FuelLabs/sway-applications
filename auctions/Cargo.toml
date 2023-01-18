@@ -2,4 +2,5 @@
 resolver = "2"
 members = [
     "./english-auction/project/auction-contract",
+    "./dutch-auction"
 ]

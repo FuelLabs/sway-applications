@@ -1,7 +1,7 @@
 use fuels::prelude::*;
 
 // Load abi from json
-abigen!(MyContract, "out/debug/dutch-auction-abi.json");
+abigen!(MyContract, "dutch-auction/out/debug/dutch-auction-abi.json");
 
 pub async fn get_contract_instance() -> MyContract {
     // Launch a local network and deploy the contract
