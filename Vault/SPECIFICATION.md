@@ -2,8 +2,23 @@ Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
   - [Core Functionality](#core-functionality)
-    - [`template()`](#template)
+    - [`deposit()`](#deposit)
+    - [`mint()`](#mint)
+    - [`redeem()`](#redeem)
+    - [`withdraw()`](#withdraw)
   - [Miscellaneous Information](#miscellaneous-information)
+    - [`asset()`](#asset)
+    - [`convert_to_assets()`](#convert_to_assets)
+    - [`convert_to_shares()`](#convert_to_shares)
+    - [`max_deposit()`](#max_deposit)
+    - [`max_mint()`](#max_mint)
+    - [`max_redeem()`](#max_redeem)
+    - [`max_withdraw()`](#max_withdraw)
+    - [`preview_deposit()`](#preview_deposit)
+    - [`preview_mint()`](#preview_mint)
+    - [`preview_redeem()`](#preview_redeem)
+    - [`preview_withdraw()`](#preview_withdraw)
+    - [`total_assets()`](#total_assets)
   - [Diagrams](#diagrams)
     - [Sequence Diagram](#sequence-diagram)
 
@@ -21,13 +36,43 @@ If you are interested in a functional overview then this is the section for you.
 
 ## Core Functionality
 
-### `template()`
+### `deposit()`
 
 TODO: description of function
 
 1. TODO: description of requirement
 
+### `mint()`
+
+### `redeem()`
+
+### `withdraw()`
+
 ## Miscellaneous Information
+
+### `asset()`
+
+### `convert_to_assets()`
+
+### `convert_to_shares()`
+
+### `max_deposit()`
+
+### `max_mint()`
+
+### `max_redeem()`
+
+### `max_withdraw()`
+
+### `preview_deposit()`
+
+### `preview_mint()`
+
+### `preview_redeem()`
+
+### `preview_withdraw()`
+
+### `total_assets()`
 
 ## Diagrams
 
