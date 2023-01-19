@@ -61,6 +61,7 @@ const _abi = {
     },
   ],
   loggedTypes: [],
+  messagesTypes: [],
 };
 
 export class AssetAbi__factory {

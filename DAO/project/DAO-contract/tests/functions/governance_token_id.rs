@@ -21,7 +21,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "ContractNotInitialized")]
     pub async fn on_not_inialized() {
         let (_gov_token, _gov_token_id, deployer, _user, _asset_amount) = setup().await;
         governance_token_id(&deployer.dao_voting).await;

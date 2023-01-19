@@ -1,7 +1,7 @@
 use crate::utils::{
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{create, total_auctions},
-    nft_abi_calls::{approve, constructor, mint},
+    nft_abi_calls::{approve, mint},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
 use fuels::prelude::Identity;
@@ -24,7 +24,7 @@ mod success {
             _,
         ) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
-        let (sell_count, _, _, _, access_control) = defaults_nft().await;
+        let (sell_count, _, _, _) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
@@ -38,15 +38,8 @@ mod success {
             seller.wallet.address().into(),
         )
         .await;
-        constructor(
-            access_control,
-            &seller.nft,
-            seller_identity.clone(),
-            sell_count,
-        )
-        .await;
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
-        approve(auction_identity.clone(), &seller.nft, 0).await;
+        approve(Some(auction_identity.clone()), &seller.nft, 0).await;
 
         assert_eq!(0, total_auctions(&seller.auction).await);
 
@@ -118,7 +111,7 @@ mod success {
 
         assert_eq!(1, total_auctions(&seller.auction).await);
 
-        let _result = provider.produce_blocks(duration + 1).await;
+        let _result = provider.produce_blocks(duration + 1, Option::None).await;
 
         assert_eq!(1, total_auctions(&seller.auction).await);
     }

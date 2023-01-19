@@ -777,7 +777,7 @@ const _abi = {
       logId: 26,
       loggedType: {
         name: '',
-        type: 7,
+        type: 6,
         typeArguments: [],
       },
     },
@@ -785,7 +785,7 @@ const _abi = {
       logId: 27,
       loggedType: {
         name: '',
-        type: 7,
+        type: 6,
         typeArguments: [],
       },
     },
@@ -793,7 +793,7 @@ const _abi = {
       logId: 28,
       loggedType: {
         name: '',
-        type: 6,
+        type: 7,
         typeArguments: [],
       },
     },
@@ -801,7 +801,7 @@ const _abi = {
       logId: 29,
       loggedType: {
         name: '',
-        type: 2,
+        type: 7,
         typeArguments: [],
       },
     },
@@ -809,7 +809,7 @@ const _abi = {
       logId: 30,
       loggedType: {
         name: '',
-        type: 6,
+        type: 2,
         typeArguments: [],
       },
     },
@@ -886,6 +886,7 @@ const _abi = {
       },
     },
   ],
+  messagesTypes: [],
 };
 
 export class AuctionContractAbi__factory {

@@ -5,7 +5,7 @@ use crate::utils::{
         setup_and_initialize, setup_initialize_and_deposit_but_do_not_add_liquidity,
         setup_initialize_deposit_and_add_liquidity, wallet_balances,
     },
-    MetaAmounts,
+    LiquidityParameters,
 };
 use fuels::prelude::*;
 
@@ -74,7 +74,7 @@ mod success {
     #[tokio::test]
     async fn adds_when_liquidity_exists_based_on_a_and_refunds() {
         let (exchange, wallet, amounts, _asset_c_id) = setup_and_initialize().await;
-        let second_liquidity_amounts = MetaAmounts {
+        let second_liquidity_amounts = LiquidityParameters {
             amount_a: amounts.amount_a,
             amount_b: amounts.amount_b * 2,
             deadline: amounts.deadline,
@@ -144,7 +144,7 @@ mod success {
     #[tokio::test]
     async fn adds_when_liquidity_exists_based_on_b_and_refunds() {
         let (exchange, wallet, amounts, _asset_c_id) = setup_and_initialize().await;
-        let second_liquidity_amounts = MetaAmounts {
+        let second_liquidity_amounts = LiquidityParameters {
             amount_a: amounts.amount_a * 2,
             amount_b: amounts.amount_b,
             deadline: amounts.deadline,
@@ -215,7 +215,7 @@ mod revert {
     use super::*;
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "NotInitialized")]
     async fn when_unitialized() {
         // call setup instead of setup_and_initialize
         let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, _asset_b_id, _asset_c_id) =
@@ -234,11 +234,11 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DeadlinePassed")]
     async fn when_deadline_has_passed() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        let override_amounts = MetaAmounts {
+        let override_amounts = LiquidityParameters {
             amount_a: amounts.amount_a,
             amount_b: amounts.amount_b,
             deadline: 0, // deadline too low
@@ -249,7 +249,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AmountMustBeZero")]
     async fn when_msg_amount_is_not_zero() {
         let (exchange, _wallet, amounts, _asset_c_id) =
             setup_initialize_and_deposit_but_do_not_add_liquidity().await;
@@ -270,11 +270,11 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "AmountTooLow")]
     async fn when_desired_liquidity_is_less_than_minimum_liquidity() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        let override_amounts = MetaAmounts {
+        let override_amounts = LiquidityParameters {
             amount_a: amounts.amount_a,
             amount_b: amounts.amount_b,
             deadline: amounts.deadline,
@@ -285,11 +285,11 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DepositCannotBeZero")]
     async fn when_deposited_a_is_zero() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        let override_amounts = MetaAmounts {
+        let override_amounts = LiquidityParameters {
             amount_a: 0, // depositing 0 amount of asset A
             amount_b: amounts.amount_b,
             deadline: amounts.deadline,
@@ -300,11 +300,11 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DepositCannotBeZero")]
     async fn when_deposited_b_is_zero() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        let override_amounts = MetaAmounts {
+        let override_amounts = LiquidityParameters {
             amount_a: amounts.amount_a,
             amount_b: 0, // depositing 0 amount of asset B
             deadline: amounts.deadline,
@@ -315,11 +315,11 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_liquidity_is_zero_but_desired_liquidity_is_too_high() {
         let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
 
-        let override_amounts = MetaAmounts {
+        let override_amounts = LiquidityParameters {
             amount_a: amounts.amount_a,
             amount_b: amounts.amount_b,
             deadline: amounts.deadline,
@@ -330,12 +330,12 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_liquidity_exists_but_desired_liquidity_is_too_high_based_on_a() {
         let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
 
-        let override_amounts = MetaAmounts {
+        let override_amounts = LiquidityParameters {
             amount_a: amounts.amount_a,
             amount_b: amounts.amount_b * 2, // setting this so that liquidity is calculated based on asset A amount
             deadline: amounts.deadline,
@@ -346,12 +346,12 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "DesiredAmountTooHigh")]
     async fn when_liquidity_exists_but_desired_liquidity_is_too_high_based_on_b() {
         let (exchange, _wallet, amounts, _asset_c_id, _added_liquidity) =
             setup_initialize_deposit_and_add_liquidity().await;
 
-        let override_amounts = MetaAmounts {
+        let override_amounts = LiquidityParameters {
             amount_a: amounts.amount_a * 2, // setting this so that liquidity is calculated based on asset B amount
             amount_b: amounts.amount_b,
             deadline: amounts.deadline,

@@ -116,8 +116,3 @@ abi EnglishAuction {
     #[storage(read)]
     fn total_auctions() -> u64;
 }
-
-abi NFT {
-    fn owner_of(token_id: u64) -> Identity;
-    fn transfer_from(from: Identity, to: Identity, token_id: u64);
-}

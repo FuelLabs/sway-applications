@@ -15,12 +15,12 @@ Table of Contents
                 - [`add_liquidity()`](#add_liquidity)
                 - [`remove_liquidity()`](#remove_liquidity)
                 - [`withdraw()`](#withdraw)
-                - [`swap_with_exact_input()`](#swap_with_exact_input)
-                - [`swap_with_exact_output()`](#swap_with_exact_output)
+                - [`swap_exact_input()`](#swap_exact_input)
+                - [`swap_exact_output()`](#swap_exact_output)
             - [Previews](#previews)
                 - [`preview_add_liquidity()`](#preview_add_liquidity)
-                - [`preview_swap_with_exact_input()`](#preview_swap_with_exact_input)
-                - [`preview_swap_with_exact_output()`](#preview_swap_with_exact_output)
+                - [`preview_swap_exact_input()`](#preview_swap_exact_input)
+                - [`preview_swap_exact_output()`](#preview_swap_exact_output)
             - [State Checks](#state-checks-1)
                 - [`balance()`](#balance)
                 - [`pool_info()`](#pool_info)
@@ -109,7 +109,7 @@ This sub-section details what a user is able to do, e.g., click a button and "x,
     2. If the deposited amount of the asset is sufficient
     3. Requires an amount of either asset to withdraw
 
-##### `swap_with_exact_input()`
+##### `swap_exact_input()`
 
 1. Allows selling an exact amount of an asset for the other asset 
     1. If the asset pair of the pool is set
@@ -118,11 +118,11 @@ This sub-section details what a user is able to do, e.g., click a button and "x,
     4. If the bought amount is not less than the optional minimum output amount
     5. Requires an exact amount of either asset to sell
     6. Requires an optional minimum desired output amount
-        > **NOTE** This is a safety mechanism against excessive slippage. The [`preview_swap_with_exact_input()`](#preview_swap_with_exact_input) function can be used to calculate a reasonable minimum output amount.
+        > **NOTE** This is a safety mechanism against excessive slippage. The [`preview_swap_exact_input()`](#preview_swap_exact_input) function can be used to calculate a reasonable minimum output amount.
     7. Requires a deadline (block height limit)
 
 
-##### `swap_with_exact_output()`
+##### `swap_exact_output()`
 
 1. Allows selling an asset for an exact amount of the other asset 
     1. If the asset pair of the pool is set
@@ -132,7 +132,7 @@ This sub-section details what a user is able to do, e.g., click a button and "x,
     5. If the bought amount is not less than the exact output amount
     6. Requires an exact amount of either asset to buy
     7. Requires a maximum input amount 
-        > **NOTE** This is a safety mechanism against excessive slippage. The [`preview_swap_with_exact_output()`](#preview_swap_with_exact_output) function can be used to calculate a reasonable maximum input amount.    
+        > **NOTE** This is a safety mechanism against excessive slippage. The [`preview_swap_exact_output()`](#preview_swap_exact_output) function can be used to calculate a reasonable maximum input amount.    
     8. Requires a deadline (block height limit)
 
 #### Previews
@@ -144,15 +144,15 @@ This sub-section details what a user is able to do, e.g., click a button and "x,
     2. Requires the amount of an asset to input to [`add_liquidity`](#add_liquidity) 
         > **NOTE** If any liquidity in the contract already exists, than the amount of the other asset is calculated based on the ratio of the assets. Otherwise, the ratio is assumed to be 1.   
 
-##### `preview_swap_with_exact_input()`
+##### `preview_swap_exact_input()`
 
-1. Returns the minimum output amount to receive after a [`swap_with_exact_input`](#swap_with_exact_input) and whether the output asset reserves are sufficient for the swap
+1. Returns the minimum output amount to receive after a [`swap_exact_input`](#swap_exact_input) and whether the output asset reserves are sufficient for the swap
     1. If the asset pair of the pool is set 
     2. Requires an exact amount of either asset to sell
 
-##### `preview_swap_with_exact_output()`
+##### `preview_swap_exact_output()`
 
-1. Returns the maximum input amount for a [`swap_with_exact_output`](#swap_with_exact_output) and whether the input asset reserves are sufficient for the swap
+1. Returns the maximum input amount for a [`swap_exact_output`](#swap_exact_output) and whether the input asset reserves are sufficient for the swap
     1. If the asset pair of the pool is set
     2. If the output asset reserves are sufficient for the swap
     3. Requires an exact amount of either asset to buy
