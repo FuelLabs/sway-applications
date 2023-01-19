@@ -62,7 +62,6 @@ impl Exchange for Contract {
     fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64 {
         require(storage.pair.is_some(), InitError::NotInitialized);
         require(deadline > height(), InputError::DeadlinePassed);
-        require(msg_amount() == 0, InputError::AmountMustBeZero);
         require(MINIMUM_LIQUIDITY <= desired_liquidity, InputError::AmountTooLow(desired_liquidity));
 
         let (asset_a_id, asset_b_id) = storage.pair.unwrap();
@@ -157,7 +156,7 @@ impl Exchange for Contract {
         log(DefineAssetPairEvent { pair });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn deposit() {
         require(storage.pair.is_some(), InitError::NotInitialized);
 
@@ -177,7 +176,7 @@ impl Exchange for Contract {
         });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo {
         require(storage.pair.is_some(), InitError::NotInitialized);
 
@@ -223,7 +222,7 @@ impl Exchange for Contract {
         }
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64 {
         let input_asset = msg_asset_id();
         let output_asset = determine_output_asset(input_asset, storage.pair);
@@ -259,7 +258,7 @@ impl Exchange for Contract {
         bought
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_output(output: u64, deadline: u64) -> u64 {
         let input_asset = msg_asset_id();
         let output_asset = determine_output_asset(input_asset, storage.pair);

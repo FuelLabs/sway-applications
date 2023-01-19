@@ -1,12 +1,14 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::Contract as TxContract};
+use fuels::{prelude::*, programs::call_response::FuelCallResponse, tx::Contract as TxContract};
 
 abigen!(
-    AMM,
-    "./project/contracts/AMM-contract/out/debug/AMM-contract-abi.json"
-);
-abigen!(
-    Exchange,
-    "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
+    Contract(
+        name = "AMM",
+        abi = "./project/contracts/AMM-contract/out/debug/AMM-contract-abi.json"
+    ),
+    Contract(
+        name = "Exchange",
+        abi = "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
+    )
 );
 
 pub struct ExchangeContract {
@@ -58,7 +60,7 @@ pub mod amm_abi_calls {
         contract
             .methods()
             .add_pool(asset_pair, pool)
-            .set_contracts(&[pool.into()])
+            .set_contract_ids(&[pool.into()])
             .call()
             .await
             .unwrap()

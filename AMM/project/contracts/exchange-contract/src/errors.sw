@@ -8,7 +8,6 @@ pub enum InitError {
 
 pub enum InputError {
     AmountCannotBeZero: (),
-    AmountMustBeZero: (),
     AmountTooLow: u64,
     DeadlinePassed: (),
     InvalidAsset: (),

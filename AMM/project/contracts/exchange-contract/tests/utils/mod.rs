@@ -1,9 +1,9 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*};
+use fuels::{prelude::*, programs::call_response::FuelCallResponse};
 
-abigen!(
-    Exchange,
-    "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
-);
+abigen!(Contract(
+    name = "Exchange",
+    abi = "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
+),);
 
 pub struct ContractBalances {
     pub asset_a: u64,
