@@ -5,5 +5,5 @@ abi Game {
     fn new_game(player_one: Identity, player_two: Identity);
 
     #[storage(read, write)]
-    fn move(position: u64);
+    fn make_move(position: u64);
 }

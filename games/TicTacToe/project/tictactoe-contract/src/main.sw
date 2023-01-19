@@ -30,7 +30,7 @@ storage {
     player_two: Option<Identity> = Option::None,
     // Stores each player's moves,
     board: StorageMap<u64, Option<Identity>> = StorageMap {},
-    // Stores move counter
+    // Stores make_move counter
     player_turn: Option<Identity> = Option::None,
     move_counter: u64 = 0,
     state: State = State::Ended,
@@ -58,9 +58,9 @@ impl Game for Contract {
     }
 
     #[storage(read, write)]
-    fn move(position: u64) {
+    fn make_move(position: u64) {
         require(storage.state == State::Playing, Errors::GameHasEnded);
-        // check if game hasn't ended, if the cell is empty and that the right player is making the move
+        // check if game hasn't ended, if the cell is empty and that the right player is making the make_move
         require(storage.player_turn.unwrap() == msg_sender().unwrap(), Errors::IncorrectPlayerTurn);
         require(position < 9, Errors::InvalidPosition);
         require(storage.board.get(position) == Option::None::<Identity>(), Errors::CellIsNotEmpty);
