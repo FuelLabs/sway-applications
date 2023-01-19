@@ -308,7 +308,8 @@ mod success {
     async fn creates_new_token_auction_with_nft_bid_asset() {
         let (deployer, seller, _, _, _, sell_asset_contract_id, _, _, buy_nft_contract_id) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, _, _, duration) = defaults_token().await;
+        let (_, initial_count, reserve_count, _) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
@@ -324,8 +325,8 @@ mod success {
             buy_asset.clone(),
             &seller.auction,
             duration,
-            initial_price,
-            Some(reserve_price),
+            initial_count,
+            Some(reserve_count),
             seller_identity.clone(),
             sell_asset.clone(),
         )
@@ -339,8 +340,8 @@ mod success {
             buy_asset.clone(),
             None,
             total_duration,
-            initial_price,
-            Some(reserve_price),
+            initial_count,
+            Some(reserve_count),
             sell_asset,
             seller_identity,
             State::Open(),

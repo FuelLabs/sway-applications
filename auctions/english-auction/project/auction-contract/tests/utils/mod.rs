@@ -294,7 +294,7 @@ pub mod test_helpers {
 
     pub async fn defaults_token() -> (u64, u64, u64, u64) {
         let sell_amount = 10;
-        let initial_price = 1;
+        let initial_price = 2;
         let reserve_price = 10;
         let duration = 10;
 
