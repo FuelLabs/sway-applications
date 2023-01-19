@@ -1,5 +1,5 @@
 use crate::utils::{abi_calls::constructor, test_helpers::setup};
-use fuels::prelude::Identity;
+use fuels::types::Identity;
 
 mod success {
 
