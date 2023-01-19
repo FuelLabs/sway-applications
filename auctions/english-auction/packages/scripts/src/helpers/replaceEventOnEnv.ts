@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile, access, copyFile } from 'fs/promises';
 import { log } from 'src/log';
 import type { Event } from 'src/types';
 import { Commands } from 'src/types';
@@ -20,6 +20,13 @@ import { Commands } from 'src/types';
 export async function replaceEventOnEnv(path: string, event: Event) {
   if (event.type === Commands.deploy || event.type === Commands.run) {
     log(`Reading file from ${path}`);
+    try {
+      await access(path);
+    } catch (e: unknown) {
+      // If the env file does not exist yet
+      // Create it by copying the example env
+      await copyFile('./packages/app/.env.example', path);
+    }
     const fileEnv = (await readFile(path)).toString();
     // Replace new ides on .env file
     const newEnvFile = event.data.reduce((file, { name, contractId }) => {
