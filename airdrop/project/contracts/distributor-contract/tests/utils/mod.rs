@@ -2,16 +2,22 @@ use fuel_merkle::{
     binary::in_memory::MerkleTree,
     common::{empty_sum_sha256, Bytes32},
 };
-use fuels::{contract::call_response::FuelCallResponse, core::types::Bits256, prelude::*};
+use fuels::{
+    prelude::*,
+    programs::call_response::FuelCallResponse,
+    types::{Bits256, Identity},
+};
 use sha2::{Digest, Sha256};
 
 abigen!(
-    AirdropDistributor,
-    "./project/contracts/distributor-contract/out/debug/distributor-contract-abi.json"
-);
-abigen!(
-    SimpleAsset,
-    "./project/contracts/asset-contract/out/debug/asset-contract-abi.json"
+    Contract(
+        name = "AirdropDistributor",
+        abi = "./project/contracts/distributor-contract/out/debug/distributor-contract-abi.json"
+    ),
+    Contract(
+        name = "SimpleAsset",
+        abi = "./project/contracts/asset-contract/out/debug/asset-contract-abi.json"
+    ),
 );
 
 pub struct Asset {
@@ -51,7 +57,7 @@ pub mod airdrop_distributor_abi_calls {
             .methods()
             .claim(amount, key, num_leaves, proof, to)
             .append_variable_outputs(1)
-            .set_contracts(&[asset_id.into()])
+            .set_contract_ids(&[asset_id.into()])
             .call()
             .await
             .unwrap()

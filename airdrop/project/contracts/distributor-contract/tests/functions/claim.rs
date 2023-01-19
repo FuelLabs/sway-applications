@@ -3,7 +3,7 @@ use crate::utils::{
     simple_asset_abi_calls::asset_constructor,
     test_helpers::{build_tree, build_tree_manual, defaults, leaves_with_depth, setup},
 };
-use fuels::{prelude::Identity, tx::AssetId};
+use fuels::{tx::AssetId, types::Identity};
 
 mod success {
 
