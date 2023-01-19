@@ -20,7 +20,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "AlreadyInitialized")]
-    async fn when_initalized_twice() {
+    async fn when_initialized_twice() {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
