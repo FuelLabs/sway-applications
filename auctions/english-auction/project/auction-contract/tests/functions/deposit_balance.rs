@@ -4,7 +4,7 @@ use crate::utils::{
     nft_abi_calls::{approve, mint},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
-use fuels::prelude::Identity;
+use fuels::types::Identity;
 
 mod success {
 

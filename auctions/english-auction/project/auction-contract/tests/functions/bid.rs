@@ -1,11 +1,14 @@
 use crate::utils::{
+    abigen_bindings::english_auction_mod::{Auction, AuctionAsset, State},
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{auction_info, bid, create, deposit_balance},
-    english_auction_mod::{Auction, AuctionAsset, State},
     nft_abi_calls::{approve, mint, set_approval_for_all},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
-use fuels::prelude::{AssetId, CallParameters, Identity, TxParameters};
+use fuels::{
+    prelude::{AssetId, CallParameters, TxParameters},
+    types::Identity,
+};
 
 mod success {
 
