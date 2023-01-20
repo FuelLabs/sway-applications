@@ -33,7 +33,7 @@ storage {
 
 // TODO: Change the static 8 length str with a dynamic string when possible
 impl NameRegistry for Contract {
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn extend(name: str[8], duration: u64) {
         require(storage.names.get(name).is_some(), RegistrationValidityError::NameNotRegistered);
         require(msg_asset_id() == ASSET_ID, AssetError::IncorrectAssetSent);
@@ -51,7 +51,7 @@ impl NameRegistry for Contract {
         });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn register(
         name: str[8],
         duration: u64,
