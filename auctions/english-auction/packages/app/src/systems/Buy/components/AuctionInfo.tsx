@@ -8,10 +8,11 @@ import { WithdrawButton } from "./WithdrawButton";
 import { PlaceBid, EndBlock } from "~/systems/Buy/components";
 import { AssetOutput, AssetIdOutput } from "~/systems/Core/components";
 import { getSlicedAddress } from "~/systems/Core/utils";
-import type { OptionalAuctionOutput } from "~/types/contracts/EnglishAuctionAbi";
+import type { AuctionOutput } from "~/types/contracts/AuctionContractAbi";
+import type { Option } from "~/types/contracts/common";
 
 interface AuctionInfoProps {
-  auctions: OptionalAuctionOutput[];
+  auctions: Option<AuctionOutput>[];
 }
 
 export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {

@@ -1,3 +1,4 @@
+import { toast } from '@fuel-ui/react';
 import { useQuery } from 'react-query';
 
 import { useFuel } from './useFuel';
@@ -5,7 +6,7 @@ import { useFuel } from './useFuel';
 export const useWallet = () => {
   const [fuel] = useFuel();
 
-  if (!fuel) throw new Error('Error fuelWeb3 instance is not defined');
+  if (!fuel) toast.error('Error fuelWeb3 instance is not defined');
 
   const {
     data: wallet,
@@ -18,6 +19,7 @@ export const useWallet = () => {
       await fuel.connect({ url: 'http://localhost:4000/graphql' });
       const selectedAccount = (await fuel.getSelectedAccount()) as string;
       const selectedWallet = await fuel.getWallet(selectedAccount);
+      console.log(selectedWallet.address.toHexString());
       return selectedWallet;
     },
     {

@@ -8,17 +8,14 @@ import type { CreateAuctionFormValues } from './useCreateAuctionForm';
 import { useContract } from '~/systems/Core/hooks/useContract';
 import { handleError } from '~/systems/Core/utils';
 import { txFeedback } from '~/systems/Core/utils/feedback';
-import type {
-  AuctionAssetInput,
-  IdentityInput,
-  OptionalU64Input,
-} from '~/types/contracts/EnglishAuctionAbi';
+import type { AuctionAssetInput, IdentityInput } from '~/types/contracts/AuctionContractAbi';
+import type { Option } from '~/types/contracts/common';
 
 export type UseCreateAuctionProps = {
   bidAsset: AuctionAssetInput;
   duration: BigNumberish;
   initialPrice: BigNumberish;
-  reservePrice: OptionalU64Input;
+  reservePrice: Option<BigNumberish>;
   sellerAddress: string;
   sellAsset: AuctionAssetInput;
 };

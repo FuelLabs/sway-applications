@@ -4,7 +4,7 @@ import { useMutation } from 'react-query';
 import { useContract } from '~/systems/Core/hooks/useContract';
 import { handleError, queryClient } from '~/systems/Core/utils';
 import { txFeedback } from '~/systems/Core/utils/feedback';
-import type { IdentityInput } from '~/types/contracts/EnglishAuctionAbi';
+import type { IdentityInput } from '~/types/contracts/AuctionContractAbi';
 
 interface UseWithdrawProps {
   auctionId: BN;
