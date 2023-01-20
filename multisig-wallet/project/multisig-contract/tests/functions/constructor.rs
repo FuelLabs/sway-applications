@@ -4,8 +4,6 @@ use crate::utils::{
     User, VALID_SIGNER_PK,
 };
 
-use fuels::prelude::*;
-
 mod success {
 
     use super::*;
@@ -21,6 +19,8 @@ mod success {
 }
 
 mod revert {
+
+    use fuels::types::Bits256;
 
     use super::*;
 

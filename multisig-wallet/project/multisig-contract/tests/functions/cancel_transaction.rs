@@ -6,7 +6,7 @@ use crate::utils::{
 
 mod success {
 
-    use fuels::prelude::Bits256;
+    use fuels::types::Bits256;
 
     use super::*;
 

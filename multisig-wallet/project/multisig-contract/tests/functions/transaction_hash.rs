@@ -5,11 +5,11 @@ use crate::utils::{
 };
 
 use fuels::{
-    contract::abi_encoder::ABIEncoder,
+    core::abi_encoder::ABIEncoder,
     prelude::*,
     signers::fuel_crypto::Hasher,
     tx::Bytes32,
-    types::{enum_variants::EnumVariants, param_types::ParamType},
+    types::{enum_variants::EnumVariants, param_types::ParamType, Bits256, Identity, Token},
 };
 
 use rand::{rngs::StdRng, Rng, SeedableRng};
