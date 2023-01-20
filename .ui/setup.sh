@@ -43,7 +43,7 @@ do
         
         pattern="\"owner\":[[:space:]]\"([a-zA-Z0-9]*)\""
         [[ $(grep owner $SCRIPT_PATH/chainConfig.json) =~ $pattern ]] && wallet="${BASH_REMATCH[1]}"
-        printf "%b" "WALLET_SECRET=${wallet}\n" >> $env_test
+        printf "%b" "WALLET_SECRET=\"${wallet}\"\n" >> $env_test
     fi
 
     contract_name=${contract_path##*\/}
@@ -57,7 +57,7 @@ do
     pattern="Contract id:[[:space:]](.*)[[:space:]]contract.*"
     [[ $(forc deploy --url localhost:4000 --unsigned) =~ $pattern ]] && contract_id="${BASH_REMATCH[1]}"
 
-    printf "%b" "${uppercase_contract_name}=${contract_id}\n" >> $env_test
+    printf "%b" "${uppercase_contract_name}=\"${contract_id}\"\n" >> $env_test
 done
 
 if [[ -d $UI_ROOT ]]; then
@@ -88,3 +88,27 @@ do
 
     npx fuels typegen -i $abi_path -o $CONTRACT_TYPES_PATH
 done
+
+cd $UI_ROOT
+
+rm -v public/favicon.ico
+rm -v public/logo192.png
+rm -v public/logo512.png
+rm -v public/manifest.json
+rm -v public/robots.txt
+rm -v src/App.test.tsx
+rm -v src/logo.svg
+rm -v src/react-app-env.d.ts
+rm -v src/reportWebVitals.ts
+rm -v src/setupTests.ts
+> public/index.html
+> src/App.css
+> src/App.tsx
+> src/index.tsx
+cat $SCRIPT_PATH/basic/index.html > public/index.html
+cat $SCRIPT_PATH/basic/App.css > src/App.css
+cat $SCRIPT_PATH/basic/App.tsx | tail -n +2 > src/App.tsx
+cat $SCRIPT_PATH/basic/index.tsx | tail -n +2 > src/index.tsx
+cat $SCRIPT_PATH/basic/Main.tsx | tail -n +2 > src/Main.tsx
+
+npm start
