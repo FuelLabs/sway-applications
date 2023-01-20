@@ -5,7 +5,7 @@ dep errors;
 dep interface;
 
 use data_structures::{State, TokenMetadata};
-use errors::{AccessError, InitError};
+use errors::{InitError, ValidityError};
 use interface::Auxiliary;
 use std::auth::msg_sender;
 use nft::{
@@ -51,7 +51,7 @@ impl Administrator for Contract {
 
     #[storage(read, write)]
     fn set_admin(new_admin: Option<Identity>) {
-        require(admin().is_some(), AccessError::NoContractAdmin);
+        require(admin().is_some(), ValidityError::NoContractAdmin);
         set_admin(new_admin);
     }
 }
@@ -104,8 +104,8 @@ impl NFT for Contract {
     #[storage(read, write)]
     fn mint(amount: u64, to: Identity) {
         require(storage.state == State::Initialized, InitError::NotInitialized);
-        require(admin().is_none() || (msg_sender().unwrap() == admin().unwrap()), AccessError::SenderNotAdmin);
-        require(max_supply().is_none() || (tokens_minted() + amount <= max_supply().unwrap()), AccessError::MaxTokensMinted);
+        require(admin().is_none() || (msg_sender().unwrap() == admin().unwrap()), ValidityError::SenderNotAdmin);
+        require(max_supply().is_none() || (tokens_minted() + amount <= max_supply().unwrap()), ValidityError::MaxTokensMinted);
 
         mint(amount, to);
 
