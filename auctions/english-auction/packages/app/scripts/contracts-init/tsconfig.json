@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "lib": ["es2019", "dom"],
+    "declaration": true,
+    "declarationMap": true,
+    "baseUrl": "."
+  },
+  "include": ["./index.ts"]
+}
