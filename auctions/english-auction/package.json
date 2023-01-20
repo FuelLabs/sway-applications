@@ -26,6 +26,7 @@
     "contracts:build": "pnpm exec english-auction-scripts build",
     "contracts:deploy": "pnpm exec english-auction-scripts deploy",
     "contracts:deploy-testnet": "NODE_ENV=testnet OUTPUT_ENV=.env run-s contracts:deploy",
+    "contracts:init": "pnpm run --filter english-auction-app contracts:init",
     "dev": "turbo run dev --parallel",
     "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "pnpm lint:check --fix",
@@ -56,6 +57,7 @@
     "@types/react-dom": "^18.0.6",
     "cypress": "^10.7.0",
     "dotenv": "^16.0.2",
+    "english-auction-scripts": "workspace:0.1.0",
     "eslint": "^8.23.0",
     "husky": "^8.0.0",
     "identity-obj-proxy": "^3.0.0",
@@ -65,7 +67,6 @@
     "lint-staged": "^13.0.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
-    "english-auction-scripts": "workspace:0.1.0",
     "ts-jest": "^28.0.8",
     "ts-node": "^10.9.1",
     "tsup": "^6.2.3",
@@ -84,5 +85,8 @@
         "react-dom"
       ]
     }
+  },
+  "dependencies": {
+    "fuels": "0.29.1"
   }
 }

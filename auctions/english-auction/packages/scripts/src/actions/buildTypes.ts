@@ -1,17 +1,22 @@
-import { runTypeChain, glob } from 'fuelchain';
+import { spawn } from 'child_process';
 import type { Config } from 'src/types';
 
-// Generate types using typechain
-// and typechain-target-fuels modules
+// Generate types
 export async function buildTypes(config: Config) {
-  const cwd = process.cwd();
-  // find all files matching the glob
-  const allFiles = glob(cwd, [config.types.artifacts, config.types.externalArtifacts || '']);
-  await runTypeChain({
-    cwd,
-    filesToProcess: allFiles,
-    allFiles,
-    outDir: config.types.output,
-    target: 'fuels',
+  return new Promise((resolve, reject) => {
+    const typeGeneration = spawn('pnpm', [
+      'exec',
+      'fuels',
+      'typegen',
+      '-i',
+      config.types.artifacts,
+      '-o',
+      config.types.output,
+    ]);
+    typeGeneration.on('exit', (code) => {
+      if (!code) return resolve(code);
+      typeGeneration.kill();
+      reject();
+    });
   });
 }

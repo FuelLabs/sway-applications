@@ -24,7 +24,6 @@ const getDeployOptions = () => ({
 export default createConfig({
   types: {
     artifacts: './packages/contracts/**/out/debug/**-abi.json',
-    externalArtifacts: '../../NFT/project/NFT-contract/**/out/debug/**-abi.json',
     output: './packages/app/src/types/contracts',
   },
   contracts: [
@@ -44,7 +43,8 @@ export default createConfig({
     {
       name: 'VITE_NFT_ID',
       buildPath: './packages/contracts',
-      deployPath: '../../NFT/project/NFT-contract',
+      deployPath:
+        './packages/contracts/english-auction/project/auction-contract/tests/artifacts/NFT',
       options: getDeployOptions(),
     },
   ],

@@ -11,7 +11,8 @@
     "create404": "cp ./dist/index.html ./dist/404.html",
     "preview": "vite preview",
     "test": "playwright test --workers=1",
-    "storybook": "start-storybook -p 6006"
+    "storybook": "start-storybook -p 6006",
+    "contracts:init": "pnpm exec ts-node ./scripts/contracts-init"
   },
   "dependencies": {
     "@fontsource/inter": "^4.5.14",
@@ -48,7 +49,7 @@
     "decimal.js": "^10.4.3",
     "ethers": "^5.7.2",
     "framer-motion": "^6.5.1",
-    "fuels": "0.28.0",
+    "fuels": "0.29.1",
     "graphql": "^16.6.0",
     "graphql-request": "^4.3.0",
     "jotai": "^1.12.1",
