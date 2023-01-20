@@ -61,7 +61,7 @@ sway-applications/
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
 - [OTC Swap Predicate](./OTC-swap-predicate) is a predicate that can be used to propose and execute an atomic swap between two parties without requiring any on-chain state.
-- [Timelock](./Timelock): is a contract which restricts the execution of a transaction to a specified time range
+- [Timelock](./timelock): is a contract which restricts the execution of a transaction to a specified time range
 
 ## Running a project
 

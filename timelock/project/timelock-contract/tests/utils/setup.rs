@@ -4,8 +4,7 @@ use fuels::prelude::*;
 
 // Load abi from json
 abigen!(
-    Timelock,
-    "./project/timelock-contract/out/debug/timelock-contract-abi.json"
+    Contract(name="Timelock", abi="./project/timelock-contract/out/debug/timelock-contract-abi.json"),
 );
 
 const TIMELOCK_CONTRACT_BINARY_PATH: &str = "./out/debug/timelock-contract.bin";

@@ -20,7 +20,7 @@ The project consists of a smart contract.
 <!--Only show most important files e.g. script to run, build etc.-->
 
 ```
-Timelock/
+timelock/
 ├── project/
 |   └── timelock-contract/
 |       ├── src/main.sw
@@ -37,7 +37,7 @@ TODO: UI does not currently exist
 
 ### Tests
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/Timelock/<you are here>`
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/timelock/<you are here>`
 
 Build the contracts:
 
