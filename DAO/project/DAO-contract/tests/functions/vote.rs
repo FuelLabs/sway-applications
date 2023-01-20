@@ -3,10 +3,7 @@ use crate::utils::{
     test_helpers::{mint, proposal_transaction, setup},
     ProposalInfo, Votes,
 };
-use fuels::{
-    prelude::{CallParameters, Identity},
-    tx::AssetId,
-};
+use fuels::{prelude::CallParameters, tx::AssetId, types::Identity};
 
 mod success {
     use super::*;
