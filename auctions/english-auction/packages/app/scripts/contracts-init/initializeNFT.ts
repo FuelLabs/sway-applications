@@ -3,7 +3,6 @@ import { Wallet, bn } from 'fuels';
 import { NFTAbi__factory } from '../../src/types/contracts';
 
 export async function initializeNFT() {
-  console.log('temp', process.env.WALLET_SECRET);
   const wallet = Wallet.fromPrivateKey(process.env.WALLET_SECRET!, process.env.PROVIDER_URL);
   const nftContract = NFTAbi__factory.connect(process.env.VITE_NFT_ID!, wallet);
   await nftContract.functions

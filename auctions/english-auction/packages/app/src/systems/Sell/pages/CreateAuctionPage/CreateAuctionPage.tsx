@@ -31,7 +31,9 @@ export const CreateAuctionPage = () => {
               asset_id: { value: formValues.sellNFTAssetId },
             },
           },
-      initialPrice: bn.parseUnits(formValues.initialPrice, DECIMAL_UNITS),
+      initialPrice: formValues.isBidAssetNft
+        ? bn(1)
+        : bn.parseUnits(formValues.initialPrice, DECIMAL_UNITS),
       reservePrice: formValues.hasReservePrice
         ? bn.parseUnits(formValues.reservePrice, DECIMAL_UNITS)
         : undefined,

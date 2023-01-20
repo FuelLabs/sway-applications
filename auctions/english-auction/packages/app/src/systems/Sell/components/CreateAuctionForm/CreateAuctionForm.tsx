@@ -50,30 +50,6 @@ export const CreateAuctionForm = ({
         setValue={setValue}
       />
 
-      <ControlledField
-        control={control}
-        name="initialPrice"
-        label="Initial Price"
-        isRequired
-        isInvalid={Boolean(formState.errors.initialPrice)}
-        render={({ field }) => (
-          <Input>
-            <Input.Number
-              {...field}
-              aria-label="Initial price"
-              placeholder="0.0"
-              allowNegative={false}
-            />
-          </Input>
-        )}
-      />
-
-      <ReservePriceInput
-        control={control}
-        formState={formState}
-        hasReservePrice={watchHasReservePrice}
-      />
-
       <BidAassetFormInput
         assets={assets}
         control={control}
@@ -81,6 +57,34 @@ export const CreateAuctionForm = ({
         isBidAssetNft={watchIsBidAssetNft}
         setValue={setValue}
       />
+
+      {!watchIsBidAssetNft && (
+        <>
+          <ControlledField
+            control={control}
+            name="initialPrice"
+            label="Initial Price"
+            isRequired
+            isInvalid={Boolean(formState.errors.initialPrice)}
+            render={({ field }) => (
+              <Input>
+                <Input.Number
+                  {...field}
+                  aria-label="Initial price"
+                  placeholder="0.0"
+                  allowNegative={false}
+                />
+              </Input>
+            )}
+          />
+
+          <ReservePriceInput
+            control={control}
+            formState={formState}
+            hasReservePrice={watchHasReservePrice}
+          />
+        </>
+      )}
 
       <ControlledField
         control={control}

@@ -19,7 +19,6 @@ export const useWallet = () => {
       await fuel.connect({ url: 'http://localhost:4000/graphql' });
       const selectedAccount = (await fuel.getSelectedAccount()) as string;
       const selectedWallet = await fuel.getWallet(selectedAccount);
-      console.log(selectedWallet.address.toHexString());
       return selectedWallet;
     },
     {

@@ -23,26 +23,50 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
     if (!auction) return;
     const [auctionExpired, setAuctionExpired] = useState(false);
 
+    const isSellAssetNft = !!auction.sell_asset.NFTAsset;
+    const isBidAssetNft = !!auction.bid_asset.NFTAsset;
+
+    const sellAsset = isSellAssetNft
+      ? auction.sell_asset.NFTAsset!
+      : auction.sell_asset.TokenAsset!;
+    const sellAssetAmount = isSellAssetNft
+      ? "1"
+      : auction.sell_asset.TokenAsset!.amount!.format();
+
+    const bidAsset = isBidAssetNft
+      ? auction.bid_asset.NFTAsset!
+      : auction.bid_asset.TokenAsset!;
+    const bidAssetAmount = isBidAssetNft // eslint-disable-line no-nested-ternary
+      ? auction.highest_bidder
+        ? "1"
+        : "0"
+      : auction.bid_asset.TokenAsset!.amount.format();
+
+    const initialPrice = isBidAssetNft ? "1" : auction.initial_price.format()!;
+
     return (
       <Card key={index}>
         <Stack>
           <Flex>
             <AssetOutput
-              assetId={auction.sell_asset.TokenAsset!.asset_id.value!}
-              assetAmount={auction.sell_asset.TokenAsset!.amount.format()!}
+              assetId={sellAsset.asset_id.value}
+              assetAmount={sellAssetAmount}
               heading="Selling"
+              isNFT={isSellAssetNft}
             />
 
             <AssetOutput
-              assetId={auction.bid_asset.TokenAsset!.asset_id.value!}
-              assetAmount={auction.bid_asset.TokenAsset!.amount.format()!}
+              assetId={bidAsset.asset_id.value}
+              assetAmount={bidAssetAmount}
               heading="Highest Bid"
+              isNFT={isBidAssetNft}
             />
 
             <AssetOutput
-              assetId={auction.bid_asset.TokenAsset!.asset_id.value!}
-              assetAmount={auction.initial_price.format()!}
+              assetId={bidAsset.asset_id.value}
+              assetAmount={initialPrice}
               heading="Initial Price"
+              isNFT={isBidAssetNft}
             />
           </Flex>
 

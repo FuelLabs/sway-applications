@@ -81,7 +81,11 @@ const schema = yup
       then: yup.string().required(),
       otherwise: yup.string().notRequired(),
     }),
-    initialPrice: yup.string().required(),
+    initialPrice: yup.string().when('isBidAssetNft', {
+      is: true,
+      then: yup.string().notRequired(),
+      otherwise: yup.string().required(),
+    }),
     hasReservePrice: yup.boolean(),
     reservePrice: yup.string().when('hasReservePrice', {
       is: true,

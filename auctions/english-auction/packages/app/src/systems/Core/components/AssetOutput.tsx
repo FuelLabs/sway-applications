@@ -6,12 +6,15 @@ interface AssetOutputProps {
   assetId: string;
   assetAmount: string;
   heading: string;
+  isNFT: boolean;
+  tokenId?: string;
 }
 
 export const AssetOutput = ({
   assetId,
   assetAmount,
   heading,
+  isNFT,
 }: AssetOutputProps) => {
   return (
     <Card>
@@ -21,7 +24,7 @@ export const AssetOutput = ({
       <Card.Body>
         <Flex gap="$2">
           <div>{assetAmount}</div>
-          <div>{getAssetText(false, assetId)}</div>
+          <div>{getAssetText(isNFT, assetId)}</div>
         </Flex>
       </Card.Body>
     </Card>
