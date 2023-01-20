@@ -8,7 +8,7 @@ use data_structures::{State, TokenMetadata};
 use errors::{AccessError, InitError};
 use interface::Auxiliary;
 use std::auth::msg_sender;
-use sway_libs::nft::{
+use nft::{
     administrator::{
         admin,
         Administrator,
