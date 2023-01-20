@@ -1,7 +1,8 @@
 use fuels::{
-    contract::call_response::FuelCallResponse,
     prelude::*,
+    programs::call_response::FuelCallResponse,
     tx::{AssetId, ContractId},
+    types::Identity,
 };
 
 use crate::utils::setup::{Coin, Fundraiser};

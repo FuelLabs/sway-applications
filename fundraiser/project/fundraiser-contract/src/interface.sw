@@ -78,7 +78,7 @@ abi Fundraiser {
     /// * When the user attempts to pledge when the deadline has been reached
     /// * When the user pledges a different asset to the one specified in the campaign
     /// * When the user pledges after the campaign has been cancelled
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn pledge(id: u64);
 
     /// Allows a user to unpledge an amount of the campaign asset that they have pledged
