@@ -39,7 +39,7 @@ The `utils` directory contains utility functions and abstractions which allow th
 
 This can be achieved by separating content into files, internally creating modules in `mod.rs` or a mixture of both.
 
-The `interface.rs` file contains `abi` wrappers which are functions that are generally limited to calling the contract with the relevant arguments. In the case where there are multiple `abi` blocks (as mentioned in [`functions`](#functions)) the `interface.rs` file would be changed to follow a simlar structure.
+The `interface.rs` file contains `abi` wrappers which are functions that are generally limited to calling the contract with the relevant arguments. In the case where there are multiple `abi` blocks (as mentioned in [`functions`](#functions)) the `interface.rs` file would be changed to follow a similar structure.
 
 The `setup.rs` file contains code that generates the contracts/scripts/predicates and sets up the environment for the tests in the [`functions`](#functions) directory.
 
