@@ -1,4 +1,5 @@
 use crate::utils::{
+    abigen_bindings::token_distributor_mod::DistributionState,
     asset_abi_calls::mint_and_send_to_address,
     fractional_nft_abi_calls::nft_info,
     nft_abi_calls::{approve, mint, owner_of},
@@ -6,12 +7,12 @@ use crate::utils::{
     token_distributor_abi_calls::{
         buyback, create, end, purchase, purchase_admin, sell, token_distribution,
     },
-    token_distributor_mod::DistributionState,
 };
 use fuels::{
-    prelude::{Address, Bech32ContractId, Identity},
+    prelude::{Address, Bech32ContractId},
     signers::Signer,
     tx::AssetId,
+    types::Identity,
 };
 
 mod success {
@@ -97,6 +98,7 @@ mod success {
 
         end(
             &owner1.token_distributor,
+            &owner1.wallet,
             fractional_nft_contract.clone(),
             nft_contract.clone(),
         )
@@ -174,6 +176,7 @@ mod success {
 
         end(
             &owner1.token_distributor,
+            &owner1.wallet,
             fractional_nft_contract.clone(),
             nft_contract.clone(),
         )
@@ -223,6 +226,7 @@ mod revert {
 
         end(
             &owner1.token_distributor,
+            &owner1.wallet,
             fractional_nft_contract.clone(),
             nft_contract.clone(),
         )
@@ -307,6 +311,7 @@ mod revert {
 
         end(
             &owner1.token_distributor,
+            &owner1.wallet,
             fractional_nft_contract.clone(),
             nft_contract.clone(),
         )
@@ -368,6 +373,7 @@ mod revert {
 
         end(
             &owner1.token_distributor,
+            &owner1.wallet,
             fractional_nft_contract.clone(),
             nft_contract.clone(),
         )
@@ -375,9 +381,7 @@ mod revert {
     }
 
     #[tokio::test]
-    // TODO: This test expects an error from another contract, upstream error messages not yet supported
-    // #[should_panic(expected = "SupplyNotReturned")]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "SupplyNotReturned")]
     async fn when_not_all_assets_returned() {
         let (
             _deployer,
@@ -445,6 +449,7 @@ mod revert {
 
         end(
             &owner1.token_distributor,
+            &owner1.wallet,
             fractional_nft_contract.clone(),
             nft_contract.clone(),
         )

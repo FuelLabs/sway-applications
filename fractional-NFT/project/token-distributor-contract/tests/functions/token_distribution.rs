@@ -1,10 +1,10 @@
 use crate::utils::{
+    abigen_bindings::token_distributor_mod::DistributionState,
     nft_abi_calls::{approve, mint},
     test_helpers::{defaults, setup},
     token_distributor_abi_calls::{create, token_distribution},
-    token_distributor_mod::DistributionState,
 };
-use fuels::{prelude::Identity, signers::Signer};
+use fuels::{signers::Signer, types::Identity};
 
 mod success {
 

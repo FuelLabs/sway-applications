@@ -1,14 +1,15 @@
 use crate::utils::{
+    abigen_bindings::token_distributor_mod::DistributionState,
     asset_abi_calls::mint_and_send_to_address,
     nft_abi_calls::{approve, mint},
     test_helpers::{defaults, setup},
     token_distributor_abi_calls::{buyback, create, purchase, token_distribution},
-    token_distributor_mod::DistributionState,
 };
 use fuels::{
-    prelude::{Address, Bech32ContractId, Identity},
+    prelude::{Address, Bech32ContractId},
     signers::Signer,
     tx::AssetId,
+    types::Identity,
 };
 
 mod success {

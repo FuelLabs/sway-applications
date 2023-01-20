@@ -4,9 +4,10 @@ use crate::utils::{
     test_helpers::{defaults, setup},
 };
 use fuels::{
-    prelude::{Bech32ContractId, Identity, TxParameters},
+    prelude::{Bech32ContractId, TxParameters},
     signers::Signer,
     tx::AssetId,
+    types::Identity,
 };
 
 mod success {

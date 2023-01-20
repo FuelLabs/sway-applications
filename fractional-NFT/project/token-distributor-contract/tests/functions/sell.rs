@@ -5,9 +5,10 @@ use crate::utils::{
     token_distributor_abi_calls::{buyback, create, purchase, sell},
 };
 use fuels::{
-    prelude::{Address, Bech32ContractId, CallParameters, Identity, TxParameters},
+    prelude::{Address, Bech32ContractId, CallParameters, TxParameters},
     signers::Signer,
     tx::AssetId,
+    types::Identity,
 };
 
 mod success {
@@ -378,7 +379,7 @@ mod revert {
             .tx_params(tx_params)
             .call_params(call_params)
             .append_variable_outputs(1)
-            .set_contracts(&[Bech32ContractId::from(fractional_nft_contract.clone())])
+            .set_contract_ids(&[Bech32ContractId::from(fractional_nft_contract.clone())])
             .call()
             .await
             .unwrap();

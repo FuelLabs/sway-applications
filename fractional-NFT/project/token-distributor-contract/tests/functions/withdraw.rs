@@ -4,10 +4,7 @@ use crate::utils::{
     test_helpers::{defaults, setup, wallet_balance},
     token_distributor_abi_calls::{create, purchase, token_distribution, withdraw},
 };
-use fuels::{
-    prelude::{Address, Identity},
-    signers::Signer,
-};
+use fuels::{prelude::Address, signers::Signer, types::Identity};
 
 mod success {
 

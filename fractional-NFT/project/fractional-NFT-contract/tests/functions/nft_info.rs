@@ -3,7 +3,7 @@ use crate::utils::{
     nft_abi_calls::{approve, mint},
     test_helpers::{defaults, setup},
 };
-use fuels::{prelude::Identity, signers::Signer};
+use fuels::{signers::Signer, types::Identity};
 
 mod success {
 

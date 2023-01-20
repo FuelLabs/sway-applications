@@ -4,10 +4,7 @@ use crate::utils::{
     test_helpers::{defaults, setup},
     token_distributor_abi_calls::{create, end, purchase, set_token_price, token_distribution},
 };
-use fuels::{
-    prelude::{Address, Identity},
-    signers::Signer,
-};
+use fuels::{prelude::Address, signers::Signer, types::Identity};
 
 mod success {
 
@@ -238,6 +235,7 @@ mod revert {
         .await;
         end(
             &owner1.token_distributor,
+            &owner1.wallet,
             fractional_nft_contract.clone(),
             nft_contract.clone(),
         )

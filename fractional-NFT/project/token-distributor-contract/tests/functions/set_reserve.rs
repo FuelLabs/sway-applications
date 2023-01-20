@@ -3,7 +3,7 @@ use crate::utils::{
     test_helpers::{defaults, setup},
     token_distributor_abi_calls::{create, set_reserve, token_distribution},
 };
-use fuels::{prelude::Identity, signers::Signer};
+use fuels::{signers::Signer, types::Identity};
 
 mod success {
 

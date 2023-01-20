@@ -1,13 +1,15 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*};
+use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identity};
 
 // Load abi from json
 abigen!(
-    FractionalNFT,
-    "./project/fractional-NFT-contract/out/debug/fractional-NFT-contract-abi.json"
-);
-abigen!(
-    Nft,
-    "./project/fractional-NFT-contract/tests/artifacts/NFT/out/debug/NFT-1-abi.json"
+    Contract(
+        name = "FractionalNFT",
+        abi = "./project/fractional-NFT-contract/out/debug/fractional-NFT-contract-abi.json"
+    ),
+    Contract(
+        name = "Nft",
+        abi = "./project/fractional-NFT-contract/tests/artifacts/NFT/out/debug/NFT-1-abi.json"
+    )
 );
 
 pub struct Metadata {
@@ -39,7 +41,7 @@ pub mod fractional_nft_abi_calls {
         contract
             .methods()
             .deposit(admin, nft, supply, token_id)
-            .set_contracts(&[Bech32ContractId::from(nft)])
+            .set_contract_ids(&[Bech32ContractId::from(nft)])
             .append_variable_outputs(1)
             .call()
             .await
@@ -74,7 +76,7 @@ pub mod fractional_nft_abi_calls {
         contract
             .methods()
             .withdraw(to)
-            .set_contracts(&[Bech32ContractId::from(nft)])
+            .set_contract_ids(&[Bech32ContractId::from(nft)])
             .call()
             .await
             .unwrap()

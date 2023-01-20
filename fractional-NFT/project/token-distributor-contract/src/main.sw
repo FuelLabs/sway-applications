@@ -42,7 +42,7 @@ storage {
 }
 
 impl TokenDistributor for Contract {
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn buyback(fractional_nft_id: ContractId, token_price: u64) {
         require(storage.token_distributions.get(fractional_nft_id).is_some(), AccessError::DistributionDoesNotExist);
         let mut token_distribution = storage.token_distributions.get(fractional_nft_id).unwrap();
@@ -118,7 +118,7 @@ impl TokenDistributor for Contract {
         });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn purchase(amount: u64, fractional_nft_id: ContractId) {
         require(storage.token_distributions.get(fractional_nft_id).is_some(), AccessError::DistributionDoesNotExist);
         let mut token_distribution = storage.token_distributions.get(fractional_nft_id).unwrap();
@@ -144,7 +144,7 @@ impl TokenDistributor for Contract {
         });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn purchase_admin(
         admin: Option<Identity>,
         fractional_nft_id: ContractId,
@@ -173,7 +173,7 @@ impl TokenDistributor for Contract {
         });
     }
 
-    #[storage(read)]
+    #[payable, storage(read)]
     fn sell(fractional_nft_id: ContractId) {
         require(storage.token_distributions.get(fractional_nft_id).is_some(), AccessError::DistributionDoesNotExist);
         let mut token_distribution = storage.token_distributions.get(fractional_nft_id).unwrap();

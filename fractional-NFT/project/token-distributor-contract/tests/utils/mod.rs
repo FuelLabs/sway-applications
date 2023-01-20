@@ -1,21 +1,23 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*};
+use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identity};
 
 // Load abi from json
 abigen!(
-    TokenDistributor,
-    "./project/token-distributor-contract/out/debug/token-distributor-contract-abi.json"
-);
-abigen!(
-    FractionalNFT,
-    "./project/fractional-NFT-contract/out/debug/fractional-NFT-contract-abi.json"
-);
-abigen!(
-    Nft,
-    "./project/token-distributor-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"
-);
-abigen!(
-    Asset,
-    "./project/token-distributor-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+    Contract(
+        name = "TokenDistributor",
+        abi = "./project/token-distributor-contract/out/debug/token-distributor-contract-abi.json"
+    ),
+    Contract(
+        name = "FractionalNFT",
+        abi = "./project/fractional-NFT-contract/out/debug/fractional-NFT-contract-abi.json"
+    ),
+    Contract(
+        name = "Nft",
+        abi = "./project/token-distributor-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"
+    ),
+    Contract(
+        name = "Asset",
+        abi = "./project/token-distributor-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+    ),
 );
 
 pub struct Metadata {
@@ -89,7 +91,7 @@ pub mod token_distributor_abi_calls {
             .buyback(f_nft.clone(), token_price)
             .tx_params(tx_params)
             .call_params(call_params)
-            .set_contracts(&[Bech32ContractId::from(f_nft)])
+            .set_contract_ids(&[Bech32ContractId::from(f_nft)])
             .call()
             .await
             .unwrap()
@@ -118,7 +120,7 @@ pub mod token_distributor_abi_calls {
                 token_supply,
                 token_id,
             )
-            .set_contracts(&[Bech32ContractId::from(f_nft), Bech32ContractId::from(nft)])
+            .set_contract_ids(&[Bech32ContractId::from(f_nft), Bech32ContractId::from(nft)])
             .append_variable_outputs(1)
             .call()
             .await
@@ -127,13 +129,17 @@ pub mod token_distributor_abi_calls {
 
     pub async fn end(
         contract: &TokenDistributor,
+        wallet: &WalletUnlocked,
         f_nft: ContractId,
         nft: ContractId,
     ) -> FuelCallResponse<()> {
         contract
             .methods()
-            .end(f_nft.clone())
-            .set_contracts(&[Bech32ContractId::from(f_nft), Bech32ContractId::from(nft)])
+            .end(f_nft.into())
+            .set_contracts(&[
+                &FractionalNFT::new(f_nft.into(), wallet.clone()) as &dyn SettableContract,
+                &Nft::new(nft.into(), wallet.clone()) as &dyn SettableContract,
+            ])
             .call()
             .await
             .unwrap()
@@ -201,7 +207,7 @@ pub mod token_distributor_abi_calls {
             .tx_params(tx_params)
             .call_params(call_params)
             .append_variable_outputs(1)
-            .set_contracts(&[Bech32ContractId::from(f_nft)])
+            .set_contract_ids(&[Bech32ContractId::from(f_nft)])
             .call()
             .await
             .unwrap()

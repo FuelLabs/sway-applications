@@ -5,9 +5,10 @@ use crate::utils::{
     token_distributor_abi_calls::{create, end, purchase, token_distribution},
 };
 use fuels::{
-    prelude::{Address, CallParameters, Identity, TxParameters},
+    prelude::{Address, CallParameters, TxParameters},
     signers::Signer,
     tx::AssetId,
+    types::Identity,
 };
 
 mod success {
@@ -242,6 +243,7 @@ mod revert {
 
         end(
             &owner1.token_distributor,
+            &owner1.wallet,
             fractional_nft_contract.clone(),
             nft_contract.clone(),
         )
