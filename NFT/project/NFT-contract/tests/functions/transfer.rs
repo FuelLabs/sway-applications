@@ -140,7 +140,7 @@ mod reverts {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "SenderNotAdmin")]
+    #[should_panic(expected = "SenderNotOwnerOrApproved")]
     async fn when_sender_is_not_owner_or_approved() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
