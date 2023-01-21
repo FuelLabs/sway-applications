@@ -58,7 +58,6 @@ impl Timelock for Contract {
         // to prevent going over the MAXIMUM_DELAY
         require(timestamp <= now() && now() <= transaction.unwrap().end, TransactionError::TimestampNotInRange((timestamp, transaction.unwrap().end, now())));
 
-        // If either is not None then both should be not None
         if value.is_some() {
             require(value.unwrap() <= this_balance(asset_id.unwrap()), FundingError::InsufficientContractBalance((this_balance(asset_id.unwrap()))));
         }
