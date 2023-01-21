@@ -67,7 +67,7 @@ pub mod abi_calls {
     ) -> FuelCallResponse<()> {
         contract
             .methods()
-            .constructor(admin.clone(), token_supply.clone())
+            .constructor(admin.clone(), token_supply)
             .call()
             .await
             .unwrap()

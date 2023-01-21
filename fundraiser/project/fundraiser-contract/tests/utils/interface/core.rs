@@ -30,7 +30,7 @@ pub async fn create_campaign(
 ) -> FuelCallResponse<()> {
     contract
         .methods()
-        .create_campaign(asset.clone(), beneficiary.clone(), deadline, target_amount)
+        .create_campaign(*asset, beneficiary.clone(), deadline, target_amount)
         .call()
         .await
         .unwrap()

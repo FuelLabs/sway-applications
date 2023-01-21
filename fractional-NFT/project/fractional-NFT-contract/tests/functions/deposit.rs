@@ -15,7 +15,7 @@ mod success {
         let token_supply = defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
@@ -36,7 +36,7 @@ mod success {
         deposit(
             Some(owner_identity.clone()),
             &owner1.f_nft,
-            nft_contract.clone(),
+            nft_contract,
             token_supply,
             0,
         )
@@ -70,7 +70,7 @@ mod success {
         let token_supply = defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
@@ -88,7 +88,7 @@ mod success {
         assert_eq!(nft_struct, None);
         assert_eq!(supply(&owner1.f_nft).await, 0);
 
-        deposit(None, &owner1.f_nft, nft_contract.clone(), token_supply, 0).await;
+        deposit(None, &owner1.f_nft, nft_contract, token_supply, 0).await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
         assert_eq!(
@@ -121,7 +121,7 @@ mod revert {
         let token_supply = defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
@@ -129,7 +129,7 @@ mod revert {
         deposit(
             Some(owner_identity.clone()),
             &owner1.f_nft,
-            nft_contract.clone(),
+            nft_contract,
             token_supply,
             0,
         )
@@ -137,7 +137,7 @@ mod revert {
         deposit(
             Some(owner_identity.clone()),
             &owner1.f_nft,
-            nft_contract.clone(),
+            nft_contract,
             token_supply,
             0,
         )

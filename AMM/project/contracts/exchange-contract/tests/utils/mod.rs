@@ -254,7 +254,7 @@ pub mod test_helpers {
         amounts: &LiquidityParameters,
         exchange: &ExchangeContract,
     ) -> u64 {
-        deposit_but_do_not_add_liquidity(&amounts, &exchange).await;
+        deposit_but_do_not_add_liquidity(amounts, exchange).await;
 
         let added = add_liquidity(
             &exchange.instance,

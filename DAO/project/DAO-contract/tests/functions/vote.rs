@@ -14,7 +14,7 @@ mod success {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         mint(
-            &deployer.gov_token.as_ref().unwrap(),
+            deployer.gov_token.as_ref().unwrap(),
             asset_amount,
             user.wallet.address(),
         )
@@ -66,7 +66,7 @@ mod success {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         mint(
-            &deployer.gov_token.as_ref().unwrap(),
+            deployer.gov_token.as_ref().unwrap(),
             asset_amount,
             user.wallet.address(),
         )
@@ -145,7 +145,7 @@ mod revert {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         mint(
-            &deployer.gov_token.as_ref().unwrap(),
+            deployer.gov_token.as_ref().unwrap(),
             asset_amount,
             user.wallet.address(),
         )

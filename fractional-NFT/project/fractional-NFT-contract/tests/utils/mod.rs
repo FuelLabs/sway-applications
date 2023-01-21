@@ -124,8 +124,7 @@ pub mod test_helpers {
     };
 
     pub async fn defaults() -> u64 {
-        let supply = 10;
-        supply
+        10 // supply
     }
 
     pub async fn setup() -> (Metadata, Metadata, Metadata, ContractId, ContractId) {

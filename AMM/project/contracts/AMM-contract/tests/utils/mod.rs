@@ -100,7 +100,7 @@ pub mod test_helpers {
     pub async fn initialize_amm_contract(wallet: &WalletUnlocked, amm_instance: &AMM) {
         Contract::deploy(
             EXCHANGE_CONTRACT_BINARY_PATH,
-            &wallet,
+            wallet,
             TxParameters::default(),
             StorageConfiguration::default(),
         )
@@ -124,7 +124,7 @@ pub mod test_helpers {
             } else {
                 MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH
             },
-            &wallet,
+            wallet,
             TxParameters::default(),
             StorageConfiguration::default(),
             Salt::from(salt),
@@ -172,7 +172,7 @@ pub mod test_helpers {
         )
         .await
         .unwrap();
-        let amm_instance = AMM::new(amm_contract_id.clone(), wallet.clone());
+        let amm_instance = AMM::new(amm_contract_id, wallet.clone());
 
         // setup two asset pairs that will be used in tests
         let asset_pairs = vec![

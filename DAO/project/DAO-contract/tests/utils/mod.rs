@@ -172,14 +172,12 @@ pub mod test_helpers {
             arguments: 0,
         };
 
-        let proposal = Proposal {
-            call_data: call_data,
+        Proposal {
+            call_data,
             amount: 0,
             asset: asset_id,
             gas: 20000,
-        };
-
-        proposal
+        }
     }
 
     pub async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {

@@ -25,21 +25,21 @@ mod success {
             defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
 
         assert_eq!(
-            token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await,
+            token_distribution(&owner1.token_distributor, fractional_nft_contract).await,
             None
         );
 
         create(
             &owner1.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
+            nft_contract,
             Some(reserve_price),
             Some(owner_identity.clone()),
             token_price,
@@ -49,7 +49,7 @@ mod success {
         .await;
 
         let token_distribution_struct =
-            token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
+            token_distribution(&owner1.token_distributor, fractional_nft_contract).await;
         assert_eq!(
             token_distribution_struct.clone().unwrap().external_asset,
             asset_contract.clone()
@@ -75,9 +75,6 @@ mod success {
             DistributionState::Started()
         ));
         assert_eq!(token_distribution_struct.clone().unwrap().token_id, 0);
-        assert_eq!(
-            token_distribution_struct.clone().unwrap().token_price,
-            token_price
-        );
+        assert_eq!(token_distribution_struct.unwrap().token_price, token_price);
     }
 }

@@ -13,8 +13,7 @@ pub const OFFERED_ASSET: AssetId = AssetId::new([2u8; 32]);
 
 // Get the balance of a given token of an address
 async fn get_balance(provider: &Provider, address: &Bech32Address, asset: AssetId) -> u64 {
-    let balance = provider.get_asset_balance(address, asset).await.unwrap();
-    balance
+    provider.get_asset_balance(address, asset).await.unwrap()
 }
 
 // Create wallet config for two wallets with base, offered, and ask assets
@@ -29,9 +28,7 @@ pub fn configure_wallets(asked_asset: AssetId) -> WalletsConfig {
                 num_coins: 1,
                 coin_amount: 1_000_000_000,
             })
-            .iter()
-            .cloned()
-            .collect::<Vec<_>>(),
+            .to_vec(),
     )
 }
 
@@ -39,7 +36,7 @@ pub fn configure_wallets(asked_asset: AssetId) -> WalletsConfig {
 pub fn predicate_bytecode_and_root_from_bin(path_to_bin: &str) -> (Vec<u8>, Bech32Address) {
     // Get predicate bytecode and root
     let predicate_bytecode = std::fs::read(path_to_bin).unwrap();
-    let predicate_root: [u8; 32] = (*Contract::root_from_code(&predicate_bytecode)).into();
+    let predicate_root: [u8; 32] = *Contract::root_from_code(&predicate_bytecode);
     let predicate_root = Address::from(predicate_root);
     let predicate_root = Bech32Address::from(predicate_root);
     (predicate_bytecode, predicate_root)
@@ -86,14 +83,14 @@ pub async fn test_predicate_spend_with_parameters(
         .unwrap();
 
     let initial_taker_offered_token_balance =
-        get_balance(&provider, taker_wallet.address(), OFFERED_ASSET).await;
+        get_balance(provider, taker_wallet.address(), OFFERED_ASSET).await;
     let initial_taker_asked_token_balance =
-        get_balance(&provider, taker_wallet.address(), asked_asset).await;
-    let initial_receiver_balance = get_balance(&provider, &receiver_address, asked_asset).await;
+        get_balance(provider, taker_wallet.address(), asked_asset).await;
+    let initial_receiver_balance = get_balance(provider, &receiver_address, asked_asset).await;
 
     // The predicate root has received the coin
     assert_eq!(
-        get_balance(&provider, &predicate_root, OFFERED_ASSET).await,
+        get_balance(provider, &predicate_root, OFFERED_ASSET).await,
         offered_amount
     );
 
@@ -178,12 +175,12 @@ pub async fn test_predicate_spend_with_parameters(
     let script = script.build(taker_wallet).await.unwrap();
     let _receipts = script.call(provider).await.unwrap();
 
-    let predicate_balance = get_balance(&provider, &predicate_root, OFFERED_ASSET).await;
+    let predicate_balance = get_balance(provider, &predicate_root, OFFERED_ASSET).await;
     let taker_asked_token_balance =
-        get_balance(&provider, taker_wallet.address(), asked_asset).await;
+        get_balance(provider, taker_wallet.address(), asked_asset).await;
     let taker_offered_token_balance =
-        get_balance(&provider, taker_wallet.address(), OFFERED_ASSET).await;
-    let receiver_balance = get_balance(&provider, &receiver_address, asked_asset).await;
+        get_balance(provider, taker_wallet.address(), OFFERED_ASSET).await;
+    let receiver_balance = get_balance(provider, &receiver_address, asked_asset).await;
 
     // The predicate root's coin has been spent
     assert_eq!(predicate_balance, 0);
@@ -225,7 +222,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     // Get provider
     let provider = wallet.get_provider().unwrap();
 
-    let initial_wallet_balance = get_balance(&provider, wallet.address(), OFFERED_ASSET).await;
+    let initial_wallet_balance = get_balance(provider, wallet.address(), OFFERED_ASSET).await;
 
     let (predicate_bytecode, predicate_root) =
         predicate_bytecode_and_root_from_bin("../swap-predicate/out/debug/swap-predicate.bin");
@@ -284,10 +281,10 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     let _receipts = script.call(provider).await.unwrap();
 
     // The predicate root's coin has been spent
-    let predicate_balance = get_balance(&provider, &predicate_root, OFFERED_ASSET).await;
+    let predicate_balance = get_balance(provider, &predicate_root, OFFERED_ASSET).await;
     assert_eq!(predicate_balance, 0);
 
     // Wallet balance is the same as before it sent the coins to the predicate
-    let wallet_balance = get_balance(&provider, wallet.address(), OFFERED_ASSET).await;
+    let wallet_balance = get_balance(provider, wallet.address(), OFFERED_ASSET).await;
     assert_eq!(wallet_balance, initial_wallet_balance);
 }

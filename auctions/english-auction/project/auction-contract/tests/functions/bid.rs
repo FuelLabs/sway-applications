@@ -260,7 +260,7 @@ mod success {
         let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let auction_identity = Identity::ContractId(auction_contract_id.into());
+        let auction_identity = Identity::ContractId(auction_contract_id);
         let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
@@ -316,7 +316,7 @@ mod success {
         let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let auction_identity = Identity::ContractId(auction_contract_id.into());
+        let auction_identity = Identity::ContractId(auction_contract_id);
         let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
@@ -372,7 +372,7 @@ mod success {
         let (sell_amount, _, _, _) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let auction_identity = Identity::ContractId(auction_contract_id.into());
+        let auction_identity = Identity::ContractId(auction_contract_id);
         let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let sell_asset = token_asset(sell_token_contract_id, sell_amount).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
@@ -427,7 +427,7 @@ mod success {
         let (_, initial_price, reserve_price, _) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let auction_identity = Identity::ContractId(auction_contract_id.into());
+        let auction_identity = Identity::ContractId(auction_contract_id);
         let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = token_asset(buy_token_contract_id, 0).await;

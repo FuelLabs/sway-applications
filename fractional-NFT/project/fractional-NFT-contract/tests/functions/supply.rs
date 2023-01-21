@@ -15,7 +15,7 @@ mod success {
         let token_supply = defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
@@ -25,7 +25,7 @@ mod success {
         deposit(
             Some(owner_identity.clone()),
             &owner1.f_nft,
-            nft_contract.clone(),
+            nft_contract,
             token_supply,
             0,
         )

@@ -96,7 +96,7 @@ mod success {
             value_token,
         ]);
 
-        let encoded_tx_struct = ABIEncoder::encode(&vec![tx_token]).unwrap().resolve(0);
+        let encoded_tx_struct = ABIEncoder::encode(&[tx_token]).unwrap().resolve(0);
 
         let expected_hash = Hasher::hash(encoded_tx_struct);
 

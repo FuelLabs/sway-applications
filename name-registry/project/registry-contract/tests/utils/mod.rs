@@ -41,7 +41,7 @@ pub async fn setup() -> (NameRegistry, Account, WalletUnlocked) {
     .await
     .unwrap();
 
-    let instance = NameRegistry::new(id.clone(), wallet.clone());
+    let instance = NameRegistry::new(id, wallet.clone());
 
     (instance, Account::new(wallet), wallet2)
 }

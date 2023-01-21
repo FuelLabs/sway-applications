@@ -17,17 +17,11 @@ mod success {
         let owner = Identity::Address(owner1.wallet.address().into());
         let operator = Identity::Address(owner2.wallet.address().into());
 
-        assert_eq!(
-            is_approved_for_all(&owner1.contract, operator.clone(), owner.clone()).await,
-            false
-        );
+        assert!(!is_approved_for_all(&owner1.contract, operator.clone(), owner.clone()).await);
 
         set_approval_for_all(true, &owner1.contract, operator.clone()).await;
 
-        assert_eq!(
-            is_approved_for_all(&owner1.contract, operator.clone(), owner.clone()).await,
-            true
-        );
+        assert!(is_approved_for_all(&owner1.contract, operator.clone(), owner.clone()).await);
     }
 
     #[tokio::test]
@@ -40,9 +34,6 @@ mod success {
         let operator = Identity::Address(owner2.wallet.address().into());
         set_approval_for_all(true, &owner1.contract, operator.clone()).await;
 
-        assert_eq!(
-            is_approved_for_all(&owner1.contract, owner.clone(), operator.clone()).await,
-            false
-        );
+        assert!(!is_approved_for_all(&owner1.contract, owner.clone(), operator.clone()).await);
     }
 }

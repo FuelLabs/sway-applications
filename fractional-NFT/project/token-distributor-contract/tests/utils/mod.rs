@@ -88,7 +88,7 @@ pub mod token_distributor_abi_calls {
 
         contract
             .methods()
-            .buyback(f_nft.clone(), token_price)
+            .buyback(f_nft, token_price)
             .tx_params(tx_params)
             .call_params(call_params)
             .set_contract_ids(&[Bech32ContractId::from(f_nft)])
@@ -111,9 +111,9 @@ pub mod token_distributor_abi_calls {
         contract
             .methods()
             .create(
-                nft.clone(),
+                nft,
                 external_asset,
-                f_nft.clone(),
+                f_nft,
                 reserve_price,
                 token_owner,
                 token_price,
@@ -135,7 +135,7 @@ pub mod token_distributor_abi_calls {
     ) -> FuelCallResponse<()> {
         contract
             .methods()
-            .end(f_nft.into())
+            .end(f_nft)
             .set_contracts(&[
                 &FractionalNFT::new(f_nft.into(), wallet.clone()) as &dyn SettableContract,
                 &Nft::new(nft.into(), wallet.clone()) as &dyn SettableContract,
@@ -203,7 +203,7 @@ pub mod token_distributor_abi_calls {
 
         contract
             .methods()
-            .sell(f_nft.clone())
+            .sell(f_nft)
             .tx_params(tx_params)
             .call_params(call_params)
             .append_variable_outputs(1)
