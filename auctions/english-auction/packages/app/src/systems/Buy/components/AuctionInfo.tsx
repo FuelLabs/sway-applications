@@ -105,7 +105,7 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
               onChange={setAuctionExpired}
             />
           )}
-          {!auctionExpired && !auction?.state.Closed ? (
+          {auction?.state.Open ? (
             <CancelAuctionButton index={index} seller={auction!.seller!} />
           ) : (
             <WithdrawButton

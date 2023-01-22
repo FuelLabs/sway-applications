@@ -363,7 +363,7 @@ test.describe('e2e', () => {
     await withdrawTransactionMessage.waitFor();
   });
 
-  test('Test auction (Sell NFT, Bid NFT) is canceled', async ({ context, extensionId }) => {
+  test('Test auction (Sell: NFT, Bid: NFT) is canceled', async ({ context, extensionId }) => {
     // ACCOUNT 1 CREATES AUCTION
     const { appPage, walletPage } = getPages(context);
 
@@ -439,8 +439,128 @@ test.describe('e2e', () => {
 
     // Now we can bid on the auction
     const tokenIdInput = appPage.getByPlaceholder('0').first();
-    // The buyer has access to nft with token id 1
-    await tokenIdInput.fill('1');
+    // The buyer has access to nft with token id 1 from contract:init
+    await tokenIdInput.fill('10');
+    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').first();
+    await expect(placeBidButton).toBeEnabled();
+
+    approvePagePromise = context.waitForEvent('page');
+
+    await placeBidButton.click();
+
+    await walletApprove(approvePagePromise);
+
+    // Expect transaction to be successful
+    const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
+    await bidTransactionMessage.waitFor();
+
+    // ACCOUNT 1 CANCELS AUCTION
+
+    // Switch to account 1
+    await switchWallet(walletPage, extensionId, 'Account 1');
+
+    await appPage.reload();
+
+    // BOTH ACCOUNTS WITHDRAW
+    // Account 1 withdraws
+    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
+    await expect(withdrawButton).toBeEnabled();
+
+    approvePagePromise = context.waitForEvent('page');
+
+    await withdrawButton.click();
+
+    await walletApprove(approvePagePromise);
+
+    // Expect transaction to be successful
+    const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
+    await withdrawTransactionMessage.waitFor();
+
+    // Switch to account 2
+    await switchWallet(walletPage, extensionId, 'Account 2');
+
+    await appPage.reload();
+
+    approvePagePromise = context.waitForEvent('page');
+
+    await withdrawButton.click();
+
+    await walletApprove(approvePagePromise);
+
+    // Expect transaction to be successful
+    await withdrawTransactionMessage.waitFor();
+  });
+
+  test('Test auction (Sell NFT, Bid Token) is canceled', async ({ context, extensionId }) => {
+    // ACCOUNT 1 CREATES AUCTION
+    const { appPage, walletPage } = getPages(context);
+
+    await appPage.goto('/sell');
+
+    await switchWallet(walletPage, extensionId, 'Account 1');
+
+    await appPage.reload();
+
+    const createAuctionButton = appPage.locator('button').getByText('Create Auction');
+    expect(createAuctionButton).toBeDisabled();
+
+    const fillSellerAddressButton = appPage.locator('[aria-label="Fill seller address"]');
+    expect(fillSellerAddressButton).toBeDefined();
+    await expect(fillSellerAddressButton).toBeEnabled();
+    await fillSellerAddressButton.click();
+
+    // Switch to NFT for sell asset
+    const sellAssetDropdown = appPage.locator('[aria-label="Sell Asset Dropdown"]');
+    await sellAssetDropdown.click();
+
+    const nftSelection = appPage.getByText('NFT');
+    await nftSelection.click();
+
+    const nftTokenIdInput = appPage.locator('input[name="sellNFTTokenId"]');
+    // Thanks to our contract:init-test function
+    // The seller owns an nft with token id 0
+    await nftTokenIdInput.fill('1');
+    const nftAssetIdInput = appPage.locator('input[name="sellNFTAssetId"]');
+    await nftAssetIdInput.fill(process.env.VITE_NFT_ID!);
+
+    const initialPriceInput = appPage.locator(`input[name="initialPrice"]`);
+    await initialPriceInput.fill('0.001');
+
+    const durationInput = appPage.locator(`input[name="duration"]`);
+    await durationInput.fill('1000');
+
+    await expect(createAuctionButton).toBeEnabled();
+    let approvePagePromise = context.waitForEvent('page');
+    await createAuctionButton.click();
+
+    await walletApprove(approvePagePromise);
+
+    // Expect transaction to be successful
+    const transactionMessage = appPage.locator('text="Auction created successfully!"');
+    await transactionMessage.waitFor();
+
+    // ACCOUNT 2 BIDS ON AUCTION
+    await appPage.goto('/buy');
+
+    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').first();
+    await expect(errorText).toContainText(
+      'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
+    );
+
+    // We don't have to add an account in this test bc it was already added in the previous test
+    await switchWallet(walletPage, extensionId, 'Account 2');
+
+    await appPage.reload();
+
+    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').first();
+    await expect(cancelErrorText).toContainText(
+      'Error only the seller of the auction can cancel it.'
+    );
+
+    // Now we can bid on the auction
+    const assetAmountInput = appPage.getByPlaceholder('0.0').first();
+    // The buyer has access to nft with token id 11
+    await assetAmountInput.fill('0.001');
     const placeBidButton = appPage.locator('button').getByText('Bid on Auction').first();
     await expect(placeBidButton).toBeEnabled();
 
@@ -503,8 +623,6 @@ test.describe('e2e', () => {
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
   });
-
-  test('Test auction (Sell NFT, Bid Token) is canceled', async () => {});
 
   test('Test auction (Sell Token, Bid NFT) is canceled', async () => {});
 });
