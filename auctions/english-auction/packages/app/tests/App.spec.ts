@@ -367,6 +367,12 @@ test.describe('e2e', () => {
     // ACCOUNT 1 CREATES AUCTION
     const { appPage, walletPage } = getPages(context);
 
+    await appPage.goto('/sell');
+
+    await switchWallet(walletPage, extensionId, 'Account 1');
+
+    await appPage.reload();
+
     const createAuctionButton = appPage.locator('button').getByText('Create Auction');
     expect(createAuctionButton).toBeDisabled();
 
@@ -399,6 +405,9 @@ test.describe('e2e', () => {
 
     const bidNFTAssetIdInput = appPage.locator('input[name="bidNFTAssetId"]');
     await bidNFTAssetIdInput.fill(process.env.VITE_NFT_ID!);
+
+    const durationInput = appPage.locator(`input[name="duration"]`);
+    await durationInput.fill('1000');
 
     await expect(createAuctionButton).toBeEnabled();
     let approvePagePromise = context.waitForEvent('page');
