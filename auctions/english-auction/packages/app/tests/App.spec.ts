@@ -5,6 +5,8 @@ import { test, expect } from './fixtures';
 
 const WORDS = 'demand fashion unaware upgrade upon heart bright august panel kangaroo want gaze';
 const WALLET_PASSWORD = '123123123';
+const ACCOUNT1 = 'Account 1';
+const ACCOUNT2 = 'Account 2';
 
 async function walletSetup(context: BrowserContext, extensionId: string) {
   // WALLET SETUP
@@ -51,8 +53,7 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   const connectButton = connectPage.locator('button').getByText('Connect');
   await connectButton.click();
 
-  await appPage.goto('/sell');
-  await appPage.reload();
+  await addWallet(walletPage, extensionId, ACCOUNT2);
 
   return { appPage, walletPage };
 }
@@ -70,7 +71,7 @@ async function walletApprove(approvePagePromise: Promise<Page>) {
   await confirmButton.click();
 }
 
-async function addWallet(walletPage: Page, extensionId: string) {
+async function addWallet(walletPage: Page, extensionId: string, accountName: string) {
   await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
 
   // First we have to add a second account
@@ -81,24 +82,25 @@ async function addWallet(walletPage: Page, extensionId: string) {
   await addAccountButton.click();
 
   const accountNameInput = walletPage.locator('[aria-label="Account Name"]');
-  await accountNameInput.fill('Account 2');
+  await accountNameInput.fill(accountName);
 
   const accountFormSubmitButton = walletPage.locator('button').getByText('Create');
   await accountFormSubmitButton.click();
 
   const passwordInput = walletPage.locator('[aria-label="Your Password"]');
   await passwordInput.fill(WALLET_PASSWORD);
+
   const accountConfirmButton = walletPage.locator('button').getByText('Add Account');
   await accountConfirmButton.click();
 }
 
 async function switchWallet(walletPage: Page, extensionId: string, accountName: string) {
-  // Switch to account 1
+  // Switch to ACCOUNT1
   await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
   const accountsButton = walletPage.locator('[aria-label="Accounts"]');
   await accountsButton.click();
-  const account1Button = walletPage.locator(`[aria-label="${accountName}"]`);
-  await account1Button.click();
+  const accountButton = walletPage.locator(`[aria-label="${accountName}"]`);
+  await accountButton.click();
 }
 
 function getPages(context: BrowserContext) {
@@ -118,9 +120,15 @@ test.describe('e2e', () => {
   test('Test auction expires', async () => {});
 
   test('Test auction (Sell: Token, Bid: Token) is canceled', async ({ context, extensionId }) => {
-    // ACCOUNT 1 CREATES AUCTION
+    // ACCOUNT1 CREATES AUCTION
 
     const { appPage, walletPage } = getPages(context);
+
+    await appPage.goto('/sell');
+
+    await switchWallet(walletPage, extensionId, ACCOUNT1);
+
+    await appPage.reload();
 
     const createAuctionButton = appPage.locator('button').getByText('Create Auction');
     expect(createAuctionButton).toBeDisabled();
@@ -157,7 +165,7 @@ test.describe('e2e', () => {
       'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
     );
 
-    await addWallet(walletPage, extensionId);
+    await switchWallet(walletPage, extensionId, ACCOUNT2);
 
     await appPage.reload();
 
@@ -182,10 +190,10 @@ test.describe('e2e', () => {
     const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
     await bidTransactionMessage.waitFor();
 
-    // ACCOUNT 1 CANCELS AUCTION
+    // ACCOUNT1 CANCELS AUCTION
 
-    // Switch to account 1
-    await switchWallet(walletPage, extensionId, 'Account 1');
+    // Switch to ACCOUNT1
+    await switchWallet(walletPage, extensionId, ACCOUNT1);
 
     // await appPage.goto('/buy');
     // await appPage.waitForLoadState();
@@ -205,7 +213,7 @@ test.describe('e2e', () => {
     await cancelTransactionMessage.waitFor();
 
     // BOTH ACCOUNTS WITHDRAW
-    // Account 1 withdraws
+    // ACCOUNT1 withdraws
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
     await expect(withdrawButton).toBeEnabled();
 
@@ -220,7 +228,7 @@ test.describe('e2e', () => {
     await withdrawTransactionMessage.waitFor();
 
     // Switch to account 2
-    await switchWallet(walletPage, extensionId, 'Account 2');
+    await switchWallet(walletPage, extensionId, ACCOUNT2);
 
     await appPage.reload();
 
@@ -242,7 +250,7 @@ test.describe('e2e', () => {
 
     await appPage.goto('/sell');
 
-    await switchWallet(walletPage, extensionId, 'Account 1');
+    await switchWallet(walletPage, extensionId, ACCOUNT1);
 
     await appPage.reload();
 
@@ -288,7 +296,7 @@ test.describe('e2e', () => {
     );
 
     // We don't have to add an account in this test bc it was already added in the previous test
-    await switchWallet(walletPage, extensionId, 'Account 2');
+    await switchWallet(walletPage, extensionId, ACCOUNT2);
 
     await appPage.reload();
 
@@ -313,10 +321,10 @@ test.describe('e2e', () => {
     const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
     await bidTransactionMessage.waitFor();
 
-    // ACCOUNT 1 CANCELS AUCTION
+    // ACCOUNT1 CANCELS AUCTION
 
-    // Switch to account 1
-    await switchWallet(walletPage, extensionId, 'Account 1');
+    // Switch to ACCOUNT1
+    await switchWallet(walletPage, extensionId, ACCOUNT1);
 
     await appPage.reload();
 
@@ -334,7 +342,7 @@ test.describe('e2e', () => {
     await cancelTransactionMessage.waitFor();
 
     // BOTH ACCOUNTS WITHDRAW
-    // Account 1 withdraws
+    // ACCOUNT1 withdraws
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
     await expect(withdrawButton).toBeEnabled();
 
@@ -349,7 +357,7 @@ test.describe('e2e', () => {
     await withdrawTransactionMessage.waitFor();
 
     // Switch to account 2
-    await switchWallet(walletPage, extensionId, 'Account 2');
+    await switchWallet(walletPage, extensionId, ACCOUNT2);
 
     await appPage.reload();
 
@@ -364,12 +372,12 @@ test.describe('e2e', () => {
   });
 
   test('Test auction (Sell: NFT, Bid: NFT) is canceled', async ({ context, extensionId }) => {
-    // ACCOUNT 1 CREATES AUCTION
+    // ACCOUNT1 CREATES AUCTION
     const { appPage, walletPage } = getPages(context);
 
     await appPage.goto('/sell');
 
-    await switchWallet(walletPage, extensionId, 'Account 1');
+    await switchWallet(walletPage, extensionId, ACCOUNT1);
 
     await appPage.reload();
 
@@ -428,7 +436,7 @@ test.describe('e2e', () => {
     );
 
     // We don't have to add an account in this test bc it was already added in the previous test
-    await switchWallet(walletPage, extensionId, 'Account 2');
+    await switchWallet(walletPage, extensionId, ACCOUNT2);
 
     await appPage.reload();
 
@@ -454,15 +462,15 @@ test.describe('e2e', () => {
     const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
     await bidTransactionMessage.waitFor();
 
-    // ACCOUNT 1 CANCELS AUCTION
+    // ACCOUNT1 CANCELS AUCTION
 
-    // Switch to account 1
-    await switchWallet(walletPage, extensionId, 'Account 1');
+    // Switch to ACCOUNT1
+    await switchWallet(walletPage, extensionId, ACCOUNT1);
 
     await appPage.reload();
 
     // BOTH ACCOUNTS WITHDRAW
-    // Account 1 withdraws
+    // ACCOUNT1 withdraws
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
     await expect(withdrawButton).toBeEnabled();
 
@@ -477,7 +485,7 @@ test.describe('e2e', () => {
     await withdrawTransactionMessage.waitFor();
 
     // Switch to account 2
-    await switchWallet(walletPage, extensionId, 'Account 2');
+    await switchWallet(walletPage, extensionId, ACCOUNT2);
 
     await appPage.reload();
 
@@ -492,12 +500,12 @@ test.describe('e2e', () => {
   });
 
   test('Test auction (Sell NFT, Bid Token) is canceled', async ({ context, extensionId }) => {
-    // ACCOUNT 1 CREATES AUCTION
+    // ACCOUNT1 CREATES AUCTION
     const { appPage, walletPage } = getPages(context);
 
     await appPage.goto('/sell');
 
-    await switchWallet(walletPage, extensionId, 'Account 1');
+    await switchWallet(walletPage, extensionId, ACCOUNT1);
 
     await appPage.reload();
 
@@ -548,7 +556,7 @@ test.describe('e2e', () => {
     );
 
     // We don't have to add an account in this test bc it was already added in the previous test
-    await switchWallet(walletPage, extensionId, 'Account 2');
+    await switchWallet(walletPage, extensionId, ACCOUNT2);
 
     await appPage.reload();
 
@@ -574,10 +582,10 @@ test.describe('e2e', () => {
     const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
     await bidTransactionMessage.waitFor();
 
-    // ACCOUNT 1 CANCELS AUCTION
+    // ACCOUNT1 CANCELS AUCTION
 
-    // Switch to account 1
-    await switchWallet(walletPage, extensionId, 'Account 1');
+    // Switch to ACCOUNT1
+    await switchWallet(walletPage, extensionId, ACCOUNT1);
 
     await appPage.reload();
 
@@ -595,7 +603,7 @@ test.describe('e2e', () => {
     await cancelTransactionMessage.waitFor();
 
     // BOTH ACCOUNTS WITHDRAW
-    // Account 1 withdraws
+    // ACCOUNT1 withdraws
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
     await expect(withdrawButton).toBeEnabled();
 
@@ -610,7 +618,7 @@ test.describe('e2e', () => {
     await withdrawTransactionMessage.waitFor();
 
     // Switch to account 2
-    await switchWallet(walletPage, extensionId, 'Account 2');
+    await switchWallet(walletPage, extensionId, ACCOUNT2);
 
     await appPage.reload();
 
@@ -624,5 +632,123 @@ test.describe('e2e', () => {
     await withdrawTransactionMessage.waitFor();
   });
 
-  test('Test auction (Sell Token, Bid NFT) is canceled', async () => {});
+  test('Test auction (Sell Token, Bid NFT) is canceled', async ({ context, extensionId }) => {
+    // ACCOUNT1 CREATES AUCTION
+    const { appPage, walletPage } = getPages(context);
+
+    await appPage.goto('/sell');
+
+    await switchWallet(walletPage, extensionId, ACCOUNT1);
+
+    await appPage.reload();
+
+    const createAuctionButton = appPage.locator('button').getByText('Create Auction');
+    expect(createAuctionButton).toBeDisabled();
+
+    const fillSellerAddressButton = appPage.locator('[aria-label="Fill seller address"]');
+    expect(fillSellerAddressButton).toBeDefined();
+    await expect(fillSellerAddressButton).toBeEnabled();
+    await fillSellerAddressButton.click();
+
+    const sellAssetAmountInput = appPage.locator(`input[name="sellAssetAmount"]`);
+    await sellAssetAmountInput.fill('0.001');
+
+    const initialPriceInput = appPage.locator(`input[name="initialPrice"]`);
+    await initialPriceInput.fill('0.001');
+
+    // Switch to NFT for bid asset
+    // Grab the second dropdown
+    const bidAssetDropdown = appPage.locator('[aria-label="Bid Asset Dropdown"]');
+    await bidAssetDropdown.click();
+
+    const bidNFTSelection = appPage.locator('li').getByText('NFT');
+    await bidNFTSelection.click();
+
+    const bidNFTAssetIdInput = appPage.locator('input[name="bidNFTAssetId"]');
+    await bidNFTAssetIdInput.fill(process.env.VITE_NFT_ID!);
+
+    const durationInput = appPage.locator(`input[name="duration"]`);
+    await durationInput.fill('1000');
+
+    await expect(createAuctionButton).toBeEnabled();
+    let approvePagePromise = context.waitForEvent('page');
+    await createAuctionButton.click();
+
+    await walletApprove(approvePagePromise);
+
+    // Expect transaction to be successful
+    const transactionMessage = appPage.locator('text="Auction created successfully!"');
+    await transactionMessage.waitFor();
+
+    // ACCOUNT 2 BIDS ON AUCTION
+    await appPage.goto('/buy');
+
+    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').first();
+    await expect(errorText).toContainText(
+      'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
+    );
+
+    // We don't have to add an account in this test bc it was already added in the previous test
+    await switchWallet(walletPage, extensionId, ACCOUNT2);
+
+    await appPage.reload();
+
+    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').first();
+    await expect(cancelErrorText).toContainText(
+      'Error only the seller of the auction can cancel it.'
+    );
+
+    // Now we can bid on the auction
+    const tokenIdInput = appPage.getByPlaceholder('0').first();
+    // The buyer has access to nft with token id 12 from contract:init
+    await tokenIdInput.fill('12');
+    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').first();
+    await expect(placeBidButton).toBeEnabled();
+
+    approvePagePromise = context.waitForEvent('page');
+
+    await placeBidButton.click();
+
+    await walletApprove(approvePagePromise);
+
+    // Expect transaction to be successful
+    const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
+    await bidTransactionMessage.waitFor();
+
+    // ACCOUNT1 CANCELS AUCTION
+
+    // Switch to ACCOUNT1
+    await switchWallet(walletPage, extensionId, ACCOUNT1);
+
+    await appPage.reload();
+
+    // BOTH ACCOUNTS WITHDRAW
+    // ACCOUNT1 withdraws
+    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
+    await expect(withdrawButton).toBeEnabled();
+
+    approvePagePromise = context.waitForEvent('page');
+
+    await withdrawButton.click();
+
+    await walletApprove(approvePagePromise);
+
+    // Expect transaction to be successful
+    const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
+    await withdrawTransactionMessage.waitFor();
+
+    // Switch to account 2
+    await switchWallet(walletPage, extensionId, ACCOUNT2);
+
+    await appPage.reload();
+
+    approvePagePromise = context.waitForEvent('page');
+
+    await withdrawButton.click();
+
+    await walletApprove(approvePagePromise);
+
+    // Expect transaction to be successful
+    await withdrawTransactionMessage.waitFor();
+  });
 });

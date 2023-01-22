@@ -38,7 +38,7 @@ export async function initializeNFT() {
       .call();
   }
 
-  console.log(`Approved identity ${process.env.VITER_NFT_ID!} to transfer token ids 0-9`);
+  console.log(`Approved identity ${CONTRACT_ID} to transfer token ids 0-9`);
 
   const buyerAddress = '0xf13c949256d0e119fecaec414ea452f21f9dc1870fb6262ff53b37c32cab4749';
   const buyerMintCount = bn(10);
@@ -58,5 +58,5 @@ export async function initializeNFT() {
       .txParams({ gasPrice: 1 })
       .call();
   }
-  console.log(`Approved identity ${process.env.VITER_NFT_ID!} to transfer token ids 10-19`);
+  console.log(`Approved identity ${CONTRACT_ID} to transfer token ids 10-19`);
 }
