@@ -1,4 +1,4 @@
-import { Address } from 'fuels';
+import { Address, Contract } from 'fuels';
 import type { BigNumberish, CoinQuantityLike } from 'fuels';
 import type { UseFormReturn } from 'react-hook-form';
 import { useMutation } from 'react-query';
@@ -8,6 +8,7 @@ import type { CreateAuctionFormValues } from './useCreateAuctionForm';
 import { useContract } from '~/systems/Core/hooks/useContract';
 import { handleError } from '~/systems/Core/utils';
 import { txFeedback } from '~/systems/Core/utils/feedback';
+import { NFTAbi__factory } from '~/types/contracts';
 import type { AuctionAssetInput, IdentityInput } from '~/types/contracts/AuctionContractAbi';
 import type { Option } from '~/types/contracts/common';
 
@@ -38,10 +39,17 @@ export function useCreateAuction(form: UseFormReturn<CreateAuctionFormValues>) {
       };
 
       // TODO fix for nfts as sell asset
-      const { transactionResult } = await contract.functions
-        .create(bidAsset, duration, initialPrice, reservePrice, seller, sellAsset)
-        .callParams({ forward: callParams })
-        .call();
+      const { transactionResult } = sellAsset.NFTAsset
+        ? await contract.functions
+            .create(bidAsset, duration, initialPrice, reservePrice, seller, sellAsset)
+            .addContracts([
+              new Contract(sellAsset.NFTAsset.asset_id.value, NFTAbi__factory.createInterface()),
+            ])
+            .call()
+        : await contract.functions
+            .create(bidAsset, duration, initialPrice, reservePrice, seller, sellAsset)
+            .callParams({ forward: callParams })
+            .call();
       return transactionResult;
     },
     {
