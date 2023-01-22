@@ -2,7 +2,7 @@ import type { BrowserContext, Page } from '@playwright/test';
 
 import { test, expect } from './fixtures';
 
-const WORDS = 'monkey advice bacon rival fitness flip inspire public yard depart thank also';
+const WORDS = 'demand fashion unaware upgrade upon heart bright august panel kangaroo want gaze';
 const WALLET_PASSWORD = '123123123';
 
 async function walletSetup(context: BrowserContext, extensionId: string) {
@@ -124,7 +124,7 @@ test.describe('e2e', () => {
     const createAuctionButton = appPage.locator('button').getByText('Create Auction');
     expect(createAuctionButton).toBeDisabled();
 
-    const fillSellerAddressButton = appPage.locator('button').getByText('fuel...apex');
+    const fillSellerAddressButton = appPage.locator('[aria-label="Fill seller address"]');
     expect(fillSellerAddressButton).toBeDefined();
     await expect(fillSellerAddressButton).toBeEnabled();
     await fillSellerAddressButton.click();
@@ -247,7 +247,7 @@ test.describe('e2e', () => {
     const createAuctionButton = appPage.locator('button').getByText('Create Auction');
     expect(createAuctionButton).toBeDisabled();
 
-    const fillSellerAddressButton = appPage.locator('button').getByText('fuel...apex');
+    const fillSellerAddressButton = appPage.locator('[aria-label="Fill seller address"]');
     expect(fillSellerAddressButton).toBeDefined();
     await expect(fillSellerAddressButton).toBeEnabled();
     await fillSellerAddressButton.click();

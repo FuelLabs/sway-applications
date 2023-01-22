@@ -1,5 +1,6 @@
 import { Button, Icon, Stack } from "@fuel-ui/react";
 import { DECIMAL_UNITS, bn } from "fuels";
+import toast from "react-hot-toast";
 
 import { CreateAuctionForm } from "../../components/CreateAuctionForm";
 import { useCreateAuction } from "../../hooks/useCreateAuction";
@@ -11,7 +12,9 @@ import { MainLayout, useAssets, useWallet } from "~/systems/Core";
 export const CreateAuctionPage = () => {
   const form = useCreateAuctionForm();
   const { wallet, isLoading, isError } = useWallet();
-  if (isError) throw new Error("Error: no wallet connected");
+  if (isError) {
+    toast.error("Error: no wallet connected");
+  }
   const assets = useAssets() || [];
   const createAuctionMutation = useCreateAuction(form);
 
@@ -57,7 +60,7 @@ export const CreateAuctionPage = () => {
   // TODO feat: add loaders to components
   return (
     <MainLayout>
-      {isLoading ? (
+      {isLoading || !wallet ? (
         <div>Loading...</div>
       ) : (
         <form onSubmit={form.handleSubmit(onSubmit)}>
