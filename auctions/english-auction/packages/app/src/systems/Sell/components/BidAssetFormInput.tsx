@@ -34,6 +34,7 @@ export const BidAassetFormInput = ({
         formFieldName="isBidAssetNft"
         setValue={setValue}
         setValueLabel="bidAssetId"
+        ariaLabel="Bid Asset Dropdown"
       >
         <>
           {isBidAssetNft && (

@@ -30,6 +30,7 @@ export const SellAssetFormInput = ({
       control={control}
       setValue={setValue}
       setValueLabel="sellAssetId"
+      ariaLabel="Sell Asset Dropdown"
     >
       {!isSellAssetNft ? (
         <Stack css={{ minWidth: "100%" }}>

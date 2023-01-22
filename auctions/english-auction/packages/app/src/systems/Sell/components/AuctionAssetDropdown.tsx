@@ -8,11 +8,13 @@ import { getTokenText, getAssetText } from "../../Core/utils";
 interface AuctionAssetDropdownProps {
   onChange: (isNFT: boolean, assetKey: string) => void;
   assets: CoinQuantity[];
+  ariaLabel: string;
 }
 
 export const AuctionAssetDropdown = ({
   onChange,
   assets,
+  ariaLabel,
 }: AuctionAssetDropdownProps) => {
   const [assetIcon, setAssetIcon] = useState("Coin");
   const [assetText, setAssetText] = useState("Token");
@@ -67,7 +69,9 @@ export const AuctionAssetDropdown = ({
   return (
     <Dropdown>
       <Dropdown.Trigger>
-        <Button leftIcon={assetIcon}>{assetText}</Button>
+        <Button aria-label={ariaLabel} leftIcon={assetIcon}>
+          {assetText}
+        </Button>
       </Dropdown.Trigger>
       <Dropdown.Menu
         autoFocus

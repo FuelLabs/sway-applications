@@ -14,6 +14,7 @@ interface DropdownContainerProps {
   control: Control<CreateAuctionFormValues>;
   setValue: UseFormSetValue<CreateAuctionFormValues>;
   setValueLabel: "sellAssetId" | "bidAssetId";
+  ariaLabel: string;
 }
 
 export const DropdownContainerForm = ({
@@ -23,6 +24,7 @@ export const DropdownContainerForm = ({
   control,
   setValue,
   setValueLabel,
+  ariaLabel,
 }: DropdownContainerProps) => {
   return (
     <Flex>
@@ -44,6 +46,7 @@ export const DropdownContainerForm = ({
               <AuctionAssetDropdown
                 onChange={handleDropdownChange}
                 assets={assets}
+                ariaLabel={ariaLabel}
               />
             );
           }}
