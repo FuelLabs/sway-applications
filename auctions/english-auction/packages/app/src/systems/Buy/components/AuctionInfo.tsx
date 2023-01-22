@@ -108,7 +108,12 @@ export const AuctionInfo = ({ auctions }: AuctionInfoProps) => {
           {!auctionExpired && !auction?.state.Closed ? (
             <CancelAuctionButton index={index} seller={auction!.seller!} />
           ) : (
-            <WithdrawButton auctionId={bn(index)} />
+            <WithdrawButton
+              auctionId={bn(index)}
+              seller={auction.seller}
+              bidAsset={auction.bid_asset}
+              sellAsset={auction.sell_asset}
+            />
           )}
         </Stack>
       </Card>

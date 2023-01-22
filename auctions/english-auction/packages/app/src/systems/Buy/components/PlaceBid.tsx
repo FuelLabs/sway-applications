@@ -7,6 +7,7 @@ import { useBid } from "../hooks/useBid";
 
 import { AssetAmountInput } from "~/systems/Core/components/AssetAmountInput";
 import { useWallet } from "~/systems/Core/hooks/useWallet";
+import { NumericFormInput } from "~/systems/Sell/components/NumericFormInput";
 import type {
   AuctionAssetOutput,
   IdentityOutput,
@@ -36,7 +37,7 @@ export const PlaceBid = ({
         }
       : {
           NFTAsset: {
-            token_id: auctionAsset.NFTAsset.token_id,
+            token_id: bn(assetAmount),
             asset_id: auctionAsset.NFTAsset.asset_id,
           },
         },
@@ -51,6 +52,8 @@ export const PlaceBid = ({
     setIdentityOutput(result);
   }, [wallet]);
 
+  const isNFT = !!auctionAsset.NFTAsset;
+
   return (
     <Card>
       <Card.Body>
@@ -64,12 +67,22 @@ export const PlaceBid = ({
           </Text>
         ) : (
           <Stack gap="$4">
-            <AssetAmountInput
-              assetAmountLabel="Place Bid"
-              assetAmountValue={assetAmount}
-              objKey="placeBidAmount"
-              onChange={(_, val) => setAssetAmount(val)}
-            />
+            {isNFT ? (
+              <NumericFormInput
+                formLabel="Enter NFT Token Id"
+                formValue={assetAmount}
+                objKey="placeBidAmount"
+                onChange={(_, val) => setAssetAmount(val)}
+              />
+            ) : (
+              <AssetAmountInput
+                assetAmountLabel="Enter Bid Amount"
+                assetAmountValue={assetAmount}
+                objKey="placeBidAmount"
+                onChange={(_, val) => setAssetAmount(val)}
+              />
+            )}
+
             <Button onPress={() => bidMutation.mutate()}>Bid on Auction</Button>
           </Stack>
         )}

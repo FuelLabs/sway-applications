@@ -37,6 +37,7 @@ export function useCreateAuction(form: UseFormReturn<CreateAuctionFormValues>) {
         Address: { value: Address.fromString(sellerAddress).toHexString() },
       };
 
+      // TODO fix for nfts as sell asset
       const { transactionResult } = await contract.functions
         .create(bidAsset, duration, initialPrice, reservePrice, seller, sellAsset)
         .callParams({ forward: callParams })
