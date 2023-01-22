@@ -92,6 +92,7 @@ async function addWallet(walletPage: Page, extensionId: string, accountName: str
 
   const accountConfirmButton = walletPage.locator('button').getByText('Add Account');
   await accountConfirmButton.click();
+  await walletPage.screenshot({ path: 'temp.png', fullPage: true });
 }
 
 async function switchWallet(walletPage: Page, extensionId: string, accountName: string) {
@@ -110,12 +111,12 @@ function getPages(context: BrowserContext) {
   return { appPage, walletPage };
 }
 
+test.beforeAll(async ({ context, extensionId }) => {
+  await walletSetup(context, extensionId);
+});
+
 // TODO figure out how to test with extension
 test.describe('e2e', () => {
-  test.beforeAll(async ({ context, extensionId }) => {
-    await walletSetup(context, extensionId);
-  });
-
   // TODO this may require block manipulation etc
   test('Test auction expires', async () => {});
 
