@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::{core::constructor, info::nonce},
-    setup::{default_users, setup_env, DEFAULT_THRESHOLD, VALID_SIGNER_PK},
+    setup::{default_users, setup_env, VALID_SIGNER_PK},
 };
 
 mod success {
@@ -11,7 +11,7 @@ mod success {
     async fn setup_with_constructor() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
 
         assert_eq!(nonce(&deployer.contract).await.value, 1);
     }
@@ -28,17 +28,19 @@ mod revert {
     async fn cannot_reinitialize() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
     }
 
     #[tokio::test]
+    #[ignore]
     #[should_panic(expected = "ThresholdCannotBeZero")]
     async fn threshold_cannot_be_zero() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        constructor(&deployer.contract, default_users(), 0).await;
+        // TODO: how to inject a different config time constant value to change the THRESHOLD?
+        constructor(&deployer.contract, default_users()).await;
     }
 
     #[tokio::test]
@@ -55,7 +57,7 @@ mod revert {
             weight: 3,
         };
 
-        constructor(&deployer.contract, users, DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, users).await;
     }
 
     #[tokio::test]
@@ -72,7 +74,7 @@ mod revert {
             weight: 0,
         };
 
-        constructor(&deployer.contract, users, DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, users).await;
     }
 
     #[tokio::test]
@@ -80,13 +82,13 @@ mod revert {
     async fn total_weight_cannot_be_less_than_threshold() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        let default_users = default_users();
+        let mut default_users = default_users();
 
-        let mut default_total_weight = 0;
-        for user in default_users.iter() {
-            default_total_weight += user.weight;
+        for user in default_users.iter_mut() {
+            // set weights to the lowest value so that they are lower than the current default threshold
+            user.weight = 1;
         }
 
-        constructor(&deployer.contract, default_users, default_total_weight + 1).await;
+        constructor(&deployer.contract, default_users).await;
     }
 }

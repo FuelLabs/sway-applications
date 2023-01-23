@@ -9,7 +9,7 @@ mod success {
     async fn returns_threshold() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
 
         let current_threshold = threshold(&deployer.contract).await.value;
 

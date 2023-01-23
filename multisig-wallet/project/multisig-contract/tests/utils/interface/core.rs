@@ -11,17 +11,8 @@ pub async fn cancel_transaction(contract: &MultiSig) -> FuelCallResponse<()> {
         .unwrap()
 }
 
-pub async fn constructor(
-    contract: &MultiSig,
-    users: Vec<User>,
-    threshold: u64,
-) -> FuelCallResponse<()> {
-    contract
-        .methods()
-        .constructor(threshold, users)
-        .call()
-        .await
-        .unwrap()
+pub async fn constructor(contract: &MultiSig, users: Vec<User>) -> FuelCallResponse<()> {
+    contract.methods().constructor(users).call().await.unwrap()
 }
 
 pub async fn execute_transaction(

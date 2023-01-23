@@ -51,9 +51,9 @@ impl MultiSignatureWallet for Contract {
     }
 
     #[storage(read, write)]
-    fn constructor(threshold: u64, users: Vec<User>) {
+    fn constructor(users: Vec<User>) {
         require(storage.nonce == 0, InitError::CannotReinitialize);
-        require(threshold != 0, InitError::ThresholdCannotBeZero);
+        require(THRESHOLD != 0, InitError::ThresholdCannotBeZero);
 
         let mut user_index = 0;
         let mut total_weight = 0;
@@ -67,10 +67,10 @@ impl MultiSignatureWallet for Contract {
             user_index += 1;
         }
 
-        require(threshold <= total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
+        require(THRESHOLD <= total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
 
         storage.nonce = 1;
-        storage.threshold = threshold;
+        storage.threshold = THRESHOLD;
     }
 
     #[storage(read, write)]

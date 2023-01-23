@@ -5,7 +5,7 @@ use crate::utils::{
     },
     setup::{
         base_asset_contract_id, default_users, setup_env, transfer_parameters, transfer_signatures,
-        DEFAULT_THRESHOLD, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
+        DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
     },
 };
 use fuels::{
@@ -24,7 +24,7 @@ mod success {
 
         let (receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
         let initial_nonce = nonce(&deployer.contract).await.value;
 
         deployer
@@ -157,7 +157,7 @@ mod revert {
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
 
         let nonce = nonce(&deployer.contract).await.value;
 
@@ -193,7 +193,7 @@ mod revert {
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
 
         deployer
             .wallet
@@ -241,7 +241,7 @@ mod revert {
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
 
         deployer
             .wallet

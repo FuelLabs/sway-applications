@@ -3,7 +3,7 @@ use crate::utils::{
         core::{cancel_transaction, constructor},
         info::nonce,
     },
-    setup::{default_users, setup_env, DEFAULT_THRESHOLD, VALID_SIGNER_PK},
+    setup::{default_users, setup_env, VALID_SIGNER_PK},
 };
 
 mod success {
@@ -16,7 +16,7 @@ mod success {
     async fn cancels_transaction() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
 
         let initial_nonce = nonce(&deployer.contract).await.value;
 
@@ -47,7 +47,7 @@ mod revert {
     async fn not_an_owner() {
         let (_private_key, deployer, non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
 
         cancel_transaction(&non_owner.contract).await;
     }

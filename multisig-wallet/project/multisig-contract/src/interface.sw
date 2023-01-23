@@ -17,7 +17,6 @@ abi MultiSignatureWallet {
     ///
     /// # Arguments
     ///
-    /// * `threshold` - The number of approvals required to enable a transaction to be sent.
     /// * `users` - The users of the multisig, who can sign transactions to add their approval.
     ///
     /// # Reverts
@@ -28,7 +27,7 @@ abi MultiSignatureWallet {
     /// * When an owner has an approval weight of 0.
     /// * When the threshold is a value greater than the sum of the weights.
     #[storage(read, write)]
-    fn constructor(threshold: u64, users: Vec<User>);
+    fn constructor(users: Vec<User>);
 
     /// Execute a transaction formed from the `to`, `value` and `data` parameters if the signatures meet the
     /// threshold requirement.
