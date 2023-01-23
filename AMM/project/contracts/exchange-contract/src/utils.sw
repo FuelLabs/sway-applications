@@ -3,6 +3,7 @@ library utils;
 dep errors;
 
 use core::primitives::*;
+use libraries::data_structures::{Asset, AssetPair};
 use errors::{InitError, InputError};
 use std::u128::U128;
 
@@ -11,13 +12,7 @@ fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
     amount - fee
 }
 
-pub fn div_multiply(a: u64, b: u64, c: u64) -> u64 {
-    let calculation = (U128::from((0, a)) / U128::from((0, b)));
-    let result_wrapped = (calculation * U128::from((0, c))).as_u64();
-    result_wrapped.unwrap()
-}
-
-/// Returns the maximum required amount of the input asset to get exactly ` output_amount ` of the output asset
+/// Returns the maximum required amount of the input asset to get exactly `output_amount` of the output asset
 pub fn maximum_input_for_exact_output(
     output_amount: u64,
     input_reserve: u64,
@@ -33,13 +28,13 @@ pub fn maximum_input_for_exact_output(
     let result_wrapped = (numerator / denominator).as_u64();
 
     if denominator > numerator {
-        u64::max()
+        0 // 0 < result < 1, round the result down since there are no floating points
     } else {
         result_wrapped.unwrap() + 1
     }
 }
 
-/// Given exactly ` input_amount ` of the input asset, returns the minimum resulting amount of the output asset
+/// Given exactly `input_amount` of the input asset, returns the minimum resulting amount of the output asset
 pub fn minimum_output_given_exact_input(
     input_amount: u64,
     input_reserve: u64,
@@ -54,22 +49,19 @@ pub fn minimum_output_given_exact_input(
     result_wrapped.unwrap()
 }
 
-pub fn multiply_div(a: u64, b: u64, c: u64) -> u64 {
-    let calculation = (U128::from((0, a)) * U128::from((0, b)));
-    let result_wrapped = (calculation / U128::from((0, c))).as_u64();
+// Calculates d in the proportion a / b = c / d
+pub fn proportional_value(b: u64, c: u64, a: u64) -> u64 {
+    let calculation = (U128::from((0, b)) * U128::from((0, c)));
+    let result_wrapped = (calculation / U128::from((0, a))).as_u64();
     result_wrapped.unwrap()
 }
 
-pub fn determine_output_asset(
-    input_asset: ContractId,
-    pair: Option<(ContractId, ContractId)>,
-) -> ContractId {
-    require(pair.is_some(), InitError::NotInitialized);
-    let (asset_a_id, asset_b_id) = pair.unwrap();
-    require(input_asset == asset_a_id || input_asset == asset_b_id, InputError::InvalidAsset);
-    if input_asset == asset_a_id {
-        asset_b_id
-    } else {
-        asset_a_id
-    }
+pub fn determine_assets(input_asset_id: ContractId, pair: Option<AssetPair>) -> (Asset, Asset) {
+    require(pair.is_some(), InitError::AssetPairNotSet);
+    let pair = pair.unwrap();
+    require(input_asset_id == pair.a.id || input_asset_id == pair.b.id, InputError::InvalidAsset);
+    (
+        pair.this_asset(input_asset_id),
+        pair.other_asset(input_asset_id),
+    )
 }

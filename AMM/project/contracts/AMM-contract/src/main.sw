@@ -32,7 +32,8 @@ impl AMM for Contract {
 
         let exchange_contract = abi(Exchange, pool.into());
         let pool_info = exchange_contract.pool_info();
-        let pair_matches_exchange_pair = (pool_info.asset_a == asset_pair.0 && pool_info.asset_b == asset_pair.1) || (pool_info.asset_a == asset_pair.1 && pool_info.asset_b == asset_pair.0);
+        let pair = pool_info.reserves;
+        let pair_matches_exchange_pair = (pair.a.id == asset_pair.0 && pair.b.id == asset_pair.1) || (pair.a.id == asset_pair.1 && pair.b.id == asset_pair.0);
 
         require(pair_matches_exchange_pair, InitError::PairDoesNotDefinePool);
 
