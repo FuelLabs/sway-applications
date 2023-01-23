@@ -3,7 +3,7 @@ use fuels::prelude::*;
 use test_utils::{
     data_structures::LiquidityParameters as TestLiquidityParameters,
     interface::{
-        atomic_add_liquidity_script_mod::{Asset, AssetPair},
+        abigen_bindings::shared_types::{Asset, AssetPair},
         LiquidityParameters, SCRIPT_GAS_LIMIT,
     },
     setup::common::deposit_and_add_liquidity,

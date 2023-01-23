@@ -1,7 +1,7 @@
 use crate::utils::{expected_liquidity, setup};
 use fuels::prelude::*;
 use test_utils::interface::{
-    atomic_add_liquidity_script_mod::{Asset, AssetPair},
+    abigen_bindings::shared_types::{Asset, AssetPair},
     LiquidityParameters, SCRIPT_GAS_LIMIT,
 };
 
