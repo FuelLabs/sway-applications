@@ -60,8 +60,7 @@ jobs:
       - name: Install Fuel toolchain
         uses: FuelLabs/action-fuel-toolchain@v0.2.0
         with:
-          name: my-toolchain
-          components: forc, fuel-core
+          toolchain: latest
 
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
@@ -106,8 +105,7 @@ jobs:
       - name: Install Fuel toolchain
         uses: FuelLabs/action-fuel-toolchain@v0.2.0
         with:
-          name: my-toolchain
-          components: forc, fuel-core
+          toolchain: latest
 
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
