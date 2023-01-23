@@ -1,8 +1,9 @@
 import { Button, Flex, Icon, Text } from "@fuel-ui/react";
 import { bn } from "fuels";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-import { useCancelAuction } from "../hooks/useCancelAuctaion";
+import { useCancelAuction } from "../hooks/useCancelAuction";
 
 import { useWallet } from "~/systems/Core/hooks/useWallet";
 import type { IdentityOutput } from "~/types/contracts/AuctionContractAbi";
@@ -20,12 +21,12 @@ export const CancelAuctionButton = ({
   const { wallet } = useWallet();
   const [identityOutput, setIdentityOutput] = useState<IdentityOutput>();
 
-  if (!wallet) throw new Error("wallet not connected");
+  if (!wallet) toast.error("wallet not connected");
 
   useEffect(() => {
     const result: IdentityOutput = {
       Address: {
-        value: wallet.address.toHexString()!,
+        value: wallet!.address.toHexString()!,
       },
     };
     setIdentityOutput(result);
