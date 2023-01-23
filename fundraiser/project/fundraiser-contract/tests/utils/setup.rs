@@ -1,16 +1,18 @@
 use fuels::{
     prelude::*,
     tx::{ContractId, Salt},
+    types::Identity,
 };
 
 abigen!(
-    Fundraiser,
-    "./project/fundraiser-contract/out/debug/fundraiser-contract-abi.json"
-);
-
-abigen!(
-    Asset,
-    "./project/fundraiser-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+    Contract(
+        name = "Fundraiser",
+        abi = "./project/fundraiser-contract/out/debug/fundraiser-contract-abi.json"
+    ),
+    Contract(
+        name = "Asset",
+        abi = "./project/fundraiser-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+    )
 );
 
 const ASSET_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";

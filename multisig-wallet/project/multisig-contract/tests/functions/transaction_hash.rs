@@ -5,11 +5,11 @@ use crate::utils::{
 };
 
 use fuels::{
-    contract::abi_encoder::ABIEncoder,
+    core::abi_encoder::ABIEncoder,
     prelude::*,
     signers::fuel_crypto::Hasher,
     tx::Bytes32,
-    types::{enum_variants::EnumVariants, param_types::ParamType},
+    types::{enum_variants::EnumVariants, param_types::ParamType, Bits256, Identity, Token},
 };
 
 use rand::{rngs::StdRng, Rng, SeedableRng};
@@ -96,7 +96,7 @@ mod success {
             value_token,
         ]);
 
-        let encoded_tx_struct = ABIEncoder::encode(&vec![tx_token]).unwrap().resolve(0);
+        let encoded_tx_struct = ABIEncoder::encode(&[tx_token]).unwrap().resolve(0);
 
         let expected_hash = Hasher::hash(encoded_tx_struct);
 

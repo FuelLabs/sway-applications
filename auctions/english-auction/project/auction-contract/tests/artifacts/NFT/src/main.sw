@@ -1,6 +1,6 @@
 contract;
 
-use sway_libs::nft::{
+use nft::{
     approve,
     approved,
     balance_of,
