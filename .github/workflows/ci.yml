@@ -15,8 +15,6 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   RUST_VERSION: 1.66.0
-  FORC_VERSION: 0.33.1
-  CORE_VERSION: 0.15.3
   PATH_TO_SCRIPTS: .github/scripts
 
 jobs:
@@ -63,7 +61,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.2.0
         with:
           name: my-toolchain
-          components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
+          components: forc, fuel-core
 
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
