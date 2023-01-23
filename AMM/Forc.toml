@@ -3,4 +3,7 @@ members = [
   "./project/contracts/AMM-contract",
   "./project/contracts/exchange-contract",
   "./project/contracts/exchange-contract/tests/artifacts/malicious-implementation",
+  "./project/scripts/atomic-add-liquidity",
+  "./project/scripts/swap-exact-input",
+  "./project/scripts/swap-exact-output",
 ]
