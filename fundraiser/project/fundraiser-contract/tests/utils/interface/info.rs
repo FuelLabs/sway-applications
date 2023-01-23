@@ -1,4 +1,4 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::ContractId};
+use fuels::{programs::call_response::FuelCallResponse, tx::ContractId, types::Identity};
 
 use crate::utils::setup::{AssetInfo, Campaign, CampaignInfo, Fundraiser, Pledge};
 

@@ -1,4 +1,4 @@
-use fuels::contract::call_response::FuelCallResponse;
+use fuels::programs::call_response::FuelCallResponse;
 
 use crate::utils::setup::Template;
 

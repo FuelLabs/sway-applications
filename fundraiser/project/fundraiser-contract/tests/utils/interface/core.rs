@@ -1,7 +1,8 @@
 use fuels::{
-    contract::call_response::FuelCallResponse,
     prelude::*,
+    programs::call_response::FuelCallResponse,
     tx::{AssetId, ContractId},
+    types::Identity,
 };
 
 use crate::utils::setup::{Coin, Fundraiser};
@@ -29,7 +30,7 @@ pub async fn create_campaign(
 ) -> FuelCallResponse<()> {
     contract
         .methods()
-        .create_campaign(asset.clone(), beneficiary.clone(), deadline, target_amount)
+        .create_campaign(*asset, beneficiary.clone(), deadline, target_amount)
         .call()
         .await
         .unwrap()

@@ -6,7 +6,7 @@ use crate::utils::{
 mod success {
 
     use super::*;
-    crate::utils::{
+    use crate::utils::{
         interface::info::{queued, transaction_hash},
         setup::QueueEvent,
     };

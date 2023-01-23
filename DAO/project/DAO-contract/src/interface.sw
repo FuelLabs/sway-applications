@@ -45,7 +45,7 @@ abi DaoVoting {
     /// * When the constructor has not been called to initialize
     /// * When the user deposits an asset that is not the specified governance token.
     /// * When the user does not deposit any assets
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn deposit();
 
     /// Update the user balance to indicate they have withdrawn governance tokens

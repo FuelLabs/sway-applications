@@ -1,6 +1,6 @@
 library utils;
 
-use sway_libs::nft::NFT;
+use nft::NFT;
 
 /// Transfers an NFT from one `Identity` to another.
 ///

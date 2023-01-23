@@ -35,7 +35,7 @@ mod success {
         let final_pool_info = pool_info(&exchange.instance).await.value;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(input_amount <= max_input, true);
+        assert!(input_amount <= max_input);
         assert_eq!(
             final_wallet_balances.asset_a,
             initial_wallet_balances.asset_a - input_amount
@@ -88,7 +88,7 @@ mod success {
         let final_pool_info = pool_info(&exchange.instance).await.value;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(input_amount <= max_input, true);
+        assert!(input_amount <= max_input);
         assert_eq!(
             final_wallet_balances.asset_a,
             initial_wallet_balances.asset_a - input_amount
@@ -135,7 +135,7 @@ mod success {
         let final_pool_info = pool_info(&exchange.instance).await.value;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(input_amount <= max_input, true);
+        assert!(input_amount <= max_input);
         assert_eq!(
             final_wallet_balances.asset_b,
             initial_wallet_balances.asset_b - input_amount
@@ -188,7 +188,7 @@ mod success {
         let final_pool_info = pool_info(&exchange.instance).await.value;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-        assert_eq!(input_amount <= max_input, true);
+        assert!(input_amount <= max_input);
         assert_eq!(
             final_wallet_balances.asset_b,
             initial_wallet_balances.asset_b - input_amount

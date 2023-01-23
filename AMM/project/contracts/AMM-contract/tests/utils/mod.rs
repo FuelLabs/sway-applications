@@ -1,12 +1,14 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::Contract as TxContract};
+use fuels::{prelude::*, programs::call_response::FuelCallResponse, tx::Contract as TxContract};
 
 abigen!(
-    AMM,
-    "./project/contracts/AMM-contract/out/debug/AMM-contract-abi.json"
-);
-abigen!(
-    Exchange,
-    "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
+    Contract(
+        name = "AMM",
+        abi = "./project/contracts/AMM-contract/out/debug/AMM-contract-abi.json"
+    ),
+    Contract(
+        name = "Exchange",
+        abi = "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
+    )
 );
 
 pub struct ExchangeContract {
@@ -58,7 +60,7 @@ pub mod amm_abi_calls {
         contract
             .methods()
             .add_pool(asset_pair, pool)
-            .set_contracts(&[pool.into()])
+            .set_contract_ids(&[pool.into()])
             .call()
             .await
             .unwrap()
@@ -98,7 +100,7 @@ pub mod test_helpers {
     pub async fn initialize_amm_contract(wallet: &WalletUnlocked, amm_instance: &AMM) {
         Contract::deploy(
             EXCHANGE_CONTRACT_BINARY_PATH,
-            &wallet,
+            wallet,
             TxParameters::default(),
             StorageConfiguration::default(),
         )
@@ -122,7 +124,7 @@ pub mod test_helpers {
             } else {
                 MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH
             },
-            &wallet,
+            wallet,
             TxParameters::default(),
             StorageConfiguration::default(),
             Salt::from(salt),
@@ -170,7 +172,7 @@ pub mod test_helpers {
         )
         .await
         .unwrap();
-        let amm_instance = AMM::new(amm_contract_id.clone(), wallet.clone());
+        let amm_instance = AMM::new(amm_contract_id, wallet.clone());
 
         // setup two asset pairs that will be used in tests
         let asset_pairs = vec![
