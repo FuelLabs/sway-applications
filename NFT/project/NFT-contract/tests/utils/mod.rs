@@ -1,9 +1,9 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*};
+use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identity};
 
-abigen!(
-    Nft,
-    "./project/NFT-contract/out/debug/NFT-contract-abi.json"
-);
+abigen!(Contract(
+    name = "Nft",
+    abi = "./project/NFT-contract/out/debug/NFT-contract-abi.json"
+),);
 
 pub struct Metadata {
     pub contract: Nft,
@@ -67,7 +67,7 @@ pub mod abi_calls {
     ) -> FuelCallResponse<()> {
         contract
             .methods()
-            .constructor(admin.clone(), token_supply.clone())
+            .constructor(admin.clone(), token_supply)
             .call()
             .await
             .unwrap()

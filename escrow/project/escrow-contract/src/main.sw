@@ -83,7 +83,7 @@ impl Escrow for Contract {
         log(AcceptedArbiterEvent { identifier });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn create_escrow(
         arbiter: Arbiter,
         assets: Vec<Asset>,
@@ -120,7 +120,7 @@ impl Escrow for Contract {
         });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn deposit(identifier: u64) {
         // The assertions ensure that only the buyer can deposit (only once) prior to the deadline
         // and escrow completion
@@ -175,7 +175,7 @@ impl Escrow for Contract {
         log(DisputeEvent { identifier });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn propose_arbiter(arbiter: Arbiter, identifier: u64) {
         // The assertions ensure that only the seller can propose a new arbiter and the arbiter
         // cannot be the buyer / seller, the arbiter will be able to take a none-zero payment
