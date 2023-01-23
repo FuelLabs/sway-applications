@@ -1,10 +1,7 @@
 use crate::utils::{
-    interface::{constructor, nonce},
-    test_helpers::{default_users, setup_env, DEFAULT_THRESHOLD},
-    User, VALID_SIGNER_PK,
+    interface::{core::constructor, info::nonce},
+    setup::{default_users, setup_env, DEFAULT_THRESHOLD, VALID_SIGNER_PK},
 };
-
-use fuels::prelude::*;
 
 mod success {
 
@@ -23,6 +20,8 @@ mod success {
 mod revert {
 
     use super::*;
+    use crate::utils::setup::User;
+    use fuels::prelude::Bits256;
 
     #[tokio::test]
     #[should_panic(expected = "CannotReinitialize")]

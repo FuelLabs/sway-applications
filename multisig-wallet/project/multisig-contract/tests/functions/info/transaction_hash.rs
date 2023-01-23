@@ -1,30 +1,25 @@
-use crate::utils::{
-    interface::{nonce, transaction_hash},
-    test_helpers::{setup_env, DEFAULT_TRANSFER_AMOUNT},
-    VALID_SIGNER_PK,
-};
-
-use fuels::{
-    contract::abi_encoder::ABIEncoder,
-    prelude::*,
-    signers::fuel_crypto::Hasher,
-    tx::Bytes32,
-    types::{enum_variants::EnumVariants, param_types::ParamType},
-};
-
-use rand::{rngs::StdRng, Rng, SeedableRng};
-
-struct Transaction {
-    contract_identifier: ContractId,
-    data: Bits256,
-    destination: Identity,
-    nonce: u64,
-    value: u64,
-}
-
 mod success {
 
-    use super::*;
+    use crate::utils::{
+        interface::info::{nonce, transaction_hash},
+        setup::{setup_env, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK},
+    };
+    use fuels::{
+        contract::abi_encoder::ABIEncoder,
+        prelude::{Bits256, ContractId, Identity, Token},
+        signers::fuel_crypto::Hasher,
+        tx::Bytes32,
+        types::{enum_variants::EnumVariants, param_types::ParamType},
+    };
+    use rand::{rngs::StdRng, Rng, SeedableRng};
+
+    struct Transaction {
+        contract_identifier: ContractId,
+        data: Bits256,
+        destination: Identity,
+        nonce: u64,
+        value: u64,
+    }
 
     #[tokio::test]
     async fn gets_transaction_hash() {

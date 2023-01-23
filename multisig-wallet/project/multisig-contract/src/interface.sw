@@ -69,8 +69,14 @@ abi MultiSignatureWallet {
     /// - When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
     fn transfer(asset_id: ContractId, data: b256, signatures: Vec<SignatureInfo>, to: Identity, value: u64);
+}
 
-    /// Returns the current nonce in the contract
+abi Info {
+    /// Returns the current threshold.
+    #[storage(read)]
+    fn threshold() -> u64;
+
+    /// Returns the current nonce.
     #[storage(read)]
     fn nonce() -> u64;
 

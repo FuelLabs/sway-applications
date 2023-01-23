@@ -20,7 +20,7 @@ use std::{
 use data_structures::{SignatureInfo, User};
 use errors::{AccessControlError, ExecutionError, InitError};
 use events::{CancelEvent, ExecutedEvent, TransferEvent};
-use interface::MultiSignatureWallet;
+use interface::{Info, MultiSignatureWallet};
 use utils::{create_hash, recover_signer};
 
 storage {
@@ -123,6 +123,13 @@ impl MultiSignatureWallet for Contract {
             to,
             value,
         });
+    }
+}
+
+impl Info for Contract {
+    #[storage(read)]
+    fn threshold() -> u64 {
+        storage.threshold
     }
 
     #[storage(read)]

@@ -1,12 +1,9 @@
-use crate::utils::{
-    interface::{constructor, nonce},
-    test_helpers::{default_users, setup_env, DEFAULT_THRESHOLD},
-    VALID_SIGNER_PK,
-};
-
 mod success {
 
-    use super::*;
+    use crate::utils::{
+        interface::{core::constructor, info::nonce},
+        setup::{default_users, setup_env, DEFAULT_THRESHOLD, VALID_SIGNER_PK},
+    };
 
     #[tokio::test]
     async fn gets_nonce() {

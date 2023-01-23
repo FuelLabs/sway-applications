@@ -1,14 +1,16 @@
 use crate::utils::{
-    interface::{cancel_transaction, constructor, nonce},
-    test_helpers::{default_users, setup_env, DEFAULT_THRESHOLD},
-    CancelEvent, VALID_SIGNER_PK,
+    interface::{
+        core::{cancel_transaction, constructor},
+        info::nonce,
+    },
+    setup::{default_users, setup_env, DEFAULT_THRESHOLD, VALID_SIGNER_PK},
 };
 
 mod success {
 
-    use fuels::prelude::Bits256;
-
     use super::*;
+    use crate::utils::setup::CancelEvent;
+    use fuels::prelude::Bits256;
 
     #[tokio::test]
     async fn cancels_transaction() {

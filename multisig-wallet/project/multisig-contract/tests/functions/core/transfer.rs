@@ -1,16 +1,22 @@
 use crate::utils::{
-    interface::{balance, constructor, nonce, transaction_hash, transfer},
-    test_helpers::{
-        base_asset_contract_id, default_users, setup_env, transfer_parameters, transfer_signatures,
-        DEFAULT_THRESHOLD, DEFAULT_TRANSFER_AMOUNT,
+    interface::{
+        core::{constructor, transfer},
+        info::{nonce, transaction_hash},
     },
-    TransferEvent, VALID_SIGNER_PK,
+    setup::{
+        base_asset_contract_id, default_users, setup_env, transfer_parameters, transfer_signatures,
+        DEFAULT_THRESHOLD, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
+    },
 };
-use fuels::{prelude::*, signers::fuel_crypto::Message};
+use fuels::{
+    prelude::{TxParameters, BASE_ASSET_ID},
+    signers::fuel_crypto::Message,
+};
 
 mod success {
 
     use super::*;
+    use crate::utils::{interface::info::balance, setup::TransferEvent};
 
     #[tokio::test]
     async fn transfers() {
