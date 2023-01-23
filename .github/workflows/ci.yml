@@ -107,7 +107,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.2.0
         with:
           name: my-toolchain
-          components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
+          components: forc, fuel-core
 
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
