@@ -138,77 +138,46 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="testing"><a class="header" href="#testing">Testing</a></h1>
-<p>Testing is a large topic to cover therefore this section will only cover some points that are followed in the repository.</p>
-<h2 id="file-separation"><a class="header" href="#file-separation">File Separation</a></h2>
-<p>There are three components to the tests and they have the following structure.</p>
+<p>The <a href="https://github.com/FuelLabs/sway-applications">Sway Applications repository</a> generally follows the current file structure when testing using the <a href="https://github.com/FuelLabs/fuels-rs">Rust SDK</a>.</p>
 <pre><code>tests/
 ├── functions/
 |     └── 1 file per ABI function
 ├── utils/
+|     ├── interface.rs
+|     ├── setup.rs
 |     └── mod.rs
 └── harness.rs
 </code></pre>
-<h3 id="functions"><a class="header" href="#functions"><code>functions</code></a></h3>
-<p>The <code>functions</code> directory contains 1 file per function declared in the <code>ABI</code> and all <strong>test cases</strong> (not utility / helper functions) for that function are contained within that module. </p>
-<p>There are two possibilities with any function call and either the call succeeds or it reverts. For this reason each file is split into two sections:</p>
+<h2 id="functions"><a class="header" href="#functions"><code>functions</code></a></h2>
+<p>The <code>functions</code> directory contains 1 file per function declared in the <code>abi</code> and all <strong>test cases</strong> (not utility/helper functions) for that function are contained within that module. </p>
+<p>There are two possibilities with any function call and they are that either the call succeeds or it reverts. For this reason each file contains two modules:</p>
 <ul>
 <li><code>success</code></li>
 <li><code>revert</code></li>
 </ul>
-<p>All of the tests where the function does not revert should be contained inside the <code>success</code> case while the reverting calls (panics) should be contained inside the <code>revert</code> module.</p>
-<h3 id="utils"><a class="header" href="#utils"><code>utils</code></a></h3>
+<p>All of the tests where the function does not revert should be contained inside the <code>success</code> module while the reverting calls (panics) should be contained inside the <code>revert</code> module.</p>
+<p>There are two additional alternatives to consider:</p>
+<ol>
+<li>The <code>abi</code> may be split into multiple <code>abi</code> blocks
+<ol>
+<li>In this case each <code>abi</code> may be its own directory containing its functions</li>
+<li>This changes the structure from having all functions in 1 directory to having categorized functions in their relevant directories</li>
+</ol>
+</li>
+<li>In some cases it may be reasonable to further separate the function into its own directory which contains two files
+<ol>
+<li><code>success</code></li>
+<li><code>revert</code></li>
+</ol>
+</li>
+</ol>
+<h2 id="utils"><a class="header" href="#utils"><code>utils</code></a></h2>
 <p>The <code>utils</code> directory contains utility functions and abstractions which allow the tests in the <code>functions</code> directory to remain small, clean and &quot;DRY&quot; (do not repeat yourself).</p>
 <p>This can be achieved by separating content into files, internally creating modules in <code>mod.rs</code> or a mixture of both.</p>
-<p>The repository follows the pattern of putting utility functions in <code>mod.rs</code> and separating them internally into <code>ABI</code> wrappers and test helpers. The <code>ABI</code> wrappers are functions which directly call the contract function with the arguments passed in while the test helpers are general utility functions such as creating a new contract instance for a new test etc.</p>
-<h3 id="harnessrs"><a class="header" href="#harnessrs"><code>harness.rs</code></a></h3>
+<p>The <code>interface.rs</code> file contains <code>abi</code> wrappers which are functions that are generally limited to calling the contract with the relevant arguments. In the case where there are multiple <code>abi</code> blocks (as mentioned in <a href="#functions"><code>functions</code></a>) the <code>interface.rs</code> file would be changed to follow a similar structure.</p>
+<p>The <code>setup.rs</code> file contains code that generates the contracts/scripts/predicates and sets up the environment for the tests in the <a href="#functions"><code>functions</code></a> directory.</p>
+<h2 id="harnessrs"><a class="header" href="#harnessrs"><code>harness.rs</code></a></h2>
 <p>The <code>harness</code> file is the entry point for the tests, and thus it contains the <code>functions</code> and <code>utils</code> modules. This is what is executed when <code>cargo test</code> is run.</p>
-<h2 id="testing-suggestions"><a class="header" href="#testing-suggestions">Testing Suggestions</a></h2>
-<!-- TODO: this is a mess and it should be cleaned up and categorized at some point-->
-<p>Here are some tips on how to approach testing:</p>
-<ul>
-<li>Similar to <a href="code-structure.html">code structure</a> content, each file should be ordered alphabetically, with one exception, so that it's easy to navigate
-<ul>
-<li>Test conditions in the order in which they may occur
-<ul>
-<li>If a test has multiple assertions then the first assertion should be tested first, second assertion second etc.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Check the code coverage
-<ul>
-<li>All assertions &amp; requirements should be tested</li>
-<li>Check boundary conditions to see if the values passed in work throughout the entire range</li>
-</ul>
-</li>
-<li>There should be positive and negative test cases meaning that a test should pass with correct data passed in but it should also revert when incorrect data is used</li>
-<li>When writing a test that changes state the test should first assert the initial condition before performing some operation and then testing the outcome of that operation
-<ul>
-<li>If the initial condition is not proven to be what is expected then there is no guarantee that the operation has performed the correct behavior</li>
-<li>This also means that the initial condition should be compared to the post condition</li>
-</ul>
-</li>
-<li>Comments should only be added to explain sections of each test if they provide insight into some complex behavior
-<ul>
-<li>If a function sets up the initial environment then there is no point in adding a comment &quot;set up the environment&quot; because the function name should be clear enough e.g. <code>fn setup()</code></li>
-</ul>
-</li>
-<li>Any tests that are ignored should be documented in the test so that the reader knows why something is currently unimplemented
-<ul>
-<li>Do not leave in commented out tests. <code>#[ignore]</code> them</li>
-</ul>
-</li>
-<li>Unit tests should remain as unit tests
-<ul>
-<li>Do not bundle multiple different checks into one test unless it becomes semantically meaningless when separating them</li>
-</ul>
-</li>
-<li>Checking that a behavior continues to work more than once may be necessary at times
-<ul>
-<li>If a user can deposit then there should be a test to see that they can deposit more than once</li>
-</ul>
-</li>
-</ul>
 
                     </main>
 
