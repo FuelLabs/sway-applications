@@ -38,8 +38,8 @@ If you are interested in a functional overview then this is the section for you.
 
 1. Sets the parameters for approving a transaction and sets the owners of the multisig.
    1. If the constructor hasn't already been called.
-   2. Requires the `threshold`; the number of approvals required for a transaction to occur.
-      1. If the `threshold` is not 0.
+   2. Requires the config time constant `THRESHOLD`; the number of approvals required for a transaction to occur.
+      1. If the `THRESHOLD` is not 0.
    3. Requires the `users`; the information about the owners of the multisig
       1. If none of the owners have the 0th address (0x00000...).
       2. If none of the owners are set to have an approval weighting (number of approvals per owner) of 0.
