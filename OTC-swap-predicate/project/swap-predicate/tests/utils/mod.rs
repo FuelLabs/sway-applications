@@ -29,7 +29,8 @@ pub fn configure_wallets(asked_asset: AssetId) -> WalletsConfig {
                 id: asset,
                 num_coins: 1,
                 coin_amount: 1_000_000_000,
-            }).to_vec(),
+            })
+            .to_vec(),
     )
 }
 
