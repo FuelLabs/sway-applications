@@ -2,5 +2,5 @@
 channel = "beta-1"
 
 [components]
-forc = "0.33.1"
+forc = "0.33.0"
 fuel-core = "0.15.3"
