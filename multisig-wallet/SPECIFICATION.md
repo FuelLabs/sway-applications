@@ -2,17 +2,18 @@ Table of Contents
 
 - [Overview](#overview)
 - [Use Cases](#use-cases)
-  - [Core Functionality](#core-functionality)
-    - [`cancel_transaction()`](#cancel_transaction)
-    - [`constructor()`](#constructor)
-    - [`execute_transaction()`](#execute_transaction)
-    - [`transfer()`](#transfer)
-  - [State Checks](#state-checks)
-    - [`nonce()`](#nonce)
-    - [`balance()`](#balance)
-  - [Utilities](#Utilities)
-    - [`transaction_hash()`](#transaction_hash)
-- [Sequence Diagram](#sequence-diagram)
+      - [Core Functionality](#core-functionality)
+        - [`cancel_transaction()`](#cancel_transaction)
+        - [`constructor()`](#constructor)
+        - [`execute_transaction()`](#execute_transaction)
+        - [`transfer()`](#transfer)
+      - [State Checks](#state-checks)
+        - [`balance()`](#balance)
+        - [`nonce()`](#nonce)
+        - [`threshold()`](#threshold)
+      - [Utilities](#utilities)
+        - [`transaction_hash()`](#transaction_hash)
+  - [Sequence Diagram](#sequence-diagram)
 
 # Overview
 
@@ -73,14 +74,18 @@ If you are interested in a functional overview then this is the section for you.
 
 #### State Checks
 
-##### `nonce()`
-
-1. Returns the current nonce of the contract.
-
 ##### `balance()`
 
 1. Returns the contract's balance of the specified asset.
    1. Requires `asset_id`; The contract ID of the asset to check that balance of.
+
+##### `nonce()`
+
+1. Returns the current nonce of the contract.
+
+##### `threshold()`
+
+1. Returns the threshold for execution.
 
 #### Utilities
 
