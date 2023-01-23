@@ -15,7 +15,7 @@ tests/
 
 ## `functions`
 
-The `functions` directory contains 1 file per function declared in the `abi` and all **test cases** (not utility / helper functions) for that function are contained within that module. 
+The `functions` directory contains 1 file per function declared in the `abi` and all **test cases** (not utility/helper functions) for that function are contained within that module. 
 
 There are two possibilities with any function call and they are that either the call succeeds or it reverts. For this reason each file contains two modules:
 
