@@ -79,6 +79,27 @@ This section has a brief description of each directory. More details can be foun
 - [packages/config](../packages/config/) Build configurations
 - [docker](../docker/) Network configurations
 
+### 🧰 Useful Scripts
+
+To make life easier we added as many useful scripts as possible to our [package.json](../package.json). These are some of the most used during development:
+
+```sh
+pnpm <command name>
+```
+
+| Script             | Description                                                                                                          |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `dev`              | Run development server for the WebApp [packages/app](../packages/app/).                                              |
+| `contracts`        | Build, generate types, and deploy [packages/contracts](../packages/contracts). It should be used when editing contracts. |
+| `contracts:build`  | Build and generate types [packages/contracts](../packages/contracts).                                                |
+| `contracts:deploy` | Deploy the current contract binaries.                                                                                         |
+| `scripts:setup`    | Setup the [english-auction-scripts](../packages/scripts/) package which is used to build, deploy contracts, and generate types.                |
+| `services:clean`   | Stop and remove all development containers that are running locally.                                                 |
+| `services:run`     | Run the local network with `fuel-core`.                                         |
+| `services:setup`   | Run the local network, setup `english-auction-scripts` and build and deploy contracts normally used on the first run.       |
+
+> Other scripts can be found in [package.json](../package.json).
+
 ### User Interface E2E Tests
 
 In order to run the user interface e2e tests make sure that you are in the root of this directory i.e `/path/to/english-auction/`
