@@ -73,6 +73,8 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   const connectButton = connectPage.locator('button').getByText('Connect');
   await connectButton.click();
 
+  console.log('three');
+
   return { appPage, walletPage };
 }
 
@@ -269,7 +271,11 @@ test.describe('e2e', () => {
   }) => {
     const { appPage, walletPage } = getPages(context);
 
+    console.log('in first test');
+
     await appPage.goto('/sell');
+
+    console.log('yupp');
 
     await switchWallet(walletPage, extensionId, ACCOUNT1);
 
