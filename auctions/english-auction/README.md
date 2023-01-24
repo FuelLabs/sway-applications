@@ -38,16 +38,19 @@ english-auction/
 To run the frontend locally first make sure that your are in the root of this project directory i.e `/path/to/english-auction/`
 
 Install dependencies
+
 ```bash
 pnpm install
 ```
 
 Run a local node and setup contracts
+
 ```bash
 pnpm services:setup
 ```
 
 Run web app
+
 ```bash
 pnpm dev
 ```
@@ -59,18 +62,24 @@ You can now interact with the web app on `http://localhost:3000`
 In order to run the user interface e2e tests make sure that you are in the root of this directory i.e `/path/to/english-auction/`
 
 Run a local node and setup contracts in test env
+
 ```bash
 pnpm services:setup-test
 ```
 
 Run test
+
 ```bash
 pnpm test
 ```
 
+Note. In order to run the tests `VITE_FUEL_PROVIDER_URL` must be set to `http://localhost:4000/graphql` inside of `.env.test`
+
+Note. After you run the tests once they will not all pass again until you `pnpm services:reset-test`
+
 ### Rust Unit Tests
 
-In order to run the rust unit tests make sure that you are in this directory `/packages/contracts/english-auction/project/auction-contract/<you are here>`
+In order to run the rust unit tests make sure that you are in this directory `/english-auction/packages/contracts/english-auction/project/auction-contract/<you are here>`
 
 Build the contracts:
 

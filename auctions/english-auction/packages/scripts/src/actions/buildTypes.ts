@@ -1,6 +1,5 @@
 import { spawn } from 'child_process';
 import type { Config } from 'src/types';
-
 // Generate types
 export async function buildTypes(config: Config) {
   return new Promise((resolve, reject) => {

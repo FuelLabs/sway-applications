@@ -24,7 +24,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content-script-loader.contentScript.ts-88d73701-aecef15c.js"
+        "assets/content-script-loader.contentScript.ts-8171eb4a-35f30907.js"
       ],
       "matches": ["<all_urls>"],
       "run_at": "document_start",
@@ -45,10 +45,10 @@
     {
       "matches": ["<all_urls>"],
       "resources": [
-        "assets/index-ba02b8c1.js",
+        "assets/index-0339478c.js",
         "assets/constants-97362116.js",
-        "assets/pageScript-8aea6675.js",
-        "assets/contentScript.ts-88d73701.js"
+        "assets/pageScript-6748fe76.js",
+        "assets/contentScript.ts-8171eb4a.js"
       ],
       "use_dynamic_url": true
     }

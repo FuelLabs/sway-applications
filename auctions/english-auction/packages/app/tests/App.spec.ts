@@ -27,7 +27,7 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   const pasteButton = signupPage.locator('button').getByText('Paste');
   await pasteButton.click();
 
-  const nextButton = signupPage.locator('button').getByText('Next');
+  let nextButton = signupPage.locator('button').getByText('Next');
   await nextButton.click();
 
   // Enter password
@@ -39,6 +39,9 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   // Agree to T&S
   await signupPage.getByRole('checkbox').click();
   await signupPage.locator('button').getByText('Next').click();
+  await signupPage.waitForSelector('text="Wallet created successfully"');
+
+  await addWallet(walletPage, extensionId, ACCOUNT2);
 
   const appPage = await context.newPage();
 
@@ -47,13 +50,25 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   // Go back to app page and connect wallet
   await appPage.goto('/sell');
 
-  // CONNECT TO WALLET
+  // Connect to wallets
   const connectPage = await connectPagePromise;
   await connectPage.waitForLoadState();
+
+  nextButton = connectPage.locator('button').getByText('Next');
+  await nextButton.click();
+
+  const changeButton = connectPage.locator('button').getByText('Change');
+  await changeButton.click();
+
+  const activateAccount1Card = connectPage.locator(`[aria-label="${ACCOUNT1}"]`);
+  const switchButton = activateAccount1Card.getByRole('switch');
+  await switchButton.click();
+
+  nextButton = connectPage.locator('button').getByText('Next');
+  await nextButton.click();
+
   const connectButton = connectPage.locator('button').getByText('Connect');
   await connectButton.click();
-
-  await addWallet(walletPage, extensionId, ACCOUNT2);
 
   return { appPage, walletPage };
 }
@@ -74,6 +89,8 @@ async function walletApprove(approvePagePromise: Promise<Page>) {
 async function addWallet(walletPage: Page, extensionId: string, accountName: string) {
   await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
 
+  await walletPage.waitForSelector('[aria-label="Accounts"]');
+
   // First we have to add a second account
   const accountsButton = walletPage.locator('[aria-label="Accounts"]');
   await accountsButton.click();
@@ -92,7 +109,8 @@ async function addWallet(walletPage: Page, extensionId: string, accountName: str
 
   const accountConfirmButton = walletPage.locator('button').getByText('Add Account');
   await accountConfirmButton.click();
-  await walletPage.screenshot({ path: 'temp.png', fullPage: true });
+
+  await walletPage.waitForSelector('img');
 }
 
 async function switchWallet(walletPage: Page, extensionId: string, accountName: string) {
@@ -119,7 +137,6 @@ test.beforeAll(async ({ context, extensionId }) => {
 test.describe('e2e', () => {
   // TODO this may require block manipulation etc
   test.fixme('Test auction expires', async () => {});
-
   test('Test auction (Sell: Token, Bid: Token) is canceled', async ({ context, extensionId }) => {
     // ACCOUNT1 CREATES AUCTION
 

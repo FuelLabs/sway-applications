@@ -73,7 +73,7 @@ importers:
       '@fuel-ui/css': ^0.9.3
       '@fuel-ui/react': ^0.9.3
       '@fuel-ui/test-utils': ^0.10.1
-      '@fuel-wallet/sdk': 0.3.0-next-a12ba85
+      '@fuel-wallet/sdk': 0.4.0-next-c59d9d7
       '@headlessui/react': ^1.7.7
       '@hookform/resolvers': ^2.9.10
       '@playwright/test': ^1.29.1
@@ -183,7 +183,7 @@ importers:
       '@fuel-ts/wallet-manager': 0.29.1
       '@fuel-ui/css': 0.9.3
       '@fuel-ui/react': 0.9.3_kb4gp5zybjkbkuvc7baikakbme
-      '@fuel-wallet/sdk': 0.3.0-next-a12ba85_fuels@0.29.1
+      '@fuel-wallet/sdk': 0.4.0-next-c59d9d7_fuels@0.29.1
       '@headlessui/react': 1.7.7_biqbaboplfbrettd7655fr4n2y
       '@hookform/resolvers': 2.9.10_react-hook-form@7.41.5
       '@radix-ui/react-accordion': 0.1.6_react@18.2.0
@@ -4739,12 +4739,12 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@fuel-wallet/sdk/0.3.0-next-a12ba85_fuels@0.29.1:
-    resolution: {integrity: sha512-AAX5QhKEwO3Ew3lmpR8odo0iu9ePMpyieDjW8tWSHIVXiMmiI4KIUcNFFl3OPyJE/g1xqMvKfZe5jAKa8FXUAw==}
+  /@fuel-wallet/sdk/0.4.0-next-c59d9d7_fuels@0.29.1:
+    resolution: {integrity: sha512-capjFjTFt2flYq3bUfHQrB1oZmngAxzfR8M8KxQqDgl1NzLzm40EvMy4KIv8zWlD0ResRoCSrogzva/XX1Mbdg==}
     peerDependencies:
-      fuels: '>=0.27.0'
+      fuels: '>=0.29.1'
     dependencies:
-      '@types/chrome': 0.0.204
+      '@types/chrome': 0.0.208
       dexie-observable: 4.0.0-beta.13
       events: 3.3.0
       fuels: 0.29.1
@@ -10457,8 +10457,8 @@ packages:
       '@types/node': 18.11.18
     dev: false
 
-  /@types/chrome/0.0.204:
-    resolution: {integrity: sha512-EvnHfxMHUWP5EAlRMK66uIEUiy36t72vg5RwmzQv9tdIl2ZmAp92NwvmEZJKpbRnIMTEc2BmSmtrFiEISUJ0Sw==}
+  /@types/chrome/0.0.208:
+    resolution: {integrity: sha512-VDU/JnXkF5qaI7WBz14Azpa2VseZTgML0ia/g/B1sr9OfdOnHiH/zZ7P7qCDqxSlkqJh76/bPc8jLFcx8rHJmw==}
     dependencies:
       '@types/filesystem': 0.0.32
       '@types/har-format': 1.2.10

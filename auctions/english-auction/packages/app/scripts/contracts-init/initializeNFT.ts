@@ -15,7 +15,9 @@ export async function initializeNFT() {
   await walletManager.addAccount();
   const accounts = walletManager.getAccounts();
   const sellerWallet = walletManager.getWallet(accounts[0].address);
+  sellerWallet.connect(process.env.PROVIDER_URL!);
   const buyerWallet = walletManager.getWallet(accounts[1].address);
+  buyerWallet.connect(process.env.PROVIDER_URL!);
 
   const sellerNFTContract = NFTAbi__factory.connect(process.env.VITE_NFT_ID!, sellerWallet);
   const buyerNFTContract = NFTAbi__factory.connect(process.env.VITE_NFT_ID!, buyerWallet);
@@ -29,6 +31,7 @@ export async function initializeNFT() {
     })
     .txParams({ gasPrice: 1 })
     .call();
+
   console.log(`Minted NFTs with token ids [0-9] to address: ${sellerAddress}`);
 
   for (let i = 0; i < sellerMintCount.toNumber(); i += 1) {

@@ -55,7 +55,6 @@ dist-ssr
 *.pem
 
 # local env files
-.env
 !docker/.env
 docker/.env.testnet
 .env.local

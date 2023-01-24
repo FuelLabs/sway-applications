@@ -15,8 +15,10 @@ export const useWallet = () => {
   } = useQuery(
     ['wallet'],
     async () => {
-      // TODO fix: don't hardcode
-      await fuel.connect({ url: 'http://localhost:4000/graphql' });
+      // if (!(await fuel.isConnected())) {
+      //   await fuel.connect();
+      // }
+      await fuel.connect();
       const selectedAccount = (await fuel.getSelectedAccount()) as string;
       const selectedWallet = await fuel.getWallet(selectedAccount);
       return selectedWallet;
