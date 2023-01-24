@@ -15,15 +15,14 @@ More information can be found in the [specification](./SPECIFICATION.md).
 
 ## Repository Structure
 
-The project consists of a smart contract and a user interface which the user can interact with.
+The project consists of a smart contract.
 
 ```
 english-auction/
-├── contract/
-|    └── src/main.sw
-|    └── tests/harness.rs
-├── frontend/
-|    └── Directories & files
+├── project/
+|   └── auction-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
 ├── README.md
 └── SPECIFICATION.md
 ```
@@ -36,27 +35,19 @@ TODO: UI does not currently exist
 
 ### Tests
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/english-auction/<you are here>`
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/auctions/english-auction/<you are here>`
 
-There are three commands required to run the tests
+Build the contracts:
 
-1. Build the native token asset used for selling and bidding in the auction
-   
-   ```bash
-   forc build --path tests/artifacts/asset
-   ```
+```bash
+forc build
+```
 
-1. Build the NFT asset used for selling and bidding in the auction
-   
-   ```bash
-   forc build --path ../../NFT/
-   ```
+Run the tests:
 
-3. Run the tests
-
-   ```bash
-   forc test
-   ```
+```bash
+cargo test
+```
 
 ## Specification
 

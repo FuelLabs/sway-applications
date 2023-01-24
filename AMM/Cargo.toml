@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = [
+    "./project/contracts/AMM-contract",
+    "./project/contracts/exchange-contract",
+    "./project/scripts/atomic-add-liquidity",
+    "./project/scripts/swap-exact-input",
+    "./project/scripts/swap-exact-output",
+]
