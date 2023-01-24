@@ -1,0 +1,31 @@
+name: "Setup Docker"
+inputs:
+  compose-version:
+    description: "Docker-compose version"
+    default: 2.6.0
+  password:
+    description: "Password"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Docker
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ inputs.password }}
+
+    # Make github action to use the latest version of
+    # docker compose without it docker compose down
+    # has issues with memory nil pointer
+    # https://github.com/docker/compose/pull/9354
+    - name: Install Compose
+      uses: ndeloof/install-compose-action@v0.0.1
+      with:
+        version: v${{ inputs.compose-version }}
+
+    - name: Docker info
+      run: |
+        docker info
+      shell: bash
