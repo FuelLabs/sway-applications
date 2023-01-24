@@ -48,6 +48,7 @@ jobs:
       - name: Run Lint
         run: |
           cd auctions/english-auction
+          pnpm install
           pnpm build
           pnpm lint
 
