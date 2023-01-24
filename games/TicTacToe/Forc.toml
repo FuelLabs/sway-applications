@@ -1,4 +1,2 @@
 [workspace]
-members = [
-  "./project/tictactoe-contract",
-]
+members = ["./project/tictactoe-contract"]

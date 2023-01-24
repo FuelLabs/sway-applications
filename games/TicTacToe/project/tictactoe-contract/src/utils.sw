@@ -23,12 +23,19 @@ impl<T> Eq for Option<T> {
     }
 }
 
-pub fn win_check(board: Vec<Option<Identity>>, player: Option<Identity>) -> bool {
+pub fn win_check(board: Vec<Option<Identity>>, player: Identity) -> bool {
     let mut i = 0;
     while (i < 9) {
-        if (board.get(MATCHES[i][0]).unwrap() == player)
-            && (board.get(MATCHES[i][1]).unwrap() == player)
-            && (board.get(MATCHES[i][2]).unwrap() == player)
+        let marker_one = board.get(MATCHES[i][0]).unwrap();
+        let marker_two = board.get(MATCHES[i][1]).unwrap();
+        let marker_three = board.get(MATCHES[i][2]).unwrap();
+
+        if (marker_one.is_some()
+            && marker_one.unwrap() == player)
+            && (marker_two.is_some()
+            && marker_two.unwrap() == player)
+            && (marker_three.is_some()
+            && marker_three.unwrap() == player)
         {
             return true;
         }
@@ -39,17 +46,27 @@ pub fn win_check(board: Vec<Option<Identity>>, player: Option<Identity>) -> bool
 
 pub fn draw(
     board: Vec<Option<Identity>>,
-    player_one: Option<Identity>,
-    player_two: Option<Identity>,
+    player_one: Identity,
+    player_two: Identity,
 ) -> bool {
     let mut i = 0;
     while (i < 9) {
-        if ((board.get(MATCHES[i][0]).unwrap() == player_one)
-            && (board.get(MATCHES[i][1]).unwrap() == player_one)
-            && (board.get(MATCHES[i][2]).unwrap() == player_one)
-            || (board.get(MATCHES[i][0]).unwrap() == player_two)
-            && (board.get(MATCHES[i][1]).unwrap() == player_two)
-            && (board.get(MATCHES[i][2]).unwrap() == player_two))
+        let marker_one = board.get(MATCHES[i][0]).unwrap();
+        let marker_two = board.get(MATCHES[i][1]).unwrap();
+        let marker_three = board.get(MATCHES[i][2]).unwrap();
+
+        if ((marker_one.is_some()
+            && marker_one.unwrap() == player_one)
+            && (marker_two.is_some()
+            && marker_two.unwrap() == player_one)
+            && (marker_three.is_some()
+            && marker_three.unwrap() == player_one)
+            || (marker_one.is_some()
+            && marker_one.unwrap() == player_two)
+            && (marker_two.is_some()
+            && marker_two.unwrap() == player_two)
+            && (marker_three.is_some()
+            && marker_three.unwrap() == player_two))
         {
             return false;
         }

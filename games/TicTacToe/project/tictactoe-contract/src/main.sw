@@ -74,13 +74,13 @@ impl Game for Contract {
                 board.push(storage.board.get(i));
                 i += 1;
             }
-            if (win_check(board, storage.player_turn)) {
+            if (win_check(board, storage.player_turn.unwrap())) {
                 storage.player_turn = Option::None;
                 storage.state = State::Ended;
                 log(GameWonEvent {
                     player: msg_sender().unwrap(),
                 });
-            } else if draw(board, storage.player_one, storage.player_two) {
+            } else if draw(board, storage.player_one.unwrap(), storage.player_two.unwrap()) {
                 storage.player_turn = Option::None;
                 storage.state = State::Ended;
                 log(GameDrawnEvent {
@@ -88,14 +88,14 @@ impl Game for Contract {
                     player_two: storage.player_two.unwrap(),
                 });
             } else {
-                if (storage.player_turn == storage.player_one) {
+                if (storage.player_turn.unwrap() == storage.player_one.unwrap()) {
                     storage.player_turn = storage.player_two;
                 } else {
                     storage.player_turn = storage.player_one;
                 }
             }
         } else {
-            if (storage.player_turn == storage.player_one) {
+            if (storage.player_turn.unwrap() == storage.player_one.unwrap()) {
                 storage.player_turn = storage.player_two;
             } else {
                 storage.player_turn = storage.player_one;
