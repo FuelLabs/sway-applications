@@ -58,10 +58,14 @@ jobs:
           pnpm lint
 
       - name: Initialization
-        run: pnpm services:setup-test
+        run: |
+          cd auctions/english-auction
+          pnpm services:setup-test
       
       - name: Run E2E Tests
-        run: pnpm test
+        run: |
+          cd auctions/english-auction
+          pnpm test
 
   build:
     runs-on: ubuntu-latest
