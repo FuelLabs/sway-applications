@@ -1,8 +1,8 @@
 ## Egnlish Auction Scripts
 
-This package create has toolings to help integrate Sway contracts
-on the Englihs Auction application. It makes easier for developers to
-change contracts at the same time they build a nice UI
+This package has scripts to help integrate Sway contracts
+with the English Auction application. This makes it easier for developers to
+change contracts while building a nice UI
 
 ### Execute
 
@@ -48,12 +48,3 @@ Commands:
 ```
 
 See complete [types here](./src/types.ts).
-
-### Environment variables
-
-| name           | default          | description                                                                                                                                            |
-| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| WALLET_SECRET  | empty            | Wallet secret used to deploy contracts                                                                                                                 |
-| GENESIS_SECRET | empty            | Genesis secret used when WALLET_SECRET is not present it creates a new wallet and seeds values from genesis to the new wallet and deploys the contract |
-| PROVIDER_URL   | fuels-ts default | Fuel network url                                                                                                                                       |
-| GAS_PRICE      | 0                | Specified the gas price used to send the tx                                                                                                            |

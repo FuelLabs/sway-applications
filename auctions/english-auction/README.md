@@ -33,6 +33,13 @@ english-auction/
 
 ## Running the project
 
+### Requirements
+
+- [Node.js v16.15.0 or latest stable](https://nodejs.org/en/). We recommend using [nvm](https://github.com/nvm-sh/nvm) to install.
+- [PNPM v7.1.7 or latest stable](https://pnpm.io/installation/)
+- [Docker v0.8.2 or latest stable](https://docs.docker.com/get-docker/)
+- [Docker Compose v2.6.0 or latest stable](https://docs.docker.com/get-docker/)
+
 ### User Interface
 
 To run the frontend locally first make sure that your are in the root of this project directory i.e `/path/to/english-auction/`
@@ -43,7 +50,12 @@ Install dependencies
 pnpm install
 ```
 
-Run a local node and setup contracts
+In this step we are going to:
+
+- Launch a local `fuel-core` node
+- Setup `english-auction-scripts`
+- Build and deploy the english auction contracts
+- Initialize the NFT contracts
 
 ```bash
 pnpm services:setup
@@ -55,7 +67,17 @@ Run web app
 pnpm dev
 ```
 
-You can now interact with the web app on `http://localhost:3000`
+You can now interact with the web app on [http://localhost:3000](http://localhost:3000)
+
+### Project Overview
+
+This section has a brief description of each directory. More details can be found inside each package, by clicking on the links.
+
+- [packages/app](../packages/app/) Frontend English Auction application
+- [packages/contracts](../packages/contracts/) English Auction 🌴 Sway contracts
+- [packages/scripts](../packages/scripts/) English Auction scripts CLI
+- [packages/config](../packages/config/) Build configurations
+- [docker](../docker/) Network configurations
 
 ### User Interface E2E Tests
 
@@ -73,9 +95,11 @@ Run test
 pnpm test
 ```
 
-Note. In order to run the tests `VITE_FUEL_PROVIDER_URL` must be set to `http://localhost:4000/graphql` inside of `.env.test`
+> **Note**
+ >In order to run the tests `VITE_FUEL_PROVIDER_URL` must be set to `http://localhost:4000/graphql` inside of `.env.test`
 
-Note. After you run the tests once they will not all pass again until you `pnpm services:reset-test`
+> **Note**
+> After you run the tests once they will not all pass again until you `pnpm services:reset-test`
 
 ### Rust Unit Tests
 
