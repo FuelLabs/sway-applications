@@ -6,12 +6,12 @@ pub async fn balance(contract: &MultiSig, asset_id: ContractId) -> FuelCallRespo
     contract.methods().balance(asset_id).call().await.unwrap()
 }
 
-pub async fn threshold(contract: &MultiSig) -> FuelCallResponse<u64> {
-    contract.methods().threshold().call().await.unwrap()
-}
-
 pub async fn nonce(contract: &MultiSig) -> FuelCallResponse<u64> {
     contract.methods().nonce().call().await.unwrap()
+}
+
+pub async fn threshold(contract: &MultiSig) -> FuelCallResponse<u64> {
+    contract.methods().threshold().call().await.unwrap()
 }
 
 pub async fn transaction_hash(
@@ -24,6 +24,19 @@ pub async fn transaction_hash(
     contract
         .methods()
         .transaction_hash(data, nonce, to, value)
+        .call()
+        .await
+        .unwrap()
+}
+
+pub async fn update_hash(
+    contract: &MultiSig,
+    data: Bits256,
+    nonce: u64,
+) -> FuelCallResponse<Bits256> {
+    contract
+        .methods()
+        .update_hash(data, nonce)
         .call()
         .await
         .unwrap()

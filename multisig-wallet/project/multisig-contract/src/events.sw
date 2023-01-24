@@ -12,6 +12,11 @@ pub struct ExecutedEvent {
     value: u64,
 }
 
+pub struct SetThresholdEvent {
+    previous_threshold: u64,
+    threshold: u64,
+}
+
 pub struct TransferEvent {
     asset: ContractId,
     nonce: u64,

@@ -27,6 +27,95 @@ pub struct Caller {
     pub wallet: WalletUnlocked,
 }
 
+pub fn base_asset_contract_id() -> ContractId {
+    ContractId::new(BASE_ASSET_ID.try_into().unwrap())
+}
+
+pub fn default_users() -> Vec<User> {
+    let fuel_user_1 = User {
+        address: Bits256::from_hex_str(
+            "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
+        )
+        .unwrap(),
+        weight: 3,
+    };
+    let evm_user_1 = User {
+        address: Bits256::from_hex_str(
+            "0x000000000000000000000000db4aa29ef306fc8d28025b838ccd3feecaedb333",
+        )
+        .unwrap(),
+        weight: 2,
+    };
+    vec![fuel_user_1, evm_user_1]
+}
+
+fn eip_191_personal_sign_format(message_hash: Message) -> Message {
+    let initial_byte = 0x19u8;
+    let version_byte = 0x45u8;
+
+    let mut eip_191_data: Vec<u8> = vec![initial_byte, version_byte];
+    eip_191_data.append(&mut message_hash.to_vec());
+
+    let eip_191_formatted_message = keccak_hash(&eip_191_data);
+    unsafe { Message::from_bytes_unchecked(*eip_191_formatted_message) } // TODO: Remove use of unsafe when feature is available: https://github.com/FuelLabs/fuels-rs/issues/698
+}
+
+fn ethereum_prefix(formatted_message: Message) -> Message {
+    let prefix = r#"\x19Ethereum Signed Message:\n32"#;
+
+    let mut eth_prefix_data: Vec<u8> = Vec::new();
+    eth_prefix_data.append(&mut prefix.as_bytes().to_vec());
+    eth_prefix_data.append(&mut formatted_message.to_vec());
+
+    let eth_prefixed_message = keccak_hash(eth_prefix_data);
+    unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) } // TODO: Remove use of unsafe when feature is available: https://github.com/FuelLabs/fuels-rs/issues/698
+}
+
+pub async fn format_and_sign(
+    private_key: SecretKey,
+    message_hash: Message,
+    message_format: MessageFormat,
+    message_prefix: MessagePrefix,
+    wallet_type: WalletType,
+) -> SignatureInfo {
+    let formatted_message = match message_format {
+        MessageFormat::None() => message_hash,
+        MessageFormat::EIP191PersonalSign() => eip_191_personal_sign_format(message_hash),
+    };
+
+    let prefixed_message = match message_prefix {
+        MessagePrefix::None() => formatted_message,
+        MessagePrefix::Ethereum() => ethereum_prefix(formatted_message),
+    };
+
+    let signature = Signature::sign(&private_key, &prefixed_message);
+
+    let signature_bytes: Bytes64 = Bytes64::try_from(signature).unwrap();
+
+    let signature = B512::from((
+        Bits256(signature_bytes[..32].try_into().unwrap()),
+        Bits256(signature_bytes[32..].try_into().unwrap()),
+    ));
+
+    SignatureInfo {
+        message_format,
+        message_prefix,
+        signature,
+        wallet_type,
+    }
+}
+
+fn keccak_hash<B>(data: B) -> Bytes32
+where
+    B: AsRef<[u8]>,
+{
+    let mut hasher = Keccak256::new();
+
+    hasher.update(data);
+
+    <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
+}
+
 pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller), Error> {
     let private_key: SecretKey = private_key.parse().unwrap();
     let mut deployer_wallet = WalletUnlocked::new_from_private_key(private_key, None);
@@ -72,24 +161,6 @@ pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller),
     Ok((private_key, deployer, non_owner))
 }
 
-pub fn default_users() -> Vec<User> {
-    let fuel_user_1 = User {
-        address: Bits256::from_hex_str(
-            "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
-        )
-        .unwrap(),
-        weight: 3,
-    };
-    let evm_user_1 = User {
-        address: Bits256::from_hex_str(
-            "0x000000000000000000000000db4aa29ef306fc8d28025b838ccd3feecaedb333",
-        )
-        .unwrap(),
-        weight: 2,
-    };
-    vec![fuel_user_1, evm_user_1]
-}
-
 pub fn transfer_parameters() -> (WalletUnlocked, Identity, Bits256) {
     let receiver_wallet = WalletUnlocked::new_random(None);
 
@@ -125,75 +196,4 @@ pub async fn transfer_signatures(private_key: SecretKey, tx_hash: Message) -> Ve
 
     // - Must comply with ascending signers requirement of Multisig's count_approvals
     vec![evm_signature, fuel_signature]
-}
-
-pub async fn format_and_sign(
-    private_key: SecretKey,
-    message_hash: Message,
-    message_format: MessageFormat,
-    message_prefix: MessagePrefix,
-    wallet_type: WalletType,
-) -> SignatureInfo {
-    let formatted_message = match message_format {
-        MessageFormat::None() => message_hash,
-        MessageFormat::EIP191PersonalSign() => eip_191_personal_sign_format(message_hash),
-    };
-
-    let prefixed_message = match message_prefix {
-        MessagePrefix::None() => formatted_message,
-        MessagePrefix::Ethereum() => ethereum_prefix(formatted_message),
-    };
-
-    let signature = Signature::sign(&private_key, &prefixed_message);
-
-    let signature_bytes: Bytes64 = Bytes64::try_from(signature).unwrap();
-
-    let signature = B512::from((
-        Bits256(signature_bytes[..32].try_into().unwrap()),
-        Bits256(signature_bytes[32..].try_into().unwrap()),
-    ));
-
-    SignatureInfo {
-        message_format,
-        message_prefix,
-        signature,
-        wallet_type,
-    }
-}
-
-fn eip_191_personal_sign_format(message_hash: Message) -> Message {
-    let initial_byte = 0x19u8;
-    let version_byte = 0x45u8;
-
-    let mut eip_191_data: Vec<u8> = vec![initial_byte, version_byte];
-    eip_191_data.append(&mut message_hash.to_vec());
-
-    let eip_191_formatted_message = keccak_hash(&eip_191_data);
-    unsafe { Message::from_bytes_unchecked(*eip_191_formatted_message) } // TODO: Remove use of unsafe when feature is available: https://github.com/FuelLabs/fuels-rs/issues/698
-}
-
-fn ethereum_prefix(formatted_message: Message) -> Message {
-    let prefix = r#"\x19Ethereum Signed Message:\n32"#;
-
-    let mut eth_prefix_data: Vec<u8> = Vec::new();
-    eth_prefix_data.append(&mut prefix.as_bytes().to_vec());
-    eth_prefix_data.append(&mut formatted_message.to_vec());
-
-    let eth_prefixed_message = keccak_hash(eth_prefix_data);
-    unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) } // TODO: Remove use of unsafe when feature is available: https://github.com/FuelLabs/fuels-rs/issues/698
-}
-
-fn keccak_hash<B>(data: B) -> Bytes32
-where
-    B: AsRef<[u8]>,
-{
-    let mut hasher = Keccak256::new();
-
-    hasher.update(data);
-
-    <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
-}
-
-pub fn base_asset_contract_id() -> ContractId {
-    ContractId::new(BASE_ASSET_ID.try_into().unwrap())
 }
