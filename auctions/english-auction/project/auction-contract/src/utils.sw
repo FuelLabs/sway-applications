@@ -8,7 +8,7 @@ use auction_asset::AuctionAsset;
 use errors::AccessError;
 use nft_asset::NFTAsset;
 use std::token::transfer;
-use sway_libs::nft::NFT;
+use nft::NFT;
 
 /// Transfers assets out of the auction contract to the specified user.
 ///

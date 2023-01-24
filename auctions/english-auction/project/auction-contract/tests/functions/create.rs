@@ -1,13 +1,16 @@
 use crate::utils::{
+    abigen_bindings::english_auction_mod::State,
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{auction_info, create},
-    english_auction_mod::State,
     nft_abi_calls::{approve, mint, set_approval_for_all},
     test_helpers::{
         create_auction_copy, defaults_nft, defaults_token, nft_asset, setup, token_asset,
     },
 };
-use fuels::prelude::{AssetId, CallParameters, Identity, TxParameters};
+use fuels::{
+    prelude::{AssetId, CallParameters, TxParameters},
+    types::Identity,
+};
 
 mod success {
 
@@ -107,7 +110,7 @@ mod success {
         let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let auction_identity = Identity::ContractId(auction_contract_id.into());
+        let auction_identity = Identity::ContractId(auction_contract_id);
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
         let provider = deployer.wallet.get_provider().unwrap();
@@ -163,7 +166,7 @@ mod success {
         let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let auction_identity = Identity::ContractId(auction_contract_id.into());
+        let auction_identity = Identity::ContractId(auction_contract_id);
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
         let provider = deployer.wallet.get_provider().unwrap();
@@ -219,7 +222,7 @@ mod success {
         let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let auction_identity = Identity::ContractId(auction_contract_id.into());
+        let auction_identity = Identity::ContractId(auction_contract_id);
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
         let provider = deployer.wallet.get_provider().unwrap();
@@ -757,7 +760,7 @@ mod revert {
         let (sell_count, _, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let auction_identity = Identity::ContractId(auction_contract_id.into());
+        let auction_identity = Identity::ContractId(auction_contract_id);
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
 
@@ -784,7 +787,7 @@ mod revert {
         let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        let auction_identity = Identity::ContractId(auction_contract_id.into());
+        let auction_identity = Identity::ContractId(auction_contract_id);
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
 

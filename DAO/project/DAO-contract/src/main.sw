@@ -86,7 +86,7 @@ impl DaoVoting for Contract {
         });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn deposit() {
         require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
         require(storage.token == msg_asset_id(), UserError::IncorrectAssetSent);

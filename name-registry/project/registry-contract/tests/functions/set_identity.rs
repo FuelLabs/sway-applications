@@ -3,7 +3,7 @@ mod success {
         abi::{identity, register, set_identity},
         setup, string_to_ascii, IdentityChangedEvent, REGISTER_DURATION,
     };
-    use fuels::prelude::*;
+    use fuels::{prelude::*, types::Identity};
 
     #[tokio::test]
     async fn can_set_identity() {
@@ -48,7 +48,7 @@ mod revert {
         abi::{register, set_identity},
         setup, REGISTER_DURATION,
     };
-    use fuels::prelude::*;
+    use fuels::{prelude::*, types::Identity};
 
     // TODO: missing tests
 

@@ -2,7 +2,7 @@ use crate::utils::{
     abi_calls::{approve, balance_of, constructor, mint, owner_of, set_approval_for_all, transfer},
     test_helpers::setup,
 };
-use fuels::{prelude::Identity, signers::Signer};
+use fuels::{signers::Signer, types::Identity};
 
 mod success {
 
@@ -140,7 +140,7 @@ mod reverts {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "SenderNotAdmin")]
+    #[should_panic(expected = "SenderNotOwnerOrApproved")]
     async fn when_sender_is_not_owner_or_approved() {
         let (deploy_wallet, owner1, owner2) = setup().await;
 
