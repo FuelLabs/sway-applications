@@ -64,12 +64,14 @@ jobs:
           pnpm services:setup-test
         
       - name:  Install Playwright
-        run: pnpx playwright install --with-deps chromium
+        run: |
+          cd auctions/english-auction
+          pnpx playwright install --with-deps chromium
       
       - name: Run E2E Tests
         run: |
           cd auctions/english-auction
-          xvfb-run pnpm test
+          xvfb-run --auto-servernum -- pnpm test
 
   build:
     runs-on: ubuntu-latest
