@@ -128,9 +128,13 @@ async function switchWallet(walletPage: Page, extensionId: string, accountName: 
 }
 
 function getPages(context: BrowserContext) {
+  console.log('in get pages');
   const pages = context.pages();
+  console.log('pages: ', pages);
   const [walletPage] = pages.filter((page) => page.url().includes('popup'));
+  console.log('wallet page: ', walletPage);
   const [appPage] = pages.filter((page) => page.url().includes('localhost'));
+  console.log('app page: ', appPage);
   return { appPage, walletPage };
 }
 
@@ -144,6 +148,7 @@ test.describe('e2e', () => {
   test.fixme('Test auction expires', async () => {});
   test('Test auction (Sell: Token, Bid: Token) is canceled', async ({ context, extensionId }) => {
     // ACCOUNT1 CREATES AUCTION
+    console.log('in first test');
 
     const { appPage, walletPage } = getPages(context);
 
@@ -271,11 +276,7 @@ test.describe('e2e', () => {
   }) => {
     const { appPage, walletPage } = getPages(context);
 
-    console.log('in first test');
-
     await appPage.goto('/sell');
-
-    console.log('yupp');
 
     await switchWallet(walletPage, extensionId, ACCOUNT1);
 
