@@ -34,6 +34,22 @@ jobs:
           version: '0.1'
       - name: Run Cargo.toml linter
         run: git ls-files | grep Cargo.toml$ | xargs --verbose -n 1 cargo-toml-lint
+      
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+      
+      - name: Run Lint
+        run: |
+          cd auctions/english-auction
+          pnpm build
+          pnpm lint
 
   build:
     runs-on: ubuntu-latest
