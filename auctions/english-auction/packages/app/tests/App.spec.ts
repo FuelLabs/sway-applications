@@ -12,9 +12,12 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   // WALLET SETUP
   const walletPage = await context.newPage();
   await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
+  console.log('one');
   const signupPage = await context.waitForEvent('page', {
     predicate: (page) => page.url().includes('sign-up'),
   });
+
+  console.log('two');
 
   expect(signupPage.url()).toContain('sign-up');
 
