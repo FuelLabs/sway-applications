@@ -23,7 +23,7 @@ pub mod common {
     pub async fn deploy_amm(wallet: &WalletUnlocked) -> AMMContract {
         let contract_id = Contract::deploy(
             AMM_CONTRACT_BINARY_PATH,
-            &wallet,
+            wallet,
             TxParameters::default(),
             StorageConfiguration {
                 storage_path: Some(AMM_CONTRACT_STORAGE_PATH.to_string()),
@@ -46,7 +46,7 @@ pub mod common {
         wallet: &WalletUnlocked,
         config: &ExchangeContractConfiguration,
     ) -> ExchangeContract {
-        let (id, instance) = deploy_exchange(&wallet, &config).await;
+        let (id, instance) = deploy_exchange(wallet, config).await;
 
         constructor(&instance, config.pair).await;
 
@@ -63,7 +63,7 @@ pub mod common {
     }
 
     pub async fn deploy_and_initialize_amm(wallet: &WalletUnlocked) -> AMMContract {
-        let amm = deploy_amm(&wallet).await;
+        let amm = deploy_amm(wallet).await;
         initialize(&amm.instance, exchange_bytecode_root().await).await;
         amm
     }
@@ -86,7 +86,7 @@ pub mod common {
 
         let contract_id = Contract::deploy_with_parameters(
             binary_path,
-            &wallet,
+            wallet,
             TxParameters::default(),
             StorageConfiguration {
                 storage_path: Some(storage_path),
@@ -164,27 +164,32 @@ pub mod common {
 
 pub mod scripts {
     use super::*;
-    use crate::{
-        data_structures::TransactionParameters,
-        interface::amm::add_pool,
-        transaction::{
-            transaction_input_coin, transaction_input_contract, transaction_output_contract,
-            transaction_output_variable,
-        },
-    };
+    use crate::{data_structures::TransactionParameters, interface::amm::add_pool};
     use common::{deploy_and_construct_exchange, deposit_and_add_liquidity};
-    use fuels::tx::{Input, Output};
+    use fuels::{
+        programs::contract::SettableContract,
+        tx::{Input, Output, TxPointer},
+        types::resource::Resource,
+    };
 
     pub const MAXIMUM_INPUT_AMOUNT: u64 = 1_000_000;
+
+    pub fn contract_instances(amm: &AMMContract) -> Vec<&dyn SettableContract> {
+        amm.pools
+            .iter()
+            .map(|((_, _), exchange)| &exchange.instance as &dyn SettableContract)
+            .chain(std::iter::once(&amm.instance as &dyn SettableContract))
+            .collect()
+    }
 
     pub async fn setup_exchange_contract(
         wallet: &WalletUnlocked,
         exchange_config: &ExchangeContractConfiguration,
         liquidity_parameters: &LiquidityParameters,
     ) -> ExchangeContract {
-        let exchange = deploy_and_construct_exchange(&wallet, &exchange_config).await;
+        let exchange = deploy_and_construct_exchange(wallet, exchange_config).await;
 
-        deposit_and_add_liquidity(&liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(liquidity_parameters, &exchange, false).await;
 
         exchange
     }
@@ -194,7 +199,7 @@ pub mod scripts {
         provider: &Provider,
         amm: &mut AMMContract,
         asset_ids: &Vec<AssetId>,
-    ) -> () {
+    ) {
         let mut exchange_index = 0;
 
         while exchange_index < asset_ids.len() - 1 {
@@ -233,34 +238,62 @@ pub mod scripts {
         }
     }
 
+    async fn transaction_input_coin(
+        provider: &Provider,
+        from: &Bech32Address,
+        asset_id: AssetId,
+        amount: u64,
+    ) -> Vec<Input> {
+        let coins = &provider
+            .get_spendable_resources(from, asset_id, amount)
+            .await
+            .unwrap();
+
+        let input_coins: Vec<Input> = coins
+            .iter()
+            .map(|coin| {
+                let (coin_utxo_id, coin_amount) = match coin {
+                    Resource::Coin(coin) => (coin.utxo_id, coin.amount),
+                    _ => panic!("Resource type does not match"),
+                };
+                Input::CoinSigned {
+                    utxo_id: coin_utxo_id,
+                    owner: Address::from(from),
+                    amount: coin_amount,
+                    asset_id,
+                    tx_pointer: TxPointer::default(),
+                    witness_index: 0,
+                    maturity: 0,
+                }
+            })
+            .collect();
+
+        input_coins
+    }
+
+    fn transaction_output_variable() -> Output {
+        Output::Variable {
+            amount: 0,
+            to: Address::zeroed(),
+            asset_id: AssetId::default(),
+        }
+    }
+
     pub async fn transaction_inputs_outputs(
         wallet: &WalletUnlocked,
         provider: &Provider,
-        contracts: &Vec<ContractId>,
         assets: &Vec<AssetId>,
         amounts: Option<&Vec<u64>>,
     ) -> TransactionParameters {
-        let mut input_contracts: Vec<Input> = Vec::with_capacity(contracts.len());
-        let mut output_contracts: Vec<Output> = Vec::with_capacity(contracts.len());
-
-        contracts
-            .into_iter()
-            .enumerate()
-            .for_each(|(index, contract_id)| {
-                input_contracts.push(transaction_input_contract(*contract_id));
-                output_contracts.push(transaction_output_contract(index as u8));
-            });
-
         let mut input_coins: Vec<Input> = vec![]; // capacity depends on wallet resources
         let mut output_variables: Vec<Output> = Vec::with_capacity(assets.len());
 
-        let mut asset_index = 0;
-        while asset_index < assets.len() {
+        for (asset_index, asset) in assets.iter().enumerate() {
             input_coins.extend(
                 transaction_input_coin(
-                    &provider,
+                    provider,
                     wallet.address(),
-                    *assets.get(asset_index).unwrap(),
+                    *asset,
                     if amounts.is_some() {
                         *amounts.unwrap().get(asset_index).unwrap()
                     } else {
@@ -270,12 +303,11 @@ pub mod scripts {
                 .await,
             );
             output_variables.push(transaction_output_variable());
-            asset_index += 1;
         }
 
         TransactionParameters {
-            inputs: [input_contracts, input_coins].concat(),
-            outputs: [output_contracts, output_variables].concat(),
+            inputs: input_coins,
+            outputs: output_variables,
         }
     }
 }

@@ -1,28 +1,26 @@
 use fuels::prelude::*;
 
 abigen!(
-    AMM,
-    "./project/contracts/AMM-contract/out/debug/AMM-contract-abi.json"
-);
-
-abigen!(
-    Exchange,
-    "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
-);
-
-script_abigen!(
-    AtomicAddLiquidityScript,
-    "./project/scripts/atomic-add-liquidity/out/debug/atomic-add-liquidity-abi.json"
-);
-
-script_abigen!(
-    SwapExactInputScript,
-    "./project/scripts/swap-exact-input/out/debug/swap-exact-input-abi.json"
-);
-
-script_abigen!(
-    SwapExactOutputScript,
-    "./project/scripts/swap-exact-output/out/debug/swap-exact-output-abi.json"
+    Contract(
+        name = "AMM",
+        abi = "./project/contracts/AMM-contract/out/debug/AMM-contract-abi.json"
+    ),
+    Contract(
+        name = "Exchange",
+        abi = "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
+    ),
+    Script(
+        name = "AtomicAddLiquidityScript",
+        abi = "./project/scripts/atomic-add-liquidity/out/debug/atomic-add-liquidity-abi.json"
+    ),
+    Script(
+        name = "SwapExactInputScript",
+        abi = "./project/scripts/swap-exact-input/out/debug/swap-exact-input-abi.json"
+    ),
+    Script(
+        name = "SwapExactOutputScript",
+        abi = "./project/scripts/swap-exact-output/out/debug/swap-exact-output-abi.json"
+    )
 );
 
 pub const SCRIPT_GAS_LIMIT: u64 = 100_000_000; // TODO: hardcoded until scripts have gas estimation
@@ -50,7 +48,7 @@ pub mod amm {
                 ),
                 pool,
             )
-            .set_contracts(&[pool.into()])
+            .set_contract_ids(&[pool.into()])
             .call()
             .await
             .unwrap();

@@ -49,9 +49,10 @@ pub fn minimum_output_given_exact_input(
     result_wrapped.unwrap()
 }
 
-pub fn multiply_divide(a: u64, b: u64, c: u64) -> u64 {
-    let calculation = (U128::from((0, a)) * U128::from((0, b)));
-    let result_wrapped = (calculation / U128::from((0, c))).as_u64();
+// Calculates d in the proportion a / b = c / d
+pub fn proportional_value(b: u64, c: u64, a: u64) -> u64 {
+    let calculation = (U128::from((0, b)) * U128::from((0, c)));
+    let result_wrapped = (calculation / U128::from((0, a))).as_u64();
     result_wrapped.unwrap()
 }
 

@@ -27,7 +27,7 @@ mod success {
             vec![NameRegisteredEvent {
                 expiry: latest_block_time + REGISTER_DURATION,
                 name: string_to_ascii(&acc.name),
-                owner: acc.identity().clone(),
+                owner: acc.identity(),
                 identity: acc.identity()
             }]
         )

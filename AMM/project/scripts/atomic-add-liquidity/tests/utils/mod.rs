@@ -95,7 +95,6 @@ pub async fn setup(
     let transaction_parameters = transaction_inputs_outputs(
         &wallet,
         &provider,
-        &vec![exchange.id],
         &vec![*asset_ids.get(0).unwrap(), *asset_ids.get(1).unwrap()],
         Some(&vec![
             liquidity_parameters.amounts.0,

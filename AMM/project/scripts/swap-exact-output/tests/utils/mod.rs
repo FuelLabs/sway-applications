@@ -7,7 +7,7 @@ use test_utils::{
     paths::SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH,
     setup::{
         common::{deploy_and_initialize_amm, setup_wallet_and_provider},
-        scripts::{setup_exchange_contracts, transaction_inputs_outputs},
+        scripts::{contract_instances, setup_exchange_contracts, transaction_inputs_outputs},
     },
 };
 
@@ -22,7 +22,7 @@ pub async fn expected_swap_input(
     while i > 0 {
         let pair = (*route.get(i - 1).unwrap(), *route.get(i).unwrap());
         let exchange = &amm.pools.get(&pair).unwrap().instance;
-        latest_input = preview_swap_exact_output(&exchange, latest_input, pair.1, true)
+        latest_input = preview_swap_exact_output(exchange, latest_input, pair.1, true)
             .await
             .other_asset
             .amount;
@@ -57,6 +57,7 @@ pub async fn expected_and_actual_input(swap_parameters: SwapParameters) -> SwapR
             expected.unwrap_or(0),
             deadline,
         )
+        .set_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -86,7 +87,7 @@ pub async fn setup() -> (
     contracts.extend(amm.pools.values().into_iter().map(|exchange| exchange.id));
 
     let transaction_parameters =
-        transaction_inputs_outputs(&wallet, &provider, &contracts, &asset_ids, None).await;
+        transaction_inputs_outputs(&wallet, &provider, &asset_ids, None).await;
 
     let deadline = provider.latest_block_height().await.unwrap() + 10;
 

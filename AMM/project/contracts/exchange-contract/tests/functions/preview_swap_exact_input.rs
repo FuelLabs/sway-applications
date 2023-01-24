@@ -3,6 +3,7 @@ use test_utils::interface::exchange::preview_swap_exact_input;
 
 mod success {
     use super::*;
+    use crate::utils::minimum_output_given_exact_input;
     use fuels::prelude::AssetId;
 
     #[tokio::test]
@@ -12,10 +13,12 @@ mod success {
 
         let input_amount = 10;
 
-        // hardcoded calculation for liquidity miner fee of 333
-        let expected_min_output_amount =
-            (input_amount * (1 - (1 / 333)) * liquidity_parameters.amounts.1)
-                / (liquidity_parameters.amounts.0 + (input_amount * (1 - (1 / 333))));
+        let expected_min_output_amount = minimum_output_given_exact_input(
+            input_amount,
+            liquidity_parameters.amounts.0,
+            liquidity_parameters.amounts.1,
+            333,
+        );
         let expected_sufficient_reserve =
             expected_min_output_amount <= liquidity_parameters.amounts.1;
 
@@ -42,10 +45,12 @@ mod success {
             setup_and_construct(true, true).await;
         let input_amount = 10;
 
-        // hardcoded calculation for liquidity miner fee of 333
-        let expected_min_output_amount =
-            (input_amount * (1 - (1 / 333)) * liquidity_parameters.amounts.0)
-                / (liquidity_parameters.amounts.1 + (input_amount * (1 - (1 / 333))));
+        let expected_min_output_amount = minimum_output_given_exact_input(
+            input_amount,
+            liquidity_parameters.amounts.1,
+            liquidity_parameters.amounts.0,
+            333,
+        );
         let expected_sufficient_reserve =
             expected_min_output_amount <= liquidity_parameters.amounts.0;
 

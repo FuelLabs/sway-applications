@@ -32,6 +32,29 @@ pub struct Assets {
     pub liquidity_pool_asset: AssetId,
 }
 
+pub fn maximum_input_for_exact_output(
+    output_amount: u64,
+    input_reserve: u64,
+    output_reserve: u64,
+    liquidity_miner_fee: u64,
+) -> u64 {
+    let numerator = input_reserve * output_amount;
+    let denominator = (output_reserve - output_amount) * (1 - (1 / liquidity_miner_fee));
+    (numerator / denominator) + 1
+}
+
+pub fn minimum_output_given_exact_input(
+    input_amount: u64,
+    input_reserve: u64,
+    output_reserve: u64,
+    liquidity_miner_fee: u64,
+) -> u64 {
+    let input_amount_with_fee = input_amount * (1 - (1 / liquidity_miner_fee));
+    let numerator = input_amount_with_fee * output_reserve;
+    let denominator = input_reserve + input_amount_with_fee;
+    numerator / denominator
+}
+
 pub async fn contract_balances(exchange: &ExchangeContract) -> ContractBalances {
     let asset_a = balance(&exchange.instance, exchange.pair.0).await;
     let asset_b = balance(&exchange.instance, exchange.pair.1).await;

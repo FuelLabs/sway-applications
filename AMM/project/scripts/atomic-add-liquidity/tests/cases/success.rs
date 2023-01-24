@@ -3,7 +3,7 @@ use fuels::prelude::*;
 use test_utils::{
     data_structures::LiquidityParameters as TestLiquidityParameters,
     interface::{
-        atomic_add_liquidity_script_mod::{Asset, AssetPair},
+        abigen_bindings::shared_types::{Asset, AssetPair},
         LiquidityParameters, SCRIPT_GAS_LIMIT,
     },
     setup::common::deposit_and_add_liquidity,
@@ -35,6 +35,7 @@ async fn adds_liquidity_with_equal_deposit_amounts() {
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -72,6 +73,7 @@ async fn adds_liquidity_to_make_a_more_valuable() {
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -109,6 +111,7 @@ async fn adds_liquidity_to_make_b_more_valuable() {
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -154,6 +157,7 @@ async fn adds_further_liquidity_without_extra_deposit_when_a_is_more_valuable() 
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -199,6 +203,7 @@ async fn adds_further_liquidity_with_extra_a_deposit_when_a_is_more_valuable() {
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -244,6 +249,7 @@ async fn adds_further_liquidity_with_extra_b_deposit_when_a_is_more_valuable() {
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -289,6 +295,7 @@ async fn adds_further_liquidity_without_extra_deposit_when_b_is_more_valuable() 
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -334,6 +341,7 @@ async fn adds_further_liquidity_with_extra_a_deposit_when_b_is_more_valuable() {
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
@@ -379,6 +387,7 @@ async fn adds_further_liquidity_with_extra_b_deposit_when_b_is_more_valuable() {
                 deadline: liquidity_parameters.deadline,
             },
         )
+        .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))

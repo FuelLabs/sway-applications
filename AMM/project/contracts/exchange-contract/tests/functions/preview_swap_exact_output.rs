@@ -3,6 +3,7 @@ use test_utils::interface::exchange::preview_swap_exact_output;
 
 mod success {
     use super::*;
+    use crate::utils::maximum_input_for_exact_output;
     use fuels::prelude::AssetId;
 
     #[tokio::test]
@@ -12,11 +13,12 @@ mod success {
 
         let output_amount = 10;
 
-        // hardcoded calculation for liquidity miner fee of 333
-        let expected_max_input_amount = ((liquidity_parameters.amounts.0 * output_amount)
-            / (liquidity_parameters.amounts.1 - output_amount)
-            * (1 - (1 / 333)))
-            + 1;
+        let expected_max_input_amount = maximum_input_for_exact_output(
+            output_amount,
+            liquidity_parameters.amounts.0,
+            liquidity_parameters.amounts.1,
+            333,
+        );
         let expected_sufficient_reserve = output_amount < liquidity_parameters.amounts.1;
 
         let preview_swap_info =
@@ -44,11 +46,12 @@ mod success {
 
         let output_amount = 10;
 
-        // hardcoded calculation for liquidity miner fee of 333
-        let expected_max_input_amount = ((liquidity_parameters.amounts.1 * output_amount)
-            / (liquidity_parameters.amounts.0 - output_amount)
-            * (1 - (1 / 333)))
-            + 1;
+        let expected_max_input_amount = maximum_input_for_exact_output(
+            output_amount,
+            liquidity_parameters.amounts.1,
+            liquidity_parameters.amounts.0,
+            333,
+        );
         let expected_sufficient_reserve = output_amount <= liquidity_parameters.amounts.0;
 
         let preview_swap_info =
@@ -76,11 +79,12 @@ mod success {
 
         let output_amount = liquidity_parameters.amounts.1 - 1;
 
-        // hardcoded calculation for liquidity miner fee of 333
-        let expected_max_input_amount = ((liquidity_parameters.amounts.0 * output_amount)
-            / (liquidity_parameters.amounts.1 - output_amount)
-            * (1 - (1 / 333)))
-            + 1;
+        let expected_max_input_amount = maximum_input_for_exact_output(
+            output_amount,
+            liquidity_parameters.amounts.0,
+            liquidity_parameters.amounts.1,
+            333,
+        );
         let expected_sufficient_reserve = output_amount < liquidity_parameters.amounts.1;
 
         let preview_swap_info =
@@ -108,11 +112,12 @@ mod success {
 
         let output_amount = liquidity_parameters.amounts.0 - 1;
 
-        // hardcoded calculation for liquidity miner fee of 333
-        let expected_max_input_amount = ((liquidity_parameters.amounts.1 * output_amount)
-            / (liquidity_parameters.amounts.0 - output_amount)
-            * (1 - (1 / 333)))
-            + 1;
+        let expected_max_input_amount = maximum_input_for_exact_output(
+            output_amount,
+            liquidity_parameters.amounts.1,
+            liquidity_parameters.amounts.0,
+            333,
+        );
         let expected_sufficient_reserve = output_amount < liquidity_parameters.amounts.0;
 
         let preview_swap_info =

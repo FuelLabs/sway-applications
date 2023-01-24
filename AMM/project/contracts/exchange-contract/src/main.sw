@@ -44,7 +44,7 @@ use utils::{
     determine_assets,
     maximum_input_for_exact_output,
     minimum_output_given_exact_input,
-    multiply_divide,
+    proportional_value,
 };
 
 storage {
@@ -94,17 +94,17 @@ impl Exchange for Contract {
             transfer(added_liquidity, contract_id(), sender);
         } else { // adding further liquidity based on current ratio
             // attempt to add liquidity by using up the deposited asset A amount
-            let b_to_attempt = multiply_divide(deposits.a.amount, reserves.b.amount, reserves.a.amount);
+            let b_to_attempt = proportional_value(deposits.a.amount, reserves.b.amount, reserves.a.amount);
 
             // continue adding based on asset A if deposited asset B amount is sufficient
             if b_to_attempt <= deposits.b.amount {
-                added_liquidity = multiply_divide(b_to_attempt, total_liquidity, reserves.b.amount);
+                added_liquidity = proportional_value(b_to_attempt, total_liquidity, reserves.b.amount);
                 require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
                 added_assets.a.amount = deposits.a.amount;
                 added_assets.b.amount = b_to_attempt;
             } else { // attempt to add liquidity by using up the deposited asset B amount
-                let a_to_attempt = multiply_divide(deposits.b.amount, reserves.a.amount, reserves.b.amount);
-                added_liquidity = multiply_divide(a_to_attempt, total_liquidity, reserves.a.amount);
+                let a_to_attempt = proportional_value(deposits.b.amount, reserves.a.amount, reserves.b.amount);
+                added_liquidity = proportional_value(a_to_attempt, total_liquidity, reserves.a.amount);
                 require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
                 added_assets.a.amount = a_to_attempt;
                 added_assets.b.amount = deposits.b.amount;
@@ -153,7 +153,7 @@ impl Exchange for Contract {
         });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn deposit() {
         require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
@@ -172,7 +172,7 @@ impl Exchange for Contract {
         });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo {
         require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
@@ -191,8 +191,8 @@ impl Exchange for Contract {
         require(burned_liquidity.amount > 0, InputError::ExpectedNonZeroAmount(burned_liquidity.id));
 
         let mut removed_assets = AssetPair::new(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
-        removed_assets.a.amount = multiply_divide(burned_liquidity.amount, reserves.a.amount, total_liquidity);
-        removed_assets.b.amount = multiply_divide(burned_liquidity.amount, reserves.b.amount, total_liquidity);
+        removed_assets.a.amount = proportional_value(burned_liquidity.amount, reserves.a.amount, total_liquidity);
+        removed_assets.b.amount = proportional_value(burned_liquidity.amount, reserves.b.amount, total_liquidity);
 
         require(removed_assets.a.amount >= min_asset_a, TransactionError::DesiredAmountTooHigh(min_asset_a));
         require(removed_assets.b.amount >= min_asset_b, TransactionError::DesiredAmountTooHigh(min_asset_b));
@@ -216,7 +216,7 @@ impl Exchange for Contract {
         }
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64 {
         require(deadline >= height(), InputError::DeadlinePassed(deadline));
 
@@ -246,7 +246,7 @@ impl Exchange for Contract {
         bought
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_output(output: u64, deadline: u64) -> u64 {
         let reserves = storage.pair;
         let (mut input_asset, mut output_asset) = determine_assets(msg_asset_id(), reserves);
@@ -350,12 +350,12 @@ impl Exchange for Contract {
         } else {
             if asset.id == reserves.a.id {
                 added_assets.a.amount = asset.amount;
-                added_assets.b.amount = multiply_divide(asset.amount, reserves.b.amount, reserves.a.amount);
+                added_assets.b.amount = proportional_value(asset.amount, reserves.b.amount, reserves.a.amount);
             } else {
-                added_assets.a.amount = multiply_divide(asset.amount, reserves.a.amount, reserves.b.amount);
+                added_assets.a.amount = proportional_value(asset.amount, reserves.a.amount, reserves.b.amount);
                 added_assets.b.amount = asset.amount;
             }
-            added_liquidity = multiply_divide(added_assets.b.amount, total_liquidity, reserves.b.amount);
+            added_liquidity = proportional_value(added_assets.b.amount, total_liquidity, reserves.b.amount);
         }
 
         PreviewAddLiquidityInfo {
