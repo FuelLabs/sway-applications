@@ -130,7 +130,6 @@ async function switchWallet(walletPage: Page, extensionId: string, accountName: 
 function getPages(context: BrowserContext) {
   console.log('in get pages');
   const pages = context.pages();
-  console.log('pages: ', pages);
   const [walletPage] = pages.filter((page) => page.url().includes('popup'));
   console.log('wallet page: ', walletPage);
   const [appPage] = pages.filter((page) => page.url().includes('localhost'));
@@ -152,7 +151,11 @@ test.describe('e2e', () => {
 
     const { appPage, walletPage } = getPages(context);
 
+    console.log('yuppp');
+
     await appPage.goto('/sell');
+
+    console.log('asdfasdf');
 
     await switchWallet(walletPage, extensionId, ACCOUNT1);
 
