@@ -28,10 +28,10 @@ impl Exchange for Contract {
         storage.pair = Option::Some(AssetPair::new(Asset::new(asset_a, 0), Asset::new(asset_b, 0)));
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn deposit() {}
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo {
         RemoveLiquidityInfo {
             removed_amounts: storage.pair.unwrap(),
@@ -39,12 +39,12 @@ impl Exchange for Contract {
         }
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64 {
         0
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_output(output: u64, deadline: u64) -> u64 {
         0
     }

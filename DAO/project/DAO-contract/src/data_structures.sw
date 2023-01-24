@@ -9,7 +9,7 @@ struct CallData {
     /// Encoded representation of a function to be called on the specified contract
     function_selector: u64,
     /// Id of contract which will be called if a proposal is approved
-    /// The contract will be caled using the provided function selector and arguments
+    /// The contract will be called using the provided function selector and arguments
     id: ContractId,
 }
 

@@ -7,7 +7,7 @@
 
 ## Overview
 
-A multi-signature wallet is a wallet that has multiple owners. In order to execute a transaction, a sufficient number of owners need to sign a Tx. Moreover, this implementation uses weighted owners which means that certain owners may have more "votes" when it comes to increasing the number of approvals in order to surpass the minimum threshold for execution.
+A multi-signature wallet is a wallet that has multiple owners. In order to execute a transaction, a sufficient number of owners need to sign a transaction. This implementation uses weighted owners which means that certain owners may have more "votes" when it comes to increasing the number of approvals in order to surpass the minimum threshold for execution. This implementation allows owners to be both Fuel and EVM addresses; by additionally supporting signatures over [EIP-191](https://eips.ethereum.org/EIPS/eip-191) formatted messages.
 
 More information can be found in the [specification](./SPECIFICATION.md).
 

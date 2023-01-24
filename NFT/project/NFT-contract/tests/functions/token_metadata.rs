@@ -4,8 +4,8 @@ use crate::utils::{
     TokenMetadata,
 };
 use fuels::{
-    prelude::{Identity, SizedAsciiString},
     signers::Signer,
+    types::{Identity, SizedAsciiString},
 };
 
 mod success {

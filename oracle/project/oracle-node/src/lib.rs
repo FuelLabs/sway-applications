@@ -1,7 +1,6 @@
 use async_trait::async_trait;
 use fuels::tx::Receipt;
 use futures::executor::block_on;
-use reqwest;
 use reqwest::{Client, Url};
 use serde::Deserialize;
 use std::time::Duration;

@@ -153,7 +153,7 @@ impl Exchange for Contract {
         });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn deposit() {
         require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
@@ -172,7 +172,7 @@ impl Exchange for Contract {
         });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo {
         require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
@@ -216,7 +216,7 @@ impl Exchange for Contract {
         }
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64 {
         require(deadline >= height(), InputError::DeadlinePassed(deadline));
 
@@ -246,7 +246,7 @@ impl Exchange for Contract {
         bought
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_output(output: u64, deadline: u64) -> u64 {
         let reserves = storage.pair;
         let (mut input_asset, mut output_asset) = determine_assets(msg_asset_id(), reserves);

@@ -49,7 +49,7 @@ impl EnglishAuction for Contract {
         storage.auctions.get(auction_id)
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn bid(auction_id: u64, bid_asset: AuctionAsset) {
         let auction = storage.auctions.get(auction_id);
         require(auction.is_some(), InputError::AuctionDoesNotExist);
@@ -131,7 +131,7 @@ impl EnglishAuction for Contract {
         log(CancelAuctionEvent { auction_id });
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn create(
         bid_asset: AuctionAsset,
         duration: u64,

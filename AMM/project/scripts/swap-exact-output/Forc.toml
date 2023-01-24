@@ -4,8 +4,8 @@ entry = "main.sw"
 license = "Apache-2.0"
 name = "swap-exact-output"
 
+[constants]
+AMM_ID = { type = "b256", value = "0x2cf873a3d03f35241a6dd401160b98a29f1bfd5e31911c8d6d43e582e6efcf80" }
+
 [dependencies]
 libraries = { path = "../../libraries" }
-
-[constants]
-AMM_ID = { type = "b256", value = "0x7c1420f4d30178fdff677e7b718ab20fdf4c0dbca78d3b9602ee8cabe50349cb" }

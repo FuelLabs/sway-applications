@@ -1,12 +1,16 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::ContractId};
+use fuels::{
+    prelude::*, programs::call_response::FuelCallResponse, tx::ContractId, types::Identity,
+};
 
 abigen!(
-    DaoVoting,
-    "./project/DAO-contract/out/debug/DAO-contract-abi.json"
-);
-abigen!(
-    GovToken,
-    "./project/DAO-contract/tests/artifacts/gov_token/out/debug/gov_token-abi.json"
+    Contract(
+        name = "DaoVoting",
+        abi = "./project/DAO-contract/out/debug/DAO-contract-abi.json"
+    ),
+    Contract(
+        name = "GovToken",
+        abi = "./project/DAO-contract/tests/artifacts/gov_token/out/debug/gov_token-abi.json"
+    ),
 );
 
 pub struct Metadata {
@@ -168,14 +172,12 @@ pub mod test_helpers {
             arguments: 0,
         };
 
-        let proposal = Proposal {
-            call_data: call_data,
+        Proposal {
+            call_data,
             amount: 0,
             asset: asset_id,
             gas: 20000,
-        };
-
-        proposal
+        }
     }
 
     pub async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {

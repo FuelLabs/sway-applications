@@ -29,14 +29,13 @@ mod success {
         .await;
         asset_constructor(asset_supply, &asset.asset, minter).await;
 
-        assert_eq!(
-            claim_data(
+        assert!(
+            !claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
             .await
-            .claimed,
-            false
+            .claimed
         );
         assert_eq!(
             claim_data(
@@ -59,14 +58,13 @@ mod success {
         )
         .await;
 
-        assert_eq!(
+        assert!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
             .await
-            .claimed,
-            true
+            .claimed
         );
         assert_eq!(
             claim_data(
@@ -96,14 +94,13 @@ mod success {
         .await;
         asset_constructor(asset_supply, &asset.asset, minter).await;
 
-        assert_eq!(
-            claim_data(
+        assert!(
+            !claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
             .await
-            .claimed,
-            false
+            .claimed
         );
         assert_eq!(
             claim_data(
@@ -126,14 +123,13 @@ mod success {
         )
         .await;
 
-        assert_eq!(
+        assert!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
             .await
-            .claimed,
-            true
+            .claimed
         );
         assert_eq!(
             claim_data(

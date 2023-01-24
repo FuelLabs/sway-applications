@@ -89,7 +89,7 @@ abi Exchange {
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     /// * When the `msg_asset_id` does not identify asset A or asset B
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn deposit();
 
     /// Burn liquidity pool asset at current ratio and transfer asset A and asset B to the sender.
@@ -109,7 +109,7 @@ abi Exchange {
     /// * When the current block height is not less than `deadline`
     /// * When the `msg_amount` with function call is 0
     /// * When the minimum amounts for asset A and asset B to receive after burn cannot be satisfied
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo;
 
     /// Swap forwarded amount of forwarded asset for other asset and transfer to sender.
@@ -126,7 +126,7 @@ abi Exchange {
     /// * When the current block height is not less than `deadline`
     /// * When the `msg_amount` with function call is 0
     /// * When `min_output` is provided and is lower than the output amount
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64;
 
     /// Swap forwarded asset for `exact_output_amount` of other asset and transfer to sender.
@@ -146,7 +146,7 @@ abi Exchange {
     /// * When the current block height is not less than ` deadline `
     /// * When the `msg_amount` with function call is 0
     /// * When the `msg_amount` is insufficient for swap
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_output(output: u64, deadline: u64) -> u64;
 
     /// Withdraw coins that have not been added to a liquidity pool yet.

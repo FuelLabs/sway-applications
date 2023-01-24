@@ -3,7 +3,7 @@ use crate::utils::{
     nft_abi_calls::{approve, mint, owner_of},
     test_helpers::{defaults, setup},
 };
-use fuels::{prelude::Identity, signers::Signer};
+use fuels::{signers::Signer, types::Identity};
 
 mod success {
 
@@ -16,14 +16,14 @@ mod success {
 
         let owner1_identity = Identity::Address(owner1.wallet.address().into());
         let owner2_identity = Identity::Address(owner2.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner1_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         deposit(
             Some(owner1_identity.clone()),
             &owner1.f_nft,
-            nft_contract.clone(),
+            nft_contract,
             token_supply,
             0,
         )
@@ -58,14 +58,14 @@ mod success {
         let token_supply = defaults().await;
 
         let owner1_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner1_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         deposit(
             Some(owner1_identity.clone()),
             &owner1.f_nft,
-            nft_contract.clone(),
+            nft_contract,
             token_supply,
             0,
         )
@@ -114,14 +114,14 @@ mod revert {
 
         let owner1_identity = Identity::Address(owner1.wallet.address().into());
         let owner2_identity = Identity::Address(owner2.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner1_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         deposit(
             Some(owner1_identity.clone()),
             &owner1.f_nft,
-            nft_contract.clone(),
+            nft_contract,
             token_supply,
             0,
         )
