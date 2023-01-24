@@ -5,5 +5,8 @@ import { CreateAuctionPage } from "./pages";
 import { Pages } from "~/types";
 
 export const sellRoutes = (
-  <Route path={Pages.sell} element={<CreateAuctionPage />} />
+  <>
+    <Route path="/" element={<CreateAuctionPage />} />
+    <Route path={Pages.sell} element={<CreateAuctionPage />} />
+  </>
 );

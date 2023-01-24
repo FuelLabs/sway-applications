@@ -53,7 +53,7 @@ export const Header = () => {
     <Grid templateColumns="repeat(2, 1fr)" css={{ padding: "$4" }}>
       <Grid.Item area="header">
         <Image
-          onClick={() => navigate("/")}
+          onClick={() => navigate(Pages.sell)}
           src={relativeUrl("/fuel-logo-512x512.png")}
           alt="english-auction"
           className="cursor-pointer"

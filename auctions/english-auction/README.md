@@ -87,16 +87,16 @@ To make life easier we added as many useful scripts as possible to our [package.
 pnpm <command name>
 ```
 
-| Script             | Description                                                                                                          |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `dev`              | Run development server for the WebApp [packages/app](../packages/app/).                                              |
-| `contracts`        | Build, generate types, and deploy [packages/contracts](../packages/contracts). It should be used when editing contracts. |
-| `contracts:build`  | Build and generate types [packages/contracts](../packages/contracts).                                                |
-| `contracts:deploy` | Deploy the current contract binaries.                                                                                         |
-| `scripts:setup`    | Setup the [english-auction-scripts](../packages/scripts/) package which is used to build, deploy contracts, and generate types.                |
-| `services:clean`   | Stop and remove all development containers that are running locally.                                                 |
-| `services:run`     | Run the local network with `fuel-core`.                                         |
-| `services:setup`   | Run the local network, setup `english-auction-scripts` and build and deploy contracts normally used on the first run.       |
+| Script             | Description                                                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `dev`              | Run development server for the WebApp [packages/app](../packages/app/).                                                         |
+| `contracts`        | Build, generate types, and deploy [packages/contracts](../packages/contracts). It should be used when editing contracts.        |
+| `contracts:build`  | Build and generate types [packages/contracts](../packages/contracts).                                                           |
+| `contracts:deploy` | Deploy the current contract binaries.                                                                                           |
+| `scripts:setup`    | Setup the [english-auction-scripts](../packages/scripts/) package which is used to build, deploy contracts, and generate types. |
+| `services:clean`   | Stop and remove all development containers that are running locally.                                                            |
+| `services:run`     | Run the local network with `fuel-core`.                                                                                         |
+| `services:setup`   | Run the local network, setup `english-auction-scripts` and build and deploy contracts normally used on the first run.           |
 
 > Other scripts can be found in [package.json](../package.json).
 
@@ -117,7 +117,7 @@ pnpm test
 ```
 
 > **Note**
- >In order to run the tests `VITE_FUEL_PROVIDER_URL` must be set to `http://localhost:4000/graphql` inside of `.env.test`
+> In order to run the tests `VITE_FUEL_PROVIDER_URL` must be set to `http://localhost:4000/graphql` inside of `.env.test`
 
 > **Note**
 > After you run the tests once they will not all pass again until you `pnpm services:reset-test`

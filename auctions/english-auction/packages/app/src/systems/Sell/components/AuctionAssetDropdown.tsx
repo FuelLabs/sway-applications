@@ -1,6 +1,5 @@
 import { Dropdown, Button, Icon } from "@fuel-ui/react";
 import type { CoinQuantity } from "fuels";
-import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
 import { getTokenText, getAssetText } from "../../Core/utils";
@@ -19,7 +18,7 @@ export const AuctionAssetDropdown = ({
   const [assetIcon, setAssetIcon] = useState("Coin");
   const [assetText, setAssetText] = useState("Token");
 
-  const assetItems: ReactNode = assets?.map((asset: CoinQuantity) => {
+  const assetItems = assets?.map((asset: CoinQuantity) => {
     // TODO dynamically load token images and symbols
     // either from some config file or from the wallet
     const iconText = "Coin";
@@ -31,6 +30,12 @@ export const AuctionAssetDropdown = ({
       </Dropdown.MenuItem>
     );
   });
+  assetItems.push(
+    <Dropdown.MenuItem key="nft" textValue="NFT">
+      <Icon icon="Image" />
+      NFT
+    </Dropdown.MenuItem>
+  );
 
   // Set the initial asset text and icon, and asset id
   useEffect(() => {
@@ -78,10 +83,6 @@ export const AuctionAssetDropdown = ({
         onAction={(e) => handleTokenTypeSelection(e.toString())}
       >
         {assetItems}
-        <Dropdown.MenuItem key="nft" textValue="NFT">
-          <Icon icon="Image" />
-          NFT
-        </Dropdown.MenuItem>
       </Dropdown.Menu>
     </Dropdown>
   );
