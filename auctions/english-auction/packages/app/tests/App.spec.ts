@@ -191,10 +191,14 @@ test.describe('e2e', () => {
     // ACCOUNT 2 BIDS ON AUCTION
     await appPage.goto('/buy');
 
+    console.log('in buy');
+
     const errorText = appPage.locator('[aria-label="Seller cannot bid"]').first();
     await expect(errorText).toContainText(
       'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
     );
+
+    console.log('error text');
 
     await switchWallet(walletPage, extensionId, ACCOUNT2);
 
@@ -216,6 +220,8 @@ test.describe('e2e', () => {
     await placeBidButton.click();
 
     await walletApprove(approvePagePromise);
+
+    console.log('two sool');
 
     // Expect transaction to be successful
     const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
