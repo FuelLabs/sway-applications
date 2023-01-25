@@ -234,6 +234,8 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
+    console.log('poop');
+
     const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').first();
     await expect(cancelAuctionButton).toBeEnabled();
 
@@ -246,6 +248,8 @@ test.describe('e2e', () => {
     // Expect transaction to be successful
     const cancelTransactionMessage = appPage.locator('text="Auction cancelled successfully!"');
     await cancelTransactionMessage.waitFor();
+
+    console.log('auction canceled successfully');
 
     // BOTH ACCOUNTS WITHDRAW
     // ACCOUNT1 withdraws
