@@ -68,7 +68,7 @@ jobs:
           cd auctions/english-auction
           pnpm services:setup-test
         
-      - name:  Install Playwright
+      - name: Install Playwright
         run: |
           cd auctions/english-auction
           pnpx playwright install --with-deps chromium
