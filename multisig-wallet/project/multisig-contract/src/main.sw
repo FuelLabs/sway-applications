@@ -60,7 +60,7 @@ impl MultiSignatureWallet for Contract {
         }
 
         storage.nonce += 1;
-        storage.total_weight = total_weight;
+        storage.total_weight += total_weight;
 
         log(AddedOwnersEvent { users })
     }

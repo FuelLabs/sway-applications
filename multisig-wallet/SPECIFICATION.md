@@ -3,6 +3,7 @@ Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
   - [Core Functionality](#core-functionality)
+    - [`add_owners()`](#add_owners)
     - [`cancel_transaction()`](#cancel_transaction)
     - [`constructor()`](#constructor)
     - [`execute_transaction()`](#execute_transaction)
@@ -31,6 +32,16 @@ This section contains general information about the functionality of the applica
 If you are interested in a functional overview then this is the section for you.
 
 ## Core Functionality
+
+### `add_owners()`
+
+1. Adds users which are able to vote on the execution of transactions.
+2. Reverts when:
+   1. The constructor has not been called.
+   2. Signature recovery failed.
+   3. When the address of an owner is the 0th address (0x00000...).
+   4. When an owner has an approval weight of 0.
+   5. When the address of a new user clashes with an existing owner address
 
 ### `cancel_transaction()`
 

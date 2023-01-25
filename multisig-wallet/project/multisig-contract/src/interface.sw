@@ -16,6 +16,11 @@ abi MultiSignatureWallet {
     /// # Reverts
     ///
     /// * When the constructor has not been called to initialize the contract.
+    /// * When the public key cannot be recovered from a signature.
+    /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
+    /// * When the user address is the 0th address (0x00000...).
+    /// * When an owner has an approval weight of 0.
+    /// * When the address of a new user clashes with an existing owner address
     #[storage(read, write)]
     fn add_owners(data: b256, signatures: Vec<SignatureInfo>, users: Vec<User>);
 
