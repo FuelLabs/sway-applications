@@ -53,6 +53,8 @@ jobs:
 
       - name: Setup Docker
         uses: ./.github/actions/setup-docker
+          with:
+            password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Run Lint
         run: |
