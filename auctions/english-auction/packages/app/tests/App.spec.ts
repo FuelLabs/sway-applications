@@ -267,6 +267,8 @@ test.describe('e2e', () => {
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
     await expect(withdrawButton).toBeEnabled();
 
+    console.log('after withdraw');
+
     approvePagePromise = context.waitForEvent('page');
 
     await withdrawButton.click();
@@ -277,8 +279,12 @@ test.describe('e2e', () => {
     const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
     await withdrawTransactionMessage.waitFor();
 
+    console.log('withdraw successful');
+
     // Switch to account 2
     await switchWallet(walletPage, extensionId, ACCOUNT2);
+
+    console.log('switch');
 
     await appPage.reload();
 
@@ -287,6 +293,8 @@ test.describe('e2e', () => {
     await withdrawButton.click();
 
     await walletApprove(approvePagePromise);
+
+    console.log('other withdraw successful');
 
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
