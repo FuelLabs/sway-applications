@@ -186,6 +186,8 @@ test.describe('e2e', () => {
     const transactionMessage = appPage.locator('text="Auction created successfully!"');
     await transactionMessage.waitFor();
 
+    console.log('auction created successfully');
+
     // ACCOUNT 2 BIDS ON AUCTION
     await appPage.goto('/buy');
 
@@ -224,8 +226,6 @@ test.describe('e2e', () => {
     // Switch to ACCOUNT1
     await switchWallet(walletPage, extensionId, ACCOUNT1);
 
-    // await appPage.goto('/buy');
-    // await appPage.waitForLoadState();
     await appPage.reload();
 
     const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').first();
