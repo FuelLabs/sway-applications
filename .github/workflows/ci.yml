@@ -50,6 +50,9 @@ jobs:
 
       - name: Setup Node
         uses: ./.github/actions/setup-node
+
+      - name: Setup Docker
+        uses: ./.github/actions/setup-docker
       
       - name: Run Lint
         run: |
@@ -66,7 +69,7 @@ jobs:
       - name:  Install Playwright
         run: |
           cd auctions/english-auction
-          npx playwright install --with-deps chromium
+          pnpx playwright install --with-deps chromium
       
       - name: Run E2E Tests
         run: |
