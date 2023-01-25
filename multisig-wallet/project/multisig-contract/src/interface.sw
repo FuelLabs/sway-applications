@@ -108,6 +108,10 @@ abi MultiSignatureWallet {
 }
 
 abi Info {
+    /// Returns the approval weight of the user.
+    #[storage(read)]
+    fn approval_weight(user: b256) -> u64;
+
     /// Returns the contract's balance of the specified asset.
     ///
     /// # Arguments
@@ -118,10 +122,6 @@ abi Info {
     /// Returns the current nonce.
     #[storage(read)]
     fn nonce() -> u64;
-
-    /// Returns a boolean indicating if the address is an owner in the contract.
-    #[storage(read)]
-    fn owner(user: b256) -> bool;
 
     /// Returns the current threshold.
     #[storage(read)]

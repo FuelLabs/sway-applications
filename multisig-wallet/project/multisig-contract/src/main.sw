@@ -181,6 +181,11 @@ impl MultiSignatureWallet for Contract {
 }
 
 impl Info for Contract {
+    #[storage(read)]
+    fn approval_weight(user: b256) -> u64 {
+        storage.weighting.get(user)
+    }
+
     fn balance(asset_id: ContractId) -> u64 {
         this_balance(asset_id)
     }
@@ -188,11 +193,6 @@ impl Info for Contract {
     #[storage(read)]
     fn nonce() -> u64 {
         storage.nonce
-    }
-
-    #[storage(read)]
-    fn owner(user: b256) -> bool {
-        storage.weighting.get(user) == 0
     }
 
     #[storage(read)]

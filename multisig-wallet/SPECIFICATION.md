@@ -10,9 +10,9 @@ Table of Contents
     - [`set_threshold()`](#set_threshold)
     - [`transfer()`](#transfer)
   - [State Checks](#state-checks)
+    - [`approval_weight()`](#approval_weight)
     - [`balance()`](#balance)
     - [`nonce()`](#nonce)
-    - [`owner()`](#owner)
     - [`threshold()`](#threshold)
   - [Utilities](#utilities)
     - [`transaction_hash()`](#transaction_hash)
@@ -98,6 +98,10 @@ If you are interested in a functional overview then this is the section for you.
 
 ## State Checks
 
+### `approval_weight()`
+
+1. Returns the approval weight of the user.
+
 ### `balance()`
 
 1. Returns the contract's balance of the specified asset.
@@ -106,10 +110,6 @@ If you are interested in a functional overview then this is the section for you.
 ### `nonce()`
 
 1. Returns the current nonce of the contract.
-
-### `owner()`
-
-1. Returns a boolean indicating if the address is an owner in the contract.
 
 ### `threshold()`
 
