@@ -243,7 +243,11 @@ test.describe('e2e', () => {
 
     await cancelAuctionButton.click();
 
+    console.log('asdf');
+
     await walletApprove(approvePagePromise);
+
+    console.log('after poop');
 
     // Expect transaction to be successful
     const cancelTransactionMessage = appPage.locator('text="Auction cancelled successfully!"');
