@@ -11,6 +11,7 @@ Table of Contents
   - [State Checks](#state-checks)
     - [`balance()`](#balance)
     - [`nonce()`](#nonce)
+    - [`owner()`](#owner)
     - [`threshold()`](#threshold)
   - [Utilities](#utilities)
     - [`transaction_hash()`](#transaction_hash)
@@ -94,6 +95,10 @@ If you are interested in a functional overview then this is the section for you.
 ### `nonce()`
 
 1. Returns the current nonce of the contract.
+
+### `owner()`
+
+1. Returns a boolean indicating if the address is an owner in the contract.
 
 ### `threshold()`
 

@@ -191,6 +191,11 @@ impl Info for Contract {
     }
 
     #[storage(read)]
+    fn owner(user: b256) -> bool {
+        storage.weighting.get(user) == 0
+    }
+
+    #[storage(read)]
     fn threshold() -> u64 {
         storage.threshold
     }

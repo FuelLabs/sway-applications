@@ -114,6 +114,10 @@ abi Info {
     #[storage(read)]
     fn nonce() -> u64;
 
+    /// Returns a boolean indicating if the address is an owner in the contract.
+    #[storage(read)]
+    fn owner(user: b256) -> bool;
+
     /// Returns the current threshold.
     #[storage(read)]
     fn threshold() -> u64;

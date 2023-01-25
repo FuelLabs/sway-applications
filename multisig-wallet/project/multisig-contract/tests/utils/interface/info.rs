@@ -10,6 +10,10 @@ pub async fn nonce(contract: &MultiSig) -> FuelCallResponse<u64> {
     contract.methods().nonce().call().await.unwrap()
 }
 
+// pub async fn owner(contract: &MultiSig, user: some type here) -> FuelCallResponse<bool> {
+//     contract.methods().owner().call().await.unwrap()
+// }
+
 pub async fn threshold(contract: &MultiSig) -> FuelCallResponse<u64> {
     contract.methods().threshold().call().await.unwrap()
 }
