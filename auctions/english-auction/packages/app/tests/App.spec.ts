@@ -151,8 +151,6 @@ test.describe('e2e', () => {
 
     await switchWallet(walletPage, extensionId, ACCOUNT1);
 
-    console.log('after asdf');
-
     await appPage.reload();
 
     const createAuctionButton = appPage.locator('button').getByText('Create Auction');
@@ -178,7 +176,11 @@ test.describe('e2e', () => {
     let approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
+    console.log('after asdf');
+
     await walletApprove(approvePagePromise);
+
+    console.log('in between');
 
     // Expect transaction to be successful
     const transactionMessage = appPage.locator('text="Auction created successfully!"');
@@ -267,6 +269,7 @@ test.describe('e2e', () => {
 
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
+    console.log('end:)');
   });
 
   test('Test auction (Sell: Token, Bid: Token) with Reserve is canceled', async ({
