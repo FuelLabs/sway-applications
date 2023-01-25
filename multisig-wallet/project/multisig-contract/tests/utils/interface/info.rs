@@ -3,7 +3,12 @@ use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::ContractI
 use crate::utils::setup::MultiSig;
 
 pub async fn approval_weight(contract: &MultiSig, user: Bits256) -> FuelCallResponse<u64> {
-    contract.methods().approval_weight(user).call().await.unwrap()
+    contract
+        .methods()
+        .approval_weight(user)
+        .call()
+        .await
+        .unwrap()
 }
 
 pub async fn balance(contract: &MultiSig, asset_id: ContractId) -> FuelCallResponse<u64> {
