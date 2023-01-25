@@ -112,6 +112,5 @@ mod revert {
         // TODO: forgot to do this
         let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
         constructor(&deployer.contract, default_users()).await;
-
     }
 }
