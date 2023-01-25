@@ -76,14 +76,20 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
 async function walletApprove(approvePagePromise: Promise<Page>) {
   // Handle transaction approval in web wallet
   const approvePage = await approvePagePromise;
+  console.log('in approve');
   await approvePage.waitForLoadState();
+  console.log('after load');
   const approveButton = approvePage.locator('button').getByText('Confirm');
   await approveButton.click();
 
+  console.log('after click');
+
   const enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
   await enterPasswordInput.fill(WALLET_PASSWORD);
+  console.log('after fill');
   const confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
   await confirmButton.click();
+  console.log('goober');
 }
 
 async function addWallet(walletPage: Page, extensionId: string, accountName: string) {
@@ -245,6 +251,7 @@ test.describe('e2e', () => {
 
     console.log('asdf');
 
+    // TODO this fails figure out why
     await walletApprove(approvePagePromise);
 
     console.log('after poop');
