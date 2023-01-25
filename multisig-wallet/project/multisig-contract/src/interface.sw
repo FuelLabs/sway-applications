@@ -54,7 +54,6 @@ abi MultiSignatureWallet {
     /// # Arguments
     ///
     /// * `data` - The data field of the transaction.
-    /// * `nonce` - The nonce field of the transaction.
     /// * `signatures` - The information for each user's signature for a specific transaction.
     /// * `threshold` - The number of approvals required to enable a transaction to be sent.
     ///
@@ -66,7 +65,7 @@ abi MultiSignatureWallet {
     /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// * When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn set_threshold(data: b256, nonce: u64, signatures: Vec<SignatureInfo>, threshold: u64);
+    fn set_threshold(data: b256, signatures: Vec<SignatureInfo>, threshold: u64);
 
     /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement.
     ///
