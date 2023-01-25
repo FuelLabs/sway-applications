@@ -5,6 +5,20 @@ dep data_structures;
 use data_structures::{SignatureInfo, User};
 
 abi MultiSignatureWallet {
+    /// Adds users which are able to vote on the execution of transactions.
+    ///
+    /// # Arguments
+    ///
+    /// * `data` - The data field of the transaction.
+    /// * `signatures` - The information for each user's signature for a specific transaction.
+    /// * `users` - The users of the multisig, who can sign transactions to add their approval.
+    ///
+    /// # Reverts
+    ///
+    /// * When the constructor has not been called to initialize the contract.
+    #[storage(read, write)]
+    fn add_owners(data: b256, signatures: Vec<SignatureInfo>, users: Vec<User>);
+
     /// Cancel the next transaction by spending the current nonce.
     ///
     /// # Reverts

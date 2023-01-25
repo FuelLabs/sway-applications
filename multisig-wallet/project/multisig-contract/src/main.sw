@@ -20,7 +20,7 @@ use std::{
 
 use data_structures::{SignatureInfo, User};
 use errors::{AccessControlError, ExecutionError, InitError};
-use events::{CancelEvent, ExecutedEvent, SetThresholdEvent, TransferEvent};
+use events::{AddedOwnersEvent, CancelEvent, ExecutedEvent, SetThresholdEvent, TransferEvent};
 use interface::{Info, MultiSignatureWallet};
 use utils::{create_hash, recover_signer};
 
@@ -37,6 +37,34 @@ storage {
 }
 
 impl MultiSignatureWallet for Contract {
+    #[storage(read, write)]
+    fn add_owners(data: b256, signatures: Vec<SignatureInfo>, users: Vec<User>) {
+        require(storage.nonce != 0, InitError::NotInitialized);
+
+        let transaction_hash = create_hash(data, storage.nonce, Identity::ContractId(contract_id()), 0);
+        let approval_count = count_approvals(signatures, transaction_hash);
+
+        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
+
+        let mut user_index = 0;
+        let mut total_weight = 0;
+        while user_index < users.len() {
+            require(ZERO_B256 != users.get(user_index).unwrap().address, InitError::AddressCannotBeZero);
+            require(users.get(user_index).unwrap().weight != 0, InitError::WeightingCannotBeZero);
+
+            // TODO: make sure that each owner is new and it does not overwrite an existing owner
+            storage.weighting.insert(users.get(user_index).unwrap().address, users.get(user_index).unwrap().weight);
+            total_weight += users.get(user_index).unwrap().weight;
+
+            user_index += 1;
+        }
+
+        storage.nonce += 1;
+        storage.total_weight = total_weight;
+
+        log(AddedOwnersEvent { users })
+    }
+
     #[storage(read, write)]
     fn cancel_transaction() {
         let sender = match msg_sender().unwrap() {

@@ -2,6 +2,20 @@ use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::ContractI
 
 use crate::utils::setup::{MultiSig, SignatureInfo, User};
 
+pub async fn add_owners(
+    contract: &MultiSig,
+    data: Bits256,
+    signatures_data: Vec<SignatureInfo>,
+    users: Vec<User>,
+) -> FuelCallResponse<()> {
+    contract
+        .methods()
+        .add_owners(data, signatures_data, users)
+        .call()
+        .await
+        .unwrap()
+}
+
 pub async fn cancel_transaction(contract: &MultiSig) -> FuelCallResponse<()> {
     contract
         .methods()

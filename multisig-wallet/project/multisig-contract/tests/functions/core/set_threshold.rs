@@ -104,4 +104,14 @@ mod revert {
 
         set_threshold(&deployer.contract, data, signatures, DEFAULT_THRESHOLD + 1).await;
     }
+
+    #[ignore]
+    #[tokio::test]
+    #[should_panic(expected = "InsufficientApprovals")]
+    async fn insufficient_approvals() {
+        // TODO: forgot to do this
+        let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+        constructor(&deployer.contract, default_users()).await;
+
+    }
 }

@@ -1,5 +1,13 @@
 library events;
 
+dep data_structures;
+
+use data_structures::User;
+
+pub struct AddedOwnersEvent {
+    users: Vec<User>,
+}
+
 pub struct CancelEvent {
     cancelled_nonce: u64,
     user: b256,
