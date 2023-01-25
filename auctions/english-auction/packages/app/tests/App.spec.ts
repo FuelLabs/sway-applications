@@ -12,12 +12,9 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   // WALLET SETUP
   const walletPage = await context.newPage();
   await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
-  console.log('one');
   const signupPage = await context.waitForEvent('page', {
     predicate: (page) => page.url().includes('sign-up'),
   });
-
-  console.log('two');
 
   expect(signupPage.url()).toContain('sign-up');
 
@@ -73,8 +70,6 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   const connectButton = connectPage.locator('button').getByText('Connect');
   await connectButton.click();
 
-  console.log('three');
-
   return { appPage, walletPage };
 }
 
@@ -128,12 +123,9 @@ async function switchWallet(walletPage: Page, extensionId: string, accountName: 
 }
 
 function getPages(context: BrowserContext) {
-  console.log('in get pages');
   const pages = context.pages();
   const [walletPage] = pages.filter((page) => page.url().includes('popup'));
-  console.log('wallet page: ', walletPage);
   const [appPage] = pages.filter((page) => page.url().includes('localhost'));
-  console.log('app page: ', appPage);
   return { appPage, walletPage };
 }
 
@@ -159,10 +151,14 @@ test.describe('e2e', () => {
 
     await switchWallet(walletPage, extensionId, ACCOUNT1);
 
+    console.log('after asdf');
+
     await appPage.reload();
 
     const createAuctionButton = appPage.locator('button').getByText('Create Auction');
     expect(createAuctionButton).toBeDisabled();
+
+    console.log('here');
 
     const fillSellerAddressButton = appPage.locator('[aria-label="Fill seller address"]');
     expect(fillSellerAddressButton).toBeDefined();
