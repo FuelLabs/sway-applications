@@ -51,8 +51,8 @@ impl MultiSignatureWallet for Contract {
         while user_index < users.len() {
             require(ZERO_B256 != users.get(user_index).unwrap().address, InitError::AddressCannotBeZero);
             require(users.get(user_index).unwrap().weight != 0, InitError::WeightingCannotBeZero);
+            require(storage.weighting.get(users.get(user_index).unwrap().address) == 0, InitError::OwnerAddressCollision);
 
-            // TODO: make sure that each owner is new and it does not overwrite an existing owner
             storage.weighting.insert(users.get(user_index).unwrap().address, users.get(user_index).unwrap().weight);
             total_weight += users.get(user_index).unwrap().weight;
 
