@@ -15,6 +15,7 @@ use std::{
     constants::ZERO_B256,
     context::this_balance,
     logging::log,
+    low_level_call::{call_with_function_selector_vec, CallParams},
     token::transfer,
 };
 
@@ -22,7 +23,7 @@ use data_structures::{SignatureInfo, User};
 use errors::{AccessControlError, ExecutionError, InitError};
 use events::{CancelEvent, ExecutedEvent, SetThresholdEvent, TransferEvent};
 use interface::{Info, MultiSignatureWallet};
-use utils::{create_hash, recover_signer};
+use utils::{create_hash, create_payload, recover_signer};
 
 storage {
     /// Used to add entropy into hashing of transaction to decrease the probability of collisions / double
@@ -79,27 +80,55 @@ impl MultiSignatureWallet for Contract {
 
     #[storage(read, write)]
     fn execute_transaction(
-        data: b256,
-        signatures: Vec<SignatureInfo>,
-        to: Identity,
-        value: u64,
+        asset_id: Option<ContractId>,
+        calldata: Option<Vec<u8>>,
+        function_selector: Option<Vec<u8>>,
+        forwarded_gas: Option<u64>,
+        signatures: Vec<SignatureInfo>, 
+        single_value_type_arg: Option<bool>,
+        target: Identity, 
+        value: Option<u64>,
     ) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
-        let transaction_hash = create_hash(data, storage.nonce, to, value);
-        let approval_count = count_approvals(signatures, transaction_hash);
+        if function_selector.is_none() {
 
-        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
+            //transfer
+            require(asset_id.is_some(), ExecutionError::TransferRequiresAnAssetId); 
+            require(value.is_some(), ExecutionError::TransferRequiresAValue); 
+            
+            let asset_id = asset_id.unwrap();
+            let value = value.unwrap();
 
-        storage.nonce += 1;
+            require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
-        // TODO: Execute https://github.com/FuelLabs/sway-applications/issues/22
-        log(ExecutedEvent {
-            data,
-            nonce: storage.nonce - 1,
-            to,
-            value,
-        });
+            let data = match target {
+                Identity::Address(address) => address_to_bytes(address),
+                Identity::ContractId(contract_id) => contract_id_to_bytes(contract_id),
+            };
+
+            let transaction_hash = create_hash(data, storage.nonce, target, value);
+            let approval_count = count_approvals(signatures, transaction_hash);
+            require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
+
+            storage.nonce += 1;
+
+            transfer(value, asset_id, target);
+
+            log(TransferEvent {
+                asset: asset_id,
+                nonce: storage.nonce - 1,
+                to: target,
+                value,
+            });
+
+        } else {
+
+            //call
+
+
+        }
+
     }
 
     #[storage(read, write)]
@@ -172,8 +201,8 @@ impl Info for Contract {
         storage.threshold
     }
 
-    fn transaction_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
-        create_hash(data, nonce, to, value)
+    fn transaction_hash(data: Vec<u8>, nonce: u64, to: Identity, value: u64) -> b256 { 
+        create_hash(Bytes::from_vec_u8(data), nonce, to, value) // TO DO : Switch Vec<u8> to Bytes when SDK supports Bytes
     }
 
     fn update_hash(data: b256, nonce: u64) -> b256 {

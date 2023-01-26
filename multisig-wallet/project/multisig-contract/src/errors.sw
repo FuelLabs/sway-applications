@@ -8,6 +8,8 @@ pub enum ExecutionError {
     IncorrectSignerOrdering: (),
     InsufficientAssetAmount: (),
     InsufficientApprovals: (),
+    TransferRequiresAnAssetId: (),
+    TransferRequiresAValue: (),
 }
 
 pub enum InitError {
