@@ -1,5 +1,8 @@
 use crate::utils::setup::TicTacToe;
-use fuels::{contract::call_response::FuelCallResponse, prelude::{Identity, TxParameters}};
+use fuels::{
+    contract::call_response::FuelCallResponse,
+    prelude::{Identity, TxParameters},
+};
 
 pub async fn new_game(
     contract: &TicTacToe,
