@@ -1,11 +1,12 @@
 use crate::utils::{
     interface::{make_move, new_game},
-    setup::{setup, GameDrawnEvent, GameWonEvent},
+    setup::setup,
 };
 
 mod success {
 
     use super::*;
+    use crate::utils::setup::{GameDrawnEvent, GameWonEvent};
 
     #[tokio::test]
     async fn when_player_one_wins() {
