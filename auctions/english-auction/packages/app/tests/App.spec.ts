@@ -143,14 +143,20 @@ test.describe('e2e', () => {
     console.log('start test 1');
     const { appPage, walletPage } = getPages(context);
 
+    console.log('hot pages');
+
     await appPage.goto('/sell');
 
     await switchWallet(walletPage, extensionId, ACCOUNT1);
+
+    console.log('switch');
 
     await appPage.reload();
 
     const createAuctionButton = appPage.locator('button').getByText('Create Auction');
     expect(createAuctionButton).toBeDisabled();
+
+    console.log('asdef');
 
     const fillSellerAddressButton = appPage.locator('[aria-label="Fill seller address"]');
     expect(fillSellerAddressButton).toBeDefined();
