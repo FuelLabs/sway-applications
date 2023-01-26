@@ -27,16 +27,16 @@ impl<T> Eq for Option<T> {
 }
 
 storage {
-    /// The first player of the game.
-    player_one: Option<Identity> = Option::None,
-    /// The second player of the game.
-    player_two: Option<Identity> = Option::None,
     /// Keeps track of each player move.
     board: StorageMap<u64, Option<Identity>> = StorageMap {},
-    /// The current player turn.
-    player_turn: Option<Identity> = Option::None,
     /// Keeps track of the move counter for various checks (win, draw, etc.).
     move_counter: u64 = 0,
+    /// The first player of the game.
+    player_one: Option<Identity> = Option::None,
+    /// The current player turn.
+    player_turn: Option<Identity> = Option::None,
+    /// The second player of the game.
+    player_two: Option<Identity> = Option::None,
     /// Keeps track of the game, its value is either Ended or Playing.
     state: State = State::Ended,
 }
