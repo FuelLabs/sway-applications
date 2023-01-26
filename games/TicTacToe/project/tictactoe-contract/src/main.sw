@@ -1,18 +1,18 @@
 contract;
 
-dep interface;
-dep events;
-dep errors;
-dep utils;
 dep data_structures;
+dep errors;
+dep events;
+dep interface;
+dep utils;
 
-use interface::Game;
-use events::{GameDrawnEvent, GameWonEvent, NewGameEvent};
-use errors::{GameStateError, PlayerError, PositionError};
-use utils::{draw, win_check};
-use data_structures::State;
 use core::ops::Eq;
+use data_structures::State;
+use errors::{GameStateError, PlayerError, PositionError};
+use events::{GameDrawnEvent, GameWonEvent, NewGameEvent};
+use interface::Game;
 use std::{auth::msg_sender, logging::log};
+use utils::{draw, win_check};
 
 // This is needed for comparing the position when the cell is not empty.
 // We only need to check if there is an Identity in the cell but we don't care about its value.
