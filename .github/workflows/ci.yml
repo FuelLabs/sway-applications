@@ -38,9 +38,6 @@ jobs:
   frontend:
     runs-on: ubuntu-latest
 
-    # container:
-    #   image: mcr.microsoft.com/playwright:v1.30.0-focal
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -71,14 +68,15 @@ jobs:
           cd auctions/english-auction
           pnpm services:setup-test
         
-      - name: Install Playwright
-        run: |
-          cd auctions/english-auction
-          pnpx playwright install --with-deps
+      # - name: Install Playwright
+      #   run: |
+      #     cd auctions/english-auction
+      #     pnpx playwright install --with-deps
       
       - name: Run E2E Tests
         run: |
           cd auctions/english-auction
+          npx playwright install --with-deps chromium
           xvfb-run --auto-servernum -- pnpm test
 
       - name: Upload Test Results
