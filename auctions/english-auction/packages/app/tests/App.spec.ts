@@ -229,6 +229,8 @@ test.describe('e2e', () => {
     const cancelTransactionMessage = appPage.locator('text="Auction cancelled successfully!"');
     await cancelTransactionMessage.waitFor();
 
+    console.log('auction canceled success');
+
     // BOTH ACCOUNTS WITHDRAW
     // ACCOUNT1 withdraws
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
@@ -244,6 +246,8 @@ test.describe('e2e', () => {
     const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
     await withdrawTransactionMessage.waitFor();
 
+    console.log('withdraw from auction success');
+
     // Switch to account 2
     await switchWallet(walletPage, extensionId, ACCOUNT2);
 
@@ -255,8 +259,12 @@ test.describe('e2e', () => {
 
     await walletApprove(approvePagePromise);
 
+    console.log('after approve');
+
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
+
+    console.log('end');
   });
 
   test('Test auction (Sell: Token, Bid: Token) with Reserve is canceled', async ({
