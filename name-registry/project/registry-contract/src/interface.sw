@@ -17,7 +17,7 @@ abi NameRegistry {
     /// * If the name is not registered
     /// * If the payment is insufficient to cover the cost for the duration
     /// * If the incorrect asset is sent
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn extend(name: str[8], duration: u64);
 
     /// Adds an entry into the registry for the given name.
@@ -36,7 +36,7 @@ abi NameRegistry {
     /// * If the name is in the registry and it has not expired
     /// * If the payment is insufficient to cover the cost for the duration
     /// * If the incorrect asset is sent
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn register(name: str[8], duration: u64, owner: Identity, identity: Identity);
 
     /// Sets the identity to which the name will resolve to

@@ -1,10 +1,10 @@
 use crate::utils::{
+    abigen_bindings::english_auction_mod::State,
     asset_abi_calls::mint_and_send_to_address,
     english_auction_abi_calls::{auction_info, bid, cancel, create},
-    english_auction_mod::State,
     test_helpers::{defaults_token, setup, token_asset},
 };
-use fuels::prelude::Identity;
+use fuels::types::Identity;
 
 mod success {
 

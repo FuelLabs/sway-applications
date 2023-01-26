@@ -1,23 +1,24 @@
 library errors;
 
 pub enum InitError {
-    CannotReinitialize: (),
-    NotInitialized: (),
-    PoolAssetsCannotBeIdentical: (),
+    AssetPairAlreadySet: (),
+    AssetPairNotSet: (),
+    IdenticalAssets: (),
 }
 
 pub enum InputError {
-    AmountCannotBeZero: (),
-    AmountMustBeZero: (),
-    AmountTooLow: u64,
-    DeadlinePassed: (),
+    CannotAddLessThanMinimumLiquidity: u64,
+    DeadlinePassed: u64,
+    ExpectedNonZeroAmount: ContractId,
+    ExpectedNonZeroParameter: ContractId,
+    ExpectedZeroAmount: (),
     InvalidAsset: (),
 }
 
 pub enum TransactionError {
-    DepositCannotBeZero: (),
     DesiredAmountTooHigh: u64,
-    InsufficientLiquidity: (),
-    LiquidityCannotBeZero: (),
-    ProvidedAmountTooLow: u64,
+    DesiredAmountTooLow: u64,
+    ExpectedNonZeroDeposit: ContractId,
+    InsufficientReserve: ContractId,
+    NoLiquidityToRemove: (),
 }

@@ -1,0 +1,8 @@
+[workspace]
+members = [
+  "./project/fractional-NFT-contract",
+  "./project/fractional-NFT-contract/tests/artifacts/NFT",
+  "./project/token-distributor-contract",
+  "./project/token-distributor-contract/tests/artifacts/NFT",
+  "./project/token-distributor-contract/tests/artifacts/asset",
+]

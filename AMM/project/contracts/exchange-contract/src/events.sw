@@ -1,53 +1,45 @@
 library events;
 
+use libraries::data_structures::{Asset, AssetPair};
+
 pub struct AddLiquidityEvent {
-    /// Amount of asset A added to reserves
-    asset_a: u64,
-    /// Amount of asset B added to reserves
-    asset_b: u64,
-    /// Amount of liquidity pool assets minted and transferred to sender
-    liquidity: u64,
+    /// Identifiers and amounts of assets added to reserves
+    added_assets: AssetPair,
+    /// Identifier and amount of liquidity pool assets minted and transferred to sender
+    liquidity: Asset,
 }
 
 pub struct DefineAssetPairEvent {
-    /// The pair that makes up the pool
-    pair: (ContractId, ContractId),
+    /// Identifier of one of the assets that make up the pool
+    asset_a_id: ContractId,
+    /// Identifier of the other asset
+    asset_b_id: ContractId,
 }
 
 pub struct DepositEvent {
-    /// Deposited amount of the asset that may be withdrawn of used to add liquidity
-    amount: u64,
-    /// Deposited asset that is either asset A or asset B
-    asset: ContractId,
+    /// Deposited asset that may be withdrawn or used to add liquidity
+    deposited_asset: Asset,
     /// New deposit balance of asset in contract
-    balance: u64,
+    new_balance: u64,
 }
 
 pub struct RemoveLiquidityEvent {
-    /// Amount of asset A removed from reserves and transferred to sender
-    amount_a: u64,
-    /// Amount of asset B removed from reserves and transferred to sender
-    amount_b: u64,
-    /// Amount of liquidity pool assets burned
-    liquidity: u64,
+    /// Identifiers and amounts of assets removed from reserves and transferred to sender
+    removed_reserve: AssetPair,
+    /// Identifier and amount of burned liquidity pool assets
+    burned_liquidity: Asset,
 }
 
 pub struct SwapEvent {
-    /// Amount of the output asset that was bought
-    bought: u64,
-    /// Identifier of input asset
-    input: ContractId,
-    /// Identifier of output asset
-    output: ContractId,
-    /// Amount of the input asset that was sold
-    sold: u64,
+    /// Identifier and amount of sold asset
+    input: Asset,
+    /// Identifier and amount of bought asset
+    output: Asset,
 }
 
 pub struct WithdrawEvent {
-    /// Amount of withdrawal
-    amount: u64,
-    /// Identifier of withdrawn asset
-    asset: ContractId,
+    /// Identifier and amount of withdrawn asset
+    withdrawn_asset: Asset,
     /// Remaining deposit balance of asset in contract
-    balance: u64,
+    remaining_balance: u64,
 }
