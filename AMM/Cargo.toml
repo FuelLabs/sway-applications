@@ -1,0 +1,6 @@
+[workspace]
+resolver = "2"
+members = [
+    "./project/contracts/AMM-contract",
+    "./project/contracts/exchange-contract",
+]

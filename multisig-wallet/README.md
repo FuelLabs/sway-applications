@@ -7,13 +7,50 @@
 
 ## Overview
 
+A multi-signature wallet is a wallet that has multiple owners. In order to execute a transaction, a sufficient number of owners need to sign a Tx. Moreover, this implementation uses weighted owners which means that certain owners may have more "votes" when it comes to increasing the number of approvals in order to surpass the minimum threshold for execution.
 
-## Repository Structure
+More information can be found in the [specification](./SPECIFICATION.md).
 
+## Project Structure
+
+The project consists of a smart contract.
+
+<!--Only show most important files e.g. script to run, build etc.-->
+
+```
+multisig-wallet/
+├── project/
+|   └── multisig-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
+├── README.md
+└── SPECIFICATION.md
+```
 
 ## Running the project
 
+### User Interface
 
-## Contributing
+TODO: UI does not currently exist
 
-Check [CONTRIBUTING.md](../CONTRIBUTING.md) for more info!
+### Tests
+
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/multisig-wallet/<you are here>`
+
+Build the contract:
+
+```bash
+forc build
+```
+
+Run the tests:
+
+```bash
+cargo test
+```
+
+## Specification
+
+The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the multisig-wallet.
+
+Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
