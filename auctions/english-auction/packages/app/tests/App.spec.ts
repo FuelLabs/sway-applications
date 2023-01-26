@@ -76,20 +76,14 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
 async function walletApprove(approvePagePromise: Promise<Page>) {
   // Handle transaction approval in web wallet
   const approvePage = await approvePagePromise;
-  console.log('in approve');
   await approvePage.waitForLoadState();
-  console.log('after load');
   const approveButton = approvePage.locator('button').getByText('Confirm');
   await approveButton.click();
 
-  console.log('after click');
-
   const enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
   await enterPasswordInput.fill(WALLET_PASSWORD);
-  console.log('after fill');
   const confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
   await confirmButton.click();
-  console.log('goober');
 }
 
 async function addWallet(walletPage: Page, extensionId: string, accountName: string) {
@@ -145,15 +139,10 @@ test.describe('e2e', () => {
   test.fixme('Test auction expires', async () => {});
   test('Test auction (Sell: Token, Bid: Token) is canceled', async ({ context, extensionId }) => {
     // ACCOUNT1 CREATES AUCTION
-    console.log('in first test');
 
     const { appPage, walletPage } = getPages(context);
 
-    console.log('yuppp');
-
     await appPage.goto('/sell');
-
-    console.log('asdfasdf');
 
     await switchWallet(walletPage, extensionId, ACCOUNT1);
 
@@ -161,8 +150,6 @@ test.describe('e2e', () => {
 
     const createAuctionButton = appPage.locator('button').getByText('Create Auction');
     expect(createAuctionButton).toBeDisabled();
-
-    console.log('here');
 
     const fillSellerAddressButton = appPage.locator('[aria-label="Fill seller address"]');
     expect(fillSellerAddressButton).toBeDefined();
@@ -182,29 +169,19 @@ test.describe('e2e', () => {
     let approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
-    console.log('after asdf');
-
     await walletApprove(approvePagePromise);
-
-    console.log('in between');
 
     // Expect transaction to be successful
     const transactionMessage = appPage.locator('text="Auction created successfully!"');
     await transactionMessage.waitFor();
 
-    console.log('auction created successfully');
-
     // ACCOUNT 2 BIDS ON AUCTION
     await appPage.goto('/buy');
-
-    console.log('in buy');
 
     const errorText = appPage.locator('[aria-label="Seller cannot bid"]').first();
     await expect(errorText).toContainText(
       'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
     );
-
-    console.log('error text');
 
     await switchWallet(walletPage, extensionId, ACCOUNT2);
 
@@ -227,8 +204,6 @@ test.describe('e2e', () => {
 
     await walletApprove(approvePagePromise);
 
-    console.log('two sool');
-
     // Expect transaction to be successful
     const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
     await bidTransactionMessage.waitFor();
@@ -240,8 +215,6 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    console.log('poop');
-
     const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').first();
     await expect(cancelAuctionButton).toBeEnabled();
 
@@ -249,25 +222,17 @@ test.describe('e2e', () => {
 
     await cancelAuctionButton.click();
 
-    console.log('asdf');
-
     // TODO this fails figure out why
     await walletApprove(approvePagePromise);
-
-    console.log('after poop');
 
     // Expect transaction to be successful
     const cancelTransactionMessage = appPage.locator('text="Auction cancelled successfully!"');
     await cancelTransactionMessage.waitFor();
 
-    console.log('auction canceled successfully');
-
     // BOTH ACCOUNTS WITHDRAW
     // ACCOUNT1 withdraws
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
     await expect(withdrawButton).toBeEnabled();
-
-    console.log('after withdraw');
 
     approvePagePromise = context.waitForEvent('page');
 
@@ -279,12 +244,8 @@ test.describe('e2e', () => {
     const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
     await withdrawTransactionMessage.waitFor();
 
-    console.log('withdraw successful');
-
     // Switch to account 2
     await switchWallet(walletPage, extensionId, ACCOUNT2);
-
-    console.log('switch');
 
     await appPage.reload();
 
@@ -294,11 +255,8 @@ test.describe('e2e', () => {
 
     await walletApprove(approvePagePromise);
 
-    console.log('other withdraw successful');
-
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
-    console.log('end:)');
   });
 
   test('Test auction (Sell: Token, Bid: Token) with Reserve is canceled', async ({
