@@ -1,7 +1,5 @@
 library utils;
 
-use core::ops::Eq;
-
 // A list of all the winning combinations.
 const MATCHES = [
     [0, 1, 2],
