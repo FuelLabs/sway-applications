@@ -25,7 +25,7 @@ If you are interested in a functional overview then this is the section for you.
 
 1. Initializes a new game with 2 players and resets the previous state. 
 2. Reverts when: 
-   1. When a game has not finished.
+   1. A game has not finished.
 
 ### `make_move()`
 
