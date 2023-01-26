@@ -1,6 +1,6 @@
 import './load.envs';
 import type { PlaywrightTestConfig } from '@playwright/test';
-// import { devices } from '@playwright/test';
+// pimport { devices } from '@playwright/test';
 
 const { E2E_PORT = 9000 } = process.env;
 
