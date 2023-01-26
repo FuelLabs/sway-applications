@@ -51,10 +51,10 @@ jobs:
       - name: Setup Node
         uses: ./.github/actions/setup-node
 
-      # - name: Setup Docker
-      #   uses: ./.github/actions/setup-docker
-      #   with:
-      #       password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Docker
+        uses: ./.github/actions/setup-docker
+        with:
+            password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Run Lint
         run: |
