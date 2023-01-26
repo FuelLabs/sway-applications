@@ -50,7 +50,7 @@ impl Game for Contract {
         storage.player_two = Option::Some(player_two);
         storage.player_turn = Option::Some(player_one);
 
-        // Once a game has been played, we need to reset all values to be None.
+        // Once a game has been played we need to reset all values.
         let mut position = 0;
         while position < 9 {
             storage.board.insert(position, Option::None::<Identity>());
