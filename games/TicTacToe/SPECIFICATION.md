@@ -32,7 +32,7 @@ If you are interested in a functional overview then this is the section for you.
 1. Allows a player to place a marker on the game board.
 2. Checks if either the game has been won or if it's a draw.
 3. Reverts when:
-   1. When the game has ended.
+   1. The game has ended.
    2. If the incorrect player tries to make a move.
    3. If a player makes a move out of bounds.
    4. If a player makes a move in an occupied cell.
