@@ -140,6 +140,7 @@ test.describe('e2e', () => {
   test('Test auction (Sell: Token, Bid: Token) is canceled', async ({ context, extensionId }) => {
     // ACCOUNT1 CREATES AUCTION
 
+    console.log('start test 1');
     const { appPage, walletPage } = getPages(context);
 
     await appPage.goto('/sell');
@@ -174,6 +175,8 @@ test.describe('e2e', () => {
     // Expect transaction to be successful
     const transactionMessage = appPage.locator('text="Auction created successfully!"');
     await transactionMessage.waitFor();
+
+    console.log('auction created successffully');
 
     // ACCOUNT 2 BIDS ON AUCTION
     await appPage.goto('/buy');
