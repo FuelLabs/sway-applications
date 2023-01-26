@@ -176,7 +176,11 @@ test.describe('e2e', () => {
     let approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
+    console.log('after click');
+
     await walletApprove(approvePagePromise);
+
+    console.log('after approve');
 
     // Expect transaction to be successful
     const transactionMessage = appPage.locator('text="Auction created successfully!"');
