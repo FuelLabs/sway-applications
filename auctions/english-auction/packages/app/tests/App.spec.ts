@@ -75,15 +75,19 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
 
 async function walletApprove(approvePagePromise: Promise<Page>) {
   // Handle transaction approval in web wallet
+  console.log('in approve');
   const approvePage = await approvePagePromise;
   await approvePage.waitForLoadState();
   const approveButton = approvePage.locator('button').getByText('Confirm');
   await approveButton.click();
 
+  console.log('approve button click');
+
   const enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
   await enterPasswordInput.fill(WALLET_PASSWORD);
   const confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
   await confirmButton.click();
+  console.log('end of approve');
 }
 
 async function addWallet(walletPage: Page, extensionId: string, accountName: string) {
