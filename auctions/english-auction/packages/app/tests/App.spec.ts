@@ -78,6 +78,7 @@ async function walletApprove(approvePagePromise: Promise<Page>) {
   console.log('in approve');
   const approvePage = await approvePagePromise;
   await approvePage.waitForLoadState();
+  console.log('after promise wait');
   const approveButton = approvePage.locator('button').getByText('Confirm');
   await approveButton.click();
 
