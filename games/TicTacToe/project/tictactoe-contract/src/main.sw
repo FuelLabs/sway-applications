@@ -15,7 +15,7 @@ use core::ops::Eq;
 use std::{auth::msg_sender, logging::log};
 
 // This is needed for comparing the position when the cell is not empty.
-// We only need to check if there is an Identity in the cell but we don't care of its value.
+// We only need to check if there is an Identity in the cell but we don't care about its value.
 impl<T> Eq for Option<T> {
     fn eq(self, other: Self) -> bool {
         match (self, other) {
