@@ -70,6 +70,8 @@ jobs:
         
       - name: Install Playwright
         run: |
+          cd auctions/english-auction
+          pnpm install
           npx playwright install --with-deps chromium
       
       - name: Run E2E Tests
