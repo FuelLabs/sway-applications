@@ -54,7 +54,7 @@ sway-applications/
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties
 - [Fundraiser](./fundraiser) is a program allowing users to pledge towards a goal
 - [Games](./games)
-    - [TicTacToe](./games/TicTacToe) is an on-chain TicTacToe game to play alone or with a friend
+    - [TicTacToe](./games/TicTacToe) is a game where two players compete to align three markers in a row.
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction
 
 ## Running a project
