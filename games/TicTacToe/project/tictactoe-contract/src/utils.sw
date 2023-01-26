@@ -2,6 +2,7 @@ library utils;
 
 use core::ops::Eq;
 
+// A list of all the winning combinations.
 const MATCHES = [
     [0, 1, 2],
     [3, 4, 5],
@@ -13,19 +14,10 @@ const MATCHES = [
     [2, 4, 6],
 ];
 
-impl<T> Eq for Option<T> {
-    fn eq(self, other: Self) -> bool {
-        match (self, other) {
-            (Option::None, Option::None) => true,
-            (Option::Some(T), Option::Some(T)) => true,
-            _ => false,
-        }
-    }
-}
-
+/// Checks if a player has won.
 pub fn win_check(board: Vec<Option<Identity>>, player: Identity) -> bool {
     let mut i = 0;
-    while (i < 9) {
+    while (i < 8) {
         let marker_one = board.get(MATCHES[i][0]).unwrap();
         let marker_two = board.get(MATCHES[i][1]).unwrap();
         let marker_three = board.get(MATCHES[i][2]).unwrap();
@@ -44,13 +36,19 @@ pub fn win_check(board: Vec<Option<Identity>>, player: Identity) -> bool {
     return false;
 }
 
+/// Checks if the game ends up in a draw.
 pub fn draw(
     board: Vec<Option<Identity>>,
     player_one: Identity,
     player_two: Identity,
+    move_counter: u64,
 ) -> bool {
+    if move_counter != 9 {
+        return false;
+    }
+
     let mut i = 0;
-    while (i < 9) {
+    while (i < 8) {
         let marker_one = board.get(MATCHES[i][0]).unwrap();
         let marker_two = board.get(MATCHES[i][1]).unwrap();
         let marker_three = board.get(MATCHES[i][2]).unwrap();

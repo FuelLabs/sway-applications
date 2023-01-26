@@ -1,4 +1,4 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*};
+use fuels::prelude::*;
 
 abigen!(
     TicTacToe,
@@ -20,7 +20,7 @@ async fn identity(address: &Bech32Address) -> Identity {
 pub async fn setup() -> (Player, Player) {
     let num_wallets = 2;
     let coins_per_wallet = 1;
-    let amount_per_coin = 1_000_000;
+    let amount_per_coin = 100_000_000;
 
     let config = WalletsConfig::new(
         Some(num_wallets),

@@ -1,9 +1,15 @@
 library errors;
 
-pub enum Errors {
+pub enum GameStateError {
+    GameHasEnded: (),
+    GameHasNotEnded: (),
+}
+
+pub enum PlayerError {
     IncorrectPlayerTurn: (),
+}
+
+pub enum PositionError {
     CellIsNotEmpty: (),
     InvalidPosition: (),
-    GameHasNotEnded: (),
-    GameHasEnded: (),
 }
