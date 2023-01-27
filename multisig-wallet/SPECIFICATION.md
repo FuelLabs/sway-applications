@@ -46,9 +46,7 @@ If you are interested in a functional overview then this is the section for you.
    2. Requires the config time constant `THRESHOLD`; the number of approvals required for a transaction to occur.
       1. If the `THRESHOLD` is not 0.
    3. Requires the `users`; the information about the owners of the multisig
-      1. If none of the owners have the 0th address (0x00000...).
-      2. If none of the owners are set to have an approval weighting (number of approvals per owner) of 0.
-      3. If the sum of the owners' approval weightings is a value larger than the `threshold` parameter. This prevents the contract being setup when the owners can never submit enough approvals to allow a transaction.
+      1. If the sum of the owners' approval weightings is a value larger than the `threshold` parameter. This prevents the contract being setup when the owners can never submit enough approvals to allow a transaction.
 
 ### `execute_transaction()`
 
@@ -68,10 +66,11 @@ If you are interested in a functional overview then this is the section for you.
 1. Changes the threshold required for execution of transactions.
 2. Reverts when:
    1. The constructor has not been called.
-   2. The new threshold is greater than the total weight of the owners.
-   3. Signature recovery failed.
-   4. Recovered addresses are not in ascending order.
-   5. The number of approvals does not meet the threshold.
+   2. The new threshold is zero.
+   3. The new threshold is greater than the total weight of the owners.
+   4. Signature recovery failed.
+   5. Recovered addresses are not in ascending order.
+   6. The number of approvals does not meet the threshold.
 
 ### `set_weights()`
 
@@ -127,11 +126,11 @@ If you are interested in a functional overview then this is the section for you.
 
 ### `threshold_hash()`
 
-1. 
+1. Returns the hash of a transaction used to change the threshold for execution.
 
 ### `weight_hash()`
 
-1. 
+1. Returns the hash of a transaction used to change the weight of owners.
 
 ## Sequence Diagram
 

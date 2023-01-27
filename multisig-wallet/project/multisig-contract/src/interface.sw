@@ -51,7 +51,7 @@ abi MultiSignatureWallet {
     #[storage(read, write)]
     fn execute_transaction(data: b256, signatures: Vec<SignatureInfo>, to: Identity, value: u64);
 
-    /// Updates the threshold required for execution
+    /// Updates the threshold required for execution.
     ///
     /// # Arguments
     ///
@@ -139,9 +139,7 @@ abi Info {
     /// * `value` - The value sent in the transaction.
     fn transaction_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256;
 
-    /// Creates a hash which is used to make updates to the state of the contract
-    ///
-    /// Used to manage the contract while `transaction_hash()` is used for external calls
+    /// Creates a hash which is used to make updates to the state of the contract.
     ///
     /// # Arguments
     ///
@@ -150,5 +148,12 @@ abi Info {
     /// * `threshold` - The number of approvals required to enable a transaction to be sent.
     fn threshold_hash(data: Option<b256>, nonce: u64, threshold: u64) -> b256;
 
+    /// Creates a hash which is used to make updates to the weights of owners.
+    ///
+    /// # Arguments
+    ///
+    /// * `data` - The data field of the transaction.
+    /// * `nonce` - The nonce field of the transaction.
+    /// * `users` - The users of the multisig, who can sign transactions to add their approval.
     fn weight_hash(data: Option<b256>, nonce: u64, users: Vec<User>) -> b256;
 }
