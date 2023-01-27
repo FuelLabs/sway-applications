@@ -21,7 +21,6 @@ mod success {
     #[tokio::test]
     async fn transfers() {
         let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
-
         let (receiver_wallet, receiver, data) = transfer_parameters();
 
         constructor(&deployer.contract, default_users()).await;

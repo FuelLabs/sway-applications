@@ -11,6 +11,8 @@ mod success {
     async fn setup_with_constructor() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
+        assert_eq!(nonce(&deployer.contract).await.value, 0);
+
         constructor(&deployer.contract, default_users()).await;
 
         assert_eq!(nonce(&deployer.contract).await.value, 1);
@@ -38,7 +40,7 @@ mod revert {
     async fn threshold_cannot_be_zero() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        // TODO: how to inject a different config time constant value to change the THRESHOLD?
+        // TODO: Inject a different config time constant value to change the THRESHOLD when SDK supports
         constructor(&deployer.contract, default_users()).await;
     }
 

@@ -1,5 +1,5 @@
 use crate::utils::{
-    interface::{core::{add_owners, constructor}, info::nonce},
+    interface::{core::constructor, info::nonce},
     setup::{default_users, setup_env, VALID_SIGNER_PK},
 };
 
@@ -87,9 +87,5 @@ mod revert {
 
         constructor(&deployer.contract, default_users).await;
     }
-
-    #[tokio::test]
-    #[should_panic(expected = "OwnerAddressCollision")]
-    async fn total_weight_cannot_be_less_than_threshold() {}
 
 }

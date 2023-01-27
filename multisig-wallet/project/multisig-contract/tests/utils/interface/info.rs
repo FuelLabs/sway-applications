@@ -1,4 +1,8 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::ContractId};
+use fuels::{
+    contract::call_response::FuelCallResponse,
+    prelude::{Bits256, Identity},
+    tx::ContractId,
+};
 
 use crate::utils::setup::{MultiSig, User};
 
