@@ -79,17 +79,19 @@ async function walletApprove(
   extensionId: string
 ) {
   // Handle transaction approval in web wallet
-  console.log('in approve');
   // const approvePage = await approvePagePromise;
-  let approvePage = context.pages().find((p) => p.url().includes(extensionId));
+  let approvePage = context.pages().find((p) => p.url().includes('/request/transaction'));
   if (!approvePage) {
     approvePage = await context.waitForEvent('page', {
       predicate: (page) => page.url().includes(extensionId),
     });
   }
-  console.log('approve page: ', approvePage);
-  await approvePage.waitForLoadState();
+
+  // await approvePage.screenshot({ path: "temp.png", fullPage: true });
+  // console.log('approve page: ', approvePage);
+  // await approvePage.waitForLoadState();
   console.log('after promise wait');
+  await approvePage.waitForSelector('text="Confirm"');
   const approveButton = approvePage.locator('button').getByText('Confirm');
   await approveButton.click();
 
