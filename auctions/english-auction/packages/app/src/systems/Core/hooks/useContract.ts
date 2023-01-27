@@ -17,9 +17,6 @@ export const useContract = () => {
     () => {
       // Connects our contract instance to the deployed contract
       // using the given wallet.
-      console.log('contract id', CONTRACT_ID);
-      console.log('env id', process.env.VITE_CONTRACT_ID);
-      console.log('provider', wallet?.provider.url);
       return AuctionContractAbi__factory.connect(CONTRACT_ID, wallet!);
     },
     {
