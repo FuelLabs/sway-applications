@@ -4,10 +4,6 @@ dep data_structures/user;
 
 use user::User;
 
-pub struct AddedOwnersEvent {
-    users: Vec<User>,
-}
-
 pub struct CancelEvent {
     cancelled_nonce: u64,
     user: b256,

@@ -10,26 +10,12 @@ dep events;
 dep interface;
 dep utils;
 
-use std::{
-    auth::msg_sender,
-    call_frames::contract_id,
-    constants::ZERO_B256,
-    context::this_balance,
-    logging::log,
-    token::transfer,
-};
+use std::{auth::msg_sender, context::this_balance, logging::log, token::transfer};
 
 // ops::*; is for the Mod trait and implementation on the u64
 use core::ops::*;
 use errors::{AccessControlError, ExecutionError, InitError};
-use events::{
-    AddedOwnersEvent,
-    CancelEvent,
-    ExecutedEvent,
-    SetThresholdEvent,
-    SetWeightsEvent,
-    TransferEvent,
-};
+use events::{CancelEvent, ExecutedEvent, SetThresholdEvent, SetWeightsEvent, TransferEvent};
 use interface::{Info, MultiSignatureWallet};
 use signatures::SignatureInfo;
 use user::User;
