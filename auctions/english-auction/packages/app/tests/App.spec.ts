@@ -101,12 +101,9 @@ async function walletApprove(
     });
   }
 
-  await approvePage.screenshot({ path: 'temp.png', fullPage: true });
   await approvePage.waitForSelector('text="Confirm"');
   const approveButton = approvePage.locator('button').getByText('Confirm');
   await approveButton.click();
-
-  await approvePage.screenshot({ path: 'temp1.png', fullPage: true });
 
   const enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
   await enterPasswordInput.fill(WALLET_PASSWORD);
