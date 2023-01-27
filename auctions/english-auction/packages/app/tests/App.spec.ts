@@ -77,6 +77,7 @@ async function walletApprove(approvePagePromise: Promise<Page>) {
   // Handle transaction approval in web wallet
   console.log('in approve');
   const approvePage = await approvePagePromise;
+  console.log('approve page: ', approvePage);
   await approvePage.waitForLoadState();
   console.log('after promise wait');
   const approveButton = approvePage.locator('button').getByText('Confirm');
