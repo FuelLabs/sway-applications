@@ -8,6 +8,7 @@ Table of Contents
     - [`constructor()`](#constructor)
     - [`execute_transaction()`](#execute_transaction)
     - [`set_threshold()`](#set_threshold)
+    - [`set_weights()`](#set_weights)
     - [`transfer()`](#transfer)
   - [State Checks](#state-checks)
     - [`approval_weight()`](#approval_weight)
@@ -16,7 +17,8 @@ Table of Contents
     - [`threshold()`](#threshold)
   - [Utilities](#utilities)
     - [`transaction_hash()`](#transaction_hash)
-    - [`update_hash()`](#update_hash)
+    - [`threshold_hash()`](#threshold_hash)
+    - [`weight_hash()`](#weight_hash)
   - [Sequence Diagram](#sequence-diagram)
 
 # Overview
@@ -82,6 +84,8 @@ If you are interested in a functional overview then this is the section for you.
    4. Recovered addresses are not in ascending order.
    5. The number of approvals does not meet the threshold
 
+### `set_weights()`
+
 ### `transfer()`
 
 1. Transfers assets, via a transaction formed from the parameters.
@@ -125,12 +129,13 @@ If you are interested in a functional overview then this is the section for you.
    3. Requires `to`; The recipient of the transaction.
    4. Requires `value`; The value sent in the transaction.
 
-### `update_hash()`
+### `threshold_hash()`
 
-1. Creates a hash which is used to make updates to the state of the contract
-   1. Requires `data`; The data field of the transaction.
-   2. Requires `nonce`; The nonce field of the transaction.
-2. Exists for the purpose of UX i.e. updating the state of the contract does not require the user to enter a `to` or `value`
+1. 
+
+### `weight_hash()`
+
+1. 
 
 ## Sequence Diagram
 

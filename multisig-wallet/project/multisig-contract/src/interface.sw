@@ -1,29 +1,12 @@
 library interface;
 
-dep data_structures;
+dep data_structures/signatures;
+dep data_structures/user;
 
-use data_structures::{SignatureInfo, User};
+use signatures::SignatureInfo;
+use user::User;
 
 abi MultiSignatureWallet {
-    /// Adds users which are able to vote on the execution of transactions.
-    ///
-    /// # Arguments
-    ///
-    /// * `data` - The data field of the transaction.
-    /// * `signatures` - The information for each user's signature for a specific transaction.
-    /// * `users` - The users of the multisig, who can sign transactions to add their approval.
-    ///
-    /// # Reverts
-    ///
-    /// * When the constructor has not been called to initialize the contract.
-    /// * When the public key cannot be recovered from a signature.
-    /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
-    /// * When the user address is the 0th address (0x00000...).
-    /// * When an owner has an approval weight of 0.
-    /// * When the address of a new user clashes with an existing owner address
-    #[storage(read, write)]
-    fn add_owners(data: b256, signatures: Vec<SignatureInfo>, users: Vec<User>);
-
     /// Cancel the next transaction by spending the current nonce.
     ///
     /// # Reverts
@@ -84,7 +67,26 @@ abi MultiSignatureWallet {
     /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// * When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn set_threshold(data: b256, signatures: Vec<SignatureInfo>, threshold: u64);
+    fn set_threshold(data: Option<b256>, signatures: Vec<SignatureInfo>, threshold: u64);
+
+    /// Adds users which are able to vote on the execution of transactions.
+    ///
+    /// # Arguments
+    ///
+    /// * `data` - The data field of the transaction.
+    /// * `signatures` - The information for each user's signature for a specific transaction.
+    /// * `users` - The users of the multisig, who can sign transactions to add their approval.
+    ///
+    /// # Reverts
+    ///
+    /// * When the constructor has not been called to initialize the contract.
+    /// * When the public key cannot be recovered from a signature.
+    /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
+    /// * When the user address is the 0th address (0x00000...).
+    /// * When an owner has an approval weight of 0.
+    /// * When the address of a new user clashes with an existing owner address
+    #[storage(read, write)]
+    fn set_weights(data: Option<b256>, signatures: Vec<SignatureInfo>, users: Vec<User>);
 
     /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement.
     ///
@@ -145,5 +147,8 @@ abi Info {
     ///
     /// * `data` - The data field of the transaction.
     /// * `nonce` - The nonce field of the transaction.
-    fn update_hash(data: b256, nonce: u64) -> b256;
+    /// * `threshold` - The number of approvals required to enable a transaction to be sent.
+    fn threshold_hash(data: Option<b256>, nonce: u64, threshold: u64) -> b256;
+
+    fn weight_hash(data: Option<b256>, nonce: u64, users: Vec<User>) -> b256;
 }

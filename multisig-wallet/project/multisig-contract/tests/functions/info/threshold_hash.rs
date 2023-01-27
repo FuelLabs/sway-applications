@@ -1,7 +1,7 @@
 mod success {
 
     use crate::utils::{
-        interface::info::{nonce, update_hash},
+        interface::info::{nonce, threshold_hash},
         setup::{setup_env, VALID_SIGNER_PK},
     };
     use fuels::{
@@ -90,7 +90,9 @@ mod success {
         let encoded_tx_struct = ABIEncoder::encode(&vec![tx_token]).unwrap().resolve(0);
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
-        let response = update_hash(&deployer.contract, data, nonce).await.value;
+        let response = threshold_hash(&deployer.contract, Some(data), nonce, 5)
+            .await
+            .value;
 
         assert_eq!(Bits256(expected_hash.into()), response);
     }

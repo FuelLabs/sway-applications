@@ -1,6 +1,8 @@
 library utils;
 
-dep data_structures;
+dep data_structures/hashing;
+dep data_structures/signatures;
+dep data_structures/user;
 
 use std::{
     call_frames::contract_id,
@@ -12,20 +14,42 @@ use std::{
     vm::evm::ecr::ec_recover_evm_address,
 };
 
-use data_structures::{MessageFormat, MessagePrefix, SignatureInfo, Transaction, WalletType};
+use hashing::{Threshold, Transaction, Weight};
+use signatures::{MessageFormat, MessagePrefix, SignatureInfo, WalletType};
+use user::User;
 
 const EIP191_INITIAL_BYTE = 0x19u8;
 const EIP191_VERSION_BYTE = 0x45u8;
 const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
 
 /// Takes in transaction data and hashes it into a unique transaction hash.
-pub fn create_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
+pub fn hash_transaction(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
     sha256(Transaction {
         contract_identifier: contract_id(),
         data,
         destination: to,
         nonce,
         value,
+    })
+}
+
+/// Takes in transaction data and hashes it into a unique transaction hash.
+pub fn hash_threshold(data: Option<b256>, nonce: u64, threshold: u64) -> b256 {
+    sha256(Threshold {
+        contract_identifier: contract_id(),
+        data,
+        nonce,
+        threshold,
+    })
+}
+
+/// Takes in transaction data and hashes it into a unique transaction hash.
+pub fn hash_weight(data: Option<b256>, nonce: u64, users: Vec<User>) -> b256 {
+    sha256(Weight {
+        contract_identifier: contract_id(),
+        data,
+        nonce,
+        users,
     })
 }
 

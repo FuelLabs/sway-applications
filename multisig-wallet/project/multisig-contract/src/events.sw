@@ -1,8 +1,8 @@
 library events;
 
-dep data_structures;
+dep data_structures/user;
 
-use data_structures::User;
+use user::User;
 
 pub struct AddedOwnersEvent {
     users: Vec<User>,
@@ -23,6 +23,10 @@ pub struct ExecutedEvent {
 pub struct SetThresholdEvent {
     previous_threshold: u64,
     threshold: u64,
+}
+
+pub struct SetWeightsEvent {
+    users: Vec<User>,
 }
 
 pub struct TransferEvent {
