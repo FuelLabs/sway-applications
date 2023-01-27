@@ -3,7 +3,6 @@ Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
   - [Core Functionality](#core-functionality)
-    - [`add_owners()`](#add_owners)
     - [`cancel_transaction()`](#cancel_transaction)
     - [`constructor()`](#constructor)
     - [`execute_transaction()`](#execute_transaction)
@@ -34,16 +33,6 @@ This section contains general information about the functionality of the applica
 If you are interested in a functional overview then this is the section for you.
 
 ## Core Functionality
-
-### `add_owners()`
-
-1. Adds users which are able to vote on the execution of transactions.
-2. Reverts when:
-   1. The constructor has not been called.
-   2. Signature recovery failed.
-   3. When the address of an owner is the 0th address (0x00000...).
-   4. When an owner has an approval weight of 0.
-   5. When the address of a new user clashes with an existing owner address
 
 ### `cancel_transaction()`
 
@@ -79,12 +68,19 @@ If you are interested in a functional overview then this is the section for you.
 1. Changes the threshold required for execution of transactions.
 2. Reverts when:
    1. The constructor has not been called.
-   2. When the new threshold is greater than the total weight of the owners.
+   2. The new threshold is greater than the total weight of the owners.
    3. Signature recovery failed.
    4. Recovered addresses are not in ascending order.
-   5. The number of approvals does not meet the threshold
+   5. The number of approvals does not meet the threshold.
 
 ### `set_weights()`
+
+1. Adds users which are able to vote on the execution of transactions.
+2. Reverts when:
+   1. The constructor has not been called.
+   2. Signature recovery failed.
+   3. The total approval weighting of owners is less than or equal to zero
+   4. The new total weighting is less than the threshold
 
 ### `transfer()`
 
