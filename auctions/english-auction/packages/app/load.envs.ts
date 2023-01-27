@@ -5,6 +5,7 @@ function getEnvName() {
   if (process.env.NODE_ENV === 'production') {
     return '.env.production';
   }
+  console.log('NODE NEV: ', process.env.NODE_ENV);
   if (process.env.NODE_ENV === 'test') {
     return '.env.test';
   }

@@ -22,6 +22,7 @@ export async function replaceEventOnEnv(path: string, event: Event) {
     log(`Reading file from ${path}`);
     try {
       await access(path);
+      console.log('env file exists');
     } catch (e: unknown) {
       // If the env file does not exist yet
       // Create it by copying the example env

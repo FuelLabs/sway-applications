@@ -78,6 +78,8 @@ jobs:
           cd auctions/english-auction/packages/app
           npx playwright install --with-deps chromium
           xvfb-run --auto-servernum -- pnpm test
+        env:
+          NODE_ENV: test
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v2
