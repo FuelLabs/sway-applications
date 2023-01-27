@@ -10,7 +10,7 @@ use fuels::{prelude::Bits256, signers::fuel_crypto::Message};
 mod success {
 
     use super::*;
-    use crate::utils::setup::{transfer_parameters, SetThresholdEvent};
+    use crate::utils::setup::SetThresholdEvent;
 
     #[tokio::test]
     async fn sets_the_threshold() {
