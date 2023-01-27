@@ -1,24 +1,22 @@
 mod success {
 
     use crate::utils::{
-        interface::info::{nonce, threshold_hash},
+        interface::info::{nonce, threshold, threshold_hash},
         setup::{setup_env, VALID_SIGNER_PK},
     };
     use fuels::{
         contract::abi_encoder::ABIEncoder,
-        prelude::{Bits256, ContractId, Identity, Token},
+        prelude::{Bits256, ContractId, Token},
         signers::fuel_crypto::Hasher,
         tx::Bytes32,
-        types::{enum_variants::EnumVariants, param_types::ParamType},
     };
     use rand::{rngs::StdRng, Rng, SeedableRng};
 
-    struct Transaction {
+    struct Threshold {
         contract_identifier: ContractId,
-        data: Bits256,
-        destination: Identity,
+        data: Option<Bits256>,
         nonce: u64,
-        value: u64,
+        threshold: u64,
     }
 
     #[ignore]
@@ -30,67 +28,35 @@ mod success {
         let data: Bytes32 = rng.gen();
         let data = Bits256(*data);
         let nonce = nonce(&deployer.contract).await.value;
+        let threshold = threshold(&deployer.contract).await.value;
 
-        // Recreate Transaction instance
-        let tx = Transaction {
+        // Recreate Threshold instance
+        let tx = Threshold {
             contract_identifier: deployer.contract.get_contract_id().try_into().unwrap(),
-            data,
-            destination: Identity::ContractId(
-                deployer.contract.get_contract_id().try_into().unwrap(),
-            ),
+            data: Some(data),
             nonce,
-            value: 0,
+            threshold,
         };
 
-        // Set tokens for encoding the Transaction instance with ABIEncoder
+        // Set tokens for encoding the Threshold instance with ABIEncoder
         let contract_identifier_token = Token::Struct(vec![Token::B256(
             tx.contract_identifier.try_into().unwrap(),
         )]);
-        let data_token = Token::B256(tx.data.0);
-        let destination_variants = EnumVariants::new(vec![
-            (
-                String::from("Address"),
-                ParamType::Struct {
-                    name: String::from("Address"),
-                    fields: vec![(String::from("value"), ParamType::B256)],
-                    generics: vec![],
-                },
-            ),
-            (
-                String::from("ContractId"),
-                ParamType::Struct {
-                    name: String::from("ContractId"),
-                    fields: vec![(String::from("value"), ParamType::B256)],
-                    generics: vec![],
-                },
-            ),
-        ])
-        .unwrap();
-
-        let destination_enum_selector = Box::new((
-            0,
-            Token::Struct(vec![Token::B256(match tx.destination {
-                Identity::Address(addr) => addr.try_into().unwrap(),
-                Identity::ContractId(id) => id.try_into().unwrap(),
-            })]),
-            destination_variants,
-        ));
-        let destination_token = Token::Enum(destination_enum_selector);
+        let data_token = Token::B256(tx.data.unwrap().0);
         let nonce_token = Token::U64(tx.nonce);
-        let value_token = Token::U64(tx.value);
+        let threshold_token = Token::U64(tx.threshold);
 
         let tx_token = Token::Struct(vec![
             contract_identifier_token,
             data_token,
-            destination_token,
             nonce_token,
-            value_token,
+            threshold_token,
         ]);
 
         let encoded_tx_struct = ABIEncoder::encode(&vec![tx_token]).unwrap().resolve(0);
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
-        let response = threshold_hash(&deployer.contract, Some(data), nonce, 5)
+        let response = threshold_hash(&deployer.contract, Some(data), nonce, threshold)
             .await
             .value;
 
