@@ -78,8 +78,9 @@ If you are interested in a functional overview then this is the section for you.
 2. Reverts when:
    1. The constructor has not been called.
    2. Signature recovery failed.
-   3. The total approval weighting of owners is less than or equal to zero
-   4. The new total weighting is less than the threshold
+   3. The total approval weighting of owners is less than or equal to zero.
+   4. The total weight of the users is less than zero.
+   5. The new total weighting is less than the threshold.
 
 ### `transfer()`
 

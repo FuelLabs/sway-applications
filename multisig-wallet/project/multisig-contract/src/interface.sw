@@ -24,9 +24,7 @@ abi MultiSignatureWallet {
     /// # Reverts
     ///
     /// * When the constructor is called more than once.
-    /// * When the user address is the 0th address (0x00000...).
     /// * When the threshold is set to 0.
-    /// * When an owner has an approval weight of 0.
     /// * When the threshold is a value greater than the sum of the weights.
     #[storage(read, write)]
     fn constructor(users: Vec<User>);
@@ -62,6 +60,7 @@ abi MultiSignatureWallet {
     /// # Reverts
     ///
     /// * When the constructor has not been called to initialize the contract.
+    /// * When the threshold is zero.
     /// * When the threshold is a value greater than the sum of the weights.
     /// * When the public key cannot be recovered from a signature.
     /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
@@ -82,9 +81,8 @@ abi MultiSignatureWallet {
     /// * When the constructor has not been called to initialize the contract.
     /// * When the public key cannot be recovered from a signature.
     /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
-    /// * When the user address is the 0th address (0x00000...).
-    /// * When an owner has an approval weight of 0.
-    /// * When the address of a new user clashes with an existing owner address
+    /// * When the total weight of the users is less than zero.
+    /// * When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
     fn set_weights(data: Option<b256>, signatures: Vec<SignatureInfo>, users: Vec<User>);
 

@@ -13,7 +13,6 @@ pub enum ExecutionError {
 pub enum InitError {
     CannotReinitialize: (),
     NotInitialized: (),
-    OwnerAddressCollision: (),
     ThresholdCannotBeZero: (),
     TotalWeightCannotBeLessThanThreshold: (),
     TotalWeightCannotBeLessThanZero: (),

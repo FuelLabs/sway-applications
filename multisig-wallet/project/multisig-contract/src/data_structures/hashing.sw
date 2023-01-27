@@ -26,7 +26,7 @@ pub struct Threshold {
     data: Option<b256>,
     /// Value used to prevent double spending.
     nonce: u64,
-    ///
+    /// The number of approvals required to enable a transaction to be sent.
     threshold: u64,
 }
 
@@ -38,6 +38,6 @@ pub struct Weight {
     data: Option<b256>,
     /// Value used to prevent double spending.
     nonce: u64,
-    ///
+    /// The users of the multisig, who can sign transactions to add their approval.
     users: Vec<User>,
 }
