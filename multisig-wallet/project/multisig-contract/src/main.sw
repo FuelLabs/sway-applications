@@ -19,7 +19,8 @@ use std::{
     token::transfer,
 };
 
-use signatures::SignatureInfo;
+// ops::*; is for the Mod trait and implementation on the u64
+use core::ops::*;
 use errors::{AccessControlError, ExecutionError, InitError};
 use events::{
     AddedOwnersEvent,
@@ -30,6 +31,7 @@ use events::{
     TransferEvent,
 };
 use interface::{Info, MultiSignatureWallet};
+use signatures::SignatureInfo;
 use user::User;
 use utils::{hash_threshold, hash_transaction, hash_weight, recover_signer};
 
@@ -148,21 +150,34 @@ impl MultiSignatureWallet for Contract {
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
         let mut user_index = 0;
-        let mut total_weight = 0;
+        let mut positive_weight = 0;  // Approval weight has increased
+        let mut negative_weight = 0;  // Approval weight has decreased
         while user_index < users.len() {
-            let weight = storage.weighting.get(users.get(user_index).unwrap().address);
+            let new_weight = users.get(user_index).unwrap().weight;
+            let current_weight = storage.weighting.get(users.get(user_index).unwrap().address);
 
-            // TODO: remove their original weight and update with newer weight
-            storage.weighting.insert(users.get(user_index).unwrap().address, users.get(user_index).unwrap().weight);
-            total_weight += users.get(user_index).unwrap().weight;
+            if current_weight < new_weight {
+                positive_weight += new_weight - current_weight;
+            } else if new_weight < current_weight {
+                negative_weight += current_weight - new_weight;
+            }
+
+            storage.weighting.insert(users.get(user_index).unwrap().address, new_weight);
 
             user_index += 1;
         }
 
-        storage.nonce += 1;
-        storage.total_weight += total_weight;
+        if negative_weight < positive_weight {
+            storage.total_weight += positive_weight - negative_weight;
+        } else if positive_weight < negative_weight {
+            let remainder = negative_weight.modulo(positive_weight);
+            require(remainder <= storage.total_weight, InitError::TotalWeightCannotBeLessThanZero);
+            storage.total_weight -= remainder;
+        }
 
         require(storage.threshold <= storage.total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
+
+        storage.nonce += 1;
 
         log(SetWeightsEvent { users })
     }

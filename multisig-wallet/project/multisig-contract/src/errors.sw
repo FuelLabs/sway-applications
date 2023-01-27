@@ -16,4 +16,5 @@ pub enum InitError {
     OwnerAddressCollision: (),
     ThresholdCannotBeZero: (),
     TotalWeightCannotBeLessThanThreshold: (),
+    TotalWeightCannotBeLessThanZero: (),
 }
