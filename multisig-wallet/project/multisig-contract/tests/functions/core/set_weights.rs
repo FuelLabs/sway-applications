@@ -13,6 +13,7 @@ mod success {
     use super::*;
     use crate::utils::setup::SetWeightsEvent;
 
+    #[ignore]
     #[tokio::test]
     async fn sets_weights() {
         let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();

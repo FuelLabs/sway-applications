@@ -1,7 +1,10 @@
 use fuels::{
-    prelude::*,
+    prelude::{
+        abigen, setup_single_asset_coins, setup_test_provider, Bits256, Contract, Error, Identity,
+        StorageConfiguration, TxParameters, WalletUnlocked, B512, BASE_ASSET_ID,
+    },
     signers::fuel_crypto::{Message, SecretKey, Signature},
-    tx::{Bytes32, Bytes64},
+    tx::{Bytes32, Bytes64, ContractId},
 };
 
 use rand::{rngs::StdRng, Rng, SeedableRng};
