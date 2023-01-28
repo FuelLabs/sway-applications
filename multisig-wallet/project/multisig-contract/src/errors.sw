@@ -15,5 +15,4 @@ pub enum InitError {
     NotInitialized: (),
     ThresholdCannotBeZero: (),
     TotalWeightCannotBeLessThanThreshold: (),
-    TotalWeightCannotBeLessThanZero: (),
 }

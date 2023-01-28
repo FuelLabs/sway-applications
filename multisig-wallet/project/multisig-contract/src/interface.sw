@@ -81,7 +81,6 @@ abi MultiSignatureWallet {
     /// * When the constructor has not been called to initialize the contract.
     /// * When the public key cannot be recovered from a signature.
     /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
-    /// * When the total weight of the users is less than zero.
     /// * When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
     fn set_weights(data: Option<b256>, signatures: Vec<SignatureInfo>, users: Vec<User>);

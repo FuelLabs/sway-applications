@@ -156,9 +156,7 @@ impl MultiSignatureWallet for Contract {
         if negative_weight < positive_weight {
             storage.total_weight += positive_weight - negative_weight;
         } else if positive_weight < negative_weight {
-            let remainder = negative_weight.modulo(positive_weight);
-            require(remainder <= storage.total_weight, InitError::TotalWeightCannotBeLessThanZero);
-            storage.total_weight -= remainder;
+            storage.total_weight -= negative_weight.modulo(positive_weight);
         }
 
         require(storage.threshold <= storage.total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
