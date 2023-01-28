@@ -57,7 +57,6 @@ dist-ssr
 # local env files
 !docker/.env
 docker/.env.testnet
-.env.local
 .env.development.local
 .env.test.local
 .env.production.local
