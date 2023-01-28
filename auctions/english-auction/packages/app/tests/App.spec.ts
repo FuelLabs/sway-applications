@@ -143,6 +143,7 @@ async function switchWallet(walletPage: Page, extensionId: string, accountName: 
   await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
   const accountsButton = walletPage.locator('[aria-label="Accounts"]');
   await accountsButton.click();
+  await walletPage.waitForSelector(`[aria-label="${accountName}"]`);
   const accountButton = walletPage.locator(`[aria-label="${accountName}"]`);
   await accountButton.click();
 }
