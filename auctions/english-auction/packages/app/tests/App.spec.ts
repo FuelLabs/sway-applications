@@ -141,6 +141,7 @@ async function addWallet(walletPage: Page, extensionId: string, accountName: str
 async function switchWallet(walletPage: Page, extensionId: string, accountName: string) {
   // Switch to ACCOUNT1
   await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
+  await walletPage.waitForSelector('[aria-label="Accounts"]');
   const accountsButton = walletPage.locator('[aria-label="Accounts"]');
   await accountsButton.click();
   await walletPage.waitForSelector(`[aria-label="${accountName}"]`);
@@ -257,6 +258,7 @@ test.describe('e2e', () => {
 
     // BOTH ACCOUNTS WITHDRAW
     // ACCOUNT1 withdraws
+    await walletPage.waitForSelector('text="Withdraw from Auction"');
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
     await expect(withdrawButton).toBeEnabled();
 
