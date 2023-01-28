@@ -144,8 +144,9 @@ async function switchWallet(walletPage: Page, extensionId: string, accountName: 
   await walletPage.waitForSelector('[aria-label="Accounts"]');
   const accountsButton = walletPage.locator('[aria-label="Accounts"]');
   await accountsButton.click();
-  await walletPage.waitForSelector(`[aria-label="${accountName}"]`);
+  // await walletPage.waitForSelector(`[aria-label="${accountName}"]`);
   const accountButton = walletPage.locator(`[aria-label="${accountName}"]`);
+  await accountButton.waitFor();
   await accountButton.click();
 }
 
@@ -258,8 +259,9 @@ test.describe('e2e', () => {
 
     // BOTH ACCOUNTS WITHDRAW
     // ACCOUNT1 withdraws
-    await walletPage.waitForSelector('text="Withdraw from Auction"');
+    // await walletPage.waitForSelector('text="Withdraw from Auction"');
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
+    await withdrawButton.waitFor();
     await expect(withdrawButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
