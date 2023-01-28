@@ -7,7 +7,7 @@ const { E2E_PORT = 9000 } = process.env;
 const config: PlaywrightTestConfig = {
   testDir: './tests',
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -18,7 +18,7 @@ const config: PlaywrightTestConfig = {
     actionTimeout: 0,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    trace: 'on',
     permissions: ['clipboard-read', 'clipboard-write'],
     baseURL: `http://localhost:${E2E_PORT}/`,
   },
