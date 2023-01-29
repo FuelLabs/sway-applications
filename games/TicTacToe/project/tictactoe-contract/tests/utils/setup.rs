@@ -1,14 +1,9 @@
-use fuels::{
-    prelude::*,
-    types::Identity,
-};
+use fuels::{prelude::*, types::Identity};
 
-abigen!(
-    Contract(
-        name = "TicTacToe",
-        abi = "./project/tictactoe-contract/out/debug/TicTacToe-abi.json"
-    )
-);
+abigen!(Contract(
+    name = "TicTacToe",
+    abi = "./project/tictactoe-contract/out/debug/TicTacToe-abi.json"
+));
 
 const TICTACTOE_CONTRACT_BINARY_PATH: &str = "./out/debug/TicTacToe.bin";
 const TICTACTOE_CONTRACT_STORAGE_PATH: &str = "./out/debug/TicTacToe-storage_slots.json";
