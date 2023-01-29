@@ -18,7 +18,7 @@ The project consists of a smart contract.
 <!--Only show most important files e.g. script to run, build etc.-->
 
 ```
-Vault/
+vault/
 ├── project/
 |   └── vault-contract/
 |       ├── src/main.sw
@@ -35,7 +35,7 @@ TODO: UI does not currently exist
 
 ### Tests
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/Vault/<you are here>`
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/vault/<you are here>`
 
 Build the contracts:
 
