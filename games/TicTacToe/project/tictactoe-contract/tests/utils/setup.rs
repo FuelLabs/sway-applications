@@ -2,11 +2,11 @@ use fuels::{prelude::*, types::Identity};
 
 abigen!(Contract(
     name = "TicTacToe",
-    abi = "./project/tictactoe-contract/out/debug/TicTacToe-abi.json"
+    abi = "./project/tictactoe-contract/out/debug/tictactoe-contract-abi.json"
 ));
 
-const TICTACTOE_CONTRACT_BINARY_PATH: &str = "./out/debug/TicTacToe.bin";
-const TICTACTOE_CONTRACT_STORAGE_PATH: &str = "./out/debug/TicTacToe-storage_slots.json";
+const TICTACTOE_CONTRACT_BINARY_PATH: &str = "./out/debug/tictactoe-contract.bin";
+const TICTACTOE_CONTRACT_STORAGE_PATH: &str = "./out/debug/tictactoe-contract-storage_slots.json";
 
 pub struct Player {
     pub contract: TicTacToe,
