@@ -16,8 +16,6 @@ More information can be found in the [specification](./SPECIFICATION.md).
 
 The project consists of a smart contract.
 
-<!--Only show most important files e.g. script to run, build etc.-->
-
 ```
 TicTacToe/
 ├── project/
