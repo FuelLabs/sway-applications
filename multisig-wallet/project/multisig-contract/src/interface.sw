@@ -47,7 +47,14 @@ abi MultiSignatureWallet {
     /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// * When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn execute_transaction(data: b256, signatures: Vec<SignatureInfo>, to: Identity, value: u64);
+    fn execute_transaction(asset_id: Option<ContractId>,
+        calldata: Option<Vec<u8>>, //Convert to Bytes when SDK supports
+        function_selector: Option<Vec<u8>>, //Convert to Bytes when SDK supports
+        forwarded_gas: Option<u64>,
+        signatures: Vec<SignatureInfo>, 
+        single_value_type_arg: Option<bool>,
+        target: Identity, 
+        value: Option<u64>,);
 
     /// Updates the threshold required for execution
     ///
@@ -113,7 +120,7 @@ abi Info {
     /// * `nonce` - The nonce field of the transaction.
     /// * `to` - The recipient of the transaction.
     /// * `value` - The value sent in the transaction.
-    fn transaction_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256;
+    fn transaction_hash(data: Vec<u8>, nonce: u64, to: Identity, value: u64) -> b256;
 
     /// Creates a hash which is used to make updates to the state of the contract
     ///
@@ -123,5 +130,6 @@ abi Info {
     ///
     /// * `data` - The data field of the transaction.
     /// * `nonce` - The nonce field of the transaction.
-    fn update_hash(data: b256, nonce: u64) -> b256;
+    fn update_hash(data: Vec<u8>, nonce: u64) -> b256;
+    
 }

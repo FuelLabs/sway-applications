@@ -1,6 +1,6 @@
 library data_structures;
 
-use std::b512::B512;
+use std::{b512::B512, bytes::Bytes};
 
 pub enum MessageFormat {
     None: (),
@@ -28,12 +28,13 @@ pub struct SignatureInfo {
     wallet_type: WalletType,
 }
 
+/*
 pub struct Transaction {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
     contract_identifier: ContractId,
     /// Payload sent to destination  // TODO: change to Bytes when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723
-    data: b256,
+    data: Vec<u8>,
     /// The recipient (output / contract) regarding the transaction details.
     destination: Identity,
     /// Value used to prevent double spending.
@@ -41,10 +42,37 @@ pub struct Transaction {
     /// Amount of asset.
     value: u64,
 }
-
+*/
 pub struct User {
     /// The wallet address of a user.
     address: b256,
     /// The number of approvals the user provides when approving.
     weight: u64,
 }
+
+pub struct Transaction {
+    contract_identifier: ContractId,
+    nonce: u64,
+    value: Option<u64>,
+    asset_id: Option<ContractId>,
+    target: Identity,
+    function_selector: Option<Bytes>, // Could hash differently to rust as this might be hashing the struct rather than the Bytes.
+                                      // Could attempt to extract internal elements as done in Bytes.sha256
+    calldata: Option<Bytes>,
+    single_value_type_arg: Option<bool>,
+    forwarded_gas: Option<u64>,
+}
+
+pub struct TransactionWithVecs { // Used for getters until Bytes are supported in SDK
+    contract_identifier: ContractId,
+    nonce: u64,
+    value: Option<u64>,
+    asset_id: Option<ContractId>,
+    target: Identity,
+    function_selector: Option<Vec<u8>>,
+    calldata: Option<Vec<u8>>,
+    single_value_type_arg: Option<bool>,
+    forwarded_gas: Option<u64>,
+}
+
+// SetThresholdInfo

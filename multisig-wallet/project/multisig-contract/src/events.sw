@@ -1,15 +1,16 @@
 library events;
 
+use std::{bytes::Bytes, low_level_call::CallParams};
+
 pub struct CancelEvent {
     cancelled_nonce: u64,
     user: b256,
 }
 
 pub struct ExecutedEvent {
-    data: b256, // TODO: change to Bytes when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723
+    call_params: CallParams,
     nonce: u64,
-    to: Identity,
-    value: u64,
+    payload: Bytes,
 }
 
 pub struct SetThresholdEvent {

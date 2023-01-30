@@ -3,8 +3,8 @@ library utils;
 dep data_structures;
 
 use std::{
-    call_frames::contract_id,
     bytes::Bytes,
+    call_frames::contract_id,
     ecr::ec_recover_address,
     hash::{
         keccak256,
@@ -20,18 +20,19 @@ const EIP191_VERSION_BYTE = 0x45u8;
 const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
 
 /// Takes in transaction data and hashes it into a unique transaction hash.
+/*
 pub fn create_hash(data: Bytes, nonce: u64, to: Identity, value: u64) -> b256 {
     sha256(Transaction {
         contract_identifier: contract_id(),
-        data,
+        data: data.into_vec_u8(),
         destination: to,
         nonce,
         value,
     })
 }
-
+*/
 /// Encode a payload from the function selection and calldata.
-fn create_payload(
+pub fn create_payload(
     target: ContractId,
     function_selector: Bytes,
     calldata: Bytes,
@@ -59,7 +60,7 @@ fn create_payload(
 
 // TODO : Replace with `from` when implemented
 /// Represent an address as a `Bytes`.
-fn address_to_bytes(address: Address) -> Bytes {
+pub fn address_to_bytes(address: Address) -> Bytes {
     let mut target_bytes = Bytes::with_capacity(32);
     target_bytes.len = 32;
 
@@ -70,18 +71,17 @@ fn address_to_bytes(address: Address) -> Bytes {
 
 // TODO : Replace with `from` when implemented
 /// Represent a contract ID as a `Bytes`, so it can be concatenated with a payload.
-fn contract_id_to_bytes(contract_id: ContractId) -> Bytes {
+pub fn contract_id_to_bytes(contract_identifier: ContractId) -> Bytes {
     let mut target_bytes = Bytes::with_capacity(32);
     target_bytes.len = 32;
 
-    __addr_of(contract_id).copy_bytes_to(target_bytes.buf.ptr, 32);
+    __addr_of(contract_identifier).copy_bytes_to(target_bytes.buf.ptr, 32);
 
     target_bytes
 }
 
 /// Represent a raw pointer as a `Bytes`, so it can be concatenated with a payload.
 fn ptr_as_bytes(ptr: raw_ptr) -> Bytes {
-
     let mut bytes = Bytes::with_capacity(8);
     bytes.len = 8;
 
@@ -172,4 +172,9 @@ fn decompose(val: b256) -> (u64, u64, u64, u64) {
 /// Applies the prefix "\x19Ethereum Signed Message:\n32" to a message hash.
 fn ethereum_prefix(msg_hash: b256) -> b256 {
     keccak256((ETHEREUM_PREFIX, msg_hash))
+}
+
+/// Takes in transaction data and hashes it into a unique transaction hash.
+pub fn create_hash(transaction: Transaction) -> b256 { // Switch to use generic type
+    sha256(transaction)
 }
