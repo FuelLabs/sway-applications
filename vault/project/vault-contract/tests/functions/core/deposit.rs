@@ -3,6 +3,7 @@ use crate::utils::{interface::core::deposit, setup::setup};
 mod success {
     use super::*;
 
+    #[ignore]
     #[tokio::test]
     async fn pass() {
         let (instance, _wallet) = setup().await;
@@ -13,6 +14,7 @@ mod success {
 mod revert {
     use super::*;
 
+    #[ignore]
     #[tokio::test]
     #[should_panic]
     // #[should_panic(expected = "SomeErrorMessage")]

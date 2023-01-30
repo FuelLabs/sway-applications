@@ -1,6 +1,6 @@
 mod success {
     use crate::utils::{interface::info::asset, setup::setup};
-    use fuels::prelude::{AssetId, BASE_ASSET_ID};
+    use fuels::prelude::BASE_ASSET_ID;
 
     #[tokio::test]
     async fn gets_the_asset_id() {
