@@ -99,7 +99,7 @@ If you are interested in a functional overview then this is the section for you.
 
 ### `approval_weight()`
 
-1. Returns the approval weight of the user.
+1. Returns the approval weight of a user.
 
 ### `balance()`
 
