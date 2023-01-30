@@ -78,7 +78,7 @@ If you are interested in a functional overview then this is the section for you.
 2. Reverts when:
    1. The constructor has not been called.
    2. Signature recovery failed.
-   3. The total approval weighting of owners is less than or equal to zero.
+   3. The number of approvals does not meet the threshold.
    4. The new total weighting is less than the threshold.
 
 ### `transfer()`
@@ -130,7 +130,7 @@ If you are interested in a functional overview then this is the section for you.
 
 ### `weight_hash()`
 
-1. Returns the hash of a transaction used to change the weight of owners.
+1. Returns the hash of a transaction used to change the weight of users.
 
 ## Sequence Diagram
 

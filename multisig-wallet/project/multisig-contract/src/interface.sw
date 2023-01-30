@@ -107,7 +107,11 @@ abi MultiSignatureWallet {
 }
 
 abi Info {
-    /// Returns the approval weight of the user.
+    /// Returns the approval weight of a user.
+    ///
+    /// # Arguments
+    ///
+    /// * `user` - User of the contract
     #[storage(read)]
     fn approval_weight(user: b256) -> u64;
 
