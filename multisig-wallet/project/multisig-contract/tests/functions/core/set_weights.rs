@@ -1,3 +1,7 @@
+// TODO: some tests are disabled because hashing a vector is problematic in the SDK (because of offsets)
+//       and thus the hash produced is not the same
+//       https://github.com/FuelLabs/fuels-rs/issues/775#issuecomment-1408751296
+
 use crate::utils::{
     interface::{
         core::{constructor, set_weights},
@@ -82,7 +86,8 @@ mod revert {
             .value
             .0;
         let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
-        let signatures = transfer_signatures(private_key, tx_hash).await;
+        let mut signatures = transfer_signatures(private_key, tx_hash).await;
+        signatures.pop();
 
         set_weights(&deployer.contract, None, signatures, users.clone()).await;
     }
