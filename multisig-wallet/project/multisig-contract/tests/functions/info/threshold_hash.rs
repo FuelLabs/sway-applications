@@ -6,6 +6,7 @@ mod success {
     };
     use fuels::{
         contract::abi_encoder::ABIEncoder,
+        core::Tokenizable,
         prelude::{Bits256, ContractId, Token},
         signers::fuel_crypto::Hasher,
         tx::Bytes32,
@@ -19,7 +20,6 @@ mod success {
         threshold: u64,
     }
 
-    #[ignore]
     #[tokio::test]
     async fn gets_transaction_hash() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
@@ -38,19 +38,11 @@ mod success {
             threshold,
         };
 
-        // Set tokens for encoding the Threshold instance with ABIEncoder
-        let contract_identifier_token = Token::Struct(vec![Token::B256(
-            tx.contract_identifier.try_into().unwrap(),
-        )]);
-        let data_token = Token::B256(tx.data.unwrap().0);
-        let nonce_token = Token::U64(tx.nonce);
-        let threshold_token = Token::U64(tx.threshold);
-
         let tx_token = Token::Struct(vec![
-            contract_identifier_token,
-            data_token,
-            nonce_token,
-            threshold_token,
+            tx.contract_identifier.into_token(),
+            tx.data.into_token(),
+            tx.nonce.into_token(),
+            tx.threshold.into_token(),
         ]);
 
         let encoded_tx_struct = ABIEncoder::encode(&vec![tx_token]).unwrap().resolve(0);
