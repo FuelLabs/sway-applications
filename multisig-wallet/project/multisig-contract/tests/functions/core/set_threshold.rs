@@ -120,7 +120,6 @@ mod revert {
         set_threshold(&deployer.contract, None, signatures, DEFAULT_THRESHOLD + 1).await;
     }
 
-    #[ignore]
     #[tokio::test]
     #[should_panic(expected = "InsufficientApprovals")]
     async fn insufficient_approvals() {
@@ -143,7 +142,8 @@ mod revert {
         .0;
 
         let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
-        let signatures = transfer_signatures(private_key, tx_hash).await;
+        let mut signatures = transfer_signatures(private_key, tx_hash).await;
+        signatures.pop();
 
         set_threshold(
             &deployer.contract,
