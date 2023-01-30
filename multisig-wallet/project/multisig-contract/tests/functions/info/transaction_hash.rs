@@ -6,10 +6,10 @@ mod success {
     };
     use fuels::{
         contract::abi_encoder::ABIEncoder,
+        core::Tokenizable,
         prelude::{Bits256, ContractId, Identity, Token},
         signers::fuel_crypto::Hasher,
         tx::Bytes32,
-        types::{enum_variants::EnumVariants, param_types::ParamType},
     };
     use rand::{rngs::StdRng, Rng, SeedableRng};
 
@@ -25,13 +25,10 @@ mod success {
     async fn gets_transaction_hash() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        // Set parameters
         let to = Identity::Address(deployer.wallet.address().try_into().unwrap());
-
         let mut rng = StdRng::seed_from_u64(1000);
         let data: Bytes32 = rng.gen();
         let data = Bits256(*data);
-
         let nonce = nonce(&deployer.contract).await.value;
 
         // Recreate Transaction instance
@@ -43,56 +40,15 @@ mod success {
             value: DEFAULT_TRANSFER_AMOUNT,
         };
 
-        // Set tokens for encoding the Transaction instance with ABIEncoder
-        let contract_identifier_token = Token::Struct(vec![Token::B256(
-            tx.contract_identifier.try_into().unwrap(),
-        )]);
-
-        let data_token = Token::B256(tx.data.0);
-
-        let destination_variants = EnumVariants::new(vec![
-            (
-                String::from("Address"),
-                ParamType::Struct {
-                    name: String::from("Address"),
-                    fields: vec![(String::from("value"), ParamType::B256)],
-                    generics: vec![],
-                },
-            ),
-            (
-                String::from("ContractId"),
-                ParamType::Struct {
-                    name: String::from("ContractId"),
-                    fields: vec![(String::from("value"), ParamType::B256)],
-                    generics: vec![],
-                },
-            ),
-        ])
-        .unwrap();
-        let destination_enum_selector = Box::new((
-            0,
-            Token::Struct(vec![Token::B256(match tx.destination {
-                Identity::Address(addr) => addr.try_into().unwrap(),
-                Identity::ContractId(id) => id.try_into().unwrap(),
-            })]),
-            destination_variants,
-        ));
-        let destination_token = Token::Enum(destination_enum_selector);
-
-        let nonce_token = Token::U64(tx.nonce);
-
-        let value_token = Token::U64(tx.value);
-
         let tx_token = Token::Struct(vec![
-            contract_identifier_token,
-            data_token,
-            destination_token,
-            nonce_token,
-            value_token,
+            tx.contract_identifier.into_token(),
+            tx.data.into_token(),
+            tx.destination.into_token(),
+            tx.nonce.into_token(),
+            tx.value.into_token(),
         ]);
 
         let encoded_tx_struct = ABIEncoder::encode(&vec![tx_token]).unwrap().resolve(0);
-
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
         let response =
