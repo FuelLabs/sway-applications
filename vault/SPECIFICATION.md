@@ -52,6 +52,8 @@ TODO: description of function
 
 ### `asset()`
 
+1. Returns the asset managed by the vault
+
 ### `convert_to_assets()`
 
 ### `convert_to_shares()`
@@ -73,6 +75,8 @@ TODO: description of function
 ### `preview_withdraw()`
 
 ### `total_assets()`
+
+1. Returns the total amount of asset that is managed by vault
 
 ## Diagrams
 
