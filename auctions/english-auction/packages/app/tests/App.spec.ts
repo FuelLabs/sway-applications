@@ -109,6 +109,7 @@ async function walletApprove(
   await enterPasswordInput.waitFor();
   await enterPasswordInput.fill(WALLET_PASSWORD);
   const confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
+  await confirmButton.waitFor();
   await confirmButton.click();
 }
 
