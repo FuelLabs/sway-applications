@@ -68,7 +68,7 @@ abi MultiSignatureWallet {
     #[storage(read, write)]
     fn set_threshold(data: Option<b256>, signatures: Vec<SignatureInfo>, threshold: u64);
 
-    /// Adds users which are able to vote on the execution of transactions.
+    /// Changes the approval weights of users in the contract.
     ///
     /// # Arguments
     ///
@@ -140,7 +140,7 @@ abi Info {
     /// * `value` - The value sent in the transaction.
     fn transaction_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256;
 
-    /// Creates a hash which is used to make updates to the state of the contract.
+    /// Creates a hash which is used to make updates to the threshold state of the contract.
     ///
     /// # Arguments
     ///
