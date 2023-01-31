@@ -38,6 +38,10 @@ jobs:
   frontend:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        project: ["auctions/english-auction"]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -58,25 +62,24 @@ jobs:
       
       - name: Run Lint
         run: |
-          cd auctions/english-auction
+          cd ${{ matrix.project }}
           pnpm install
           pnpm build
           pnpm lint
 
       - name: Initialization
         run: |
-          cd auctions/english-auction
+          cd ${{ matrix.project }}
           pnpm services:setup-test
         
-      # - name: Install Playwright
-      #   run: |
-      #     cd auctions/english-auction
-      #     pnpx playwright install --with-deps
+      - name: Install Playwright
+        run: |
+          cd ${{ matrix.project }}
+          pnpm exec playwright install --with-deps chromium
       
       - name: Run E2E Tests
         run: |
-          cd auctions/english-auction
-          pnpm exec playwright install --with-deps chromium
+          cd ${{ matrix.project }}
           xvfb-run --auto-servernum -- pnpm test
         env:
           NODE_ENV: test
