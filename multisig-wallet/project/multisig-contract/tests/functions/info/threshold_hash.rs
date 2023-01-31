@@ -21,7 +21,7 @@ mod success {
     }
 
     #[tokio::test]
-    async fn gets_transaction_hash() {
+    async fn gets_threshold_hash() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
         let mut rng = StdRng::seed_from_u64(1000);
