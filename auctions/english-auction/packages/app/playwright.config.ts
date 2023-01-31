@@ -1,6 +1,5 @@
 import './load.envs';
 import type { PlaywrightTestConfig } from '@playwright/test';
-// import { devices } from '@playwright/test';
 
 const { E2E_PORT = 9000 } = process.env;
 
@@ -23,16 +22,6 @@ const config: PlaywrightTestConfig = {
     permissions: ['clipboard-read', 'clipboard-write'],
     baseURL: `http://localhost:${E2E_PORT}/`,
   },
-
-  /* Configure projects for major browsers */
-  // projects: [
-  //   {
-  //     name: 'chromium',
-  //     use: {
-  //       ...devices['Desktop Chrome'],
-  //     },
-  //   },
-  // ],
 
   /* Run your local dev server before starting the tests */
   webServer: {
