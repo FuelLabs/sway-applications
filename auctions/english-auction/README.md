@@ -61,7 +61,7 @@ In this step we are going to:
 pnpm services:setup
 ```
 
-Ensure that `VITE_FUEL_PROVIDER_URL=http://localhost:4001/graphql` inside of the newly created `.env` file.
+Ensure that `VITE_FUEL_PROVIDER_URL` is set to `http://localhost:4001/graphql` inside of the newly created `.env` file.
 
 Run web app
 
