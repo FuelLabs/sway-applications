@@ -21,7 +21,6 @@ export const useBid = ({ auctionId, auctionAsset, setAssetAmount }: UseBidProps)
     async () => {
       if (!contract) throw new Error('Contract not connected');
       const callParams: CoinQuantityLike | undefined = auctionAsset.TokenAsset ?? undefined;
-      console.log('auction asset: ', auctionAsset);
       const { transactionResult } = auctionAsset.NFTAsset
         ? await contract.functions
             .bid(auctionId, auctionAsset)

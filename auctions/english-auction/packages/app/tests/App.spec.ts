@@ -50,7 +50,7 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   // Agree to T&S
   await signupPage.getByRole('checkbox').click();
   await signupPage.locator('button').getByText('Next').click();
-  await signupPage.waitForSelector('text="Wallet created successfully"');
+  await signupPage.waitForSelector('text=Wallet created successfully');
 
   await addWallet(walletPage, extensionId, ACCOUNT2);
 
@@ -101,7 +101,7 @@ async function walletApprove(
     });
   }
 
-  await approvePage.waitForSelector('text="Confirm"');
+  await approvePage.waitForSelector('text=Confirm');
   const approveButton = approvePage.locator('button').getByText('Confirm');
   await approveButton.click();
 
@@ -202,7 +202,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const transactionMessage = appPage.locator('text="Auction created successfully!"');
+    const transactionMessage = appPage.locator('text=Auction created successfully!');
     await transactionMessage.waitFor();
 
     // ACCOUNT 2 BIDS ON AUCTION
@@ -235,7 +235,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
+    const bidTransactionMessage = appPage.locator('text=Auction bid placed successfully');
     await bidTransactionMessage.waitFor();
 
     // ACCOUNT1 CANCELS AUCTION
@@ -256,7 +256,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const cancelTransactionMessage = appPage.locator('text="Auction cancelled successfully!"');
+    const cancelTransactionMessage = appPage.locator('text=Auction cancelled successfully!');
     await cancelTransactionMessage.waitFor();
 
     // BOTH ACCOUNTS WITHDRAW
@@ -273,7 +273,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
+    const withdrawTransactionMessage = appPage.locator('text=Withdraw from auction successful');
     await withdrawTransactionMessage.waitFor();
 
     // Switch to account 2
@@ -335,7 +335,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const transactionMessage = appPage.locator('text="Auction created successfully!"');
+    const transactionMessage = appPage.locator('text=Auction created successfully!');
     await transactionMessage.waitFor();
 
     // ACCOUNT 2 BIDS ON AUCTION
@@ -369,7 +369,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
+    const bidTransactionMessage = appPage.locator('text=Auction bid placed successfully');
     await bidTransactionMessage.waitFor();
 
     // ACCOUNT1 CANCELS AUCTION
@@ -389,7 +389,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const cancelTransactionMessage = appPage.locator('text="Auction cancelled successfully!"');
+    const cancelTransactionMessage = appPage.locator('text=Auction cancelled successfully!');
     await cancelTransactionMessage.waitFor();
 
     // BOTH ACCOUNTS WITHDRAW
@@ -404,7 +404,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
+    const withdrawTransactionMessage = appPage.locator('text=Withdraw from auction successful');
     await withdrawTransactionMessage.waitFor();
 
     // Switch to account 2
@@ -475,7 +475,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const transactionMessage = appPage.locator('text="Auction created successfully!"');
+    const transactionMessage = appPage.locator('text=Auction created successfully!');
     await transactionMessage.waitFor();
 
     // ACCOUNT 2 BIDS ON AUCTION
@@ -510,7 +510,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
+    const bidTransactionMessage = appPage.locator('text=Auction bid placed successfully');
     await bidTransactionMessage.waitFor();
 
     // ACCOUNT1 CANCELS AUCTION
@@ -532,7 +532,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
+    const withdrawTransactionMessage = appPage.locator('text=Withdraw from auction successful');
     await withdrawTransactionMessage.waitFor();
 
     // Switch to account 2
@@ -595,7 +595,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const transactionMessage = appPage.locator('text="Auction created successfully!"');
+    const transactionMessage = appPage.locator('text=Auction created successfully!');
     await transactionMessage.waitFor();
 
     // ACCOUNT 2 BIDS ON AUCTION
@@ -630,7 +630,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
+    const bidTransactionMessage = appPage.locator('text=Auction bid placed successfully');
     await bidTransactionMessage.waitFor();
 
     // ACCOUNT1 CANCELS AUCTION
@@ -652,7 +652,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
+    const withdrawTransactionMessage = appPage.locator('text=Withdraw from auction successful');
     await withdrawTransactionMessage.waitFor();
 
     // Switch to account 2
@@ -717,7 +717,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const transactionMessage = appPage.locator('text="Auction created successfully!"');
+    const transactionMessage = appPage.locator('text=Auction created successfully!');
     await transactionMessage.waitFor();
 
     // ACCOUNT 2 BIDS ON AUCTION
@@ -752,7 +752,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const bidTransactionMessage = appPage.locator('text="Auction bid placed successfully"');
+    const bidTransactionMessage = appPage.locator('text=Auction bid placed successfully');
     await bidTransactionMessage.waitFor();
 
     // ACCOUNT1 CANCELS AUCTION
@@ -772,7 +772,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const cancelTransactionMessage = appPage.locator('text="Auction cancelled successfully!"');
+    const cancelTransactionMessage = appPage.locator('text=Auction cancelled successfully!');
     await cancelTransactionMessage.waitFor();
 
     // BOTH ACCOUNTS WITHDRAW
@@ -787,7 +787,7 @@ test.describe('e2e', () => {
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
-    const withdrawTransactionMessage = appPage.locator('text="Withdraw from auction successful"');
+    const withdrawTransactionMessage = appPage.locator('text=Withdraw from auction successful');
     await withdrawTransactionMessage.waitFor();
 
     // Switch to account 2
