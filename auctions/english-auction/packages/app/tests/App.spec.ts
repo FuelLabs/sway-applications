@@ -289,8 +289,6 @@ test.describe('e2e', () => {
 
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
-
-    console.log('end');
   });
 
   test('Test auction (Sell: Token, Bid: Token) with Reserve is canceled', async ({

@@ -72,10 +72,10 @@ importers:
       '@fuel-ts/mnemonic': 0.29.1
       '@fuel-ts/wallet': 0.29.1
       '@fuel-ts/wallet-manager': 0.29.1
-      '@fuel-ui/css': ^0.9.3
-      '@fuel-ui/react': ^0.9.3
+      '@fuel-ui/css': ^0.12.0
+      '@fuel-ui/react': ^0.12.0
       '@fuel-ui/test-utils': ^0.10.1
-      '@fuel-wallet/sdk': 0.4.0-next-c59d9d7
+      '@fuel-wallet/sdk': 0.5.0-next-c2a82f8
       '@headlessui/react': ^1.7.7
       '@hookform/resolvers': ^2.9.10
       '@playwright/test': ^1.29.2
@@ -183,9 +183,9 @@ importers:
       '@fuel-ts/mnemonic': 0.29.1
       '@fuel-ts/wallet': 0.29.1
       '@fuel-ts/wallet-manager': 0.29.1
-      '@fuel-ui/css': 0.9.3
-      '@fuel-ui/react': 0.9.3_gmg6i7kdfnbhfngjz3f6xkldpu
-      '@fuel-wallet/sdk': 0.4.0-next-c59d9d7_fuels@0.29.1
+      '@fuel-ui/css': 0.12.0
+      '@fuel-ui/react': 0.12.0_gmg6i7kdfnbhfngjz3f6xkldpu
+      '@fuel-wallet/sdk': 0.5.0-next-c2a82f8_fuels@0.29.1
       '@headlessui/react': 1.7.8_biqbaboplfbrettd7655fr4n2y
       '@hookform/resolvers': 2.9.10_react-hook-form@7.43.0
       '@radix-ui/react-accordion': 0.1.6_react@18.2.0
@@ -3654,8 +3654,8 @@ packages:
     resolution: {integrity: sha512-gH2Lyc13p6vDryd7024KsFc7IdnGt5VXd/dr+4OUqhy+xk6Rvma6UVnUUXEhunEgpfW/nBnUPwQAjwj7aDz4OA==}
     dev: false
 
-  /@fuel-ui/css/0.9.3:
-    resolution: {integrity: sha512-EPqKMCxZqE2S9DUl3CP5pECqNRSRmLhQ0Jcl5+ClXVeai3rWSxfGoqSvf1woqaEkDJ+mBTRYJbdBI3cqY1HuxQ==}
+  /@fuel-ui/css/0.12.0:
+    resolution: {integrity: sha512-BAdveU6M94l9N6jnTqmqjUF9p6fcc/F0BKKSYvOimAwj94c3avZVb0D8ScCtlm4W3/SKncYzG0ppU7+9IMgi/g==}
     dependencies:
       '@radix-ui/colors': 0.1.8
       '@stitches/react': 1.2.8_react@18.2.0
@@ -3664,11 +3664,12 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@fuel-ui/react/0.9.3_gmg6i7kdfnbhfngjz3f6xkldpu:
-    resolution: {integrity: sha512-koHY/sgUt9iav2xEftyCUCIjyGhgRE47py16mvr0+SdmdDcn7UsTmLdziiFNEpKppVrhV2z+uXp8wJ+k/KoxnA==}
+  /@fuel-ui/react/0.12.0_gmg6i7kdfnbhfngjz3f6xkldpu:
+    resolution: {integrity: sha512-KZb5y8UOcSVNKh3lfdbxL3zmUaIiQswuq290uBbKEKh/MHcoz+d/iIZ+Z9qDkvmkJCIHh2zqqpMA6hUwu33CAA==}
     dependencies:
-      '@fuel-ui/css': 0.9.3
-      '@fuel-ui/test-utils': 0.9.3_hgxjw5ypthrteuhz3jmccccsx4
+      '@fuel-ts/math': 0.29.1
+      '@fuel-ui/css': 0.12.0
+      '@fuel-ui/test-utils': 0.12.0_hgxjw5ypthrteuhz3jmccccsx4
       '@radix-ui/react-accordion': 1.1.0_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-alert-dialog': 1.0.2_5ndqzdd6t4rivxsukjv3i3ak2q
       '@radix-ui/react-aspect-ratio': 1.0.1_biqbaboplfbrettd7655fr4n2y
@@ -3682,15 +3683,17 @@ packages:
       '@radix-ui/react-tabs': 1.0.2_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-tooltip': 1.0.3_5ndqzdd6t4rivxsukjv3i3ak2q
       '@radix-ui/react-visually-hidden': 1.0.1_biqbaboplfbrettd7655fr4n2y
+      '@react-aria/focus': 3.10.1_react@18.2.0
       '@react-aria/overlays': 3.12.1_biqbaboplfbrettd7655fr4n2y
       '@react-aria/utils': 3.14.2_react@18.2.0
       '@stitches/react': 1.2.8_react@18.2.0
       '@xstate/react': 3.1.1_7p5wdez77vm2n5hldoeso3aqoi
-      framer-motion: 7.10.3_biqbaboplfbrettd7655fr4n2y
+      framer-motion: 8.5.5_biqbaboplfbrettd7655fr4n2y
       jdenticon: 3.2.0
       phosphor-react: 1.4.1_react@18.2.0
       react: 18.2.0
       react-aria: 3.22.0_biqbaboplfbrettd7655fr4n2y
+      react-content-loader: 6.2.0_react@18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-hot-toast: 2.4.0_owo25xnefcwdq3zjgtohz6dbju
       react-number-format: 5.1.3_biqbaboplfbrettd7655fr4n2y
@@ -3757,8 +3760,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@fuel-ui/test-utils/0.9.3_hgxjw5ypthrteuhz3jmccccsx4:
-    resolution: {integrity: sha512-KSFwEH8NJfCmysxodFqXaLiKwMyI7z4DzXGl7JVnzltV/MG8b++s9s6oAsoJ9Zmd7g0tvbI+RmIs/MouEx7p1g==}
+  /@fuel-ui/test-utils/0.12.0_hgxjw5ypthrteuhz3jmccccsx4:
+    resolution: {integrity: sha512-HEC2XS5xSsEQwWfRaAlnW+TZUCwOj7teP3N8RVBh9Ld/v7JNK1jJsM/d0xcvATSBTTDKaNzmTZ2FkoDrQYJ3Bg==}
     peerDependencies:
       react: '*'
     peerDependenciesMeta:
@@ -3798,8 +3801,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@fuel-wallet/sdk/0.4.0-next-c59d9d7_fuels@0.29.1:
-    resolution: {integrity: sha512-capjFjTFt2flYq3bUfHQrB1oZmngAxzfR8M8KxQqDgl1NzLzm40EvMy4KIv8zWlD0ResRoCSrogzva/XX1Mbdg==}
+  /@fuel-wallet/sdk/0.5.0-next-c2a82f8_fuels@0.29.1:
+    resolution: {integrity: sha512-JMhXD/EYsRNswPRCJRheqUuLzRLz7Dg167LCbGrqP3acDYqrjsf4FuU3KejvnxfptSfYrdy39OrLzs+4Qv2WcA==}
     peerDependencies:
       fuels: '>=0.29.1'
     dependencies:
@@ -4668,7 +4671,7 @@ packages:
       '@motionone/types': 10.15.1
       '@motionone/utils': 10.15.1
       hey-listen: 1.0.8
-      tslib: 2.4.0
+      tslib: 2.5.0
     dev: false
 
   /@motionone/easing/10.15.1:
@@ -15376,8 +15379,8 @@ packages:
       '@emotion/is-prop-valid': 0.8.8
     dev: false
 
-  /framer-motion/7.10.3_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-k2ccYeZNSpPg//HTaqrU+4pRq9f9ZpaaN7rr0+Rx5zA4wZLbk547wtDzge2db1sB+1mnJ6r59P4xb+aEIi/W+w==}
+  /framer-motion/8.5.5_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-5IDx5bxkjWHWUF3CVJoSyUVOtrbAxtzYBBowRE2uYI/6VYhkEBD+rbTHEGuUmbGHRj6YqqSfoG7Aa1cLyWCrBA==}
     peerDependencies:
       react: '*'
       react-dom: '*'
@@ -15391,7 +15394,7 @@ packages:
       hey-listen: 1.0.8
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      tslib: 2.4.0
+      tslib: 2.5.0
     optionalDependencies:
       '@emotion/is-prop-valid': 0.8.8
     dev: false
@@ -24112,10 +24115,6 @@ packages:
   /tslib/2.0.1:
     resolution: {integrity: sha512-SgIkNheinmEBgx1IUNirK0TUD4X9yjjBRTqqjggWCU3pUEqIk3/Uwl3yRixYKT6WjQuGiwDv4NomL3wqRCj+CQ==}
     dev: true
-
-  /tslib/2.4.0:
-    resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
-    dev: false
 
   /tslib/2.5.0:
     resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
