@@ -49,6 +49,8 @@ sway-applications/
 
 ### Projects
 
+#### Decentralized Applications
+
 - [Airdrop](./airdrop/) is a token distribution program where users are able to claim tokens given a valid merkle proof.
 - [Automated Market Maker (AMM)](./AMM/) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines prices algorithmically while exchanging assets.
 - [Decentralized Autonomous Organization (DAO)](./DAO) is an organization where users get to vote on governance proposals using governance tokens.
@@ -62,6 +64,10 @@ sway-applications/
 - [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
 - [OTC Swap Predicate](./OTC-swap-predicate) is a predicate that can be used to propose and execute an atomic swap between two parties without requiring any on-chain state.
 - [Timelock](./timelock) is a contract which restricts the execution of a transaction to a specified time range
+
+#### Games
+
+- [TicTacToe](./games/TicTacToe) is a game where two players compete to align three markers in a row.
 
 ## Running a project
 
