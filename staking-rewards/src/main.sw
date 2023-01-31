@@ -10,10 +10,10 @@ use interface::StakingRewards;
 use std::{
     address::Address,
     block::timestamp,
-    chain::auth::msg_sender,
+    call_frames::msg_asset_id,
+    auth::msg_sender,
     constants::ZERO_B256,
     context::{
-        call_frames::msg_asset_id,
         msg_amount,
         this_balance,
     },
@@ -159,7 +159,7 @@ impl StakingRewards for Contract {
     }
 
     // Added to support recovering LP Rewards from other systems such as BAL to be distributed to holders
-    #[storage(read, write)]
+    #[storage(read)]
     fn recover_tokens(asset_id: ContractId, amount: u64) {
         require(msg_sender().unwrap() == storage.owner, StakingRewardsError::SenderNotOwner);
 
