@@ -77,7 +77,7 @@ jobs:
         run: |
           cd auctions/english-auction/packages/app
           npx playwright install --with-deps chromium
-          xvfb-run --auto-servernum -- pnpm test --debug
+          xvfb-run --auto-servernum -- pnpm test
         env:
           NODE_ENV: test
 

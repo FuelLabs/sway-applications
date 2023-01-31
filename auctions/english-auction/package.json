@@ -44,7 +44,7 @@
     "services:run-test": "NODE_ENV=test make -C docker services-run-test",
     "services:reset-test": "NODE_ENV=test run-s services:clean-test services:setup-test",
     "storybook": "pnpm -r --filter=english-auction-app storybook",
-    "test": "NODE_ENV=test pnpm -r --filter=english-auction-app test"
+    "test": "NODE_ENV=test pnpm -r --filter=english-auction-app test --debug"
   },
   "devDependencies": {
     "@babel/core": "^7.19.0",
