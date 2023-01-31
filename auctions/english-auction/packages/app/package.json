@@ -76,7 +76,7 @@
   },
   "devDependencies": {
     "@fuel-ui/test-utils": "^0.10.1",
-    "@playwright/test": "^1.29.1",
+    "@playwright/test": "^1.29.2",
     "@react-types/button": "^3.7.0",
     "@react-types/dialog": "^3.4.5",
     "@react-types/link": "^3.3.6",
