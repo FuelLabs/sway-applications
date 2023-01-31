@@ -44,10 +44,11 @@
     "services:run-test": "NODE_ENV=test make -C docker services-run-test",
     "services:reset-test": "NODE_ENV=test run-s services:clean-test services:setup-test",
     "storybook": "pnpm -r --filter=english-auction-app storybook",
-    "test": "NODE_ENV=test pnpm -r --filter=english-auction-app test"
+    "test": "NODE_ENV=test playwright test --config=packages/app/playwright.config.ts"
   },
   "devDependencies": {
     "@babel/core": "^7.19.0",
+    "@playwright/test": "^1.29.1",
     "@cypress/react": "^5.12.5",
     "@jest/types": "^28.1.3",
     "@swc/core": "^1.2.249",
