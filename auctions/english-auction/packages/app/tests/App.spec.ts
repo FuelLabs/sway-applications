@@ -208,7 +208,7 @@ test.describe('e2e', () => {
     // ACCOUNT 2 BIDS ON AUCTION
     await appPage.goto('/buy');
 
-    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').first();
+    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').last();
     await expect(errorText).toContainText(
       'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
     );
@@ -217,15 +217,15 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').first();
+    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').last();
     await expect(cancelErrorText).toContainText(
       'Error only the seller of the auction can cancel it.'
     );
 
     // Now we can bid on the auction
-    const bidAmountInput = appPage.getByPlaceholder('0.0').first();
+    const bidAmountInput = appPage.getByPlaceholder('0.0').last();
     await bidAmountInput.fill('0.001');
-    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').first();
+    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').last();
     await expect(placeBidButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
@@ -245,7 +245,7 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').first();
+    const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').last();
     await expect(cancelAuctionButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
@@ -262,7 +262,7 @@ test.describe('e2e', () => {
     // BOTH ACCOUNTS WITHDRAW
     // ACCOUNT1 withdraws
     // await walletPage.waitForSelector('text="Withdraw from Auction"');
-    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
+    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').last();
     await withdrawButton.waitFor();
     await expect(withdrawButton).toBeEnabled();
 
@@ -341,7 +341,7 @@ test.describe('e2e', () => {
     // ACCOUNT 2 BIDS ON AUCTION
     await appPage.goto('/buy');
 
-    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').first();
+    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').last();
     await expect(errorText).toContainText(
       'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
     );
@@ -351,15 +351,15 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').first();
+    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').last();
     await expect(cancelErrorText).toContainText(
       'Error only the seller of the auction can cancel it.'
     );
 
     // Now we can bid on the auction
-    const bidAmountInput = appPage.getByPlaceholder('0.0').first();
+    const bidAmountInput = appPage.getByPlaceholder('0.0').last();
     await bidAmountInput.fill('0.001');
-    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').first();
+    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').last();
     await expect(placeBidButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
@@ -379,7 +379,7 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').first();
+    const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').last();
     await expect(cancelAuctionButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
@@ -394,7 +394,7 @@ test.describe('e2e', () => {
 
     // BOTH ACCOUNTS WITHDRAW
     // ACCOUNT1 withdraws
-    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
+    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').last();
     await expect(withdrawButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
@@ -481,7 +481,7 @@ test.describe('e2e', () => {
     // ACCOUNT 2 BIDS ON AUCTION
     await appPage.goto('/buy');
 
-    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').first();
+    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').last();
     await expect(errorText).toContainText(
       'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
     );
@@ -491,16 +491,16 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').first();
+    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').last();
     await expect(cancelErrorText).toContainText(
       'Error only the seller of the auction can cancel it.'
     );
 
     // Now we can bid on the auction
-    const tokenIdInput = appPage.getByPlaceholder('0').first();
+    const tokenIdInput = appPage.getByPlaceholder('0').last();
     // The buyer has access to nft with token id 1 from contract:init
     await tokenIdInput.fill('10');
-    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').first();
+    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').last();
     await expect(placeBidButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
@@ -522,7 +522,7 @@ test.describe('e2e', () => {
 
     // BOTH ACCOUNTS WITHDRAW
     // ACCOUNT1 withdraws
-    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
+    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').last();
     await expect(withdrawButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
@@ -601,7 +601,7 @@ test.describe('e2e', () => {
     // ACCOUNT 2 BIDS ON AUCTION
     await appPage.goto('/buy');
 
-    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').first();
+    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').last();
     await expect(errorText).toContainText(
       'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
     );
@@ -611,16 +611,16 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').first();
+    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').last();
     await expect(cancelErrorText).toContainText(
       'Error only the seller of the auction can cancel it.'
     );
 
     // Now we can bid on the auction
-    const tokenIdInput = appPage.getByPlaceholder('0').first();
+    const tokenIdInput = appPage.getByPlaceholder('0').last();
     // The buyer has access to nft with token id 12 from contract:init
     await tokenIdInput.fill('12');
-    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').first();
+    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').last();
     await expect(placeBidButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
@@ -642,7 +642,7 @@ test.describe('e2e', () => {
 
     // BOTH ACCOUNTS WITHDRAW
     // ACCOUNT1 withdraws
-    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
+    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').last();
     await expect(withdrawButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
@@ -723,7 +723,7 @@ test.describe('e2e', () => {
     // ACCOUNT 2 BIDS ON AUCTION
     await appPage.goto('/buy');
 
-    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').first();
+    const errorText = appPage.locator('[aria-label="Seller cannot bid"]').last();
     await expect(errorText).toContainText(
       'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
     );
@@ -733,16 +733,16 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').first();
+    const cancelErrorText = appPage.locator('[aria-label="Buyer cannot cancel"]').last();
     await expect(cancelErrorText).toContainText(
       'Error only the seller of the auction can cancel it.'
     );
 
     // Now we can bid on the auction
-    const assetAmountInput = appPage.getByPlaceholder('0.0').first();
+    const assetAmountInput = appPage.getByPlaceholder('0.0').last();
     // The buyer has access to nft with token id 11
     await assetAmountInput.fill('0.001');
-    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').first();
+    const placeBidButton = appPage.locator('button').getByText('Bid on Auction').last();
     await expect(placeBidButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
@@ -762,7 +762,7 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').first();
+    const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').last();
     await expect(cancelAuctionButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');
@@ -777,7 +777,7 @@ test.describe('e2e', () => {
 
     // BOTH ACCOUNTS WITHDRAW
     // ACCOUNT1 withdraws
-    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').first();
+    const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').last();
     await expect(withdrawButton).toBeEnabled();
 
     approvePagePromise = context.waitForEvent('page');

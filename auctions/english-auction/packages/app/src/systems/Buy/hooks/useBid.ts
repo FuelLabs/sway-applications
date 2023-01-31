@@ -26,7 +26,10 @@ export const useBid = ({ auctionId, auctionAsset, setAssetAmount }: UseBidProps)
         ? await contract.functions
             .bid(auctionId, auctionAsset)
             .addContracts([
-              new Contract(auctionAsset.NFTAsset.asset_id.value, NFTAbi__factory.createInterface()),
+              new Contract(
+                auctionAsset.NFTAsset!.asset_id.value,
+                NFTAbi__factory.createInterface()
+              ),
             ])
             .call()
         : await contract.functions
