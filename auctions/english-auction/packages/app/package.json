@@ -10,7 +10,7 @@
     "build:storybook": "./scripts/build.sh --app=storybook",
     "create404": "cp ./dist/index.html ./dist/404.html",
     "preview": "vite preview",
-    "test": "playwright test --workers=1 --debug",
+    "test": "playwright test --workers=1",
     "storybook": "start-storybook -p 6006",
     "contracts:init": "pnpm exec ts-node ./scripts/contracts-init"
   },
