@@ -10,8 +10,6 @@ dep events;
 dep interface;
 dep utils;
 
-// ops::*; is for the Mod trait and implementation on the u64
-use core::ops::*;
 use errors::{AccessControlError, ExecutionError, InitError};
 use events::{CancelEvent, ExecutedEvent, SetThresholdEvent, SetWeightsEvent, TransferEvent};
 use interface::{Info, MultiSignatureWallet};
@@ -155,7 +153,7 @@ impl MultiSignatureWallet for Contract {
         if negative_weight < positive_weight {
             storage.total_weight += positive_weight - negative_weight;
         } else if positive_weight < negative_weight {
-            storage.total_weight -= negative_weight.modulo(positive_weight);
+            storage.total_weight -= negative_weight - positive_weight;
         }
 
         require(storage.threshold <= storage.total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
