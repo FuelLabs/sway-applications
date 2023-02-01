@@ -87,7 +87,6 @@ impl MultiSignatureWallet for Contract {
         storage.total_weight = total_weight;
     }
 
-    /*
     #[storage(read, write)]
     fn execute_transaction(
         asset_id: Option<ContractId>,
@@ -141,13 +140,28 @@ impl MultiSignatureWallet for Contract {
                 value,
             });
         } else if function_selector.is_some() {
+
             //call
+            /*
+            CAUSE OF:
+            Internal compiler error: Verification failed: Store value and pointer type mismatch
+            WAS:
             let target_contract_id = match target {
                 Identity::Address => {
                     log(ExecutionError::InsufficientApprovals); // Add Error
                     revert(FAILED_REQUIRE_SIGNAL)
                 },
                 Identity::ContractId(contract_identifier) => contract_identifier,
+            }
+
+            putting the Identity::Address branch below the Identity::ContractId branch resolves the ICE
+            */
+            let target_contract_id = match target {
+                Identity::ContractId(contract_identifier) => contract_identifier,
+                Identity::Address => {
+                    log(ExecutionError::InsufficientApprovals); // Add Error
+                    revert(FAILED_REQUIRE_SIGNAL)
+                },
             };
 
             require(calldata.is_some(), ExecutionError::InsufficientApprovals);  // Add Error
@@ -175,6 +189,7 @@ impl MultiSignatureWallet for Contract {
             let approval_count = count_approvals(signatures, transaction_hash);
             require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
+            let transaction_nonce = storage.nonce;
             storage.nonce += 1;
 
             let call_params = CallParams {
@@ -186,120 +201,11 @@ impl MultiSignatureWallet for Contract {
 
             log(CallEvent {
                 call_params,
-                nonce: storage.nonce - 1,
+                nonce: transaction_nonce,
                 target_contract_id,
                 function_selector,
                 calldata,
             });
-        }
-    }
-    */
-
-    #[storage(read, write)]
-    fn execute_transaction(
-        asset_id: Option<ContractId>,
-        calldata: Option<Vec<u8>>, //Convert to Bytes when SDK supports
-        function_selector: Option<Vec<u8>>, //Convert to Bytes when SDK supports
-        forwarded_gas: Option<u64>,
-        signatures: Vec<SignatureInfo>,
-        single_value_type_arg: Option<bool>,
-        target: Identity,
-        value: Option<u64>,
-    ) {
-        require(storage.nonce != 0, InitError::NotInitialized);
-
-        match function_selector {
-            Option::None => {
-                //transfer
-                require(asset_id.is_some(), ExecutionError::TransferRequiresAnAssetId);
-                require(value.is_some(), ExecutionError::TransferRequiresAValue);
-                let asset_id = asset_id.unwrap();
-                let value = value.unwrap();
-
-                require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
-
-                let transaction_hash = sha256(Transaction {
-                    contract_identifier: contract_id(), // Less gas to turn into a constant?
-                    nonce: storage.nonce,
-                    value: Option::Some(value),
-                    asset_id: Option::Some(asset_id),
-                    target,
-                    function_selector: Option::None,
-                    calldata: match calldata {
-                        Option::None => Option::None,
-                        Option::Some(vec) => {
-                            let mut vec = vec;
-                            Option::Some(Bytes::from_vec_u8(vec))
-                        },
-                    },
-                    single_value_type_arg,
-                    forwarded_gas,
-                });
-                let approval_count = count_approvals(signatures, transaction_hash);
-                require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
-
-                storage.nonce += 1;
-
-                transfer(value, asset_id, target);
-
-                log(TransferEvent {
-                    asset: asset_id,
-                    nonce: storage.nonce - 1,
-                    target,
-                    value,
-                });
-            },
-            Option::Some => {
-                //call
-                let target_contract_id = match target {
-                    Identity::Address => {
-                        log(ExecutionError::InsufficientApprovals); // Add Error
-                        revert(FAILED_REQUIRE_SIGNAL)
-                    },
-                    Identity::ContractId(contract_identifier) => contract_identifier,
-                };
-
-                require(calldata.is_some(), ExecutionError::InsufficientApprovals);  // Add Error
-                require(single_value_type_arg.is_some(), ExecutionError::InsufficientApprovals);  // Add Error
-                let function_selector = Bytes::from_vec_u8(function_selector.unwrap());
-                let calldata = Bytes::from_vec_u8(calldata.unwrap());
-                let single_value_type_arg = single_value_type_arg.unwrap();
-
-                if value.is_some() {
-                    require(asset_id.is_some(), ExecutionError::TransferRequiresAnAssetId);
-                    require(value.unwrap() <= this_balance(asset_id.unwrap()), ExecutionError::InsufficientAssetAmount);
-                }
-
-                let transaction_hash = sha256(Transaction {
-                    contract_identifier: contract_id(),
-                    nonce: storage.nonce,
-                    value,
-                    asset_id,
-                    target,
-                    function_selector: Option::Some(function_selector),
-                    calldata: Option::Some(calldata),
-                    single_value_type_arg: Option::Some(single_value_type_arg),
-                    forwarded_gas,
-                });
-                let approval_count = count_approvals(signatures, transaction_hash);
-                require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
-
-                storage.nonce += 1;
-                let call_params = CallParams {
-                    coins: value.unwrap_or(0),
-                    asset_id: asset_id.unwrap_or(BASE_ASSET_ID),
-                    gas: forwarded_gas.unwrap_or(0),
-                };
-                call_with_function_selector(target_contract_id, function_selector, calldata, single_value_type_arg, call_params);
-
-                log(CallEvent {
-                    call_params,
-                    nonce: storage.nonce - 1,
-                    target_contract_id,
-                    function_selector,
-                    calldata,
-                });
-            }
         }
     }
 }
