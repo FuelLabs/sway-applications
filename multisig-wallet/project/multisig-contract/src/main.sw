@@ -19,6 +19,7 @@ use std::{
     },
     context::this_balance,
     error_signals::FAILED_REQUIRE_SIGNAL,
+    hash::sha256,
     logging::log,
     low_level_call::{
         call_with_function_selector,
@@ -27,11 +28,11 @@ use std::{
     token::transfer,
 };
 
-use data_structures::{SignatureInfo, User};
+use data_structures::{SignatureInfo, Transaction, TypeToHash, User};
 use errors::{AccessControlError, ExecutionError, InitError};
-use events::{CancelEvent, ExecutedEvent, SetThresholdEvent, TransferEvent};
+use events::{CallEvent, CancelEvent, SetThresholdEvent, TransferEvent};
 use interface::{Info, MultiSignatureWallet};
-use utils::{address_to_bytes, contract_id_to_bytes, create_hash, create_payload, recover_signer};
+use utils::recover_signer;
 
 storage {
     /// Used to add entropy into hashing of transaction to decrease the probability of collisions / double
@@ -108,12 +109,23 @@ impl MultiSignatureWallet for Contract {
 
             require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
-            let data = match target {
-                Identity::Address(address) => address_to_bytes(address),
-                Identity::ContractId(contract_identifier) => contract_id_to_bytes(contract_identifier),
-            };
-
-            let transaction_hash = create_hash(data, storage.nonce, target, value);
+            let transaction_hash = sha256(Transaction {
+                contract_identifier: contract_id(), // Less gas to turn into a constant?
+                nonce: storage.nonce,
+                value: Option::Some(value),
+                asset_id: Option::Some(asset_id),
+                target,
+                function_selector: Option::None,
+                calldata: match calldata {
+                    Option::None => Option::None,
+                    Option::Some(vec) => {
+                        let mut vec = vec;
+                        Option::Some(Bytes::from_vec_u8(vec))
+                    },
+                },
+                single_value_type_arg,
+                forwarded_gas,
+            });
             let approval_count = count_approvals(signatures, transaction_hash);
             require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
@@ -124,10 +136,10 @@ impl MultiSignatureWallet for Contract {
             log(TransferEvent {
                 asset: asset_id,
                 nonce: storage.nonce - 1,
-                to: target,
+                target,
                 value,
             });
-        } else {
+        } else if function_selector.is_some() {
             //call
             let target_contract_id = match target {
                 Identity::Address => {
@@ -147,84 +159,38 @@ impl MultiSignatureWallet for Contract {
                 require(asset_id.is_some(), ExecutionError::TransferRequiresAnAssetId);
                 require(value.unwrap() <= this_balance(asset_id.unwrap()), ExecutionError::InsufficientAssetAmount);
             }
-            let value = value.unwrap_or(0);
 
-            let payload = create_payload(target_contract_id, function_selector, calldata, single_value_type_arg);
-
-            let transaction_hash = create_hash(payload, storage.nonce, target, value);
+            let transaction_hash = sha256(Transaction {
+                contract_identifier: contract_id(),
+                nonce: storage.nonce,
+                value,
+                asset_id,
+                target,
+                function_selector: Option::Some(function_selector),
+                calldata: Option::Some(calldata),
+                single_value_type_arg: Option::Some(single_value_type_arg),
+                forwarded_gas,
+            });
             let approval_count = count_approvals(signatures, transaction_hash);
             require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
             storage.nonce += 1;
 
             let call_params = CallParams {
-                coins: value,
+                coins: value.unwrap_or(0),
                 asset_id: asset_id.unwrap_or(BASE_ASSET_ID),
                 gas: forwarded_gas.unwrap_or(0),
             };
-
             call_with_function_selector(target_contract_id, function_selector, calldata, single_value_type_arg, call_params);
 
-            log(ExecutedEvent {
+            log(CallEvent {
                 call_params,
                 nonce: storage.nonce - 1,
-                payload,
+                target_contract_id,
+                function_selector,
+                calldata,
             });
         }
-    }
-
-    #[storage(read, write)]
-    fn set_threshold(
-        data: b256,
-        nonce: u64,
-        signatures: Vec<SignatureInfo>,
-        threshold: u64,
-    ) {
-        require(storage.nonce != 0, InitError::NotInitialized);
-        require(threshold != 0, InitError::ThresholdCannotBeZero);
-        require(threshold <= storage.total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
-
-
-
-        // let transaction_hash = create_hash(data, nonce, Identity::ContractId(contract_id()), 0);
-        // let approval_count = count_approvals(signatures, transaction_hash);
-        // require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
-        let previous_threshold = storage.threshold;
-
-        storage.nonce += 1;
-        storage.threshold = threshold;
-
-        log(SetThresholdEvent {
-            previous_threshold,
-            threshold,
-        });
-    }
-
-    #[storage(read, write)]
-    fn transfer(
-        asset_id: ContractId,
-        data: b256,
-        signatures: Vec<SignatureInfo>,
-        to: Identity,
-        value: u64,
-    ) {
-        require(storage.nonce != 0, InitError::NotInitialized);
-        require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
-
-
-                // let transaction_hash = create_hash(data, storage.nonce, to, value);
-        // let approval_count = count_approvals(signatures, transaction_hash);
-        // require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
-        storage.nonce += 1;
-
-        transfer(value, asset_id, to);
-
-        log(TransferEvent {
-            asset: asset_id,
-            nonce: storage.nonce - 1,
-            to,
-            value,
-        });
     }
 }
 
@@ -243,36 +209,48 @@ impl Info for Contract {
         storage.threshold
     }
 
-    fn transaction_hash(transaction: TransactionWithVecs) -> b256 { // TO DO : Switch from TransactionWithVecs to Transaction once Bytes are supported in SDK
-        create_hash(Transaction {
-            contract_identifier: transaction.contract_identifier,
-            nonce: transaction.nonce,
-            value: transaction.value,
-            asset_id: transaction.asset_id,
-            target: transaction.target,
-            function_selector: match transaction.function_selector {
-                Option::Some(vec) => Option::Some(Bytes::from_vec_u8(vec)),
-                Option::None => Option::None,
-            },
-            calldata: match transaction.calldata {
-                Option::Some(vec) => Option::Some(Bytes::from_vec_u8(vec)),
-                Option::None => Option::None,
-            },
-            single_value_type_arg: transaction.single_value_type_arg,
-            forwarded_gas: transaction.forwarded_gas,
-        })
-        // When Bytes are supported in the SDK, this will become:
-        // create_hash(transaction)
+    /// Currently won't work for the Transaction type, use calculate_transaction_hash instead
+    fn calculate_hash(type_to_hash: TypeToHash) -> b256 {
+        sha256(type_to_hash)
     }
 
-    // Uses SetThresholdInfo
-    /*
-    fn update_hash(data: Vec<u8>, nonce: u64) -> b256 { // TO DO : Switch Vec<u8> to Bytes when SDK supports Bytes
-        // Assume default values for `to` and `value` to simplify the abi user experience
-        let mut data = data;
-        create_hash(Bytes::from_vec_u8(data), nonce, Identity::ContractId(contract_id()), 0)
+    /// Needed for hashing the Transaction type, as Bytes are not supported by SDK, and Vectors as fields in a struct are not supported by the SDK
+    /// Once Bytes are supported in the SDK, this can be deprecated and calculate_hash can be used for hashing the Transaction type
+    fn calculate_transaction_hash(
+        contract_identifier: ContractId,
+        nonce: u64,
+        value: Option<u64>,
+        asset_id: Option<ContractId>,
+        target: Identity,
+        function_selector: Option<Vec<u8>>,
+        calldata: Option<Vec<u8>>,
+        single_value_type_arg: Option<bool>,
+        forwarded_gas: Option<u64>,
+    ) -> b256 {
+        sha256(Transaction {
+            contract_identifier,
+            nonce,
+            value,
+            asset_id,
+            target,
+            function_selector: match function_selector {
+                Option::None => Option::None,
+                Option::Some(vec) => {
+                    let mut vec = vec;
+                    Option::Some(Bytes::from_vec_u8(vec))
+                },
+            },
+            calldata: match calldata {
+                Option::None => Option::None,
+                Option::Some(vec) => {
+                    let mut vec = vec;
+                    Option::Some(Bytes::from_vec_u8(vec))
+                },
+            },
+            single_value_type_arg,
+            forwarded_gas,
+        })
     }
-    */
 }
 
 /// Takes in a transaction hash and signatures with associated data.

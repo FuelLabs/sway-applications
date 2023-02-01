@@ -2,7 +2,7 @@ library interface;
 
 dep data_structures;
 
-use data_structures::{SignatureInfo, User};
+use data_structures::{SignatureInfo, User, TypeToHash};
 
 abi MultiSignatureWallet {
     /// Cancel the next transaction by spending the current nonce.
@@ -47,53 +47,16 @@ abi MultiSignatureWallet {
     /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// * When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn execute_transaction(asset_id: Option<ContractId>,
+    fn execute_transaction(
+        asset_id: Option<ContractId>,
         calldata: Option<Vec<u8>>, //Convert to Bytes when SDK supports
         function_selector: Option<Vec<u8>>, //Convert to Bytes when SDK supports
         forwarded_gas: Option<u64>,
-        signatures: Vec<SignatureInfo>, 
+        signatures: Vec<SignatureInfo>,
         single_value_type_arg: Option<bool>,
-        target: Identity, 
-        value: Option<u64>,);
-
-    /// Updates the threshold required for execution
-    ///
-    /// # Arguments
-    ///
-    /// * `data` - The data field of the transaction.
-    /// * `nonce` - The nonce field of the transaction.
-    /// * `signatures` - The information for each user's signature for a specific transaction.
-    /// * `threshold` - The number of approvals required to enable a transaction to be sent.
-    ///
-    /// # Reverts
-    ///
-    /// * When the constructor has not been called to initialize the contract.
-    /// * When the threshold is a value greater than the sum of the weights.
-    /// * When the public key cannot be recovered from a signature.
-    /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
-    /// * When the total approval count is less than the required threshold for execution.
-    #[storage(read, write)]
-    fn set_threshold(data: b256, nonce: u64, signatures: Vec<SignatureInfo>, threshold: u64);
-
-    /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement.
-    ///
-    /// # Arguments
-    ///
-    /// * `asset_id` - The contract ID of the asset to be transferred.
-    /// * `data` - The data field of the transaction.
-    /// * `signatures` - The information for each user's signature for a specific transaction.
-    /// * `to` - The recipient of the transaction.
-    /// * `value` - The value sent in the transaction.
-    ///
-    /// # Reverts
-    ///
-    /// * When the constructor has not been called to initialize the contract.
-    /// * When the amount of the asset being sent is greater than the balance in the contract.
-    /// * When the public key cannot be recovered from a signature.
-    /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
-    /// * When the total approval count is less than the required threshold for execution.
-    #[storage(read, write)]
-    fn transfer(asset_id: ContractId, data: b256, signatures: Vec<SignatureInfo>, to: Identity, value: u64);
+        target: Identity,
+        value: Option<u64>,
+        );
 }
 
 abi Info {
@@ -112,24 +75,16 @@ abi Info {
     #[storage(read)]
     fn threshold() -> u64;
 
-    /// Takes in transaction data and hashes it into a unique tx hash.
-    ///
-    /// # Arguments
-    ///
-    /// * `data` - The data field of the transaction.
-    /// * `nonce` - The nonce field of the transaction.
-    /// * `to` - The recipient of the transaction.
-    /// * `value` - The value sent in the transaction.
-    fn transaction_hash(data: Vec<u8>, nonce: u64, to: Identity, value: u64) -> b256;
+    fn calculate_hash(type_to_hash: TypeToHash) -> b256;
 
-    /// Creates a hash which is used to make updates to the state of the contract
-    ///
-    /// Used to manage the contract while `transaction_hash()` is used for external calls
-    ///
-    /// # Arguments
-    ///
-    /// * `data` - The data field of the transaction.
-    /// * `nonce` - The nonce field of the transaction.
-    fn update_hash(data: Vec<u8>, nonce: u64) -> b256;
-    
+    fn calculate_transaction_hash(
+        contract_identifier: ContractId,
+        nonce: u64,
+        value: Option<u64>,
+        asset_id: Option<ContractId>,
+        target: Identity,
+        function_selector: Option<Vec<u8>>,
+        calldata: Option<Vec<u8>>,
+        single_value_type_arg: Option<bool>,
+        forwarded_gas: Option<u64>,) -> b256;
 }

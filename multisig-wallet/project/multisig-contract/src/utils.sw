@@ -19,80 +19,6 @@ const EIP191_INITIAL_BYTE = 0x19u8;
 const EIP191_VERSION_BYTE = 0x45u8;
 const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
 
-/// Takes in transaction data and hashes it into a unique transaction hash.
-/*
-pub fn create_hash(data: Bytes, nonce: u64, to: Identity, value: u64) -> b256 {
-    sha256(Transaction {
-        contract_identifier: contract_id(),
-        data: data.into_vec_u8(),
-        destination: to,
-        nonce,
-        value,
-    })
-}
-*/
-/// Encode a payload from the function selection and calldata.
-pub fn create_payload(
-    target: ContractId,
-    function_selector: Bytes,
-    calldata: Bytes,
-    single_value_type_arg: bool,
-) -> Bytes {
-    /*
-    packs args according to spec (https://github.com/FuelLabs/fuel-specs/blob/master/src/vm/instruction_set.md#call-call-contract) :
-    bytes   type        value   description
-    32	    byte[32]    to      Contract ID to call.
-    8	    byte[8]	    param1  First parameter (function selector).
-    8	    byte[8]	    param2  Second parameter (abi-encoded calldata: value if value type, otherwise pointer to reference type).
-    */
-    require(function_selector.len() == 8, "function selector must be 8 bytes");
-
-    let mut payload = Bytes::new().join(contract_id_to_bytes(target)).join(function_selector);
-
-    if (single_value_type_arg) {
-        payload = payload.join(calldata); // When calldata is copy type, just pass calldata
-    } else {
-        payload = payload.join(ptr_as_bytes(calldata.buf.ptr)); // When calldata is reference type, need to get pointer as bytes
-    };
-
-    payload
-}
-
-// TODO : Replace with `from` when implemented
-/// Represent an address as a `Bytes`.
-pub fn address_to_bytes(address: Address) -> Bytes {
-    let mut target_bytes = Bytes::with_capacity(32);
-    target_bytes.len = 32;
-
-    __addr_of(address).copy_bytes_to(target_bytes.buf.ptr, 32);
-
-    target_bytes
-}
-
-// TODO : Replace with `from` when implemented
-/// Represent a contract ID as a `Bytes`, so it can be concatenated with a payload.
-pub fn contract_id_to_bytes(contract_identifier: ContractId) -> Bytes {
-    let mut target_bytes = Bytes::with_capacity(32);
-    target_bytes.len = 32;
-
-    __addr_of(contract_identifier).copy_bytes_to(target_bytes.buf.ptr, 32);
-
-    target_bytes
-}
-
-/// Represent a raw pointer as a `Bytes`, so it can be concatenated with a payload.
-fn ptr_as_bytes(ptr: raw_ptr) -> Bytes {
-    let mut bytes = Bytes::with_capacity(8);
-    bytes.len = 8;
-
-    // Need to copy pointer to heap so it has an address and can be copied onto the bytes buffer
-    let mut ptr_on_heap = Vec::new();
-    ptr_on_heap.push(ptr);
-    ptr_on_heap.buf.ptr.copy_bytes_to(bytes.buf.ptr, 8);
-
-    bytes
-}
-
 /// Applies the format and prefix specified by signature_info to the message_hash.
 /// Returns the b256 value of the recovered address.
 pub fn recover_signer(message_hash: b256, signature_info: SignatureInfo) -> b256 {
@@ -172,9 +98,4 @@ fn decompose(val: b256) -> (u64, u64, u64, u64) {
 /// Applies the prefix "\x19Ethereum Signed Message:\n32" to a message hash.
 fn ethereum_prefix(msg_hash: b256) -> b256 {
     keccak256((ETHEREUM_PREFIX, msg_hash))
-}
-
-/// Takes in transaction data and hashes it into a unique transaction hash.
-pub fn create_hash(transaction: Transaction) -> b256 { // Switch to use generic type
-    sha256(transaction)
 }

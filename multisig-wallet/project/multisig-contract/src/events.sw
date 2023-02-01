@@ -7,10 +7,12 @@ pub struct CancelEvent {
     user: b256,
 }
 
-pub struct ExecutedEvent {
+pub struct CallEvent {
     call_params: CallParams,
     nonce: u64,
-    payload: Bytes,
+    target_contract_id: ContractId,
+    function_selector: Bytes,
+    calldata: Bytes,
 }
 
 pub struct SetThresholdEvent {
@@ -21,6 +23,6 @@ pub struct SetThresholdEvent {
 pub struct TransferEvent {
     asset: ContractId,
     nonce: u64,
-    to: Identity,
+    target: Identity,
     value: u64,
 }
