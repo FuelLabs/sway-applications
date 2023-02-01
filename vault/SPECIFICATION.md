@@ -76,7 +76,7 @@ TODO: description of function
 
 ### `total_assets()`
 
-1. Returns the total amount of asset that is managed by vault
+1. Returns the total amount of the asset that is managed by the vault
 
 ## Diagrams
 
