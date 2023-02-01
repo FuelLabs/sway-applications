@@ -1,12 +1,14 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*};
+use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identity};
 
 abigen!(
-    Escrow,
-    "project/escrow-contract/out/debug/escrow-contract-abi.json"
-);
-abigen!(
-    MyAsset,
-    "project/escrow-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+    Contract(
+        name = "Escrow",
+        abi = "project/escrow-contract/out/debug/escrow-contract-abi.json"
+    ),
+    Contract(
+        name = "MyAsset",
+        abi = "project/escrow-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+    )
 );
 
 pub struct Defaults {

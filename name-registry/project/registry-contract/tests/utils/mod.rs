@@ -1,12 +1,15 @@
 pub mod abi;
 
-use fuels::prelude::*;
+use fuels::{
+    prelude::*,
+    types::{Identity, SizedAsciiString},
+};
 
 // Load abi from json
-abigen!(
-    NameRegistry,
-    "./project/registry-contract/out/debug/registry-contract-abi.json"
-);
+abigen!(Contract(
+    name = "NameRegistry",
+    abi = "./project/registry-contract/out/debug/registry-contract-abi.json"
+),);
 
 pub const REGISTER_DURATION: u64 = 10000;
 pub const EXTEND_DURATION: u64 = 2500;
@@ -38,7 +41,7 @@ pub async fn setup() -> (NameRegistry, Account, WalletUnlocked) {
     .await
     .unwrap();
 
-    let instance = NameRegistry::new(id.clone(), wallet.clone());
+    let instance = NameRegistry::new(id, wallet.clone());
 
     (instance, Account::new(wallet), wallet2)
 }

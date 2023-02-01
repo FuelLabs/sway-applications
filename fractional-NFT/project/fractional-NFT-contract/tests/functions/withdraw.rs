@@ -4,9 +4,10 @@ use crate::utils::{
     test_helpers::{defaults, setup},
 };
 use fuels::{
-    prelude::{Bech32ContractId, Identity, TxParameters},
+    prelude::{Bech32ContractId, TxParameters},
     signers::Signer,
     tx::AssetId,
+    types::Identity,
 };
 
 mod success {
@@ -19,14 +20,14 @@ mod success {
         let token_supply = defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         deposit(
             Some(owner_identity.clone()),
             &owner1.f_nft,
-            nft_contract.clone(),
+            nft_contract,
             token_supply,
             0,
         )
@@ -53,13 +54,13 @@ mod success {
         let _ = owner1
             .wallet
             .force_transfer_to_contract(
-                &Bech32ContractId::from(fractional_nft_contract.clone()),
+                &Bech32ContractId::from(fractional_nft_contract),
                 token_supply,
-                AssetId::new(*fractional_nft_contract.clone()),
+                AssetId::new(*fractional_nft_contract),
                 TxParameters::default(),
             )
             .await;
-        withdraw(&owner1.f_nft, nft_contract.clone(), owner_identity.clone()).await;
+        withdraw(&owner1.f_nft, nft_contract, owner_identity.clone()).await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
         assert_eq!(
@@ -86,7 +87,7 @@ mod revert {
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
 
-        withdraw(&owner1.f_nft, nft_contract.clone(), owner_identity.clone()).await;
+        withdraw(&owner1.f_nft, nft_contract, owner_identity.clone()).await;
     }
 
     #[tokio::test]
@@ -96,14 +97,14 @@ mod revert {
         let token_supply = defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         deposit(
             Some(owner_identity.clone()),
             &owner1.f_nft,
-            nft_contract.clone(),
+            nft_contract,
             token_supply,
             0,
         )
@@ -112,13 +113,13 @@ mod revert {
         let _ = owner1
             .wallet
             .force_transfer_to_contract(
-                &Bech32ContractId::from(fractional_nft_contract.clone()),
+                &Bech32ContractId::from(fractional_nft_contract),
                 token_supply,
-                AssetId::new(*fractional_nft_contract.clone()),
+                AssetId::new(*fractional_nft_contract),
                 TxParameters::default(),
             )
             .await;
-        withdraw(&owner2.f_nft, nft_contract.clone(), owner_identity.clone()).await;
+        withdraw(&owner2.f_nft, nft_contract, owner_identity.clone()).await;
     }
 
     #[tokio::test]
@@ -128,22 +129,22 @@ mod revert {
         let token_supply = defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
-        deposit(None, &owner1.f_nft, nft_contract.clone(), token_supply, 0).await;
+        deposit(None, &owner1.f_nft, nft_contract, token_supply, 0).await;
 
         let _ = owner1
             .wallet
             .force_transfer_to_contract(
-                &Bech32ContractId::from(fractional_nft_contract.clone()),
+                &Bech32ContractId::from(fractional_nft_contract),
                 token_supply,
-                AssetId::new(*fractional_nft_contract.clone()),
+                AssetId::new(*fractional_nft_contract),
                 TxParameters::default(),
             )
             .await;
-        withdraw(&owner1.f_nft, nft_contract.clone(), owner_identity.clone()).await;
+        withdraw(&owner1.f_nft, nft_contract, owner_identity.clone()).await;
     }
 
     #[tokio::test]
@@ -153,19 +154,19 @@ mod revert {
         let token_supply = defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         deposit(
             Some(owner_identity.clone()),
             &owner1.f_nft,
-            nft_contract.clone(),
+            nft_contract,
             token_supply,
             0,
         )
         .await;
 
-        withdraw(&owner1.f_nft, nft_contract.clone(), owner_identity.clone()).await;
+        withdraw(&owner1.f_nft, nft_contract, owner_identity.clone()).await;
     }
 }

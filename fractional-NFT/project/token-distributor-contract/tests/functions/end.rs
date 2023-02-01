@@ -1,4 +1,5 @@
 use crate::utils::{
+    abigen_bindings::token_distributor_mod::DistributionState,
     asset_abi_calls::mint_and_send_to_address,
     fractional_nft_abi_calls::nft_info,
     nft_abi_calls::{approve, mint, owner_of},
@@ -6,12 +7,12 @@ use crate::utils::{
     token_distributor_abi_calls::{
         buyback, create, end, purchase, purchase_admin, sell, token_distribution,
     },
-    token_distributor_mod::DistributionState,
 };
 use fuels::{
-    prelude::{Address, Bech32ContractId, Identity},
+    prelude::{Address, Bech32ContractId},
     signers::Signer,
     tx::AssetId,
+    types::Identity,
 };
 
 mod success {
@@ -33,15 +34,15 @@ mod success {
             defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         create(
             &owner1.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
+            nft_contract,
             Some(reserve_price),
             Some(owner_identity.clone()),
             token_price,
@@ -64,28 +65,28 @@ mod success {
         purchase(
             purchase_amount,
             &owner2.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
             token_price,
         )
         .await;
         buyback(
             purchase_amount * token_price,
             &owner1.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
             token_price,
         )
         .await;
         sell(
             purchase_amount,
             &owner2.token_distributor,
-            fractional_nft_contract.clone(),
+            fractional_nft_contract,
         )
         .await;
 
         let token_distribution_struct =
-            token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
+            token_distribution(&owner1.token_distributor, fractional_nft_contract).await;
         assert_eq!(
             owner_of(&owner1.nft, 0).await,
             Some(fractional_nft_identity.clone())
@@ -97,13 +98,14 @@ mod success {
 
         end(
             &owner1.token_distributor,
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            &owner1.wallet,
+            fractional_nft_contract,
+            nft_contract,
         )
         .await;
 
         let token_distribution_struct =
-            token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
+            token_distribution(&owner1.token_distributor, fractional_nft_contract).await;
         assert_eq!(owner_of(&owner1.nft, 0).await, Some(owner_identity.clone()));
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
@@ -126,17 +128,17 @@ mod success {
             defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
-        let token_distributor_identity = Identity::ContractId(token_distributor_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
+        let token_distributor_identity = Identity::ContractId(token_distributor_contract);
         let provider = deployer.wallet.get_provider().unwrap();
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         create(
             &owner1.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
+            nft_contract,
             Some(reserve_price),
             Some(owner_identity.clone()),
             token_price,
@@ -147,12 +149,12 @@ mod success {
 
         let nft_struct = nft_info(&owner1.f_nft).await;
         let token_distribution_struct =
-            token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
+            token_distribution(&owner1.token_distributor, fractional_nft_contract).await;
         assert_eq!(
             provider
                 .get_contract_asset_balance(
-                    &Bech32ContractId::from(token_distributor_contract.clone()),
-                    AssetId::from(*fractional_nft_contract.clone())
+                    &Bech32ContractId::from(token_distributor_contract),
+                    AssetId::from(*fractional_nft_contract)
                 )
                 .await
                 .unwrap(),
@@ -174,19 +176,20 @@ mod success {
 
         end(
             &owner1.token_distributor,
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            &owner1.wallet,
+            fractional_nft_contract,
+            nft_contract,
         )
         .await;
 
         let nft_struct = nft_info(&owner1.f_nft).await;
         let token_distribution_struct =
-            token_distribution(&owner1.token_distributor, fractional_nft_contract.clone()).await;
+            token_distribution(&owner1.token_distributor, fractional_nft_contract).await;
         assert_eq!(
             provider
                 .get_contract_asset_balance(
-                    &Bech32ContractId::from(token_distributor_contract.clone()),
-                    AssetId::from(*fractional_nft_contract.clone())
+                    &Bech32ContractId::from(token_distributor_contract),
+                    AssetId::from(*fractional_nft_contract)
                 )
                 .await
                 .unwrap(),
@@ -223,8 +226,9 @@ mod revert {
 
         end(
             &owner1.token_distributor,
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            &owner1.wallet,
+            fractional_nft_contract,
+            nft_contract,
         )
         .await;
     }
@@ -245,15 +249,15 @@ mod revert {
             defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         create(
             &owner1.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
+            nft_contract,
             Some(reserve_price),
             Some(owner_identity.clone()),
             token_price,
@@ -276,39 +280,40 @@ mod revert {
         purchase(
             purchase_amount,
             &owner2.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
             token_price,
         )
         .await;
         buyback(
             purchase_amount * token_price,
             &owner1.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
             token_price,
         )
         .await;
         sell(
             purchase_amount,
             &owner2.token_distributor,
-            fractional_nft_contract.clone(),
+            fractional_nft_contract,
         )
         .await;
         purchase_admin(
             None,
             reserve_price,
             &owner2.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
             Some(reserve_price * 2),
         )
         .await;
 
         end(
             &owner1.token_distributor,
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            &owner1.wallet,
+            fractional_nft_contract,
+            nft_contract,
         )
         .await;
     }
@@ -329,15 +334,15 @@ mod revert {
             defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         create(
             &owner1.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
+            nft_contract,
             Some(reserve_price),
             Some(owner_identity.clone()),
             token_price,
@@ -360,24 +365,23 @@ mod revert {
         purchase(
             purchase_amount,
             &owner2.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
             token_price,
         )
         .await;
 
         end(
             &owner1.token_distributor,
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            &owner1.wallet,
+            fractional_nft_contract,
+            nft_contract,
         )
         .await;
     }
 
     #[tokio::test]
-    // TODO: This test expects an error from another contract, upstream error messages not yet supported
-    // #[should_panic(expected = "SupplyNotReturned")]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
+    #[should_panic(expected = "SupplyNotReturned")]
     async fn when_not_all_assets_returned() {
         let (
             _deployer,
@@ -392,15 +396,15 @@ mod revert {
             defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
-        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract.into());
+        let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
         create(
             &owner1.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
+            nft_contract,
             Some(reserve_price),
             Some(owner_identity.clone()),
             token_price,
@@ -423,30 +427,31 @@ mod revert {
         purchase(
             purchase_amount,
             &owner2.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
             token_price,
         )
         .await;
         buyback(
             purchase_amount * token_price,
             &owner1.token_distributor,
-            asset_contract.clone(),
-            fractional_nft_contract.clone(),
+            asset_contract,
+            fractional_nft_contract,
             token_price,
         )
         .await;
         sell(
             purchase_amount - 1,
             &owner2.token_distributor,
-            fractional_nft_contract.clone(),
+            fractional_nft_contract,
         )
         .await;
 
         end(
             &owner1.token_distributor,
-            fractional_nft_contract.clone(),
-            nft_contract.clone(),
+            &owner1.wallet,
+            fractional_nft_contract,
+            nft_contract,
         )
         .await;
     }

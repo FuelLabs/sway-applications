@@ -3,7 +3,7 @@ use crate::utils::{
     simple_asset_abi_calls::asset_constructor,
     test_helpers::{build_tree, build_tree_manual, defaults, leaves_with_depth, setup},
 };
-use fuels::{prelude::Identity, tx::AssetId};
+use fuels::{tx::AssetId, types::Identity};
 
 mod success {
 
@@ -48,11 +48,10 @@ mod success {
                 .unwrap(),
             0
         );
-        assert_eq!(
-            claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
+        assert!(
+            !claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
                 .await
-                .claimed,
-            false
+                .claimed
         );
 
         claim(
@@ -74,11 +73,10 @@ mod success {
                 .unwrap(),
             airdrop_leaves[key as usize].1
         );
-        assert_eq!(
+        assert!(
             claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone())
                 .await
-                .claimed,
-            true
+                .claimed
         );
     }
 
@@ -107,14 +105,13 @@ mod success {
                 .unwrap(),
             0
         );
-        assert_eq!(
-            claim_data(
+        assert!(
+            !claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
             .await
-            .claimed,
-            false
+            .claimed
         );
 
         claim(
@@ -136,14 +133,13 @@ mod success {
                 .unwrap(),
             airdrop_leaves[key as usize].1
         );
-        assert_eq!(
+        assert!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
             .await
-            .claimed,
-            true
+            .claimed
         );
     }
 
@@ -153,10 +149,8 @@ mod success {
         let (identity_a, identity_b, identity_c, minter, key, _, asset_supply, _, claim_time, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let mut identity_vec: Vec<Identity> = Vec::new();
-        identity_vec.push(identity_a.clone());
-        identity_vec.push(identity_b.clone());
-        identity_vec.push(identity_c.clone());
+        let identity_vec: Vec<Identity> =
+            vec![identity_a.clone(), identity_b.clone(), identity_c.clone()];
 
         let depth = 2;
         let airdrop_leaves = leaves_with_depth(depth, identity_vec.clone()).await;
@@ -180,14 +174,13 @@ mod success {
                 .unwrap(),
             0
         );
-        assert_eq!(
-            claim_data(
+        assert!(
+            !claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
             .await
-            .claimed,
-            false
+            .claimed
         );
 
         claim(
@@ -209,14 +202,13 @@ mod success {
                 .unwrap(),
             airdrop_leaves[key as usize].1
         );
-        assert_eq!(
+        assert!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
             .await
-            .claimed,
-            true
+            .claimed
         );
     }
 
@@ -226,10 +218,8 @@ mod success {
         let (identity_a, identity_b, identity_c, minter, key, _, asset_supply, _, claim_time, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
-        let mut identity_vec: Vec<Identity> = Vec::new();
-        identity_vec.push(identity_a.clone());
-        identity_vec.push(identity_b.clone());
-        identity_vec.push(identity_c.clone());
+        let identity_vec: Vec<Identity> =
+            vec![identity_a.clone(), identity_b.clone(), identity_c.clone()];
 
         let depth = 16;
         let airdrop_leaves = leaves_with_depth(depth, identity_vec.clone()).await;
@@ -253,14 +243,13 @@ mod success {
                 .unwrap(),
             0
         );
-        assert_eq!(
-            claim_data(
+        assert!(
+            !claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
             .await
-            .claimed,
-            false
+            .claimed
         );
 
         claim(
@@ -282,14 +271,13 @@ mod success {
                 .unwrap(),
             airdrop_leaves[key as usize].1
         );
-        assert_eq!(
+        assert!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
             .await
-            .claimed,
-            true
+            .claimed
         );
     }
 }

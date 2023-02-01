@@ -1,7 +1,9 @@
 use core::fmt::Debug;
 use fuels::{
-    contract::{call_response::FuelCallResponse, contract::ContractCallHandler},
+    core::traits::Tokenizable,
     prelude::*,
+    programs::{call_response::FuelCallResponse, contract::ContractCallHandler},
+    types::{Identity, SizedAsciiString},
     // tx::UniqueIdentifier,
     // types::transaction_response::TransactionStatus,
 };

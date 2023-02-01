@@ -5,10 +5,10 @@ abi Template {
     ///
     /// # Arguments
     ///
-    /// - `<argument>`: <description>
+    /// * `<argument>`: <description>
     ///
     /// # Reverts
     ///
-    /// - <condition>
+    /// * <condition>
     fn template();
 }

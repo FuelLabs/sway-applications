@@ -1,21 +1,15 @@
 use fuels::{
-    contract::call_response::FuelCallResponse,
     prelude::*,
+    programs::call_response::FuelCallResponse,
     tx::{ContractId, Salt},
+    types::Identity,
 };
 
 // Load abi from json
 abigen!(
-    EnglishAuction,
-    "./english-auction/project/auction-contract/out/debug/auction-contract-abi.json"
-);
-abigen!(
-    Nft,
-    "./english-auction/project/auction-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"
-);
-abigen!(
-    MyAsset,
-    "./english-auction/project/auction-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+    Contract(name="EnglishAuction", abi="./english-auction/project/auction-contract/out/debug/auction-contract-abi.json"),
+    Contract(name="Nft", abi="./english-auction/project/auction-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"),
+    Contract(name="MyAsset", abi="./english-auction/project/auction-contract/tests/artifacts/asset/out/debug/asset-abi.json"),
 );
 
 pub struct Metadata {
@@ -77,7 +71,7 @@ pub mod english_auction_abi_calls {
             AuctionAsset::NFTAsset(bid_asset) => contract
                 .methods()
                 .bid(auction_id, AuctionAsset::NFTAsset(bid_asset.clone()))
-                .set_contracts(&[bid_asset.asset_id.into()])
+                .set_contract_ids(&[bid_asset.asset_id.into()])
                 .call()
                 .await
                 .unwrap(),
@@ -126,7 +120,7 @@ pub mod english_auction_abi_calls {
                         seller,
                         AuctionAsset::NFTAsset(sell_asset.clone()),
                     )
-                    .set_contracts(&[sell_asset.asset_id.into(), sell_asset.asset_id.into()])
+                    .set_contract_ids(&[sell_asset.asset_id.into(), sell_asset.asset_id.into()])
                     .call()
                     .await
                     .unwrap()
@@ -183,7 +177,7 @@ pub mod english_auction_abi_calls {
             AuctionAsset::NFTAsset(withdrawing_asset) => contract
                 .methods()
                 .withdraw(auction_id)
-                .set_contracts(&[withdrawing_asset.asset_id.into()])
+                .set_contract_ids(&[withdrawing_asset.asset_id.into()])
                 .call()
                 .await
                 .unwrap(),

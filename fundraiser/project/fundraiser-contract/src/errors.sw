@@ -4,12 +4,10 @@ pub enum CampaignError {
     CampaignEnded: (),
     CampaignHasBeenCancelled: (),
     DeadlineNotReached: (),
-    TargetReached: (),
     TargetNotReached: (),
 }
 
 pub enum CreationError {
-    ContractNotInitialized: (),
     DeadlineMustBeInTheFuture: (),
     TargetAmountCannotBeZero: (),
 }

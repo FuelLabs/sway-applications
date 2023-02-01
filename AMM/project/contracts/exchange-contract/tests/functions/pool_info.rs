@@ -1,65 +1,78 @@
-use crate::utils::{
-    abi_calls::pool_info,
-    test_helpers::{deposit_and_add_liquidity, setup, setup_and_initialize},
-};
-use fuels::prelude::*;
+use test_utils::interface::exchange::pool_info;
 
 mod success {
     use super::*;
+    use crate::utils::setup_and_construct;
+    use fuels::prelude::ContractId;
+    use test_utils::setup::common::deposit_and_add_liquidity;
 
     #[tokio::test]
     async fn returns_empty_pool_info() {
-        let (exchange, _wallet, _amounts, _asset_c_id) = setup_and_initialize().await;
-        let pool_info = pool_info(&exchange.instance).await.value;
+        let (exchange, _wallet, _liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
+        let pool_info = pool_info(&exchange.instance).await;
 
-        assert_eq!(pool_info.asset_a, ContractId::new(*exchange.asset_a));
-        assert_eq!(pool_info.asset_a_reserve, 0);
-        assert_eq!(pool_info.asset_b, ContractId::new(*exchange.asset_b));
-        assert_eq!(pool_info.asset_b_reserve, 0);
+        assert_eq!(pool_info.reserves.a.id, ContractId::new(*exchange.pair.0));
+        assert_eq!(pool_info.reserves.a.amount, 0);
+        assert_eq!(pool_info.reserves.b.id, ContractId::new(*exchange.pair.1));
+        assert_eq!(pool_info.reserves.b.amount, 0);
         assert_eq!(pool_info.liquidity, 0);
     }
 
     #[tokio::test]
     async fn returns_non_empty_pool_info() {
-        let (exchange, _wallet, amounts, _asset_c_id) = setup_and_initialize().await;
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
 
-        let initial_pool_info = pool_info(&exchange.instance).await.value;
+        let initial_pool_info = pool_info(&exchange.instance).await;
 
-        deposit_and_add_liquidity(&amounts, &exchange).await;
+        deposit_and_add_liquidity(&liquidity_parameters, &exchange, false).await;
 
-        let final_pool_info = pool_info(&exchange.instance).await.value;
+        let final_pool_info = pool_info(&exchange.instance).await;
 
         assert_eq!(
-            initial_pool_info.asset_a,
-            ContractId::new(*exchange.asset_a)
+            initial_pool_info.reserves.a.id,
+            ContractId::new(*exchange.pair.0)
         );
-        assert_eq!(initial_pool_info.asset_a_reserve, 0);
+        assert_eq!(initial_pool_info.reserves.a.amount, 0);
         assert_eq!(
-            initial_pool_info.asset_b,
-            ContractId::new(*exchange.asset_b)
+            initial_pool_info.reserves.b.id,
+            ContractId::new(*exchange.pair.1)
         );
-        assert_eq!(initial_pool_info.asset_b_reserve, 0);
+        assert_eq!(initial_pool_info.reserves.b.amount, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
-        assert_eq!(final_pool_info.asset_a, ContractId::new(*exchange.asset_a));
-        assert_eq!(final_pool_info.asset_a_reserve, amounts.amount_a);
-        assert_eq!(final_pool_info.asset_b, ContractId::new(*exchange.asset_b));
-        assert_eq!(final_pool_info.asset_b_reserve, amounts.amount_b);
+        assert_eq!(
+            final_pool_info.reserves.a.id,
+            ContractId::new(*exchange.pair.0)
+        );
+        assert_eq!(
+            final_pool_info.reserves.a.amount,
+            liquidity_parameters.amounts.0
+        );
+        assert_eq!(
+            final_pool_info.reserves.b.id,
+            ContractId::new(*exchange.pair.1)
+        );
+        assert_eq!(
+            final_pool_info.reserves.b.amount,
+            liquidity_parameters.amounts.1
+        );
         assert_eq!(
             final_pool_info.liquidity * final_pool_info.liquidity,
-            amounts.amount_a * amounts.amount_b
+            liquidity_parameters.amounts.0 * liquidity_parameters.amounts.1
         );
     }
 }
 
 mod revert {
     use super::*;
+    use crate::utils::setup;
 
     #[tokio::test]
-    #[should_panic(expected = "NotInitialized")]
-    async fn when_unitialized() {
-        // call setup instead of setup_and_initialize
-        let (exchange_instance, _wallet, _pool_asset_id, _asset_a_id, _asset_b_id, _asset_c_id) =
-            setup().await;
+    #[should_panic(expected = "AssetPairNotSet")]
+    async fn when_uninitialized() {
+        // call setup instead of setup_and_construct
+        let (exchange_instance, _wallet, _assets, _deadline) = setup().await;
 
         pool_info(&exchange_instance).await;
     }
