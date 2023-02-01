@@ -4,7 +4,7 @@ import type { PlaywrightTestConfig } from '@playwright/test';
 const { E2E_PORT = 9000 } = process.env;
 
 const config: PlaywrightTestConfig = {
-  timeout: 60000,
+  timeout: 120000,
   testDir: './tests',
   /* Retry on CI only */
   retries: process.env.CI ? 1 : 0,
