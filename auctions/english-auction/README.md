@@ -49,6 +49,7 @@ Install dependencies
 ```bash
 pnpm install
 ```
+
 Ensure that docker is running locally before doing the next step.
 In this next step we are going to:
 
