@@ -1,6 +1,6 @@
 use fuel_merkle::{
     binary::in_memory::MerkleTree,
-    common::{empty_sum_sha256, Bytes32},
+    common::{empty_sum_sha256, Bytes32, LEAF, NODE},
 };
 use fuels::{
     prelude::*,
@@ -53,10 +53,12 @@ pub mod airdrop_distributor_abi_calls {
         proof: Vec<Bits256>,
         to: Identity,
     ) -> FuelCallResponse<()> {
+        let tx_params = TxParameters::new(None, Some(12_000_000), None);
         contract
             .methods()
             .claim(amount, key, num_leaves, proof, to)
             .append_variable_outputs(1)
+            .tx_params(tx_params)
             .set_contract_ids(&[asset_id.into()])
             .call()
             .await
@@ -198,7 +200,6 @@ pub mod test_helpers {
         let mut nodes: Vec<Node> = Vec::new();
         let mut leaf_hash: Bytes32 = *empty_sum_sha256();
         let mut proof: Vec<Bits256> = Vec::new();
-        let leaf_u64: u64 = 0;
 
         assert!(key <= num_leaves as u64);
 
@@ -221,7 +222,7 @@ pub mod test_helpers {
             let hash_leaf_data: Bytes32 = hasher.finalize().try_into().unwrap();
 
             let mut hasher2 = Sha256::new();
-            hasher2.update(leaf_u64.to_be_bytes());
+            hasher2.update(&[LEAF]);
             hasher2.update(hash_leaf_data);
             let hash2_leaf: Bytes32 = hasher2.finalize().try_into().unwrap();
 
@@ -232,7 +233,6 @@ pub mod test_helpers {
             }
         }
 
-        let node_u64: u64 = 1;
         let mut iterator = 0;
         // Build tree
         for i in 0..height {
@@ -241,7 +241,7 @@ pub mod test_helpers {
             // Create new depth
             while iterator < current_num_leaves {
                 let mut hasher = Sha256::new();
-                hasher.update(node_u64.to_be_bytes());
+                hasher.update(&[NODE]);
                 hasher.update(nodes[iterator].hash);
                 hasher.update(nodes[iterator + 1].hash);
                 let hash: Bytes32 = hasher.finalize().try_into().unwrap();
