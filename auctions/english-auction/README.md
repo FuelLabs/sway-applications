@@ -49,8 +49,8 @@ Install dependencies
 ```bash
 pnpm install
 ```
-
-In this step we are going to:
+Ensure that docker is running locally before doing the next step.
+In this next step we are going to:
 
 - Launch a local `fuel-core` node
 - Setup `english-auction-scripts`
