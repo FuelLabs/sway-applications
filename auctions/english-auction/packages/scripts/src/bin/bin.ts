@@ -39,12 +39,12 @@ program
 
 program
   .command(Commands.deploy)
-  .description('deploy contract to fuel network')
+  .description('Deploy contract to the fuel network')
   .action(action(Commands.deploy, (config) => deployContracts(config)));
 
 program
   .command(Commands.run)
-  .description('build and deploy contracts to fuel network')
+  .description('Build and deploy contracts to the fuel network')
   .action(action(Commands.run, (config) => runAll(config)));
 
 program
