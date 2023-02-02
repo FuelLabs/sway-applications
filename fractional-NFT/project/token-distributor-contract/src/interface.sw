@@ -18,7 +18,7 @@ abi TokenDistributor {
     /// * When the sender is not the token admin.
     /// * When the distribution is not in the distributing state.
     /// * When providing an incorrect payment asset or amount.
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn buyback(fractional_nft_id: ContractId, token_price: u64);
 
     /// Starts a new token distribution and takes control of the NFT.
@@ -67,7 +67,7 @@ abi TokenDistributor {
     /// * When the distribution is not allowing sales.
     /// * When trying to buy more tokens than held in by contract.
     /// * When providing an incorrect payment asset or amount.
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn purchase(amount: u64, fractional_nft_id: ContractId);
 
     /// Allows user to purchase admin rights of the fractionalized NFT.
@@ -84,7 +84,7 @@ abi TokenDistributor {
     /// * When there is no reserve price.
     /// * When the token distribution has already closed.
     /// * When providing an incorrect payment asset or amount.
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn purchase_admin(admin: Option<Identity>, fractional_nft_id: ContractId, reserve: Option<u64>);
 
     /// Allows for a fractionalized NFT token holder to sell their tokens.
@@ -98,7 +98,7 @@ abi TokenDistributor {
     /// * When `fractional_nft_id` does not map to an exising token distribution.
     /// * When the token distribution is not in the buyback state.
     /// * When not sending fractionalized NFT tokens.
-    #[storage(read)]
+    #[payable, storage(read)]
     fn sell(fractional_nft_id: ContractId);
 
     /// Allows for the admin to change the price at which admin rights may be bought outright.

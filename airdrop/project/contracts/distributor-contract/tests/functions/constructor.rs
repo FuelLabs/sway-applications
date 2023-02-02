@@ -2,7 +2,7 @@ use crate::utils::{
     airdrop_distributor_abi_calls::{airdrop_constructor, end_block, merkle_root},
     test_helpers::{defaults, setup},
 };
-use fuels::core::types::Bits256;
+use fuels::types::Bits256;
 
 mod success {
 

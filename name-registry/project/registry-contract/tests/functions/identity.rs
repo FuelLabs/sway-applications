@@ -3,7 +3,7 @@ mod success {
         abi::{identity, register, set_identity},
         setup, REGISTER_DURATION,
     };
-    use fuels::prelude::*;
+    use fuels::{prelude::*, types::Identity};
 
     #[tokio::test]
     async fn can_get_identity() {

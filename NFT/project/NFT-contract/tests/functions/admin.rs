@@ -2,7 +2,7 @@ use crate::utils::{
     abi_calls::{admin, constructor, set_admin},
     test_helpers::setup,
 };
-use fuels::{prelude::Identity, signers::Signer};
+use fuels::{signers::Signer, types::Identity};
 
 mod success {
 

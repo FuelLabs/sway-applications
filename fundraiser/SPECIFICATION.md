@@ -122,8 +122,8 @@ Returns information regarding the amount pledged by a user to a specific campaig
 
 Returns the total number of uniquely pledged assets by a user
 
-1. If a user has pledgd 1 asset (any number of times) then the `pledge_count()` will be 1
-2. If a user has pledgd 2 different assets (any number of times) then the `pledge_count()` will be 2
+1. If a user has pledged 1 asset (any number of times) then the `pledge_count()` will be 1
+2. If a user has pledged 2 different assets (any number of times) then the `pledge_count()` will be 2
 
 ### `total_campaigns()`
 
@@ -134,7 +134,7 @@ Returns the total number of created campaigns
 Returns the total number of campaigns that a user has pledged to
 
 1. If a user pledges to 2 different campaigns then the `user_pledge_count()` will be 2
-2. If the user performs step 1. and then completely unpledges then `user_pledge_count()` will be 2
+2. If the user performs step 1 and then completely unpledges then `user_pledge_count()` will be 2
 
 ## Sequence diagram
 

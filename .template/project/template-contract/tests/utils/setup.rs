@@ -1,9 +1,9 @@
 use fuels::prelude::*;
 
-abigen!(
-    Template,
-    "./project/template-contract/out/debug/template-contract-abi.json"
-);
+abigen!(Contract(
+    name = "Template",
+    abi = "./project/template-contract/out/debug/template-contract-abi.json"
+),);
 
 const TEMPLATE_CONTRACT_BINARY_PATH: &str = "./out/debug/template-contract.bin";
 const TEMPLATE_CONTRACT_STORAGE_PATH: &str = "./out/debug/template-contract-storage_slots.json";
