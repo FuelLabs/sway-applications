@@ -23,7 +23,6 @@ export async function deployContractBinary(
 
   log('deploy contract');
   const contract = await contractFactory.deployContract({
-    gasLimit: 1_000_000,
     storageSlots: [],
     ...options,
   });
