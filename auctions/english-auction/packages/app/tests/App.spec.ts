@@ -20,8 +20,6 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
 
   // WALLET SETUP
   const walletPage = await context.newPage();
-  // walletPage.on('console', (msg) => console.log(msg));
-  // appPage.on('console', (msg) => console.log(msg));
   await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
   const signupPage = await context.waitForEvent('page', {
     predicate: (page) => page.url().includes('sign-up'),
@@ -88,12 +86,6 @@ async function walletApprove(
   context: BrowserContext,
   _extensionId: string
 ) {
-  // Handle transaction approval in web wallet
-  // const approvePage = await approvePagePromise;
-  // await approvePage.goto(`chrome-extension://${extensionId}/popup.html#/request/transaction`);
-  // const signupPage = await context.waitForEvent('page', {
-  //   predicate: (page) => page.url().includes('sign-up'),
-  // });
   let approvePage = context.pages().find((p) => p.url().includes('/request/transaction'));
   if (!approvePage) {
     approvePage = await context.waitForEvent('page', {
@@ -146,7 +138,6 @@ async function switchWallet(walletPage: Page, extensionId: string, accountName: 
   await walletPage.waitForSelector('[aria-label="Accounts"]');
   const accountsButton = walletPage.locator('[aria-label="Accounts"]');
   await accountsButton.click();
-  // await walletPage.waitForSelector(`[aria-label="${accountName}"]`);
   const accountButton = walletPage.locator(`[aria-label="${accountName}"]`);
   await accountButton.waitFor();
   await accountButton.click();
@@ -163,9 +154,8 @@ test.beforeAll(async ({ context, extensionId }) => {
   await walletSetup(context, extensionId);
 });
 
-// TODO figure out how to test with extension
 test.describe('e2e', () => {
-  // TODO this may require block manipulation etc
+  // TODO this requires block manipulation etc
   test.fixme('Test auction expires', async () => {});
   test('Test auction (Sell: Token, Bid: Token) is canceled', async ({ context, extensionId }) => {
     // ACCOUNT1 CREATES AUCTION
@@ -252,7 +242,6 @@ test.describe('e2e', () => {
 
     await cancelAuctionButton.click();
 
-    // TODO this fails figure out why
     await walletApprove(approvePagePromise, walletPage, context, extensionId);
 
     // Expect transaction to be successful
@@ -261,7 +250,6 @@ test.describe('e2e', () => {
 
     // BOTH ACCOUNTS WITHDRAW
     // ACCOUNT1 withdraws
-    // await walletPage.waitForSelector('text="Withdraw from Auction"');
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').last();
     await withdrawButton.waitFor();
     await expect(withdrawButton).toBeEnabled();
@@ -344,7 +332,6 @@ test.describe('e2e', () => {
       'Error sellers cannot bid on their own auctions. Change your wallet to bid on the auction.'
     );
 
-    // We don't have to add an account in this test bc it was already added in the previous test
     await switchWallet(walletPage, extensionId, ACCOUNT2);
 
     await appPage.reload();
@@ -668,8 +655,6 @@ test.describe('e2e', () => {
     await withdrawTransactionMessage.waitFor();
   });
 
-  // This one is not working
-  // Somehow fails to switch to account 2 even though it is created
   test('Test auction (Sell NFT, Bid Token) is canceled', async ({ context, extensionId }) => {
     // ACCOUNT1 CREATES AUCTION
     const { appPage, walletPage } = getPages(context);
