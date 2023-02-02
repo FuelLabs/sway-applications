@@ -2,7 +2,13 @@ library interface;
 
 dep data_structures;
 
-use data_structures::{PoolInfo, PreviewAddLiquidityInfo, PreviewSwapInfo, RemoveLiquidityInfo};
+use data_structures::{
+    Asset,
+    PoolInfo,
+    PreviewAddLiquidityInfo,
+    PreviewSwapInfo,
+    RemoveLiquidityInfo,
+};
 
 abi AMM {
     /// Initialize the AMM by specifying the exchange contract bytecode root, for security.
@@ -67,14 +73,15 @@ abi Exchange {
     ///
     /// # Arguments
     ///
-    /// - `pair` - unique identifiers of the asset pair, i.e., asset A and asset B
+    /// - `asset_a` - unique identifier of one asset
+    /// - `asset_b` - unique identifier of the other asset
     ///
     /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     /// * When the passed pair describes identical assets
     #[storage(read, write)]
-    fn constructor(pair: (ContractId, ContractId));
+    fn constructor(asset_a: ContractId, asset_b: ContractId);
 
     /// Deposit asset to later add to the liquidity pool or withdraw.
     ///
@@ -82,7 +89,7 @@ abi Exchange {
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     /// * When the `msg_asset_id` does not identify asset A or asset B
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn deposit();
 
     /// Burn liquidity pool asset at current ratio and transfer asset A and asset B to the sender.
@@ -102,7 +109,7 @@ abi Exchange {
     /// * When the current block height is not less than `deadline`
     /// * When the `msg_amount` with function call is 0
     /// * When the minimum amounts for asset A and asset B to receive after burn cannot be satisfied
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo;
 
     /// Swap forwarded amount of forwarded asset for other asset and transfer to sender.
@@ -119,7 +126,7 @@ abi Exchange {
     /// * When the current block height is not less than `deadline`
     /// * When the `msg_amount` with function call is 0
     /// * When `min_output` is provided and is lower than the output amount
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64;
 
     /// Swap forwarded asset for `exact_output_amount` of other asset and transfer to sender.
@@ -139,15 +146,14 @@ abi Exchange {
     /// * When the current block height is not less than ` deadline `
     /// * When the `msg_amount` with function call is 0
     /// * When the `msg_amount` is insufficient for swap
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn swap_exact_output(output: u64, deadline: u64) -> u64;
 
     /// Withdraw coins that have not been added to a liquidity pool yet.
     ///
     /// # Arguments
     ///
-    /// - `amount` - the amount of coins to withdraw
-    /// - `asset` - asset to withdraw
+    /// - `asset` - id and amount of asset to withdraw
     ///
     /// # Reverts
     ///
@@ -155,19 +161,19 @@ abi Exchange {
     /// * When the `msg_asset_id` does not identify asset A or asset B
     /// * When the deposited amount by the sender stored in the contract is insufficient
     #[storage(read, write)]
-    fn withdraw(amount: u64, asset: ContractId);
+    fn withdraw(asset: Asset);
 
     /// Get current balance of the sender for a given asset on the contract.
     ///
     /// # Arguments
     ///
-    /// - `asset` - asset to get balance of
+    /// - `asset_id` - asset to get balance of
     ///
     /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     #[storage(read)]
-    fn balance(asset: ContractId) -> u64;
+    fn balance(asset_id: ContractId) -> u64;
 
     /// Get the pool info of the exchange contract.
     ///
@@ -192,14 +198,13 @@ abi Exchange {
     ///
     /// # Arguments
     ///
-    /// - `amount` - amount of an asset to add
-    /// - `asset` - asset to add
+    /// - `asset` - id and amount of asset to add
     ///
     /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     #[storage(read)]
-    fn preview_add_liquidity(amount: u64, asset: ContractId) -> PreviewAddLiquidityInfo;
+    fn preview_add_liquidity(asset: Asset) -> PreviewAddLiquidityInfo;
 
     /// Get information about the output asset for a `swap_exact_input` without doing the swap operation.
     ///
@@ -209,13 +214,12 @@ abi Exchange {
     ///
     /// # Arguments
     ///
-    /// - `exact_input` - the amount to input
-    /// - `input_asset` - asset to input
+    /// - `exact_input_asset` - the asset to sell
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
     /// * When the `msg_asset_id` does not identify asset A or asset B
     #[storage(read)]
-    fn preview_swap_exact_input(exact_input: u64, input_asset: ContractId) -> PreviewSwapInfo;
+    fn preview_swap_exact_input(exact_input_asset: Asset) -> PreviewSwapInfo;
 
     /// Get information about the input asset for a `swap_exact_output` without doing the swap operation.
     ///
@@ -225,8 +229,7 @@ abi Exchange {
     ///
     /// # Arguments
     ///
-    /// - `exact_output` - the desired amount of other asset to receive after swap
-    /// - `output_asset` - asset to output
+    /// - `exact_output_asset` - the asset to buy
     ///
     /// # Reverts
     ///
@@ -234,5 +237,5 @@ abi Exchange {
     /// * When the `msg_asset_id` does not identify asset A or asset B
     /// * When the `exact_output` is less than the reserve amount of the output asset
     #[storage(read)]
-    fn preview_swap_exact_output(exact_output: u64, output_asset: ContractId) -> PreviewSwapInfo;
+    fn preview_swap_exact_output(exact_output_asset: Asset) -> PreviewSwapInfo;
 }

@@ -3,7 +3,7 @@ use crate::utils::{
     test_helpers::{proposal_transaction, setup},
     ProposalInfo,
 };
-use fuels::prelude::Identity;
+use fuels::types::Identity;
 
 mod success {
     use super::*;

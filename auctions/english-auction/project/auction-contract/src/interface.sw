@@ -35,7 +35,7 @@ abi EnglishAuction {
     /// * When the bid amount is less than the initial price.
     /// * When the bidder's total deposits are not greater than the current bid.
     /// * When the bidder's total deposits are greater than the reserve price.
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn bid(auction_id: u64, bid_asset: AuctionAsset);
 
     /// Cancels the specified auction.
@@ -77,7 +77,7 @@ abi EnglishAuction {
     /// * When the native asset type sent and the `sell_asset` enum do not match.
     /// * When the `initial_price` for NFTs is not one.
     /// * When transfering of the NFT asset to the contract failed.
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn create(bid_asset: AuctionAsset, duration: u64, inital_price: u64, reserve_price: Option<u64>, seller: Identity, sell_asset: AuctionAsset) -> u64;
 
     /// Returns the balance of the user's deposits for the specified auction.

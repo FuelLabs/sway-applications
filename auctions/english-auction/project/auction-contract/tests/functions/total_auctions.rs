@@ -4,7 +4,7 @@ use crate::utils::{
     nft_abi_calls::{approve, mint},
     test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
-use fuels::prelude::Identity;
+use fuels::types::Identity;
 
 mod success {
 
@@ -30,7 +30,7 @@ mod success {
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let sell_nft = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-        let auction_identity = Identity::ContractId(auction_contract_id.into());
+        let auction_identity = Identity::ContractId(auction_contract_id);
 
         mint_and_send_to_address(
             sell_amount * 2,

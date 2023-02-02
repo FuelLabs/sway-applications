@@ -1,0 +1,11 @@
+[project]
+authors = ["Fuel Labs <contact@fuel.sh>"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "swap-exact-input"
+
+[constants]
+AMM_ID = { type = "b256", value = "0x2cf873a3d03f35241a6dd401160b98a29f1bfd5e31911c8d6d43e582e6efcf80" }
+
+[dependencies]
+libraries = { path = "../../libraries" }
