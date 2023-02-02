@@ -4,12 +4,6 @@ import type { TransactionResult } from "fuels";
 import { BLOCK_EXPLORER_URL } from "~/config";
 import type { Maybe } from "~/types";
 
-// export const getBlockExplorerLink = (path: string) => {
-//     return `${BLOCK_EXPLORER_URL}?providerUrl=${encodeURIComponent(
-//         process.env.VITE_FUEL_PROVIDER_URL as string
-//     )}`;
-// };
-
 interface TxLinkProps {
   id?: string;
 }
