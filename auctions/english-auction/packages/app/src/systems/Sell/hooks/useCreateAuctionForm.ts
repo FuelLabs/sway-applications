@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import type { Maybe } from '~/systems/Core';
+import type { Maybe } from '~/types';
 
 export type CreateAuctionFormValues = {
   sellerAddress: string;
