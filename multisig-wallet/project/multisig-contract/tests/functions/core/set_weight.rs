@@ -1,48 +1,55 @@
-// TODO: some tests are disabled because hashing a vector is problematic in the SDK (because of offsets)
-//       and thus the hash produced is not the same
-//       https://github.com/FuelLabs/fuels-rs/issues/775#issuecomment-1408751296
-
 use crate::utils::{
     interface::{
-        core::{constructor, set_weights},
-        info::{nonce, weight_hash},
+        core::{constructor, set_weight},
+        info::{approval_weight, nonce, weight_hash},
     },
     setup::{default_users, setup_env, transfer_signatures, VALID_SIGNER_PK},
 };
-
 use fuels::signers::fuel_crypto::Message;
 
 mod success {
 
     use super::*;
-    use crate::utils::setup::SetWeightsEvent;
+    use crate::utils::setup::SetWeightEvent;
 
-    #[ignore]
     #[tokio::test]
-    async fn sets_weights() {
+    async fn sets_weight() {
         let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        let mut users = default_users();
+        let users = default_users();
+        let mut user = users.get(0).unwrap().clone();
 
         constructor(&deployer.contract, users.clone()).await;
 
-        users[0].weight += 1;
-        users[1].weight -= 1;
+        user.weight += 1;
 
         let initial_nonce = nonce(&deployer.contract).await.value;
-        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, users.clone())
+        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, user.clone())
             .await
             .value
             .0;
         let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        let response = set_weights(&deployer.contract, None, signatures, users.clone()).await;
+        let initial_weight = approval_weight(&deployer.contract, user.address.into())
+            .await
+            .value;
 
-        let log = response.get_logs_with_type::<SetWeightsEvent>().unwrap();
+        let response = set_weight(&deployer.contract, None, signatures, user.clone()).await;
+
+        let final_nonce = nonce(&deployer.contract).await.value;
+        let final_weight = approval_weight(&deployer.contract, user.address.into())
+            .await
+            .value;
+
+        let log = response.get_logs_with_type::<SetWeightEvent>().unwrap();
         let event = log.get(0).unwrap();
 
-        assert_eq!(*event, SetWeightsEvent { users });
+        assert_eq!(*event, SetWeightEvent { user: user.clone() });
+        assert_eq!(initial_nonce, 1);
+        assert_eq!(final_nonce, initial_nonce + 1);
+        assert_ne!(initial_weight, final_weight);
+        assert_eq!(final_weight, user.weight);
     }
 }
 
@@ -57,15 +64,16 @@ mod revert {
 
         let initial_nonce = nonce(&deployer.contract).await.value;
         let users = default_users();
+        let user = users.get(0).unwrap().clone();
 
-        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, users.clone())
+        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, user.clone())
             .await
             .value
             .0;
         let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        set_weights(&deployer.contract, None, signatures, users).await;
+        set_weight(&deployer.contract, None, signatures, user.clone()).await;
     }
 
     #[tokio::test]
@@ -73,15 +81,15 @@ mod revert {
     async fn insufficient_approvals() {
         let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        let mut users = default_users();
+        let users = default_users();
+        let mut user = users.get(0).unwrap().clone();
 
         constructor(&deployer.contract, users.clone()).await;
 
-        users[0].weight += 1;
-        users[1].weight -= 1;
+        user.weight += 1;
 
         let initial_nonce = nonce(&deployer.contract).await.value;
-        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, users.clone())
+        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, user.clone())
             .await
             .value
             .0;
@@ -89,29 +97,29 @@ mod revert {
         let mut signatures = transfer_signatures(private_key, tx_hash).await;
         signatures.pop();
 
-        set_weights(&deployer.contract, None, signatures, users.clone()).await;
+        set_weight(&deployer.contract, None, signatures, user.clone()).await;
     }
 
-    #[ignore]
     #[tokio::test]
     #[should_panic(expected = "TotalWeightCannotBeLessThanThreshold")]
     async fn total_weight_cannot_be_less_than_threshold() {
         let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        let mut users = default_users();
+        let users = default_users();
+        let mut user = users.get(0).unwrap().clone();
 
         constructor(&deployer.contract, users.clone()).await;
 
-        users[0].weight -= 1;
+        user.weight -= 1;
 
         let initial_nonce = nonce(&deployer.contract).await.value;
-        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, users.clone())
+        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, user.clone())
             .await
             .value
             .0;
         let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        set_weights(&deployer.contract, None, signatures, users.clone()).await;
+        set_weight(&deployer.contract, None, signatures, user.clone()).await;
     }
 }

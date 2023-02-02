@@ -49,15 +49,15 @@ pub async fn set_threshold(
         .unwrap()
 }
 
-pub async fn set_weights(
+pub async fn set_weight(
     contract: &MultiSig,
     data: Option<Bits256>,
     signatures_data: Vec<SignatureInfo>,
-    users: Vec<User>,
+    user: User,
 ) -> FuelCallResponse<()> {
     contract
         .methods()
-        .set_weights(data, signatures_data, users)
+        .set_weight(data, signatures_data, user)
         .call()
         .await
         .unwrap()

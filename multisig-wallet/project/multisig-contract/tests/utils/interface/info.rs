@@ -60,11 +60,11 @@ pub async fn weight_hash(
     contract: &MultiSig,
     data: Option<Bits256>,
     nonce: u64,
-    users: Vec<User>,
+    user: User,
 ) -> FuelCallResponse<Bits256> {
     contract
         .methods()
-        .weight_hash(data, nonce, users)
+        .weight_hash(data, nonce, user)
         .call()
         .await
         .unwrap()
