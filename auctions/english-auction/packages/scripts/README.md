@@ -1,8 +1,6 @@
 ## Egnlish Auction Scripts
 
-This package has scripts to help integrate Sway contracts
-with the English Auction application. This makes it easier for developers to
-change contracts while building a nice UI
+This package has scripts to help integrate Sway contracts with the English Auction application. This makes it easier for developers to change contracts while building a user interface.
 
 ### Execute
 
