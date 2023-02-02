@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APPS=("AMM" "DAO" "NFT" "OTC-swap-predicate" "airdrop" "auctions" "escrow" "fundraiser" "multisig-wallet" "name-registry" "oracle", "Vault")
+APPS=("AMM" "DAO" "NFT" "OTC-swap-predicate" "airdrop" "auctions" "escrow" "fundraiser" "multisig-wallet" "name-registry" "oracle", "vault")
 errors=()
 
 # This can probably be cleaner

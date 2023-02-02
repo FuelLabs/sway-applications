@@ -10,6 +10,7 @@ use errors::*;
 use events::{DepositEvent, MintEvent, RedeemEvent, WithdrawEvent};
 use example::*;
 use interface::{Info, Vault};
+use std::context::this_balance;
 use utils::*;
 
 impl Vault for Contract {
@@ -32,7 +33,7 @@ impl Vault for Contract {
 
 impl Info for Contract {
     fn asset() -> ContractId {
-        ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000)
+        ContractId::from(ASSET)
     }
 
     fn convert_to_assets(shares: u64) -> u64 {
@@ -76,6 +77,6 @@ impl Info for Contract {
     }
 
     fn total_assets() -> u64 {
-        0
+        this_balance(ContractId::from(ASSET))
     }
 }
