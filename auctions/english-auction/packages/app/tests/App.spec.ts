@@ -31,7 +31,7 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   await button.click();
 
   /** Copy words to clipboard area */
-  await signupPage.evaluate(`navigator.clipboard.writeText('${WORDS}')`);
+  await signupPage.evaluate(`navigator.clipboard.writeText('${MNEMONIC}')`);
 
   const pasteButton = signupPage.locator('button').getByText('Paste');
   await pasteButton.click();
