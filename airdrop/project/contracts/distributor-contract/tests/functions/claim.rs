@@ -9,10 +9,6 @@ mod success {
 
     use super::*;
 
-    // NOTE: This test is ignored as it uses the Fuel-Merkle crate. There is currently an
-    // incompatability with the Fuel-Merkle crate and the Sway-Libs Merkle Proof library.
-    // The issue can be tracked here: https://github.com/FuelLabs/sway/issues/2594
-    #[ignore]
     #[tokio::test]
     async fn claims() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
@@ -310,10 +306,6 @@ mod revert {
         .await;
     }
 
-    // NOTE: This test is ignored as it uses the Fuel-Merkle crate. There is currently an
-    // incompatability with the Fuel-Merkle crate and the Sway-Libs Merkle Proof library.
-    // The issue can be tracked here: https://github.com/FuelLabs/sway/issues/2594
-    #[ignore]
     #[tokio::test]
     #[should_panic(expected = "UserAlreadyClaimed")]
     async fn when_claim_twice() {
@@ -355,8 +347,6 @@ mod revert {
         .await;
     }
 
-    // TODO: This test will be removed and replaced by `panics_when_claim_twice()` when
-    // https://github.com/FuelLabs/sway/issues/2594 is resolved
     #[tokio::test]
     #[should_panic(expected = "UserAlreadyClaimed")]
     async fn when_claim_twice_manual_tree() {
@@ -416,10 +406,6 @@ mod revert {
         .await;
     }
 
-    // NOTE: This test is ignored as it uses the Fuel-Merkle crate. There is currently an
-    // incompatability with the Fuel-Merkle crate and the Sway-Libs Merkle Proof library.
-    // The issue can be tracked here: https://github.com/FuelLabs/sway/issues/2594
-    #[ignore]
     #[tokio::test]
     #[should_panic(expected = "MerkleProofFailed")]
     async fn when_failed_merkle_verification() {
@@ -451,8 +437,6 @@ mod revert {
         .await;
     }
 
-    // TODO: This test will be removed and replaced by `panics_when_failed_merkle_verification()` when
-    // https://github.com/FuelLabs/sway/issues/2594 is resolved
     #[tokio::test]
     #[should_panic(expected = "MerkleProofFailed")]
     async fn when_failed_merkle_verification_manual_tree() {
