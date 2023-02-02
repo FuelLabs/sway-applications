@@ -7,14 +7,17 @@ Table of Contents
     - [`constructor()`](#constructor)
     - [`execute_transaction()`](#execute_transaction)
     - [`set_threshold()`](#set_threshold)
+    - [`set_weight()`](#set_weight)
     - [`transfer()`](#transfer)
   - [State Checks](#state-checks)
+    - [`approval_weight()`](#approval_weight)
     - [`balance()`](#balance)
     - [`nonce()`](#nonce)
     - [`threshold()`](#threshold)
   - [Utilities](#utilities)
     - [`transaction_hash()`](#transaction_hash)
-    - [`update_hash()`](#update_hash)
+    - [`threshold_hash()`](#threshold_hash)
+    - [`weight_hash()`](#weight_hash)
   - [Sequence Diagram](#sequence-diagram)
 
 # Overview
@@ -43,9 +46,7 @@ If you are interested in a functional overview then this is the section for you.
    2. Requires the config time constant `THRESHOLD`; the number of approvals required for a transaction to occur.
       1. If the `THRESHOLD` is not 0.
    3. Requires the `users`; the information about the owners of the multisig
-      1. If none of the owners have the 0th address (0x00000...).
-      2. If none of the owners are set to have an approval weighting (number of approvals per owner) of 0.
-      3. If the sum of the owners' approval weightings is a value larger than the `threshold` parameter. This prevents the contract being setup when the owners can never submit enough approvals to allow a transaction.
+      1. If the sum of the owners' approval weightings is a value larger than the `threshold` parameter. This prevents the contract being setup when the owners can never submit enough approvals to allow a transaction.
 
 ### `execute_transaction()`
 
@@ -65,10 +66,20 @@ If you are interested in a functional overview then this is the section for you.
 1. Changes the threshold required for execution of transactions.
 2. Reverts when:
    1. The constructor has not been called.
-   2. When the new threshold is greater than the total weight of the owners.
-   3. Signature recovery failed.
-   4. Recovered addresses are not in ascending order.
-   5. The number of approvals does not meet the threshold
+   2. The new threshold is zero.
+   3. The new threshold is greater than the total weight of the owners.
+   4. Signature recovery failed.
+   5. Recovered addresses are not in ascending order.
+   6. The number of approvals does not meet the threshold.
+
+### `set_weight()`
+
+1. Sets the weight of a user which may be able to vote on the execution of transactions.
+2. Reverts when:
+   1. The constructor has not been called.
+   2. Signature recovery failed.
+   3. The number of approvals does not meet the threshold.
+   4. The new total weighting is less than the threshold.
 
 ### `transfer()`
 
@@ -85,6 +96,10 @@ If you are interested in a functional overview then this is the section for you.
       1. If the contract owns enough of the asset to be transferred.
 
 ## State Checks
+
+### `approval_weight()`
+
+1. Returns the approval weight of a user.
 
 ### `balance()`
 
@@ -109,12 +124,13 @@ If you are interested in a functional overview then this is the section for you.
    3. Requires `to`; The recipient of the transaction.
    4. Requires `value`; The value sent in the transaction.
 
-### `update_hash()`
+### `threshold_hash()`
 
-1. Creates a hash which is used to make updates to the state of the contract
-   1. Requires `data`; The data field of the transaction.
-   2. Requires `nonce`; The nonce field of the transaction.
-2. Exists for the purpose of UX i.e. updating the state of the contract does not require the user to enter a `to` or `value`
+1. Returns the hash of a transaction used to change the threshold for execution.
+
+### `weight_hash()`
+
+1. Returns the hash of a transaction used to change the weight of a user.
 
 ## Sequence Diagram
 

@@ -1,4 +1,8 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::ContractId};
+use fuels::{
+    contract::call_response::FuelCallResponse,
+    prelude::{Bits256, Identity},
+    tx::ContractId,
+};
 
 use crate::utils::setup::{MultiSig, SignatureInfo, User};
 
@@ -33,14 +37,27 @@ pub async fn execute_transaction(
 
 pub async fn set_threshold(
     contract: &MultiSig,
-    data: Bits256,
-    nonce: u64,
+    data: Option<Bits256>,
     signatures_data: Vec<SignatureInfo>,
     threshold: u64,
 ) -> FuelCallResponse<()> {
     contract
         .methods()
-        .set_threshold(data, nonce, signatures_data, threshold)
+        .set_threshold(data, signatures_data, threshold)
+        .call()
+        .await
+        .unwrap()
+}
+
+pub async fn set_weight(
+    contract: &MultiSig,
+    data: Option<Bits256>,
+    signatures_data: Vec<SignatureInfo>,
+    user: User,
+) -> FuelCallResponse<()> {
+    contract
+        .methods()
+        .set_weight(data, signatures_data, user)
         .call()
         .await
         .unwrap()

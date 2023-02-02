@@ -11,6 +11,8 @@ mod success {
     async fn setup_with_constructor() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
+        assert_eq!(nonce(&deployer.contract).await.value, 0);
+
         constructor(&deployer.contract, default_users()).await;
 
         assert_eq!(nonce(&deployer.contract).await.value, 1);
@@ -20,8 +22,6 @@ mod success {
 mod revert {
 
     use super::*;
-    use crate::utils::setup::User;
-    use fuels::prelude::Bits256;
 
     #[tokio::test]
     #[should_panic(expected = "CannotReinitialize")]
@@ -32,48 +32,14 @@ mod revert {
         constructor(&deployer.contract, default_users()).await;
     }
 
-    #[tokio::test]
     #[ignore]
+    #[tokio::test]
     #[should_panic(expected = "ThresholdCannotBeZero")]
     async fn threshold_cannot_be_zero() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        // TODO: how to inject a different config time constant value to change the THRESHOLD?
+        // TODO: Inject a different config time constant value to change the THRESHOLD when SDK supports
         constructor(&deployer.contract, default_users()).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "AddressCannotBeZero")]
-    async fn address_cannot_be_zero() {
-        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
-
-        let mut users = default_users();
-        users[0] = User {
-            address: Bits256::from_hex_str(
-                "0x0000000000000000000000000000000000000000000000000000000000000000",
-            )
-            .unwrap(),
-            weight: 3,
-        };
-
-        constructor(&deployer.contract, users).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "WeightingCannotBeZero")]
-    async fn weighting_cannot_be_zero() {
-        let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
-
-        let mut users = default_users();
-        users[0] = User {
-            address: Bits256::from_hex_str(
-                "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
-            )
-            .unwrap(),
-            weight: 0,
-        };
-
-        constructor(&deployer.contract, users).await;
     }
 
     #[tokio::test]
