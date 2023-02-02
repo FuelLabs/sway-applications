@@ -8,17 +8,8 @@ export const useWallet = () => {
 
   if (!fuel) toast.error('Error fuelWeb3 instance is not defined');
 
-  // useEffect(() => {
-  //   // TODO move this somewhere where it is not called multiple times
-  //   // We add this event listener a whole bunch
-  //   fuel.on('currentAccount', () => {
-  //     queryClient.invalidateQueries({ queryKey: ['wallet'] });
-  //   });
-
-  //   return () => {
-  //     fuel.off('currentAccount', () => {});
-  //   };
-  // }, []);
+  // TODO figure out how to listen for the fuel.on('currentAccount', ...) event correctly
+  // this small feature can be added in a later pr
 
   const {
     data: wallet,
