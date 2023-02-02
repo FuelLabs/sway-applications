@@ -21,8 +21,8 @@ pub struct SetThresholdEvent {
     threshold: u64,
 }
 
-pub struct SetWeightsEvent {
-    users: Vec<User>,
+pub struct SetWeightEvent {
+    user: User,
 }
 
 pub struct TransferEvent {

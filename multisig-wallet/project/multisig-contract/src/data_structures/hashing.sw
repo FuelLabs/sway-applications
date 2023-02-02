@@ -38,6 +38,6 @@ pub struct Weight {
     data: Option<b256>,
     /// Value used to prevent double spending.
     nonce: u64,
-    /// The users of the multisig, who can sign transactions to add their approval.
-    users: Vec<User>,
+    /// The user of the multisig, who can sign transactions to add their approval.
+    user: User,
 }

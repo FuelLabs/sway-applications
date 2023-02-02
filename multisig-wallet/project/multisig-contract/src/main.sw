@@ -11,7 +11,7 @@ dep interface;
 dep utils;
 
 use errors::{AccessControlError, ExecutionError, InitError};
-use events::{CancelEvent, ExecutedEvent, SetThresholdEvent, SetWeightsEvent, TransferEvent};
+use events::{CancelEvent, ExecutedEvent, SetThresholdEvent, SetWeightEvent, TransferEvent};
 use interface::{Info, MultiSignatureWallet};
 use signatures::SignatureInfo;
 use std::{auth::msg_sender, context::this_balance, logging::log, token::transfer};
@@ -120,47 +120,33 @@ impl MultiSignatureWallet for Contract {
     }
 
     #[storage(read, write)]
-    fn set_weights(
+    fn set_weight(
         data: Option<b256>,
         signatures: Vec<SignatureInfo>,
-        users: Vec<User>,
+        user: User,
     ) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
-        let transaction_hash = hash_weight(data, storage.nonce, users);
+        let transaction_hash = hash_weight(data, storage.nonce, user);
         let approval_count = count_approvals(signatures, transaction_hash);
 
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
-        let mut user_index = 0;
-        let mut positive_weight = 0;  // Approval weight has increased
-        let mut negative_weight = 0;  // Approval weight has decreased
-        while user_index < users.len() {
-            let new_weight = users.get(user_index).unwrap().weight;
-            let current_weight = storage.weighting.get(users.get(user_index).unwrap().address);
+        let current_weight = storage.weighting.get(user.address);
 
-            if current_weight < new_weight {
-                positive_weight += new_weight - current_weight;
-            } else if new_weight < current_weight {
-                negative_weight += current_weight - new_weight;
-            }
-
-            storage.weighting.insert(users.get(user_index).unwrap().address, new_weight);
-
-            user_index += 1;
-        }
-
-        if negative_weight < positive_weight {
-            storage.total_weight += positive_weight - negative_weight;
-        } else if positive_weight < negative_weight {
-            storage.total_weight -= negative_weight - positive_weight;
+        if current_weight < user.weight {
+            storage.total_weight += user.weight - current_weight;
+        } else if user.weight < current_weight {
+            storage.total_weight -= current_weight - user.weight;
         }
 
         require(storage.threshold <= storage.total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
 
+        // DRY, if they set the same weight then they pay the extra `write` operation
+        storage.weighting.insert(user.address, user.weight);
         storage.nonce += 1;
 
-        log(SetWeightsEvent { users })
+        log(SetWeightEvent { user })
     }
 
     #[storage(read, write)]
@@ -219,8 +205,8 @@ impl Info for Contract {
         hash_threshold(data, nonce, threshold)
     }
 
-    fn weight_hash(data: Option<b256>, nonce: u64, users: Vec<User>) -> b256 {
-        hash_weight(data, nonce, users)
+    fn weight_hash(data: Option<b256>, nonce: u64, user: User) -> b256 {
+        hash_weight(data, nonce, user)
     }
 }
 

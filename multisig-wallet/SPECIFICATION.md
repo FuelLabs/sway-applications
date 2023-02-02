@@ -7,7 +7,7 @@ Table of Contents
     - [`constructor()`](#constructor)
     - [`execute_transaction()`](#execute_transaction)
     - [`set_threshold()`](#set_threshold)
-    - [`set_weights()`](#set_weights)
+    - [`set_weight()`](#set_weight)
     - [`transfer()`](#transfer)
   - [State Checks](#state-checks)
     - [`approval_weight()`](#approval_weight)
@@ -72,9 +72,9 @@ If you are interested in a functional overview then this is the section for you.
    5. Recovered addresses are not in ascending order.
    6. The number of approvals does not meet the threshold.
 
-### `set_weights()`
+### `set_weight()`
 
-1. Adds users which are able to vote on the execution of transactions.
+1. Sets the weight of a user which may be able to vote on the execution of transactions.
 2. Reverts when:
    1. The constructor has not been called.
    2. Signature recovery failed.
@@ -130,7 +130,7 @@ If you are interested in a functional overview then this is the section for you.
 
 ### `weight_hash()`
 
-1. Returns the hash of a transaction used to change the weight of users.
+1. Returns the hash of a transaction used to change the weight of a user.
 
 ## Sequence Diagram
 
