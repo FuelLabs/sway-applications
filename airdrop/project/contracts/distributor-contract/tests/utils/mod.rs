@@ -7,14 +7,6 @@ use fuels::{
     programs::call_response::FuelCallResponse,
     types::{Bits256, Identity},
 };
-<<<<<<< HEAD
-=======
-use fuels::{
-    prelude::*,
-    programs::call_response::FuelCallResponse,
-    types::{Bits256, Identity},
-};
->>>>>>> origin/staging-airdrop
 use sha2::{Digest, Sha256};
 
 abigen!(
@@ -66,10 +58,7 @@ pub mod airdrop_distributor_abi_calls {
             .methods()
             .claim(amount, key, num_leaves, proof, to)
             .append_variable_outputs(1)
-<<<<<<< HEAD
             .tx_params(tx_params)
-=======
->>>>>>> origin/staging-airdrop
             .set_contract_ids(&[asset_id.into()])
             .call()
             .await
@@ -233,11 +222,7 @@ pub mod test_helpers {
             let hash_leaf_data: Bytes32 = hasher.finalize().try_into().unwrap();
 
             let mut hasher2 = Sha256::new();
-<<<<<<< HEAD
             hasher2.update(&[LEAF]);
-=======
-            hasher2.update(leaf_u64.to_be_bytes());
->>>>>>> origin/staging-airdrop
             hasher2.update(hash_leaf_data);
             let hash2_leaf: Bytes32 = hasher2.finalize().try_into().unwrap();
 
@@ -248,10 +233,6 @@ pub mod test_helpers {
             }
         }
 
-<<<<<<< HEAD
-=======
-        let node_u64: u64 = 1;
->>>>>>> origin/staging-airdrop
         let mut iterator = 0;
         // Build tree
         for i in 0..height {
@@ -260,11 +241,7 @@ pub mod test_helpers {
             // Create new depth
             while iterator < current_num_leaves {
                 let mut hasher = Sha256::new();
-<<<<<<< HEAD
                 hasher.update(&[NODE]);
-=======
-                hasher.update(node_u64.to_be_bytes());
->>>>>>> origin/staging-airdrop
                 hasher.update(nodes[iterator].hash);
                 hasher.update(nodes[iterator + 1].hash);
                 let hash: Bytes32 = hasher.finalize().try_into().unwrap();
