@@ -5,6 +5,9 @@ pub enum AccessControlError {
 }
 
 pub enum ExecutionError {
+    CallingFunctionsRequiresCalldata: (),
+    CallingFunctionsRequiresSingleValueTypeArg: (),
+    CannotCallFunctionsOnAddresses: (),
     IncorrectSignerOrdering: (),
     InsufficientAssetAmount: (),
     InsufficientApprovals: (),

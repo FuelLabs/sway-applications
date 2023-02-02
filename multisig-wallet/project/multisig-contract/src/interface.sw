@@ -50,8 +50,8 @@ abi MultiSignatureWallet {
     fn execute_transaction(
         asset_id: Option<ContractId>,
         calldata: Option<Vec<u8>>, //Convert to Bytes when SDK supports
-        function_selector: Option<Vec<u8>>, //Convert to Bytes when SDK supports
         forwarded_gas: Option<u64>,
+        function_selector: Option<Vec<u8>>, //Convert to Bytes when SDK supports
         signatures: Vec<SignatureInfo>,
         single_value_type_arg: Option<bool>,
         target: Identity,

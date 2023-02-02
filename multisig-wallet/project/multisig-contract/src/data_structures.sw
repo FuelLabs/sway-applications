@@ -41,14 +41,14 @@ pub struct Transaction {
     value: Option<u64>,
     asset_id: Option<ContractId>,
     target: Identity,
-    function_selector: Option<Bytes>, // Could hash differently to rust as this might be hashing the struct rather than the Bytes.
-                                      // Could attempt to extract internal elements as done in Bytes.sha256
+    function_selector: Option<Bytes>, /// Could hash differently to rust as this might be hashing the struct rather than the Bytes.
+                                      /// Could attempt to extract internal elements as done in Bytes.sha256
+                                      /// Could refactor hashing to convert to Bytes and then use Bytes.sha256
     calldata: Option<Bytes>,
     single_value_type_arg: Option<bool>,
     forwarded_gas: Option<u64>,
 }
 
-// Acts as generic for calculate_hash in ABI
 pub enum TypeToHash {
     Transaction: Transaction,
 }

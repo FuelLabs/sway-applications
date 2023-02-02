@@ -1,8 +1,5 @@
 contract;
 
-// TODO:
-//      - change the "data" in the Tx hashing from b256 to Bytes type when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723.
-//    
 dep data_structures;
 dep errors;
 dep events;
@@ -88,11 +85,11 @@ impl MultiSignatureWallet for Contract {
     }
 
     #[storage(read, write)]
-    fn execute_transaction(
+    fn execute_transaction( // TODO: Convert `Option<Vec<u8>>` to `Option<Bytes>` when SDK supports `Bytes`. https://github.com/FuelLabs/fuels-rs/issues/723.
         asset_id: Option<ContractId>,
-        calldata: Option<Vec<u8>>, //Convert to Bytes when SDK supports
-        function_selector: Option<Vec<u8>>, //Convert to Bytes when SDK supports
+        calldata: Option<Vec<u8>>, 
         forwarded_gas: Option<u64>,
+        function_selector: Option<Vec<u8>>, 
         signatures: Vec<SignatureInfo>,
         single_value_type_arg: Option<bool>,
         target: Identity,
@@ -101,7 +98,6 @@ impl MultiSignatureWallet for Contract {
         require(storage.nonce != 0, InitError::NotInitialized);
 
         if function_selector.is_none() {
-            //transfer
             require(asset_id.is_some(), ExecutionError::TransferRequiresAnAssetId);
             require(value.is_some(), ExecutionError::TransferRequiresAValue);
             let asset_id = asset_id.unwrap();
@@ -110,7 +106,7 @@ impl MultiSignatureWallet for Contract {
             require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
             let transaction_hash = sha256(Transaction {
-                contract_identifier: contract_id(), // Less gas to turn into a constant?
+                contract_identifier: contract_id(),
                 nonce: storage.nonce,
                 value: Option::Some(value),
                 asset_id: Option::Some(asset_id),
@@ -140,32 +136,16 @@ impl MultiSignatureWallet for Contract {
                 value,
             });
         } else if function_selector.is_some() {
-
-            //call
-            /*
-            CAUSE OF:
-            Internal compiler error: Verification failed: Store value and pointer type mismatch
-            WAS:
-            let target_contract_id = match target {
-                Identity::Address => {
-                    log(ExecutionError::InsufficientApprovals); // Add Error
-                    revert(FAILED_REQUIRE_SIGNAL)
-                },
-                Identity::ContractId(contract_identifier) => contract_identifier,
-            }
-
-            putting the Identity::Address branch below the Identity::ContractId branch resolves the ICE
-            */
             let target_contract_id = match target {
                 Identity::ContractId(contract_identifier) => contract_identifier,
                 Identity::Address => {
-                    log(ExecutionError::InsufficientApprovals); // Add Error
+                    log(ExecutionError::CannotCallFunctionsOnAddresses);
                     revert(FAILED_REQUIRE_SIGNAL)
                 },
             };
 
-            require(calldata.is_some(), ExecutionError::InsufficientApprovals);  // Add Error
-            require(single_value_type_arg.is_some(), ExecutionError::InsufficientApprovals);  // Add Error
+            require(calldata.is_some(), ExecutionError::CallingFunctionsRequiresCalldata);
+            require(single_value_type_arg.is_some(), ExecutionError::CallingFunctionsRequiresSingleValueTypeArg);
             let function_selector = Bytes::from_vec_u8(function_selector.unwrap());
             let calldata = Bytes::from_vec_u8(calldata.unwrap());
             let single_value_type_arg = single_value_type_arg.unwrap();
@@ -225,14 +205,13 @@ impl Info for Contract {
         storage.threshold
     }
 
-    /// Currently won't work for the Transaction type, use calculate_transaction_hash instead
-    fn calculate_hash(type_to_hash: TypeToHash) -> b256 {
+    fn calculate_hash(type_to_hash: TypeToHash) -> b256 { // Currently won't work for the `Transaction` type as the SDK doesn't support `Bytes` (https://github.com/FuelLabs/fuels-rs/issues/723), 
+                                                          // to hash `Transaction` use `calculate_transaction_hash` instead.
         sha256(type_to_hash)
     }
 
-    /// Needed for hashing the Transaction type, as Bytes are not supported by SDK, and Vectors as fields in a struct are not supported by the SDK
-    /// Once Bytes are supported in the SDK, this can be deprecated and calculate_hash can be used for hashing the Transaction type
-    fn calculate_transaction_hash(
+    fn calculate_transaction_hash( // Needed for hashing the `Transaction` type, as `Bytes are not supported by SDK`, and Vectors as fields in a struct are not supported by the SDK.
+                                   // Once `Bytes` are supported in the SDK, this can be deprecated and calculate_hash can be used for hashing the `Transaction` type.
         contract_identifier: ContractId,
         nonce: u64,
         value: Option<u64>,
