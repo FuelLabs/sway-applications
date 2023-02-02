@@ -87,9 +87,9 @@ impl MultiSignatureWallet for Contract {
     #[storage(read, write)]
     fn execute_transaction( // TODO: Convert `Option<Vec<u8>>` to `Option<Bytes>` when SDK supports `Bytes`. https://github.com/FuelLabs/fuels-rs/issues/723.
         asset_id: Option<ContractId>,
-        calldata: Option<Vec<u8>>, 
+        calldata: Option<Vec<u8>>,
         forwarded_gas: Option<u64>,
-        function_selector: Option<Vec<u8>>, 
+        function_selector: Option<Vec<u8>>,
         signatures: Vec<SignatureInfo>,
         single_value_type_arg: Option<bool>,
         target: Identity,
@@ -183,10 +183,11 @@ impl MultiSignatureWallet for Contract {
                 call_params,
                 nonce: transaction_nonce,
                 target_contract_id,
-                function_selector,
-                calldata,
+                function_selector: function_selector.into_vec_u8(),
+                calldata: calldata.into_vec_u8(),
             });
         }
+        
     }
 }
 

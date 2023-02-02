@@ -2,7 +2,7 @@ library interface;
 
 dep data_structures;
 
-use data_structures::{SignatureInfo, User, TypeToHash};
+use data_structures::{SignatureInfo, TypeToHash, User};
 
 abi MultiSignatureWallet {
     /// Cancel the next transaction by spending the current nonce.
@@ -77,14 +77,5 @@ abi Info {
 
     fn calculate_hash(type_to_hash: TypeToHash) -> b256;
 
-    fn calculate_transaction_hash(
-        contract_identifier: ContractId,
-        nonce: u64,
-        value: Option<u64>,
-        asset_id: Option<ContractId>,
-        target: Identity,
-        function_selector: Option<Vec<u8>>,
-        calldata: Option<Vec<u8>>,
-        single_value_type_arg: Option<bool>,
-        forwarded_gas: Option<u64>,) -> b256;
+    fn calculate_transaction_hash(contract_identifier: ContractId, nonce: u64, value: Option<u64>, asset_id: Option<ContractId>, target: Identity, function_selector: Option<Vec<u8>>, calldata: Option<Vec<u8>>, single_value_type_arg: Option<bool>, forwarded_gas: Option<u64>) -> b256;
 }
