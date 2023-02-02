@@ -3,7 +3,7 @@ import type { BrowserContext, Page } from '@playwright/test';
 
 import { test, expect } from './fixtures';
 
-const WORDS = 'demand fashion unaware upgrade upon heart bright august panel kangaroo want gaze';
+const MNEMONIC = 'demand fashion unaware upgrade upon heart bright august panel kangaroo want gaze';
 const WALLET_PASSWORD = '123123123';
 const ACCOUNT1 = 'Account 1';
 const ACCOUNT2 = 'Account 2';
