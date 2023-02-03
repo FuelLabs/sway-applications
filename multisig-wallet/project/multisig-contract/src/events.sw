@@ -12,7 +12,7 @@ pub struct CallEvent {
     nonce: u64,
     target_contract_id: ContractId,
     function_selector: Vec<u8>, // TODO: Convert `Vec<u8>` to `Bytes` when SDK supports `Bytes`. https://github.com/FuelLabs/fuels-rs/issues/723.
-    calldata: Vec<u8>, // TODO: Convert `Vec<u8>` to `Bytes` when SDK supports `Bytes`. https://github.com/FuelLabs/fuels-rs/issues/723.
+    calldata: Vec<u8>,
 }
 
 pub struct SetThresholdEvent {
