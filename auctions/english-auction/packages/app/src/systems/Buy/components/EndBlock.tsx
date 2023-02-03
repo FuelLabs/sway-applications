@@ -11,7 +11,6 @@ interface EndBlockProps {
 }
 
 export const EndBlock = ({ endBlock, onChange }: EndBlockProps) => {
-  // const [curBlocksAway, setCurBlocksAway] = useState<BN>();
   const [endText, setEndText] = useState<string>("");
   const { latestBlockHeight, isLoading, isError } = useLatestBlockHeight();
 
