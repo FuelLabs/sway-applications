@@ -1,4 +1,7 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*, tx::ContractId};
+use fuels::{
+    programs::call_response::FuelCallResponse,
+    types::{ContractId, Identity},
+};
 
 use crate::utils::setup::{MultiSig, SignatureInfo, User};
 
@@ -17,46 +20,27 @@ pub async fn constructor(contract: &MultiSig, users: Vec<User>) -> FuelCallRespo
 
 pub async fn execute_transaction(
     contract: &MultiSig,
-    to: Identity,
-    value: u64,
-    data: Bits256,
-    signatures_data: Vec<SignatureInfo>,
+    asset_id: Option<ContractId>,
+    calldata: Option<Vec<u8>>,
+    forwarded_gas: Option<u64>,
+    function_selector: Option<Vec<u8>>,
+    signatures: Vec<SignatureInfo>,
+    single_value_type_arg: Option<bool>,
+    target: Identity,
+    value: Option<u64>,
 ) -> FuelCallResponse<()> {
     contract
         .methods()
-        .execute_transaction(data, signatures_data, to, value)
-        .append_variable_outputs(1)
-        .call()
-        .await
-        .unwrap()
-}
-
-pub async fn set_threshold(
-    contract: &MultiSig,
-    data: Bits256,
-    nonce: u64,
-    signatures_data: Vec<SignatureInfo>,
-    threshold: u64,
-) -> FuelCallResponse<()> {
-    contract
-        .methods()
-        .set_threshold(data, nonce, signatures_data, threshold)
-        .call()
-        .await
-        .unwrap()
-}
-
-pub async fn transfer(
-    contract: &MultiSig,
-    to: Identity,
-    asset_id: ContractId,
-    value: u64,
-    data: Bits256,
-    signatures_data: Vec<SignatureInfo>,
-) -> FuelCallResponse<()> {
-    contract
-        .methods()
-        .transfer(asset_id, data, signatures_data, to, value)
+        .execute_transaction(
+            asset_id,
+            calldata,
+            forwarded_gas,
+            function_selector,
+            signatures,
+            single_value_type_arg,
+            target,
+            value,
+        )
         .append_variable_outputs(1)
         .call()
         .await

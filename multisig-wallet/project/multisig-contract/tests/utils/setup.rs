@@ -2,15 +2,16 @@ use fuels::{
     prelude::*,
     signers::fuel_crypto::{Message, SecretKey, Signature},
     tx::{Bytes32, Bytes64},
+    types::{Bits256, Identity, B512},
 };
 
 use rand::{rngs::StdRng, Rng, SeedableRng};
 use sha3::{Digest, Keccak256};
 
-abigen!(
-    MultiSig,
-    "./project/multisig-contract/out/debug/multisig-contract-abi.json"
-);
+abigen!(Contract(
+    name = "MultiSig",
+    abi = "./project/multisig-contract/out/debug/multisig-contract-abi.json"
+));
 
 // Test-only private key
 pub const VALID_SIGNER_PK: &str =
