@@ -35,15 +35,16 @@ pub struct User {
     weight: u64,
 }
 
+/// Will implement an `into_bytes` for types that will be hashed, so that hashing can be done via Bytes.sha256, as per https://github.com/FuelLabs/sway/issues/3809.
+/// This require From<u64> & From<bool> for Bytes.
+/// This should allow for correct hashing of the Bytes types within Transaction, as well as parity with hashing a Vec<u8> in Rust testing.
 pub struct Transaction {
     contract_identifier: ContractId,
     nonce: u64,
     value: Option<u64>,
     asset_id: Option<ContractId>,
     target: Identity,
-    function_selector: Option<Bytes>,/// Could hash differently to rust as this might be hashing the struct rather than the Bytes.
-                                     /// Could attempt to extract internal elements as done in Bytes.sha256
-                                     /// Could refactor hashing to convert to Bytes and then use Bytes.sha256
+    function_selector: Option<Bytes>,
     calldata: Option<Bytes>,
     single_value_type_arg: Option<bool>,
     forwarded_gas: Option<u64>,
