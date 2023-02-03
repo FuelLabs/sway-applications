@@ -21,7 +21,7 @@ mod revert {
 
     use super::*;
     use crate::utils::setup::User;
-    use fuels::prelude::Bits256;
+    use fuels::types::Bits256;
 
     #[tokio::test]
     #[should_panic(expected = "CannotReinitialize")]
