@@ -33,24 +33,4 @@ Commands:
   help [command]  display help for command
 ```
 
-### Config
-
-```
-{
-  onSuccess?: (event: Event) => void;
-  onFailure?: (err: unknown) => void;
-  env?: {
-    [key: string]: string;
-  };
-  types: {
-    artifacts: string;
-    output: string;
-  };
-  contracts: {
-    name: string;
-    path: string;
-  }[];
-}
-```
-
 See complete [types here](./src/types.ts).
