@@ -1,6 +1,14 @@
-## Egnlish Auction Scripts
+## English Auction Scripts
 
 This package has scripts to help integrate Sway contracts with the English Auction application. This makes it easier for developers to change contracts while building a user interface.
+
+To use this package you must install the dependencies from the root of the monorepo i.e `/path/to/english-auction/`.
+
+```bash
+pnpm install
+```
+
+Also you must be in the repo root to run the package commands.
 
 ### Execute
 
