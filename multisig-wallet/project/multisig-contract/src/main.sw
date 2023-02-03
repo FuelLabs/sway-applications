@@ -187,7 +187,6 @@ impl MultiSignatureWallet for Contract {
                 calldata: calldata.into_vec_u8(),
             });
         }
-        
     }
 }
 
@@ -206,12 +205,12 @@ impl Info for Contract {
         storage.threshold
     }
 
-    fn calculate_hash(type_to_hash: TypeToHash) -> b256 { // Currently won't work for the `Transaction` type as the SDK doesn't support `Bytes` (https://github.com/FuelLabs/fuels-rs/issues/723), 
+    fn compute_hash(type_to_hash: TypeToHash) -> b256 { // Currently won't work for the `Transaction` type as the SDK doesn't support `Bytes` (https://github.com/FuelLabs/fuels-rs/issues/723), 
                                                           // to hash `Transaction` use `calculate_transaction_hash` instead.
         sha256(type_to_hash)
     }
 
-    fn calculate_transaction_hash( // Needed for hashing the `Transaction` type, as `Bytes are not supported by SDK`, and Vectors as fields in a struct are not supported by the SDK.
+    fn compute_transaction_hash( // Needed for hashing the `Transaction` type, as `Bytes are not supported by SDK`, and Vectors as fields in a struct are not supported by the SDK.
                                    // Once `Bytes` are supported in the SDK, this can be deprecated and calculate_hash can be used for hashing the `Transaction` type.
         contract_identifier: ContractId,
         nonce: u64,

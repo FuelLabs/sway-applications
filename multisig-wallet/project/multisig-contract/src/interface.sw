@@ -75,7 +75,7 @@ abi Info {
     #[storage(read)]
     fn threshold() -> u64;
 
-    fn calculate_hash(type_to_hash: TypeToHash) -> b256;
+    fn compute_hash(type_to_hash: TypeToHash) -> b256;
 
-    fn calculate_transaction_hash(contract_identifier: ContractId, nonce: u64, value: Option<u64>, asset_id: Option<ContractId>, target: Identity, function_selector: Option<Vec<u8>>, calldata: Option<Vec<u8>>, single_value_type_arg: Option<bool>, forwarded_gas: Option<u64>) -> b256;
+    fn compute_transaction_hash(contract_identifier: ContractId, nonce: u64, value: Option<u64>, asset_id: Option<ContractId>, target: Identity, function_selector: Option<Vec<u8>>, calldata: Option<Vec<u8>>, single_value_type_arg: Option<bool>, forwarded_gas: Option<u64>) -> b256;
 }
