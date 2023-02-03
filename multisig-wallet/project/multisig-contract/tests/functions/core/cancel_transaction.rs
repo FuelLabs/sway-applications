@@ -10,7 +10,7 @@ mod success {
 
     use super::*;
     use crate::utils::setup::CancelEvent;
-    use fuels::prelude::Bits256;
+    use fuels::types::Bits256;
 
     #[tokio::test]
     async fn cancels_transaction() {
