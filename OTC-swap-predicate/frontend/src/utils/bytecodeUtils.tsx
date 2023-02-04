@@ -34,9 +34,3 @@ function chunkString (str: string, len: number) {
 
     return r;
   }
-
-
-export function getTokens(predicateAddress: string): string[] {
-    // Get all the tokens belonging to the predicate address
-    return ["TODO", "get tokens", "at this address"];
-}

@@ -1,6 +1,7 @@
 import {  useState, useRef } from "react";
 import { Wallet } from "fuels";
-import { buildBytecode, calculateRoot, getTokens } from "./utils/bytecodeUtils";
+import { buildBytecode, calculateRoot } from "./utils/bytecodeUtils";
+import { getTokenBalance } from "./utils/predicateBalance";
 import {validateAddress, validateAmount, parseAmount} from "./utils/inputValidation";
 import "./App.css";
 
@@ -48,7 +49,7 @@ function App() {
     setpredicateAddress(predicateAddress);
 
     // Set the tokens found at the predicate address
-    let tokens = getTokens(predicateAddress);
+    let tokens = getTokenBalance(predicateAddress);
     setTokensFound(tokens);
 
 

@@ -2,7 +2,7 @@ import { Wallet } from "fuels";
 
 
 
-export function getTokenBalance(address: string)  {
+export function getTokenBalance(address: string) : string[] {
 // The address of the contract deployed the Fuel testnet
 const CONTRACT_ID =
   "0x3edb96c23766b8504caaff042994efa18460e7ba27f60191394a6bcf5be8d7d8";
@@ -19,7 +19,7 @@ const wallet = Wallet.fromPrivateKey(
 );
 
 
-// TODO return all the tokens belongng to the provided address
+return ["TODO", "get tokens", "at this address"];
 
 }
 
