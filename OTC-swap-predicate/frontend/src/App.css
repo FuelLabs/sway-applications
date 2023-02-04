@@ -30,7 +30,7 @@
   border-radius: 5px;
   padding: 10px;
   margin: 10px;
-  font-size: 20px;
+  font-size: calc(12px + 0.8vmin);
   cursor: pointer;
 }
 

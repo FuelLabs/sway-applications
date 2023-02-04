@@ -7,60 +7,64 @@ import "./App.css";
 
 
 function App() {
+
+  // Set the provider address used for balance queries and transactions
+  const providerAddress = "https://node-beta-2.fuel.network/graphql"
+
+  // State contains the calculated predicate address and any tokens belonging to it
   const [predicateAddress, setpredicateAddress] = useState("");
   const [tokensFound, setTokensFound] = useState([{"asset_id": "", "amount": ""}]);
 
+  // Convenience function to clear state
+  function clearResults() {
+    setpredicateAddress("");
+    setTokensFound([]);
+  }
+
+  // References to the input fields
   const receiverRef = useRef<HTMLInputElement>(null);
   const askTokenRef = useRef<HTMLInputElement>(null);
   const askAmounRef = useRef<HTMLInputElement>(null);
 
-  // Use offer conditions to create a predicate whose bytecode root corresponds to them
+  // Use provided offer conditions to create a corresponding predicate root (address)
   async function handleGenerate() {
     clearResults();
+
+    // Validate inputs
     if (receiverRef.current == null || askTokenRef.current == null || askAmounRef.current == null) return;
     
     const receiver = receiverRef.current.value;
     const askToken = askTokenRef.current.value;
     const askAmount = askAmounRef.current.value;
 
-    // Validate inputs
+    // TO DO : Make it clear which input was invalid
     if (!validateAddress(receiver) || !validateAddress(askToken)|| !validateAmount(askAmount)) {
       clearResults();
       return;
     }
     
-    // build predicate bytecode
+    // build predicate bytecode, calculate root, and set to state
     let bytecode = buildBytecode(receiver, askToken, parseAmount(askAmount));
-
-    // Calculate predicate address
     let predicateAddress = calculateRoot(bytecode);
-    
-    // Set address to state
     setpredicateAddress(predicateAddress);
 
-    // Set the tokens found at the predicate address
-    let tokens = await getTokenBalance(predicateAddress);
+    // Look for tokens belonging to the predicate address, and set them to state
+    let tokens = await getTokenBalance(predicateAddress, providerAddress);
     setTokensFound(tokens);
 
-    function clearResults() {
-      setpredicateAddress("");
-      setTokensFound([]);
-    }
   }
 
-  // Spend the tokens found at the predicate address
+  // TODO Spend the tokens found at the predicate address
   async function handleTake() {
   }
 
-  // Recover the tokens found at the predicate address (if owner)
+  // TODO Recover the tokens found at the predicate address (if owner)
   async function handleCancel() {
   }
-  
+
 
   return (
-    
     <>
-
     <header className="App-header">
       <h1>OTC Swap</h1>
     </header>
@@ -99,9 +103,6 @@ function App() {
                   <button className="App-button" onClick={handleTake}>Take offer</button>
                   <button className="App-button" onClick={handleCancel}>Cancel offer</button>
                 </div>
-
-                
-
 
               </>
             } 

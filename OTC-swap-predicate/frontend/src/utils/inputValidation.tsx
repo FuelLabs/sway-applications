@@ -1,11 +1,16 @@
+import { Address } from "fuels";
+
+
 export function validateAddress(address: string): boolean {
-    // TODO Actually check it's a valid address
-    return address.length == 66 ? true : false;
+    return Address.fromAddressOrString(address) !== null;
 }
 
+
+// TODO : Amounts should be BigNumbers. Validation and parsing need to account for this
 export function validateAmount(amount: string): boolean {
     // TODO actually check it can be parsed as a number
-    return (parseInt(amount) < 2**64 && parseInt(amount) > 0) ? true : false;
+    let parsed = parseInt(amount);
+    return (parsed < 2**64 && parsed > 0) ? true : false;
 }
 
 export function parseAmount(amount: string): string {
