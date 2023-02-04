@@ -1,14 +1,24 @@
 import { calcRoot } from "@fuel-ts/merkle";
-import { RAW } from "../precompiles/swapPredicatePrecompile";
+import { RAW, OFFSETS } from "../precompiles/swapPredicatePrecompile";
 
+// Read precompiled binary, and substitute receiver, askToken and askAmount
 export function buildBytecode(receiver: string, askToken: string, askAmount: string): string {
-    // Read precompiled binary, and substitute receiver, askToken and askAmount
-    // TO DO : This is horrible. Find way to read .bin directly and do substitutions
-    let first = RAW.slice(0, 3800);
-    let second = RAW.slice(3800+128, 3800+128+48);
-    let third = RAW.slice(3800+128+48+16);
+    
+    // Note: If the order of the values changes in the bytecode, this will break
+    // Addresses are 32 bytes (64 chars), U64 amounts are 8 bytes (16 chars)
+    const BEFORE_ASK_TOKEN = RAW.slice(0, OFFSETS.ASK_TOKEN);
+    const ASK_TO_RECEIVER = RAW.slice(OFFSETS.ASK_TOKEN + 64, OFFSETS.RECEIVER);
+    const RECEIVER_TO_ASK_AMOUNT = RAW.slice(OFFSETS.RECEIVER + 64, OFFSETS.ASK_AMOUNT);
+    const AFTER_ASK_AMOUNT = RAW.slice(OFFSETS.ASK_AMOUNT + 16);
 
-    return first.concat(askToken.slice(2)).concat(receiver.slice(2)).concat(second).concat(askAmount.slice(2)).concat(third);
+    return BEFORE_ASK_TOKEN
+    .concat(askToken.slice(2))
+    .concat(ASK_TO_RECEIVER)
+    .concat(receiver.slice(2))
+    .concat(RECEIVER_TO_ASK_AMOUNT)
+    .concat(askAmount.slice(2))
+    .concat(AFTER_ASK_AMOUNT);
+
 }
 
 
