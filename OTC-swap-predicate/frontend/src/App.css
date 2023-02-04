@@ -35,12 +35,13 @@
 }
 
 .App-address {
-  font-size: calc(6px + 1.5vmin);
+  font-size: 17px;
+  font-family: 'Courier New', monospace;
 }
 
 .App-tokenTable {
   border-collapse: collapse;
   width: 75%;
-  font-size: 20px;
+  font-size: 17px;
   text-align: center;
 }

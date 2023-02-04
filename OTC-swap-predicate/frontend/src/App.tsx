@@ -1,20 +1,10 @@
 import {  useState, useRef } from "react";
-import { Wallet, Address, CoinQuantity, BN } from "fuels";
+import { Address} from "fuels";
 import { buildBytecode, calculateRoot } from "./utils/bytecodeUtils";
 import { getTokenBalance } from "./utils/predicateBalance";
 import {validateAddress, validateAmount, parseAmount} from "./utils/inputValidation";
 import "./App.css";
 
-//the private key from createWallet.js
-const WALLET_SECRET =
-  "0x7b87229cbb3fd7e03e85d95df2be2ab46a2907fcca6ebcc56dc2e34a0abe6cb8";
-
-// Create a Wallet from given secretKey in this case
-// The one we configured at the chainConfig.json
-const wallet = Wallet.fromPrivateKey(
-  WALLET_SECRET,
-  "https://node-beta-2.fuel.network/graphql"
-);
 
 function App() {
   const [predicateAddress, setpredicateAddress] = useState("");
@@ -58,6 +48,14 @@ function App() {
     }
   }
 
+  // Spend the tokens found at the predicate address
+  async function handleTake() {
+  }
+
+  // Recover the tokens found at the predicate address (if owner)
+  async function handleCancel() {
+  }
+  
 
   return (
     
@@ -72,12 +70,12 @@ function App() {
         <p>Ask token</p><input ref={askTokenRef} type="text"/>
         <p>Receiver</p><input ref={receiverRef} type="text"/>
 
-        <button className="App-button" onClick={handleGenerate}>Generate predicate address</button>
+        <button className="App-button" onClick={handleGenerate}>Generate offer address</button>
 
         {/* Only render this part if the predicateAddress has been calculated */}
         {predicateAddress.length > 0 &&
           <>
-            <p>To fund offer, send tokens to :</p>
+            <p>To fund this offer, send tokens to :</p>
             <p className="App-address">{Address.fromAddressOrString(predicateAddress).toString()}</p>
 
             {/* Only render this part if tokens are found */}
@@ -91,11 +89,20 @@ function App() {
                   </tr>
                   {tokensFound.map((token) => (
                     <tr>
-                      <td>{token.asset_id}</td>
+                      <td className="App-address">{token.asset_id}</td>
                       <td>{token.amount}</td>
                     </tr>
                   ))}
                 </table>
+
+                <div>
+                  <button className="App-button" onClick={handleTake}>Take offer</button>
+                  <button className="App-button" onClick={handleCancel}>Cancel offer</button>
+                </div>
+
+                
+
+
               </>
             } 
           </>
