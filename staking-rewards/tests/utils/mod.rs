@@ -113,20 +113,13 @@ pub async fn setup() -> (
 //     (call_response, time)
 // }
 
-// pub async fn earned(
-//     instance: &StakingRewards,
-//     wallet_identity: Identity,
-// ) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().earned(wallet_identity)).await
-// }
+
 
 // pub async fn total_supply(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
 //     get_timestamp_and_call(instance.methods().total_supply()).await
 // }
 
-// pub async fn reward_per_token(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().reward_per_token()).await
-// }
+
 
 // pub async fn get_reward(instance: &StakingRewards) -> (FuelCallResponse<()>, u64) {
 //     get_timestamp_and_call(instance.methods().get_reward().append_variable_outputs(1)).await
@@ -162,12 +155,7 @@ pub async fn setup() -> (
 //     get_timestamp_and_call(instance.methods().last_update_time()).await
 // }
 
-// pub async fn notify_reward_amount(
-//     instance: &StakingRewards,
-//     reward: u64,
-// ) -> (FuelCallResponse<()>, u64) {
-//     get_timestamp_and_call(instance.methods().notify_reward_amount(reward)).await
-// }
+
 
 // pub async fn owner(instance: &StakingRewards) -> (FuelCallResponse<Identity>, u64) {
 //     get_timestamp_and_call(instance.methods().owner()).await
@@ -187,9 +175,7 @@ pub async fn setup() -> (
 //     .await
 // }
 
-// pub async fn reward_per_token_stored(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().reward_per_token_stored()).await
-// }
+
 
 // pub async fn reward_per_token_paid(
 //     instance: &StakingRewards,
