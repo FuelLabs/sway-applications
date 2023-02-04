@@ -73,9 +73,15 @@ function App() {
 
         <button className="App-button" onClick={handleGenerate}>Generate predicate address</button>
 
-        <p>To fund offer, send tokens to :</p>
-        <p className="App-address">{predicateAddress}</p>
-        <p>Tokens already found at address : {tokensFound.map((token) => token.length > 0 ? <li>{token}</li> : "None")}</p>
+        {/* Only render this part if the predicateAddress has been calculated */}
+        {predicateAddress.length > 0 &&
+          <>
+            <p>To fund offer, send tokens to :</p>
+            <p className="App-address">{predicateAddress}</p>
+            <p>Tokens already found at address : {tokensFound.map((token) => token.length > 0 ? <li>{token}</li> : "None")}</p>
+          </>
+        }
+    
       </div>
     </>
 
