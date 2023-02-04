@@ -61,14 +61,19 @@ function App() {
 
   return (
     <>
+
+    <header className="App-header">
+      <h1>OTC Swap</h1>
+    </header>
       <div className="App-main">
         <p>Ask amount</p><input ref={askAmounRef} type="text"/>
         <p>Ask token</p><input ref={askTokenRef} type="text"/>
         <p>Receiver</p><input ref={receiverRef} type="text"/>
 
-        <button onClick={handleGenerate}>Generate</button>
+        <button className="App-button" onClick={handleGenerate}>Generate predicate address</button>
 
-        <p>To fund offer, send tokens to : {predicateAddress}</p>
+        <p>To fund offer, send tokens to :</p>
+        <p className="App-address">{predicateAddress}</p>
         <p>Tokens already found at address : {tokensFound.map((token) => token.length > 0 ? <li>{token}</li> : "None")}</p>
       </div>
     </>

@@ -2,6 +2,16 @@
   text-align: center;
 }
 
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #6ccc72;
+  color: rgb(0, 0, 0);
+
+}
+
 .App-main {
   background-color: #282c34;
   min-height: 100vh;
@@ -11,4 +21,19 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: rgb(255, 255, 255);
+}
+
+.App-button {
+  background-color: #6ccc72;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.App-address {
+  font-size: calc(6px + 1.5vmin);
 }
