@@ -1,5 +1,5 @@
 import {  useState, useRef } from "react";
-import { Wallet } from "fuels";
+import { Wallet, Address, CoinQuantity, BN } from "fuels";
 import { buildBytecode, calculateRoot } from "./utils/bytecodeUtils";
 import { getTokenBalance } from "./utils/predicateBalance";
 import {validateAddress, validateAmount, parseAmount} from "./utils/inputValidation";
@@ -18,7 +18,7 @@ const wallet = Wallet.fromPrivateKey(
 
 function App() {
   const [predicateAddress, setpredicateAddress] = useState("");
-  const [tokensFound, setTokensFound] = useState([""]);
+  const [tokensFound, setTokensFound] = useState([{"asset_id": "", "amount": ""}]);
 
   const receiverRef = useRef<HTMLInputElement>(null);
   const askTokenRef = useRef<HTMLInputElement>(null);
@@ -49,23 +49,24 @@ function App() {
     setpredicateAddress(predicateAddress);
 
     // Set the tokens found at the predicate address
-    let tokens = getTokenBalance(predicateAddress);
+    let tokens = await getTokenBalance(predicateAddress);
     setTokensFound(tokens);
-
 
     function clearResults() {
       setpredicateAddress("");
-      setTokensFound([""]);
+      setTokensFound([]);
     }
   }
 
 
   return (
+    
     <>
 
     <header className="App-header">
       <h1>OTC Swap</h1>
     </header>
+    
       <div className="App-main">
         <p>Ask amount</p><input ref={askAmounRef} type="text"/>
         <p>Ask token</p><input ref={askTokenRef} type="text"/>
@@ -77,8 +78,26 @@ function App() {
         {predicateAddress.length > 0 &&
           <>
             <p>To fund offer, send tokens to :</p>
-            <p className="App-address">{predicateAddress}</p>
-            <p>Tokens already found at address : {tokensFound.map((token) => token.length > 0 ? <li>{token}</li> : "None")}</p>
+            <p className="App-address">{Address.fromAddressOrString(predicateAddress).toString()}</p>
+
+            {/* Only render this part if tokens are found */}
+            {tokensFound.length > 0 &&
+              <>
+                <p>Tokens found at address :</p>
+                <table className="App-tokenTable">
+                  <tr>
+                    <th>Asset ID</th>
+                    <th>Amount</th>
+                  </tr>
+                  {tokensFound.map((token) => (
+                    <tr>
+                      <td>{token.asset_id}</td>
+                      <td>{token.amount}</td>
+                    </tr>
+                  ))}
+                </table>
+              </>
+            } 
           </>
         }
     

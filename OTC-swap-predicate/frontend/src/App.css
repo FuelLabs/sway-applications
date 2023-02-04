@@ -37,3 +37,10 @@
 .App-address {
   font-size: calc(6px + 1.5vmin);
 }
+
+.App-tokenTable {
+  border-collapse: collapse;
+  width: 75%;
+  font-size: 20px;
+  text-align: center;
+}
