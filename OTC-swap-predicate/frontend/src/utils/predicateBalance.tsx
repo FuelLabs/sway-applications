@@ -6,5 +6,7 @@ export async function getTokenBalance(address: string, providerAddress: string) 
     let wallet = new BaseWalletLocked(addressified, providerAddress)
     let coinQuantities = await wallet.getBalances();
 
-    return coinQuantities.map((coinQuantity) => ({"asset_id": coinQuantity.assetId, "amount": coinQuantity.amount.toString()}));
+    return coinQuantities.map((coinQuantity) => (
+        {"asset_id": coinQuantity.assetId, "amount": coinQuantity.amount.toString()}
+    ));
 }
