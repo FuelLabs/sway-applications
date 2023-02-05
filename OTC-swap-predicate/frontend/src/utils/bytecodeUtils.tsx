@@ -1,18 +1,16 @@
 import { calcRoot } from "@fuel-ts/merkle";
-import { RAW, OFFSETS } from "../precompiles/swapPredicatePrecompile";
+import { PRECOMPILE } from "../precompiles/swapPredicatePrecompile";
 
 // Read precompiled binary, and substitute receiver, askToken and askAmount
 export function buildBytecode(receiver: string, askToken: string, askAmount: string): string {
     
     // Addresses are 32 bytes (64 chars), U64 amounts are 8 bytes (16 chars)
-    let bytecode = RAW;
-    bytecode = bytecode.slice(0, OFFSETS.ASK_TOKEN).concat(askToken.slice(2)).concat(bytecode.slice(OFFSETS.ASK_TOKEN + 64));
-    bytecode = bytecode.slice(0, OFFSETS.RECEIVER).concat(receiver.slice(2)).concat(bytecode.slice(OFFSETS.RECEIVER + 64));
-    bytecode = bytecode.slice(0, OFFSETS.ASK_AMOUNT).concat(askAmount.slice(2)).concat(bytecode.slice(OFFSETS.ASK_AMOUNT + 16));
+    let bytecode = PRECOMPILE.BYTECODE;
+    bytecode = bytecode.slice(0, PRECOMPILE.ASK_TOKEN_OFFSET).concat(askToken.slice(2)).concat(bytecode.slice(PRECOMPILE.ASK_TOKEN_OFFSET + 64));
+    bytecode = bytecode.slice(0, PRECOMPILE.RECEIVER_OFFSET).concat(receiver.slice(2)).concat(bytecode.slice(PRECOMPILE.RECEIVER_OFFSET + 64));
+    bytecode = bytecode.slice(0, PRECOMPILE.ASK_AMOUNT_OFFSET).concat(askAmount.slice(2)).concat(bytecode.slice(PRECOMPILE.ASK_AMOUNT_OFFSET + 16));
 
     return bytecode;
-
-
 }
 
 
