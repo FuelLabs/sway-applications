@@ -4,8 +4,8 @@ export const RAW = "9000000447000000000000000000076C5DFCC00110FFF3001A5850009100
 
 
 // NOTE: These offsets are specific to the precompiled bytecode `RAW`
-// If the code is changed (or recompiled with a different forc version)
-// These offsets will need to be recalculated
+// If the precompile is changed (new version of predicate, new compiler version, etc.),
+// these offsets will need to be recalculated
 export const OFFSETS = {
     "ASK_TOKEN": 3800,
     "RECEIVER": 3864,

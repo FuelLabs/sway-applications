@@ -22,13 +22,14 @@ export function calculateRoot(bytecode: string): string {
     return calcRoot(chunks);
 }
 
+// Break a string into an array of substrings of a given length
 function chunkString (str: string, len: number) {
     const size = Math.ceil(str.length/len);
     const r = Array(size);
     let offset = 0;
     
     for (let i = 0; i < size; i++) {
-      r[i] = "0x".concat(str.substr(offset, len));
+      r[i] = "0x".concat(str.substring(offset, offset + len));
       offset += len;
     }
 
