@@ -122,17 +122,9 @@ pub async fn setup() -> (
 
 
 
-// pub async fn reward_rate(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().reward_rate()).await
-// }
 
-// pub async fn reward_duration(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().rewards_duration()).await
-// }
 
-// pub async fn get_reward_for_duration(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().get_reward_for_duration()).await
-// }
+
 
 // pub async fn period_finish(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
 //     get_timestamp_and_call(instance.methods().period_finish()).await

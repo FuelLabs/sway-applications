@@ -62,3 +62,15 @@ pub async fn get_reward(instance: &StakingRewards) -> FuelCallResponse<()> {
 pub async fn exit(instance: &StakingRewards) -> FuelCallResponse<()> {
     instance.methods().exit().append_variable_outputs(1).call().await.unwrap()
 }
+
+pub async fn reward_rate(instance: &StakingRewards) -> u64 {
+    instance.methods().reward_rate().call().await.unwrap().value
+}
+
+pub async fn reward_duration(instance: &StakingRewards) -> u64 {
+    instance.methods().rewards_duration().call().await.unwrap().value
+}
+
+pub async fn get_reward_for_duration(instance: &StakingRewards) -> u64 {
+    instance.methods().get_reward_for_duration().call().await.unwrap().value
+}
