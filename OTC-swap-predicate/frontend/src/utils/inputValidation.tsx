@@ -3,7 +3,7 @@ import { Address } from "fuels";
 
 export function validateAddress(addressInput: HTMLInputElement | null): string | null {
 
-    // If input element is not initialized, empty, or cannot be parsed, return null
+    // If input element is not initialized, empty, or cannot be parsed as an address, return null
     if (addressInput === null) {
         return null;
     }

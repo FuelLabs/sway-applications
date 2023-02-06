@@ -20,6 +20,7 @@ export function calculateRoot(bytecode: string): string {
     return calcRoot(chunks);
 }
 
+
 // Break a string into an array of substrings of a given length
 function chunkString (str: string, len: number) {
     const size = Math.ceil(str.length/len);
@@ -31,9 +32,8 @@ function chunkString (str: string, len: number) {
       offset += len;
     }
 
-    if (r[r.length - 1].length === 10) {
-        r[r.length - 1] = r[r.length - 1].concat("00000000");
-    }
+    // If final leaf is not 8 bytes, pad with 0s
+    r[r.length - 1] = r[r.length - 1].padEnd(18, "0");
 
     return r;
   }
