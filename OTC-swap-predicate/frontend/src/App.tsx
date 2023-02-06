@@ -38,6 +38,7 @@ function App() {
     let askTokenValid = validateAddress(askTokenRef.current);
     let askAmountValid = validateAmount(askAmountRef.current);
 
+
     // TODO : Provide feedback to user on which input(s) were invalid
     if (receiverValid === null || askTokenValid === null|| askAmountValid === null) {
       clearResults();
