@@ -13,7 +13,7 @@ use fuels::{prelude::*, signers::provider};
 use utils::{setup, ONE};
 
 // Until timestamp supported in Sways of each action must be specified. Contract is deployed at t=0
-const INITIAL_STAKE: u64 = 10 * ONE;
+
 
 // #[tokio::test]
 // async fn constructed() {
@@ -24,65 +24,14 @@ const INITIAL_STAKE: u64 = 10 * ONE;
 //     assert_eq!(wallet_identity, owner_identity.0.value);
 // }
 
-// #[tokio::test]
-// async fn stake_tokens() {
-//     let (staking_contract, _id, wallet, _wallet2, _inittimestamp) = setup().await;
-
-//     // User balance has updated
-//     let wallet_identity = Identity::Address(Address::from(wallet.address()));
-//     let user_balance = balance_of(&staking_contract, &wallet_identity).await;
-//     assert_eq!(user_balance.0.value, INITIAL_STAKE);
-
-//     // Total_supply has updated
-//     let total_supply = total_supply(&staking_contract).await;
-//     assert_eq!(total_supply.0.value, INITIAL_STAKE);
-// }
 
 
 
 
 
-// #[tokio::test]
-// async fn claim_reward() {
-//     let (staking_contract, _id, wallet, _wallet2, inittimestamp) = setup().await;
 
-//     let balance_before = get_balance(&wallet, REWARDS_ASSET).await;
 
-//     let receipts = get_reward(&staking_contract).await;
 
-//     let expected_reward_per_token: u64 =
-//     ((receipts.1 - inittimestamp) * 42 * ONE) / INITIAL_STAKE;
-//     let expected_reward = expected_reward_per_token * INITIAL_STAKE / ONE;
-
-//     let balance_after = get_balance(&wallet, REWARDS_ASSET).await;
-//     assert_eq!(balance_after - balance_before, expected_reward);
-// }
-
-// #[tokio::test]
-// async fn exit_with_reward() {
-//     let (staking_contract, _id, wallet, _wallet2, inittimestamp) = setup().await;
-
-//     let staking_balance_before = get_balance(&wallet, STAKING_ASSET).await;
-//     let rewards_balance_before = get_balance(&wallet, REWARDS_ASSET).await;
-
-//     let receipts = exit(&staking_contract).await;
-
-//     let staking_balance_after = get_balance(&wallet, STAKING_ASSET).await;
-//     let rewards_balance_after = get_balance(&wallet, REWARDS_ASSET).await;
-
-//     let expected_reward_per_token: u64 =
-//         ((receipts.1 - inittimestamp) * 42 * ONE) / INITIAL_STAKE;
-//     let expected_reward = expected_reward_per_token * INITIAL_STAKE / ONE;
-
-//     assert_eq!(
-//         rewards_balance_after - rewards_balance_before,
-//         expected_reward
-//     );
-//     assert_eq!(
-//         staking_balance_after - staking_balance_before,
-//         INITIAL_STAKE
-//     );
-// }
 
 // #[tokio::test]
 // async fn can_get_reward_for_duration() {

@@ -1,10 +1,10 @@
 use fuels::types::Identity;
 use fuels::prelude::*;
 
-use crate::utils::{setup, INITIAL_STAKE, abi::{balance_of, stake}};
+use crate::utils::{setup, INITIAL_STAKE, abi::{balance_of, stake, total_supply}};
 
 #[tokio::test]
-async fn can_get_balance_of() {
+async fn stake_tokens() {
     let (staking_contract, _id, wallet, _wallet2, _inittimestamp) = setup().await;
 
     // User balance has updated
@@ -12,8 +12,7 @@ async fn can_get_balance_of() {
     let user_balance = balance_of(&staking_contract, &wallet_identity).await;
     assert_eq!(user_balance, INITIAL_STAKE);
 
-    // User balance updates again
-    stake(&staking_contract, 50000).await;
-    let user_balance = balance_of(&staking_contract, &wallet_identity).await;
-    assert_eq!(user_balance, INITIAL_STAKE + 50000);
+    // Total_supply has updated
+    let total_supply = total_supply(&staking_contract).await;
+    assert_eq!(total_supply, INITIAL_STAKE);
 }

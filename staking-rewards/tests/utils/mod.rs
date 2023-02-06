@@ -23,7 +23,7 @@ pub const STAKING_ASSET: AssetId = AssetId::new([1u8; 32]);
 pub const REWARDS_ASSET: AssetId = AssetId::new([2u8; 32]);
 pub const RANDOM_ASSET: AssetId = AssetId::new([3u8; 32]);
 
-const INITIAL_STAKE: u64 = 10 * ONE;
+pub const INITIAL_STAKE: u64 = 10 * ONE;
 
 pub async fn get_balance(wallet: &Wallet, asset: AssetId) -> u64 {
     let provider = wallet.get_provider().unwrap();
@@ -115,19 +115,10 @@ pub async fn setup() -> (
 
 
 
-// pub async fn total_supply(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().total_supply()).await
-// }
 
 
 
-// pub async fn get_reward(instance: &StakingRewards) -> (FuelCallResponse<()>, u64) {
-//     get_timestamp_and_call(instance.methods().get_reward().append_variable_outputs(1)).await
-// }
 
-// pub async fn exit(instance: &StakingRewards) -> (FuelCallResponse<()>, u64) {
-//     get_timestamp_and_call(instance.methods().exit().append_variable_outputs(2)).await
-// }
 
 
 

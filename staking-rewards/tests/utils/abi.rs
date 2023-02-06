@@ -50,3 +50,15 @@ pub async fn notify_reward_amount(instance: &StakingRewards, reward: u64) -> Fue
         .await
         .unwrap()
 }
+
+pub async fn total_supply(instance: &StakingRewards) -> u64 {
+    instance.methods().total_supply().call().await.unwrap().value
+}
+
+pub async fn get_reward(instance: &StakingRewards) -> FuelCallResponse<()> {
+    instance.methods().get_reward().call().await.unwrap()
+}
+
+pub async fn exit(instance: &StakingRewards) -> FuelCallResponse<()> {
+    instance.methods().exit().append_variable_outputs(1).call().await.unwrap()
+}

@@ -1,10 +1,7 @@
 use fuels::types::Identity;
 use fuels::prelude::*;
 
-use crate::utils::abi::{notify_reward_amount, reward_per_token, earned};
-use crate::utils::{setup, ONE};
-
-const INITIAL_STAKE: u64 = 10 * ONE;
+use crate::utils::{setup, ONE, INITIAL_STAKE, abi::{notify_reward_amount, reward_per_token, earned}};
 
 #[tokio::test]
 async fn calculate_earned_tokens() {
