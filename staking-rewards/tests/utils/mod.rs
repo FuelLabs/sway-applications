@@ -129,13 +129,7 @@ pub async fn setup() -> (
 //     (call_response, time)
 // }
 
-// pub async fn period_finish(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().period_finish()).await
-// }
 
-// pub async fn last_time_reward_applicable(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().last_time_reward_applicable()).await
-// }
 
 // pub async fn last_update_time(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
 //     get_timestamp_and_call(instance.methods().last_update_time()).await

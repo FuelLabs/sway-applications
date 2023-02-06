@@ -8,7 +8,6 @@ async fn claim_reward() {
 
     get_reward(&staking_contract).await;
 
-    // wallet.get_provider().unwrap().chain_info().await.unwrap().latest_block.header.time.unwrap().timestamp() as u64;
     let timestamp = wallet
         .get_provider()
         .unwrap()

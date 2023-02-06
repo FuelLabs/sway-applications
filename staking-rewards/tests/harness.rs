@@ -23,16 +23,7 @@ use utils::{setup, ONE};
 //     assert_eq!(wallet_identity, owner_identity.0.value);
 // }
 
-// #[tokio::test]
-// async fn can_get_last_time_reward_applicable() {
-//     let (staking_contract, _id, _wallet, _wallet2, _inittimestamp) = setup().await;
 
-//     let period_finish = period_finish(&staking_contract).await;
-//     let expected = std::cmp::min(period_finish.1, period_finish.0.value);
-//     let actual = last_time_reward_applicable(&staking_contract).await;
-
-//     assert_eq!(actual.0.value, expected);
-// }
 
 // #[tokio::test]
 // async fn can_get_last_updated() {
