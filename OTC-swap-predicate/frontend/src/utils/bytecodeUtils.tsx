@@ -14,8 +14,8 @@ export function buildBytecode(receiver: string, askToken: string, askAmount: str
 }
 
 
+// Calculate the Merkle root of the bytecode. Each leaf is 8 bytes.
 export function calculateRoot(bytecode: string): string {
-    // TODO: Calculate root of bytecode as split into 8-byte chunks
     let chunks = chunkString(bytecode, 16);
     return calcRoot(chunks);
 }

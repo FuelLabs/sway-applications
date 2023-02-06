@@ -85,16 +85,20 @@ function App() {
               <>
                 <p>Tokens found at address :</p>
                 <table className="App-tokenTable">
-                  <tr>
-                    <th>Asset ID</th>
-                    <th>Amount</th>
-                  </tr>
-                  {tokensFound.map((token) => (
-                    <tr>
-                      <td className="App-address">{token.asset_id}</td>
-                      <td>{token.amount}</td>
+                  <thead>
+                    <tr key="headers">
+                      <th>Asset ID</th>
+                      <th>Amount</th>
                     </tr>
-                  ))}
+                  </thead>
+                  <tbody>
+                    {tokensFound.map((token) => (
+                      <tr key="items">
+                        <td className="App-address">{token.asset_id}</td>
+                        <td>{token.amount}</td>
+                      </tr>
+                    ))}
+                  </tbody>
                 </table>
 
                 <div>
