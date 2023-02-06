@@ -23,13 +23,13 @@ export function validateAddress(addressInput: HTMLInputElement | null): string |
         return null;
     }
 
+
     // If address is a bech32 Fuel address, convert to a hex string
     if (address.slice(0, 4) == "fuel") {
         return parsed.toHexString();
     }
 
     return address;
-
 }
 
 

@@ -25,27 +25,27 @@ function App() {
   }
 
   // References to the input fields
-  const receiverRef = useRef<HTMLInputElement>(null);
-  const askTokenRef = useRef<HTMLInputElement>(null);
-  const askAmounRef = useRef<HTMLInputElement>(null);
+  let receiverRef = useRef<HTMLInputElement>(null);
+  let askTokenRef = useRef<HTMLInputElement>(null);
+  let askAmountRef = useRef<HTMLInputElement>(null);
 
   // Use provided offer conditions to create a corresponding predicate root (address)
-  async function handleGenerate() {
+  async function handleCalculate() {
     clearResults();
 
     // Validate inputs    
     let receiverValid = validateAddress(receiverRef.current);
     let askTokenValid = validateAddress(askTokenRef.current);
-    let askAmountVald = validateAmount(askAmounRef.current);
+    let askAmountValid = validateAmount(askAmountRef.current);
 
     // TODO : Provide feedback to user on which input(s) were invalid
-    if (receiverValid === null || askTokenValid === null|| askAmountVald === null) {
+    if (receiverValid === null || askTokenValid === null|| askAmountValid === null) {
       clearResults();
       return;
     }
     
     // build predicate bytecode, calculate root, and set to state
-    let bytecode = buildBytecode(receiverValid, askTokenValid, askAmountVald);
+    let bytecode = buildBytecode(receiverValid, askTokenValid, askAmountValid);
     let predicateAddress = Address.fromString(calculateRoot(bytecode));
     setpredicateAddress(predicateAddress);
 
@@ -71,12 +71,10 @@ function App() {
     </header>
     
       <div className="App-main">
-
-        <p>Ask amount</p><input ref={askAmounRef} type="text"/>
-        <p>Ask token</p><input ref={askTokenRef} type="text"/>
-        <p>Receiver</p><input ref={receiverRef} type="text"/>
-
-        <button className="App-button" onClick={handleGenerate}>Calculate offer address</button>
+          <p>Ask amount</p><input ref={askAmountRef} id="amountInput" type="text" required/>
+          <p>Ask token</p><input ref={askTokenRef} type="text" placeholder="0x... / fuel1..." required/>
+          <p>Receiver</p><input ref={receiverRef} type="text" placeholder="0x... / fuel1..." required/>
+          <button className="App-button" onClick={handleCalculate}> Calculate offer address </button>
 
         <PredicateInfo predicateAddress={predicateAddress} tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
 
