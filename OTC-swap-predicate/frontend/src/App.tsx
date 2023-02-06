@@ -57,10 +57,12 @@ function App() {
 
   // TODO Spend the tokens found at the predicate address
   async function handleTake() {
+    window.alert("Not implemented yet!");
   }
 
   // TODO Recover the tokens found at the predicate address (if owner)
   async function handleCancel() {
+    window.alert("Not implemented yet!");
   }
 
 

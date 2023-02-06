@@ -20,7 +20,8 @@ const PredicateInfo: FC<PredicateInfoProps> = ({predicateAddress, tokensFound, h
                 <>
                 <p>To fund this offer, send tokens to :</p>
                 <p className="App-address">{predicateAddress.toString()}</p>
-                
+                <p style={{fontSize: "10px", color:"red"}}> WARNING: Spending / recovery not yet supported by this UI. Use real funds ONLY if you know what you're doing!</p>
+
                 {/* Render tokens found belonging to predicate address */}
                 <TokenList tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
                 </>
