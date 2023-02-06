@@ -11,7 +11,7 @@ import "./App.css";
 function App() {
 
   // Set the provider address used for balance queries and transactions
-  // TODO : GEt provider from wallet extension
+  // TODO : Get provider from wallet extension
   const providerAddress = "https://node-beta-2.fuel.network/graphql"
 
   // State contains the calculated predicate address and any tokens belonging to it
@@ -38,7 +38,7 @@ function App() {
     let askTokenValid = validateAddress(askTokenRef.current);
     let askAmountVald = validateAmount(askAmounRef.current);
 
-    // TO DO : Provide feedback to user on which input(s) were invalid
+    // TODO : Provide feedback to user on which input(s) were invalid
     if (receiverValid === null || askTokenValid === null|| askAmountVald === null) {
       clearResults();
       return;
