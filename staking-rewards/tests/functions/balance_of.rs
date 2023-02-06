@@ -1,7 +1,10 @@
-use fuels::types::Identity;
 use fuels::prelude::*;
+use fuels::types::Identity;
 
-use crate::utils::{setup, INITIAL_STAKE, abi::{balance_of, stake}};
+use crate::utils::{
+    abi::{balance_of, stake},
+    setup, INITIAL_STAKE,
+};
 
 #[tokio::test]
 async fn can_get_balance_of() {

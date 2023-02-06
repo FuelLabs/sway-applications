@@ -1,4 +1,7 @@
-use crate::utils::{setup, abi::{get_reward_for_duration, reward_rate, reward_duration}};
+use crate::utils::{
+    abi::{get_reward_for_duration, reward_duration, reward_rate},
+    setup,
+};
 
 #[tokio::test]
 async fn can_get_reward_for_duration() {

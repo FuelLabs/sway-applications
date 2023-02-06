@@ -1,4 +1,6 @@
-use crate::utils::{setup, ONE, INITIAL_STAKE, get_balance, REWARDS_ASSET, abi::exit, STAKING_ASSET};
+use crate::utils::{
+    abi::exit, get_balance, setup, INITIAL_STAKE, ONE, REWARDS_ASSET, STAKING_ASSET,
+};
 
 #[tokio::test]
 async fn exit_with_reward() {
@@ -8,13 +10,22 @@ async fn exit_with_reward() {
     let rewards_balance_before = get_balance(&wallet, REWARDS_ASSET).await;
 
     exit(&staking_contract).await;
-    let exit_ts = wallet.get_provider().unwrap().chain_info().await.unwrap().latest_block.header.time.unwrap().timestamp() as u64;
+    let exit_ts = wallet
+        .get_provider()
+        .unwrap()
+        .chain_info()
+        .await
+        .unwrap()
+        .latest_block
+        .header
+        .time
+        .unwrap()
+        .timestamp() as u64;
 
     let staking_balance_after = get_balance(&wallet, STAKING_ASSET).await;
     let rewards_balance_after = get_balance(&wallet, REWARDS_ASSET).await;
 
-    let expected_reward_per_token: u64 =
-        ((exit_ts - inittimestamp) * 42 * ONE) / INITIAL_STAKE;
+    let expected_reward_per_token: u64 = ((exit_ts - inittimestamp) * 42 * ONE) / INITIAL_STAKE;
     let expected_reward = expected_reward_per_token * INITIAL_STAKE / ONE;
 
     assert_eq!(

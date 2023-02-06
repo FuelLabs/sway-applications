@@ -13,19 +13,43 @@ use crate::utils::StakingRewards;
 use super::STAKING_ASSET;
 
 pub async fn balance_of(instance: &StakingRewards, id: &Identity) -> u64 {
-    instance.methods().balance_of(id.to_owned()).call().await.unwrap().value
+    instance
+        .methods()
+        .balance_of(id.to_owned())
+        .call()
+        .await
+        .unwrap()
+        .value
 }
 
 pub async fn earned(instance: &StakingRewards, wallet_identity: Identity) -> u64 {
-    instance.methods().earned(wallet_identity).call().await.unwrap().value
+    instance
+        .methods()
+        .earned(wallet_identity)
+        .call()
+        .await
+        .unwrap()
+        .value
 }
 
 pub async fn reward_per_token(instance: &StakingRewards) -> u64 {
-    instance.methods().reward_per_token().call().await.unwrap().value
+    instance
+        .methods()
+        .reward_per_token()
+        .call()
+        .await
+        .unwrap()
+        .value
 }
 
 pub async fn reward_per_token_stored(instance: &StakingRewards) -> u64 {
-    instance.methods().reward_per_token_stored().call().await.unwrap().value
+    instance
+        .methods()
+        .reward_per_token_stored()
+        .call()
+        .await
+        .unwrap()
+        .value
 }
 
 pub async fn stake(instance: &StakingRewards, amount: u64) -> FuelCallResponse<()> {
@@ -52,7 +76,13 @@ pub async fn notify_reward_amount(instance: &StakingRewards, reward: u64) -> Fue
 }
 
 pub async fn total_supply(instance: &StakingRewards) -> u64 {
-    instance.methods().total_supply().call().await.unwrap().value
+    instance
+        .methods()
+        .total_supply()
+        .call()
+        .await
+        .unwrap()
+        .value
 }
 
 pub async fn get_reward(instance: &StakingRewards) -> FuelCallResponse<()> {
@@ -60,7 +90,13 @@ pub async fn get_reward(instance: &StakingRewards) -> FuelCallResponse<()> {
 }
 
 pub async fn exit(instance: &StakingRewards) -> FuelCallResponse<()> {
-    instance.methods().exit().append_variable_outputs(1).call().await.unwrap()
+    instance
+        .methods()
+        .exit()
+        .append_variable_outputs(1)
+        .call()
+        .await
+        .unwrap()
 }
 
 pub async fn reward_rate(instance: &StakingRewards) -> u64 {
@@ -68,9 +104,21 @@ pub async fn reward_rate(instance: &StakingRewards) -> u64 {
 }
 
 pub async fn reward_duration(instance: &StakingRewards) -> u64 {
-    instance.methods().rewards_duration().call().await.unwrap().value
+    instance
+        .methods()
+        .rewards_duration()
+        .call()
+        .await
+        .unwrap()
+        .value
 }
 
 pub async fn get_reward_for_duration(instance: &StakingRewards) -> u64 {
-    instance.methods().get_reward_for_duration().call().await.unwrap().value
+    instance
+        .methods()
+        .get_reward_for_duration()
+        .call()
+        .await
+        .unwrap()
+        .value
 }

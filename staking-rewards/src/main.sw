@@ -9,9 +9,9 @@ use errors::StakingRewardsError;
 use interface::StakingRewards;
 use std::{
     address::Address,
+    auth::msg_sender,
     block::timestamp,
     call_frames::msg_asset_id,
-    auth::msg_sender,
     constants::ZERO_B256,
     context::{
         msg_amount,
@@ -27,7 +27,6 @@ use std::{
 };
 
 // Precision for staking and rewards token
-
 const ONE: u64 = 1_000_000_000; // Can this be constant-evaluated from `PRECISION` ?
 storage {
     balances: StorageMap<Identity, u64> = StorageMap {},
@@ -70,7 +69,7 @@ impl StakingRewards for Contract {
         log(WithdrawnEvent {
             user: sender,
             amount,
-        });        
+        });
         _update_reward(sender);
 
         let reward = storage.rewards.get(sender);
@@ -83,7 +82,6 @@ impl StakingRewards for Contract {
                 reward,
             });
         }
-        
     }
 
     #[storage(read, write)]
@@ -143,9 +141,7 @@ impl StakingRewards for Contract {
 
         storage.last_update_time = ts;
         storage.period_finish = ts + storage.rewards_duration;
-        log(RewardAddedEvent {
-            reward,
-        });
+        log(RewardAddedEvent { reward });
     }
 
     #[storage(read)]
@@ -290,9 +286,7 @@ fn _reward_per_token() -> u64 {
 }
 
 #[storage(read, write)]
-fn _get_reward() {
-    
-}
+fn _get_reward() {}
 
 #[storage(read, write)]
 fn _withdraw(amount: u64) {

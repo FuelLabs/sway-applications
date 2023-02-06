@@ -1,5 +1,5 @@
-mod utils;
 mod functions;
+mod utils;
 
 use fuels::{prelude::*, signers::provider};
 // use utils::{
@@ -14,7 +14,6 @@ use utils::{setup, ONE};
 
 // Until timestamp supported in Sways of each action must be specified. Contract is deployed at t=0
 
-
 // #[tokio::test]
 // async fn constructed() {
 //     let (staking_contract, _id, wallet, _wallet2, _inittimestamp) = setup().await;
@@ -23,17 +22,6 @@ use utils::{setup, ONE};
 //     let owner_identity = owner(&staking_contract).await;
 //     assert_eq!(wallet_identity, owner_identity.0.value);
 // }
-
-
-
-
-
-
-
-
-
-
-
 
 // #[tokio::test]
 // async fn can_get_last_time_reward_applicable() {

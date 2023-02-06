@@ -1,8 +1,8 @@
 pub mod abi;
 
 use core::fmt::Debug;
-use fuels::prelude::*;
 use fuels::core::traits::Tokenizable;
+use fuels::prelude::*;
 use fuels::types::Identity;
 use fuels::{
     client::types::TransactionStatus,
@@ -82,8 +82,24 @@ pub async fn setup() -> (
 
     // Stake some tokens from the wallet
     let staking_call_params = CallParameters::new(Some(INITIAL_STAKE), Some(STAKING_ASSET), None);
-    staking_contract.methods().stake().call_params(staking_call_params).call().await.unwrap();
-    let init_timestamp = wallet.get_provider().unwrap().chain_info().await.unwrap().latest_block.header.time.unwrap().timestamp() as u64;
+    staking_contract
+        .methods()
+        .stake()
+        .call_params(staking_call_params)
+        .call()
+        .await
+        .unwrap();
+    let init_timestamp = wallet
+        .get_provider()
+        .unwrap()
+        .chain_info()
+        .await
+        .unwrap()
+        .latest_block
+        .header
+        .time
+        .unwrap()
+        .timestamp() as u64;
 
     (
         staking_contract,
@@ -113,19 +129,6 @@ pub async fn setup() -> (
 //     (call_response, time)
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // pub async fn period_finish(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
 //     get_timestamp_and_call(instance.methods().period_finish()).await
 // }
@@ -137,8 +140,6 @@ pub async fn setup() -> (
 // pub async fn last_update_time(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
 //     get_timestamp_and_call(instance.methods().last_update_time()).await
 // }
-
-
 
 // pub async fn owner(instance: &StakingRewards) -> (FuelCallResponse<Identity>, u64) {
 //     get_timestamp_and_call(instance.methods().owner()).await
@@ -157,8 +158,6 @@ pub async fn setup() -> (
 //     )
 //     .await
 // }
-
-
 
 // pub async fn reward_per_token_paid(
 //     instance: &StakingRewards,
