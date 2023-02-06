@@ -32,7 +32,6 @@ export function validateAddress(addressInput: HTMLInputElement | null): string |
 }
 
 
-// TODO : Amounts should be BigNumbers. Validation and parsing need to account for this
 export function validateAmount(amountInput: HTMLInputElement | null): string | null {
 
     // If input element is not initialized, empty, or cannot be parsed, return null
@@ -46,7 +45,7 @@ export function validateAmount(amountInput: HTMLInputElement | null): string | n
 
     let parsed;
     try{
-        parsed = parseInt(amountInput.value);
+        parsed = BigInt(amountInput.value);
     }
     catch {
         return null;

@@ -1,7 +1,8 @@
 import { FC } from "react";
+import { CoinQuantity } from "fuels";
 
 type TokenListProps = {
-    tokensFound: {"asset_id": string, "amount": string}[],
+    tokensFound: CoinQuantity[],
     handleTake: () => void,
     handleCancel: () => void,
 }
@@ -9,6 +10,7 @@ type TokenListProps = {
 const TokenList: FC<TokenListProps> = ({tokensFound, handleTake, handleCancel}: TokenListProps) => {
     return (
         <>
+        {/* This will only render if tokensFound is not empty */}
         {tokensFound.length > 0 &&
           <>
             <p>Tokens found at address :</p>
@@ -22,8 +24,8 @@ const TokenList: FC<TokenListProps> = ({tokensFound, handleTake, handleCancel}: 
               <tbody>
                 {tokensFound.map((token) => (
                   <tr key="items">
-                    <td className="App-address">{token.asset_id}</td>
-                    <td>{token.amount}</td>
+                    <td className="App-address">{token.assetId}</td>
+                    <td>{token.amount.toString()}</td>
                   </tr>
                 ))}
               </tbody>

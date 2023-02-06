@@ -1,12 +1,8 @@
-import { BaseWalletLocked, Address } from "fuels";
+import { BaseWalletLocked, Address, CoinQuantity } from "fuels";
 
-export async function getTokenBalance(address: string, providerAddress: string) : Promise<{ asset_id: string; amount: string; }[]> {
-    let addressified = Address.fromAddressOrString(address);
-
-    let wallet = new BaseWalletLocked(addressified, providerAddress)
+export async function getTokenBalance(address: Address, providerAddress: string) : Promise<CoinQuantity[]> {
+    let wallet = new BaseWalletLocked(address, providerAddress)
     let coinQuantities = await wallet.getBalances();
 
-    return coinQuantities.map((coinQuantity) => (
-        {"asset_id": coinQuantity.assetId, "amount": coinQuantity.amount.toString()}
-    ));
+    return coinQuantities;
 }

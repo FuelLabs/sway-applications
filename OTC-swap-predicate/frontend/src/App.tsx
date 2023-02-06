@@ -1,25 +1,30 @@
 import { useState, useRef } from "react";
-import { Address } from "fuels";
+import { Address, CoinQuantity } from "fuels";
+
 import { buildBytecode, calculateRoot } from "./utils/bytecodeUtils";
+import { ZERO_ADDRESS } from "./utils/constants";
 import { validateAddress, validateAmount } from "./utils/inputValidation";
 import { getTokenBalance } from "./utils/predicateBalance";
+
 import PredicateInfo from "./components/predicateInfo";
 import TokenList from "./components/tokensList";
+
 import "./App.css";
 
 
 function App() {
 
   // Set the provider address used for balance queries and transactions
+  // TODO : GEt provider from wallet extension
   const providerAddress = "https://node-beta-2.fuel.network/graphql"
 
   // State contains the calculated predicate address and any tokens belonging to it
-  const [predicateAddress, setpredicateAddress] = useState("");
-  const [tokensFound, setTokensFound] = useState([{"asset_id": "", "amount": ""}]);
+  const [predicateAddress, setpredicateAddress] = useState(ZERO_ADDRESS);
+  const [tokensFound, setTokensFound] = useState<CoinQuantity[]>([]);
 
   // Convenience function to clear state
   function clearResults() {
-    setpredicateAddress("");
+    setpredicateAddress(ZERO_ADDRESS);
     setTokensFound([]);
   }
 
@@ -45,7 +50,7 @@ function App() {
     
     // build predicate bytecode, calculate root, and set to state
     let bytecode = buildBytecode(receiverValid, askTokenValid, askAmountVald);
-    let predicateAddress = calculateRoot(bytecode);
+    let predicateAddress = Address.fromString(calculateRoot(bytecode));
     setpredicateAddress(predicateAddress);
 
     // Look for tokens belonging to the predicate address, and set them to state
@@ -76,7 +81,6 @@ function App() {
         <p>Receiver</p><input ref={receiverRef} type="text"/>
 
         <button className="App-button" onClick={handleGenerate}>Generate offer address</button>
-
         <PredicateInfo predicateAddress={predicateAddress}/>
         <TokenList tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
     
