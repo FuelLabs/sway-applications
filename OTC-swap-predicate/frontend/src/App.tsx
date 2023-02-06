@@ -1,14 +1,10 @@
 import { useState, useRef } from "react";
 import { Address, CoinQuantity } from "fuels";
-
 import { buildBytecode, calculateRoot } from "./utils/bytecodeUtils";
 import { ZERO_ADDRESS } from "./utils/constants";
 import { validateAddress, validateAmount } from "./utils/inputValidation";
 import { getTokenBalance } from "./utils/predicateBalance";
-
 import PredicateInfo from "./components/predicateInfo";
-import TokenList from "./components/tokensList";
-
 import "./App.css";
 
 
@@ -42,7 +38,7 @@ function App() {
     let askTokenValid = validateAddress(askTokenRef.current);
     let askAmountVald = validateAmount(askAmounRef.current);
 
-    // TO DO : Make it clear which input was invalid
+    // TO DO : Provide feedback to user on which input(s) were invalid
     if (receiverValid === null || askTokenValid === null|| askAmountVald === null) {
       clearResults();
       return;
@@ -80,10 +76,10 @@ function App() {
         <p>Ask token</p><input ref={askTokenRef} type="text"/>
         <p>Receiver</p><input ref={receiverRef} type="text"/>
 
-        <button className="App-button" onClick={handleGenerate}>Generate offer address</button>
-        <PredicateInfo predicateAddress={predicateAddress}/>
-        <TokenList tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
-    
+        <button className="App-button" onClick={handleGenerate}>Calculate offer address</button>
+
+        <PredicateInfo predicateAddress={predicateAddress} tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
+
       </div>
     </>
 

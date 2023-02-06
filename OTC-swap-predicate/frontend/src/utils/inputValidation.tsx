@@ -1,4 +1,5 @@
 import { Address } from "fuels";
+import { MAX_U64 } from "./constants";
 
 
 export function validateAddress(addressInput: HTMLInputElement | null): string | null {
@@ -22,7 +23,7 @@ export function validateAddress(addressInput: HTMLInputElement | null): string |
         return null;
     }
 
-    // If address is a fuel address, convert to a hex string
+    // If address is a bech32 Fuel address, convert to a hex string
     if (address.slice(0, 4) == "fuel") {
         return parsed.toHexString();
     }
@@ -51,7 +52,7 @@ export function validateAmount(amountInput: HTMLInputElement | null): string | n
         return null;
     }
 
-    if(parsed > 2**64 - 1 || parsed < 1){
+    if(parsed > MAX_U64 || parsed < 1){
         return null;
     }
 
