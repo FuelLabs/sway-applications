@@ -2,7 +2,7 @@ import {  useState, useRef } from "react";
 import { Address} from "fuels";
 import { buildBytecode, calculateRoot } from "./utils/bytecodeUtils";
 import { getTokenBalance } from "./utils/predicateBalance";
-import {validateAddress, validateAmount, parseAmount} from "./utils/inputValidation";
+import {validateAddress, validateAmount} from "./utils/inputValidation";
 import "./App.css";
 
 
@@ -30,21 +30,19 @@ function App() {
   async function handleGenerate() {
     clearResults();
 
-    // Validate inputs
-    if (receiverRef.current == null || askTokenRef.current == null || askAmounRef.current == null) return;
-    
-    const receiver = receiverRef.current.value;
-    const askToken = askTokenRef.current.value;
-    const askAmount = askAmounRef.current.value;
+    // Validate inputs    
+    let receiverValid = validateAddress(receiverRef.current);
+    let askTokenValid = validateAddress(askTokenRef.current);
+    let askAmountVald = validateAmount(askAmounRef.current);
 
     // TO DO : Make it clear which input was invalid
-    if (!validateAddress(receiver) || !validateAddress(askToken)|| !validateAmount(askAmount)) {
+    if (receiverValid === null || askTokenValid === null|| askAmountVald === null) {
       clearResults();
       return;
     }
     
     // build predicate bytecode, calculate root, and set to state
-    let bytecode = buildBytecode(receiver, askToken, parseAmount(askAmount));
+    let bytecode = buildBytecode(receiverValid, askTokenValid, askAmountVald);
     let predicateAddress = calculateRoot(bytecode);
     setpredicateAddress(predicateAddress);
 
