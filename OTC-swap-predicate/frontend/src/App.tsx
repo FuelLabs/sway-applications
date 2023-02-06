@@ -1,8 +1,10 @@
-import {  useState, useRef } from "react";
-import { Address} from "fuels";
+import { useState, useRef } from "react";
+import { Address } from "fuels";
 import { buildBytecode, calculateRoot } from "./utils/bytecodeUtils";
+import { validateAddress, validateAmount } from "./utils/inputValidation";
 import { getTokenBalance } from "./utils/predicateBalance";
-import {validateAddress, validateAmount} from "./utils/inputValidation";
+import PredicateInfo from "./components/predicateInfo";
+import TokenList from "./components/tokensList";
 import "./App.css";
 
 
@@ -68,48 +70,15 @@ function App() {
     </header>
     
       <div className="App-main">
+
         <p>Ask amount</p><input ref={askAmounRef} type="text"/>
         <p>Ask token</p><input ref={askTokenRef} type="text"/>
         <p>Receiver</p><input ref={receiverRef} type="text"/>
 
         <button className="App-button" onClick={handleGenerate}>Generate offer address</button>
 
-        {/* Only render this part if the predicateAddress has been calculated */}
-        {predicateAddress.length > 0 &&
-          <>
-            <p>To fund this offer, send tokens to :</p>
-            <p className="App-address">{Address.fromAddressOrString(predicateAddress).toString()}</p>
-
-            {/* Only render this part if tokens are found */}
-            {tokensFound.length > 0 &&
-              <>
-                <p>Tokens found at address :</p>
-                <table className="App-tokenTable">
-                  <thead>
-                    <tr key="headers">
-                      <th>Asset ID</th>
-                      <th>Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tokensFound.map((token) => (
-                      <tr key="items">
-                        <td className="App-address">{token.asset_id}</td>
-                        <td>{token.amount}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                <div>
-                  <button className="App-button" onClick={handleTake}>Take offer</button>
-                  <button className="App-button" onClick={handleCancel}>Cancel offer</button>
-                </div>
-
-              </>
-            } 
-          </>
-        }
+        <PredicateInfo predicateAddress={predicateAddress}/>
+        <TokenList tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
     
       </div>
     </>
