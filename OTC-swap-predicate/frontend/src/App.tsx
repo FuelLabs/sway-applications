@@ -5,14 +5,18 @@ import { ZERO_ADDRESS } from "./utils/constants";
 import { validateAddress, validateAmount } from "./utils/inputValidation";
 import { getTokenBalance } from "./utils/predicateBalance";
 import PredicateInfo from "./components/predicateInfo";
+import { useProvider } from "./hooks/useProvider";
 import "./App.css";
+
 
 
 function App() {
 
+
   // Set the provider address used for balance queries and transactions
-  // TODO : Get provider from wallet extension
-  const providerAddress = "https://node-beta-2.fuel.network/graphql"
+  //const providerAddress = "https://node-beta-2.fuel.network/graphql"
+  
+  const { provider } = useProvider();
 
   // State contains the calculated predicate address and any tokens belonging to it
   const [predicateAddress, setpredicateAddress] = useState(ZERO_ADDRESS);
@@ -51,7 +55,7 @@ function App() {
     setpredicateAddress(predicateAddress);
 
     // Look for tokens belonging to the predicate address, and set them to state
-    let tokens = await getTokenBalance(predicateAddress, providerAddress);
+    let tokens = await getTokenBalance(predicateAddress, provider!.url);
     setTokensFound(tokens);
 
   }
