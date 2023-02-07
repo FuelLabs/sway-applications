@@ -3,20 +3,21 @@ name: "Deploy Contracts"
 on:
   workflow_dispatch:
     inputs:
-      provider_url: 'Provider url'
+      provider_url:
+        description: 'Provider url'
         required: true
         default: 'https://node-beta-2.fuel.network/graphql'
         type: string
       wallet_secret:
-        description: 'Wallet secret used to deploy and mint nfts'
+        description: 'Wallet secret used to deploy and provide initial liquidity'
         type: string
       gas_price:
         description: 'Min gas price required from the provider'
         required: true
         default: 1
         type: number
-      initialize_nfts:
-        description: 'Should initialize nfts?'
+      initiate_supply:
+        description: 'Should initialize nfts'
         required: true
         default: false
         type: boolean
