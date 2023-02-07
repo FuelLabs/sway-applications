@@ -4,27 +4,27 @@ on:
   workflow_dispatch:
     inputs:
       provider_url: 'Provider url'
-      required: true
-      default: 'https://node-beta-2.fuel.network/graphql'
-      type: string
-    wallet_secret:
-      description: 'Wallet secret used to deploy and mint nfts'
-      type: string
-    gas_price:
-      description: 'Min gas price required from the provider'
-      required: true
-      default: 1
-      type: number
-    initialize_nfts:
-      description: 'Should initialize nfts?'
-      required: true
-      default: false
-      type: boolean
-    commit_changes:
-      description: 'Commit .env.production on the current branch'
-      required: true
-      default: true
-      type: boolean
+        required: true
+        default: 'https://node-beta-2.fuel.network/graphql'
+        type: string
+      wallet_secret:
+        description: 'Wallet secret used to deploy and mint nfts'
+        type: string
+      gas_price:
+        description: 'Min gas price required from the provider'
+        required: true
+        default: 1
+        type: number
+      initialize_nfts:
+        description: 'Should initialize nfts?'
+        required: true
+        default: false
+        type: boolean
+      commit_changes:
+        description: 'Commit .env.production on the current branch'
+        required: true
+        default: true
+        type: boolean
 
 env:
   RUST_VERSION: 1.61.0
