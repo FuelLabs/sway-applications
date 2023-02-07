@@ -9,7 +9,7 @@ export function validateAddress(addressInput: HTMLInputElement | null): string |
         return null;
     }
 
-    if (addressInput.value=== ""){
+    if (addressInput.value === ""){
         return null;
     }
 
@@ -25,7 +25,7 @@ export function validateAddress(addressInput: HTMLInputElement | null): string |
 
 
     // If address is a bech32 Fuel address, convert to a hex string
-    if (address.slice(0, 4) == "fuel") {
+    if (address.slice(0, 4) === "fuel") {
         return parsed.toHexString();
     }
 

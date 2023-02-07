@@ -5,18 +5,20 @@ import { ZERO_ADDRESS } from "./utils/constants";
 import { validateAddress, validateAmount } from "./utils/inputValidation";
 import { getTokenBalance } from "./utils/predicateBalance";
 import PredicateInfo from "./components/predicateInfo";
-import { useProvider } from "./hooks/useProvider";
+import { Network } from "./components/network";
+
 import "./App.css";
 
 
 function App() {
 
-  // Get the provider address to use for balance queries
-  const { provider } = useProvider();
-
   // State contains the calculated predicate address and any tokens belonging to it
   const [predicateAddress, setpredicateAddress] = useState(ZERO_ADDRESS);
   const [tokensFound, setTokensFound] = useState<CoinQuantity[]>([]);
+  const [network, setNetwork] = useState<string>("")
+
+  // Get initial network url from fuel wallet and listen for changes
+  Network(network, setNetwork);
 
   // Convenience function to clear state
   function clearResults() {
@@ -51,7 +53,7 @@ function App() {
     setpredicateAddress(predicateAddress);
 
     // Look for tokens belonging to the predicate address, and set them to state
-    let tokens = await getTokenBalance(predicateAddress, provider!.url);
+    let tokens = await getTokenBalance(predicateAddress, network);
     setTokensFound(tokens);
 
   }
@@ -66,7 +68,6 @@ function App() {
     window.alert("Not implemented yet!");
   }
 
-
   return (
     <>
     <header className="App-header">
@@ -74,14 +75,18 @@ function App() {
     </header>
 
     <div className="App-main">
-        <p>Ask amount</p><input ref={askAmountRef} id="amountInput" type="text" required/>
-        <p>Ask token</p><input ref={askTokenRef} type="text" placeholder="0x... / fuel1..." required/>
-        <p>Receiver</p><input ref={receiverRef} type="text" placeholder="0x... / fuel1..." required/>
-        <button className="App-button" onClick={handleCalculate}> Calculate offer address </button>
+      <p>Ask amount</p><input ref={askAmountRef} id="amountInput" type="text" required/>
+      <p>Ask token</p><input ref={askTokenRef} type="text" placeholder="0x... / fuel1..." required/>
+      <p>Receiver</p><input ref={receiverRef} type="text" placeholder="0x... / fuel1..." required/>
+      <button className="App-button" onClick={handleCalculate}> Calculate offer address </button>
 
       <PredicateInfo predicateAddress={predicateAddress} tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
-
     </div>
+
+    <div className="App-provider">
+      <p> Connected to network: {network} </p>        
+    </div>
+
     </>
 
   );
