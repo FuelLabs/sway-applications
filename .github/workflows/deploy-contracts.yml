@@ -9,7 +9,7 @@ on:
         default: 'https://node-beta-2.fuel.network/graphql'
         type: string
       wallet_secret:
-        description: 'Wallet secret used to deploy and provide initial liquidity'
+        description: 'Wallet secret used to deploy and initialize nfts'
         type: string
       gas_price:
         description: 'Min gas price required from the provider'
