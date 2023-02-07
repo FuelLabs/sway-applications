@@ -75,9 +75,6 @@ If you wish to run any of the projects then clone this repository and go through
 
 Any instructions related to running a specific project should be found within the README.md of that project.
 
-> **Note**
-> All projects currently use `forc 0.33.1`, `fuel-core 0.15.3`, and `rust 1.66.0`.
-
 ## Contributing
 
 Check out the [book](https://fuellabs.github.io/sway-applications/book/index.html) for more info!
