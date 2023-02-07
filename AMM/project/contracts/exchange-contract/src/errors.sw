@@ -11,7 +11,6 @@ pub enum InputError {
     DeadlinePassed: u64,
     ExpectedNonZeroAmount: ContractId,
     ExpectedNonZeroParameter: ContractId,
-    ExpectedZeroAmount: (),
     InvalidAsset: (),
 }
 
