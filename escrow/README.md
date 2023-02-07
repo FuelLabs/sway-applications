@@ -5,6 +5,18 @@
     </picture>
 </p>
 
+<p align="center">
+    <a href="https://crates.io/crates/forc/0.33.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.33.1-orange" />
+    </a>
+    <a href="https://crates.io/crates/fuel-core/0.15.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.15.3-yellow" />
+    </a>
+    <a href="https://crates.io/crates/fuels/0.34.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.34.0-blue" />
+    </a>
+</p>
+
 ## Overview
 
 An escrow is a neutral third party that holds an asset on behalf of two parties until a transaction has occurred. Once the transaction has taken place the escrow can be resolved and the assets will be transferred as dictated by the contract. This escrow application handles the transaction between an on-chain and off-chain asset.
