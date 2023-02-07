@@ -1,4 +1,4 @@
-import { Address, BaseWalletLocked, CoinQuantity, Provider } from "fuels";
+import { Address, BaseWalletLocked, CoinQuantity } from "fuels";
 
 export async function getTokenBalance(address: Address, provider: string) : Promise<CoinQuantity[]> {
     let wallet = new BaseWalletLocked(address, provider)

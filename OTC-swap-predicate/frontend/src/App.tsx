@@ -9,13 +9,9 @@ import { useProvider } from "./hooks/useProvider";
 import "./App.css";
 
 
-
 function App() {
 
-
-  // Set the provider address used for balance queries and transactions
-  //const providerAddress = "https://node-beta-2.fuel.network/graphql"
-  
+  // Get the provider address to use for balance queries
   const { provider } = useProvider();
 
   // State contains the calculated predicate address and any tokens belonging to it
@@ -76,16 +72,16 @@ function App() {
     <header className="App-header">
       <h1>OTC Swap</h1>
     </header>
-    
-      <div className="App-main">
-          <p>Ask amount</p><input ref={askAmountRef} id="amountInput" type="text" required/>
-          <p>Ask token</p><input ref={askTokenRef} type="text" placeholder="0x... / fuel1..." required/>
-          <p>Receiver</p><input ref={receiverRef} type="text" placeholder="0x... / fuel1..." required/>
-          <button className="App-button" onClick={handleCalculate}> Calculate offer address </button>
 
-        <PredicateInfo predicateAddress={predicateAddress} tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
+    <div className="App-main">
+        <p>Ask amount</p><input ref={askAmountRef} id="amountInput" type="text" required/>
+        <p>Ask token</p><input ref={askTokenRef} type="text" placeholder="0x... / fuel1..." required/>
+        <p>Receiver</p><input ref={receiverRef} type="text" placeholder="0x... / fuel1..." required/>
+        <button className="App-button" onClick={handleCalculate}> Calculate offer address </button>
 
-      </div>
+      <PredicateInfo predicateAddress={predicateAddress} tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
+
+    </div>
     </>
 
   );
