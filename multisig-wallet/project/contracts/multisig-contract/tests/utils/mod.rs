@@ -12,7 +12,7 @@ use sha3::{Digest, Keccak256};
 
 abigen!(Contract(
     name = "MultiSig",
-    abi = "./project/multisig-contract/out/debug/multisig-contract-abi.json"
+    abi = "./contracts/multisig-contract/out/debug/multisig-contract-abi.json"
 ));
 
 pub const VALID_SIGNER_PK: &str =
