@@ -25,7 +25,7 @@ In order to verifiably prove that a user has a claim to an airdrop and avoiding 
 
 > **Note** This application implements the [Binary Merkle Proof Verification Library](https://github.com/FuelLabs/sway-libs/tree/master/sway_libs/src/merkle_proof).
 
-More information can be found in the [specification](./SPECIFICATION.md) and [interface](./project/contracts/distributor-contract/src/interface.sw).
+More information can be found in the [specification](./project/SPECIFICATION.md) and [interface](./project/contracts/distributor-contract/src/interface.sw).
 
 ## Project Structure
 
