@@ -5,6 +5,18 @@
     </picture>
 </p>
 
+<p align="center">
+    <a href="https://crates.io/crates/forc/0.33.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.33.1-orange" />
+    </a>
+    <a href="https://crates.io/crates/fuel-core/0.15.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.15.3-yellow" />
+    </a>
+    <a href="https://crates.io/crates/fuels/0.34.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.34.0-blue" />
+    </a>
+</p>
+
 ## Overview
 
 A multi-signature wallet is a wallet that has multiple owners. In order to execute a transaction, a sufficient number of owners need to sign a transaction. This implementation uses weighted owners which means that certain owners may have more "votes" when it comes to increasing the number of approvals in order to surpass the minimum threshold for execution. This implementation allows owners to be both Fuel and EVM addresses; by additionally supporting signatures over [EIP-191](https://eips.ethereum.org/EIPS/eip-191) formatted messages.

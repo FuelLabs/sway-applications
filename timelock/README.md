@@ -5,6 +5,18 @@
     </picture>
 </p>
 
+<p align="center">
+    <a href="https://crates.io/crates/forc/0.33.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.33.1-orange" />
+    </a>
+    <a href="https://crates.io/crates/fuel-core/0.15.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.15.3-yellow" />
+    </a>
+    <a href="https://crates.io/crates/fuels/0.34.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.34.0-blue" />
+    </a>
+</p>
+
 ## Overview
 
 The purpose of a timelock is to restrict the execution of a transaction to some window of time. The transaction usually involves a transfer of funds e.g. via an escrow, vesting schedule, deferred payment etc. however, it may also be used for valueless execution i.e. calls to a contract to perform computation.
