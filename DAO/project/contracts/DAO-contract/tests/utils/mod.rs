@@ -5,11 +5,11 @@ use fuels::{
 abigen!(
     Contract(
         name = "DaoVoting",
-        abi = "./project/DAO-contract/out/debug/DAO-contract-abi.json"
+        abi = "./contracts/DAO-contract/out/debug/DAO-contract-abi.json"
     ),
     Contract(
         name = "GovToken",
-        abi = "./project/DAO-contract/tests/artifacts/gov_token/out/debug/gov_token-abi.json"
+        abi = "./contracts/DAO-contract/tests/artifacts/gov_token/out/debug/gov_token-abi.json"
     ),
 );
 
