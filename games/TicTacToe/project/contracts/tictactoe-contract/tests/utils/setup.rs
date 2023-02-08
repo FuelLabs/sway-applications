@@ -2,7 +2,7 @@ use fuels::{prelude::*, types::Identity};
 
 abigen!(Contract(
     name = "TicTacToe",
-    abi = "./project/tictactoe-contract/out/debug/tictactoe-contract-abi.json"
+    abi = "./contracts/tictactoe-contract/out/debug/tictactoe-contract-abi.json"
 ));
 
 const TICTACTOE_CONTRACT_BINARY_PATH: &str = "./out/debug/tictactoe-contract.bin";

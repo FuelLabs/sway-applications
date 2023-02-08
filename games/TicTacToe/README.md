@@ -22,7 +22,7 @@
 An on-chain TicTacToe game, where two players compete to align 3 markers in a row. The game consists of a 3x3 grid.
 The game has been won if three markers were aligned in a row. Otherwise, it's a draw.
 
-More information can be found in the [specification](./SPECIFICATION.md).
+More information can be found in the [specification](./project/SPECIFICATION.md).
 
 ## Project Structure
 
@@ -64,4 +64,4 @@ cargo test
 
 The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the tictactoe.
 
-Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
+Check [SPECIFICATION.md](./project/SPECIFICATION.md) for more info!
