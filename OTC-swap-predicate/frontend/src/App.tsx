@@ -3,9 +3,9 @@ import { Address, CoinQuantity } from "fuels";
 import { buildBytecode, calculateRoot } from "./utils/bytecodeUtils";
 import { ZERO_ADDRESS } from "./utils/constants";
 import { validateAddress, validateAmount } from "./utils/inputValidation";
-import { getTokenBalance } from "./utils/predicateBalance";
+import getTokenBalance from "./utils/predicateBalance";
 import PredicateInfo from "./components/predicateInfo";
-import { Network } from "./components/network";
+import Network from "./components/network";
 
 import "./App.css";
 

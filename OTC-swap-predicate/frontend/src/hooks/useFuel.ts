@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const globalWindow = typeof window !== "undefined" ? window : ({} as Window);
 
-export function useFuel() {
+function useFuel() {
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(true);
   const [fuel, setFuel] = useState<Window["fuel"]>(globalWindow.fuel);
@@ -21,3 +21,6 @@ export function useFuel() {
 
   return [fuel as NonNullable<Window["fuel"]>, error, isLoading] as const;
 }
+
+
+export default useFuel;

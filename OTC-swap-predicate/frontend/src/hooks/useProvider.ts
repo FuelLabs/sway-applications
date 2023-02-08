@@ -1,8 +1,8 @@
 import { toast } from "@fuel-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import { useFuel } from "./useFuel";
+import useFuel from "./useFuel";
 
-export const useProvider = () => {
+const useProvider = () => {
   const [fuel] = useFuel();
 
   if (!fuel) toast.error("Error fuelWeb3 instance is not defined");
@@ -24,3 +24,5 @@ export const useProvider = () => {
 
   return { provider, isLoading, isError };
 };
+
+export default useProvider;

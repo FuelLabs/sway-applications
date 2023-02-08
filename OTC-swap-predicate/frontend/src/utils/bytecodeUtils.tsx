@@ -1,5 +1,5 @@
 import { calcRoot } from "@fuel-ts/merkle";
-import { PRECOMPILE } from "../precompiles/swapPredicatePrecompile";
+import PRECOMPILE from "../precompiles/swapPredicatePrecompile";
 
 // Read precompiled binary, and substitute receiver, askToken and askAmount
 export function buildBytecode(receiver: string, askToken: string, askAmount: string): string {

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { useProvider } from "../hooks/useProvider";
-import { useFuel } from "../hooks/useFuel";
 import type { FuelProviderConfig } from "@fuel-wallet/types";
+import useProvider from "../hooks/useProvider";
+import useFuel from "../hooks/useFuel";
 
 
-export function Network(network: string, setNetwork: React.Dispatch<React.SetStateAction<string>>) {
+function Network(network: string, setNetwork: React.Dispatch<React.SetStateAction<string>>) {
     let {provider} = useProvider();
       
     if (provider !== undefined && network === "") {
@@ -26,3 +26,5 @@ export function Network(network: string, setNetwork: React.Dispatch<React.SetSta
         };
     }, [fuel]);
   }
+
+export default Network;
