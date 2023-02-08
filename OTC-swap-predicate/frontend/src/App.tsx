@@ -5,7 +5,7 @@ import { ZERO_ADDRESS } from "./utils/constants";
 import { validateAddress, validateAmount } from "./utils/inputValidation";
 import getTokenBalance from "./utils/predicateBalance";
 import PredicateInfo from "./components/predicateInfo";
-import Network from "./components/network";
+import useNetwork from "./hooks/useNetwork";
 
 import "./App.css";
 
@@ -18,7 +18,7 @@ function App() {
   const [network, setNetwork] = useState<string>("")
 
   // Get initial network url from fuel wallet and listen for changes
-  Network(network, setNetwork);
+  useNetwork(network, setNetwork);
 
   // Convenience function to clear state
   function clearResults() {
