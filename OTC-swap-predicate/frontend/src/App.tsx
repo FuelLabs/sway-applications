@@ -4,6 +4,7 @@ import { buildBytecode, calculateRoot } from "./utils/bytecodeUtils";
 import { ZERO_ADDRESS } from "./utils/constants";
 import { validateAddress, validateAmount } from "./utils/inputValidation";
 import getTokenBalance from "./utils/predicateBalance";
+import OfferInput from "./components/offerInput";
 import PredicateInfo from "./components/predicateInfo";
 import useNetwork from "./hooks/useNetwork";
 
@@ -75,11 +76,7 @@ function App() {
     </header>
 
     <div className="App-main">
-      <p>Ask amount</p><input ref={askAmountRef} id="amountInput" type="text" required/>
-      <p>Ask token</p><input ref={askTokenRef} type="text" placeholder="0x... / fuel1..." required/>
-      <p>Receiver</p><input ref={receiverRef} type="text" placeholder="0x... / fuel1..." required/>
-      <button className="App-button" onClick={handleCalculate}> Calculate offer address </button>
-
+      <OfferInput askAmountRef={askAmountRef} askTokenRef={askTokenRef} receiverRef={receiverRef} handleCalculate={handleCalculate}/>
       <PredicateInfo predicateAddress={predicateAddress} tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
     </div>
 
