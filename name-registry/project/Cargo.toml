@@ -1,5 +1,5 @@
 [workspace]
 resolver = "2"
 members = [
-    "./project/registry-contract",
+    "./contracts/registry-contract",
 ]
