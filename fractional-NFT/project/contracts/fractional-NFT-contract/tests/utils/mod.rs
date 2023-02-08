@@ -1,14 +1,13 @@
 use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identity};
 
-// Load abi from json
 abigen!(
     Contract(
         name = "FractionalNFT",
-        abi = "./project/fractional-NFT-contract/out/debug/fractional-NFT-contract-abi.json"
+        abi = "./contracts/fractional-NFT-contract/out/debug/fractional-NFT-contract-abi.json"
     ),
     Contract(
         name = "Nft",
-        abi = "./project/fractional-NFT-contract/tests/artifacts/NFT/out/debug/NFT-1-abi.json"
+        abi = "./contracts/fractional-NFT-contract/tests/artifacts/NFT/out/debug/NFT-1-abi.json"
     )
 );
 

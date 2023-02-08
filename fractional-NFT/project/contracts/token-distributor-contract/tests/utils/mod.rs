@@ -4,19 +4,19 @@ use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identi
 abigen!(
     Contract(
         name = "TokenDistributor",
-        abi = "./project/token-distributor-contract/out/debug/token-distributor-contract-abi.json"
+        abi = "./contracts/token-distributor-contract/out/debug/token-distributor-contract-abi.json"
     ),
     Contract(
         name = "FractionalNFT",
-        abi = "./project/fractional-NFT-contract/out/debug/fractional-NFT-contract-abi.json"
+        abi = "./contracts/fractional-NFT-contract/out/debug/fractional-NFT-contract-abi.json"
     ),
     Contract(
         name = "Nft",
-        abi = "./project/token-distributor-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"
+        abi = "./contracts/token-distributor-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"
     ),
     Contract(
         name = "Asset",
-        abi = "./project/token-distributor-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+        abi = "./contracts/token-distributor-contract/tests/artifacts/asset/out/debug/asset-abi.json"
     ),
 );
 
