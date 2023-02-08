@@ -4,7 +4,6 @@ import { useFuel } from "../hooks/useFuel";
 import type { FuelProviderConfig } from "@fuel-wallet/types";
 
 
-// React function component
 export function Network(network: string, setNetwork: React.Dispatch<React.SetStateAction<string>>) {
     let {provider} = useProvider();
       

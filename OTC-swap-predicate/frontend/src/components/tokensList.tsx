@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { CoinQuantity } from "fuels";
+import { Address, CoinQuantity } from "fuels";
 
 type TokenListProps = {
     tokensFound: CoinQuantity[],
@@ -8,12 +8,12 @@ type TokenListProps = {
 }
 
 const TokenList: FC<TokenListProps> = ({tokensFound, handleTake, handleCancel}: TokenListProps) => {
-    return (
+  return (
         <>
         {/* This will only render if tokensFound is not empty */}
         {tokensFound.length > 0 &&
           <>
-            <p>Tokens found at address :</p>
+            <p>Offer found :</p>
             <table className="App-tokenTable">
               <thead>
                 <tr key="headers">
