@@ -81,7 +81,9 @@ jobs:
           date: 2023-01-18
 
       - name: Check Sway formatting
-        run: forc fmt --path ${{ matrix.project }} --check
+        run: |
+          cd ${{ matrix.project }}
+          forc fmt --check
 
       - name: Check Rust formatting
         run: |
@@ -89,7 +91,9 @@ jobs:
           cargo fmt --verbose --check
 
       - name: Build Sway
-        run: forc build --path ${{ matrix.project }}
+        run: |
+          cd ${{ matrix.project }}
+          forc build
 
       - name: Run Rust tests
         run: |
@@ -127,7 +131,11 @@ jobs:
           date: 2023-01-18
 
       - name: Check Sway formatting
-        run: forc fmt --path ${{ matrix.project }} --check
+        run: |
+          cd ${{ matrix.project }}
+          forc fmt --check
 
       - name: Build Sway
-        run: forc build --path ${{ matrix.project }}
+        run: |
+          cd ${{ matrix.project }}
+          forc build
