@@ -3,11 +3,11 @@ use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identi
 abigen!(
     Contract(
         name = "Escrow",
-        abi = "project/escrow-contract/out/debug/escrow-contract-abi.json"
+        abi = "./contracts/escrow-contract/out/debug/escrow-contract-abi.json"
     ),
     Contract(
         name = "MyAsset",
-        abi = "project/escrow-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+        abi = "./contracts/escrow-contract/tests/artifacts/asset/out/debug/asset-abi.json"
     )
 );
 
