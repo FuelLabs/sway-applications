@@ -21,7 +21,7 @@
 
 Oracles provide blockchain applications access to off-chain information such as asset prices, and verifiable random numbers.  Oracles allow blockchain applications to react to real-world events such as a price drop in collateral or the winner of a sporting event.  Oracles typically rely on a trusted off-chain node to provide them with the correct data.  This example oracle provides price data about a specific asset, and assumes a decimal precision of 1e9.
 
-More information can be found in the [specification](./SPECIFICATION.md).
+More information can be found in the [specification](./project/SPECIFICATION.md).
 
 ## Project Structure
 
@@ -124,4 +124,4 @@ cargo test
 
 The specification contains a non-technical overview of the contract.
 
-Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
+Check [SPECIFICATION.md](./project/SPECIFICATION.md) for more info!
