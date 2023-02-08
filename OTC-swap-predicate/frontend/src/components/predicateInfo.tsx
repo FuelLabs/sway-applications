@@ -7,17 +7,17 @@ import TokenList from "./tokensList";
 type PredicateInfoProps = {
     predicateAddress: Address,
     tokensFound: CoinQuantity[],
-    handleTake: () => void,
-    handleCancel: () => void,
 }
 
+const PredicateInfo: FC<PredicateInfoProps> = ({predicateAddress, tokensFound}: PredicateInfoProps) => {
 
-const PredicateInfo: FC<PredicateInfoProps> = ({predicateAddress, tokensFound, handleTake, handleCancel}: PredicateInfoProps) => {
+
     if (predicateAddress === ZERO_ADDRESS) {
         return null;
     }
 
     if (tokensFound.length === 0) {
+
         return (
             <>
                 <p>To fund this offer, send tokens to :</p>
@@ -29,7 +29,7 @@ const PredicateInfo: FC<PredicateInfoProps> = ({predicateAddress, tokensFound, h
 
     else {
         return (
-            <TokenList tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
+            <TokenList tokensFound={tokensFound}/>
         )
     }
 }

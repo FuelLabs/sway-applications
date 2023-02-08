@@ -1,73 +1,23 @@
-import { useState, useRef } from "react";
-import { Address, CoinQuantity } from "fuels";
-import { buildBytecode, calculateRoot } from "./utils/bytecodeUtils";
+import { useState } from "react";
+import { CoinQuantity } from "fuels";
 import { ZERO_ADDRESS } from "./utils/constants";
-import { validateAddress, validateAmount } from "./utils/inputValidation";
-import getTokenBalance from "./utils/predicateBalance";
 import OfferInput from "./components/offerInput";
 import PredicateInfo from "./components/predicateInfo";
 import useNetwork from "./hooks/useNetwork";
 
 import "./App.css";
+import { Box } from "@fuel-ui/react";
 
 
 function App() {
 
   // State contains the calculated predicate address and any tokens belonging to it
-  const [predicateAddress, setpredicateAddress] = useState(ZERO_ADDRESS);
+  const [predicateAddress, setPredicateAddress] = useState(ZERO_ADDRESS);
   const [tokensFound, setTokensFound] = useState<CoinQuantity[]>([]);
   const [network, setNetwork] = useState<string>("")
 
   // Get initial network url from fuel wallet and listen for changes
-  useNetwork(network, setNetwork);
-
-  // Convenience function to clear state
-  function clearResults() {
-    setpredicateAddress(ZERO_ADDRESS);
-    setTokensFound([]);
-  }
-
-  // References to the input fields
-  let receiverRef = useRef<HTMLInputElement>(null);
-  let askTokenRef = useRef<HTMLInputElement>(null);
-  let askAmountRef = useRef<HTMLInputElement>(null);
-
-  // Use provided offer conditions to create a corresponding predicate root (address)
-  async function handleCalculate() {
-    clearResults();
-
-    // Validate inputs    
-    let receiverValid = validateAddress(receiverRef.current);
-    let askTokenValid = validateAddress(askTokenRef.current);
-    let askAmountValid = validateAmount(askAmountRef.current);
-
-
-    // TODO : Provide feedback to user on which input(s) were invalid
-    if (receiverValid === null || askTokenValid === null|| askAmountValid === null) {
-      clearResults();
-      return;
-    }
-    
-    // build predicate bytecode, calculate root, and set to state
-    let bytecode = buildBytecode(receiverValid, askTokenValid, askAmountValid);
-    let predicateAddress = Address.fromString(calculateRoot(bytecode));
-    setpredicateAddress(predicateAddress);
-
-    // Look for tokens belonging to the predicate address, and set them to state
-    let tokens = await getTokenBalance(predicateAddress, network);
-    setTokensFound(tokens);
-
-  }
-
-  // TODO Spend the tokens found at the predicate address
-  async function handleTake() {
-    window.alert("Not implemented yet!");
-  }
-
-  // TODO Recover the tokens found at the predicate address (if owner)
-  async function handleCancel() {
-    window.alert("Not implemented yet!");
-  }
+  useNetwork(network, setNetwork, predicateAddress, setTokensFound);
 
   return (
     <>
@@ -75,9 +25,11 @@ function App() {
       <h1>OTC Swap</h1>
     </header>
 
+    <Box css={{ background: '$red7' }}>Hello world</Box>
+
     <div className="App-main">
-      <OfferInput askAmountRef={askAmountRef} askTokenRef={askTokenRef} receiverRef={receiverRef} handleCalculate={handleCalculate}/>
-      <PredicateInfo predicateAddress={predicateAddress} tokensFound={tokensFound} handleTake={handleTake} handleCancel={handleCancel}/>
+      <OfferInput setPredicateAddress={setPredicateAddress} setTokensFound={setTokensFound} network={network}/>
+      <PredicateInfo predicateAddress={predicateAddress} tokensFound={tokensFound}/>
     </div>
 
     <div className="App-provider">

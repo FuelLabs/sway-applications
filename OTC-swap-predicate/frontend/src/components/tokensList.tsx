@@ -1,43 +1,45 @@
 import { FC } from "react";
-import { Address, CoinQuantity } from "fuels";
+import { CoinQuantity } from "fuels";
 
 type TokenListProps = {
     tokensFound: CoinQuantity[],
-    handleTake: () => void,
-    handleCancel: () => void,
 }
 
-const TokenList: FC<TokenListProps> = ({tokensFound, handleTake, handleCancel}: TokenListProps) => {
+const TokenList: FC<TokenListProps> = ({tokensFound}: TokenListProps) => {
+
+    // TODO Spend the tokens found at the predicate address
+    async function handleTake() {
+      window.alert("Not implemented yet!");
+    }
+  
+    // TODO Recover the tokens found at the predicate address (if owner)
+    async function handleCancel() {
+      window.alert("Not implemented yet!");
+    }
   return (
         <>
-        {/* This will only render if tokensFound is not empty */}
-        {tokensFound.length > 0 &&
-          <>
-            <p>Offer found :</p>
-            <table className="App-tokenTable">
-              <thead>
-                <tr key="headers">
-                  <th>Asset ID</th>
-                  <th>Amount</th>
+          <p>Offer found :</p>
+          <table className="App-tokenTable">
+            <thead>
+              <tr key="headers">
+                <th>Asset ID</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tokensFound.map((token) => (
+                <tr key="items">
+                  <td className="App-address">{token.assetId}</td>
+                  <td>{token.amount.toString()}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {tokensFound.map((token) => (
-                  <tr key="items">
-                    <td className="App-address">{token.assetId}</td>
-                    <td>{token.amount.toString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+              ))}
+            </tbody>
+          </table>
 
-            <div>
-              <button className="App-button" onClick={handleTake}>Take offer</button>
-              <button className="App-button" onClick={handleCancel}>Cancel offer</button>
-            </div>
-
-          </>
-        } 
+          <div>
+            <button className="App-button" onClick={handleTake}>Take offer</button>
+            <button className="App-button" onClick={handleCancel}>Cancel offer</button>
+          </div>
       </>
         
         )
