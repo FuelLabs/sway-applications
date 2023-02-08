@@ -44,7 +44,7 @@ Limitations:
 As such, this mechanism is most useful for OTC trades and atomic swaps.
 
 # Project Structure
-The project consists of a predicate written in Sway (`./project/swap-predicate/src/main.sw`) and tests using fuels-rs (`./project/swap-predicate/tests/`)
+The project consists of a predicate written in Sway (`./project/predicates/swap-predicate/src/main.sw`) and tests using fuels-rs (`./project/predicates/swap-predicate/tests/`)
 
 # Running the project
 In order to run the project make sure that you are in the root of this project i.e. `/path/to/OTC-swap-predicate/<you are here>`

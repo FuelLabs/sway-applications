@@ -5,7 +5,7 @@ use fuels::types::resource::Resource;
 
 abigen!(Predicate(
     name = "SwapPredicate",
-    abi = "project/swap-predicate/out/debug/swap-predicate-abi.json"
+    abi = "./predicates/swap-predicate/out/debug/swap-predicate-abi.json"
 ));
 
 // The fee-paying base asset
