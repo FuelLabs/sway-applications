@@ -61,7 +61,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.3.0
         with:
           toolchain: latest
-          date: 2023-01-06
+          date: 2023-01-18
 
       - name: Check Sway formatting
         run: forc fmt --path ${{ matrix.project }} --check
