@@ -1,8 +1,11 @@
 import { Address } from "fuels";
 import { MAX_U64 } from "./constants";
+import { bn } from 'fuels'
+import { toast } from "@fuel-ui/react";
 
 
-export function parseAddress(addressInput: string): string | null {
+
+export function parseAddress(addressInput: string, element: string): string | null {
 
     // If input element is empty, or cannot be parsed as an address, return null
     if (addressInput === ""){
@@ -16,7 +19,8 @@ export function parseAddress(addressInput: string): string | null {
         parsed =  Address.fromAddressOrString(address);
     }
     catch {
-        console.log( "failed to validate input: " + addressInput)
+        console.log("failed to parse address input " + element + ": " + addressInput)
+        window.alert("Invalid address: " + element)
         return null;
     }
 
@@ -29,7 +33,7 @@ export function parseAddress(addressInput: string): string | null {
 }
 
 
-export function parseAmount(amountInput: string): string | null {
+export function parseAmount(amountInput: string, element: string): string | null {
 
     // If input element is empty, or cannot be parsed, return null
     if (amountInput === "") {
@@ -38,16 +42,18 @@ export function parseAmount(amountInput: string): string | null {
 
     let parsed;
     try{
-        parsed = BigInt(amountInput);
+        parsed = bn.parseUnits(amountInput, 9);
     }
     catch {
-        console.log( "failed to validate input: " + amountInput)
+        console.log("failed to parse address input " + element + ": " + amountInput)
+        window.alert("Invalid amount: " + element)
         return null;
     }
 
-    if(parsed > MAX_U64 || parsed < 1){
-        return null;
-    }
+    //if(parsed.gt(MAX_U64) || parsed.lte(0)){
+    //    console.log("size err!")
+    //    return null;
+    //}
 
-    return "0x".concat(parsed.toString(16).padStart(16, "0"));
+    return parsed.toHex(8);
 }

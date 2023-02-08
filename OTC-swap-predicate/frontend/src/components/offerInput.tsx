@@ -36,9 +36,9 @@ const OfferInput: FC<OfferInputProps> = ({setPredicateAddress, setTokensFound, n
         let {askAmount, askToken, receiver} = getParams();
 
         // Validate inputs    
-        let askAmountValid = parseAmount(askAmount);
-        let askTokenValid = parseAddress(askToken);
-        let receiverValid = parseAddress(receiver);
+        let askAmountValid = parseAmount(askAmount, "ask amount");
+        let askTokenValid = parseAddress(askToken, "ask token");
+        let receiverValid = parseAddress(receiver, "receiver");
 
         // TODO : Provide feedback to user on which input(s) were invalid
         if (receiverValid === null || askTokenValid === null|| askAmountValid === null) {

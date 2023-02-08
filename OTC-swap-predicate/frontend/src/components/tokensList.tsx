@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { CoinQuantity } from "fuels";
+import { Button, Stack } from "@fuel-ui/react";
 
 type TokenListProps = {
     tokensFound: CoinQuantity[],
@@ -9,13 +10,14 @@ const TokenList: FC<TokenListProps> = ({tokensFound}: TokenListProps) => {
 
     // TODO Spend the tokens found at the predicate address
     async function handleTake() {
-      window.alert("Not implemented yet!");
+      window.alert("Taking offer not implemented yet!");
     }
   
     // TODO Recover the tokens found at the predicate address (if owner)
     async function handleCancel() {
-      window.alert("Not implemented yet!");
+      window.alert("Cancelling offer not implemented yet!");
     }
+
   return (
         <>
           <p>Offer found :</p>
@@ -36,10 +38,10 @@ const TokenList: FC<TokenListProps> = ({tokensFound}: TokenListProps) => {
             </tbody>
           </table>
 
-          <div>
-            <button className="App-button" onClick={handleTake}>Take offer</button>
-            <button className="App-button" onClick={handleCancel}>Cancel offer</button>
-          </div>
+          <Stack css={{ maxW: "400px" }}>
+            <Button onPress={handleTake}> Take offer </Button>
+            <Button onPress={handleCancel}> Cancel offer </Button>
+          </Stack>
       </>
         
         )
