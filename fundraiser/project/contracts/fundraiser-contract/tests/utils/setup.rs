@@ -7,11 +7,11 @@ use fuels::{
 abigen!(
     Contract(
         name = "Fundraiser",
-        abi = "./project/fundraiser-contract/out/debug/fundraiser-contract-abi.json"
+        abi = "./contracts/fundraiser-contract/out/debug/fundraiser-contract-abi.json"
     ),
     Contract(
         name = "Asset",
-        abi = "./project/fundraiser-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+        abi = "./contracts/fundraiser-contract/tests/artifacts/asset/out/debug/asset-abi.json"
     )
 );
 

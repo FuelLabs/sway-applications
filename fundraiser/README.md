@@ -21,7 +21,7 @@
 
 A fundraiser, or crowdfund, is an application where any number of users are able to pledge towards a goal specified by the creator of the campaign. If the target amount is reached, or surpassed, then after the deadline of the campaign the creator is able to take those funds and spend it towards the proposed goal. On the other hand, if the target is not reached then all the users that have pledged are able to withdraw their pledge.
 
-In this case the pledged asset is a native asset on the Fuel network. More information can be found in the [specification](./SPECIFICATION.md).
+In this case the pledged asset is a native asset on the Fuel network. More information can be found in the [specification](./project/SPECIFICATION.md).
 
 ## Project Structure
 
@@ -65,4 +65,4 @@ cargo test
 
 The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the fundraiser.
 
-Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
+Check [SPECIFICATION.md](./project/SPECIFICATION.md) for more info!
