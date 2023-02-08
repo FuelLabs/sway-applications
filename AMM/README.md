@@ -5,6 +5,18 @@
     </picture>
 </p>
 
+<p align="center">
+    <a href="https://crates.io/crates/forc/0.33.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.33.1-orange" />
+    </a>
+    <a href="https://crates.io/crates/fuel-core/0.15.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.15.3-yellow" />
+    </a>
+    <a href="https://crates.io/crates/fuels/0.34.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.34.0-blue" />
+    </a>
+</p>
+
 ## Overview
 
 An *automated market maker (AMM)* is a type of decentralized exchange protocol that determines asset prices algorithmically through a conservation function. Trades on an AMM take place between the user and the contract, rather than between two users. The liquidity pool of assets in an AMM is supplied by the users. Providing liquidity is incentivized via liquidity miner rewards. 
