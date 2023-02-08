@@ -6,7 +6,7 @@ import PredicateInfo from "./components/predicateInfo";
 import useNetwork from "./hooks/useNetwork";
 
 import "./App.css";
-import { Box } from "@fuel-ui/react";
+import { Heading } from "@fuel-ui/react";
 
 
 function App() {
@@ -22,10 +22,8 @@ function App() {
   return (
     <>
     <header className="App-header">
-      <h1>OTC Swap</h1>
+      <Heading as="h1">OTC Swap</Heading>
     </header>
-
-    <Box css={{ background: '$red7' }}>Hello world</Box>
 
     <div className="App-main">
       <OfferInput setPredicateAddress={setPredicateAddress} setTokensFound={setTokensFound} network={network}/>
