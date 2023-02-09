@@ -20,19 +20,18 @@ const TokenList: FC<TokenListProps> = ({tokensFound}: TokenListProps) => {
 
   return (
         <>
-          <p>Offer found :</p>
           <table className="App-tokenTable">
             <thead>
               <tr key="headers">
-                <th>Asset ID</th>
-                <th>Amount</th>
+                <th>Offered Asset ID</th>
+                <th>Offered Amount</th>
               </tr>
             </thead>
             <tbody>
               {tokensFound.map((token) => (
                 <tr key="items">
                   <td className="App-address">{token.assetId}</td>
-                  <td>{token.amount.toString()}</td>
+                  <td>{token.amount.formatUnits()}</td>
                 </tr>
               ))}
             </tbody>

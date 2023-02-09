@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Address, CoinQuantity } from "fuels";
 import { ZERO_ADDRESS } from "../utils/constants";
 import TokenList from "./tokensList";
-import { Stack } from "@fuel-ui/react";
+import { Copyable, Stack, Text } from "@fuel-ui/react";
 
 
 type PredicateInfoProps = {
@@ -19,11 +19,19 @@ const PredicateInfo: FC<PredicateInfoProps> = ({predicateAddress, tokensFound}: 
 
     if (tokensFound.length === 0) {
 
+        let addressString = predicateAddress.toString();
+
         return (
             <Stack css={{ maxW: "600px", textAlign: "center" }}>
-                <p>To fund this offer, send tokens to :</p>
-                <p className="App-address">{predicateAddress.toString()}</p>
-                <p style={{fontSize: "10px", color:"red"}}> WARNING: Spending / recovery not yet supported by this UI. Use real funds ONLY if you know what you're doing!</p>
+                <Text css={{fontSize : 20}}>
+                    To fund this offer, send tokens to :
+                </Text>
+                <Copyable value={addressString}>
+                    <p className="App-address">{addressString}</p>
+                </Copyable>
+                <Text css={{ color: "red", fontSize: "10px"}}>
+                    WARNING: Spending / recovery not yet supported by this UI. Use real funds ONLY if you know what you're doing!
+                </Text>
             </Stack>
         )
     }

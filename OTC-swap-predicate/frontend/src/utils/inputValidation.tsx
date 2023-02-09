@@ -1,7 +1,5 @@
 import { Address } from "fuels";
-import { MAX_U64 } from "./constants";
 import { bn } from 'fuels'
-import { toast } from "@fuel-ui/react";
 
 
 
@@ -42,18 +40,13 @@ export function parseAmount(amountInput: string, element: string): string | null
 
     let parsed;
     try{
-        parsed = bn.parseUnits(amountInput, 9);
+        parsed = bn.parseUnits(amountInput);
     }
     catch {
         console.log("failed to parse address input " + element + ": " + amountInput)
         window.alert("Invalid amount: " + element)
         return null;
     }
-
-    //if(parsed.gt(MAX_U64) || parsed.lte(0)){
-    //    console.log("size err!")
-    //    return null;
-    //}
 
     return parsed.toHex(8);
 }

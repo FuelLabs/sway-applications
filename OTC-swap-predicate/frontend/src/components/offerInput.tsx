@@ -4,7 +4,7 @@ import { parseAddress, parseAmount } from "../utils/inputValidation";
 import getTokenBalance from "../utils/predicateBalance";
 import { buildBytecode, calculateRoot } from "../utils/bytecodeUtils";
 import { ZERO_ADDRESS } from "../utils/constants";
-import { Form, Input, Stack, Button } from "@fuel-ui/react";
+import { Form, Input, Stack, Button, Tooltip } from "@fuel-ui/react";
 
 
 type OfferInputProps = {
@@ -57,26 +57,32 @@ const OfferInput: FC<OfferInputProps> = ({setPredicateAddress, setTokensFound, n
     }
 
     return (
-        <Stack css={{ maxW: "400px" }}>
+        <Stack css={{ maxW: "400px"}}>
             <Form.Control className="input" isRequired>
                 <Form.Label css={{color: "white"}} htmlFor="amount">
-                    Ask amount
+                    Requested token amount
                 </Form.Label>
-                <Input key="amount" size="lg" isFullWidth >
-                    <Input.Number inputMode="decimal" name="amount" placeholder="0.0"/>
-                </Input>
+                <Tooltip content={<>The amount of tokens you would like to receive</>}>
+                    <Input key="amount" size="lg" isFullWidth >
+                        <Input.Number inputMode="decimal" name="amount" placeholder="0.0"/>
+                    </Input>
+                </Tooltip>
                 <Form.Label css={{color: "white"}} htmlFor="token">
-                    Ask token
+                    Requested Asset ID
                 </Form.Label>
-                <Input key="token" size="lg" isFullWidth>
-                    <Input.Field inputMode="text" name="token" placeholder="0x... / fuel1..."/>
-                </Input>
+                <Tooltip content={<>The asset ID of tokens you would like to receive</>}>
+                    <Input key="token" size="lg" isFullWidth>
+                        <Input.Field inputMode="text" name="token" placeholder="0x... / fuel1..."/>
+                    </Input>
+                </Tooltip>
                 <Form.Label css={{color: "white"}} htmlFor="receiver">
-                    Ask receiver
+                    Receiver
                 </Form.Label>
+                <Tooltip content={<>The address you would like to receive the funds at. Note: This is also the only address that will be able to cancel the order</>}>
                 <Input key="receiver" size="lg" isFullWidth>
                     <Input.Field inputMode="text" name="receiver" placeholder="0x... / fuel1..."/>
                 </Input>
+                </Tooltip>
             </Form.Control>
             <Button onPress={handleCalculate}> Calculate offer address </Button>
         </Stack>
