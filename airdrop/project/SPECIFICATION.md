@@ -1,17 +1,17 @@
 Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
-    - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
-        - [Airdrop Core Functionality](#airdrop-core-functionality)
-            - [`constructor()`](#constructor)
-            - [`claim()`](#claim)
-        - [Airdrop State Checks](#airdrop-state-checks)
-            - [`claim_data()`](#claim_data)
-            - [`end_block()`](#end_block)
-            - [`merkle_root()`](#merkle_root)
-        - [Simple Asset Core Functionality](#simple-asset-core-functionality)
-            - [`constructor()`](#constructor-1)
-- [Sequence Diagram](#sequence-diagram)
+  - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
+    - [Airdrop Core Functionality](#airdrop-core-functionality)
+      - [`constructor()`](#constructor)
+      - [`claim()`](#claim)
+    - [Airdrop State Checks](#airdrop-state-checks)
+      - [`claim_data()`](#claim_data)
+      - [`end_block()`](#end_block)
+      - [`merkle_root()`](#merkle_root)
+    - [Simple Asset Core Functionality](#simple-asset-core-functionality)
+      - [`constructor()`](#constructor-1)
+  - [Sequence Diagram](#sequence-diagram)
 
 # Overview
 
@@ -72,4 +72,4 @@ This sub-section details what a user is able to do e.g. click a button and "x, y
 
 ## Sequence Diagram
 
-![Airdrop Sequence Diagram](.docs/airdrop-sequence-diagram.png)
+![Airdrop Sequence Diagram](../.docs/airdrop-sequence-diagram.png)
