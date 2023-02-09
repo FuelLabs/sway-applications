@@ -45,10 +45,10 @@ airdrop
 │   │       └── tests/harness.rs
 │   ├── README.md
 │   └── SPECIFICATION.md
-├── README.md
-└── ui
-    ├── README.md
-    └── SPECIFICATION.md
+├── ui
+│   ├── README.md
+│   └── SPECIFICATION.md
+└── README.md
 ```
 
 ## Running the project
