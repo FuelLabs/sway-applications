@@ -40,21 +40,21 @@ jobs:
       matrix:
         project:
           [
-            "airdrop/project",
-            "AMM/project",
-            "auctions/project",
-            "DAO/project",
-            "escrow/project",
-            "fractional-NFT/project",
-            "fundraiser/project",
-            "games/TicTacToe/project",
-            "multisig-wallet/project",
-            "name-registry/project",
-            "NFT/project",
-            "oracle/project",
-            "OTC-swap-predicate/project",
-            ".template/project",
-            "timelock/project",
+            "airdrop",
+            "AMM",
+            "auctions",
+            "DAO",
+            "escrow",
+            "fractional-NFT",
+            "fundraiser",
+            "games/TicTacToe",
+            "multisig-wallet",
+            "name-registry",
+            "NFT",
+            "oracle",
+            "OTC-swap-predicate",
+            ".template",
+            "timelock",
           ]
 
     steps:
@@ -82,22 +82,22 @@ jobs:
 
       - name: Check Sway formatting
         run: |
-          cd ${{ matrix.project }}
+          cd ${{ matrix.project }}/project
           forc fmt --check
 
       - name: Check Rust formatting
         run: |
-          cd ${{ matrix.project }}
+          cd ${{ matrix.project }}/project
           cargo fmt --verbose --check
 
       - name: Build Sway
         run: |
-          cd ${{ matrix.project }}
+          cd ${{ matrix.project }}/project
           forc build
 
       - name: Run Rust tests
         run: |
-          cd ${{ matrix.project }}
+          cd ${{ matrix.project }}/project
           cargo test
 
   contributing-book:
