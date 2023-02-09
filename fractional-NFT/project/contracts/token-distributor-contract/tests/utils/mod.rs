@@ -4,7 +4,8 @@ use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identi
 abigen!(
     Contract(
         name = "TokenDistributor",
-        abi = "./contracts/token-distributor-contract/out/debug/token-distributor-contract-abi.json"
+        abi =
+            "./contracts/token-distributor-contract/out/debug/token-distributor-contract-abi.json"
     ),
     Contract(
         name = "FractionalNFT",
@@ -16,7 +17,8 @@ abigen!(
     ),
     Contract(
         name = "Asset",
-        abi = "./contracts/token-distributor-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+        abi =
+            "./contracts/token-distributor-contract/tests/artifacts/asset/out/debug/asset-abi.json"
     ),
 );
 
