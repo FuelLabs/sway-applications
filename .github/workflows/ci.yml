@@ -75,7 +75,7 @@ jobs:
         run: rustup component add rustfmt
 
       - name: Install Fuel toolchain
-        uses: FuelLabs/action-fuel-toolchain@v0.3.0
+        uses: FuelLabs/action-fuel-toolchain@v0.4.0
         with:
           toolchain: latest
           date: 2023-01-18
@@ -125,7 +125,7 @@ jobs:
         run: rustup component add rustfmt
 
       - name: Install Fuel toolchain
-        uses: FuelLabs/action-fuel-toolchain@v0.3.0
+        uses: FuelLabs/action-fuel-toolchain@v0.4.0
         with:
           toolchain: latest
           date: 2023-01-18
