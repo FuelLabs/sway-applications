@@ -31,40 +31,41 @@ The project consists of a smart contract.
 
 <!--Only show most important files e.g. script to run, build etc.-->
 
-```
-escrow/
-├── project/
-|   └── escrow-contract/
-|       ├── src/main.sw
-|       └── tests/harness.rs
-├── README.md
-└── SPECIFICATION.md
+```sh
+escrow
+├── project
+│   ├── contracts
+│   │   └── escrow-contract
+│   │       ├── src/main.sw
+│   │       └── tests/harness.rs
+│   ├── README.md
+│   └── SPECIFICATION.md
+├── ui
+│   ├── README.md
+│   └── SPECIFICATION.md
+└── README.md
 ```
 
 ## Running the project
 
-### User Interface
+### User interface
 
-TODO: UI does not currently exist
+TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
 
-### Tests
+### Project
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/escrow/<you are here>`
+In order to run the subsequent commands change into the following directory `/path/to/escrow/project/<here>`.
 
-Build the contracts:
+#### Program compilation
 
 ```bash
 forc build
 ```
 
-Run the tests:
+#### Running the tests
+
+Before running the tests the programs must be compiled with the command above.
 
 ```bash
 cargo test
 ```
-
-## Specification
-
-The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the escrow.
-
-Check [SPECIFICATION.md](./project/SPECIFICATION.md) for more info!
