@@ -9,6 +9,7 @@ import "./App.css";
 import { Heading } from "@fuel-ui/react";
 
 
+
 function App() {
 
   // State contains the calculated predicate address and any tokens belonging to it
