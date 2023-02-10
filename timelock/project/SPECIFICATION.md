@@ -73,11 +73,11 @@ Returns the hash (`id`) of the transaction arguments
 
 ### Sequence Diagram
 
-![Timelock Sequence Diagram](.docs/timelock-sequence-diagram.png)
+![Timelock Sequence Diagram](../.docs/timelock-sequence-diagram.png)
 
 ### Timestamp Validity
 
 1. When submitting a transaction into a [`queue()`](#queue) the timestamp must fall between the `MINIMUM_DELAY` and `MAXIMUM_DELAY`.
 2. To [`execute()`](#execute) the transaction the current time `t` must be greater than or equal to the submitted timestamp; however, it must be no greater than the `MAXIMUM_DELAY` time.
 
-![Timelock Timestamp Diagram](.docs/timelock-timestamp-validity.png)
+![Timelock Timestamp Diagram](../.docs/timelock-timestamp-validity.png)
