@@ -1,13 +1,13 @@
 Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
-  - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
+  - [Core Functionality](#core-functionality)
     - [`create_campaign()`](#create_campaign)
     - [`cancel_campaign()`](#cancel_campaign)
     - [`claim_pledges()`](#claim_pledges)
     - [`pledge()`](#pledge)
     - [`unpledge()`](#unpledge)
-  - [Information that is presented to users](#information-that-is-presented-to-users)
+  - [State Checks](#state-checks)
     - [`asset_count()`](#asset_count)
     - [`asset_info_by_id()`](#asset_info_by_id)
     - [`asset_info_by_count()`](#asset_info_by_count)
@@ -31,7 +31,7 @@ This section contains general information about the functionality of the applica
 
 If you are interested in a functional overview then this is the section for you.
 
-## Actions that users are able to perform
+## Core Functionality
 
 This sub-section details what a user is able to do e.g. click a button and "x, y, z" happens.
 
@@ -74,7 +74,7 @@ A user should be able to unpledge any amount that they have pledged
 
 1. If the campaign has not been claimed
 
-## Information that is presented to users
+## State Checks
 
 This sub-section details the information that a user should have access to / what the application provides to them e.g. a history of their previous actions.
 
@@ -138,4 +138,4 @@ Returns the total number of campaigns that a user has pledged to
 
 ## Sequence diagram
 
-![Fundraiser Sequence Diagram](.docs/fundraiser-sequence-diagram.png)
+![Fundraiser Sequence Diagram](../.docs/fundraiser-sequence-diagram.png)
