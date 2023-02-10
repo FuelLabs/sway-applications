@@ -1,8 +1,6 @@
 import { Address } from "fuels";
 import { bn } from 'fuels'
 
-
-
 export function parseAddress(addressInput: string, element: string): string | null {
 
     // If input element is empty, or cannot be parsed as an address, return null
@@ -10,28 +8,15 @@ export function parseAddress(addressInput: string, element: string): string | nu
         return null;
     }
 
-    let parsed;
-
-    if (addressInput.slice(0, 5) === "fuel1") {
-        try {
-            parsed = Address.fromAddressOrString(addressInput);
-        }
-        catch {
-            return null;
-        }
+    try {
+        let parsed = Address.fromDynamicInput(addressInput);
+        return parsed.toHexString();
     }
 
-    else {
-        try {
-            parsed = Address.fromDynamicInput(addressInput);
-        }
-
-        catch {
-            return null;
-        }
+    catch {
+        return null;
     }
-
-    return parsed.toHexString();
+   
 }
 
 
@@ -42,13 +27,12 @@ export function parseAmount(amountInput: string, element: string): string | null
         return null;
     }
 
-    let parsed;
     try {
-        parsed = bn.parseUnits(amountInput);
+        let parsed = bn.parseUnits(amountInput);
+        return parsed.toHex(8);
     }
     catch {
         return null;
     }
-
-    return parsed.toHex(8);
+    
 }
