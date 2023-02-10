@@ -41,4 +41,4 @@ If you are interested in a functional overview then this is the section for you.
 
 ### Sequence Diagram
 
-![TicTacToe Sequence Diagram](.docs/tictactoe-sequence-diagram.png)
+![TicTacToe Sequence Diagram](../.docs/tictactoe-sequence-diagram.png)
