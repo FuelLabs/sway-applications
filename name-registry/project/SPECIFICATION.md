@@ -1,12 +1,12 @@
 Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
-  - [Actions that users are able to perform](#actions-that-users-are-able-to-perform)
+  - [Core Functionality](#core-functionality)
     - [`register()`](#register)
     - [`extend()`](#extend)
     - [`set_identity()`](#set_identity)
     - [`set_owner()`](#set_owner)
-  - [Information that is presented to users](#information-that-is-presented-to-users)
+  - [State Checks](#state-checks)
     - [`expiry()`](#expiry)
     - [`identity()`](#identity)
     - [`owner()`](#owner)
@@ -23,7 +23,7 @@ This section contains general information about the functionality of the applica
 
 If you are interested in a functional overview then this is the section for you.
 
-## Actions that users are able to perform
+## Core Functionality
 
 This sub-section details what a user is able to do e.g. click a button and "x, y, z" happens.
 
@@ -51,7 +51,7 @@ Allows the owner to change the resolving identity
 
 Allows the owner to transfer ownership of the registered name
 
-## Information that is presented to users
+## State Checks
 
 This sub-section details the information that a user should have access to / what the application provides to them e.g. a history of their previous actions.
 
