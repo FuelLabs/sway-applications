@@ -5,11 +5,19 @@ use fuels::{
     types::Identity,
 };
 
-// Load abi from json
 abigen!(
-    Contract(name="EnglishAuction", abi="./english-auction/project/auction-contract/out/debug/auction-contract-abi.json"),
-    Contract(name="Nft", abi="./english-auction/project/auction-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"),
-    Contract(name="MyAsset", abi="./english-auction/project/auction-contract/tests/artifacts/asset/out/debug/asset-abi.json"),
+    Contract(
+        name = "EnglishAuction",
+        abi = "./contracts/auction-contract/out/debug/auction-contract-abi.json"
+    ),
+    Contract(
+        name = "Nft",
+        abi = "./contracts/auction-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"
+    ),
+    Contract(
+        name = "MyAsset",
+        abi = "./contracts/auction-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+    ),
 );
 
 pub struct Metadata {
