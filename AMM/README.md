@@ -36,24 +36,28 @@ The contracts are designed to
 
 	> **NOTE** The miner fee can be modified per asset pair
 
-## Project Structure
+## Project structure
 
-```
-AMM/
-├── project/
-|   ├── contracts/
-|   |   ├── AMM-contract/
-|   |   └── exchange-contract/
-|   ├── scripts/
-|   |   ├── atomic-add-liquidity/
-|   |   ├── swap-exact-input/
-|   |   └── swap-exact-output/
-|   ├── libraries/
-|   |   └── src/interface.sw
-|   └── test-utils/
-|       └── src/lib.rs
-├── README.md
-└── SPECIFICATION.md
+```sh
+AMM
+├── project
+│   ├── contracts
+│   │   ├── AMM-contract
+│   │   └── exchange-contract
+│   ├── libraries
+│   │   └── src/interface.sw
+│   ├── scripts
+│   │   ├── atomic-add-liquidity
+│   │   ├── swap-exact-input
+│   │   └── swap-exact-output
+|   ├── test-utils
+|   |   └── src/lib.rs
+|   ├── README.md
+│   └── SPECIFICATION.md
+├── ui
+│   ├── README.md
+│   └── SPECIFICATION.md
+└─── README.md
 ```
 
 All contracts and scripts have the structure:
@@ -66,28 +70,24 @@ contract or script/
 
 ## Running the project
 
-### User Interface
+### User interface
 
-TODO: UI is to be added.
+TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
 
-### Tests
+### Project
 
-In order to run the tests make sure that you are in the root of this project `/path/to/AMM/<you are here>`
+In order to run the subsequent commands change into the following directory `/path/to/AMM/project/<here>`.
 
-Build the contracts:
+#### Program compilation
 
 ```bash
 forc build
 ```
 
-Run the tests:
+#### Running the tests
+
+Before running the tests the programs must be compiled with the command above.
 
 ```bash
 cargo test
 ```
-
-## Specification
-
-The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the AMM.
-
-Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!

@@ -21,7 +21,7 @@
 
 TODO: A summary of the application should be written here.
 
-More information can be found in the [specification](./SPECIFICATION.md).
+More information can be found in the [specification](./project/SPECIFICATION.md).
 
 ## Project Structure
 
@@ -65,4 +65,4 @@ cargo test
 
 The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the template.
 
-Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
+Check [SPECIFICATION.md](./project/SPECIFICATION.md) for more info!
