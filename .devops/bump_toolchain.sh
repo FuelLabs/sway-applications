@@ -6,6 +6,7 @@ success=()
 
 # This can probably be cleaner
 REPO_ROOT=$(dirname $(dirname $(realpath $0)))
+TOOLCHAIN="fuel-toolchain.toml"
 TMP_TOOLCHAIN="fuel-toolchain2.toml"
 
 cd $REPO_ROOT
@@ -13,8 +14,8 @@ cd $REPO_ROOT
 for app in "${APPS[@]}"
 do
     echo Building $app
-    mv $app/fuel-toolchain.toml $app/$TMP_TOOLCHAIN
-    cp $REPO_ROOT/.devops/fuel-toolchain.toml $app/fuel-toolchain.toml
+    mv $app/$TOOLCHAIN $app/$TMP_TOOLCHAIN
+    cp .devops/$TOOLCHAIN $app/$TOOLCHAIN
     cd $app
     forc build
     
@@ -22,10 +23,10 @@ do
     status=$?
     if [ $status -ne 0 ]; then
         errors+=("${app}")
-        mv $app/$TMP_TOOLCHAIN $app/fuel-toolchain.toml
+        mv $TMP_TOOLCHAIN $TOOLCHAIN
     else
 	success+=("${app}")
-	rm $app/$TMP_TOOLCHAIN
+	rm $TMP_TOOLCHAIN
     fi
 
     cd $REPO_ROOT
@@ -48,4 +49,3 @@ if [ ${#success[@]} -ne 0 ]; then
         echo "  " $app
     done
 fi
-
