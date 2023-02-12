@@ -21,50 +21,49 @@
 
 The Fractional NFT Application will lock an NFT into a fractional-NFT(f-NFT) contract and allow users to purchase the newly minted fractionalized tokens. These tokens can then be bought and sold on an AMM or if a buyback is initiated, return them to the distribution contract. If all tokens are returned, the admin may unlock the NFT from the f-NFT contract and regain full ownership.
 
-More information can be found in the [specification](./projects/SPECIFICATION.md).
+More information can be found in the [specification](./SPECIFICATION.md).
 
-## Repository structure
+## Repository Structure
 
-The project consists of two smart contracts.
+The project consists of a smart contract.
 
-```sh
-fractional-NFT
-├── project
-│   ├── contracts
-│   │   ├── fractional-NFT-contract
-│   │   │   ├── src/main.sw
-│   │   │   └── tests/harness.rs
-│   │   └── token-distributor-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└── README.md
+```
+fractional-NFT/
+├── project/
+|   └── fractional-NFT-contract/
+|   |   ├── src/main.sw
+|   |   └── tests/harness.rs
+|   └── token-distributor-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
-### User interface
+### User Interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+TODO: UI does not currently exist
 
-### Project
+### Tests
 
-In order to run the subsequent commands change into the following directory `/path/to/fractional-NFT/project/<here>`.
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/fractional-NFT/<you are here>`
 
-#### Program compilation
+Build the contracts:
 
 ```bash
 forc build
 ```
 
-#### Running the tests
-
-Before running the tests the programs must be compiled with the command above.
+Run the tests:
 
 ```bash
 cargo test
 ```
+
+## Specification
+
+The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the fractional NFT.
+
+Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!

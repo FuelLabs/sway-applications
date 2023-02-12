@@ -23,47 +23,46 @@ An English Auction is where a seller auctions off an asset with an initial price
 
 The English Auction application implements this idea in a decentralized manner without the need for a 3rd party and with strong settlement assurances. The application has been designed to utilize native assets and NFTs enabling users to auction off native assets / NFTs and place bids using native assets / NFTs. 
 
-More information can be found in the [specification](./project/SPECIFICATION.md).
+More information can be found in the [specification](./SPECIFICATION.md).
 
-## Repository structure
+## Repository Structure
 
 The project consists of a smart contract.
 
-```sh
-english-auction
-├── project
-│   ├── contracts
-│   │   └── auction-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└── README.md
+```
+english-auction/
+├── project/
+|   └── auction-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
-### User interface
+### User Interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+TODO: UI does not currently exist
 
-### Project
+### Tests
 
-In order to run the subsequent commands change into the following directory `/path/to/english-auction/project/<here>`.
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/auctions/english-auction/<you are here>`
 
-#### Program compilation
+Build the contracts:
 
 ```bash
 forc build
 ```
 
-#### Running the tests
-
-Before running the tests the programs must be compiled with the command above.
+Run the tests:
 
 ```bash
 cargo test
 ```
+
+## Specification
+
+The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the english-auction.
+
+Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!

@@ -4,8 +4,8 @@ use fuels::{
 
 abigen!(Contract(
     name = "Oracle",
-    abi = "./contracts/oracle-contract/out/debug/oracle-contract-abi.json"
-));
+    abi = "./project/oracle-contract/out/debug/oracle-contract-abi.json"
+),);
 
 pub struct Metadata {
     pub oracle: Oracle,

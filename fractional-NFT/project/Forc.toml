@@ -1,8 +1,0 @@
-[workspace]
-members = [
-  "./contracts/fractional-NFT-contract",
-  "./contracts/fractional-NFT-contract/tests/artifacts/NFT",
-  "./contracts/token-distributor-contract",
-  "./contracts/token-distributor-contract/tests/artifacts/NFT",
-  "./contracts/token-distributor-contract/tests/artifacts/asset",
-]

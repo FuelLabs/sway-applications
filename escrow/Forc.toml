@@ -1,0 +1,5 @@
+[workspace]
+members = [
+  "./project/escrow-contract",
+  "./project/escrow-contract/tests/artifacts/asset",
+]

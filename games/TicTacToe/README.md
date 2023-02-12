@@ -22,47 +22,46 @@
 An on-chain TicTacToe game, where two players compete to align 3 markers in a row. The game consists of a 3x3 grid.
 The game has been won if three markers were aligned in a row. Otherwise, it's a draw.
 
-More information can be found in the [specification](./project/SPECIFICATION.md).
+More information can be found in the [specification](./SPECIFICATION.md).
 
-## Project structure
+## Project Structure
 
 The project consists of a smart contract.
 
-```sh
-TicTacToe
-├── project
-│   ├── contracts
-│   │   └── tictactoe-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
-└── README.md
+```
+TicTacToe/
+├── project/
+|   └── tictactoe-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
+├── README.md
+└── SPECIFICATION.md
 ```
 
 ## Running the project
 
-### User interface
+### User Interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+TODO: UI does not currently exist
 
-### Project
+### Tests
 
-In order to run the subsequent commands change into the following directory `/path/to/TicTacToe/project/<here>`.
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/TicTacToe/<you are here>`
 
-#### Program compilation
+Build the contracts:
 
 ```bash
 forc build
 ```
 
-#### Running the tests
-
-Before running the tests the programs must be compiled with the command above.
+Run the tests:
 
 ```bash
 cargo test
 ```
+
+## Specification
+
+The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the tictactoe.
+
+Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!

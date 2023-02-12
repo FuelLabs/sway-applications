@@ -25,46 +25,34 @@ A non-fungible token (NFT) is a unique token that has an identifier which distin
 
 More information can be found in the NFT Library [specification](https://github.com/FuelLabs/sway-libs/blob/master/libs/nft/SPECIFICATION.md).
 
-## Project structure
+## Project Structure
 
 The project consists of a smart contract.
 
 <!--Only show most important files e.g. script to run, build etc.-->
 
-```sh
-NFT
-├── project
-│   ├── contracts
-│   │   └── NFT-contract
-│   │       ├── src/main.sw
-│   │       └── tests/harness.rs
-│   ├── README.md
-│   └── SPECIFICATION.md
-├── ui
-│   ├── README.md
-│   └── SPECIFICATION.md
+```
+NFT/
+├── project/
+|   └── NFT-contract/
+|       ├── src/main.sw
+|       └── tests/harness.rs
 └── README.md
 ```
 
 ## Running the project
 
-### User interface
+### Tests
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+In order to run the tests make sure that you are in the root of this project i.e. `/path/to/NFT/<you are here>`
 
-### Project
-
-In order to run the subsequent commands change into the following directory `/path/to/NFT/project/<here>`.
-
-#### Program compilation
+Build the contract:
 
 ```bash
 forc build
 ```
 
-#### Running the tests
-
-Before running the tests the programs must be compiled with the command above.
+Run the tests:
 
 ```bash
 cargo test

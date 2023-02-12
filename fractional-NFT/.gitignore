@@ -1,6 +1,6 @@
 target
-project/contracts/fractional-NFT-contract/out
-project/contracts/fractional-NFT-contract/tests/artifacts/NFT
-project/contracts/token-distributor-contract/out
-project/contracts/token-distributor-contract/tests/artifacts/asset
-project/contracts/token-distributor-contract/tests/artifacts/NFT
+project/fractional-NFT-contract/out
+project/fractional-NFT-contract/tests/artifacts/NFT
+project/token-distributor-contract/out
+project/token-distributor-contract/tests/artifacts/asset
+project/token-distributor-contract/tests/artifacts/NFT
