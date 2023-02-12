@@ -1,11 +1,13 @@
 #!/bin/bash
 
-APP_PATH=$(pwd)
+APPLICATION_PATH=$(pwd)
 SCRIPT_PATH=$(realpath $0)
 SCAFFOLD_ROOT=$(dirname $SCRIPT_PATH)
 COMMON_PATH=$SCAFFOLD_ROOT/common
 UI=ui
-UI_PATH=$APP_PATH/$UI
+UI_APP=app
+UI_PATH=$APPLICATION_PATH/$UI
+UI_APP_PATH=$UI_PATH/$UI_APP
 declare -a ABIS
 
 # colors used for some messages written to standard output
@@ -15,15 +17,14 @@ ADDITION_COLOR=`tput setaf 2` # green
 INFORMATIVE_COLOR=`tput setaf 3` # yellow
 PATH_COLOR=`tput setaf 4` # blue
 
-# assumes that all contract projects are under the project directory, either directly or in a subdirectory
-# TODO: can be simplified once https://github.com/FuelLabs/sway-applications/pull/409 is merged
+# assumes that all contract projects are under project/contracts directory and their names end with "-contract"
 function find_abis() {
-    cd $APP_PATH
-    PROJECT_PATH=$APP_PATH/project
+    cd $APPLICATION_PATH
+    CONTRACTS_PATH=$APPLICATION_PATH/project/contracts
     
-    [ -d $APP_PATH/project ] || { echo "${ERROR_COLOR}Directory not found ${PATH_COLOR}$PROJECT_PATH${NO_COLOR}"; exit; }
+    [ -d $CONTRACTS_PATH ] || { echo "${ERROR_COLOR}Directory not found ${PATH_COLOR}$CONTRACTS_PATH${NO_COLOR}"; exit; }
 
-    CONTRACTS=("$PROJECT_PATH/**/*-contract" "$PROJECT_PATH/*-contract")
+    CONTRACTS=("$CONTRACTS_PATH/*-contract")
     
     for contract in ${CONTRACTS[@]}; do
         contract_name=$(basename ${contract})
@@ -34,13 +35,15 @@ function find_abis() {
     done
 
     # check that at least one ABI has been found
-    [ ${#ABIS[@]} != 0 ] || { echo "${ERROR_COLOR}No ABI found in directory ${PATH_COLOR}$APP_PATH/project${NO_COLOR}"; exit; }
+    [ ${#ABIS[@]} != 0 ] || { echo "${ERROR_COLOR}No ABI found in directory ${PATH_COLOR}$CONTRACTS_PATH${NO_COLOR}"; exit; }
 }
 
 function create_ui_project() {
-    echo -e "\n${ADDITION_COLOR}Creating react-ts template in ${PATH_COLOR}$UI_PATH${NO_COLOR}"
-    pnpm create vite@latest $UI --template react-ts
-    cd $UI
+    cd $UI_PATH
+    rm -rf $UI_APP 
+    echo -e "\n${ADDITION_COLOR}Creating react-ts template in ${PATH_COLOR}$UI_APP_PATH${NO_COLOR}"
+    pnpm create vite@latest $UI_APP --template react-ts
+    cd $UI_APP
 }
 
 function install_dependencies() {
