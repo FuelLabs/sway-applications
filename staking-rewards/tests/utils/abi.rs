@@ -142,3 +142,61 @@ pub async fn last_time_reward_applicable(instance: &StakingRewards) -> u64 {
         .unwrap()
         .value
 }
+
+pub async fn last_update_time(instance: &StakingRewards) -> u64 {
+    instance
+        .methods()
+        .last_update_time()
+        .call()
+        .await
+        .unwrap()
+        .value
+}
+
+pub async fn owner(instance: &StakingRewards) -> Identity {
+    instance.methods().owner().call().await.unwrap().value
+}
+
+pub async fn recover_tokens(
+    instance: &StakingRewards,
+    asset_id: ContractId,
+    amount: u64,
+) -> FuelCallResponse<()> {
+    instance
+        .methods()
+        .recover_tokens(asset_id, amount)
+        .append_variable_outputs(1)
+        .call()
+        .await
+        .unwrap()
+}
+
+pub async fn reward_per_token_paid(instance: &StakingRewards, account: Identity) -> u64 {
+    instance
+        .methods()
+        .reward_per_token_paid(account)
+        .call()
+        .await
+        .unwrap()
+        .value
+}
+
+
+pub async fn rewards(instance: &StakingRewards, account: Identity) -> u64 {
+    instance
+        .methods()
+        .rewards(account)
+        .call()
+        .await
+        .unwrap()
+        .value
+}
+
+pub async fn set_rewards_duration(instance: &StakingRewards, duration: u64) -> FuelCallResponse<()> {
+    instance
+        .methods()
+        .set_rewards_duration(duration)
+        .call()
+        .await
+        .unwrap()
+}

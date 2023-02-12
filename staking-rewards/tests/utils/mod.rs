@@ -56,7 +56,12 @@ pub async fn setup() -> (
             .collect::<Vec<_>>(),
     );
 
-    let wallets = &launch_custom_provider_and_get_wallets(wallet_config, None, None).await;
+    let config = Config {
+        manual_blocks_enabled: true, // Necessary so the `produce_blocks` API can be used locally
+        ..Config::local_node()
+    };
+
+    let wallets = &launch_custom_provider_and_get_wallets(wallet_config, Some(config), None).await;
     let wallet = &wallets[0];
     let wallet2 = &wallets[1];
 
@@ -131,38 +136,8 @@ pub async fn setup() -> (
 
 
 
-// pub async fn last_update_time(instance: &StakingRewards) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().last_update_time()).await
-// }
 
-// pub async fn owner(instance: &StakingRewards) -> (FuelCallResponse<Identity>, u64) {
-//     get_timestamp_and_call(instance.methods().owner()).await
-// }
 
-// pub async fn recover_tokens(
-//     instance: &StakingRewards,
-//     asset_id: ContractId,
-//     amount: u64,
-// ) -> (FuelCallResponse<()>, u64) {
-//     get_timestamp_and_call(
-//         instance
-//             .methods()
-//             .recover_tokens(asset_id, amount)
-//             .append_variable_outputs(1),
-//     )
-//     .await
-// }
-
-// pub async fn reward_per_token_paid(
-//     instance: &StakingRewards,
-//     account: Identity,
-// ) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().reward_per_token_paid(account)).await
-// }
-
-// pub async fn rewards(instance: &StakingRewards, account: Identity) -> (FuelCallResponse<u64>, u64) {
-//     get_timestamp_and_call(instance.methods().rewards(account)).await
-// }
 
 // pub async fn rewards_distribution(instance: &StakingRewards) -> (FuelCallResponse<Identity>, u64) {
 //     get_timestamp_and_call(instance.methods().rewards_distribution()).await
