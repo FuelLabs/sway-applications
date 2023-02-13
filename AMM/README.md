@@ -5,6 +5,18 @@
     </picture>
 </p>
 
+<p align="center">
+    <a href="https://crates.io/crates/forc/0.33.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.33.1-orange" />
+    </a>
+    <a href="https://crates.io/crates/fuel-core/0.15.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.15.3-yellow" />
+    </a>
+    <a href="https://crates.io/crates/fuels/0.36.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.36.0-blue" />
+    </a>
+</p>
+
 ## Overview
 
 An *automated market maker (AMM)* is a type of decentralized exchange protocol that determines asset prices algorithmically through a conservation function. Trades on an AMM take place between the user and the contract, rather than between two users. The liquidity pool of assets in an AMM is supplied by the users. Providing liquidity is incentivized via liquidity miner rewards. 
@@ -24,48 +36,58 @@ The contracts are designed to
 
 	> **NOTE** The miner fee can be modified per asset pair
 
-## Project Structure
+## Project structure
+
+```sh
+AMM
+├── project
+│   ├── contracts
+│   │   ├── AMM-contract
+│   │   └── exchange-contract
+│   ├── libraries
+│   │   └── src/interface.sw
+│   ├── scripts
+│   │   ├── atomic-add-liquidity
+│   │   ├── swap-exact-input
+│   │   └── swap-exact-output
+|   ├── test-utils
+|   |   └── src/lib.rs
+|   ├── README.md
+│   └── SPECIFICATION.md
+├── ui
+│   ├── README.md
+│   └── SPECIFICATION.md
+└─── README.md
+```
+
+All contracts and scripts have the structure:
 
 ```
-AMM/
-├── project/
-|   └── contracts/
-|   |   ├── AMM-contract/
-|   |   |   ├── src/main.sw
-|   |   |   └── tests/harness.rs
-|   |   └── exchange-contract/
-|   |       ├── src/main.sw
-|   |       └── tests/harness.rs
-|   └── libraries/
-|       └── src/interface.sw
-├── README.md
-└── SPECIFICATION.md
+contract or script/
+├── src/main.sw
+└── tests/harness.rs
 ```
 
 ## Running the project
 
-### User Interface
+### User interface
 
-TODO: UI is to be added.
+TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
 
-### Tests
+### Project
 
-In order to run the tests make sure that you are in the root of this project `/path/to/AMM/<you are here>`
+In order to run the subsequent commands change into the following directory `/path/to/AMM/project/<here>`.
 
-Build the contracts:
+#### Program compilation
 
 ```bash
 forc build
 ```
 
-Run the tests:
+#### Running the tests
+
+Before running the tests the programs must be compiled with the command above.
 
 ```bash
 cargo test
 ```
-
-## Specification
-
-The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the AMM.
-
-Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!
