@@ -167,7 +167,6 @@ pub mod scripts {
     use crate::{data_structures::TransactionParameters, interface::amm::add_pool};
     use common::{deploy_and_construct_exchange, deposit_and_add_liquidity};
     use fuels::{
-        programs::contract::SettableContract,
         tx::{Input, Output, TxPointer},
         types::resource::Resource,
     };
