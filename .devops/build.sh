@@ -19,6 +19,7 @@ do
         errors+=("${app}")
     fi
     
+    cd $REPO_ROOT
     echo
 done
 

@@ -9,9 +9,9 @@ abigen!(Predicate(
 ));
 
 // The fee-paying base asset
-pub const BASE_ASSET: AssetId = AssetId::new([0u8; 32]);
+const BASE_ASSET: AssetId = AssetId::new([0u8; 32]);
 // Offered asset is the asset that will be locked behind the predicate
-pub const OFFERED_ASSET: AssetId = AssetId::new([2u8; 32]);
+const OFFERED_ASSET: AssetId = AssetId::new([2u8; 32]);
 
 // Get the balance of a given token of an address
 async fn get_balance(provider: &Provider, address: &Bech32Address, asset: AssetId) -> u64 {
@@ -19,7 +19,7 @@ async fn get_balance(provider: &Provider, address: &Bech32Address, asset: AssetI
 }
 
 // Create wallet config for two wallets with base, offered, and ask assets
-pub fn configure_wallets(asked_asset: AssetId) -> WalletsConfig {
+fn configure_wallets(asked_asset: AssetId) -> WalletsConfig {
     let assets = [BASE_ASSET, OFFERED_ASSET, asked_asset];
 
     WalletsConfig::new_multiple_assets(
