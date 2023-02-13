@@ -257,7 +257,7 @@ impl StakingRewards for Contract {
 // Non-abi (internal) functions
 #[storage(read)]
 fn _earned(account: Identity) -> u64 {
-    storage.balances.get(account) * (_reward_per_token() - storage.user_reward_per_token_paid.get(account)) / ONE + storage.rewards.get(account)
+    (storage.balances.get(account) * (_reward_per_token() - storage.user_reward_per_token_paid.get(account)) / ONE) + storage.rewards.get(account)
 }
 
 #[storage(read)]
