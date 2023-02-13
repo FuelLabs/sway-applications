@@ -1,0 +1,6 @@
+[toolchain]
+channel = "beta-3"
+
+[components]
+forc = "0.35.0"
+fuel-core = "0.17.1"
