@@ -14,8 +14,8 @@ declare -a ABIS
 NO_COLOR=`tput sgr0` # used to reset to default color
 ERROR_COLOR=`tput setaf 1` # red
 ADDITION_COLOR=`tput setaf 2` # green
-INFORMATIVE_COLOR=`tput setaf 3` # yellow
-PATH_COLOR=`tput setaf 4` # blue
+INFORMATIVE_COLOR=`tput setaf 5` # magenta
+PATH_COLOR=`tput setaf 6` # blue
 
 # assumes that all contract projects are under project/contracts directory and their names end with "-contract"
 function find_abis() {
