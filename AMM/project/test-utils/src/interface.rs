@@ -3,23 +3,23 @@ use fuels::prelude::*;
 abigen!(
     Contract(
         name = "AMM",
-        abi = "./project/contracts/AMM-contract/out/debug/AMM-contract-abi.json"
+        abi = "./contracts/AMM-contract/out/debug/AMM-contract-abi.json"
     ),
     Contract(
         name = "Exchange",
-        abi = "./project/contracts/exchange-contract/out/debug/exchange-contract-abi.json"
+        abi = "./contracts/exchange-contract/out/debug/exchange-contract-abi.json"
     ),
     Script(
         name = "AtomicAddLiquidityScript",
-        abi = "./project/scripts/atomic-add-liquidity/out/debug/atomic-add-liquidity-abi.json"
+        abi = "./scripts/atomic-add-liquidity/out/debug/atomic-add-liquidity-abi.json"
     ),
     Script(
         name = "SwapExactInputScript",
-        abi = "./project/scripts/swap-exact-input/out/debug/swap-exact-input-abi.json"
+        abi = "./scripts/swap-exact-input/out/debug/swap-exact-input-abi.json"
     ),
     Script(
         name = "SwapExactOutputScript",
-        abi = "./project/scripts/swap-exact-output/out/debug/swap-exact-output-abi.json"
+        abi = "./scripts/swap-exact-output/out/debug/swap-exact-output-abi.json"
     )
 );
 
@@ -116,6 +116,7 @@ pub mod exchange {
             .methods()
             .deposit()
             .call_params(CallParameters::new(Some(amount), Some(asset), None))
+            .unwrap()
             .call()
             .await
             .unwrap();
@@ -138,6 +139,7 @@ pub mod exchange {
                 Some(AssetId::new(*exchange_id)),
                 None,
             ))
+            .unwrap()
             .append_variable_outputs(2);
 
         if override_gas_limit {
@@ -170,6 +172,7 @@ pub mod exchange {
                 Some(input_asset),
                 None,
             ))
+            .unwrap()
             .append_variable_outputs(1);
 
         if override_gas_limit {
@@ -202,6 +205,7 @@ pub mod exchange {
                 Some(input_asset),
                 None,
             ))
+            .unwrap()
             .append_variable_outputs(2);
 
         if override_gas_limit {

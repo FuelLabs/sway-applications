@@ -2,8 +2,8 @@ use fuels::prelude::*;
 
 abigen!(Contract(
     name = "SimpleAsset",
-    abi = "./project/contracts/asset-contract/out/debug/asset-contract-abi.json"
-),);
+    abi = "./contracts/asset-contract/out/debug/asset-contract-abi.json"
+));
 
 pub struct Metadata {
     pub asset_id: ContractId,

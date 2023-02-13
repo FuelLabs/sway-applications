@@ -17,7 +17,7 @@
     </a>
 </p>
 
-# Overview
+## Overview
 
 ## Predicates in Fuel
 Predicates are pure functions evaluating to either `True` or `False`. They are stateless, and can neither read nor write to any contract state. They can not emit logs.
@@ -43,19 +43,44 @@ Limitations:
 
 As such, this mechanism is most useful for OTC trades and atomic swaps.
 
-# Project Structure
-The project consists of a predicate written in Sway (`./project/swap-predicate/src/main.sw`) and tests using fuels-rs (`./project/swap-predicate/tests/`)
+## Project structure
 
-# Running the project
-In order to run the project make sure that you are in the root of this project i.e. `/path/to/OTC-swap-predicate/<you are here>`
+The project consists of a predicate.
 
-Build the predicate:
+```sh
+OTC-swap-predicate
+├── project
+│   ├── predicates
+│   │   └── swap-predicate
+│   │       ├── src/main.sw
+│   │       └── tests/harness.rs
+│   ├── README.md
+│   └── SPECIFICATION.md
+├── ui
+│   ├── README.md
+│   └── SPECIFICATION.md
+└── README.md
+```
+
+## Running the project
+
+### User interface
+
+TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+
+### Project
+
+In order to run the subsequent commands change into the following directory `/path/to/OTC-swap-predicate/project/<here>`.
+
+#### Program compilation
 
 ```bash
 forc build
 ```
 
-Run the tests:
+#### Running the tests
+
+Before running the tests the programs must be compiled with the command above.
 
 ```bash
 cargo test

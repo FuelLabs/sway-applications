@@ -1,0 +1,5 @@
+[workspace]
+members = [
+  "./contracts/DAO-contract",
+  "./contracts/DAO-contract/tests/artifacts/gov_token",
+]

@@ -61,7 +61,6 @@ impl Exchange for Contract {
     fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64 {
         require(storage.pair.is_some(), InitError::AssetPairNotSet);
         require(deadline > height(), InputError::DeadlinePassed(deadline));
-        require(msg_amount() == 0, InputError::ExpectedZeroAmount);
         require(MINIMUM_LIQUIDITY <= desired_liquidity, InputError::CannotAddLessThanMinimumLiquidity(desired_liquidity));
 
         let sender = msg_sender().unwrap();
