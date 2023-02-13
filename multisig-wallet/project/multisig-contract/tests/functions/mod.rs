@@ -1,2 +1,0 @@
-mod core;
-mod info;

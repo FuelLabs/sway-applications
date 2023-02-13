@@ -1,9 +1,9 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*};
+use fuels::prelude::*;
 
-abigen!(
-    SimpleAsset,
-    "./project/contracts/asset-contract/out/debug/asset-contract-abi.json"
-);
+abigen!(Contract(
+    name = "SimpleAsset",
+    abi = "./contracts/asset-contract/out/debug/asset-contract-abi.json"
+));
 
 pub struct Metadata {
     pub asset_id: ContractId,
@@ -19,6 +19,7 @@ pub mod paths {
 pub mod abi_calls {
 
     use super::*;
+    use fuels::{programs::call_response::FuelCallResponse, types::Identity};
 
     pub async fn constructor(
         asset_supply: u64,
