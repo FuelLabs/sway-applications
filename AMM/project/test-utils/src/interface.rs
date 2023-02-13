@@ -116,6 +116,7 @@ pub mod exchange {
             .methods()
             .deposit()
             .call_params(CallParameters::new(Some(amount), Some(asset), None))
+            .unwrap()
             .call()
             .await
             .unwrap();
@@ -138,6 +139,7 @@ pub mod exchange {
                 Some(AssetId::new(*exchange_id)),
                 None,
             ))
+            .unwrap()
             .append_variable_outputs(2);
 
         if override_gas_limit {
@@ -170,6 +172,7 @@ pub mod exchange {
                 Some(input_asset),
                 None,
             ))
+            .unwrap()
             .append_variable_outputs(1);
 
         if override_gas_limit {
@@ -202,6 +205,7 @@ pub mod exchange {
                 Some(input_asset),
                 None,
             ))
+            .unwrap()
             .append_variable_outputs(2);
 
         if override_gas_limit {
