@@ -11,14 +11,16 @@ cd $REPO_ROOT
 for app in "${APPS[@]}"
 do
     echo Building $app
-    forc build --path $app
+    cd $app
+    forc build
     
     # Check if there was an error and report the app at the end
     status=$?
     if [ $status -ne 0 ]; then
         errors+=("${app}")
     fi
-    
+
+    cd $REPO_ROOT
     echo
 done
 
