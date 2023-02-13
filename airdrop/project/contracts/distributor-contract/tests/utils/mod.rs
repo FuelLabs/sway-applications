@@ -12,11 +12,11 @@ use sha2::{Digest, Sha256};
 abigen!(
     Contract(
         name = "AirdropDistributor",
-        abi = "./project/contracts/distributor-contract/out/debug/distributor-contract-abi.json"
+        abi = "./contracts/distributor-contract/out/debug/distributor-contract-abi.json"
     ),
     Contract(
         name = "SimpleAsset",
-        abi = "./project/contracts/asset-contract/out/debug/asset-contract-abi.json"
+        abi = "./contracts/asset-contract/out/debug/asset-contract-abi.json"
     ),
 );
 
