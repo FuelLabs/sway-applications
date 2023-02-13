@@ -21,48 +21,52 @@
 
 TODO: A summary of the application should be written here.
 
-More information can be found in the [specification](./project/SPECIFICATION.md).
+More information about the contract can be found [here](./project/SPECIFICATION.md) and for the user interface [here](./ui/SPECIFICATION.md).
 
-## Project Structure
+## Project structure
 
 The project consists of a smart contract.
 
 <!--Only show most important files e.g. script to run, build etc.-->
 
-```
-Template/
-├── project/
-|   └── template-contract/
-|       ├── src/main.sw
-|       └── tests/harness.rs
-├── README.md
-└── SPECIFICATION.md
+```sh
+Template
+├── project
+│   ├── contracts
+│   │   └── template-contract
+│   │       ├── src/main.sw
+│   │       └── tests/harness.rs
+│   ├── libraries
+│   ├── predicates
+│   ├── scripts
+│   ├── README.md
+│   └── SPECIFICATION.md
+├── ui
+│   ├── README.md
+│   └── SPECIFICATION.md
+└── README.md
 ```
 
 ## Running the project
 
-### User Interface
+### User interface
 
-TODO: UI does not currently exist
+TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
 
-### Tests
+### Project
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/Template/<you are here>`
+In order to run the subsequent commands change into the following directory `/path/to/Template/project/<here>`.
 
-Build the contracts:
+#### Program compilation
 
 ```bash
 forc build
 ```
 
-Run the tests:
+#### Running the tests
+
+Before running the tests the programs must be compiled with the command above.
 
 ```bash
 cargo test
 ```
-
-## Specification
-
-The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the template.
-
-Check [SPECIFICATION.md](./project/SPECIFICATION.md) for more info!
