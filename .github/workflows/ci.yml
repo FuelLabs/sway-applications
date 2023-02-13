@@ -15,8 +15,6 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   RUST_VERSION: 1.67.0
-  FORC_VERSION: 0.33.1
-  CORE_VERSION: 0.15.3
   PATH_TO_SCRIPTS: .github/scripts
 
 jobs:
@@ -31,7 +29,7 @@ jobs:
         uses: baptiste0928/cargo-install@v1
         with:
           crate: cargo-toml-lint
-          version: '0.1'
+          version: "0.1"
       - name: Run Cargo.toml linter
         run: git ls-files | grep Cargo.toml$ | xargs --verbose -n 1 cargo-toml-lint
 
@@ -40,7 +38,24 @@ jobs:
 
     strategy:
       matrix:
-        project: ["airdrop", "AMM", "auctions", "DAO", "escrow", "fractional-NFT", "fundraiser", "games/TicTacToe", "multisig-wallet", "name-registry", "NFT", "oracle", "OTC-swap-predicate", ".template", "timelock"]
+        project:
+          [
+            "airdrop",
+            "AMM",
+            "auctions",
+            "DAO",
+            "escrow",
+            "fractional-NFT",
+            "fundraiser",
+            "games/TicTacToe",
+            "multisig-wallet",
+            "name-registry",
+            "NFT",
+            "oracle",
+            "OTC-swap-predicate",
+            ".template",
+            "timelock",
+          ]
 
     steps:
       - name: Checkout repository
@@ -60,13 +75,15 @@ jobs:
         run: rustup component add rustfmt
 
       - name: Install Fuel toolchain
-        uses: FuelLabs/action-fuel-toolchain@v0.2.0
+        uses: FuelLabs/action-fuel-toolchain@v0.3.0
         with:
-          name: my-toolchain
-          components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
+          toolchain: latest
+          date: 2023-01-18
 
       - name: Check Sway formatting
-        run: forc fmt --path ${{ matrix.project }} --check
+        run: |
+          cd ${{ matrix.project }}
+          forc fmt --check
 
       - name: Check Rust formatting
         run: |
@@ -74,7 +91,9 @@ jobs:
           cargo fmt --verbose --check
 
       - name: Build Sway
-        run: forc build --path ${{ matrix.project }}
+        run: |
+          cd ${{ matrix.project }}
+          forc build
 
       - name: Run Rust tests
         run: |
@@ -106,13 +125,17 @@ jobs:
         run: rustup component add rustfmt
 
       - name: Install Fuel toolchain
-        uses: FuelLabs/action-fuel-toolchain@v0.2.0
+        uses: FuelLabs/action-fuel-toolchain@v0.3.0
         with:
-          name: my-toolchain
-          components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
+          toolchain: latest
+          date: 2023-01-18
 
       - name: Check Sway formatting
-        run: forc fmt --path ${{ matrix.project }} --check
+        run: |
+          cd ${{ matrix.project }}
+          forc fmt --check
 
       - name: Build Sway
-        run: forc build --path ${{ matrix.project }}
+        run: |
+          cd ${{ matrix.project }}
+          forc build
