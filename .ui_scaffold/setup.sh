@@ -53,8 +53,6 @@ function install_dependencies() {
     pnpm install fuels --save
     echo -e "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels @fuel-wallet/sdk${NO_COLOR}"
     pnpm install fuels @fuel-wallet/sdk --save
-    echo -e "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels @fuel-wallet/types${NO_COLOR}"
-    pnpm install fuels @fuel-wallet/types --save
     echo -e "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels @fuel-ui/react${NO_COLOR}"
     pnpm install fuels @fuel-ui/react --save
     echo -e "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels @fuel-ui/css${NO_COLOR}"
