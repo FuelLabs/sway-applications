@@ -18,7 +18,7 @@ do
     if [ $status -ne 0 ]; then
         errors+=("${app}")
     fi
-    
+
     cd $REPO_ROOT
     echo
 done
