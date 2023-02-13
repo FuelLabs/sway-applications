@@ -47,17 +47,17 @@ function create_ui_project() {
 }
 
 function install_dependencies() {
-    echo -e "${ADDITION_COLOR}Installing ${PATH_COLOR}react-ts template dependencies${NO_COLOR}"
+    echo -e "${ADDITION_COLOR}\nInstalling ${PATH_COLOR}react-ts template dependencies${NO_COLOR}"
     pnpm install
-    echo -e "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels${NO_COLOR}"
+    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels${NO_COLOR}"
     pnpm install fuels --save
-    echo -e "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels @fuel-wallet/sdk${NO_COLOR}"
+    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels @fuel-wallet/sdk${NO_COLOR}"
     pnpm install fuels @fuel-wallet/sdk --save
-    echo -e "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels @fuel-ui/react${NO_COLOR}"
+    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels @fuel-ui/react${NO_COLOR}"
     pnpm install fuels @fuel-ui/react --save
-    echo -e "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels @fuel-ui/css${NO_COLOR}"
+    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels @fuel-ui/css${NO_COLOR}"
     pnpm install fuels @fuel-ui/css --save
-    echo -e "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels @tanstact/react-query${NO_COLOR}"
+    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels @tanstact/react-query${NO_COLOR}"
     pnpm install @tanstack/react-query --save
 }
 
