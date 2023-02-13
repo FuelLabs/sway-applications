@@ -63,7 +63,7 @@ function install_dependencies() {
 
 function generate_types() {
     echo -e "\n${ADDITION_COLOR}Generating types for ${PURPLE}${ABIS[@]}${NO_COLOR}\n" 
-    npx fuels typegen -i ${ABIS[@]} -o src/contracts
+    pnpm fuels typegen -i ${ABIS[@]} -o src/contracts
 }
 
 function apply_template() {
