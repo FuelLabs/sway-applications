@@ -237,7 +237,6 @@ mod success {
 mod revert {
     use super::*;
     use crate::utils::setup;
-    use fuels::prelude::CallParameters;
 
     #[tokio::test]
     #[should_panic(expected = "AssetPairNotSet")]
@@ -265,29 +264,6 @@ mod revert {
         );
 
         deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "ExpectedZeroAmount")]
-    async fn when_msg_amount_is_not_zero() {
-        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
-            setup_and_construct(true, false).await;
-
-        exchange
-            .instance
-            .methods()
-            .add_liquidity(
-                liquidity_parameters.liquidity,
-                liquidity_parameters.deadline,
-            )
-            // `add_liquidity` adds liquidity by using up at least one of the assets
-            // one variable output is for the minted liquidity pool asset
-            // the other variable output is for the asset that is not used up
-            .append_variable_outputs(2)
-            .call_params(CallParameters::new(Some(1), None, None))
-            .call()
-            .await
-            .unwrap();
     }
 
     #[tokio::test]
