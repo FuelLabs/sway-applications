@@ -22,7 +22,7 @@ function find_abis() {
     cd $APPLICATION_PATH
     CONTRACTS_PATH=$APPLICATION_PATH/project/contracts
     
-    [ -d $CONTRACTS_PATH ] || { echo "${ERROR_COLOR}Directory not found ${PATH_COLOR}$CONTRACTS_PATH${NO_COLOR}"; exit; }
+    [ -d $CONTRACTS_PATH ] || { printf "%s\n" "${ERROR_COLOR}Directory not found ${PATH_COLOR}$CONTRACTS_PATH${NO_COLOR}"; exit; }
 
     CONTRACTS=("$CONTRACTS_PATH/*-contract")
     
@@ -31,38 +31,38 @@ function find_abis() {
         abi=$contract/out/debug/$contract_name-abi.json
         [ -f $abi ] || continue
         ABIS+=($abi)
-        echo -e "${INFORMATIVE_COLOR}Found ABI ${PATH_COLOR}$abi${NO_COLOR}"
+        printf "%s\n" "${INFORMATIVE_COLOR}Found ABI ${PATH_COLOR}$abi${NO_COLOR}"
     done
 
     # check that at least one ABI has been found
-    [ ${#ABIS[@]} != 0 ] || { echo "${ERROR_COLOR}No ABI found in directory ${PATH_COLOR}$CONTRACTS_PATH${NO_COLOR}"; exit; }
+    [ ${#ABIS[@]} != 0 ] || { printf "%s\n" "${ERROR_COLOR}No ABI found in directory ${PATH_COLOR}$CONTRACTS_PATH${NO_COLOR}"; exit; }
 }
 
 function create_ui_project() {
     cd $UI_PATH
     rm -rf $UI_APP 
-    echo -e "\n${ADDITION_COLOR}Creating react-ts template in ${PATH_COLOR}$UI_APP_PATH${NO_COLOR}"
+    printf "\n%s\n" "${ADDITION_COLOR}Creating react-ts template in ${PATH_COLOR}$UI_APP_PATH${NO_COLOR}"
     pnpm create vite@latest $UI_APP --template react-ts
     cd $UI_APP
 }
 
 function install_dependencies() {
-    echo -e "${ADDITION_COLOR}\nInstalling ${PATH_COLOR}react-ts template dependencies${NO_COLOR}"
+    printf "\n%s\n" "${ADDITION_COLOR}Installing ${PATH_COLOR}react-ts template dependencies${NO_COLOR}"
     pnpm install
-    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels${NO_COLOR}"
+    printf "\n\n%s\n" "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels${NO_COLOR}"
     pnpm install fuels --save
-    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels @fuel-wallet/sdk${NO_COLOR}"
+    printf "\n\n%s\n" "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels @fuel-wallet/sdk${NO_COLOR}"
     pnpm install fuels @fuel-wallet/sdk --save
-    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels @fuel-ui/react${NO_COLOR}"
+    printf "\n\n%s\n" "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels @fuel-ui/react${NO_COLOR}"
     pnpm install fuels @fuel-ui/react --save
-    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels @fuel-ui/css${NO_COLOR}"
+    printf "\n\n%s\n" "${ADDITION_COLOR}Installing ${PATH_COLOR}fuels @fuel-ui/css${NO_COLOR}"
     pnpm install fuels @fuel-ui/css --save
-    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels @tanstack/react-query${NO_COLOR}"
+    printf "\n\n%s\n" "${ADDITION_COLOR}Installing ${PATH_COLOR}@tanstack/react-query${NO_COLOR}"
     pnpm install @tanstack/react-query --save
 }
 
 function generate_types() {
-    echo -e "\n${ADDITION_COLOR}Generating types for ${PURPLE}${ABIS[@]}${NO_COLOR}\n" 
+    printf "\n%s\n\n" "${ADDITION_COLOR}Generating types for ${PURPLE}${ABIS[@]}${NO_COLOR}" 
     pnpm fuels typegen -i ${ABIS[@]} -o src/contracts
 }
 
