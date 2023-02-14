@@ -4,7 +4,7 @@ import { queryClient } from "./utils/queryClient";
 
 function App() {
   async function doNothing() {
-    console.log("lalalala")
+    toast.error("Unimplemented!", { duration: 4000 });
   }
 
   async function connect() {
