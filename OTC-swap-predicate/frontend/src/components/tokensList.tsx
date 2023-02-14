@@ -31,7 +31,7 @@ const TokenList: FC<TokenListProps> = ({tokensFound}: TokenListProps) => {
               {tokensFound.map((token) => (
                 <tr key="items">
                   <td className="App-address">{token.assetId}</td>
-                  <td>{token.amount.formatUnits()}</td>
+                  <td>{token.amount.formatUnits().replace(/0+$/, "")}</td>
                 </tr>
               ))}
             </tbody>

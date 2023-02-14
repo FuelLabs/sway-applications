@@ -5,6 +5,7 @@ export function parseAddress(addressInput: string, element: string): string | nu
 
     // If input element is empty, or cannot be parsed as an address, return null
     if (addressInput === "") {
+        console.log("is empty")
         return null;
     }
 
@@ -14,6 +15,7 @@ export function parseAddress(addressInput: string, element: string): string | nu
     }
 
     catch {
+        console.log("fails to parse")
         return null;
     }
    

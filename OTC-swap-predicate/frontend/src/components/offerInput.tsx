@@ -65,7 +65,8 @@ const OfferInput: FC<OfferInputProps> = ({
         setReceiverValid(receiverParsed !== null);
 
         // If any not valid, set predicateAddress to ZERO_ADDRESS
-        if (!askTokenValid || !receiverValid || askAmountParsed === null) {
+        if (askTokenParsed === null || receiverParsed === null || askAmountParsed === null) {
+            console.log("should return");
             setPredicateAddress(ZERO_ADDRESS);
             return;
         }
