@@ -57,7 +57,7 @@ function install_dependencies() {
     pnpm install fuels @fuel-ui/react --save
     echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels @fuel-ui/css${NO_COLOR}"
     pnpm install fuels @fuel-ui/css --save
-    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels @tanstact/react-query${NO_COLOR}"
+    echo -e "${ADDITION_COLOR}\n\nInstalling ${PATH_COLOR}fuels @tanstack/react-query${NO_COLOR}"
     pnpm install @tanstack/react-query --save
 }
 
