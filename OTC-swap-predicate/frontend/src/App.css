@@ -1,0 +1,56 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: hsl(167, 70%, 48%);
+  color: rgb(0, 0, 0);
+
+}
+
+.App-main {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: rgb(255, 255, 255);
+}
+
+.App-button {
+  background-color: #6ccc72;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px;
+  font-size: calc(12px + 0.8vmin);
+  cursor: pointer;
+}
+
+.App-address {
+  font-size: 17px;
+  font-family: 'Courier New', monospace;
+}
+
+.App-tokenTable {
+  border-collapse: collapse;
+  width: 75%;
+  font-size: 17px;
+  text-align: center;
+}
+
+.App-provider {
+  background-color: #282c34;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgb(255, 255, 255);
+}
