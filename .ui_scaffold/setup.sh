@@ -71,18 +71,21 @@ function apply_template() {
     rm -rf src/assets
     rm src/App.css
     rm src/index.css
-    > tsconfig.json && cat $COMMON_PATH/tsconfig.json > tsconfig.json
-    > index.html && cat $COMMON_PATH/index.html > index.html
+
+    mkdir src/hooks
+    cp $COMMON_PATH/src/hooks/index.ts src/hooks/index.ts
+    cat $COMMON_PATH/src/hooks/useContract.ts | tail -n +2 > src/hooks/useContract.ts
+    cat $COMMON_PATH/src/hooks/useFuel.ts | tail -n +2 > src/hooks/useFuel.ts
+    cat $COMMON_PATH/src/hooks/useWallet.ts | tail -n +2 > src/hooks/useWallet.ts
+
+    mkdir src/utils
+    cp $COMMON_PATH/src/utils/index.tsx src/utils/index.tsx
+    cat $COMMON_PATH/src/utils/queryClient.tsx | tail -n +2 > src/utils/queryClient.tsx
+
     > src/App.tsx && cat $COMMON_PATH/src/App.tsx | tail -n +2 > src/App.tsx 
     > src/main.tsx && cat $COMMON_PATH/src/main.tsx | tail -n +2 > src/main.tsx 
-    mkdir src/hooks
-    cp $COMMON_PATH/hooks/index.ts src/hooks/index.ts
-    cat $COMMON_PATH/hooks/useContract.ts | tail -n +2 > src/hooks/useContract.ts
-    cat $COMMON_PATH/hooks/useFuel.ts | tail -n +2 > src/hooks/useFuel.ts
-    cat $COMMON_PATH/hooks/useWallet.ts | tail -n +2 > src/hooks/useWallet.ts
-    mkdir src/utils
-    cp $COMMON_PATH/utils/index.tsx src/utils/index.tsx
-    cat $COMMON_PATH/utils/queryClient.tsx | tail -n +2 > src/utils/queryClient.tsx
+    > index.html && cat $COMMON_PATH/index.html > index.html
+    > tsconfig.json && cat $COMMON_PATH/tsconfig.json > tsconfig.json
 }
 
 find_abis
