@@ -1,30 +1,13 @@
 import { Box, BoxCentered, ButtonLink, Card, CardList, Container, Flex, FuelLogo, Heading, Link, Stack, ThemeProvider, toast } from "@fuel-ui/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./utils/queryClient";
+// import { useEffect, useState } from "react"
+import { WalletState } from './WalletState'
 
 function App() {
+
   async function doNothing() {
     toast.error("Unimplemented!", { duration: 4000 });
-  }
-
-  async function connect() {
-    const isConnected = await window.fuel.isConnected();
-    if (!isConnected) {
-      await fuel.connect();
-      toast.success("Connected!", { duration: 4000 });
-    } else {
-      toast.error("Fuel wallet is already connected!", { duration: 4000 });
-    }
-  }
-
-  async function disconnect() {
-    const isConnected = await window.fuel.isConnected();
-    if (!isConnected) {
-      toast.error("Fuel wallet is already disconnected!", { duration: 4000 });
-    } else {
-      await fuel.disconnect();
-      toast.success("Disconnected!", { duration: 4000 });
-    }
   }
 
   return (
@@ -59,13 +42,8 @@ function App() {
                 View
               </ButtonLink>
 
-              <ButtonLink href="#" onClick={connect} css={{ color: 'black', fontWeight: 'bolder' }}>
-                Connect
-              </ButtonLink>
+              <WalletState />
 
-              <ButtonLink href="#" onClick={disconnect} css={{ color: 'black', fontWeight: 'bolder' }}>
-                Disconnect
-              </ButtonLink>
             </BoxCentered>
           </Flex>
 
