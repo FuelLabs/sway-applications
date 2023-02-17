@@ -1,6 +1,6 @@
 use super::interface::{Exchange, AMM};
 use fuels::{
-    prelude::*,
+    prelude::{AssetId, ContractId},
     tx::{Input, Output},
 };
 use std::collections::HashMap;

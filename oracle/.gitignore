@@ -1,3 +1,3 @@
 target
-project/oracle-contract/out
+project/contracts/oracle-contract/out
 project/oracle-node/.env
