@@ -20,19 +20,19 @@ export const Header = () => {
             </BoxCentered>
 
             <BoxCentered css={{ background: 'rgb(63 149 57)', width: '40%', justifyContent: 'space-evenly', boxShadow: "11px 1px 8px 0px black", borderBottom: "1px solid black" }}>
-                <ButtonLink href="#" onClick={doNothing} css={{ color: 'black', fontWeight: 'bolder' }}>
+                <ButtonLink onClick={doNothing} css={{ color: 'black', fontWeight: 'bolder' }}>
                     Create
                 </ButtonLink>
 
-                <ButtonLink href="#" onClick={doNothing} css={{ color: 'black', fontWeight: 'bolder' }}>
+                <ButtonLink onClick={doNothing} css={{ color: 'black', fontWeight: 'bolder' }}>
                     Execute
                 </ButtonLink>
 
-                <ButtonLink href="#" onClick={doNothing} css={{ color: 'black', fontWeight: 'bolder' }}>
+                <ButtonLink onClick={doNothing} css={{ color: 'black', fontWeight: 'bolder' }}>
                     Update
                 </ButtonLink>
 
-                <ButtonLink href="#" onClick={doNothing} css={{ color: 'black', fontWeight: 'bolder' }}>
+                <ButtonLink onClick={doNothing} css={{ color: 'black', fontWeight: 'bolder' }}>
                     View
                 </ButtonLink>
 
