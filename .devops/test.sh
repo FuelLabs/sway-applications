@@ -1,6 +1,8 @@
 #!/bin/bash
 
-APPS=("AMM" "DAO" "NFT" "OTC-swap-predicate" "airdrop" "auctions/english-auction" "escrow" "fractional-NFT" "fundraiser" "games/TicTacToe" "multisig-wallet" "name-registry" "oracle" "timelock")
+declare -a APPS
+mapfile -t APPS < apps.txt
+
 errors=()
 
 REPO_ROOT=$(dirname $(dirname $(realpath $0)))

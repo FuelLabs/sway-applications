@@ -98,7 +98,7 @@ function App() {
                     <code>mutations</code>
                   </Link>{" "}
                   are extensively used to interact with contracts.<br></br>
-                  This application comes with <code>src/App.tsx</code> wrapped in <code>QueryClientProvider</code> which uses the client in <code>utils/queryClient</code>.
+                  This application comes with <code>src/App.tsx</code> wrapped in <code>QueryClientProvider</code> which uses the client in <code>src/utils/queryClient</code>.
                 </Card.Body>
               </Card>
             </CardList>

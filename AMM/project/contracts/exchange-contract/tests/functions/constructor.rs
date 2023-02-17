@@ -4,15 +4,27 @@ use test_utils::interface::exchange::constructor;
 mod success {
     use super::*;
     use fuels::prelude::ContractId;
-    use test_utils::interface::exchange::pool_info;
+    use test_utils::interface::{exchange::pool_info, DefineAssetPairEvent};
 
     #[tokio::test]
     async fn constructs() {
         let (exchange_instance, _wallet, assets, _deadline) = setup().await;
 
-        constructor(&exchange_instance, (assets.asset_1, assets.asset_2)).await;
+        let response = constructor(&exchange_instance, (assets.asset_1, assets.asset_2)).await;
+        let log = response
+            .get_logs_with_type::<DefineAssetPairEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
         let pool_info = pool_info(&exchange_instance).await;
 
+        assert_eq!(
+            *event,
+            DefineAssetPairEvent {
+                asset_a_id: ContractId::new(*assets.asset_1),
+                asset_b_id: ContractId::new(*assets.asset_2),
+            }
+        );
         assert_eq!(pool_info.reserves.a.id, ContractId::new(*assets.asset_1));
         assert_eq!(pool_info.reserves.b.id, ContractId::new(*assets.asset_2));
     }
