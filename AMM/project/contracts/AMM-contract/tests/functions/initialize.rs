@@ -3,14 +3,29 @@ use test_utils::interface::amm::initialize;
 
 mod success {
     use super::*;
-    use test_utils::setup::common::exchange_bytecode_root;
+    use fuels::types::Bits256;
+    use test_utils::{
+        interface::SetExchangeBytecodeRootEvent, setup::common::exchange_bytecode_root,
+    };
 
     #[tokio::test]
     async fn initializes() {
         let (_wallet, amm_instance, _asset_pairs) = setup(false).await;
 
         let calculated_bytecode_root = exchange_bytecode_root().await;
-        initialize(&amm_instance, calculated_bytecode_root).await;
+
+        let response = initialize(&amm_instance, calculated_bytecode_root).await;
+        let log = response
+            .get_logs_with_type::<SetExchangeBytecodeRootEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            SetExchangeBytecodeRootEvent {
+                root: Bits256::from_hex_str(&calculated_bytecode_root.to_string()).unwrap()
+            }
+        );
     }
 }
 
