@@ -1,4 +1,7 @@
-use fuels::{prelude::*, programs::call_response::FuelCallResponse};
+use fuels::{
+    prelude::{abigen, AssetId, CallParameters, ContractId, TxParameters},
+    programs::call_response::FuelCallResponse,
+};
 
 abigen!(
     Contract(

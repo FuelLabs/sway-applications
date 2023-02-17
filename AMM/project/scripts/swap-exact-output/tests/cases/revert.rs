@@ -1,5 +1,5 @@
 use crate::utils::{expected_and_actual_input, expected_swap_input, setup};
-use fuels::prelude::*;
+use fuels::prelude::{AssetId, ContractId, TxParameters};
 use test_utils::{
     data_structures::{SwapParameters, NUMBER_OF_ASSETS},
     interface::SCRIPT_GAS_LIMIT,
