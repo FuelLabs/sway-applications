@@ -56,11 +56,6 @@ impl AMM for Contract {
         } else {
             (asset_pair.1, asset_pair.0)
         };
-        let pool_id = storage.pools.get(ordered_asset_pair);
-        if pool_id == BASE_ASSET_ID {
-            Option::None
-        } else {
-            Option::Some(pool_id)
-        }
+        storage.pools.get(ordered_asset_pair)
     }
 }
