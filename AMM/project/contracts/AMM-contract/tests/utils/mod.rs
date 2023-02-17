@@ -20,3 +20,11 @@ pub async fn setup(initialize: bool) -> (WalletUnlocked, AMM, Vec<(AssetId, Asse
 
     (wallet, amm.instance, asset_pairs)
 }
+
+pub fn ordered_pair(pair: (AssetId, AssetId)) -> (ContractId, ContractId) {
+    if pair.0 < pair.1 {
+        (ContractId::new(*pair.0), ContractId::new(*pair.1))
+    } else {
+        (ContractId::new(*pair.1), ContractId::new(*pair.0))
+    }
+}
