@@ -10,10 +10,11 @@ use fuels::{
 };
 
 pub mod common {
-    use fuels::programs::call_response::FuelCallResponse;
-
     use super::*;
-    use fuels::test_helpers::{setup_multiple_assets_coins, setup_test_provider};
+    use fuels::{
+        programs::call_response::FuelCallResponse,
+        test_helpers::{setup_multiple_assets_coins, setup_test_provider},
+    };
 
     use crate::{
         data_structures::WalletAssetConfiguration,
