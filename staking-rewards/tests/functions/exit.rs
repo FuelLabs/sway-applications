@@ -1,3 +1,6 @@
+use chrono::{DateTime, Utc, Duration, TimeZone};
+use fuels::signers::provider::TimeParameters;
+
 use crate::utils::{
     abi::exit, get_balance, setup, INITIAL_STAKE, ONE, REWARDS_ASSET, STAKING_ASSET,
 };
@@ -8,6 +11,13 @@ async fn exit_with_reward() {
 
     let staking_balance_before = get_balance(&wallet, STAKING_ASSET).await;
     let rewards_balance_before = get_balance(&wallet, REWARDS_ASSET).await;
+
+    let time = TimeParameters { 
+        start_time: DateTime::from(Utc::now()) + Duration::seconds(2),
+        block_time_interval: Duration::seconds(2),
+    };
+
+    wallet.get_provider().unwrap().produce_blocks(2, Some(time)).await.unwrap();
 
     exit(&staking_contract).await;
     let exit_ts = wallet

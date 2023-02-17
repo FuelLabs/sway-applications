@@ -93,7 +93,7 @@ pub async fn exit(instance: &StakingRewards) -> FuelCallResponse<()> {
     instance
         .methods()
         .exit()
-        .append_variable_outputs(1)
+        .append_variable_outputs(2)
         .call()
         .await
         .unwrap()

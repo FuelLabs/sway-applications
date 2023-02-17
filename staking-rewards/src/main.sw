@@ -32,12 +32,12 @@ storage {
     balances: StorageMap<Identity, u64> = StorageMap {},
     last_update_time: u64 = 0,
     owner: Identity = Identity::Address(Address { value: owner }),
-    period_finish: u64 = 1000, // Should be start timestamp + rewards_duration
+    period_finish: u64 = 0, // Should be start timestamp + rewards_duration
     rewards: StorageMap<Identity, u64> = StorageMap {},
     rewards_distribution: Identity = Identity::Address(Address {
         value: rewards_distribution,
     }),
-    rewards_duration: u64 = 1000,
+    rewards_duration: u64 = 604800,
     rewards_token: ContractId = ContractId {
         value: rewards_token_b256,
     },
@@ -53,7 +53,7 @@ storage {
 impl StakingRewards for Contract {
     #[storage(read)]
     fn balance_of(account: Identity) -> u64 {
-        storage.balances.get(account)
+        storage.balances.get(account).unwrap()
     }
 
     #[storage(read)]
@@ -64,7 +64,7 @@ impl StakingRewards for Contract {
     #[storage(read, write)]
     fn exit() {
         let sender = msg_sender().unwrap();
-        let amount = storage.balances.get(sender);
+        let amount = storage.balances.get(sender).unwrap();
         _withdraw(amount);
         log(WithdrawnEvent {
             user: sender,
@@ -72,7 +72,7 @@ impl StakingRewards for Contract {
         });
         _update_reward(sender);
 
-        let reward = storage.rewards.get(sender);
+        let reward = storage.rewards.get(sender).unwrap();
 
         if (reward > 0) {
             storage.rewards.insert(sender, 0);
@@ -89,7 +89,7 @@ impl StakingRewards for Contract {
         let sender = msg_sender().unwrap();
         _update_reward(sender);
 
-        let reward = storage.rewards.get(sender);
+        let reward = storage.rewards.get(sender).unwrap();
 
         if (reward > 0) {
             storage.rewards.insert(sender, 0);
@@ -180,7 +180,7 @@ impl StakingRewards for Contract {
 
     #[storage(read)]
     fn reward_per_token_paid(account: Identity) -> u64 {
-        storage.user_reward_per_token_paid.get(account)
+        storage.user_reward_per_token_paid.get(account).unwrap()
     }
 
     #[storage(read)]
@@ -190,7 +190,7 @@ impl StakingRewards for Contract {
 
     #[storage(read)]
     fn rewards(account: Identity) -> u64 {
-        storage.rewards.get(account)
+        storage.rewards.get(account).unwrap()
     }
 
     #[storage(read)]
@@ -230,7 +230,7 @@ impl StakingRewards for Contract {
         _update_reward(user);
 
         storage.total_supply += amount;
-        storage.balances.insert(user, storage.balances.get(user) + amount);
+        storage.balances.insert(user, storage.balances.get(user).unwrap_or(0) + amount);
         log(StakedEvent { user, amount });
     }
 
@@ -257,7 +257,7 @@ impl StakingRewards for Contract {
 // Non-abi (internal) functions
 #[storage(read)]
 fn _earned(account: Identity) -> u64 {
-    (storage.balances.get(account) * (_reward_per_token() - storage.user_reward_per_token_paid.get(account)) / ONE) + storage.rewards.get(account)
+    (storage.balances.get(account).unwrap_or(0) * (_reward_per_token() - storage.user_reward_per_token_paid.get(account).unwrap_or(0)) / ONE) + storage.rewards.get(account).unwrap_or(0)
 }
 
 #[storage(read)]
@@ -278,10 +278,16 @@ fn _last_time_reward_applicable() -> u64 {
 #[storage(read)]
 fn _reward_per_token() -> u64 {
     let reward_per_token = storage.reward_per_token_stored;
+    log(reward_per_token);
 
     match storage.total_supply {
         0 => reward_per_token,
-        _ => reward_per_token + ((_last_time_reward_applicable() - storage.last_update_time) * storage.reward_rate * ONE / storage.total_supply),
+        _ => { 
+            let ltra = _last_time_reward_applicable();
+            let lut = storage.last_update_time;
+            log((ltra, lut, ltra-lut));
+            reward_per_token + ((_last_time_reward_applicable() - storage.last_update_time) * storage.reward_rate * ONE / storage.total_supply)
+            },
     }
 }
 
@@ -296,7 +302,7 @@ fn _withdraw(amount: u64) {
     _update_reward(sender);
 
     storage.total_supply -= amount;
-    storage.balances.insert(sender, storage.balances.get(sender) - amount);
+    storage.balances.insert(sender, storage.balances.get(sender).unwrap() - amount);
     transfer(amount, storage.staking_token, sender);
 }
 

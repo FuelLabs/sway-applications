@@ -61,9 +61,9 @@ pub async fn setup() -> (
         ..Config::local_node()
     };
 
-    let wallets = &launch_custom_provider_and_get_wallets(wallet_config, Some(config), None).await;
-    let wallet = &wallets[0];
-    let wallet2 = &wallets[1];
+    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, Some(config), None).await;
+    let wallet2 = wallets.pop().unwrap();
+    let wallet = wallets.pop().unwrap();
 
     let id = Contract::deploy(
         "./out/debug/staking-rewards.bin",

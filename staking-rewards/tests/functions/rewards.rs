@@ -1,5 +1,5 @@
 
-use fuels::{types::{Identity, Address}, signers::provider::TimeParameters, prelude::CallParameters};
+use fuels::{types::{Identity, Address}, signers::provider::TimeParameters};
 use chrono::{DateTime, Duration, Utc};
 
 use crate::utils::{
