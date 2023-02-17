@@ -1,4 +1,4 @@
-use fuels::prelude::*;
+use fuels::prelude::{AssetId, WalletUnlocked};
 use test_utils::{
     data_structures::WalletAssetConfiguration,
     interface::AMM,
