@@ -1,7 +1,9 @@
 import { PleaseConnect } from "../../core/components";
 
 export function CreatePage() {
-    return (
-        <PleaseConnect />
-    );
+    if (window.fuel?.isConnected()) {
+        return (<>lalalala</>);
+    } else {
+        return (<PleaseConnect />);
+    }
 }

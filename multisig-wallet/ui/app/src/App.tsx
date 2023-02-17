@@ -10,7 +10,7 @@ function App() {
       <ThemeProvider>
         <Layout>
           <Stack>
-            <CreatePage />
+            {/* <CreatePage /> */}
           </Stack>
         </Layout>
       </ThemeProvider>
