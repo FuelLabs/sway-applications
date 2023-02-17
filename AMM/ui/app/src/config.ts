@@ -1,0 +1,2 @@
+export const AMM_CONTRACT_ID = "0x2cf873a3d03f35241a6dd401160b98a29f1bfd5e31911c8d6d43e582e6efcf80";
+export const EXCHANGE_CONTRACT_ID = "0xc3e44afe5a26ec774d1406314bed586f64f9a3bed7ff8dcf890903940dbda2df";
