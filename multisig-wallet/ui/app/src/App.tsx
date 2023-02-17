@@ -9,7 +9,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <Layout>
-          <Stack css={{ marginTop: '20vh' }}>
+          <Stack>
             <CreatePage />
           </Stack>
         </Layout>
