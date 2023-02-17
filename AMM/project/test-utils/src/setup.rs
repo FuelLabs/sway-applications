@@ -1,10 +1,18 @@
 use super::data_structures::{
     AMMContract, ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
 };
-use fuels::{prelude::*, tx::Contract as TxContract};
+use fuels::{
+    prelude::{
+        Address, AssetId, Bech32Address, Contract, ContractId, Provider, Salt, SettableContract,
+        StorageConfiguration, TxParameters, WalletUnlocked,
+    },
+    tx::Contract as TxContract,
+};
 
 pub mod common {
     use super::*;
+    use fuels::test_helpers::{setup_multiple_assets_coins, setup_test_provider};
+
     use crate::{
         data_structures::WalletAssetConfiguration,
         interface::{
