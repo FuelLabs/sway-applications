@@ -32,7 +32,6 @@ use std::{
         msg_asset_id,
     },
     context::msg_amount,
-    logging::log,
     math::*,
     token::{
         burn,
