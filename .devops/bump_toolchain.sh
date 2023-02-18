@@ -27,8 +27,8 @@ do
         errors+=("${app}")
         mv $TMP_TOOLCHAIN $TOOLCHAIN
     else
-	    success+=("${app}")
-	    rm $TMP_TOOLCHAIN
+        success+=("${app}")
+        rm $TMP_TOOLCHAIN
     fi
 
     cd $REPO_ROOT
