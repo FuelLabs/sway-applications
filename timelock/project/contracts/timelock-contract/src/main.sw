@@ -16,7 +16,6 @@ use std::{
     bytes::Bytes,
     call_frames::msg_asset_id,
     context::this_balance,
-    logging::log,
 };
 use utils::create_hash;
 
@@ -24,7 +23,7 @@ const ADMIN: Identity = Identity::Address(Address::from(OWNER));
 
 storage {
     /// Mapping transaction hash to time range of available execution
-    queue: StorageMap<b256, Option<ExecutionRange>> = StorageMap {},
+    queue: StorageMap<b256, ExecutionRange> = StorageMap {},
 }
 
 impl Timelock for Contract {
@@ -33,7 +32,7 @@ impl Timelock for Contract {
         require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
         require(storage.queue.get(id).is_some(), TransactionError::InvalidTransaction(id));
 
-        storage.queue.insert(id, Option::None::<ExecutionRange>());
+        storage.queue.remove(id);
 
         log(CancelEvent { id })
     }
@@ -62,7 +61,7 @@ impl Timelock for Contract {
             require(value.unwrap() <= this_balance(asset_id.unwrap()), FundingError::InsufficientContractBalance((this_balance(asset_id.unwrap()))));
         }
 
-        storage.queue.insert(id, Option::None::<ExecutionRange>());
+        storage.queue.remove(id);
 
         // TODO: execute arbitrary call...
         log(ExecuteEvent {
@@ -95,7 +94,7 @@ impl Timelock for Contract {
 
         require(start <= timestamp && timestamp <= end, TransactionError::TimestampNotInRange((start, end, timestamp)));
 
-        storage.queue.insert(id, Option::Some(ExecutionRange { start, end }));
+        storage.queue.insert(id, ExecutionRange { start, end });
 
         log(QueueEvent {
             asset_id,
