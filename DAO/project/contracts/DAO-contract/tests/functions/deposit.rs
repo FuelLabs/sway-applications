@@ -10,6 +10,8 @@ use fuels::{
 
 mod success {
     use super::*;
+    use crate::utils::DepositEvent;
+    use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
     async fn user_can_deposit() {
@@ -36,7 +38,18 @@ mod success {
             Some(AssetId::from(*gov_token_id)),
             Some(100_000),
         );
-        deposit(&user.dao_voting, call_params).await;
+        let response = deposit(&user.dao_voting, call_params).await;
+
+        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            DepositEvent {
+                amount: asset_amount,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
 
         // Make sure that deposit did not erroneously work with 0
         assert!(asset_amount != 0);

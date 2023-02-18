@@ -9,6 +9,8 @@ use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
+    use crate::utils::UnlockVotesEvent;
+    use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
     async fn user_can_unlock_tokens() {
@@ -45,7 +47,19 @@ mod success {
             }
         );
 
-        unlock_votes(&user.dao_voting, 0).await;
+        let response = unlock_votes(&user.dao_voting, 0).await;
+
+        let log = response.get_logs_with_type::<UnlockVotesEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            UnlockVotesEvent {
+                id: 0,
+                vote_amount: asset_amount / 2,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
 
         assert_eq!(
             user_balance(&user.dao_voting, user.wallet.address()).await,
@@ -104,7 +118,20 @@ mod success {
             }
         );
 
-        unlock_votes(&user.dao_voting, 0).await;
+        let response1 = unlock_votes(&user.dao_voting, 0).await;
+
+        let log1 = response1.get_logs_with_type::<UnlockVotesEvent>().unwrap();
+        let event1 = log1.get(0).unwrap();
+
+        assert_eq!(
+            *event1,
+            UnlockVotesEvent {
+                id: 0,
+                vote_amount: asset_amount / 2,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
+
         assert_eq!(
             user_balance(&user.dao_voting, user.wallet.address()).await,
             asset_amount / 2
@@ -116,7 +143,20 @@ mod success {
                 no_votes: 0
             }
         );
-        unlock_votes(&user.dao_voting, 1).await;
+
+        let response2 = unlock_votes(&user.dao_voting, 1).await;
+
+        let log2 = response2.get_logs_with_type::<UnlockVotesEvent>().unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(
+            *event2,
+            UnlockVotesEvent {
+                id: 1,
+                vote_amount: asset_amount / 2,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
         assert_eq!(
             user_balance(&user.dao_voting, user.wallet.address()).await,
             asset_amount
@@ -165,7 +205,19 @@ mod success {
             }
         );
 
-        unlock_votes(&user.dao_voting, 0).await;
+        let response1 = unlock_votes(&user.dao_voting, 0).await;
+
+        let log1 = response1.get_logs_with_type::<UnlockVotesEvent>().unwrap();
+        let event1 = log1.get(0).unwrap();
+
+        assert_eq!(
+            *event1,
+            UnlockVotesEvent {
+                id: 0,
+                vote_amount: asset_amount / 2,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
 
         assert_eq!(
             user_balance(&user.dao_voting, user.wallet.address()).await,
@@ -194,7 +246,19 @@ mod success {
             }
         );
 
-        unlock_votes(&user.dao_voting, 1).await;
+        let response2 = unlock_votes(&user.dao_voting, 1).await;
+
+        let log2 = response2.get_logs_with_type::<UnlockVotesEvent>().unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(
+            *event2,
+            UnlockVotesEvent {
+                id: 1,
+                vote_amount: asset_amount / 2,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
 
         assert_eq!(
             user_balance(&user.dao_voting, user.wallet.address()).await,

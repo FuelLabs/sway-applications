@@ -6,6 +6,8 @@ use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
+    use crate::utils::ExecuteEvent;
+    use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
     #[ignore]
@@ -31,7 +33,19 @@ mod success {
         create_proposal(&user.dao_voting, 10, 1, proposal_transaction.clone()).await;
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
 
-        execute(&user.dao_voting, 0).await;
+        let response = execute(&user.dao_voting, 0).await;
+
+        let log = response.get_logs_with_type::<ExecuteEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ExecuteEvent {
+                id: 0,
+                acceptance_percentage: 10,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
 
         // TODO actually test execution of an arbitrary transaction
     }

@@ -7,6 +7,8 @@ use fuels::{prelude::CallParameters, tx::AssetId, types::Identity};
 
 mod success {
     use super::*;
+    use crate::utils::VoteEvent;
+    use fuels::prelude::Address;
 
     #[tokio::test]
     async fn user_can_vote() {
@@ -30,8 +32,30 @@ mod success {
         let proposal_transaction = proposal_transaction(gov_token_id);
         create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
-        vote(&user.dao_voting, true, 0, asset_amount / 4).await;
-        vote(&user.dao_voting, false, 0, asset_amount / 4).await;
+        let response1 = vote(&user.dao_voting, true, 0, asset_amount / 4).await;
+        let response2 = vote(&user.dao_voting, false, 0, asset_amount / 4).await;
+
+        let log1 = response1.get_logs_with_type::<VoteEvent>().unwrap();
+        let log2 = response2.get_logs_with_type::<VoteEvent>().unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(
+            *event1,
+            VoteEvent {
+                id: 0,
+                vote_amount: asset_amount / 4,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
+        assert_eq!(
+            *event2,
+            VoteEvent {
+                id: 0,
+                vote_amount: asset_amount / 4,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
 
         assert_eq!(
             proposal(&user.dao_voting, 0).await,
@@ -82,8 +106,30 @@ mod success {
         let proposal_transaction = proposal_transaction(gov_token_id);
         create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
-        vote(&user.dao_voting, true, 0, asset_amount / 4).await;
-        vote(&user.dao_voting, false, 0, asset_amount / 4).await;
+        let response1 = vote(&user.dao_voting, true, 0, asset_amount / 4).await;
+        let response2 = vote(&user.dao_voting, false, 0, asset_amount / 4).await;
+
+        let log1 = response1.get_logs_with_type::<VoteEvent>().unwrap();
+        let log2 = response2.get_logs_with_type::<VoteEvent>().unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(
+            *event1,
+            VoteEvent {
+                id: 0,
+                vote_amount: asset_amount / 4,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
+        assert_eq!(
+            *event2,
+            VoteEvent {
+                id: 0,
+                vote_amount: asset_amount / 4,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
 
         assert_eq!(
             user_balance(&user.dao_voting, user.wallet.address()).await,
@@ -100,7 +146,19 @@ mod success {
 
         create_proposal(&user.dao_voting, 20, 20, proposal_transaction.clone()).await;
 
-        vote(&user.dao_voting, true, 1, asset_amount / 4).await;
+        let response3 = vote(&user.dao_voting, true, 1, asset_amount / 4).await;
+
+        let log3 = response3.get_logs_with_type::<VoteEvent>().unwrap();
+        let event3 = log3.get(0).unwrap();
+
+        assert_eq!(
+            *event3,
+            VoteEvent {
+                id: 1,
+                vote_amount: asset_amount / 4,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
 
         assert_eq!(
             user_balance(&user.dao_voting, user.wallet.address()).await,
