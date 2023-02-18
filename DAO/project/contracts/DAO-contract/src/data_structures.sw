@@ -84,3 +84,12 @@ pub struct Votes {
     /// Stores the number of yes votes for a proposal
     yes_votes: u64,
 }
+
+impl Votes {
+    pub fn default() -> Self {
+        Self {
+            no_votes: 0,
+            yes_votes: 0,
+        }
+    }
+}
