@@ -36,7 +36,6 @@ use std::{
     block::height,
     call_frames::msg_asset_id,
     context::msg_amount,
-    storage::StorageVec,
     token::transfer,
 };
 
