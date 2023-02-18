@@ -13,7 +13,6 @@ use std::{
     auth::msg_sender,
     constants::ZERO_B256,
     context::this_balance,
-    logging::log,
     token::transfer,
 };
 
