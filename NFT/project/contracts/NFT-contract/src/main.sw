@@ -59,7 +59,7 @@ impl Administrator for Contract {
 impl Burn for Contract {
     #[storage(read, write)]
     fn burn(token_id: u64) {
-        set_token_metadata(Option::None::<TokenMetadata>(), token_id);
+        set_token_metadata(Option::None::<TokenMetadata>, token_id);
         burn(token_id);
     }
 }
