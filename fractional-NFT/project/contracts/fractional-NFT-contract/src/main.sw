@@ -10,13 +10,7 @@ use data_structures::NFTInfo;
 use errors::{AccessError, AssetError};
 use events::{AdminEvent, DepositEvent, WithdrawEvent};
 use interface::FractionalNFT;
-use std::{
-    auth::msg_sender,
-    call_frames::contract_id,
-    context::this_balance,
-    logging::log,
-    token::mint_to,
-};
+use std::{auth::msg_sender, call_frames::contract_id, context::this_balance, token::mint_to};
 use utils::transfer_nft;
 
 storage {
