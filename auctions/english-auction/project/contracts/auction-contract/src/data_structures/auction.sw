@@ -37,7 +37,7 @@ impl Auction {
         Auction {
             bid_asset,
             end_block,
-            highest_bidder: Option::None(),
+            highest_bidder: Option::None,
             initial_price,
             reserve_price,
             sell_asset,
