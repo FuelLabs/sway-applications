@@ -11,7 +11,7 @@ use errors::{AccessError, InitError, StateError, VerificationError};
 use events::{ClaimEvent, CreateAirdropEvent};
 use interface::AirdropDistributor;
 use merkle_proof::binary_merkle_proof::{leaf_digest, verify_proof};
-use std::{block::height, hash::sha256, logging::log, storage::StorageMap};
+use std::{block::height, hash::sha256};
 use utils::mint_to;
 
 storage {
@@ -37,7 +37,8 @@ impl AirdropDistributor for Contract {
     ) {
         // The claiming period must be open and the `to` identity hasn't already claimed
         require(storage.end_block > height(), StateError::ClaimPeriodHasEnded);
-        require(!storage.claims.get(to).claimed, AccessError::UserAlreadyClaimed);
+        let claim = storage.claims.get(to);
+        require(claim.is_some() && !claim.unwarp().claimed, AccessError::UserAlreadyClaimed);
 
         // Verify the merkle proof against the user and amount
         let leaf = leaf_digest(sha256((to, amount)));
@@ -51,7 +52,7 @@ impl AirdropDistributor for Contract {
     }
 
     #[storage(read)]
-    fn claim_data(identity: Identity) -> ClaimData {
+    fn claim_data(identity: Identity) -> Option<ClaimData> {
         storage.claims.get(identity)
     }
 

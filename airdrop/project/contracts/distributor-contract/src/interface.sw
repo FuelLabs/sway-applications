@@ -33,7 +33,7 @@ abi AirdropDistributor {
     ///
     /// * `identity` - The user whose ClaimData will be returned
     #[storage(read)]
-    fn claim_data(identity: Identity) -> ClaimData;
+    fn claim_data(identity: Identity) -> Option<ClaimData>;
 
     /// Initialized the contract and starts the airdrop.
     ///
