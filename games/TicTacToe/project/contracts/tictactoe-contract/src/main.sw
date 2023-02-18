@@ -11,7 +11,7 @@ use data_structures::State;
 use errors::{GameStateError, PlayerError, PositionError};
 use events::{GameDrawnEvent, GameWonEvent, NewGameEvent};
 use interface::Game;
-use std::{auth::msg_sender, logging::log};
+use std::auth::msg_sender;
 use utils::{draw, win_check};
 
 // This is needed for comparing the position when the cell is not empty.
@@ -28,7 +28,7 @@ impl<T> Eq for Option<T> {
 
 storage {
     /// Keeps track of each player move.
-    board: StorageMap<u64, Option<Identity>> = StorageMap {},
+    board: StorageMap<u64, Identity> = StorageMap {},
     /// Keeps track of the move counter for various checks (win, draw, etc.).
     move_counter: u64 = 0,
     /// The first player of the game.
@@ -53,7 +53,7 @@ impl Game for Contract {
         // Once a game has been played we need to reset all values.
         let mut position = 0;
         while position < 9 {
-            storage.board.insert(position, Option::None::<Identity>());
+            storage.board.remove(position);
             position += 1;
         }
         storage.move_counter = 0;
@@ -70,9 +70,9 @@ impl Game for Contract {
         require(storage.state == State::Playing, GameStateError::GameHasEnded);
         require(storage.player_turn.unwrap() == msg_sender().unwrap(), PlayerError::IncorrectPlayerTurn);
         require(position < 9, PositionError::InvalidPosition);
-        require(storage.board.get(position) == Option::None::<Identity>(), PositionError::CellIsNotEmpty);
+        require(storage.board.get(position) == Option::None, PositionError::CellIsNotEmpty);
 
-        storage.board.insert(position, Option::Some(msg_sender().unwrap()));
+        storage.board.insert(position, msg_sender().unwrap());
         storage.move_counter += 1;
 
         let current_player = storage.player_turn.unwrap();
