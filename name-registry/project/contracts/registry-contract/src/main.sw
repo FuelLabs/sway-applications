@@ -14,20 +14,14 @@ use events::{
     RegistrationExtendedEvent,
 };
 use interface::NameRegistry;
-use std::{
-    auth::msg_sender,
-    block::timestamp,
-    call_frames::msg_asset_id,
-    context::msg_amount,
-    logging::log,
-};
+use std::{auth::msg_sender, block::timestamp, call_frames::msg_asset_id, context::msg_amount};
 
 // TODO: Replace the B256 config-time constant with a ContractId when possible
 const ASSET_ID = ContractId::from(ASSET_B256);
 
 storage {
     /// A mapping of names to an option of records, with a none representing an unregistered name
-    names: StorageMap<str[8], Option<Record>> = StorageMap {},
+    names: StorageMap<str[8], Record> = StorageMap {},
 }
 
 // TODO: Change the static 8 length str with a dynamic string when possible
@@ -41,7 +35,7 @@ impl NameRegistry for Contract {
         let mut record = storage.names.get(name).unwrap();
         record.expiry = record.expiry + duration;
 
-        storage.names.insert(name, Option::Some(record));
+        storage.names.insert(name, record);
 
         log(RegistrationExtendedEvent {
             duration,
@@ -65,13 +59,9 @@ impl NameRegistry for Contract {
         require(msg_asset_id() == ASSET_ID, AssetError::IncorrectAssetSent);
         require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetError::InsufficientPayment);
 
-        let record = Record {
-            expiry: timestamp() + duration,
-            identity,
-            owner,
-        };
+        let record = Record::new(timestamp() + duration, identity, owner);
 
-        storage.names.insert(name, Option::Some(record));
+        storage.names.insert(name, record);
 
         log(NameRegisteredEvent {
             expiry: record.expiry,
@@ -88,13 +78,9 @@ impl NameRegistry for Contract {
         require(timestamp() < previous_record.expiry, RegistrationValidityError::NameExpired);
         require(previous_record.owner == msg_sender().unwrap(), AuthorisationError::SenderNotOwner);
 
-        let new_record = Record {
-            expiry: previous_record.expiry,
-            identity,
-            owner: previous_record.owner,
-        };
+        let new_record = Record::new(previous_record.expiry, identity, previous_record.owner);
 
-        storage.names.insert(name, Option::Some(new_record));
+        storage.names.insert(name, new_record);
 
         log(IdentityChangedEvent {
             name,
@@ -110,13 +96,9 @@ impl NameRegistry for Contract {
         require(timestamp() < previous_record.expiry, RegistrationValidityError::NameExpired);
         require(previous_record.owner == msg_sender().unwrap(), AuthorisationError::SenderNotOwner);
 
-        let new_record = Record {
-            expiry: previous_record.expiry,
-            identity: previous_record.identity,
-            owner,
-        };
+        let new_record = Record::new(previous_record.expiry, previous_record.identity, owner);
 
-        storage.names.insert(name, Option::Some(new_record));
+        storage.names.insert(name, new_record);
 
         log(OwnerChangedEvent {
             name,

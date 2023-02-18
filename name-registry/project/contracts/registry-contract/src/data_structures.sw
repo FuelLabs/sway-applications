@@ -8,3 +8,13 @@ pub struct Record {
     /// The identity which controls the name, and can change the identity and owner
     owner: Identity,
 }
+
+impl Record {
+    pub fn new(expiry: u64, identity: Identity, owner: Identity) -> Self {
+        Self {
+            expiry,
+            identity,
+            owner,
+        }
+    }
+}
