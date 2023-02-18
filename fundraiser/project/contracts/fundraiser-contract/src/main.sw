@@ -27,8 +27,8 @@ use std::{
     auth::msg_sender,
     block::height,
     call_frames::msg_asset_id,
+    constants::BASE_ASSET_ID,
     context::msg_amount,
-    logging::log,
     token::transfer,
 };
 use interface::{Fundraiser, Info};
@@ -38,7 +38,7 @@ storage {
     /// Total number of unique assets used across all campaigns
     asset_count: u64 = 0,
     /// Direct look-up for asset data if the user wants to check via a known ID
-    asset_info: StorageMap<ContractId, Option<AssetInfo>> = StorageMap {},
+    asset_info: StorageMap<ContractId, AssetInfo> = StorageMap {},
     /// O(1) look-up to allow searching via asset_count
     /// Map(1...asset_count => asset)
     asset_index: StorageMap<u64, ContractId> = StorageMap {},
@@ -48,10 +48,10 @@ storage {
     user_campaign_count: StorageMap<Identity, u64> = StorageMap {},
     /// Campaigns that have been created by a user
     /// Map(Identity => Map(1...user_campaign_count => Campaign)
-    campaign_history: StorageMap<(Identity, u64), Option<Campaign>> = StorageMap {},
+    campaign_history: StorageMap<(Identity, u64), Campaign> = StorageMap {},
     /// Data describing the content of a campaign
     /// Map(Campaign ID => CampaignInfo)
-    campaign_info: StorageMap<u64, Option<CampaignInfo>> = StorageMap {},
+    campaign_info: StorageMap<u64, CampaignInfo> = StorageMap {},
     /// The total number of unique campaigns that a user has pledged to
     /// This should only be incremented.
     /// Unpledging should not affect this number
@@ -59,7 +59,7 @@ storage {
     /// Record of how much a user has pledged to a specific campaign
     /// Locked after the deadline
     /// Map(Identity => Map(1...pledge_count => Pledge))
-    pledge_history: StorageMap<(Identity, u64), Option<Pledge>> = StorageMap {},
+    pledge_history: StorageMap<(Identity, u64), Pledge> = StorageMap {},
     /// O(1) look-up to prevent iterating over pledge_history
     /// Map(Identity => Map(Campaign ID => Pledge History Index))
     pledge_history_index: StorageMap<(Identity, u64), u64> = StorageMap {},
@@ -90,7 +90,7 @@ impl Fundraiser for Contract {
         campaign_info.state = CampaignState::Cancelled;
 
         // Overwrite the previous campaign (which has not been cancelled) with the updated version
-        storage.campaign_info.insert(campaign_id, Option::Some(campaign_info));
+        storage.campaign_info.insert(campaign_id, campaign_info);
 
         // We have updated the state of a campaign therefore we must log it
         log(CancelledCampaignEvent { campaign_id });
@@ -124,7 +124,7 @@ impl Fundraiser for Contract {
 
         // Mark the campaign as claimed and overwrite the previous state with the updated version
         campaign_info.state = CampaignState::Claimed;
-        storage.campaign_info.insert(campaign_id, Option::Some(campaign_info));
+        storage.campaign_info.insert(campaign_id, campaign_info);
 
         // Transfer the total pledged to this campaign to the beneficiary
         transfer(campaign_info.total_pledge, campaign_info.asset, campaign_info.beneficiary);
@@ -155,7 +155,7 @@ impl Fundraiser for Contract {
         let mut asset_info = storage.asset_info.get(asset);
         if asset_info.is_none() {
             // Update storage for new asset
-            storage.asset_info.insert(asset, Option::Some(AssetInfo::new()));
+            storage.asset_info.insert(asset, AssetInfo::new());
 
             // Increment asset count to keep track of new total
             storage.asset_count += 1;
@@ -165,17 +165,17 @@ impl Fundraiser for Contract {
         }
 
         // Use the user's number of created campaigns as an ID / way to index this new campaign
-        let user_campaign_count = storage.user_campaign_count.get(author);
+        let user_campaign_count = storage.user_campaign_count.get(author).unwrap_or(0);
 
         // We've just created a new campaign so increment the number of created campaigns across all
         // users and store the new campaign
         storage.total_campaigns += 1;
-        storage.campaign_info.insert(storage.total_campaigns, Option::Some(campaign_info));
+        storage.campaign_info.insert(storage.total_campaigns, campaign_info);
 
         // Increment the number of campaigns this user has created and track the ID for the campaign
         // they have just created so that data can be easily retrieved without duplicating data
         storage.user_campaign_count.insert(author, user_campaign_count + 1);
-        storage.campaign_history.insert((author, user_campaign_count + 1), Option::Some(Campaign::new(storage.total_campaigns)));
+        storage.campaign_history.insert((author, user_campaign_count + 1), Campaign::new(storage.total_campaigns));
 
         // We have changed the state by adding a new data structure therefore we log it
         log(CreatedCampaignEvent {
@@ -210,11 +210,11 @@ impl Fundraiser for Contract {
 
         // Use the user's pledges as an ID / way to index this new pledge
         let user = msg_sender().unwrap();
-        let pledge_count = storage.pledge_count.get(user);
+        let pledge_count = storage.pledge_count.get(user).unwrap_or(0);
 
         // Fetch the index to see if the user has pledged to this campaign before or if this is a
         // pledge to a new campaign
-        let pledge_history_index = storage.pledge_history_index.get((user, campaign_id));
+        let pledge_history_index = storage.pledge_history_index.get((user, campaign_id)).unwrap_or(0);
 
         // Pledging to a campaign that they have already pledged to
         if pledge_history_index != 0 {
@@ -223,7 +223,7 @@ impl Fundraiser for Contract {
             let mut pledge = storage.pledge_history.get((user, pledge_history_index)).unwrap();
             pledge.amount += msg_amount();
 
-            storage.pledge_history.insert((user, pledge_history_index), Option::Some(pledge));
+            storage.pledge_history.insert((user, pledge_history_index), pledge);
         } else {
             // Pledging to a new campaign
             
@@ -233,7 +233,7 @@ impl Fundraiser for Contract {
             // Store the data structure required to look up the campaign they have pledged to, also
             // track how much they have pledged so that they can withdraw the correct amount.
             // Moreover, this can be used to show the user how much they have pledged to any campaign
-            storage.pledge_history.insert((user, pledge_count + 1), Option::Some(Pledge::new(msg_amount(), campaign_id)));
+            storage.pledge_history.insert((user, pledge_count + 1), Pledge::new(msg_amount(), campaign_id));
 
             // Since we use the campaign ID to interact with the contract use the ID as a key for
             // a reverse look-up. Value is the 1st pledge (count)
@@ -245,14 +245,14 @@ impl Fundraiser for Contract {
         campaign_info.total_pledge += msg_amount();
 
         // Campaign state has been updated therefore overwrite the previous version with the new
-        storage.campaign_info.insert(campaign_id, Option::Some(campaign_info));
+        storage.campaign_info.insert(campaign_id, campaign_info);
 
         // Update the asset amount to track the addition of the new pledge
         let mut asset_info = storage.asset_info.get(campaign_info.asset).unwrap();
         asset_info.amount += msg_amount();
 
         // Update asset state
-        storage.asset_info.insert(campaign_info.asset, Option::Some(asset_info));
+        storage.asset_info.insert(campaign_info.asset, asset_info);
 
         // We have updated the state of a campaign therefore we must log it
         log(PledgedEvent {
@@ -281,7 +281,7 @@ impl Fundraiser for Contract {
 
         // Check if the user has pledged to the campaign they are attempting to unpledge from
         let user = msg_sender().unwrap();
-        let pledge_history_index = storage.pledge_history_index.get((user, campaign_id));
+        let pledge_history_index = storage.pledge_history_index.get((user, campaign_id)).unwrap_or(0);
 
         require(pledge_history_index != 0, UserError::UserHasNotPledged);
 
@@ -301,17 +301,17 @@ impl Fundraiser for Contract {
         campaign_info.total_pledge -= amount;
 
         // Update the state of their pledge with the new version
-        storage.pledge_history.insert((user, pledge_history_index), Option::Some(pledge));
+        storage.pledge_history.insert((user, pledge_history_index), pledge);
 
         // Update the campaign state with the updated version as well
-        storage.campaign_info.insert(campaign_id, Option::Some(campaign_info));
+        storage.campaign_info.insert(campaign_id, campaign_info);
 
         // Update the asset amount to track the removal of the amount
         let mut asset_info = storage.asset_info.get(campaign_info.asset).unwrap();
         asset_info.amount -= amount;
 
         // Update asset state
-        storage.asset_info.insert(campaign_info.asset, Option::Some(asset_info));
+        storage.asset_info.insert(campaign_info.asset, asset_info);
 
         // Transfer back the amount the user has unpledged
         transfer(amount, campaign_info.asset, user);
@@ -333,7 +333,7 @@ impl Info for Contract {
 
     #[storage(read)]
     fn asset_info_by_count(index: u64) -> Option<AssetInfo> {
-        storage.asset_info.get(storage.asset_index.get(index))
+        storage.asset_info.get(storage.asset_index.get(index).unwrap_or(BASE_ASSET_ID))
     }
 
     #[storage(read)]
@@ -353,7 +353,7 @@ impl Info for Contract {
 
     #[storage(read)]
     fn pledge_count(user: Identity) -> u64 {
-        storage.pledge_count.get(user)
+        storage.pledge_count.get(user).unwrap_or(0)
     }
 
     #[storage(read)]
@@ -368,6 +368,6 @@ impl Info for Contract {
 
     #[storage(read)]
     fn user_campaign_count(user: Identity) -> u64 {
-        storage.user_campaign_count.get(user)
+        storage.user_campaign_count.get(user).unwrap_or(0)
     }
 }
