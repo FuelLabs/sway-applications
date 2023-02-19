@@ -53,7 +53,7 @@ abi Info {
     /// * `identity` - The user whose ClaimData will be returned
     #[storage(read)]
     fn claim_data(identity: Identity) -> ClaimData;
-    
+
     /// Returns the block at which the airdrop ends
     #[storage(read)]
     fn end_block() -> u64;
