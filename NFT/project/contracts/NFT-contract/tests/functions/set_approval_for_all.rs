@@ -7,6 +7,7 @@ use fuels::{signers::Signer, types::Identity};
 mod success {
 
     use super::*;
+    use crate::utils::OperatorEvent;
 
     #[tokio::test]
     async fn sets_approval_for_all() {
@@ -19,9 +20,19 @@ mod success {
 
         assert!(!is_approved_for_all(&owner1.contract, operator.clone(), owner.clone()).await);
 
-        set_approval_for_all(true, &owner1.contract, operator.clone()).await;
+        let response = set_approval_for_all(true, &owner1.contract, operator.clone()).await;
+        let log = response.get_logs_with_type::<OperatorEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
-        assert!(is_approved_for_all(&owner1.contract, operator, owner.clone()).await);
+        assert_eq!(
+            *event,
+            OperatorEvent {
+                approved: true,
+                owner: owner.clone(),
+                operator: operator.clone(),
+            }
+        );
+        assert!(is_approved_for_all(&owner1.contract, operator, owner).await);
     }
 
     #[tokio::test]
@@ -35,12 +46,32 @@ mod success {
 
         assert!(!is_approved_for_all(&owner1.contract, operator.clone(), owner.clone()).await);
 
-        set_approval_for_all(true, &owner1.contract, operator.clone()).await;
+        let response = set_approval_for_all(true, &owner1.contract, operator.clone()).await;
+        let log = response.get_logs_with_type::<OperatorEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            OperatorEvent {
+                approved: true,
+                owner: owner.clone(),
+                operator: operator.clone(),
+            }
+        );
         assert!(is_approved_for_all(&owner1.contract, operator.clone(), owner.clone()).await);
 
-        set_approval_for_all(false, &owner1.contract, operator.clone()).await;
+        let response = set_approval_for_all(false, &owner1.contract, operator.clone()).await;
+        let log = response.get_logs_with_type::<OperatorEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
-        assert!(!is_approved_for_all(&owner1.contract, operator.clone(), owner.clone()).await);
+        assert_eq!(
+            *event,
+            OperatorEvent {
+                approved: false,
+                owner: owner.clone(),
+                operator: operator.clone(),
+            }
+        );
+        assert!(!is_approved_for_all(&owner1.contract, operator, owner).await);
     }
 }
