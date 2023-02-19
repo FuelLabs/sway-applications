@@ -40,13 +40,12 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
         let response = accept_arbiter(&buyer.contract, 0).await;
-        let log = response.get_logs_with_type::<AcceptedArbiterEvent>().unwrap();
+        let log = response
+            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
-        assert_eq!(
-            *event,
-            AcceptedArbiterEvent { identifier: 0 }
-        );
+        assert_eq!(*event, AcceptedArbiterEvent { identifier: 0 });
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
@@ -107,27 +106,25 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
         let response = accept_arbiter(&buyer.contract, 0).await;
-        let log = response.get_logs_with_type::<AcceptedArbiterEvent>().unwrap();
+        let log = response
+            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
-        assert_eq!(
-            *event,
-            AcceptedArbiterEvent { identifier: 0 }
-        );
-        
+        assert_eq!(*event, AcceptedArbiterEvent { identifier: 0 });
+
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
         let response = accept_arbiter(&buyer.contract, 1).await;
-        let log = response.get_logs_with_type::<AcceptedArbiterEvent>().unwrap();
+        let log = response
+            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
-        assert_eq!(
-            *event,
-            AcceptedArbiterEvent { identifier: 1 }
-        );
+        assert_eq!(*event, AcceptedArbiterEvent { identifier: 1 });
         assert_eq!(
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
