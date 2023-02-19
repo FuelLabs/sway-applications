@@ -1,12 +1,11 @@
-use crate::utils::{
-    airdrop_distributor_abi_calls::{airdrop_constructor, claim, claim_data},
-    simple_asset_abi_calls::asset_constructor,
-    test_helpers::{build_tree, build_tree_manual, defaults, setup},
-};
-
 mod success {
-
-    use super::*;
+    use crate::utils::{
+        interface::{
+            core::{airdrop_constructor, asset_constructor, claim},
+            info::claim_data,
+        },
+        setup::{build_tree, build_tree_manual, defaults, setup},
+    };
 
     // NOTE: This test is ignored as it uses the Fuel-Merkle crate. There is currently an
     // incompatability with the Fuel-Merkle crate and the Sway-Libs Merkle Proof library.

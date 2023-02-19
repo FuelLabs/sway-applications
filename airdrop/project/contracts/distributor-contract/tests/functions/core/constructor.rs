@@ -1,12 +1,13 @@
 use crate::utils::{
-    airdrop_distributor_abi_calls::{airdrop_constructor, end_block, merkle_root},
-    test_helpers::{defaults, setup},
+    interface::core::airdrop_constructor,
+    setup::{defaults, setup},
 };
 use fuels::types::Bits256;
 
 mod success {
 
     use super::*;
+    use crate::utils::interface::info::{end_block, merkle_root};
 
     #[tokio::test]
     async fn initalizes() {

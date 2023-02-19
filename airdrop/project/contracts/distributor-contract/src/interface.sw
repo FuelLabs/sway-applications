@@ -27,14 +27,6 @@ abi AirdropDistributor {
     #[storage(read, write)]
     fn claim(amount: u64, key: u64, num_leaves: u64, proof: Vec<b256>, to: Identity);
 
-    /// Returns the claim data stored on the given identity
-    ///
-    /// # Arguments
-    ///
-    /// * `identity` - The user whose ClaimData will be returned
-    #[storage(read)]
-    fn claim_data(identity: Identity) -> ClaimData;
-
     /// Initialized the contract and starts the airdrop.
     ///
     /// Note: The `asset` contract will need to have a `mint_to` function implemented which this
@@ -51,7 +43,17 @@ abi AirdropDistributor {
     /// * The constructor has already been called.
     #[storage(read, write)]
     fn constructor(asset: ContractId, claim_time: u64, merkleRoot: b256);
+}
 
+abi Info {
+    /// Returns the claim data stored on the given identity
+    ///
+    /// # Arguments
+    ///
+    /// * `identity` - The user whose ClaimData will be returned
+    #[storage(read)]
+    fn claim_data(identity: Identity) -> ClaimData;
+    
     /// Returns the block at which the airdrop ends
     #[storage(read)]
     fn end_block() -> u64;

@@ -9,7 +9,7 @@ dep utils;
 use data_structures::ClaimData;
 use errors::{AccessError, InitError, StateError, VerificationError};
 use events::{ClaimEvent, CreateAirdropEvent};
-use interface::AirdropDistributor;
+use interface::{AirdropDistributor, Info};
 use merkle_proof::binary_merkle_proof::{leaf_digest, verify_proof};
 use std::{block::height, hash::sha256, logging::log, storage::StorageMap};
 use utils::mint_to;
@@ -50,11 +50,6 @@ impl AirdropDistributor for Contract {
         log(ClaimEvent { to, amount });
     }
 
-    #[storage(read)]
-    fn claim_data(identity: Identity) -> ClaimData {
-        storage.claims.get(identity)
-    }
-
     #[storage(read, write)]
     fn constructor(asset: ContractId, claim_time: u64, merkle_root: b256) {
         // If `end_block` is set to a value other than 0, we know that the contructor has already
@@ -70,6 +65,13 @@ impl AirdropDistributor for Contract {
             end_block: claim_time,
             merkle_root,
         });
+    }
+}
+
+impl Info for Contract {
+    #[storage(read)]
+    fn claim_data(identity: Identity) -> ClaimData {
+        storage.claims.get(identity)
     }
 
     #[storage(read)]
