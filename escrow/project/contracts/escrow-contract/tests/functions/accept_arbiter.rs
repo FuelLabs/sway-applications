@@ -6,6 +6,7 @@ use crate::utils::{
 mod success {
 
     use super::*;
+    use crate::utils::AcceptedArbiterEvent;
 
     #[tokio::test]
     async fn accepts_proposal() {
@@ -38,7 +39,14 @@ mod success {
         propose_arbiter(arbiter_obj, &seller.contract, 0).await;
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
-        accept_arbiter(&buyer.contract, 0).await;
+        let response = accept_arbiter(&buyer.contract, 0).await;
+        let log = response.get_logs_with_type::<AcceptedArbiterEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            AcceptedArbiterEvent { identifier: 0 }
+        );
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
@@ -98,13 +106,28 @@ mod success {
         propose_arbiter(arbiter_obj, &seller.contract, 1).await;
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
-        accept_arbiter(&buyer.contract, 0).await;
+        let response = accept_arbiter(&buyer.contract, 0).await;
+        let log = response.get_logs_with_type::<AcceptedArbiterEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            AcceptedArbiterEvent { identifier: 0 }
+        );
+        
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        accept_arbiter(&buyer.contract, 1).await;
+        let response = accept_arbiter(&buyer.contract, 1).await;
+        let log = response.get_logs_with_type::<AcceptedArbiterEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            AcceptedArbiterEvent { identifier: 1 }
+        );
         assert_eq!(
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
