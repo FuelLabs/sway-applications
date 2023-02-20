@@ -1,4 +1,10 @@
-use fuels::{prelude::*, types::Identity};
+use fuels::{
+    prelude::{
+        abigen, launch_custom_provider_and_get_wallets, Bech32Address, Contract,
+        StorageConfiguration, TxParameters, WalletsConfig,
+    },
+    types::Identity,
+};
 
 abigen!(Contract(
     name = "TicTacToe",
@@ -11,10 +17,6 @@ const TICTACTOE_CONTRACT_STORAGE_PATH: &str = "./out/debug/tictactoe-contract-st
 pub struct Player {
     pub contract: TicTacToe,
     pub identity: Identity,
-}
-
-async fn identity(address: &Bech32Address) -> Identity {
-    Identity::Address(address.into())
 }
 
 pub async fn setup() -> (Player, Player) {
@@ -44,12 +46,12 @@ pub async fn setup() -> (Player, Player) {
 
     let player_one = Player {
         contract: TicTacToe::new(id.clone(), player_one_wallet.clone()),
-        identity: identity(player_one_wallet.address()).await,
+        identity: Identity::Address(player_one_wallet.address().into()),
     };
 
     let player_two = Player {
         contract: TicTacToe::new(id, player_two_wallet.clone()),
-        identity: identity(player_two_wallet.address()).await,
+        identity: Identity::Address(player_two_wallet.address().into()),
     };
 
     (player_one, player_two)
