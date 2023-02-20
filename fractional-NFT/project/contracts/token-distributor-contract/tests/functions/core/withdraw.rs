@@ -1,26 +1,32 @@
 use crate::utils::{
-    nft_abi_calls::{approve, mint},
-    test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{create, set_reserve, token_distribution},
+    interface::core::{
+        asset::mint_and_send_to_address,
+        nft::{approve, mint},
+        token_distributor::{create, purchase, withdraw},
+    },
+    setup::{defaults, setup},
 };
-use fuels::{signers::Signer, types::Identity};
+use fuels::{prelude::Address, types::Identity};
 
 mod success {
 
     use super::*;
+    use crate::utils::{
+        interface::info::token_distributor::token_distribution, setup::wallet_balance,
+    };
 
     #[tokio::test]
-    async fn sets_reserve() {
+    async fn withdraws_tokens() {
         let (
             _deployer,
             owner1,
-            _owner2,
+            owner2,
             _token_distributor_contract,
             fractional_nft_contract,
             nft_contract,
             asset_contract,
         ) = setup().await;
-        let (reserve_price, token_price, token_supply, _purchase_amount, _asset_supply) =
+        let (reserve_price, token_price, token_supply, purchase_amount, asset_supply) =
             defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
@@ -40,26 +46,40 @@ mod success {
             0,
         )
         .await;
-
-        let token_distribution_struct =
-            token_distribution(&owner1.token_distributor, fractional_nft_contract).await;
-        assert_eq!(
-            token_distribution_struct.clone().unwrap().reserve_price,
-            Some(reserve_price)
-        );
-
-        set_reserve(
-            &owner1.token_distributor,
+        mint_and_send_to_address(
+            asset_supply,
+            &owner2.asset,
+            Address::new(*owner2.wallet.address().hash()),
+        )
+        .await;
+        purchase(
+            purchase_amount,
+            &owner2.token_distributor,
+            asset_contract,
             fractional_nft_contract,
-            Some(reserve_price + 1),
+            token_price,
         )
         .await;
 
         let token_distribution_struct =
             token_distribution(&owner1.token_distributor, fractional_nft_contract).await;
+        assert_eq!(wallet_balance(asset_contract, &owner1.wallet).await, 0);
         assert_eq!(
-            token_distribution_struct.unwrap().reserve_price,
-            Some(reserve_price + 1)
+            token_distribution_struct.clone().unwrap().external_deposits,
+            (purchase_amount * token_price)
+        );
+
+        withdraw(&owner1.token_distributor, fractional_nft_contract).await;
+
+        let token_distribution_struct =
+            token_distribution(&owner1.token_distributor, fractional_nft_contract).await;
+        assert_eq!(
+            wallet_balance(asset_contract, &owner1.wallet).await,
+            purchase_amount * token_price
+        );
+        assert_eq!(
+            token_distribution_struct.clone().unwrap().external_deposits,
+            0
         );
     }
 }
@@ -80,30 +100,25 @@ mod revert {
             _nft_contract,
             _asset_contract,
         ) = setup().await;
-        let (reserve_price, _token_price, _token_supply, _purchase_amount, _asset_supply) =
+        let (_reserve_price, _token_price, _token_supply, _purchase_amount, _asset_supply) =
             defaults().await;
 
-        set_reserve(
-            &owner1.token_distributor,
-            fractional_nft_contract,
-            Some(reserve_price + 1),
-        )
-        .await;
+        withdraw(&owner1.token_distributor, fractional_nft_contract).await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "NotTokenAdmin")]
-    async fn when_not_owner() {
+    async fn when_not_admin() {
         let (
             _deployer,
             owner1,
-            _owner2,
+            owner2,
             _token_distributor_contract,
             fractional_nft_contract,
             nft_contract,
             asset_contract,
         ) = setup().await;
-        let (reserve_price, token_price, token_supply, _purchase_amount, _asset_supply) =
+        let (reserve_price, token_price, token_supply, purchase_amount, asset_supply) =
             defaults().await;
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
@@ -117,18 +132,27 @@ mod revert {
             fractional_nft_contract,
             nft_contract,
             Some(reserve_price),
-            None,
+            Some(owner_identity.clone()),
             token_price,
             token_supply,
             0,
         )
         .await;
-
-        set_reserve(
-            &owner1.token_distributor,
-            fractional_nft_contract,
-            Some(reserve_price + 1),
+        mint_and_send_to_address(
+            asset_supply,
+            &owner2.asset,
+            Address::new(*owner2.wallet.address().hash()),
         )
         .await;
+        purchase(
+            purchase_amount,
+            &owner2.token_distributor,
+            asset_contract,
+            fractional_nft_contract,
+            token_price,
+        )
+        .await;
+
+        withdraw(&owner2.token_distributor, fractional_nft_contract).await;
     }
 }

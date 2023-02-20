@@ -1,15 +1,22 @@
 use crate::utils::{
-    abigen_bindings::token_distributor_mod::DistributionState,
-    fractional_nft_abi_calls::nft_info,
-    nft_abi_calls::{approve, mint, owner_of},
-    test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{create, token_distribution},
+    interface::core::{
+        nft::{approve, mint},
+        token_distributor::create,
+    },
+    setup::{defaults, setup},
 };
-use fuels::{prelude::Bech32ContractId, signers::Signer, tx::AssetId, types::Identity};
+use fuels::types::Identity;
 
 mod success {
 
     use super::*;
+    use crate::utils::{
+        interface::info::{
+            fractional_nft::nft_info, nft::owner_of, token_distributor::token_distribution,
+        },
+        setup::DistributionState,
+    };
+    use fuels::{prelude::Bech32ContractId, tx::AssetId};
 
     #[tokio::test]
     async fn creates_token_distribution() {

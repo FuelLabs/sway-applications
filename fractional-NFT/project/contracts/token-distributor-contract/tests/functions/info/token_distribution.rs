@@ -1,14 +1,15 @@
-use crate::utils::{
-    abigen_bindings::token_distributor_mod::DistributionState,
-    nft_abi_calls::{approve, mint},
-    test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{create, token_distribution},
-};
-use fuels::{signers::Signer, types::Identity};
-
 mod success {
-
-    use super::*;
+    use crate::utils::{
+        interface::{
+            core::{
+                nft::{approve, mint},
+                token_distributor::create,
+            },
+            info::token_distributor::token_distribution,
+        },
+        setup::{defaults, setup, DistributionState},
+    };
+    use fuels::types::Identity;
 
     #[tokio::test]
     async fn returns_token_distribution_info() {

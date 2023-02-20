@@ -1,23 +1,23 @@
 use crate::utils::{
-    abigen_bindings::token_distributor_mod::DistributionState,
-    asset_abi_calls::mint_and_send_to_address,
-    fractional_nft_abi_calls::nft_info,
-    nft_abi_calls::{approve, mint, owner_of},
-    test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{
-        buyback, create, end, purchase, purchase_admin, sell, token_distribution,
+    interface::core::{
+        asset::mint_and_send_to_address,
+        nft::{approve, mint},
+        token_distributor::{buyback, create, end, purchase, purchase_admin, sell},
     },
+    setup::{defaults, setup},
 };
-use fuels::{
-    prelude::{Address, Bech32ContractId},
-    signers::Signer,
-    tx::AssetId,
-    types::Identity,
-};
+use fuels::{prelude::Address, types::Identity};
 
 mod success {
 
     use super::*;
+    use crate::utils::{
+        interface::info::{
+            fractional_nft::nft_info, nft::owner_of, token_distributor::token_distribution,
+        },
+        setup::DistributionState,
+    };
+    use fuels::{prelude::Bech32ContractId, tx::AssetId};
 
     #[tokio::test]
     async fn ends() {
