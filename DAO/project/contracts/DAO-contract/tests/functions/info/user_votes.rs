@@ -1,12 +1,12 @@
-use crate::utils::{
-    abi_calls::{constructor, create_proposal, deposit, user_votes, vote},
-    test_helpers::{mint, proposal_transaction, setup},
-    Votes,
-};
-use fuels::{prelude::CallParameters, tx::AssetId};
+use crate::utils::{interface::info::user_votes, setup::setup};
 
 mod sucess {
     use super::*;
+    use crate::utils::{
+        interface::core::{constructor, create_proposal, deposit, vote},
+        setup::{mint, proposal_transaction, Votes},
+    };
+    use fuels::{prelude::CallParameters, tx::AssetId};
 
     #[tokio::test]
     pub async fn user_can_check_user_votes() {
