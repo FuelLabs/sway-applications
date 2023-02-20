@@ -1,13 +1,2 @@
-mod balance;
-mod constructor;
-mod create_proposal;
-mod deposit;
-mod execute;
-mod governance_token_id;
-mod proposal;
-mod proposal_count;
-mod unlock_votes;
-mod user_balance;
-mod user_votes;
-mod vote;
-mod withdraw;
+mod core;
+mod info;

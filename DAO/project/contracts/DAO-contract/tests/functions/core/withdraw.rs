@@ -1,11 +1,12 @@
 use crate::utils::{
-    abi_calls::{balance, constructor, deposit, user_balance, withdraw},
-    test_helpers::{mint, setup},
+    interface::core::{constructor, deposit, withdraw},
+    setup::{mint, setup},
 };
 use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
+    use crate::utils::interface::info::{balance, user_balance};
 
     #[tokio::test]
     async fn user_can_withdraw() {
