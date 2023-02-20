@@ -1,11 +1,12 @@
 use crate::utils::{
-    fractional_nft_abi_calls::{deposit, nft_info, withdraw},
-    nft_abi_calls::{approve, mint, owner_of},
-    test_helpers::{defaults, setup},
+    interface::core::{
+        fractional_nft::{deposit, withdraw},
+        nft::{approve, mint},
+    },
+    setup::{defaults, setup},
 };
 use fuels::{
     prelude::{Bech32ContractId, TxParameters},
-    signers::Signer,
     tx::AssetId,
     types::Identity,
 };
@@ -13,6 +14,7 @@ use fuels::{
 mod success {
 
     use super::*;
+    use crate::utils::interface::info::{fractional_nft::nft_info, nft::owner_of};
 
     #[tokio::test]
     async fn withdraws_nft() {
