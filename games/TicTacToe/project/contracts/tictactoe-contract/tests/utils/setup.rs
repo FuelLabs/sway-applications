@@ -19,10 +19,6 @@ pub struct Player {
     pub identity: Identity,
 }
 
-async fn identity(address: &Bech32Address) -> Identity {
-    Identity::Address(address.into())
-}
-
 pub async fn setup() -> (Player, Player) {
     let num_wallets = 2;
     let coins_per_wallet = 1;
@@ -50,12 +46,12 @@ pub async fn setup() -> (Player, Player) {
 
     let player_one = Player {
         contract: TicTacToe::new(id.clone(), player_one_wallet.clone()),
-        identity: identity(player_one_wallet.address()).await,
+        identity: Identity::Address(player_one_wallet.address().into()),
     };
 
     let player_two = Player {
         contract: TicTacToe::new(id, player_two_wallet.clone()),
-        identity: identity(player_two_wallet.address()).await,
+        identity: Identity::Address(player_two_wallet.address().into()),
     };
 
     (player_one, player_two)
