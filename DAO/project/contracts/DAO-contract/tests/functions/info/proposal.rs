@@ -1,12 +1,12 @@
-use crate::utils::{
-    abi_calls::{constructor, create_proposal, proposal},
-    test_helpers::{proposal_transaction, setup},
-    ProposalInfo,
-};
-use fuels::types::Identity;
+use crate::utils::{interface::info::proposal, setup::setup};
 
 mod success {
     use super::*;
+    use crate::utils::{
+        interface::core::{constructor, create_proposal},
+        setup::{proposal_transaction, ProposalInfo},
+    };
+    use fuels::types::Identity;
 
     #[tokio::test]
     pub async fn user_can_get_proposal() {

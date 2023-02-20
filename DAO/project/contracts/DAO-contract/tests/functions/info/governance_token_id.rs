@@ -1,10 +1,8 @@
-use crate::utils::{
-    abi_calls::{constructor, governance_token_id},
-    test_helpers::setup,
-};
+use crate::utils::{interface::info::governance_token_id, setup::setup};
 
 mod success {
     use super::*;
+    use crate::utils::interface::core::constructor;
 
     #[tokio::test]
     pub async fn user_can_get_governance_token_id() {
