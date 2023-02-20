@@ -1,4 +1,10 @@
-use fuels::{prelude::*, types::Identity};
+use fuels::{
+    prelude::{
+        abigen, launch_custom_provider_and_get_wallets, Bech32Address, Contract,
+        StorageConfiguration, TxParameters, WalletsConfig,
+    },
+    types::Identity,
+};
 
 abigen!(Contract(
     name = "TicTacToe",
