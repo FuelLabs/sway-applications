@@ -1,10 +1,11 @@
-use crate::utils::{
-    abi_calls::{constructor, create_proposal, proposal_count},
-    test_helpers::{proposal_transaction, setup},
-};
-
 mod success {
-    use super::*;
+    use crate::utils::{
+        interface::{
+            core::{constructor, create_proposal},
+            info::proposal_count,
+        },
+        setup::{proposal_transaction, setup},
+    };
 
     #[tokio::test]
     async fn use_can_get_proposal_count() {
