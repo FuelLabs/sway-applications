@@ -1,5 +1,5 @@
 use fuels::{
-    prelude::*,
+    prelude::{CallParameters, TxParameters},
     programs::call_response::FuelCallResponse,
     tx::{AssetId, ContractId},
     types::Identity,
