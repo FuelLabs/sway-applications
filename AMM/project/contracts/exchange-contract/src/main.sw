@@ -32,7 +32,6 @@ use std::{
         msg_asset_id,
     },
     context::msg_amount,
-    logging::log,
     math::*,
     token::{
         burn,
@@ -65,7 +64,12 @@ impl Exchange for Contract {
 
         let sender = msg_sender().unwrap();
         let reserves = storage.pair.unwrap();
-        let deposits = AssetPair::new(Asset::new(reserves.a.id, storage.deposits.get((sender, reserves.a.id))), Asset::new(reserves.b.id, storage.deposits.get((sender, reserves.b.id))));
+
+        let (deposit_a, deposit_b) = (
+            storage.deposits.get((sender, reserves.a.id)).unwrap_or(0),
+            storage.deposits.get((sender, reserves.b.id)).unwrap_or(0),
+        );
+        let deposits = AssetPair::new(Asset::new(reserves.a.id, deposit_a), Asset::new(reserves.b.id, deposit_b));
 
         // checking this because this will either result in a math error or adding no liquidity at all
         require(deposits.a.amount != 0, TransactionError::ExpectedNonZeroDeposit(deposits.a.id));
@@ -162,7 +166,7 @@ impl Exchange for Contract {
 
         let sender = msg_sender().unwrap();
         let amount = msg_amount();
-        let new_balance = storage.deposits.get((sender, deposit_asset)) + amount;
+        let new_balance = storage.deposits.get((sender, deposit_asset)).unwrap_or(0) + amount;
         storage.deposits.insert((sender, deposit_asset), new_balance);
 
         log(DepositEvent {
@@ -290,7 +294,7 @@ impl Exchange for Contract {
         require(asset.id == storage.pair.unwrap().a.id || asset.id == storage.pair.unwrap().b.id, InputError::InvalidAsset);
 
         let sender = msg_sender().unwrap();
-        let deposited_amount = storage.deposits.get((sender, asset.id));
+        let deposited_amount = storage.deposits.get((sender, asset.id)).unwrap_or(0);
 
         require(deposited_amount >= asset.amount, TransactionError::DesiredAmountTooHigh(asset.amount));
 
@@ -309,7 +313,7 @@ impl Exchange for Contract {
         require(storage.pair.is_some(), InitError::AssetPairNotSet);
         require(asset_id == storage.pair.unwrap().a.id || asset_id == storage.pair.unwrap().b.id, InputError::InvalidAsset);
 
-        storage.deposits.get((msg_sender().unwrap(), asset_id))
+        storage.deposits.get((msg_sender().unwrap(), asset_id)).unwrap_or(0)
     }
 
     #[storage(read)]
@@ -329,7 +333,12 @@ impl Exchange for Contract {
         let sender = msg_sender().unwrap();
         let total_liquidity = storage.liquidity_pool_supply;
         let reserves = storage.pair.unwrap();
-        let deposits = AssetPair::new(Asset::new(reserves.a.id, storage.deposits.get((sender, reserves.a.id))), Asset::new(reserves.b.id, storage.deposits.get((sender, reserves.b.id))));
+
+        let (deposit_a, deposit_b) = (
+            storage.deposits.get((sender, reserves.a.id)).unwrap_or(0),
+            storage.deposits.get((sender, reserves.b.id)).unwrap_or(0),
+        );
+        let deposits = AssetPair::new(Asset::new(reserves.a.id, deposit_a), Asset::new(reserves.b.id, deposit_b));
 
         let mut added_assets = AssetPair::new(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
         let mut added_liquidity = 0;

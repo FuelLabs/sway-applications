@@ -1,14 +1,12 @@
 use crate::utils::{
-    abi_calls::{
-        constructor, create_proposal, deposit, unlock_votes, user_balance, user_votes, vote,
-    },
-    test_helpers::{mint, proposal_transaction, setup},
-    Votes,
+    interface::core::{constructor, create_proposal, deposit, unlock_votes, vote},
+    setup::{mint, proposal_transaction, setup, Votes},
 };
 use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
+    use crate::utils::interface::info::{user_balance, user_votes};
 
     #[tokio::test]
     async fn user_can_unlock_tokens() {

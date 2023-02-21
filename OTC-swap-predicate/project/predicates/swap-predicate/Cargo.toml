@@ -7,8 +7,7 @@ license = "Apache-2.0"
 
 [dependencies]
 fuel-gql-client = { version = "0.14.1", default-features = false }
-fuels = { version = "0.34.0", features = ["fuel-core-lib"] }
-
+fuels = { version = "0.36.1", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]
