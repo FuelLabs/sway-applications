@@ -11,10 +11,8 @@ pub enum ExecutionError {
 }
 
 pub enum InitError {
-    AddressCannotBeZero: (),
     CannotReinitialize: (),
     NotInitialized: (),
     ThresholdCannotBeZero: (),
     TotalWeightCannotBeLessThanThreshold: (),
-    WeightingCannotBeZero: (),
 }

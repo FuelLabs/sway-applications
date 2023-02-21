@@ -1,14 +1,10 @@
-use crate::utils::{
-    interface::balance,
-    test_helpers::{base_asset_contract_id, setup_env, DEFAULT_TRANSFER_AMOUNT},
-    VALID_SIGNER_PK,
-};
-
-use fuels::prelude::*;
-
 mod success {
 
-    use super::*;
+    use crate::utils::{
+        interface::info::balance,
+        setup::{base_asset_contract_id, setup_env, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK},
+    };
+    use fuels::prelude::{TxParameters, BASE_ASSET_ID};
 
     #[tokio::test]
     async fn gets_balance() {
