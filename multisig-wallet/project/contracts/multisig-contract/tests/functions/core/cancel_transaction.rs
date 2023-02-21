@@ -7,7 +7,7 @@ use crate::utils::{
 };
 
 mod success {
-    
+
     use super::*;
     use crate::utils::setup::CancelEvent;
     use fuels::types::Bits256;
