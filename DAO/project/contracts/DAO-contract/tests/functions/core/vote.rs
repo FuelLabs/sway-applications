@@ -1,12 +1,16 @@
 use crate::utils::{
-    abi_calls::{constructor, create_proposal, deposit, proposal, user_balance, user_votes, vote},
-    test_helpers::{mint, proposal_transaction, setup},
-    ProposalInfo, Votes,
+    interface::core::{constructor, create_proposal, deposit, vote},
+    setup::{mint, proposal_transaction, setup},
 };
-use fuels::{prelude::CallParameters, tx::AssetId, types::Identity};
+use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
+    use crate::utils::{
+        interface::info::{proposal, user_balance, user_votes},
+        setup::{ProposalInfo, Votes},
+    };
+    use fuels::types::Identity;
 
     #[tokio::test]
     async fn user_can_vote() {

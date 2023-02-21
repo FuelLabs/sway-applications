@@ -1,14 +1,15 @@
-use crate::utils::{
-    abi_calls::{balance, constructor, deposit},
-    test_helpers::{mint, setup},
-};
-use fuels::{prelude::CallParameters, tx::AssetId};
-
 mod success {
-    use super::*;
+    use crate::utils::{
+        interface::{
+            core::{constructor, deposit},
+            info::user_balance,
+        },
+        setup::{mint, setup},
+    };
+    use fuels::{prelude::CallParameters, tx::AssetId};
 
     #[tokio::test]
-    pub async fn user_can_check_contract_balance() {
+    pub async fn user_can_check_user_balance() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
@@ -24,8 +25,14 @@ mod success {
             Some(AssetId::from(*gov_token_id)),
             Some(100_000),
         );
-        assert_eq!(balance(&user.dao_voting).await, 0);
+        assert_eq!(
+            user_balance(&user.dao_voting, user.wallet.address()).await,
+            0
+        );
         deposit(&user.dao_voting, call_params).await;
-        assert_eq!(balance(&user.dao_voting).await, asset_amount);
+        assert_eq!(
+            user_balance(&user.dao_voting, user.wallet.address()).await,
+            asset_amount
+        );
     }
 }

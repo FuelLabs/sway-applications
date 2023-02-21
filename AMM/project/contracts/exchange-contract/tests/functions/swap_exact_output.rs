@@ -4,7 +4,8 @@ use test_utils::interface::exchange::{preview_swap_exact_output, swap_exact_outp
 mod success {
     use super::*;
     use crate::utils::wallet_balances;
-    use test_utils::interface::exchange::pool_info;
+    use fuels::prelude::ContractId;
+    use test_utils::interface::{exchange::pool_info, Asset, SwapEvent};
 
     #[tokio::test]
     async fn swaps_a_for_b_without_refund() {
@@ -22,7 +23,7 @@ mod success {
                 .other_asset
                 .amount;
 
-        let input_amount = swap_exact_output(
+        let response = swap_exact_output(
             &exchange.instance,
             exchange.pair.0,
             max_input,
@@ -31,10 +32,27 @@ mod success {
             true,
         )
         .await;
+        let log = response.get_logs_with_type::<SwapEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        let input_amount = response.value;
 
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
+        assert_eq!(
+            *event,
+            SwapEvent {
+                input: Asset {
+                    id: ContractId::from(*exchange.pair.0),
+                    amount: initial_pool_info.reserves.a.amount + max_input,
+                },
+                output: Asset {
+                    id: ContractId::from(*exchange.pair.1),
+                    amount: initial_pool_info.reserves.b.amount - output_amount,
+                },
+            }
+        );
         assert!(input_amount <= max_input);
         assert_eq!(
             final_wallet_balances.asset_a,
@@ -72,7 +90,7 @@ mod success {
                 .amount;
         let forward_amount = max_input + forward_extra;
 
-        let input_amount = swap_exact_output(
+        let response = swap_exact_output(
             &exchange.instance,
             exchange.pair.0,
             forward_amount,
@@ -81,10 +99,27 @@ mod success {
             true,
         )
         .await;
+        let log = response.get_logs_with_type::<SwapEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        let input_amount = response.value;
 
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
+        assert_eq!(
+            *event,
+            SwapEvent {
+                input: Asset {
+                    id: ContractId::from(*exchange.pair.0),
+                    amount: initial_pool_info.reserves.a.amount + max_input,
+                },
+                output: Asset {
+                    id: ContractId::from(*exchange.pair.1),
+                    amount: initial_pool_info.reserves.b.amount - output_amount,
+                },
+            }
+        );
         assert!(input_amount <= max_input);
         assert_eq!(
             final_wallet_balances.asset_a,
@@ -120,7 +155,7 @@ mod success {
                 .other_asset
                 .amount;
 
-        let input_amount = swap_exact_output(
+        let response = swap_exact_output(
             &exchange.instance,
             exchange.pair.1,
             max_input,
@@ -129,10 +164,27 @@ mod success {
             true,
         )
         .await;
+        let log = response.get_logs_with_type::<SwapEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        let input_amount = response.value;
 
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
+        assert_eq!(
+            *event,
+            SwapEvent {
+                input: Asset {
+                    id: ContractId::from(*exchange.pair.1),
+                    amount: initial_pool_info.reserves.b.amount + max_input,
+                },
+                output: Asset {
+                    id: ContractId::from(*exchange.pair.0),
+                    amount: initial_pool_info.reserves.a.amount - output_amount,
+                },
+            }
+        );
         assert!(input_amount <= max_input);
         assert_eq!(
             final_wallet_balances.asset_b,
@@ -170,7 +222,7 @@ mod success {
                 .amount;
         let forward_amount = max_input + forward_extra;
 
-        let input_amount = swap_exact_output(
+        let response = swap_exact_output(
             &exchange.instance,
             exchange.pair.1,
             forward_amount,
@@ -179,10 +231,27 @@ mod success {
             true,
         )
         .await;
+        let log = response.get_logs_with_type::<SwapEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        let input_amount = response.value;
 
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
+        assert_eq!(
+            *event,
+            SwapEvent {
+                input: Asset {
+                    id: ContractId::from(*exchange.pair.1),
+                    amount: initial_pool_info.reserves.b.amount + max_input,
+                },
+                output: Asset {
+                    id: ContractId::from(*exchange.pair.0),
+                    amount: initial_pool_info.reserves.a.amount - output_amount,
+                },
+            }
+        );
         assert!(input_amount <= max_input);
         assert_eq!(
             final_wallet_balances.asset_b,

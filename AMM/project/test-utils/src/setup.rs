@@ -1,10 +1,21 @@
 use super::data_structures::{
     AMMContract, ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
 };
-use fuels::{prelude::*, tx::Contract as TxContract};
+use fuels::{
+    prelude::{
+        Address, AssetId, Bech32Address, Contract, ContractId, Provider, Salt, SettableContract,
+        StorageConfiguration, TxParameters, WalletUnlocked,
+    },
+    tx::Contract as TxContract,
+};
 
 pub mod common {
     use super::*;
+    use fuels::{
+        programs::call_response::FuelCallResponse,
+        test_helpers::{setup_multiple_assets_coins, setup_test_provider},
+    };
+
     use crate::{
         data_structures::WalletAssetConfiguration,
         interface::{
@@ -103,12 +114,11 @@ pub mod common {
         (id, instance)
     }
 
-    // TODO: once the script is reliable enough, use it for this functionality
-    pub async fn deposit_and_add_liquidity(
+    pub async fn deposit_and_add_liquidity_with_response(
         liquidity_parameters: &LiquidityParameters,
         exchange: &ExchangeContract,
         override_gas_limit: bool,
-    ) -> u64 {
+    ) -> FuelCallResponse<u64> {
         deposit(
             &exchange.instance,
             liquidity_parameters.amounts.0,
@@ -130,6 +140,17 @@ pub mod common {
             override_gas_limit,
         )
         .await
+    }
+
+    // TODO: once the script is reliable enough, use it for this functionality
+    pub async fn deposit_and_add_liquidity(
+        liquidity_parameters: &LiquidityParameters,
+        exchange: &ExchangeContract,
+        override_gas_limit: bool,
+    ) -> u64 {
+        deposit_and_add_liquidity_with_response(liquidity_parameters, exchange, override_gas_limit)
+            .await
+            .value
     }
 
     pub async fn exchange_bytecode_root() -> ContractId {
