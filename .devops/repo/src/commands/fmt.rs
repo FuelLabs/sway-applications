@@ -1,4 +1,4 @@
-use crate::utils::{read_applications, repo_root};
+use crate::utils::{execute, print_application_errors, read_applications, repo_root};
 use std::process::Command;
 
 pub(crate) fn run() {
@@ -26,28 +26,6 @@ pub(crate) fn run() {
         );
     }
 
-    print(sway_errors, "Sway".to_string());
-    print(cargo_errors, "Cargo".to_string());
-}
-
-fn execute(command: &mut Command, errors: &mut Vec<String>, app: &String) {
-    let result = command.status();
-
-    match result {
-        Ok(status) => {
-            if !status.success() {
-                errors.push(app.clone());
-            }
-        }
-        Err(_) => errors.push(app.clone()),
-    }
-}
-
-fn print(errors: Vec<String>, source: String) {
-    if 0 < errors.len() {
-        println!("{}", format!("\n{} formatting errors found in", source));
-        for app in errors.iter() {
-            println!("    {}", app);
-        }
-    }
+    print_application_errors(sway_errors, "Sway formatting errors in".to_string());
+    print_application_errors(cargo_errors, "Cargo formatting errors in".to_string());
 }

@@ -1,4 +1,4 @@
-use crate::utils::{read_applications, repo_root};
+use crate::utils::{execute, print_application_errors, read_applications, repo_root};
 use std::process::Command;
 
 pub(crate) fn run() {
@@ -13,24 +13,12 @@ pub(crate) fn run() {
         // TODO: safety
         let project = std::fs::canonicalize(format!("{}/{}/project", root, app)).unwrap();
 
-        let result = Command::new("forc")
-            .current_dir(project)
-            .arg("build")
-            .status();
-        match result {
-            Ok(status) => {
-                if !status.success() {
-                    errors.push(app.clone());
-                }
-            }
-            Err(_) => errors.push(app.clone()),
-        }
+        execute(
+            Command::new("forc").current_dir(project).arg("build"),
+            &mut errors,
+            &app,
+        );
     }
 
-    if 0 < errors.len() {
-        println!("\nErrors found in");
-        for app in errors.iter() {
-            println!("    {}", app);
-        }
-    }
+    print_application_errors(errors, "Errors found in".to_string());
 }
