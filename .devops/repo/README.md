@@ -8,6 +8,8 @@ Change into the following directory `/path/to/sway-applications/.devops/repo/<he
 cargo build
 ```
 
+After building the executable you may run it directly from `/repo/target/debug/repo --<command>` or with the usage below.
+
 ### Usage
 
 The tool has 4 modes.
