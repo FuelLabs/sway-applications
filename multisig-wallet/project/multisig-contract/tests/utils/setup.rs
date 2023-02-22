@@ -80,13 +80,13 @@ pub async fn format_and_sign(
     wallet_type: WalletType,
 ) -> SignatureInfo {
     let formatted_message = match message_format {
-        MessageFormat::None() => message_hash,
-        MessageFormat::EIP191PersonalSign() => eip_191_personal_sign_format(message_hash),
+        MessageFormat::None => message_hash,
+        MessageFormat::EIP191PersonalSign => eip_191_personal_sign_format(message_hash),
     };
 
     let prefixed_message = match message_prefix {
-        MessagePrefix::None() => formatted_message,
-        MessagePrefix::Ethereum() => ethereum_prefix(formatted_message),
+        MessagePrefix::None => formatted_message,
+        MessagePrefix::Ethereum => ethereum_prefix(formatted_message),
     };
 
     let signature = Signature::sign(&private_key, &prefixed_message);
@@ -117,7 +117,7 @@ where
     <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
 }
 
-pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller), Error> {
+pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller)> {
     let private_key: SecretKey = private_key.parse().unwrap();
     let mut deployer_wallet = WalletUnlocked::new_from_private_key(private_key, None);
 
@@ -179,9 +179,9 @@ pub async fn transfer_signatures(private_key: SecretKey, tx_hash: Message) -> Ve
     let fuel_signature = format_and_sign(
         private_key,
         tx_hash,
-        MessageFormat::None(),
-        MessagePrefix::None(),
-        WalletType::Fuel(),
+        MessageFormat::None,
+        MessagePrefix::None,
+        WalletType::Fuel,
     )
     .await;
 
@@ -189,9 +189,9 @@ pub async fn transfer_signatures(private_key: SecretKey, tx_hash: Message) -> Ve
     let evm_signature = format_and_sign(
         private_key,
         tx_hash,
-        MessageFormat::EIP191PersonalSign(),
-        MessagePrefix::Ethereum(),
-        WalletType::EVM(),
+        MessageFormat::EIP191PersonalSign,
+        MessagePrefix::Ethereum,
+        WalletType::EVM,
     )
     .await;
 
