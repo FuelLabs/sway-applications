@@ -1,10 +1,7 @@
-use crate::utils::{execute, print_application_errors, read_applications, repo_root};
+use crate::utils::{execute, print_application_errors};
 use std::process::Command;
 
-pub(crate) fn run() {
-    let root = repo_root();
-    let apps = read_applications();
-
+pub(crate) fn run(apps: Vec<String>, root: String) {
     let mut sway_errors: Vec<String> = vec![];
     let mut cargo_errors: Vec<String> = vec![];
 
