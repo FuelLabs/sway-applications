@@ -1,7 +1,7 @@
 use crate::utils::setup::TicTacToe;
 use fuels::{prelude::TxParameters, programs::call_response::FuelCallResponse, types::Identity};
 
-pub async fn new_game(
+pub(crate) async fn new_game(
     contract: &TicTacToe,
     player_one: &Identity,
     player_two: &Identity,
@@ -15,7 +15,7 @@ pub async fn new_game(
         .unwrap()
 }
 
-pub async fn make_move(contract: &TicTacToe, position: u64) -> FuelCallResponse<()> {
+pub(crate) async fn make_move(contract: &TicTacToe, position: u64) -> FuelCallResponse<()> {
     contract
         .methods()
         .make_move(position)

@@ -1,7 +1,7 @@
 use fuels::{
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Bech32Address, Contract,
-        StorageConfiguration, TxParameters, WalletsConfig,
+        abigen, launch_custom_provider_and_get_wallets, Contract, StorageConfiguration,
+        TxParameters, WalletsConfig,
     },
     types::Identity,
 };
@@ -14,12 +14,12 @@ abigen!(Contract(
 const TICTACTOE_CONTRACT_BINARY_PATH: &str = "./out/debug/tictactoe-contract.bin";
 const TICTACTOE_CONTRACT_STORAGE_PATH: &str = "./out/debug/tictactoe-contract-storage_slots.json";
 
-pub struct Player {
-    pub contract: TicTacToe,
-    pub identity: Identity,
+pub(crate) struct Player {
+    pub(crate) contract: TicTacToe,
+    pub(crate) identity: Identity,
 }
 
-pub async fn setup() -> (Player, Player) {
+pub(crate) async fn setup() -> (Player, Player) {
     let num_wallets = 2;
     let coins_per_wallet = 1;
     let amount_per_coin = 100_000_000;
