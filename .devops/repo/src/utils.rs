@@ -13,10 +13,10 @@ pub(crate) fn execute(command: &mut Command, errors: &mut Vec<String>, app: &Str
     }
 }
 
-pub(crate) fn print_applications(errors: Vec<String>, error_message: String) {
-    if 0 < errors.len() {
-        println!("\n{}", error_message);
-        for app in errors.iter() {
+pub(crate) fn print_applications(apps: Vec<String>, message: String) {
+    if 0 < apps.len() {
+        println!("\n{}", message);
+        for app in apps.iter() {
             println!("    {}", app);
         }
     }
@@ -33,6 +33,7 @@ pub(crate) fn repo_root() -> String {
     let project = std::env::current_dir().unwrap();
     let absolute_path = project.to_str().expect("Failed to convert root path");
     // TODO: safety
+    // /path/to/sway-applications/.devops/repo -> /path/to/sway-applications
     let root = absolute_path.split("/.devops").next().unwrap();
     root.into()
 }
