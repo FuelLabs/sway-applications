@@ -1,5 +1,4 @@
-use std::env;
-use std::{fs, process::Command};
+use std::{env, fs};
 
 pub(crate) fn read_applications() -> Vec<String> {
     let contents = fs::read_to_string("./apps.txt").expect("Unable to read apps.txt file");

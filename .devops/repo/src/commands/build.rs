@@ -10,7 +10,8 @@ pub(crate) fn run() {
     for app in apps {
         println!("\nBuilding {}", app);
 
-        set_current_dir(format!("{}/{}/project", root, app));
+        let project = format!("{}/{}/project", root, app);
+        set_current_dir(&project).expect(format!("Failed to change into: {}", project).as_str());
 
         let build = Command::new("forc").arg("build").status();
         match build {

@@ -12,7 +12,7 @@ struct Cli {
     command: Mode,
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+#[derive(Clone, ValueEnum)]
 enum Mode {
     Build,
     Bump,
