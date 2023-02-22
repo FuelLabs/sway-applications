@@ -14,11 +14,23 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
         let project = std::fs::canonicalize(format!("{}/{}/project", root, app)).unwrap();
 
         let result = Command::new("mv")
-            .arg(format!("{}/{}", project.clone(), toolchain.clone()))
-            .arg(format!("{}/{}", project.clone(), tmp_toolchain.clone()))
+            .arg(format!(
+                "{}/{}",
+                project.clone().display(),
+                toolchain.clone()
+            ))
+            .arg(format!(
+                "{}/{}",
+                project.clone().display(),
+                tmp_toolchain.clone()
+            ))
             .arg("cp")
             .arg(format!("./{}", toolchain.clone()))
-            .arg(format!("{}/{}", project.clone(), toolchain.clone()))
+            .arg(format!(
+                "{}/{}",
+                project.clone().display(),
+                toolchain.clone()
+            ))
             .current_dir(project.clone())
             .arg("forc")
             .arg("build")
@@ -28,17 +40,25 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
             Ok(status) => {
                 if status.success() {
                     success.push(app.clone());
-                    let _ = Command::new("rm").arg(tmp_toolchain).status();
+                    let _ = Command::new("rm").arg(tmp_toolchain.clone()).status();
                 } else {
                     let _ = Command::new("mv")
-                        .arg(format!("{}/{}", project.clone(), tmp_toolchain))
-                        .arg(format!("{}/{}", project, toolchain));
+                        .arg(format!(
+                            "{}/{}",
+                            project.clone().display(),
+                            tmp_toolchain.clone()
+                        ))
+                        .arg(format!("{}/{}", project.display(), toolchain.clone()));
                 }
             }
             Err(_) => {
                 let _ = Command::new("mv")
-                    .arg(format!("{}/{}", project.clone(), tmp_toolchain))
-                    .arg(format!("{}/{}", project, toolchain));
+                    .arg(format!(
+                        "{}/{}",
+                        project.clone().display(),
+                        tmp_toolchain.clone()
+                    ))
+                    .arg(format!("{}/{}", project.display(), toolchain.clone()));
             }
         }
     }
