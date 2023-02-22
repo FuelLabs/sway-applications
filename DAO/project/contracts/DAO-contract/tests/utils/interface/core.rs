@@ -32,6 +32,7 @@ pub(crate) async fn deposit(
         .deposit()
         .tx_params(tx_params)
         .call_params(call_params)
+        .unwrap()
         .call()
         .await
         .unwrap()
