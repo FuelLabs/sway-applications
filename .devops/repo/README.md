@@ -16,7 +16,7 @@ The tool has 4 modes.
 
 #### `build`
 
-Building the Sway contracts in each project
+Build the Sway contracts for each project
 
 ```sh
 cargo run build
@@ -24,7 +24,7 @@ cargo run build
 
 #### `test`
 
-Running the Rust tests for each project
+Run the Rust tests for each project
 
 ```sh
 cargo run test
@@ -32,7 +32,7 @@ cargo run test
 
 #### `fmt`
 
-Formatting the Sway and Rust files in each project
+Format the Sway and Rust files in each project
 
 ```sh
 cargo run fmt
@@ -40,7 +40,7 @@ cargo run fmt
 
 #### `bump`
 
-Bumping each project from its current `fuel-toolchain.toml` to the one in this repository. If the bump fails then the project will be restored to its previous toolchain
+Bump each project from its current `fuel-toolchain.toml` to the one in this repository. If the bump fails then the project will be restored to its previous toolchain
 
 ```sh
 cargo run bump

@@ -15,9 +15,13 @@ struct Cli {
 
 #[derive(Clone, ValueEnum)]
 enum Mode {
+    /// Build the Sway contracts for each project
     Build,
+    /// Bump each project from its current `fuel-toolchain.toml` to the one in this repository
     Bump,
+    /// Format the Sway and Rust files in each project
     Fmt,
+    /// Run the Rust tests for each project
     Test,
 }
 
