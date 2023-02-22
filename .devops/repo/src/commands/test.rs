@@ -13,10 +13,7 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
         execute(
             Command::new("cargo")
                 .current_dir(project)
-                .arg("test")
-                .arg("--color")
-                .arg("always")
-                .arg("-q"),
+                .args(["test", "--color", "always", "-q"]),
             &mut errors,
             &app,
         );

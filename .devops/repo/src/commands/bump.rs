@@ -13,26 +13,24 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
         // TODO: safety
         let project = std::fs::canonicalize(format!("{}/{}/project", root, app)).unwrap();
 
-        let result = Command::new("mv")
-            .arg(format!(
-                "{}/{}",
-                project.clone().display(),
-                toolchain.clone()
-            ))
-            .arg(format!(
-                "{}/{}",
-                project.clone().display(),
-                tmp_toolchain.clone()
-            ))
-            .arg("cp")
-            .arg(format!("./{}", toolchain.clone()))
-            .arg(format!(
-                "{}/{}",
-                project.clone().display(),
-                toolchain.clone()
-            ))
+        let _ = Command::new("mv")
+            .env("IFS", "''")
+            .args([
+                format!("{}/{}", project.clone().display(), toolchain.clone()),
+                format!("{}/{}", project.clone().display(), tmp_toolchain.clone()),
+            ])
+            .status();
+
+        let _ = Command::new("cp")
+            .env("IFS", "''")
+            .args([
+                format!("./{}", toolchain.clone()),
+                format!("{}/{}", project.clone().display(), toolchain.clone()),
+            ])
+            .status();
+
+        let result = Command::new("forc")
             .current_dir(project.clone())
-            .arg("forc")
             .arg("build")
             .status();
 
@@ -40,25 +38,30 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
             Ok(status) => {
                 if status.success() {
                     success.push(app.clone());
-                    let _ = Command::new("rm").arg(tmp_toolchain.clone()).status();
+                    let _ = Command::new("rm")
+                        .current_dir(project.clone())
+                        .arg(tmp_toolchain.clone())
+                        .status();
                 } else {
                     let _ = Command::new("mv")
-                        .arg(format!(
-                            "{}/{}",
-                            project.clone().display(),
-                            tmp_toolchain.clone()
-                        ))
-                        .arg(format!("{}/{}", project.display(), toolchain.clone()));
+                        .env("IFS", "''")
+                        .current_dir(project.clone())
+                        .args([
+                            format!("{}/{}", project.clone().display(), tmp_toolchain.clone()),
+                            format!("{}/{}", project.display(), toolchain.clone()),
+                        ])
+                        .status();
                 }
             }
             Err(_) => {
                 let _ = Command::new("mv")
-                    .arg(format!(
-                        "{}/{}",
-                        project.clone().display(),
-                        tmp_toolchain.clone()
-                    ))
-                    .arg(format!("{}/{}", project.display(), toolchain.clone()));
+                    .env("IFS", "''")
+                    .current_dir(project.clone())
+                    .args([
+                        format!("{}/{}", project.clone().display(), tmp_toolchain.clone()),
+                        format!("{}/{}", project.display(), toolchain.clone()),
+                    ])
+                    .status();
             }
         }
     }
