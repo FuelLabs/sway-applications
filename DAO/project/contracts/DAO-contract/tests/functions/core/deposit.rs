@@ -1,15 +1,12 @@
 use crate::utils::{
-    abi_calls::{balance, constructor, deposit, user_balance},
-    test_helpers::{mint, setup},
-    GovToken,
+    interface::core::{constructor, deposit},
+    setup::{mint, setup},
 };
-use fuels::{
-    prelude::{CallParameters, Contract, StorageConfiguration, TxParameters},
-    tx::{AssetId, ContractId, Salt},
-};
+use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
+    use crate::utils::interface::info::{balance, user_balance};
 
     #[tokio::test]
     async fn user_can_deposit() {
@@ -52,6 +49,11 @@ mod success {
 
 mod revert {
     use super::*;
+    use crate::utils::setup::GovToken;
+    use fuels::{
+        prelude::{Contract, StorageConfiguration, TxParameters},
+        tx::{ContractId, Salt},
+    };
 
     #[tokio::test]
     #[should_panic(expected = "ContractNotInitialized")]

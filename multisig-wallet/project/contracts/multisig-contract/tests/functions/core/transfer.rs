@@ -1,24 +1,29 @@
 use crate::utils::{
-    interface::{balance, constructor, nonce, transaction_hash, transfer},
-    test_helpers::{
-        base_asset_contract_id, default_users, setup_env, transfer_parameters, transfer_signatures,
-        DEFAULT_THRESHOLD, DEFAULT_TRANSFER_AMOUNT,
+    interface::{
+        core::{constructor, transfer},
+        info::{nonce, transaction_hash},
     },
-    TransferEvent, VALID_SIGNER_PK,
+    setup::{
+        base_asset_contract_id, default_users, setup_env, transfer_parameters, transfer_signatures,
+        DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
+    },
 };
-use fuels::{prelude::*, signers::fuel_crypto::Message};
+use fuels::{
+    prelude::{TxParameters, BASE_ASSET_ID},
+    signers::fuel_crypto::Message,
+};
 
 mod success {
 
     use super::*;
+    use crate::utils::{interface::info::balance, setup::TransferEvent};
 
     #[tokio::test]
     async fn transfers() {
         let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
-
         let (receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
         let initial_nonce = nonce(&deployer.contract).await.value;
 
         deployer
@@ -151,7 +156,7 @@ mod revert {
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
 
         let nonce = nonce(&deployer.contract).await.value;
 
@@ -187,7 +192,7 @@ mod revert {
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
 
         deployer
             .wallet
@@ -235,7 +240,7 @@ mod revert {
 
         let (_receiver_wallet, receiver, data) = transfer_parameters();
 
-        constructor(&deployer.contract, default_users(), DEFAULT_THRESHOLD).await;
+        constructor(&deployer.contract, default_users()).await;
 
         deployer
             .wallet

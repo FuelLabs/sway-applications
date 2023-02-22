@@ -1,6 +1,6 @@
 use crate::utils::{
-    abi_calls::{constructor, create_proposal, deposit, execute, vote},
-    test_helpers::{mint, proposal_transaction, setup},
+    interface::core::{constructor, create_proposal, deposit, execute, vote},
+    setup::{mint, proposal_transaction, setup},
 };
 use fuels::{prelude::CallParameters, tx::AssetId};
 
