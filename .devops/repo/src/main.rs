@@ -3,7 +3,7 @@ use clap::{Parser, ValueEnum};
 mod commands;
 mod utils;
 
-use commands::{build, test};
+use commands::{build, fmt, test};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -16,7 +16,7 @@ struct Cli {
 enum Mode {
     Build,
     Bump,
-    Format,
+    Fmt,
     Test,
 }
 
@@ -26,7 +26,7 @@ fn main() {
     match cli.command {
         Mode::Build => build::run(),
         Mode::Bump => println!("b"),
-        Mode::Format => println!("c"),
+        Mode::Fmt => fmt::run(),
         Mode::Test => test::run(),
     }
 }
