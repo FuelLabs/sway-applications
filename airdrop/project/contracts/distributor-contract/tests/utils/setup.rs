@@ -60,12 +60,11 @@ impl Node {
     }
 }
 
-pub(crate) const ASSET_CONTRACT_BINARY_PATH: &str =
-    "../asset-contract/out/debug/asset-contract.bin";
-pub(crate) const ASSET_CONTRACT_STORAGE_PATH: &str =
+const ASSET_CONTRACT_BINARY_PATH: &str = "../asset-contract/out/debug/asset-contract.bin";
+const ASSET_CONTRACT_STORAGE_PATH: &str =
     "../asset-contract/out/debug/asset-contract-storage_slots.json";
-pub(crate) const DISTRIBUTOR_CONTRACT_BINARY_PATH: &str = "./out/debug/distributor-contract.bin";
-pub(crate) const DISTRIBUTOR_CONTRACT_STORAGE_PATH: &str =
+const DISTRIBUTOR_CONTRACT_BINARY_PATH: &str = "./out/debug/distributor-contract.bin";
+const DISTRIBUTOR_CONTRACT_STORAGE_PATH: &str =
     "./out/debug/distributor-contract-storage_slots.json";
 
 pub(crate) async fn build_tree(

@@ -7,7 +7,7 @@ use fuels::tx::AssetId;
 mod success {
 
     use super::*;
-    use crate::utils::{ClaimEvent, interface::info::claim_data, setup::leaves_with_depth};
+    use crate::utils::{interface::info::claim_data, setup::leaves_with_depth, setup::ClaimEvent};
     use fuels::types::Identity;
 
     // NOTE: This test is ignored as it uses the Fuel-Merkle crate. There is currently an

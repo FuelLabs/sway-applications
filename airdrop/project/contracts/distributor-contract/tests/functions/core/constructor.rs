@@ -7,7 +7,10 @@ use fuels::types::Bits256;
 mod success {
 
     use super::*;
-    use crate::utils::{CreateAirdropEvent, interface::info::{end_block, merkle_root}};
+    use crate::utils::{
+        interface::info::{end_block, merkle_root},
+        setup::CreateAirdropEvent,
+    };
 
     #[tokio::test]
     async fn initalizes() {
