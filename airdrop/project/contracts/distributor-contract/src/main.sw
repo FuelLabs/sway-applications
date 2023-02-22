@@ -37,8 +37,9 @@ impl AirdropDistributor for Contract {
     ) {
         // The claiming period must be open and the `to` identity hasn't already claimed
         require(storage.end_block > height(), StateError::ClaimPeriodHasEnded);
-        let claim = storage.claims.get(to);
-        require(claim.is_some() && !claim.unwarp().claimed, AccessError::UserAlreadyClaimed);
+        if storage.claims.get(to).is_some() {
+            require(!storage.claims.unwarp().claimed, AccessError::UserAlreadyClaimed);
+        }
 
         // Verify the merkle proof against the user and amount
         let leaf = leaf_digest(sha256((to, amount)));
