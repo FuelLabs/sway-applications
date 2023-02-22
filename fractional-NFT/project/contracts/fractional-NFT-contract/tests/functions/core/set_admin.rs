@@ -1,13 +1,16 @@
 use crate::utils::{
-    fractional_nft_abi_calls::{deposit, nft_info, set_admin},
-    nft_abi_calls::{approve, mint, owner_of},
-    test_helpers::{defaults, setup},
+    interface::core::{
+        fractional_nft::{deposit, set_admin},
+        nft::{approve, mint},
+    },
+    setup::{defaults, setup},
 };
-use fuels::{signers::Signer, types::Identity};
+use fuels::types::Identity;
 
 mod success {
 
     use super::*;
+    use crate::utils::interface::info::{fractional_nft::nft_info, nft::owner_of};
 
     #[tokio::test]
     async fn sets_admin() {

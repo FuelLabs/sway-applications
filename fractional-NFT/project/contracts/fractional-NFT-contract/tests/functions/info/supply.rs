@@ -1,13 +1,15 @@
-use crate::utils::{
-    fractional_nft_abi_calls::{deposit, supply},
-    nft_abi_calls::{approve, mint},
-    test_helpers::{defaults, setup},
-};
-use fuels::{signers::Signer, types::Identity};
-
 mod success {
-
-    use super::*;
+    use crate::utils::{
+        interface::{
+            core::{
+                fractional_nft::deposit,
+                nft::{approve, mint},
+            },
+            info::fractional_nft::supply,
+        },
+        setup::{defaults, setup},
+    };
+    use fuels::{signers::Signer, types::Identity};
 
     #[tokio::test]
     async fn gets_supply() {

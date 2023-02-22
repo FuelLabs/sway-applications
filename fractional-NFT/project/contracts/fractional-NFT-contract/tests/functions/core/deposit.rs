@@ -1,13 +1,20 @@
 use crate::utils::{
-    fractional_nft_abi_calls::{deposit, nft_info, supply},
-    nft_abi_calls::{approve, mint, owner_of},
-    test_helpers::{defaults, setup},
+    interface::core::{
+        fractional_nft::deposit,
+        nft::{approve, mint},
+    },
+    setup::{defaults, setup},
 };
-use fuels::{signers::Signer, tx::AssetId, types::Identity};
+use fuels::types::Identity;
 
 mod success {
 
     use super::*;
+    use crate::utils::interface::info::{
+        fractional_nft::{nft_info, supply},
+        nft::owner_of,
+    };
+    use fuels::tx::AssetId;
 
     #[tokio::test]
     async fn deposits_nft() {
