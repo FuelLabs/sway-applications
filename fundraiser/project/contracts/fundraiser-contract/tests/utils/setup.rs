@@ -1,5 +1,8 @@
 use fuels::{
-    prelude::*,
+    prelude::{
+        abigen, launch_custom_provider_and_get_wallets, Bech32Address, Config, Contract,
+        StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+    },
     tx::{ContractId, Salt},
     types::Identity,
 };
@@ -21,28 +24,28 @@ const ASSET_CONTRACT_STORAGE_PATH: &str =
 const FUNDRAISER_CONTRACT_BINARY_PATH: &str = "./out/debug/fundraiser-contract.bin";
 const FUNDRAISER_CONTRACT_STORAGE_PATH: &str = "./out/debug/fundraiser-contract-storage_slots.json";
 
-pub struct Coin {
-    pub contract: Asset,
-    pub id: ContractId,
+pub(crate) struct Coin {
+    pub(crate) contract: Asset,
+    pub(crate) id: ContractId,
 }
 
-pub struct DefaultParameters {
-    pub asset_id: ContractId,
-    pub beneficiary: Identity,
-    pub deadline: u64,
-    pub target_amount: u64,
+pub(crate) struct DefaultParameters {
+    pub(crate) asset_id: ContractId,
+    pub(crate) beneficiary: Identity,
+    pub(crate) deadline: u64,
+    pub(crate) target_amount: u64,
 }
 
-pub struct User {
-    pub contract: Fundraiser,
-    pub wallet: WalletUnlocked,
+pub(crate) struct User {
+    pub(crate) contract: Fundraiser,
+    pub(crate) wallet: WalletUnlocked,
 }
 
-pub async fn identity(address: &Bech32Address) -> Identity {
+pub(crate) async fn identity(address: &Bech32Address) -> Identity {
     Identity::Address(address.into())
 }
 
-pub async fn mint(contract: &Asset, amount: u64, address: &Bech32Address) -> bool {
+pub(crate) async fn mint(contract: &Asset, amount: u64, address: &Bech32Address) -> bool {
     contract
         .methods()
         .mint_and_send_to_address(amount, address.into())
@@ -53,7 +56,7 @@ pub async fn mint(contract: &Asset, amount: u64, address: &Bech32Address) -> boo
         .value
 }
 
-pub async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
+pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
     let number_of_wallets = 3;
     let coins_per_wallet = 1;
     let amount_per_coin = 1_000_000;

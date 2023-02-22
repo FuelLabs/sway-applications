@@ -2,11 +2,11 @@ use fuels::{programs::call_response::FuelCallResponse, tx::ContractId, types::Id
 
 use crate::utils::setup::{AssetInfo, Campaign, CampaignInfo, Fundraiser, Pledge};
 
-pub async fn asset_count(contract: &Fundraiser) -> u64 {
+pub(crate) async fn asset_count(contract: &Fundraiser) -> u64 {
     contract.methods().asset_count().call().await.unwrap().value
 }
 
-pub async fn asset_info_by_id(
+pub(crate) async fn asset_info_by_id(
     contract: &Fundraiser,
     asset: &ContractId,
 ) -> FuelCallResponse<Option<AssetInfo>> {
@@ -18,7 +18,7 @@ pub async fn asset_info_by_id(
         .unwrap()
 }
 
-pub async fn asset_info_by_count(
+pub(crate) async fn asset_info_by_count(
     contract: &Fundraiser,
     id: u64,
 ) -> FuelCallResponse<Option<AssetInfo>> {
@@ -30,7 +30,7 @@ pub async fn asset_info_by_count(
         .unwrap()
 }
 
-pub async fn campaign(
+pub(crate) async fn campaign(
     contract: &Fundraiser,
     id: u64,
     user: Identity,
@@ -38,14 +38,14 @@ pub async fn campaign(
     contract.methods().campaign(id, user).call().await.unwrap()
 }
 
-pub async fn campaign_info(
+pub(crate) async fn campaign_info(
     contract: &Fundraiser,
     id: u64,
 ) -> FuelCallResponse<Option<CampaignInfo>> {
     contract.methods().campaign_info(id).call().await.unwrap()
 }
 
-pub async fn pledged(
+pub(crate) async fn pledged(
     contract: &Fundraiser,
     id: u64,
     user: Identity,
@@ -53,7 +53,7 @@ pub async fn pledged(
     contract.methods().pledged(id, user).call().await.unwrap()
 }
 
-pub async fn pledge_count(contract: &Fundraiser, user: Identity) -> u64 {
+pub(crate) async fn pledge_count(contract: &Fundraiser, user: Identity) -> u64 {
     contract
         .methods()
         .pledge_count(user)
@@ -63,7 +63,7 @@ pub async fn pledge_count(contract: &Fundraiser, user: Identity) -> u64 {
         .value
 }
 
-pub async fn total_campaigns(contract: &Fundraiser) -> u64 {
+pub(crate) async fn total_campaigns(contract: &Fundraiser) -> u64 {
     contract
         .methods()
         .total_campaigns()
@@ -73,7 +73,7 @@ pub async fn total_campaigns(contract: &Fundraiser) -> u64 {
         .value
 }
 
-pub async fn user_campaign_count(contract: &Fundraiser, user: Identity) -> u64 {
+pub(crate) async fn user_campaign_count(contract: &Fundraiser, user: Identity) -> u64 {
     contract
         .methods()
         .user_campaign_count(user)

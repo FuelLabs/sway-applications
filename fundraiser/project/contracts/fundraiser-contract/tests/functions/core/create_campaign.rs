@@ -63,7 +63,7 @@ mod success {
         assert_eq!(info.asset, defaults.asset_id);
         assert_eq!(info.author, identity(author.wallet.address()).await);
         assert_eq!(info.beneficiary, defaults.beneficiary);
-        assert!(matches!(info.state, CampaignState::Funding()));
+        assert!(matches!(info.state, CampaignState::Funding));
         assert_eq!(info.deadline, defaults.deadline);
         assert_eq!(info.target_amount, defaults.target_amount);
         assert_eq!(info.total_pledge, 0);

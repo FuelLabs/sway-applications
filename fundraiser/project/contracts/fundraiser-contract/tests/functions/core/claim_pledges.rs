@@ -63,7 +63,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            CampaignState::Claimed()
+            CampaignState::Claimed
         ));
     }
 }
