@@ -37,7 +37,7 @@ impl MultiSignatureWallet for Contract {
             Identity::Address(address) => address.value,
             Identity::ContractId(asset_id) => asset_id.value,
         };
-        require(storage.weighting.get(sender) > 0, AccessControlError::CanOnlyBeAccessedByAnOwner);
+        require(storage.weighting.get(sender).unwrap_or(0) > 0, AccessControlError::CanOnlyBeAccessedByAnOwner);
 
         storage.nonce += 1;
 
@@ -132,7 +132,7 @@ impl MultiSignatureWallet for Contract {
 
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
-        let current_weight = storage.weighting.get(user.address);
+        let current_weight = storage.weighting.get(user.address).unwrap_or(0);
 
         if current_weight < user.weight {
             storage.total_weight += user.weight - current_weight;
@@ -180,7 +180,7 @@ impl MultiSignatureWallet for Contract {
 impl Info for Contract {
     #[storage(read)]
     fn approval_weight(user: b256) -> u64 {
-        storage.weighting.get(user)
+        storage.weighting.get(user).unwrap_or(0)
     }
 
     fn balance(asset_id: ContractId) -> u64 {
@@ -227,7 +227,7 @@ fn count_approvals(signatures: Vec<SignatureInfo>, transaction_hash: b256) -> u6
         require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
 
         previous_signer = signer;
-        approval_count += storage.weighting.get(signer);
+        approval_count += storage.weighting.get(signer).unwrap_or(0);
 
         if storage.threshold <= approval_count {
             break;

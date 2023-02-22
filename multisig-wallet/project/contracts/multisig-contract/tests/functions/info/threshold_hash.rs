@@ -5,11 +5,11 @@ mod success {
         setup::{setup_env, VALID_SIGNER_PK},
     };
     use fuels::{
-        core::{abi_encoder::ABIEncoder, traits::Tokenizable},
+        core::abi_encoder::ABIEncoder,
         prelude::ContractId,
         signers::fuel_crypto::Hasher,
         tx::Bytes32,
-        types::{Bits256, Token},
+        types::{traits::Tokenizable, Bits256, Token},
     };
     use rand::{rngs::StdRng, Rng, SeedableRng};
 
@@ -32,7 +32,7 @@ mod success {
 
         // Recreate Threshold instance
         let tx = Threshold {
-            contract_identifier: deployer.contract.get_contract_id().try_into().unwrap(),
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             data: Some(data),
             nonce,
             threshold,

@@ -29,7 +29,7 @@ mod success {
         deployer
             .wallet
             .force_transfer_to_contract(
-                deployer.contract.get_contract_id(),
+                deployer.contract.contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),
@@ -197,7 +197,7 @@ mod revert {
         deployer
             .wallet
             .force_transfer_to_contract(
-                deployer.contract.get_contract_id(),
+                deployer.contract.contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),
@@ -245,7 +245,7 @@ mod revert {
         deployer
             .wallet
             .force_transfer_to_contract(
-                deployer.contract.get_contract_id(),
+                deployer.contract.contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),
