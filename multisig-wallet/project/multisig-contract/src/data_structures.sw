@@ -1,6 +1,89 @@
 library data_structures;
 
-use std::{b512::B512, bytes::Bytes};
+use std::{alloc::realloc_bytes, b512::B512, bytes::Bytes, constants::ZERO_B256};
+
+impl Bytes {
+    ////////////////////////////////////// not in this forc version //////////////////////////////////////////////////////
+    pub fn append(ref mut self, ref other: self) {
+        if other.len == 0 {
+            return
+        };
+
+        // optimization for when starting with empty bytes and appending to it
+        if self.len == 0 {
+            self = other;
+            other.clear();
+            return;
+        };
+
+        let both_len = self.len + other.len;
+        let other_start = self.len;
+
+        // reallocate with combined capacity, write `other`, set buffer capacity
+        self.buf.ptr = realloc_bytes(self.buf.ptr(), self.buf.capacity(), both_len);
+
+        let mut i = 0;
+        while i < other.len {
+            let new_ptr = self.buf.ptr().add_uint_offset(other_start);
+            new_ptr.add_uint_offset(i).write_byte(other.buf.ptr.add_uint_offset(i).read_byte());
+            i += 1;
+        }
+
+        // set capacity and length
+        self.buf.cap = both_len;
+        self.len = both_len;
+
+        // clear `other`
+        other.clear();
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    pub fn from_copy_type<T>(value: T) -> Bytes {
+    // Artificially create bytes with capacity and len
+        let mut bytes = Bytes::with_capacity(8);
+        bytes.len = 8;
+
+        asm(buffer, ptr: value, dst: bytes.buf.ptr, len: 8) {
+            move buffer sp; // Make `buffer` point to the current top of the stack
+            cfei i8; // Grow stack by 1 word
+            sw buffer ptr i0; // Save value in register at `ptr` to memory at `buffer`
+            mcp dst buffer len; // Copy `len` bytes in memory starting from `buffer`, to `dst`
+            cfsi i8; // Shrink stack by 1 word
+        }
+
+        bytes
+    }
+
+    pub fn from_reference_type<T>(t: T) -> Bytes { // NOTE: Does not work correctly for Option<Bytes>, use `from_option_bytes` instead
+        // Artificially create bytes with capacity and len
+        let size = __size_of::<T>();
+        let mut bytes = Bytes::with_capacity(size);
+        bytes.len = size;
+        // Copy bytes from contract_id into the buffer of the target bytes
+        __addr_of(t).copy_bytes_to(bytes.buf.ptr, size);
+        bytes
+    }
+}
+
+impl Bytes {
+    pub fn from_option_bytes(o: Option<Bytes>) -> Bytes {
+        match o {
+            Option::None => { 
+            // __size_of_val(o) == 32 bytes
+            // 8 bytes for the enum tag (0u64) + 24 bytes for the Bytes type ([0u8; 24])
+                Bytes::from_reference_type(ZERO_B256)
+            },
+            Option::Some(bytes) => {
+                let mut option_bytes = Bytes::from_copy_type(1u64);
+                option_bytes.append(bytes);
+                option_bytes
+            }
+        }
+    }
+}
+
+pub trait IntoBytes {
+    fn into_bytes(self) -> Bytes;
+}
 
 pub enum MessageFormat {
     None: (),
@@ -35,9 +118,6 @@ pub struct User {
     weight: u64,
 }
 
-/// Will implement an `into_bytes` for types that will be hashed, so that hashing can be done via Bytes.sha256, as per https://github.com/FuelLabs/sway/issues/3809.
-/// This require From<u64> & From<bool> for Bytes.
-/// This should allow for correct hashing of the Bytes types within Transaction, as well as parity with hashing a Vec<u8> in Rust testing.
 pub struct Transaction {
     contract_identifier: ContractId,
     nonce: u64,
@@ -50,7 +130,24 @@ pub struct Transaction {
     forwarded_gas: Option<u64>,
 }
 
+impl IntoBytes for Transaction { // Needed as `Transaction` contains `Bytes` which can only be correctly hashed by the Bytes.sha256() method, 
+                                 // as such the whole struct must be converted to `Bytes`.
+    fn into_bytes(self) -> Bytes {
+        let mut bytes = Bytes::new();
+        bytes.append(Bytes::from_reference_type(self.contract_identifier));
+        bytes.append(Bytes::from_copy_type(self.nonce));
+        bytes.append(Bytes::from_reference_type(self.value));
+        bytes.append(Bytes::from_reference_type(self.asset_id));
+        bytes.append(Bytes::from_reference_type(self.target));
+        bytes.append(Bytes::from_option_bytes(self.function_selector));
+        bytes.append(Bytes::from_option_bytes(self.calldata));
+        bytes.append(Bytes::from_reference_type(self.single_value_type_arg));
+        bytes.append(Bytes::from_reference_type(self.forwarded_gas));
+        bytes
+    }
+}
+
 pub enum TypeToHash {
-    //Transaction: Transaction, // TODO: Uncomment when SDK supports `Bytes`. https://github.com/FuelLabs/fuels-rs/issues/723.
+    //Transaction: Transaction, // TODO: Uncomment when the RustSDK supports `Bytes`. https://github.com/FuelLabs/fuels-rs/issues/723.
     User: User,
 }

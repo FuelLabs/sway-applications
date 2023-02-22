@@ -25,6 +25,18 @@ use std::{
     token::transfer,
 };
 
+impl Bytes {
+    ////////////////////////////////////// not in this forc version /////////////////////////////////////////////////////
+    pub fn sha256(self) -> b256 {
+        let mut result_buffer = b256::min();
+        asm(hash: result_buffer, ptr: self.buf.ptr, bytes: self.len) {
+            s256 hash ptr bytes;
+            hash: b256
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+
 use data_structures::{SignatureInfo, Transaction, TypeToHash, User};
 use errors::{AccessControlError, ExecutionError, InitError};
 use events::{CallEvent, CancelEvent, SetThresholdEvent, TransferEvent};
@@ -105,7 +117,7 @@ impl MultiSignatureWallet for Contract {
 
             require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
-            let transaction_hash = sha256(Transaction {
+            let transaction_hash = Transaction {
                 contract_identifier: contract_id(),
                 nonce: storage.nonce,
                 value: Option::Some(value),
@@ -121,7 +133,7 @@ impl MultiSignatureWallet for Contract {
                 },
                 single_value_type_arg,
                 forwarded_gas,
-            });
+            }.into_bytes().sha256();
             let approval_count = count_approvals(signatures, transaction_hash);
             require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
@@ -155,7 +167,7 @@ impl MultiSignatureWallet for Contract {
                 require(value.unwrap() <= this_balance(asset_id.unwrap()), ExecutionError::InsufficientAssetAmount);
             }
 
-            let transaction_hash = sha256(Transaction {
+            let transaction_hash = Transaction {
                 contract_identifier: contract_id(),
                 nonce: storage.nonce,
                 value,
@@ -165,7 +177,7 @@ impl MultiSignatureWallet for Contract {
                 calldata: Option::Some(calldata),
                 single_value_type_arg: Option::Some(single_value_type_arg),
                 forwarded_gas,
-            });
+            }.into_bytes().sha256();
             let approval_count = count_approvals(signatures, transaction_hash);
             require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
@@ -206,12 +218,15 @@ impl Info for Contract {
     }
 
     fn compute_hash(type_to_hash: TypeToHash) -> b256 { // Currently won't work for the `Transaction` type as the SDK doesn't support `Bytes` (https://github.com/FuelLabs/fuels-rs/issues/723), 
-                                                          // to hash `Transaction` use `calculate_transaction_hash` instead.
-        sha256(type_to_hash)
+                                                        // to hash `Transaction` use `compute_transaction_hash` instead.
+        match type_to_hash {
+            //TypeToHash::Transaction(transaction) => transaction.into_bytes().sha256(),
+            TypeToHash::User(user) => sha256(user),
+        }
     }
 
     fn compute_transaction_hash( // Needed for hashing the `Transaction` type, as `Bytes are not supported by SDK`, and Vectors as fields in a struct are not supported by the SDK.
-                                   // Once `Bytes` are supported in the SDK, this can be deprecated and calculate_hash can be used for hashing the `Transaction` type.
+                                 // Once `Bytes` are supported in the SDK, this can be deprecated and compute_hash can be used for hashing the `Transaction` type.
         contract_identifier: ContractId,
         nonce: u64,
         value: Option<u64>,
@@ -222,7 +237,7 @@ impl Info for Contract {
         single_value_type_arg: Option<bool>,
         forwarded_gas: Option<u64>,
     ) -> b256 {
-        sha256(Transaction {
+        Transaction {
             contract_identifier,
             nonce,
             value,
@@ -244,7 +259,7 @@ impl Info for Contract {
             },
             single_value_type_arg,
             forwarded_gas,
-        })
+        }.into_bytes().sha256()
     }
 }
 
