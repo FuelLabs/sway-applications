@@ -17,25 +17,25 @@ abigen!(Contract(
 ));
 
 // Test-only private key
-pub const VALID_SIGNER_PK: &str =
+pub(crate) const VALID_SIGNER_PK: &str =
     "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301";
 
-pub const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
-pub const MULTISIG_CONTRACT_STORAGE_PATH: &str = "./out/debug/multisig-contract-storage_slots.json";
+const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
+const MULTISIG_CONTRACT_STORAGE_PATH: &str = "./out/debug/multisig-contract-storage_slots.json";
 
-pub const DEFAULT_THRESHOLD: u64 = 5;
-pub const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
+pub(crate) const DEFAULT_THRESHOLD: u64 = 5;
+pub(crate) const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
 
-pub struct Caller {
-    pub contract: MultiSig,
-    pub wallet: WalletUnlocked,
+pub(crate) struct Caller {
+    pub(crate) contract: MultiSig,
+    pub(crate) wallet: WalletUnlocked,
 }
 
-pub fn base_asset_contract_id() -> ContractId {
+pub(crate) fn base_asset_contract_id() -> ContractId {
     ContractId::new(BASE_ASSET_ID.try_into().unwrap())
 }
 
-pub fn default_users() -> Vec<User> {
+pub(crate) fn default_users() -> Vec<User> {
     let fuel_user_1 = User {
         address: Bits256::from_hex_str(
             "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
@@ -75,7 +75,7 @@ fn ethereum_prefix(formatted_message: Message) -> Message {
     unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) } // TODO: Remove use of unsafe when feature is available: https://github.com/FuelLabs/fuels-rs/issues/698
 }
 
-pub async fn format_and_sign(
+pub(crate) async fn format_and_sign(
     private_key: SecretKey,
     message_hash: Message,
     message_format: MessageFormat,
@@ -120,7 +120,7 @@ where
     <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
 }
 
-pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller), Error> {
+pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller), Error> {
     let private_key: SecretKey = private_key.parse().unwrap();
     let mut deployer_wallet = WalletUnlocked::new_from_private_key(private_key, None);
 
@@ -165,7 +165,7 @@ pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller),
     Ok((private_key, deployer, non_owner))
 }
 
-pub fn transfer_parameters() -> (WalletUnlocked, Identity, Bits256) {
+pub(crate) fn transfer_parameters() -> (WalletUnlocked, Identity, Bits256) {
     let receiver_wallet = WalletUnlocked::new_random(None);
 
     let receiver = Identity::Address(receiver_wallet.address().try_into().unwrap());
@@ -177,7 +177,10 @@ pub fn transfer_parameters() -> (WalletUnlocked, Identity, Bits256) {
     (receiver_wallet, receiver, data)
 }
 
-pub async fn transfer_signatures(private_key: SecretKey, tx_hash: Message) -> Vec<SignatureInfo> {
+pub(crate) async fn transfer_signatures(
+    private_key: SecretKey,
+    tx_hash: Message,
+) -> Vec<SignatureInfo> {
     // - Fuel signature. Fuel wallet. No format. No prefix.
     let fuel_signature = format_and_sign(
         private_key,
