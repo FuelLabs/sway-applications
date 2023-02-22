@@ -1,5 +1,5 @@
 use crate::utils::{read_applications, repo_root};
-use std::{env::set_current_dir, process::Command};
+use std::process::Command;
 
 pub(crate) fn run() {
     let root = repo_root();
@@ -10,10 +10,13 @@ pub(crate) fn run() {
     for app in apps {
         println!("\nBuilding {}", app);
 
-        let project = format!("{}/{}/project", root, app);
-        set_current_dir(&project).expect(format!("Failed to change into: {}", project).as_str());
+        // TODO: safety
+        let project = std::fs::canonicalize(format!("{}/{}/project", root, app)).unwrap();
 
-        let result = Command::new("forc").arg("build").status();
+        let result = Command::new("forc")
+            .current_dir(project)
+            .arg("build")
+            .status();
         match result {
             Ok(status) => {
                 if !status.success() {

@@ -1,5 +1,5 @@
 use crate::utils::{read_applications, repo_root};
-use std::{env::set_current_dir, process::Command};
+use std::process::Command;
 
 pub(crate) fn run() {
     let root = repo_root();
@@ -10,10 +10,11 @@ pub(crate) fn run() {
     for app in apps {
         println!("\nTesting {}", app);
 
-        let project = format!("{}/{}/project", root, app);
-        set_current_dir(&project).expect(format!("Failed to change into: {}", project).as_str());
+        // TODO: safety
+        let project = std::fs::canonicalize(format!("{}/{}/project", root, app)).unwrap();
 
         let result = Command::new("cargo")
+            .current_dir(project)
             .arg("test")
             .arg("--color")
             .arg("always")
