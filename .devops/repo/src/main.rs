@@ -3,7 +3,7 @@ use clap::{Parser, ValueEnum};
 mod commands;
 mod utils;
 
-use commands::build;
+use commands::{build, test};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -27,6 +27,6 @@ fn main() {
         Mode::Build => build::run(),
         Mode::Bump => println!("b"),
         Mode::Format => println!("c"),
-        Mode::Test => println!("d"),
+        Mode::Test => test::run(),
     }
 }

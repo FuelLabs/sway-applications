@@ -13,8 +13,8 @@ pub(crate) fn run() {
         let project = format!("{}/{}/project", root, app);
         set_current_dir(&project).expect(format!("Failed to change into: {}", project).as_str());
 
-        let build = Command::new("forc").arg("build").status();
-        match build {
+        let result = Command::new("forc").arg("build").status();
+        match result {
             Ok(status) => {
                 if !status.success() {
                     errors.push(app.clone());
