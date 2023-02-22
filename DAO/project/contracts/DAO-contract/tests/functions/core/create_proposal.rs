@@ -7,7 +7,7 @@ mod success {
     use super::*;
     use crate::utils::{
         interface::info::proposal,
-        setup::{CreatePropEvent, ProposalInfo},
+        setup::{CreateProposalEvent, ProposalInfo},
     };
     use fuels::types::Identity;
 
@@ -20,7 +20,9 @@ mod success {
         let response =
             create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
-        let log = response.get_logs_with_type::<CreatePropEvent>().unwrap();
+        let log = response
+            .get_logs_with_type::<CreateProposalEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         let expected_proposal = ProposalInfo {
@@ -35,7 +37,7 @@ mod success {
 
         assert_eq!(
             *event,
-            CreatePropEvent {
+            CreateProposalEvent {
                 proposal_info: expected_proposal.clone(),
                 id: 0
             }
@@ -52,12 +54,14 @@ mod success {
         let response =
             create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
-        let log = response.get_logs_with_type::<CreatePropEvent>().unwrap();
+        let log = response
+            .get_logs_with_type::<CreateProposalEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
             *event,
-            CreatePropEvent {
+            CreateProposalEvent {
                 proposal_info: ProposalInfo {
                     author: Identity::Address(user.wallet.address().into()),
                     yes_votes: 0,
@@ -86,12 +90,14 @@ mod success {
         let response =
             create_proposal(&user.dao_voting, 20, 20, proposal_transaction.clone()).await;
 
-        let log = response.get_logs_with_type::<CreatePropEvent>().unwrap();
+        let log = response
+            .get_logs_with_type::<CreateProposalEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
             *event,
-            CreatePropEvent {
+            CreateProposalEvent {
                 proposal_info: ProposalInfo {
                     author: Identity::Address(user.wallet.address().into()),
                     yes_votes: 0,
