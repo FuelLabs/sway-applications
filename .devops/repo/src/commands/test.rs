@@ -1,4 +1,4 @@
-use crate::utils::{execute, print_application_errors};
+use crate::utils::{execute, print_applications};
 use std::process::Command;
 
 pub(crate) fn run(apps: Vec<String>, root: String) {
@@ -22,5 +22,5 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
         );
     }
 
-    print_application_errors(errors, "Errors found in".to_string());
+    print_applications(errors, "Errors found in".to_string());
 }

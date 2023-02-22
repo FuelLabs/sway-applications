@@ -1,4 +1,4 @@
-use crate::utils::{execute, print_application_errors};
+use crate::utils::{execute, print_applications};
 use std::process::Command;
 
 pub(crate) fn run(apps: Vec<String>, root: String) {
@@ -23,6 +23,6 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
         );
     }
 
-    print_application_errors(sway_errors, "Sway formatting errors in".to_string());
-    print_application_errors(cargo_errors, "Cargo formatting errors in".to_string());
+    print_applications(sway_errors, "Sway formatting errors in".to_string());
+    print_applications(cargo_errors, "Cargo formatting errors in".to_string());
 }

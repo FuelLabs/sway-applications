@@ -3,7 +3,7 @@ use clap::{Parser, ValueEnum};
 mod commands;
 mod utils;
 
-use commands::{build, fmt, test};
+use commands::{build, bump, fmt, test};
 use utils::{read_applications, repo_root};
 
 #[derive(Parser)]
@@ -29,7 +29,7 @@ fn main() {
 
     match cli.command {
         Mode::Build => build::run(apps, root),
-        Mode::Bump => println!("b"),
+        Mode::Bump => bump::run(apps, root),
         Mode::Fmt => fmt::run(apps, root),
         Mode::Test => test::run(apps, root),
     }

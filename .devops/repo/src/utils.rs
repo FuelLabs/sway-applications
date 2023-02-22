@@ -13,7 +13,7 @@ pub(crate) fn execute(command: &mut Command, errors: &mut Vec<String>, app: &Str
     }
 }
 
-pub(crate) fn print_application_errors(errors: Vec<String>, error_message: String) {
+pub(crate) fn print_applications(errors: Vec<String>, error_message: String) {
     if 0 < errors.len() {
         println!("\n{}", error_message);
         for app in errors.iter() {
