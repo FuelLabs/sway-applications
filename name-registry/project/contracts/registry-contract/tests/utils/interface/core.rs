@@ -17,6 +17,7 @@ pub(crate) async fn extend(
             duration,
         )
         .call_params(CallParameters::new(Some(100), None, None))
+        .unwrap()
         .call()
         .await
         .unwrap()
@@ -34,7 +35,8 @@ pub(crate) async fn extend_with_time(
                 SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
                 duration,
             )
-            .call_params(CallParameters::new(Some(100), None, None)),
+            .call_params(CallParameters::new(Some(100), None, None))
+            .unwrap(),
     )
     .await
 }
@@ -55,6 +57,7 @@ pub(crate) async fn register(
             identity.to_owned(),
         )
         .call_params(CallParameters::new(Some(100), None, None))
+        .unwrap()
         .call()
         .await
         .unwrap()
@@ -76,7 +79,8 @@ pub(crate) async fn register_with_time(
                 owner.to_owned(),
                 identity.to_owned(),
             )
-            .call_params(CallParameters::new(Some(100), None, None)),
+            .call_params(CallParameters::new(Some(100), None, None))
+            .unwrap(),
     )
     .await
 }

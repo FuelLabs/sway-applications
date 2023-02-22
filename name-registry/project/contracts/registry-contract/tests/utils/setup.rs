@@ -1,12 +1,11 @@
 use core::fmt::Debug;
 use fuels::{
-    core::traits::Tokenizable,
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Address, Contract, StorageConfiguration,
         TxParameters, WalletUnlocked, WalletsConfig,
     },
     programs::{call_response::FuelCallResponse, contract::ContractCallHandler},
-    types::{Identity, SizedAsciiString},
+    types::{traits::Tokenizable, Identity, SizedAsciiString},
 };
 
 abigen!(Contract(
