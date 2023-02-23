@@ -370,6 +370,7 @@ mod revert {
             .purchase(purchase_amount, fractional_nft_contract)
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .append_variable_outputs(1)
             .call()
             .await

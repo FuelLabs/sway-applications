@@ -67,6 +67,7 @@ pub(crate) mod token_distributor {
             .buyback(f_nft, token_price)
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .set_contract_ids(&[Bech32ContractId::from(f_nft)])
             .call()
             .await
@@ -140,6 +141,7 @@ pub(crate) mod token_distributor {
             .purchase(amount, f_nft)
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .append_variable_outputs(1)
             .call()
             .await
@@ -163,6 +165,7 @@ pub(crate) mod token_distributor {
             .purchase_admin(admin, f_nft, reserve)
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .append_variable_outputs(1)
             .call()
             .await
@@ -182,6 +185,7 @@ pub(crate) mod token_distributor {
             .sell(f_nft)
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .append_variable_outputs(1)
             .set_contract_ids(&[Bech32ContractId::from(f_nft)])
             .call()

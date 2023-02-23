@@ -83,7 +83,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Distributed()
+            DistributionState::Distributed
         ));
 
         buyback(
@@ -109,7 +109,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Buyback()
+            DistributionState::Buyback
         ));
     }
 
@@ -180,7 +180,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Distributed()
+            DistributionState::Distributed
         ));
 
         buyback(
@@ -206,7 +206,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Buyback()
+            DistributionState::Buyback
         ));
     }
 }

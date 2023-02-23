@@ -93,7 +93,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Buyback()
+            DistributionState::Buyback
         ));
 
         end(
@@ -109,7 +109,7 @@ mod success {
         assert_eq!(owner_of(&owner1.nft, 0).await, Some(owner_identity.clone()));
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Ended()
+            DistributionState::Ended
         ));
     }
 
@@ -171,7 +171,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Started()
+            DistributionState::Started
         ));
 
         end(
@@ -200,7 +200,7 @@ mod success {
         assert_eq!(nft_struct.clone().unwrap().admin, None);
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Ended()
+            DistributionState::Ended
         ));
     }
 }
