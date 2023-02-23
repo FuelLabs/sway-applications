@@ -68,7 +68,9 @@ abi NameRegistry {
     /// * If the sender is not the owner of the name
     #[storage(read, write)]
     fn set_owner(name: str[8], new_owner: Identity);
+}
 
+abi Info {
     /// Returns the expiry timestamp of the given name
     ///
     /// # Arguments

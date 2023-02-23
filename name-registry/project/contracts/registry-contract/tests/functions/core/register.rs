@@ -1,6 +1,10 @@
+use crate::utils::setup::{setup, REGISTER_DURATION};
+
 mod success {
+    use super::*;
     use crate::utils::{
-        abi::register_with_time, setup, string_to_ascii, NameRegisteredEvent, REGISTER_DURATION,
+        interface::core::register_with_time,
+        setup::{string_to_ascii, NameRegisteredEvent},
     };
 
     #[tokio::test]
@@ -35,7 +39,8 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::{abi::register, setup, REGISTER_DURATION};
+    use super::*;
+    use crate::utils::interface::core::register;
 
     // TODO: missing test
 

@@ -1,7 +1,13 @@
+use crate::utils::{
+    interface::core::register,
+    setup::{setup, EXTEND_DURATION, REGISTER_DURATION},
+};
+
 mod success {
+    use super::*;
     use crate::utils::{
-        abi::{expiry, extend_with_time, register},
-        setup, string_to_ascii, RegistrationExtendedEvent, EXTEND_DURATION, REGISTER_DURATION,
+        interface::{core::extend_with_time, info::expiry},
+        setup::{string_to_ascii, RegistrationExtendedEvent},
     };
 
     #[tokio::test]
@@ -45,10 +51,8 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::{
-        abi::{extend, register},
-        setup, EXTEND_DURATION, REGISTER_DURATION,
-    };
+    use super::*;
+    use crate::utils::interface::core::extend;
 
     // TODO: missing test for incorrect asset
 
