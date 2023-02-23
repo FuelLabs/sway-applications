@@ -2,6 +2,8 @@ use crate::utils::print_applications;
 use anyhow::anyhow;
 use std::process::Command;
 
+const MESSAGE: &str = "Bumped";
+
 pub(crate) fn run(apps: Vec<String>, root: String) {
     let mut success: Vec<String> = vec![];
 
@@ -73,5 +75,5 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
         }
     }
 
-    print_applications(success, "Bumped".to_string());
+    print_applications(success, MESSAGE.into());
 }

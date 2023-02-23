@@ -2,6 +2,8 @@ use crate::utils::{execute, print_applications};
 use anyhow::anyhow;
 use std::process::Command;
 
+const MESSAGE: &str = "Errors found in";
+
 pub(crate) fn run(apps: Vec<String>, root: String) {
     let mut errors: Vec<String> = vec![];
 
@@ -25,5 +27,5 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
         );
     }
 
-    print_applications(errors, "Errors found in".to_string());
+    print_applications(errors, MESSAGE.into());
 }

@@ -2,6 +2,9 @@ use crate::utils::{execute, print_applications};
 use anyhow::anyhow;
 use std::process::Command;
 
+const SWAY_MESSAGE: &str = "Sway formatting errors in";
+const CARGO_MESSAGE: &str = "Cargo formatting errors in";
+
 pub(crate) fn run(apps: Vec<String>, root: String) {
     let mut sway_errors: Vec<String> = vec![];
     let mut cargo_errors: Vec<String> = vec![];
@@ -31,6 +34,6 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
         );
     }
 
-    print_applications(sway_errors, "Sway formatting errors in".to_string());
-    print_applications(cargo_errors, "Cargo formatting errors in".to_string());
+    print_applications(sway_errors, SWAY_MESSAGE.into());
+    print_applications(cargo_errors, CARGO_MESSAGE.into());
 }
