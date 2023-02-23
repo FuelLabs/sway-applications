@@ -11,7 +11,7 @@ use errors::{AccessError, InitError, StateError, VerificationError};
 use events::{ClaimEvent, CreateAirdropEvent};
 use interface::{AirdropDistributor, Info};
 use merkle_proof::binary_merkle_proof::{leaf_digest, verify_proof};
-use std::{block::height, hash::sha256, logging::log, storage::StorageMap};
+use std::{block::height, hash::sha256};
 use utils::mint_to;
 
 storage {
