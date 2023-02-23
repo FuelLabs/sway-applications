@@ -66,7 +66,7 @@ mod revert {
     use super::*;
     use crate::utils::setup::GovToken;
     use fuels::{
-        prelude::{Contract, StorageConfiguration, TxParameters},
+        prelude::{Configurables, Contract, StorageConfiguration, TxParameters},
         tx::{ContractId, Salt},
     };
 
@@ -102,6 +102,7 @@ mod revert {
             StorageConfiguration::with_storage_path(Some(
                 "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json".to_string(),
             )),
+            Configurables::default(),
             Salt::from([1u8; 32]),
         )
         .await
