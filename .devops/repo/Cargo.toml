@@ -8,3 +8,4 @@ authors=["Fuel Labs <contact@fuel.sh>"]
 
 [dependencies]
 clap = { version = "4.1.6", features = ["derive"] }
+anyhow = "1.0.69"

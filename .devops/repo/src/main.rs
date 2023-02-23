@@ -7,7 +7,7 @@ use commands::{build, bump, fmt, test};
 use utils::{read_applications, repo_root};
 
 #[derive(Parser)]
-#[command(about="Utility crate for maintaining the repository")]
+#[command(about = "Utility crate for maintaining the repository")]
 struct Cli {
     #[arg(value_enum)]
     command: Mode,

@@ -1,4 +1,5 @@
 use crate::utils::print_applications;
+use anyhow::anyhow;
 use std::process::Command;
 
 pub(crate) fn run(apps: Vec<String>, root: String) {
@@ -10,8 +11,15 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
     for app in apps {
         println!("\nBumping {}", app);
 
-        // TODO: safety
-        let project = std::fs::canonicalize(format!("{}/{}/project", root, app)).unwrap();
+        let project = std::fs::canonicalize(format!("{}/{}/project", root, app))
+            .map_err(|error| {
+                anyhow!(
+                    "Failed to canonicalize path to project for app '{}': {}",
+                    app,
+                    error
+                )
+            })
+            .unwrap();
 
         let _ = Command::new("mv")
             .env("IFS", "''")
