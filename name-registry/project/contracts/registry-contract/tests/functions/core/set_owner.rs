@@ -1,9 +1,15 @@
+use crate::utils::{
+    interface::core::{register, set_owner},
+    setup::{setup, REGISTER_DURATION},
+};
+use fuels::{prelude::Address, types::Identity};
+
 mod success {
+    use super::*;
     use crate::utils::{
-        abi::{owner, register, set_owner},
-        setup, string_to_ascii, OwnerChangedEvent, REGISTER_DURATION,
+        interface::info::owner,
+        setup::{string_to_ascii, OwnerChangedEvent},
     };
-    use fuels::{prelude::*, types::Identity};
 
     #[tokio::test]
     async fn can_set_owner() {
@@ -41,11 +47,7 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::{
-        abi::{register, set_owner},
-        setup, REGISTER_DURATION,
-    };
-    use fuels::{prelude::*, types::Identity};
+    use super::*;
 
     // TODO: missing tests
 
