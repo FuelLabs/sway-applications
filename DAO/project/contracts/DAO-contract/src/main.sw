@@ -18,11 +18,11 @@ use std::{
     token::transfer,
 };
 
-use interface::DaoVoting;
+use interface::{DaoVoting, Info};
 use data_structures::{Proposal, ProposalInfo, State, Votes};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
 use events::{
-    CreatePropEvent,
+    CreateProposalEvent,
     DepositEvent,
     ExecuteEvent,
     InitializeEvent,
@@ -80,7 +80,7 @@ impl DaoVoting for Contract {
         storage.proposals.insert(storage.proposal_count, proposal);
         storage.proposal_count += 1;
 
-        log(CreatePropEvent {
+        log(CreateProposalEvent {
             proposal_info: proposal,
             id: storage.proposal_count - 1,
         });
@@ -204,7 +204,9 @@ impl DaoVoting for Contract {
             vote_amount,
         });
     }
+}
 
+impl Info for Contract {
     #[storage(read)]
     fn balance() -> u64 {
         this_balance(storage.token)

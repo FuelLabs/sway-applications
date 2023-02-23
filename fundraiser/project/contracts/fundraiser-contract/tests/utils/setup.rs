@@ -1,5 +1,8 @@
 use fuels::{
-    prelude::*,
+    prelude::{
+        abigen, launch_custom_provider_and_get_wallets, Bech32Address, Config, Contract,
+        StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+    },
     tx::{ContractId, Salt},
     types::Identity,
 };

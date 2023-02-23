@@ -130,14 +130,6 @@ abi TokenDistributor {
     #[storage(read, write)]
     fn set_token_price(fractional_nft_id: ContractId, token_price: u64);
 
-    /// Returns the information on a fractionalized NFT token distribution.
-    ///
-    /// # Arguments
-    ///
-    /// * `fractional_nft_id` - The token contract that holds the NFT.
-    #[storage(read)]
-    fn token_distribution(fractional_nft_id: ContractId) -> Option<TokenDistribution>;
-
     /// Allows the admin to withdraw the payments made by token purchasers.
     ///
     /// # Arguments
@@ -150,6 +142,16 @@ abi TokenDistributor {
     /// * When the sender is not the admin of the token distribution.
     #[storage(read, write)]
     fn withdraw(fractional_nft_id: ContractId);
+}
+
+abi Info {
+    /// Returns the information on a fractionalized NFT token distribution.
+    ///
+    /// # Arguments
+    ///
+    /// * `fractional_nft_id` - The token contract that holds the NFT.
+    #[storage(read)]
+    fn token_distribution(fractional_nft_id: ContractId) -> Option<TokenDistribution>;
 }
 
 abi FractionalNFT {
