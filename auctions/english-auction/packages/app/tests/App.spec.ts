@@ -4,7 +4,7 @@ import type { BrowserContext, Page } from '@playwright/test';
 import { test, expect } from './fixtures';
 
 const MNEMONIC = 'demand fashion unaware upgrade upon heart bright august panel kangaroo want gaze';
-const WALLET_PASSWORD = '123123123';
+const WALLET_PASSWORD = '$123Ran123Dom123!';
 const ACCOUNT1 = 'Account 1';
 const ACCOUNT2 = 'Account 2';
 
@@ -45,10 +45,22 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   // Confirm password
   const confirmPassword = signupPage.locator(`[aria-label="Confirm Password"]`);
   await confirmPassword.type(WALLET_PASSWORD);
+
+  // This is needed to dismiss the password security popup
+  await signupPage.click('body');
+
   // Agree to T&S
   await signupPage.getByRole('checkbox').click();
+  await expect(signupPage.getByRole('checkbox')).toBeChecked();
   await signupPage.locator('button').getByText('Next').click();
-  await signupPage.waitForSelector('text=Wallet created successfully');
+  await expect(signupPage.getByText('Wallet created successfully')).toBeVisible({ timeout: 15000 });
+
+  // Navigate to add network and add test network
+  await walletPage.goto(`chrome-extension://${extensionId}/popup.html#/networks/add`);
+  await walletPage.reload({ waitUntil: 'load' });
+  await walletPage.locator('[aria-label="Network name"]').fill('test');
+  await walletPage.locator('[aria-label="Network URL"]').fill(process.env.VITE_FUEL_PROVIDER_URL!);
+  await walletPage.locator('button', { hasText: 'Create' }).click();
 
   await addWallet(walletPage, extensionId, ACCOUNT2);
 
@@ -80,12 +92,7 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   return { appPage, walletPage };
 }
 
-async function walletApprove(
-  _approvePagePromise: Promise<Page>,
-  _approvePage: Page,
-  context: BrowserContext,
-  _extensionId: string
-) {
+async function walletApprove(context: BrowserContext) {
   let approvePage = context.pages().find((p) => p.url().includes('/request/transaction'));
   if (!approvePage) {
     approvePage = await context.waitForEvent('page', {
@@ -93,16 +100,8 @@ async function walletApprove(
     });
   }
 
-  await approvePage.waitForSelector('text=Confirm');
   const approveButton = approvePage.locator('button').getByText('Confirm');
-  await approveButton.click();
-
-  const enterPasswordInput = approvePage.locator(`[aria-label="Your Password"]`);
-  await enterPasswordInput.waitFor();
-  await enterPasswordInput.fill(WALLET_PASSWORD);
-  const confirmButton = approvePage.locator('button').getByText('Confirm Transaction');
-  await confirmButton.waitFor();
-  await confirmButton.click();
+  await approveButton.click({ timeout: 15000 });
 }
 
 async function addWallet(walletPage: Page, extensionId: string, accountName: string) {
@@ -123,11 +122,8 @@ async function addWallet(walletPage: Page, extensionId: string, accountName: str
   const accountFormSubmitButton = walletPage.locator('button').getByText('Create');
   await accountFormSubmitButton.click();
 
-  const passwordInput = walletPage.locator('[aria-label="Your Password"]');
-  await passwordInput.fill(WALLET_PASSWORD);
-
-  const accountConfirmButton = walletPage.locator('button').getByText('Add Account');
-  await accountConfirmButton.click();
+  // const accountConfirmButton = walletPage.locator('button').getByText('Add Account');
+  // await accountConfirmButton.click();
 
   await walletPage.waitForSelector('img', { timeout: 10000 });
 }
@@ -186,10 +182,9 @@ test.describe('e2e', () => {
     await durationInput.fill('1000');
 
     await expect(createAuctionButton).toBeEnabled();
-    let approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const transactionMessage = appPage.locator('text=Auction created successfully!');
@@ -218,11 +213,9 @@ test.describe('e2e', () => {
     const placeBidButton = appPage.locator('button').getByText('Bid on Auction').last();
     await expect(placeBidButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await placeBidButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const bidTransactionMessage = appPage.locator('text=Auction bid placed successfully');
@@ -238,11 +231,9 @@ test.describe('e2e', () => {
     const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').last();
     await expect(cancelAuctionButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await cancelAuctionButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const cancelTransactionMessage = appPage.locator('text=Auction cancelled successfully!');
@@ -254,11 +245,9 @@ test.describe('e2e', () => {
     await withdrawButton.waitFor();
     await expect(withdrawButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await withdrawButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const withdrawTransactionMessage = appPage.locator('text=Withdraw from auction successful');
@@ -269,11 +258,9 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await withdrawButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
@@ -315,10 +302,9 @@ test.describe('e2e', () => {
     await durationInput.fill('1000');
 
     await expect(createAuctionButton).toBeEnabled();
-    let approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const transactionMessage = appPage.locator('text=Auction created successfully!');
@@ -347,11 +333,9 @@ test.describe('e2e', () => {
     const placeBidButton = appPage.locator('button').getByText('Bid on Auction').last();
     await expect(placeBidButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await placeBidButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const bidTransactionMessage = appPage.locator('text=Auction bid placed successfully');
@@ -367,11 +351,9 @@ test.describe('e2e', () => {
     const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').last();
     await expect(cancelAuctionButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await cancelAuctionButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const cancelTransactionMessage = appPage.locator('text=Auction cancelled successfully!');
@@ -382,11 +364,9 @@ test.describe('e2e', () => {
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').last();
     await expect(withdrawButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await withdrawButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const withdrawTransactionMessage = appPage.locator('text=Withdraw from auction successful');
@@ -397,11 +377,9 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await withdrawButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
@@ -454,10 +432,9 @@ test.describe('e2e', () => {
     await durationInput.fill('1000');
 
     await expect(createAuctionButton).toBeEnabled();
-    let approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const transactionMessage = appPage.locator('text=Auction created successfully!');
@@ -488,11 +465,9 @@ test.describe('e2e', () => {
     const placeBidButton = appPage.locator('button').getByText('Bid on Auction').last();
     await expect(placeBidButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await placeBidButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const bidTransactionMessage = appPage.locator('text=Auction bid placed successfully');
@@ -510,11 +485,9 @@ test.describe('e2e', () => {
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').last();
     await expect(withdrawButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await withdrawButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const withdrawTransactionMessage = appPage.locator('text=Withdraw from auction successful');
@@ -525,11 +498,9 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await withdrawButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
@@ -574,10 +545,9 @@ test.describe('e2e', () => {
     await durationInput.fill('1000');
 
     await expect(createAuctionButton).toBeEnabled();
-    let approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const transactionMessage = appPage.locator('text=Auction created successfully!');
@@ -608,11 +578,9 @@ test.describe('e2e', () => {
     const placeBidButton = appPage.locator('button').getByText('Bid on Auction').last();
     await expect(placeBidButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await placeBidButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const bidTransactionMessage = appPage.locator('text=Auction bid placed successfully');
@@ -630,11 +598,9 @@ test.describe('e2e', () => {
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').last();
     await expect(withdrawButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await withdrawButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const withdrawTransactionMessage = appPage.locator('text=Withdraw from auction successful');
@@ -645,11 +611,9 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await withdrawButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
@@ -694,10 +658,9 @@ test.describe('e2e', () => {
     await durationInput.fill('1000');
 
     await expect(createAuctionButton).toBeEnabled();
-    let approvePagePromise = context.waitForEvent('page');
     await createAuctionButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const transactionMessage = appPage.locator('text=Auction created successfully!');
@@ -728,11 +691,9 @@ test.describe('e2e', () => {
     const placeBidButton = appPage.locator('button').getByText('Bid on Auction').last();
     await expect(placeBidButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await placeBidButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const bidTransactionMessage = appPage.locator('text=Auction bid placed successfully');
@@ -748,11 +709,9 @@ test.describe('e2e', () => {
     const cancelAuctionButton = appPage.locator('button').getByText('Cancel Auction').last();
     await expect(cancelAuctionButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await cancelAuctionButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const cancelTransactionMessage = appPage.locator('text=Auction cancelled successfully!');
@@ -763,11 +722,9 @@ test.describe('e2e', () => {
     const withdrawButton = appPage.locator('button').getByText('Withdraw from Auction').last();
     await expect(withdrawButton).toBeEnabled();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await withdrawButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     const withdrawTransactionMessage = appPage.locator('text=Withdraw from auction successful');
@@ -778,11 +735,9 @@ test.describe('e2e', () => {
 
     await appPage.reload();
 
-    approvePagePromise = context.waitForEvent('page');
-
     await withdrawButton.click();
 
-    await walletApprove(approvePagePromise, walletPage, context, extensionId);
+    await walletApprove(context);
 
     // Expect transaction to be successful
     await withdrawTransactionMessage.waitFor();
