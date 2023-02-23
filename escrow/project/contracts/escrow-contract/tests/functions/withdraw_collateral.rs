@@ -6,6 +6,7 @@ use crate::utils::{
 mod success {
 
     use super::*;
+    use crate::utils::WithdrawnCollateralEvent;
 
     #[tokio::test]
     #[ignore]
@@ -41,8 +42,13 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
         // TODO: need to shift block by one, waiting on SDK
-        withdraw_collateral(&seller.contract, 0).await;
+        let response = withdraw_collateral(&seller.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<WithdrawnCollateralEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(*event, WithdrawnCollateralEvent { identifier: 0 });
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
@@ -83,8 +89,13 @@ mod success {
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
-        withdraw_collateral(&seller.contract, 0).await;
+        let response = withdraw_collateral(&seller.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<WithdrawnCollateralEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(*event, WithdrawnCollateralEvent { identifier: 0 });
         assert_eq!(
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
