@@ -137,7 +137,7 @@ abi Escrow {
 
     /// If a user has deposited but not transferred in time & they have not disputed then the seller
     /// can take the payment themselves
-    //
+    ///
     /// # Arguments
     ///
     /// * `identifier` - Identifier used to find a specific escrow

@@ -628,6 +628,7 @@ mod revert {
             .propose_arbiter(arbiter_obj, 0)
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .append_variable_outputs(1)
             .call()
             .await
@@ -703,6 +704,7 @@ mod revert {
             .propose_arbiter(arbiter_obj_unequal, 0)
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .append_variable_outputs(1)
             .call()
             .await
