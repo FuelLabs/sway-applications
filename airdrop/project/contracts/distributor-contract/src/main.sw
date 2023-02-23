@@ -38,7 +38,7 @@ impl AirdropDistributor for Contract {
         // The claiming period must be open and the `to` identity hasn't already claimed
         require(storage.end_block > height(), StateError::ClaimPeriodHasEnded);
         if storage.claims.get(to).is_some() {
-            require(!storage.claims.unwarp().claimed, AccessError::UserAlreadyClaimed);
+            require(!storage.claims.get(to).unwrap().claimed, AccessError::UserAlreadyClaimed);
         }
 
         // Verify the merkle proof against the user and amount
@@ -53,8 +53,8 @@ impl AirdropDistributor for Contract {
     }
 
     #[storage(read)]
-    fn claim_data(identity: Identity) -> Option<ClaimData> {
-        storage.claims.get(identity)
+    fn claim_data(identity: Identity) -> ClaimData {
+        storage.claims.get(identity).unwrap_or(ClaimData::new(0, false))
     }
 
     #[storage(read, write)]
