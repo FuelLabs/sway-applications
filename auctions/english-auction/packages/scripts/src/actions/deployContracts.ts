@@ -6,6 +6,7 @@ import { getWalletInstance } from './getWalletInstance';
 
 export async function deployContracts(config: Config) {
   const wallet = await getWalletInstance();
+  console.log('in deploy: ', wallet.provider.url);
   const contracts: Array<ContractDeployed> = [];
 
   for (const { name, buildPath, deployPath, options } of config.contracts) {
