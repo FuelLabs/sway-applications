@@ -1,8 +1,8 @@
 use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, AssetId, Bech32Address, CallParameters,
-        Contract, ContractId, Salt, StorageConfiguration, TxParameters, WalletUnlocked,
-        WalletsConfig,
+        Configurables, Contract, ContractId, Salt, StorageConfiguration, TxParameters,
+        WalletUnlocked, WalletsConfig,
     },
     programs::call_response::FuelCallResponse,
     types::Identity,
@@ -236,6 +236,7 @@ pub(crate) mod test_helpers {
             &wallet,
             TxParameters::default(),
             StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
+            Configurables::default(),
             Salt::from(salt),
         )
         .await
