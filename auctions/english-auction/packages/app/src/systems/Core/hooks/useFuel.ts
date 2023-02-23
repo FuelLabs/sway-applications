@@ -1,23 +1,24 @@
 import { useEffect, useState } from 'react';
 
-const globalWindow = typeof window !== 'undefined' ? window : ({} as Window);
-
 export function useFuel() {
-  const [error, setError] = useState('');
-  const [isLoading, setLoading] = useState(true);
-  const [fuel, setFuel] = useState<Window['fuel']>(globalWindow.fuel);
+  const [fuel, setFuel] = useState<Window['fuel']>();
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (globalWindow.fuel) {
-        setFuel(globalWindow.fuel);
-      } else {
-        setError('fuel not detected on the window!');
-      }
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timeout);
+    const onFuelLoaded = () => {
+      setFuel(window.fuel);
+    };
+
+    if (window.fuel) {
+      onFuelLoaded();
+    }
+
+    document.addEventListener('FuelLoaded', onFuelLoaded);
+
+    // On unmount remove the event listener
+    return () => {
+      document.removeEventListener('FuelLoaded', onFuelLoaded);
+    };
   }, []);
 
-  return [fuel as NonNullable<Window['fuel']>, error, isLoading] as const;
+  return fuel;
 }

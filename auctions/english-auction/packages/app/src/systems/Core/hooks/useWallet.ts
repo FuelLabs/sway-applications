@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 import { useFuel } from './useFuel';
 
 export const useWallet = () => {
-  const [fuel] = useFuel();
+  const fuel = useFuel();
 
   if (!fuel) toast.error('Error fuelWeb3 instance is not defined');
 
@@ -18,12 +18,12 @@ export const useWallet = () => {
   } = useQuery(
     ['wallet'],
     async () => {
-      const isConnected = await fuel.isConnected();
+      const isConnected = await fuel!.isConnected();
       if (!isConnected) {
-        await fuel.connect();
+        await fuel!.connect();
       }
-      const selectedAccount = (await fuel.currentAccount()) as string;
-      const selectedWallet = await fuel.getWallet(selectedAccount);
+      const selectedAccount = (await fuel!.currentAccount()) as string;
+      const selectedWallet = await fuel!.getWallet(selectedAccount);
       return selectedWallet;
     },
     {
