@@ -1,7 +1,6 @@
 import type { BN, CoinQuantityLike } from 'fuels';
 import { Contract } from 'fuels';
 import { useMutation } from 'react-query';
-import { useWallet } from '~/systems/Core';
 
 import { useContract } from '~/systems/Core/hooks/useContract';
 import { handleError, queryClient } from '~/systems/Core/utils';

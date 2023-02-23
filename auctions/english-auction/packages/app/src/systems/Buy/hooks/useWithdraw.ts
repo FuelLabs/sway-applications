@@ -29,14 +29,20 @@ async function withdrawAsset(
     const res = await contract.functions
       .withdraw(auctionId)
       .addContracts([
-        new Contract(asset.NFTAsset.asset_id.value, NFTAbi__factory.createInterface(), contract.provider!),
+        new Contract(
+          asset.NFTAsset.asset_id.value,
+          NFTAbi__factory.createInterface(),
+          contract.provider!
+        ),
       ])
       .call();
     return res;
   }
   const res = await contract.functions
     .withdraw(auctionId)
-    .addContracts([new Contract(process.env.VITE_NFT_ID!, NFTAbi__factory.createInterface(), contract.provider!)])
+    .addContracts([
+      new Contract(process.env.VITE_NFT_ID!, NFTAbi__factory.createInterface(), contract.provider!),
+    ])
     .call();
   return res;
 }

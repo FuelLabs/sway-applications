@@ -2,10 +2,10 @@
 // Use a test fixture to set the context so tests have access to the wallet extension.
 import type { BrowserContext } from '@playwright/test';
 import { chromium, test as base } from '@playwright/test';
-import path from 'path';
 import admZip from 'adm-zip';
 import * as fs from 'fs';
 import https from 'https';
+import path from 'path';
 
 const pathToExtension = path.join(__dirname, './dist-crx');
 
@@ -34,7 +34,7 @@ test.beforeAll(async () => {
       zipFileStream.on('finish', () => {
         zipFileStream.close();
         console.log('Download Completed extracting zip...');
-        const zip = new admZip(zipFile);
+        const zip = new admZip(zipFile); // eslint-disable-line new-cap
         zip.extractAllTo('./packages/app/tests/dist-crx', true);
         console.log('zip extracted');
       });
