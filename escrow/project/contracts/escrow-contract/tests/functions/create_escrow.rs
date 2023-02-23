@@ -7,6 +7,8 @@ use fuels::tx::ContractId;
 mod success {
 
     use super::*;
+    use crate::utils::{Buyer, CreatedEscrowEvent, EscrowInfo, Seller, State};
+    use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
     async fn creates_escrow_single_asset() {
@@ -30,7 +32,7 @@ mod success {
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        create_escrow(
+        let response = create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
@@ -40,6 +42,31 @@ mod success {
             defaults.deadline,
         )
         .await;
+        let log = response.get_logs_with_type::<CreatedEscrowEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            CreatedEscrowEvent {
+                escrow: EscrowInfo {
+                    arbiter: arbiter_obj,
+                    asset_count: 1,
+                    buyer: Buyer {
+                        address: Identity::Address(Address::from(buyer.wallet.address())),
+                        asset: Option::None,
+                        deposited_amount: 0,
+                    },
+                    deadline: defaults.deadline,
+                    disputed: false,
+                    first_asset_index: 0,
+                    seller: Seller {
+                        address: Identity::Address(Address::from(seller.wallet.address())),
+                    },
+                    state: State::Pending(),
+                },
+                identifier: 0
+            }
+        );
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
     }
 
@@ -65,7 +92,7 @@ mod success {
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        create_escrow(
+        let response = create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
@@ -75,6 +102,31 @@ mod success {
             defaults.deadline,
         )
         .await;
+        let log = response.get_logs_with_type::<CreatedEscrowEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            CreatedEscrowEvent {
+                escrow: EscrowInfo {
+                    arbiter: arbiter_obj,
+                    asset_count: 3,
+                    buyer: Buyer {
+                        address: Identity::Address(Address::from(buyer.wallet.address())),
+                        asset: Option::None,
+                        deposited_amount: 0,
+                    },
+                    deadline: defaults.deadline,
+                    disputed: false,
+                    first_asset_index: 0,
+                    seller: Seller {
+                        address: Identity::Address(Address::from(seller.wallet.address())),
+                    },
+                    state: State::Pending(),
+                },
+                identifier: 0
+            }
+        );
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
     }
 
@@ -100,7 +152,7 @@ mod success {
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        create_escrow(
+        let response = create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
@@ -110,12 +162,37 @@ mod success {
             defaults.deadline,
         )
         .await;
+        let log = response.get_logs_with_type::<CreatedEscrowEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            CreatedEscrowEvent {
+                escrow: EscrowInfo {
+                    arbiter: arbiter_obj.clone(),
+                    asset_count: 1,
+                    buyer: Buyer {
+                        address: Identity::Address(Address::from(buyer.wallet.address())),
+                        asset: Option::None,
+                        deposited_amount: 0,
+                    },
+                    deadline: defaults.deadline,
+                    disputed: false,
+                    first_asset_index: 0,
+                    seller: Seller {
+                        address: Identity::Address(Address::from(seller.wallet.address())),
+                    },
+                    state: State::Pending(),
+                },
+                identifier: 0
+            }
+        );
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        create_escrow(
+        let response = create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
@@ -125,6 +202,31 @@ mod success {
             defaults.deadline,
         )
         .await;
+        let log = response.get_logs_with_type::<CreatedEscrowEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            CreatedEscrowEvent {
+                escrow: EscrowInfo {
+                    arbiter: arbiter_obj,
+                    asset_count: 1,
+                    buyer: Buyer {
+                        address: Identity::Address(Address::from(buyer.wallet.address())),
+                        asset: Option::None,
+                        deposited_amount: 0,
+                    },
+                    deadline: defaults.deadline,
+                    disputed: false,
+                    first_asset_index: 1,
+                    seller: Seller {
+                        address: Identity::Address(Address::from(seller.wallet.address())),
+                    },
+                    state: State::Pending(),
+                },
+                identifier: 1
+            }
+        );
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
     }
 }

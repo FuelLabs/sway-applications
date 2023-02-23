@@ -6,6 +6,7 @@ use crate::utils::{
 mod success {
 
     use super::*;
+    use crate::utils::PaymentTakenEvent;
 
     #[tokio::test]
     #[ignore]
@@ -56,7 +57,13 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
-        // take_payment(&seller.contract, 0).await;
+        // let response = take_payment(&seller.contract, 0).await;
+        // let log = response
+        //     .get_logs_with_type::<PaymentTakenEvent>()
+        //     .unwrap();
+        // let event = log.get(0).unwrap();
+
+        // assert_eq!(*event, PaymentTakenEvent { identifier: 0 });
 
         // assert_eq!(defaults.asset_amount, asset_amount(&defaults.asset_id, &seller.wallet).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
@@ -112,8 +119,11 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
-        take_payment(&seller.contract, 0).await;
+        let response = take_payment(&seller.contract, 0).await;
+        let log = response.get_logs_with_type::<PaymentTakenEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(*event, PaymentTakenEvent { identifier: 0 });
         assert_eq!(
             defaults.asset_amount * 3,
             asset_amount(&defaults.asset_id, &seller.wallet).await

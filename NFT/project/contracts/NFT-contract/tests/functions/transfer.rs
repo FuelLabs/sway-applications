@@ -7,6 +7,7 @@ use fuels::{signers::Signer, types::Identity};
 mod success {
 
     use super::*;
+    use crate::utils::TransferEvent;
 
     #[tokio::test]
     async fn transfers() {
@@ -23,11 +24,22 @@ mod success {
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 1);
         assert_eq!(balance_of(&owner2.contract, to.clone()).await, 0);
 
-        transfer(&owner1.contract, to.clone(), 0).await;
+        let response = transfer(&owner1.contract, to.clone(), 0).await;
+        let log = response.get_logs_with_type::<TransferEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            TransferEvent {
+                from: minter.clone(),
+                sender: minter.clone(),
+                to: to.clone(),
+                token_id: 0,
+            }
+        );
         assert_eq!(owner_of(&owner1.contract, 0).await, Some(to.clone()));
-        assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 0);
-        assert_eq!(balance_of(&owner2.contract, to.clone()).await, 1);
+        assert_eq!(balance_of(&owner1.contract, minter).await, 0);
+        assert_eq!(balance_of(&owner2.contract, to).await, 1);
     }
 
     #[tokio::test]
@@ -48,14 +60,25 @@ mod success {
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 1);
         assert_eq!(balance_of(&owner2.contract, to.clone()).await, 0);
 
-        transfer(&owner2.contract, to.clone(), 0).await;
+        let response = transfer(&owner2.contract, to.clone(), 0).await;
+        let log = response.get_logs_with_type::<TransferEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            TransferEvent {
+                from: minter.clone(),
+                sender: approved_identity.clone().unwrap(),
+                to: to.clone(),
+                token_id: 0,
+            }
+        );
         assert_eq!(
             owner_of(&owner1.contract, 0).await,
             approved_identity.clone()
         );
-        assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 0);
-        assert_eq!(balance_of(&owner2.contract, to.clone()).await, 1);
+        assert_eq!(balance_of(&owner1.contract, minter).await, 0);
+        assert_eq!(balance_of(&owner2.contract, to).await, 1);
     }
 
     #[tokio::test]
@@ -75,11 +98,22 @@ mod success {
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 1);
         assert_eq!(balance_of(&owner2.contract, operator.clone()).await, 0);
 
-        transfer(&owner2.contract, operator.clone(), 0).await;
+        let response = transfer(&owner2.contract, operator.clone(), 0).await;
+        let log = response.get_logs_with_type::<TransferEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            TransferEvent {
+                from: minter.clone(),
+                sender: operator.clone(),
+                to: operator.clone(),
+                token_id: 0,
+            }
+        );
         assert_eq!(owner_of(&owner1.contract, 0).await, Some(operator.clone()));
-        assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 0);
-        assert_eq!(balance_of(&owner2.contract, operator.clone()).await, 1);
+        assert_eq!(balance_of(&owner1.contract, minter).await, 0);
+        assert_eq!(balance_of(&owner2.contract, operator).await, 1);
     }
 
     #[tokio::test]
@@ -97,32 +131,76 @@ mod success {
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 4);
         assert_eq!(balance_of(&owner2.contract, to.clone()).await, 0);
 
-        transfer(&owner1.contract, to.clone(), 0).await;
+        let response = transfer(&owner1.contract, to.clone(), 0).await;
+        let log = response.get_logs_with_type::<TransferEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            TransferEvent {
+                from: minter.clone(),
+                sender: minter.clone(),
+                to: to.clone(),
+                token_id: 0,
+            }
+        );
         assert_eq!(owner_of(&owner1.contract, 0).await, Some(to.clone()));
         assert_eq!(owner_of(&owner1.contract, 1).await, Some(minter.clone()));
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 3);
         assert_eq!(balance_of(&owner2.contract, to.clone()).await, 1);
 
-        transfer(&owner1.contract, to.clone(), 1).await;
+        let response = transfer(&owner1.contract, to.clone(), 1).await;
+        let log = response.get_logs_with_type::<TransferEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            TransferEvent {
+                from: minter.clone(),
+                sender: minter.clone(),
+                to: to.clone(),
+                token_id: 1,
+            }
+        );
         assert_eq!(owner_of(&owner1.contract, 1).await, Some(to.clone()));
         assert_eq!(owner_of(&owner1.contract, 2).await, Some(minter.clone()));
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 2);
         assert_eq!(balance_of(&owner2.contract, to.clone()).await, 2);
 
-        transfer(&owner1.contract, to.clone(), 2).await;
+        let response = transfer(&owner1.contract, to.clone(), 2).await;
+        let log = response.get_logs_with_type::<TransferEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            TransferEvent {
+                from: minter.clone(),
+                sender: minter.clone(),
+                to: to.clone(),
+                token_id: 2,
+            }
+        );
         assert_eq!(owner_of(&owner1.contract, 2).await, Some(to.clone()));
         assert_eq!(owner_of(&owner1.contract, 3).await, Some(minter.clone()));
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 1);
         assert_eq!(balance_of(&owner2.contract, to.clone()).await, 3);
 
-        transfer(&owner1.contract, to.clone(), 3).await;
+        let response = transfer(&owner1.contract, to.clone(), 3).await;
+        let log = response.get_logs_with_type::<TransferEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            TransferEvent {
+                from: minter.clone(),
+                sender: minter.clone(),
+                to: to.clone(),
+                token_id: 3,
+            }
+        );
         assert_eq!(owner_of(&owner1.contract, 3).await, Some(to.clone()));
-        assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 0);
-        assert_eq!(balance_of(&owner2.contract, to.clone()).await, 4);
+        assert_eq!(balance_of(&owner1.contract, minter).await, 0);
+        assert_eq!(balance_of(&owner2.contract, to).await, 4);
     }
 }
 

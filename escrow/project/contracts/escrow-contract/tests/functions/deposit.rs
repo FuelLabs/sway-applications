@@ -9,6 +9,7 @@ use fuels::tx::ContractId;
 mod success {
 
     use super::*;
+    use crate::utils::DepositEvent;
 
     #[tokio::test]
     async fn deposits() {
@@ -50,13 +51,23 @@ mod success {
         )
         .await;
 
-        deposit(
+        let response = deposit(
             defaults.asset_amount,
             &defaults.asset_id,
             &buyer.contract,
             0,
         )
         .await;
+        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            DepositEvent {
+                asset: defaults.asset_id,
+                identifier: 0
+            }
+        );
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
     }
 
@@ -110,25 +121,45 @@ mod success {
         )
         .await;
 
-        deposit(
+        let response = deposit(
             defaults.asset_amount,
             &defaults.asset_id,
             &buyer.contract,
             0,
         )
         .await;
+        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            DepositEvent {
+                asset: defaults.asset_id,
+                identifier: 0
+            }
+        );
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &buyer.wallet).await
         );
 
-        deposit(
+        let response = deposit(
             defaults.asset_amount,
             &defaults.asset_id,
             &buyer.contract,
             1,
         )
         .await;
+        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            DepositEvent {
+                asset: defaults.asset_id,
+                identifier: 1
+            }
+        );
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
     }
 }
