@@ -1,4 +1,11 @@
-use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identity};
+use fuels::{
+    prelude::{
+        abigen, launch_custom_provider_and_get_wallets, AssetId, Bech32Address, CallParameters,
+        Contract, ContractId, Salt, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+    },
+    programs::call_response::FuelCallResponse,
+    types::Identity,
+};
 
 abigen!(
     Contract(
@@ -11,31 +18,33 @@ abigen!(
     )
 );
 
-pub struct Defaults {
-    pub asset: MyAsset,
-    pub asset_amount: u64,
-    pub asset_id: ContractId,
-    pub deadline: u64,
+pub(crate) struct Defaults {
+    pub(crate) asset: MyAsset,
+    pub(crate) asset_amount: u64,
+    pub(crate) asset_id: ContractId,
+    pub(crate) deadline: u64,
 }
 
-pub struct User {
-    pub contract: Escrow,
-    pub wallet: WalletUnlocked,
+pub(crate) struct User {
+    pub(crate) contract: Escrow,
+    pub(crate) wallet: WalletUnlocked,
 }
 
-pub mod paths {
-    pub const ASSET_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
-    pub const ASSET_CONTRACT_STORAGE_PATH: &str =
+pub(crate) mod paths {
+    pub(crate) const ASSET_CONTRACT_BINARY_PATH: &str =
+        "./tests/artifacts/asset/out/debug/asset.bin";
+    pub(crate) const ASSET_CONTRACT_STORAGE_PATH: &str =
         "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
-    pub const ESCROW_CONTRACT_BINARY_PATH: &str = "./out/debug/escrow-contract.bin";
-    pub const ESCROW_CONTRACT_STORAGE_PATH: &str = "./out/debug/escrow-contract-storage_slots.json";
+    pub(crate) const ESCROW_CONTRACT_BINARY_PATH: &str = "./out/debug/escrow-contract.bin";
+    pub(crate) const ESCROW_CONTRACT_STORAGE_PATH: &str =
+        "./out/debug/escrow-contract-storage_slots.json";
 }
 
-pub mod abi_calls {
+pub(crate) mod abi_calls {
 
     use super::*;
 
-    pub async fn accept_arbiter(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
+    pub(crate) async fn accept_arbiter(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .accept_arbiter(identifier)
@@ -45,7 +54,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn create_escrow(
+    pub(crate) async fn create_escrow(
         amount: u64,
         arbiter: &Arbiter,
         asset: &ContractId,
@@ -68,12 +77,13 @@ pub mod abi_calls {
             )
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap()
     }
 
-    pub async fn deposit(
+    pub(crate) async fn deposit(
         amount: u64,
         asset: &ContractId,
         contract: &Escrow,
@@ -88,16 +98,17 @@ pub mod abi_calls {
             .deposit(identifier)
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap()
     }
 
-    pub async fn dispute(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
+    pub(crate) async fn dispute(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
         contract.methods().dispute(identifier).call().await.unwrap()
     }
 
-    pub async fn propose_arbiter(
+    pub(crate) async fn propose_arbiter(
         arbiter: Arbiter,
         contract: &Escrow,
         identifier: u64,
@@ -114,13 +125,14 @@ pub mod abi_calls {
             .propose_arbiter(arbiter, identifier)
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .append_variable_outputs(1)
             .call()
             .await
             .unwrap()
     }
 
-    pub async fn resolve_dispute(
+    pub(crate) async fn resolve_dispute(
         contract: &Escrow,
         identifier: u64,
         payment_amount: u64,
@@ -135,7 +147,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn return_deposit(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
+    pub(crate) async fn return_deposit(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .return_deposit(identifier)
@@ -145,7 +157,7 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn take_payment(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
+    pub(crate) async fn take_payment(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
         contract
             .methods()
             .take_payment(identifier)
@@ -155,7 +167,10 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn transfer_to_seller(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
+    pub(crate) async fn transfer_to_seller(
+        contract: &Escrow,
+        identifier: u64,
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .transfer_to_seller(identifier)
@@ -165,7 +180,10 @@ pub mod abi_calls {
             .unwrap()
     }
 
-    pub async fn withdraw_collateral(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
+    pub(crate) async fn withdraw_collateral(
+        contract: &Escrow,
+        identifier: u64,
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .withdraw_collateral(identifier)
@@ -176,7 +194,7 @@ pub mod abi_calls {
     }
 }
 
-pub mod test_helpers {
+pub(crate) mod test_helpers {
 
     use super::*;
     use paths::{
@@ -184,7 +202,7 @@ pub mod test_helpers {
         ESCROW_CONTRACT_STORAGE_PATH,
     };
 
-    pub async fn asset_amount(asset: &ContractId, wallet: &WalletUnlocked) -> u64 {
+    pub(crate) async fn asset_amount(asset: &ContractId, wallet: &WalletUnlocked) -> u64 {
         wallet
             .clone()
             .get_asset_balance(&AssetId::from(**asset))
@@ -192,7 +210,7 @@ pub mod test_helpers {
             .unwrap()
     }
 
-    pub async fn create_arbiter(
+    pub(crate) async fn create_arbiter(
         address: &Bech32Address,
         asset: ContractId,
         fee_amount: u64,
@@ -204,11 +222,11 @@ pub mod test_helpers {
         }
     }
 
-    pub async fn create_asset(amount: u64, id: ContractId) -> Asset {
+    pub(crate) async fn create_asset(amount: u64, id: ContractId) -> Asset {
         Asset { amount, id }
     }
 
-    pub async fn create_asset_with_salt(
+    pub(crate) async fn create_asset_with_salt(
         salt: [u8; 32],
         wallet: WalletUnlocked,
     ) -> (ContractId, MyAsset) {
@@ -225,7 +243,7 @@ pub mod test_helpers {
         (asset_id.clone().into(), MyAsset::new(asset_id, wallet))
     }
 
-    pub async fn mint(address: &Bech32Address, amount: u64, contract: &MyAsset) {
+    pub(crate) async fn mint(address: &Bech32Address, amount: u64, contract: &MyAsset) {
         contract
             .methods()
             .mint_and_send_to_address(amount, address.into())
@@ -235,13 +253,13 @@ pub mod test_helpers {
             .unwrap();
     }
 
-    pub async fn setup() -> (User, User, User, Defaults) {
-        let num_wallets = 4;
+    pub(crate) async fn setup() -> (User, User, User, Defaults) {
+        let number_of_wallets = 4;
         let coins_per_wallet = 1;
         let amount_per_coin = 1_000_000;
 
         let config = WalletsConfig::new(
-            Some(num_wallets),
+            Some(number_of_wallets),
             Some(coins_per_wallet),
             Some(amount_per_coin),
         );

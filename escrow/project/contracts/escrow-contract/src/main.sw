@@ -178,7 +178,7 @@ impl Escrow for Contract {
     fn propose_arbiter(arbiter: Arbiter, identifier: u64) {
         // The assertions ensure that only the seller can propose a new arbiter and the arbiter
         // cannot be the buyer / seller, the arbiter will be able to take a none-zero payment
-        let escrow = storage.escrows.get(identifier).unwarp();
+        let escrow = storage.escrows.get(identifier).unwrap();
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
 
@@ -276,7 +276,7 @@ impl Escrow for Contract {
     fn take_payment(identifier: u64) {
         // The assertions ensure that only the seller can take payment before the escrow has been
         // completed and after the deadline as long as there is no disupte and it contains a deposit
-        let mut escrow = storage.escrows.get(identifier).unwarp();
+        let mut escrow = storage.escrows.get(identifier).unwrap();
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
         require(escrow.deadline < height(), StateError::CannotTakePaymentBeforeDeadline);
