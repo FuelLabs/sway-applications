@@ -1,14 +1,15 @@
-use crate::utils::{
-    abigen_bindings::english_auction_mod::State,
-    asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{auction_info, bid, create},
-    test_helpers::{create_auction_copy, defaults_token, setup, token_asset},
-};
-use fuels::types::Identity;
-
 mod success {
-
-    use super::*;
+    use crate::utils::{
+        interface::{
+            core::{
+                asset::mint_and_send_to_address,
+                auction::{bid, create},
+            },
+            info::auction_info,
+        },
+        setup::{create_auction_copy, defaults_token, setup, token_asset, State},
+    };
+    use fuels::types::Identity;
 
     #[tokio::test]
     async fn returns_auction_info() {

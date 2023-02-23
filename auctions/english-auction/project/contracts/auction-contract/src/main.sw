@@ -14,7 +14,7 @@ use auction_asset::AuctionAsset;
 use auction::Auction;
 use errors::{AccessError, InitError, InputError, UserError};
 use events::{BidEvent, CancelAuctionEvent, CreateAuctionEvent, WithdrawEvent};
-use interface::EnglishAuction;
+use interface::{EnglishAuction, Info};
 use state::State;
 use std::{
     auth::msg_sender,
@@ -44,11 +44,6 @@ storage {
 }
 
 impl EnglishAuction for Contract {
-    #[storage(read)]
-    fn auction_info(auction_id: u64) -> Option<Auction> {
-        storage.auctions.get(auction_id)
-    }
-
     #[payable, storage(read, write)]
     fn bid(auction_id: u64, bid_asset: AuctionAsset) {
         let auction = storage.auctions.get(auction_id);
@@ -193,11 +188,6 @@ impl EnglishAuction for Contract {
         total_auctions
     }
 
-    #[storage(read)]
-    fn deposit_balance(auction_id: u64, identity: Identity) -> Option<AuctionAsset> {
-        storage.deposits.get((identity, auction_id))
-    }
-
     #[storage(read, write)]
     fn withdraw(auction_id: u64) {
         // Make sure this auction exists
@@ -243,6 +233,18 @@ impl EnglishAuction for Contract {
             auction_id,
             user: sender,
         });
+    }
+}
+
+impl Info for Contract {
+    #[storage(read)]
+    fn auction_info(auction_id: u64) -> Option<Auction> {
+        storage.auctions.get(auction_id)
+    }
+
+    #[storage(read)]
+    fn deposit_balance(auction_id: u64, identity: Identity) -> Option<AuctionAsset> {
+        storage.deposits.get((identity, auction_id))
     }
 
     #[storage(read)]
