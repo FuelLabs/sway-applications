@@ -122,9 +122,6 @@ async function addWallet(walletPage: Page, extensionId: string, accountName: str
   const accountFormSubmitButton = walletPage.locator('button').getByText('Create');
   await accountFormSubmitButton.click();
 
-  // const accountConfirmButton = walletPage.locator('button').getByText('Add Account');
-  // await accountConfirmButton.click();
-
   await walletPage.waitForSelector('img', { timeout: 10000 });
 }
 
