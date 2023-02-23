@@ -7,6 +7,7 @@ use fuels::{signers::Signer, types::Identity};
 mod success {
 
     use super::*;
+    use crate::utils::AdminEvent;
 
     #[tokio::test]
     async fn changes_admin() {
@@ -22,9 +23,17 @@ mod success {
 
         let minter2 = Identity::Address(owner2.wallet.address().into());
         let new_admin2 = Some(minter2.clone());
-        set_admin(&owner1.contract, new_admin2.clone()).await;
+        let response = set_admin(&owner1.contract, new_admin2.clone()).await;
+        let log = response.get_logs_with_type::<AdminEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
-        assert_eq!(admin(&owner2.contract).await, new_admin2.clone());
+        assert_eq!(
+            *event,
+            AdminEvent {
+                admin: new_admin2.clone()
+            }
+        );
+        assert_eq!(admin(&owner2.contract).await, new_admin2);
     }
 }
 
