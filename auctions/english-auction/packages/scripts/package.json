@@ -17,7 +17,7 @@
     "commander": "^9.4.0",
     "debug": "^4.3.4",
     "esbuild": "^0.14.54",
-    "fuels": "0.29.1",
+    "fuels": "0.31.0",
     "joycon": "^3.1.1",
     "prettier": "^2.7.1",
     "typescript": "^4.9.3"
