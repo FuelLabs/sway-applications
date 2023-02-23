@@ -64,7 +64,7 @@ mod success {
         assert_eq!(buyer1_deposit, bid_asset);
         assert_eq!(auction.bid_asset, bid_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Open());
+        assert_eq!(auction.state, State::Open);
 
         let buyer2_deposit =
             deposit_balance(auction_id, &buyer2.auction, buyer2_identity.clone()).await;
@@ -80,7 +80,7 @@ mod success {
         assert_eq!(buyer2_deposit, bid2_asset);
         assert_eq!(auction.bid_asset, bid2_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer2_identity);
-        assert_eq!(auction.state, State::Open());
+        assert_eq!(auction.state, State::Open);
     }
 
     #[tokio::test]
@@ -128,7 +128,7 @@ mod success {
         assert_eq!(buyer1_deposit, bid_asset);
         assert_eq!(auction.bid_asset, bid_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Open());
+        assert_eq!(auction.state, State::Open);
 
         let buyer2_deposit =
             deposit_balance(auction_id, &buyer2.auction, buyer2_identity.clone()).await;
@@ -144,7 +144,7 @@ mod success {
         assert_eq!(buyer2_deposit, bid2_asset);
         assert_eq!(auction.bid_asset, bid2_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer2_identity);
-        assert_eq!(auction.state, State::Closed());
+        assert_eq!(auction.state, State::Closed);
     }
 
     #[tokio::test]
@@ -188,7 +188,7 @@ mod success {
         assert_eq!(buyer1_deposit, bid_asset);
         assert_eq!(auction.bid_asset, bid_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Closed());
+        assert_eq!(auction.state, State::Closed);
     }
 
     #[tokio::test]
@@ -234,7 +234,7 @@ mod success {
         assert_eq!(buyer1_deposit, bid1_asset);
         assert_eq!(auction.bid_asset, bid1_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Open());
+        assert_eq!(auction.state, State::Open);
 
         bid(auction_id, bid2_asset.clone(), &buyer1.auction).await;
 
@@ -246,7 +246,7 @@ mod success {
         assert_eq!(buyer1_deposit, total_bid_asset);
         assert_eq!(auction.bid_asset, total_bid_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Open());
+        assert_eq!(auction.state, State::Open);
     }
 
     #[tokio::test]
@@ -302,7 +302,7 @@ mod success {
         assert_eq!(buyer1_deposit, bid_asset);
         assert_eq!(auction.bid_asset, bid_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Closed());
+        assert_eq!(auction.state, State::Closed);
     }
 
     #[tokio::test]
@@ -357,7 +357,7 @@ mod success {
         assert_eq!(buyer1_deposit, bid_asset);
         assert_eq!(auction.bid_asset, bid_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Closed());
+        assert_eq!(auction.state, State::Closed);
     }
 
     #[tokio::test]
@@ -412,7 +412,7 @@ mod success {
         assert_eq!(buyer1_deposit, bid_asset);
         assert_eq!(auction.bid_asset, bid_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Closed());
+        assert_eq!(auction.state, State::Closed);
     }
 
     #[tokio::test]
@@ -468,7 +468,7 @@ mod success {
         assert_eq!(buyer1_deposit, bid_asset);
         assert_eq!(auction.bid_asset, bid_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Open());
+        assert_eq!(auction.state, State::Open);
     }
 
     #[tokio::test]
@@ -512,7 +512,7 @@ mod success {
         assert_eq!(buyer1_deposit, bid_asset);
         assert_eq!(auction.bid_asset, bid_asset);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Open());
+        assert_eq!(auction.state, State::Open);
     }
 }
 
@@ -661,10 +661,10 @@ mod revert {
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
     }
 
+    #[ignore]
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
     // TODO: test is not set up to hit the error properly: https://github.com/FuelLabs/sway-applications/issues/330
-    // #[should_panic(expected = "NFTTransferNotApproved")]
+    #[should_panic(expected = "NFTTransferNotApproved")]
     async fn when_bidder_does_not_own_nft() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, _, buy_nft_contract_id) =
             setup().await;
@@ -692,10 +692,10 @@ mod revert {
         bid(auction_id, bid_asset.clone(), &buyer1.auction).await;
     }
 
+    #[ignore]
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
     // TODO: test is not set up to hit the error properly: https://github.com/FuelLabs/sway-applications/issues/330
-    // #[should_panic(expected = "NFTTransferNotApproved")]
+    #[should_panic(expected = "NFTTransferNotApproved")]
     async fn when_auction_contract_does_not_have_permission_to_transfer_nft() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, _, buy_nft_contract_id) =
             setup().await;
@@ -765,6 +765,7 @@ mod revert {
             .bid(auction_id, bid_asset.clone())
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap();
@@ -810,6 +811,7 @@ mod revert {
             .bid(auction_id, bid_asset.clone())
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap();

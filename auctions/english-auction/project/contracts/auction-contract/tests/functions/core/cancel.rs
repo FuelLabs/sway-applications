@@ -44,7 +44,7 @@ mod success {
 
         let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(auction.highest_bidder, None);
-        assert_eq!(auction.state, State::Closed());
+        assert_eq!(auction.state, State::Closed);
     }
 
     #[tokio::test]
@@ -91,18 +91,18 @@ mod success {
         let auction1 = auction_info(auction_id1, &seller.auction).await.unwrap();
         let auction2 = auction_info(auction_id2, &seller.auction).await.unwrap();
         assert_eq!(auction1.highest_bidder, None);
-        assert_eq!(auction1.state, State::Closed());
+        assert_eq!(auction1.state, State::Closed);
         assert_eq!(auction2.highest_bidder, None);
-        assert_eq!(auction2.state, State::Open());
+        assert_eq!(auction2.state, State::Open);
 
         cancel(auction_id2, &seller.auction).await;
 
         let auction1 = auction_info(auction_id1, &seller.auction).await.unwrap();
         let auction2 = auction_info(auction_id2, &seller.auction).await.unwrap();
         assert_eq!(auction1.highest_bidder, None);
-        assert_eq!(auction1.state, State::Closed());
+        assert_eq!(auction1.state, State::Closed);
         assert_eq!(auction2.highest_bidder, None);
-        assert_eq!(auction2.state, State::Closed());
+        assert_eq!(auction2.state, State::Closed);
     }
 
     #[tokio::test]
@@ -132,7 +132,7 @@ mod success {
 
         let auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(auction.highest_bidder, None);
-        assert_eq!(auction.state, State::Closed());
+        assert_eq!(auction.state, State::Closed);
     }
 }
 

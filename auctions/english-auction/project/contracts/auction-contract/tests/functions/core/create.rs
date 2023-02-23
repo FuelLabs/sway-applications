@@ -63,7 +63,7 @@ mod success {
             Some(reserve_price),
             sell_asset.clone(),
             seller_identity.clone(),
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction1.unwrap(), auction1_copy);
@@ -91,7 +91,7 @@ mod success {
             Some(reserve_price),
             sell_asset.clone(),
             seller_identity.clone(),
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction2.unwrap(), auction2_copy);
@@ -147,7 +147,7 @@ mod success {
             Some(reserve_count),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -203,7 +203,7 @@ mod success {
             Some(reserve_count),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -259,7 +259,7 @@ mod success {
             Some(reserve_count),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -304,7 +304,7 @@ mod success {
             Some(reserve_price),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -349,7 +349,7 @@ mod success {
             Some(reserve_price),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -394,7 +394,7 @@ mod success {
             None,
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -439,7 +439,7 @@ mod success {
             Some(initial_price),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -633,6 +633,7 @@ mod revert {
             )
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap();
@@ -676,6 +677,7 @@ mod revert {
             )
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap();
@@ -713,6 +715,7 @@ mod revert {
             )
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap();
@@ -751,6 +754,7 @@ mod revert {
             )
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap();
@@ -810,10 +814,10 @@ mod revert {
         .await;
     }
 
+    #[ignore]
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
     // TODO: test is not set up to hit the error properly: https://github.com/FuelLabs/sway-applications/issues/330
-    // #[should_panic(expected = "NFTTransferNotApproved")]
+    #[should_panic(expected = "NFTTransferNotApproved")]
     async fn when_auction_not_approved_for_transfer() {
         let (_, seller, _, _, _, _, sell_nft_contract_id, _, buy_nft_contract_id) = setup().await;
         let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;

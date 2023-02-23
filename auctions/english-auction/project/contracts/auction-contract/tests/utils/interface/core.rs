@@ -52,6 +52,7 @@ pub(crate) mod auction {
                     .bid(auction_id, AuctionAsset::TokenAsset(bid_asset.clone()))
                     .tx_params(tx_params)
                     .call_params(call_params)
+                    .unwrap()
                     .call()
                     .await
                     .unwrap()
@@ -110,6 +111,7 @@ pub(crate) mod auction {
                     )
                     .tx_params(tx_params)
                     .call_params(call_params)
+                    .unwrap()
                     .call()
                     .await
                     .unwrap()

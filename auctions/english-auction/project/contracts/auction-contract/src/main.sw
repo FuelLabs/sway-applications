@@ -199,7 +199,7 @@ impl EnglishAuction for Contract {
             && auction.state == State::Open)
         {
             auction.state = State::Closed;
-            storage.auctions.insert(auction_id, Option::Some(auction));
+            storage.auctions.insert(auction_id, auction);
         }
 
         let sender = msg_sender().unwrap();

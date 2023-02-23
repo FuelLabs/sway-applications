@@ -54,7 +54,7 @@ mod success {
             Some(reserve_price),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -120,7 +120,7 @@ mod success {
             Some(reserve_price),
             sell_asset.clone(),
             seller_identity.clone(),
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction1.unwrap(), auction1_copy);
@@ -151,7 +151,7 @@ mod success {
             Some(reserve_price),
             sell_asset,
             seller_identity.clone(),
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction2.unwrap(), auction2_copy);
