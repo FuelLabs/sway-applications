@@ -1,18 +1,23 @@
 use crate::utils::{
-    abigen_bindings::english_auction_mod::{Auction, AuctionAsset, State},
-    asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{auction_info, bid, create, deposit_balance},
-    nft_abi_calls::{approve, mint, set_approval_for_all},
-    test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
+    interface::core::{
+        asset::mint_and_send_to_address,
+        auction::{bid, create},
+        nft::mint,
+    },
+    setup::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
-use fuels::{
-    prelude::{AssetId, CallParameters, TxParameters},
-    types::Identity,
-};
+use fuels::types::Identity;
 
 mod success {
 
     use super::*;
+    use crate::utils::{
+        interface::{
+            core::nft::{approve, mint, set_approval_for_all},
+            info::{auction_info, deposit_balance},
+        },
+        setup::{Auction, AuctionAsset, State},
+    };
 
     #[tokio::test]
     async fn overrides_bid() {
@@ -514,6 +519,7 @@ mod success {
 mod revert {
 
     use super::*;
+    use fuels::prelude::{AssetId, CallParameters, TxParameters};
 
     #[tokio::test]
     #[should_panic(expected = "AuctionDoesNotExist")]

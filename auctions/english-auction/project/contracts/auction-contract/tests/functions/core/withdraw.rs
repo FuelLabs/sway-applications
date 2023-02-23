@@ -1,14 +1,23 @@
 use crate::utils::{
-    asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{bid, create, deposit_balance, withdraw},
-    nft_abi_calls::{approve, mint, owner_of},
-    test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
+    interface::core::{
+        asset::mint_and_send_to_address,
+        auction::{bid, create, withdraw},
+    },
+    setup::{defaults_token, setup, token_asset},
 };
-use fuels::{prelude::AssetId, types::Identity};
+use fuels::types::Identity;
 
 mod success {
 
     use super::*;
+    use crate::utils::{
+        interface::{
+            core::nft::{approve, mint, owner_of},
+            info::deposit_balance,
+        },
+        setup::{defaults_nft, nft_asset},
+    };
+    use fuels::prelude::AssetId;
 
     #[tokio::test]
     async fn buyer_withdraws_expired_auction() {
