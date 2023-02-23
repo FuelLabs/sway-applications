@@ -62,7 +62,7 @@ mod success {
                     seller: Seller {
                         address: Identity::Address(Address::from(seller.wallet.address())),
                     },
-                    state: State::Pending(),
+                    state: State::Pending,
                 },
                 identifier: 0
             }
@@ -122,7 +122,7 @@ mod success {
                     seller: Seller {
                         address: Identity::Address(Address::from(seller.wallet.address())),
                     },
-                    state: State::Pending(),
+                    state: State::Pending,
                 },
                 identifier: 0
             }
@@ -182,7 +182,7 @@ mod success {
                     seller: Seller {
                         address: Identity::Address(Address::from(seller.wallet.address())),
                     },
-                    state: State::Pending(),
+                    state: State::Pending,
                 },
                 identifier: 0
             }
@@ -222,7 +222,7 @@ mod success {
                     seller: Seller {
                         address: Identity::Address(Address::from(seller.wallet.address())),
                     },
-                    state: State::Pending(),
+                    state: State::Pending,
                 },
                 identifier: 1
             }
