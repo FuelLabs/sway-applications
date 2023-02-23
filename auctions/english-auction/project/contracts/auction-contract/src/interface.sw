@@ -7,14 +7,6 @@ use auction_asset::AuctionAsset;
 use auction::Auction;
 
 abi EnglishAuction {
-    /// Returns the auction struct for the corresponding auction id.
-    ///
-    /// # Arguments
-    ///
-    /// * `auction_id` - The id number of the auction.
-    #[storage(read)]
-    fn auction_info(auction_id: u64) -> Option<Auction>;
-
     /// Places a bid on the specified auction.
     ///
     /// # Arguments
@@ -80,15 +72,6 @@ abi EnglishAuction {
     #[payable, storage(read, write)]
     fn create(bid_asset: AuctionAsset, duration: u64, inital_price: u64, reserve_price: Option<u64>, seller: Identity, sell_asset: AuctionAsset) -> u64;
 
-    /// Returns the balance of the user's deposits for the specified auction.
-    ///
-    /// # Arguments
-    ///
-    /// * `identity` - The user which has deposited assets.
-    /// * `auction_id` - The id number of the auction.
-    #[storage(read)]
-    fn deposit_balance(auction_id: u64, identity: Identity) -> Option<AuctionAsset>;
-
     /// Allows users to withdraw their owed assets if the auction's bid period has ended, the
     /// reserve has been met, or the auction has been canceled.
     ///
@@ -111,6 +94,25 @@ abi EnglishAuction {
     /// * When the sender has already withdrawn their deposit.
     #[storage(read, write)]
     fn withdraw(auction_id: u64);
+}
+
+abi Info {
+    /// Returns the auction struct for the corresponding auction id.
+    ///
+    /// # Arguments
+    ///
+    /// * `auction_id` - The id number of the auction.
+    #[storage(read)]
+    fn auction_info(auction_id: u64) -> Option<Auction>;
+
+    /// Returns the balance of the user's deposits for the specified auction.
+    ///
+    /// # Arguments
+    ///
+    /// * `identity` - The user which has deposited assets.
+    /// * `auction_id` - The id number of the auction.
+    #[storage(read)]
+    fn deposit_balance(auction_id: u64, identity: Identity) -> Option<AuctionAsset>;
 
     /// Returns the total auctions which have been started using this auction contract.
     #[storage(read)]
