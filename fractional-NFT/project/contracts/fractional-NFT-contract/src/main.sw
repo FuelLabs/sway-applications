@@ -9,7 +9,7 @@ dep utils;
 use data_structures::NFTInfo;
 use errors::{AccessError, AssetError};
 use events::{AdminEvent, DepositEvent, WithdrawEvent};
-use interface::FractionalNFT;
+use interface::{FractionalNFT, Info};
 use std::{
     auth::msg_sender,
     call_frames::contract_id,
@@ -52,11 +52,6 @@ impl FractionalNFT for Contract {
         });
     }
 
-    #[storage(read)]
-    fn nft_info() -> Option<NFTInfo> {
-        storage.nft_info
-    }
-
     #[storage(read, write)]
     fn set_admin(new_admin: Option<Identity>) {
         require(storage.nft_info.is_some(), AccessError::NoNftDeposited);
@@ -73,11 +68,6 @@ impl FractionalNFT for Contract {
             new_admin,
             previous_admin: previous_admin.unwrap(),
         });
-    }
-
-    #[storage(read)]
-    fn supply() -> u64 {
-        storage.supply
     }
 
     #[storage(read, write)]
@@ -100,5 +90,17 @@ impl FractionalNFT for Contract {
             owner: to,
             token_id: nft_info.token_id,
         });
+    }
+}
+
+impl Info for Contract {
+    #[storage(read)]
+    fn nft_info() -> Option<NFTInfo> {
+        storage.nft_info
+    }
+
+    #[storage(read)]
+    fn supply() -> u64 {
+        storage.supply
     }
 }
