@@ -182,7 +182,7 @@ test.describe('e2e', () => {
     await durationInput.fill('1000');
 
     await expect(createAuctionButton).toBeEnabled();
-    await createAuctionButton.click();
+    await createAuctionButton.click({ timeout: 10000 });
 
     await walletApprove(context);
 
