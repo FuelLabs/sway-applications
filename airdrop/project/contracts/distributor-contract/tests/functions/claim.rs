@@ -8,6 +8,7 @@ use fuels::{tx::AssetId, types::Identity};
 mod success {
 
     use super::*;
+    use crate::utils::ClaimEvent;
 
     // NOTE: This test is ignored as it uses the Fuel-Merkle crate. There is currently an
     // incompatability with the Fuel-Merkle crate and the Sway-Libs Merkle Proof library.
@@ -54,7 +55,7 @@ mod success {
                 .claimed
         );
 
-        claim(
+        let response = claim(
             airdrop_leaves[key as usize].1,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
@@ -65,6 +66,16 @@ mod success {
         )
         .await;
 
+        let log = response.get_logs_with_type::<ClaimEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ClaimEvent {
+                to: identity_a.clone(),
+                amount: airdrop_leaves[key as usize].1
+            }
+        );
         assert_eq!(
             wallet1
                 .wallet
@@ -114,7 +125,7 @@ mod success {
             .claimed
         );
 
-        claim(
+        let response = claim(
             airdrop_leaves[key as usize].1,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
@@ -125,6 +136,16 @@ mod success {
         )
         .await;
 
+        let log = response.get_logs_with_type::<ClaimEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ClaimEvent {
+                to: airdrop_leaves[key as usize].0.clone(),
+                amount: airdrop_leaves[key as usize].1
+            }
+        );
         assert_eq!(
             wallet1
                 .wallet
@@ -183,7 +204,7 @@ mod success {
             .claimed
         );
 
-        claim(
+        let response = claim(
             airdrop_leaves[key as usize].1,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
@@ -193,7 +214,16 @@ mod success {
             airdrop_leaves[key as usize].0.clone(),
         )
         .await;
+        let log = response.get_logs_with_type::<ClaimEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            ClaimEvent {
+                to: airdrop_leaves[key as usize].0.clone(),
+                amount: airdrop_leaves[key as usize].1
+            }
+        );
         assert_eq!(
             wallet1
                 .wallet
@@ -252,7 +282,7 @@ mod success {
             .claimed
         );
 
-        claim(
+        let response = claim(
             airdrop_leaves[key as usize].1,
             asset.asset_id,
             &deploy_wallet.airdrop_distributor,
@@ -262,7 +292,16 @@ mod success {
             airdrop_leaves[key as usize].0.clone(),
         )
         .await;
+        let log = response.get_logs_with_type::<ClaimEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            ClaimEvent {
+                to: airdrop_leaves[key as usize].0.clone(),
+                amount: airdrop_leaves[key as usize].1
+            }
+        );
         assert_eq!(
             wallet1
                 .wallet
