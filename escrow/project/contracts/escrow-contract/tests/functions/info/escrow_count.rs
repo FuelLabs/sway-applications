@@ -1,18 +1,18 @@
 mod success {
 
     use crate::utils::{
-        abi_calls::{arbiter_proposal, create_escrow, propose_arbiter},
-        test_helpers::{create_arbiter, create_asset, mint, setup},
+        interface::{core::create_escrow, info::escrow_count},
+        setup::{create_arbiter, create_asset, mint, setup},
     };
 
     #[tokio::test]
-    async fn returns_none() {
+    async fn returns_zero() {
         let (_arbiter, _buyer, seller, _defaults) = setup().await;
-        assert!(matches!(arbiter_proposal(&seller.contract, 0).await, None));
+        assert_eq!(0, escrow_count(&seller.contract).await);
     }
 
     #[tokio::test]
-    async fn return_arbiter() {
+    async fn returns_one() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
             arbiter.wallet.address(),
@@ -24,28 +24,24 @@ mod success {
 
         mint(
             seller.wallet.address(),
-            defaults.asset_amount * 2,
+            defaults.asset_amount,
             &defaults.asset,
         )
         .await;
+
+        assert_eq!(0, escrow_count(&seller.contract).await);
+
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
+            vec![asset.clone()],
             buyer.wallet.address(),
             &seller.contract,
             defaults.deadline,
         )
         .await;
 
-        assert!(matches!(arbiter_proposal(&seller.contract, 0).await, None));
-
-        propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
-
-        assert_eq!(
-            arbiter_proposal(&seller.contract, 0).await.unwrap(),
-            arbiter_obj
-        );
+        assert_eq!(1, escrow_count(&seller.contract).await);
     }
 }

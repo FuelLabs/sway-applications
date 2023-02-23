@@ -1,8 +1,6 @@
 use crate::utils::{
-    abi_calls::{create_escrow, deposit, propose_arbiter, transfer_to_seller},
-    test_helpers::{
-        asset_amount, create_arbiter, create_asset, create_asset_with_salt, mint, setup,
-    },
+    interface::core::{create_escrow, deposit, propose_arbiter},
+    setup::{create_arbiter, create_asset, mint, setup},
 };
 use fuels::{
     prelude::{CallParameters, TxParameters},
@@ -12,7 +10,7 @@ use fuels::{
 mod success {
 
     use super::*;
-    use crate::utils::ProposedArbiterEvent;
+    use crate::utils::setup::{asset_amount, ProposedArbiterEvent};
 
     #[tokio::test]
     async fn proposes_arbiter() {
@@ -333,6 +331,7 @@ mod success {
 mod revert {
 
     use super::*;
+    use crate::utils::{interface::core::transfer_to_seller, setup::create_asset_with_salt};
 
     #[tokio::test]
     #[should_panic(expected = "StateNotPending")]

@@ -1,30 +1,19 @@
 use crate::utils::{
-    abi_calls::{create_escrow, deposit, dispute, transfer_to_seller},
-    test_helpers::{create_arbiter, create_asset, mint, setup},
+    interface::core::{accept_arbiter, create_escrow, deposit},
+    setup::{create_arbiter, create_asset, mint, setup},
 };
 
 mod success {
 
     use super::*;
-    use crate::utils::DisputeEvent;
+    use crate::utils::{
+        interface::core::propose_arbiter,
+        setup::{asset_amount, AcceptedArbiterEvent},
+    };
 
     #[tokio::test]
-    async fn disputes() {
+    async fn accepts_proposal() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
         let arbiter_obj = create_arbiter(
             arbiter.wallet.address(),
             defaults.asset_id,
@@ -33,6 +22,12 @@ mod success {
         .await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
+        mint(
+            seller.wallet.address(),
+            defaults.asset_amount * 2,
+            &defaults.asset,
+        )
+        .await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -43,37 +38,26 @@ mod success {
             defaults.deadline,
         )
         .await;
-        deposit(
-            defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
-        let response = dispute(&buyer.contract, 0).await;
-        let log = response.get_logs_with_type::<DisputeEvent>().unwrap();
+
+        propose_arbiter(arbiter_obj, &seller.contract, 0).await;
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+
+        let response = accept_arbiter(&buyer.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
-        assert_eq!(*event, DisputeEvent { identifier: 0 });
+        assert_eq!(*event, AcceptedArbiterEvent { identifier: 0 });
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller.wallet).await
+        );
     }
 
     #[tokio::test]
-    async fn disputes_in_two_escrows() {
+    async fn accepts_proposal_in_two_escrows() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount * 2,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount * 2,
-            &defaults.asset,
-        )
-        .await;
-
         let arbiter_obj = create_arbiter(
             arbiter.wallet.address(),
             defaults.asset_id,
@@ -82,6 +66,13 @@ mod success {
         .await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
+        mint(
+            seller.wallet.address(),
+            defaults.asset_amount * 4,
+            &defaults.asset,
+        )
+        .await;
+
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -103,37 +94,51 @@ mod success {
         )
         .await;
 
-        deposit(
+        assert_eq!(
+            defaults.asset_amount * 2,
+            asset_amount(&defaults.asset_id, &seller.wallet).await
+        );
+
+        propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+        assert_eq!(
             defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
-        deposit(
+            asset_amount(&defaults.asset_id, &seller.wallet).await
+        );
+
+        propose_arbiter(arbiter_obj, &seller.contract, 1).await;
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+
+        let response = accept_arbiter(&buyer.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(*event, AcceptedArbiterEvent { identifier: 0 });
+
+        assert_eq!(
             defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            1,
-        )
-        .await;
+            asset_amount(&defaults.asset_id, &seller.wallet).await
+        );
 
-        let response1 = dispute(&buyer.contract, 0).await;
-        let response2 = dispute(&buyer.contract, 1).await;
+        let response = accept_arbiter(&buyer.contract, 1).await;
+        let log = response
+            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
 
-        let log1 = response1.get_logs_with_type::<DisputeEvent>().unwrap();
-        let log2 = response2.get_logs_with_type::<DisputeEvent>().unwrap();
-        let event1 = log1.get(0).unwrap();
-        let event2 = log2.get(0).unwrap();
-
-        assert_eq!(*event1, DisputeEvent { identifier: 0 });
-        assert_eq!(*event2, DisputeEvent { identifier: 1 });
+        assert_eq!(*event, AcceptedArbiterEvent { identifier: 1 });
+        assert_eq!(
+            defaults.asset_amount * 2,
+            asset_amount(&defaults.asset_id, &seller.wallet).await
+        );
     }
 }
 
 mod revert {
 
     use super::*;
+    use crate::utils::interface::core::transfer_to_seller;
 
     #[tokio::test]
     #[should_panic(expected = "StateNotPending")]
@@ -149,7 +154,7 @@ mod revert {
 
         mint(
             seller.wallet.address(),
-            defaults.asset_amount,
+            defaults.asset_amount * 2,
             &defaults.asset,
         )
         .await;
@@ -178,53 +183,7 @@ mod revert {
         )
         .await;
         transfer_to_seller(&buyer.contract, 0).await;
-        dispute(&buyer.contract, 0).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "AlreadyDisputed")]
-    async fn when_disputing_more_than_once() {
-        let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
-        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
-        create_escrow(
-            defaults.asset_amount,
-            &arbiter_obj,
-            &defaults.asset_id,
-            vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
-            defaults.deadline,
-        )
-        .await;
-        deposit(
-            defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
-        dispute(&buyer.contract, 0).await;
-        dispute(&buyer.contract, 0).await;
+        accept_arbiter(&buyer.contract, 0).await;
     }
 
     #[tokio::test]
@@ -241,7 +200,7 @@ mod revert {
 
         mint(
             seller.wallet.address(),
-            defaults.asset_amount,
+            defaults.asset_amount * 2,
             &defaults.asset,
         )
         .await;
@@ -269,12 +228,12 @@ mod revert {
             0,
         )
         .await;
-        dispute(&seller.contract, 0).await;
+        accept_arbiter(&seller.contract, 0).await;
     }
 
     #[tokio::test]
-    #[should_panic(expected = "CannotDisputeBeforeDesposit")]
-    async fn when_buyer_has_not_deposited() {
+    #[should_panic(expected = "ArbiterHasNotBeenProposed")]
+    async fn when_arbiter_proposal_is_not_set() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
             arbiter.wallet.address(),
@@ -286,7 +245,7 @@ mod revert {
 
         mint(
             seller.wallet.address(),
-            defaults.asset_amount,
+            defaults.asset_amount * 2,
             &defaults.asset,
         )
         .await;
@@ -307,6 +266,13 @@ mod revert {
             defaults.deadline,
         )
         .await;
-        dispute(&buyer.contract, 0).await;
+        deposit(
+            defaults.asset_amount,
+            &defaults.asset_id,
+            &buyer.contract,
+            0,
+        )
+        .await;
+        accept_arbiter(&buyer.contract, 0).await;
     }
 }
