@@ -1,5 +1,7 @@
 import { toast } from '@fuel-ui/react';
+import { useEffect } from 'react';
 import { useQuery } from 'react-query';
+import { queryClient } from '../utils';
 
 import { useFuel } from './useFuel';
 
