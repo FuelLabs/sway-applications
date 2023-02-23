@@ -5,7 +5,10 @@ use crate::utils::{
 
 mod success {
     use super::*;
-    use crate::utils::{interface::info::proposal, setup::ProposalInfo};
+    use crate::utils::{
+        interface::info::proposal,
+        setup::{CreateProposalEvent, ProposalInfo},
+    };
     use fuels::types::Identity;
 
     #[tokio::test]
@@ -14,20 +17,32 @@ mod success {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
-        create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
+        let response =
+            create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
+
+        let log = response
+            .get_logs_with_type::<CreateProposalEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        let expected_proposal = ProposalInfo {
+            author: Identity::Address(user.wallet.address().into()),
+            yes_votes: 0,
+            no_votes: 0,
+            acceptance_percentage: 10,
+            proposal_transaction: proposal_transaction.clone(),
+            deadline: 14,
+            executed: false,
+        };
 
         assert_eq!(
-            proposal(&user.dao_voting, 0).await,
-            ProposalInfo {
-                author: Identity::Address(user.wallet.address().into()),
-                yes_votes: 0,
-                no_votes: 0,
-                acceptance_percentage: 10,
-                proposal_transaction,
-                deadline: 14,
-                executed: false,
+            *event,
+            CreateProposalEvent {
+                proposal_info: expected_proposal.clone(),
+                id: 0
             }
         );
+        assert_eq!(proposal(&user.dao_voting, 0).await, expected_proposal);
     }
 
     #[tokio::test]
@@ -36,7 +51,29 @@ mod success {
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
-        create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
+        let response =
+            create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
+
+        let log = response
+            .get_logs_with_type::<CreateProposalEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            CreateProposalEvent {
+                proposal_info: ProposalInfo {
+                    author: Identity::Address(user.wallet.address().into()),
+                    yes_votes: 0,
+                    no_votes: 0,
+                    acceptance_percentage: 10,
+                    proposal_transaction: proposal_transaction.clone(),
+                    deadline: 14,
+                    executed: false,
+                },
+                id: 0
+            }
+        );
         assert_eq!(
             proposal(&user.dao_voting, 0).await,
             ProposalInfo {
@@ -50,7 +87,29 @@ mod success {
             }
         );
 
-        create_proposal(&user.dao_voting, 20, 20, proposal_transaction.clone()).await;
+        let response =
+            create_proposal(&user.dao_voting, 20, 20, proposal_transaction.clone()).await;
+
+        let log = response
+            .get_logs_with_type::<CreateProposalEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            CreateProposalEvent {
+                proposal_info: ProposalInfo {
+                    author: Identity::Address(user.wallet.address().into()),
+                    yes_votes: 0,
+                    no_votes: 0,
+                    acceptance_percentage: 20,
+                    proposal_transaction: proposal_transaction.clone(),
+                    deadline: 26,
+                    executed: false,
+                },
+                id: 1
+            }
+        );
         assert_eq!(
             proposal(&user.dao_voting, 1).await,
             ProposalInfo {

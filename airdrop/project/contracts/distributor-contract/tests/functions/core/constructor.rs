@@ -1,12 +1,16 @@
 use crate::utils::{
-    airdrop_distributor_abi_calls::{airdrop_constructor, end_block, merkle_root},
-    test_helpers::{defaults, setup},
+    interface::core::airdrop_constructor,
+    setup::{defaults, setup},
 };
 use fuels::types::Bits256;
 
 mod success {
 
     use super::*;
+    use crate::utils::{
+        interface::info::{end_block, merkle_root},
+        setup::CreateAirdropEvent,
+    };
 
     #[tokio::test]
     async fn initalizes() {
@@ -18,13 +22,24 @@ mod success {
 
         assert_eq!(end_block(&deploy_wallet.airdrop_distributor).await, 0);
 
-        airdrop_constructor(
+        let response = airdrop_constructor(
             asset.asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
         )
         .await;
+        let log = response.get_logs_with_type::<CreateAirdropEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            CreateAirdropEvent {
+                asset: asset.asset_id,
+                end_block: claim_time,
+                merkle_root: root
+            }
+        );
 
         assert_eq!(
             provider.latest_block_height().await.unwrap() + claim_time,
