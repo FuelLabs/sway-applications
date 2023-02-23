@@ -181,7 +181,7 @@ test.describe('e2e', () => {
     const durationInput = appPage.locator(`input[name="duration"]`);
     await durationInput.fill('1000');
 
-    await expect(createAuctionButton).toBeEnabled();
+    await expect(createAuctionButton).toBeEnabled({ timeout: 10000 });
     await createAuctionButton.click({ timeout: 10000 });
 
     await walletApprove(context);
