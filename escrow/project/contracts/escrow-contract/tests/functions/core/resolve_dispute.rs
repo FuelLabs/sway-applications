@@ -1,12 +1,15 @@
 use crate::utils::{
-    abi_calls::{create_escrow, deposit, dispute, propose_arbiter, resolve_dispute},
-    test_helpers::{asset_amount, create_arbiter, create_asset, mint, setup},
+    interface::core::{create_escrow, deposit, dispute, resolve_dispute},
+    setup::{create_arbiter, create_asset, mint, setup},
 };
 
 mod success {
 
     use super::*;
-    use crate::utils::ResolvedDisputeEvent;
+    use crate::utils::{
+        interface::core::propose_arbiter,
+        setup::{asset_amount, ResolvedDisputeEvent},
+    };
     use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
