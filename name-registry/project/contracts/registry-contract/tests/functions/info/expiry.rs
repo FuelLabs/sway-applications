@@ -1,7 +1,10 @@
+use crate::utils::{interface::info::expiry, setup::setup};
+
 mod success {
+    use super::*;
     use crate::utils::{
-        abi::{expiry, extend, register},
-        setup, EXTEND_DURATION, REGISTER_DURATION,
+        interface::core::{extend, register},
+        setup::{EXTEND_DURATION, REGISTER_DURATION},
     };
 
     #[tokio::test]
@@ -30,7 +33,7 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::{abi::expiry, setup};
+    use super::*;
 
     #[tokio::test]
     #[should_panic(expected = "NameNotRegistered")]

@@ -1,14 +1,16 @@
-use crate::utils::{
-    asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{bid, create, deposit_balance},
-    nft_abi_calls::{approve, mint},
-    test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
-};
-use fuels::types::Identity;
-
 mod success {
-
-    use super::*;
+    use crate::utils::{
+        interface::{
+            core::{
+                asset::mint_and_send_to_address,
+                auction::{bid, create},
+                nft::{approve, mint},
+            },
+            info::deposit_balance,
+        },
+        setup::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
+    };
+    use fuels::types::Identity;
 
     #[tokio::test]
     async fn returns_mutliple_deposits() {

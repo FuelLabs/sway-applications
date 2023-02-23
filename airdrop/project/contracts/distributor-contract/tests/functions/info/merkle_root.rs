@@ -1,12 +1,10 @@
-use crate::utils::{
-    airdrop_distributor_abi_calls::{airdrop_constructor, merkle_root},
-    test_helpers::{defaults, setup},
-};
-use fuels::types::Bits256;
+use crate::utils::{interface::info::merkle_root, setup::setup};
 
 mod success {
 
     use super::*;
+    use crate::utils::{interface::core::airdrop_constructor, setup::defaults};
+    use fuels::types::Bits256;
 
     #[tokio::test]
     async fn returns_root() {

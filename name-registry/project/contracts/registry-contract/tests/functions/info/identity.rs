@@ -1,9 +1,12 @@
+use crate::utils::{interface::info::identity, setup::setup};
+
 mod success {
+    use super::*;
     use crate::utils::{
-        abi::{identity, register, set_identity},
-        setup, REGISTER_DURATION,
+        interface::core::{register, set_identity},
+        setup::REGISTER_DURATION,
     };
-    use fuels::{prelude::*, types::Identity};
+    use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
     async fn can_get_identity() {
@@ -31,7 +34,7 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::{abi::identity, setup};
+    use super::*;
 
     // TODO: missing test
 

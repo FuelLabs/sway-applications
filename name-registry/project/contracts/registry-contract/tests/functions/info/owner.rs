@@ -1,9 +1,12 @@
+use crate::utils::{interface::info::owner, setup::setup};
+
 mod success {
+    use super::*;
     use crate::utils::{
-        abi::{owner, register, set_owner},
-        setup, REGISTER_DURATION,
+        interface::core::{register, set_owner},
+        setup::REGISTER_DURATION,
     };
-    use fuels::{prelude::*, types::Identity};
+    use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
     async fn can_get_owner() {
@@ -32,7 +35,7 @@ mod success {
 }
 
 mod revert {
-    use crate::utils::{abi::owner, setup};
+    use super::*;
 
     // TODO: missing test
 
