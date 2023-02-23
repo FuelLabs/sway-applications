@@ -13,7 +13,8 @@ use events::{
     OwnerChangedEvent,
     RegistrationExtendedEvent,
 };
-use interface::NameRegistry;
+
+use interface::{Info, NameRegistry};
 use std::{auth::msg_sender, block::timestamp, call_frames::msg_asset_id, context::msg_amount};
 
 // TODO: Replace the B256 config-time constant with a ContractId when possible
@@ -106,7 +107,9 @@ impl NameRegistry for Contract {
             previous_owner: previous_record.owner,
         });
     }
+}
 
+impl Info for Contract {
     #[storage(read)]
     fn expiry(name: str[8]) -> Result<u64, RegistrationValidityError> {
         match storage.names.get(name) {
