@@ -95,7 +95,7 @@ mod success {
             forwarded_gas: Some(10_000_000),
         };
 
-        // Manually encode due to `Bytes` type in the contract's `Transaction` type
+        // Manually encode in order to accurately match encoding of the `Bytes` type in the contract's `Transaction` type
         let mut encoded_tx_struct = Vec::new();
         encoded_tx_struct.append(
             &mut ABIEncoder::encode(&vec![tx.contract_identifier.into_token()])
