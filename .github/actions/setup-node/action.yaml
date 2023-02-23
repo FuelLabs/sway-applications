@@ -5,7 +5,7 @@ inputs:
     default: 16.15
   pnpm-version:
     description: "PNPM version"
-    default: latest
+    default: 7.22.0
 runs:
   using: "composite"
   steps:
