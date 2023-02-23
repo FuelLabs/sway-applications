@@ -1,5 +1,8 @@
 use crate::utils::{
-    interface::core::{accept_arbiter, create_escrow, deposit},
+    interface::{
+        core::{accept_arbiter, create_escrow, deposit},
+        info::arbiter_proposal,
+    },
     setup::{create_arbiter, create_asset, mint, setup},
 };
 
@@ -39,8 +42,15 @@ mod success {
         )
         .await;
 
-        propose_arbiter(arbiter_obj, &seller.contract, 0).await;
+        assert!(matches!(arbiter_proposal(&seller.contract, 0).await, None));
+
+        propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(
+            arbiter_proposal(&seller.contract, 0).await.unwrap(),
+            arbiter_obj
+        );
 
         let response = accept_arbiter(&buyer.contract, 0).await;
         let log = response
@@ -99,14 +109,26 @@ mod success {
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
+        assert!(matches!(arbiter_proposal(&seller.contract, 0).await, None));
+
         propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
+        assert_eq!(
+            arbiter_proposal(&seller.contract, 0).await.unwrap(),
+            arbiter_obj.clone()
+        );
 
-        propose_arbiter(arbiter_obj, &seller.contract, 1).await;
+        assert!(matches!(arbiter_proposal(&seller.contract, 1).await, None));
+
+        propose_arbiter(arbiter_obj.clone(), &seller.contract, 1).await;
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(
+            arbiter_proposal(&seller.contract, 1).await.unwrap(),
+            arbiter_obj
+        );
 
         let response = accept_arbiter(&buyer.contract, 0).await;
         let log = response

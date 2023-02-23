@@ -7,7 +7,10 @@ use fuels::tx::ContractId;
 mod success {
 
     use super::*;
-    use crate::utils::setup::{asset_amount, Buyer, CreatedEscrowEvent, EscrowInfo, Seller, State};
+    use crate::utils::{
+        interface::info::{assets, escrow_count, escrows},
+        setup::{asset_amount, Buyer, CreatedEscrowEvent, EscrowInfo, Seller, State},
+    };
     use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
@@ -32,6 +35,10 @@ mod success {
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
+        assert_eq!(0, escrow_count(&seller.contract).await);
+        assert!(matches!(assets(&seller.contract, 0).await, None));
+        assert!(matches!(escrows(&seller.contract, 0).await, None));
+
         let response = create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -49,7 +56,7 @@ mod success {
             *event,
             CreatedEscrowEvent {
                 escrow: EscrowInfo {
-                    arbiter: arbiter_obj,
+                    arbiter: arbiter_obj.clone(),
                     asset_count: 1,
                     buyer: Buyer {
                         address: Identity::Address(Address::from(buyer.wallet.address())),
@@ -68,6 +75,27 @@ mod success {
             }
         );
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(1, escrow_count(&seller.contract).await);
+        assert_eq!(assets(&seller.contract, 0).await.unwrap(), asset);
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            EscrowInfo {
+                arbiter: arbiter_obj,
+                asset_count: 1,
+                buyer: Buyer {
+                    address: Identity::Address(Address::from(buyer.wallet.address())),
+                    asset: None,
+                    deposited_amount: 0,
+                },
+                deadline: defaults.deadline,
+                disputed: false,
+                first_asset_index: 0,
+                seller: Seller {
+                    address: Identity::Address(Address::from(seller.wallet.address())),
+                },
+                state: State::Pending,
+            }
+        );
     }
 
     #[tokio::test]
@@ -92,6 +120,10 @@ mod success {
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
+        assert_eq!(0, escrow_count(&seller.contract).await);
+        assert!(matches!(assets(&seller.contract, 0).await, None));
+        assert!(matches!(escrows(&seller.contract, 0).await, None));
+
         let response = create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -109,7 +141,7 @@ mod success {
             *event,
             CreatedEscrowEvent {
                 escrow: EscrowInfo {
-                    arbiter: arbiter_obj,
+                    arbiter: arbiter_obj.clone(),
                     asset_count: 3,
                     buyer: Buyer {
                         address: Identity::Address(Address::from(buyer.wallet.address())),
@@ -128,6 +160,29 @@ mod success {
             }
         );
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(1, escrow_count(&seller.contract).await);
+        assert_eq!(assets(&seller.contract, 0).await.unwrap(), asset);
+        assert_eq!(assets(&seller.contract, 1).await.unwrap(), asset);
+        assert_eq!(assets(&seller.contract, 2).await.unwrap(), asset);
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            EscrowInfo {
+                arbiter: arbiter_obj,
+                asset_count: 3,
+                buyer: Buyer {
+                    address: Identity::Address(Address::from(buyer.wallet.address())),
+                    asset: None,
+                    deposited_amount: 0,
+                },
+                deadline: defaults.deadline,
+                disputed: false,
+                first_asset_index: 0,
+                seller: Seller {
+                    address: Identity::Address(Address::from(seller.wallet.address())),
+                },
+                state: State::Pending,
+            }
+        );
     }
 
     #[tokio::test]
@@ -151,6 +206,10 @@ mod success {
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
+
+        assert_eq!(0, escrow_count(&seller.contract).await);
+        assert!(matches!(assets(&seller.contract, 0).await, None));
+        assert!(matches!(escrows(&seller.contract, 0).await, None));
 
         let response = create_escrow(
             defaults.asset_amount,
@@ -191,6 +250,27 @@ mod success {
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
+        assert_eq!(1, escrow_count(&seller.contract).await);
+        assert_eq!(assets(&seller.contract, 0).await.unwrap(), asset);
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            EscrowInfo {
+                arbiter: arbiter_obj.clone(),
+                asset_count: 1,
+                buyer: Buyer {
+                    address: Identity::Address(Address::from(buyer.wallet.address())),
+                    asset: None,
+                    deposited_amount: 0,
+                },
+                deadline: defaults.deadline,
+                disputed: false,
+                first_asset_index: 0,
+                seller: Seller {
+                    address: Identity::Address(Address::from(seller.wallet.address())),
+                },
+                state: State::Pending,
+            }
+        );
 
         let response = create_escrow(
             defaults.asset_amount,
@@ -209,7 +289,7 @@ mod success {
             *event,
             CreatedEscrowEvent {
                 escrow: EscrowInfo {
-                    arbiter: arbiter_obj,
+                    arbiter: arbiter_obj.clone(),
                     asset_count: 1,
                     buyer: Buyer {
                         address: Identity::Address(Address::from(buyer.wallet.address())),
@@ -228,6 +308,27 @@ mod success {
             }
         );
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(2, escrow_count(&seller.contract).await);
+        assert_eq!(assets(&seller.contract, 1).await.unwrap(), asset);
+        assert_eq!(
+            escrows(&seller.contract, 1).await.unwrap(),
+            EscrowInfo {
+                arbiter: arbiter_obj,
+                asset_count: 1,
+                buyer: Buyer {
+                    address: Identity::Address(Address::from(buyer.wallet.address())),
+                    asset: None,
+                    deposited_amount: 0,
+                },
+                deadline: defaults.deadline,
+                disputed: false,
+                first_asset_index: 1,
+                seller: Seller {
+                    address: Identity::Address(Address::from(seller.wallet.address())),
+                },
+                state: State::Pending,
+            }
+        );
     }
 }
 
