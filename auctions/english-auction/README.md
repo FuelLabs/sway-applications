@@ -62,7 +62,7 @@ In this next step we are going to:
 pnpm services:setup
 ```
 
-Ensure that `VITE_FUEL_PROVIDER_URL` is set to `http://localhost:4001/graphql` inside of the newly created `.env` file.
+Ensure that `VITE_FUEL_PROVIDER_URL` is set to `http://localhost:4000/graphql` inside of the newly created `.env` file.
 
 Run web app
 
@@ -120,7 +120,7 @@ pnpm test
 ```
 
 > **Note**
-> In order to run the tests `VITE_FUEL_PROVIDER_URL` must be set to `http://localhost:4000/graphql` inside of `.env.test`
+> In order to run the tests `VITE_FUEL_PROVIDER_URL` must be set to `http://localhost:4001/graphql` inside of `.env.test`
 
 > **Note**
 > After you run the tests once they will not all pass again until you `pnpm services:reset-test`
