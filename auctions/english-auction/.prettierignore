@@ -13,3 +13,4 @@ packages/contracts
 .pnpm-store
 .env
 **/*.typegen.ts
+/packages/app/tests/dist-crx

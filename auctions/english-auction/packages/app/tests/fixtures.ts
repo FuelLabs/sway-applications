@@ -29,38 +29,38 @@ test.beforeAll(async () => {
   const zipFileStream = fs.createWriteStream(zipFile);
   const zipPromise = new Promise((resolve, reject) => {
     https
-    .get(extensionUrl, (res) => {
-      res.pipe(zipFileStream);
-      // after download completed close filestream
-      zipFileStream.on('finish', async () => {
-        zipFileStream.close();
-        console.log('Download Completed extracting zip...');
-        const zip = new admZip(zipFile); // eslint-disable-line new-cap
-        zip.extractAllTo('./packages/app/tests/dist-crx', true);
-        console.log('zip extracted');
-        console.log('one');
-        context = await chromium.launchPersistentContext('', {
-          headless: false,
-          args: [
-            `--disable-extensions-except=${pathToExtension}`,
-            `--load-extension=${pathToExtension},`,
-          ],
+      .get(extensionUrl, (res) => {
+        res.pipe(zipFileStream);
+        // after download completed close filestream
+        zipFileStream.on('finish', async () => {
+          zipFileStream.close();
+          console.log('Download Completed extracting zip...');
+          const zip = new admZip(zipFile); // eslint-disable-line new-cap
+          zip.extractAllTo('./packages/app/tests/dist-crx', true);
+          console.log('zip extracted');
+          console.log('one');
+          context = await chromium.launchPersistentContext('', {
+            headless: false,
+            args: [
+              `--disable-extensions-except=${pathToExtension}`,
+              `--load-extension=${pathToExtension},`,
+            ],
+          });
+          resolve(context);
+          console.log('two');
         });
-        resolve(context);
-        console.log('two');
+      })
+      .on('error', (error) => {
+        console.log('error: ', error);
+        reject(error);
       });
-    })
-    .on('error', (error) => {
-      console.log('error: ', error);
-      reject(error);
-    });
   });
   await zipPromise;
 });
 
 test.use({
   context: ({}, use) => {
-    console.log("fuck");
+    console.log('fuck');
     use(context);
   },
 });
