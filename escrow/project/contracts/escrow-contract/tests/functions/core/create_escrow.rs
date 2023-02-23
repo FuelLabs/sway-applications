@@ -1,13 +1,13 @@
 use crate::utils::{
-    abi_calls::create_escrow,
-    test_helpers::{asset_amount, create_arbiter, create_asset, mint, setup},
+    interface::core::create_escrow,
+    setup::{create_arbiter, create_asset, mint, setup},
 };
 use fuels::tx::ContractId;
 
 mod success {
 
     use super::*;
-    use crate::utils::{Buyer, CreatedEscrowEvent, EscrowInfo, Seller, State};
+    use crate::utils::setup::{asset_amount, Buyer, CreatedEscrowEvent, EscrowInfo, Seller, State};
     use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
