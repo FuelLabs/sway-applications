@@ -18,7 +18,7 @@ use std::{
     token::transfer,
 };
 
-use interface::DaoVoting;
+use interface::{DaoVoting, Info};
 use data_structures::{Proposal, ProposalInfo, State, Votes};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
 use events::{
@@ -204,7 +204,9 @@ impl DaoVoting for Contract {
             vote_amount,
         });
     }
+}
 
+impl Info for Contract {
     #[storage(read)]
     fn balance() -> u64 {
         this_balance(storage.token)

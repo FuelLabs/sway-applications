@@ -5,13 +5,25 @@ use utils::{
 
 mod success {
     use super::*;
+    use utils::PriceUpdateEvent;
 
     #[tokio::test]
     async fn can_set_price() {
         let (user, _) = setup().await;
         let set_price_amount: u64 = 1000;
-        set_price(&user.oracle, set_price_amount).await;
+
+        let response = set_price(&user.oracle, set_price_amount).await;
         let price = price(&user.oracle).await;
+
+        let log = response.get_logs_with_type::<PriceUpdateEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            PriceUpdateEvent {
+                price: set_price_amount
+            }
+        );
         assert_eq!(price, set_price_amount);
     }
 }
