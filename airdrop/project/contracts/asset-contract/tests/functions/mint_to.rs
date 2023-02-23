@@ -1,12 +1,13 @@
 use crate::utils::{
-    abi_calls::{constructor, mint_to},
-    test_helpers::setup,
+    interface::{constructor, mint_to},
+    setup::setup,
 };
-use fuels::{tx::AssetId, types::Identity};
+use fuels::types::Identity;
 
 mod success {
 
     use super::*;
+    use fuels::tx::AssetId;
 
     #[tokio::test]
     async fn mints_to_one_wallet() {
