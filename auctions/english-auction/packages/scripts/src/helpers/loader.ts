@@ -7,7 +7,7 @@ import type { Config } from 'src/types';
 export async function loadConfig(cwd: string): Promise<Config> {
   const configJoycon = new JoyCon();
   const configPath = await configJoycon.resolve({
-    files: ['english-auction.config.js', 'english-auction.config.ts'],
+    files: ['english-auction.config.ts'],
     cwd,
     stopDir: path.parse(cwd).root,
     packageKey: 'tsup',
