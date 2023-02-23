@@ -6,6 +6,7 @@ use crate::utils::{
 mod success {
 
     use super::*;
+    use crate::utils::DisputeEvent;
 
     #[tokio::test]
     async fn disputes() {
@@ -49,7 +50,11 @@ mod success {
             0,
         )
         .await;
-        dispute(&buyer.contract, 0).await;
+        let response = dispute(&buyer.contract, 0).await;
+        let log = response.get_logs_with_type::<DisputeEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(*event, DisputeEvent { identifier: 0 });
     }
 
     #[tokio::test]
@@ -113,8 +118,16 @@ mod success {
         )
         .await;
 
-        dispute(&buyer.contract, 0).await;
-        dispute(&buyer.contract, 1).await;
+        let response1 = dispute(&buyer.contract, 0).await;
+        let response2 = dispute(&buyer.contract, 1).await;
+
+        let log1 = response1.get_logs_with_type::<DisputeEvent>().unwrap();
+        let log2 = response2.get_logs_with_type::<DisputeEvent>().unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(*event1, DisputeEvent { identifier: 0 });
+        assert_eq!(*event2, DisputeEvent { identifier: 1 });
     }
 }
 
