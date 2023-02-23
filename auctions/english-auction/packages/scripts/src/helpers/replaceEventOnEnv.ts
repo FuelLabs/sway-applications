@@ -25,7 +25,11 @@ export async function replaceEventOnEnv(path: string, event: Event) {
     } catch (e: unknown) {
       // If the env file does not exist yet
       // Create it by copying the example env
-      await copyFile('./packages/app/.env.example', path);
+      if (path[-4] === 'test') {
+        await copyFile('./packages/app/.env.example.test', path);
+      } else {
+        await copyFile('./packages/app/.env.example', path);
+      }
     }
     const fileEnv = (await readFile(path)).toString();
     // Replace new ides on .env file
