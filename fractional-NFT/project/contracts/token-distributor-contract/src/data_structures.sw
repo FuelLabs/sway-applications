@@ -12,7 +12,6 @@ impl core::ops::Eq for DistributionState {
         match (self, other) {
             (DistributionState::Buyback, DistributionState::Buyback) => true,
             (
-
                 DistributionState::Distributed,
                 DistributionState::Distributed,
             ) => true,
