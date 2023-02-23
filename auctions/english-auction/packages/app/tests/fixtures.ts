@@ -38,7 +38,6 @@ test.beforeAll(async () => {
           const zip = new admZip(zipFile); // eslint-disable-line new-cap
           zip.extractAllTo('./packages/app/tests/dist-crx', true);
           console.log('zip extracted');
-          console.log('one');
           context = await chromium.launchPersistentContext('', {
             headless: false,
             args: [
@@ -47,7 +46,6 @@ test.beforeAll(async () => {
             ],
           });
           resolve(context);
-          console.log('two');
         });
       })
       .on('error', (error) => {

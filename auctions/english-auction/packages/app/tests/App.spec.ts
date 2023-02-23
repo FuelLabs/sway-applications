@@ -20,8 +20,6 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
 
   // WALLET SETUP
   const walletPage = await context.newPage();
-  appPage.on('console', (msg) => console.log(msg));
-  walletPage.on('console', (msg) => console.log(msg));
   await walletPage.goto(`chrome-extension://${extensionId}/popup.html`);
   const signupPage = await context.waitForEvent('page', {
     predicate: (page) => page.url().includes('sign-up'),
@@ -63,8 +61,6 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   await walletPage.goto(`chrome-extension://${extensionId}/popup.html#/networks/add`);
   await walletPage.reload({ waitUntil: 'load' });
   await walletPage.locator('[aria-label="Network name"]').fill('test');
-  console.log('url: ', process.env.VITE_FUEL_PROVIDER_URL);
-  console.log('env: ', process.env);
   await walletPage.locator('[aria-label="Network URL"]').fill(process.env.VITE_FUEL_PROVIDER_URL!);
   await walletPage.locator('button', { hasText: 'Create' }).click();
 
