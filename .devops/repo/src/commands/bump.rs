@@ -37,12 +37,11 @@ pub(crate) fn run(apps: Vec<String>, root: String) {
             ])
             .status();
 
-        let result = Command::new("forc")
+        match Command::new("forc")
             .current_dir(project.clone())
             .arg("build")
-            .status();
-
-        match result {
+            .status()
+        {
             Ok(status) => {
                 if status.success() {
                     success.push(app.clone());
