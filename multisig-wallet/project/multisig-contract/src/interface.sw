@@ -86,6 +86,6 @@ abi Info {
         function_selector: Option<Vec<u8>>, 
         calldata: Option<Vec<u8>>, 
         single_value_type_arg: Option<bool>, 
-        forwarded_gas: Option<u64>
+        forwarded_gas: Option<u64>,
         ) -> b256;
 }
