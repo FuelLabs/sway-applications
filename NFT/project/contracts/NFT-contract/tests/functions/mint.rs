@@ -7,6 +7,7 @@ use fuels::{signers::Signer, types::Identity};
 mod success {
 
     use super::*;
+    use crate::utils::MintEvent;
 
     #[tokio::test]
     async fn mints() {
@@ -20,8 +21,17 @@ mod success {
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 0);
         assert_eq!(owner_of(&owner1.contract, 0).await, None);
 
-        mint(1, &owner1.contract, minter.clone()).await;
+        let response = mint(1, &owner1.contract, minter.clone()).await;
+        let log = response.get_logs_with_type::<MintEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            MintEvent {
+                owner: minter.clone(),
+                token_id: 0,
+            }
+        );
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 1);
         assert_eq!(owner_of(&owner1.contract, 0).await, Some(minter.clone()));
         assert_eq!(approved(&owner1.contract, 0).await, None);
@@ -42,8 +52,17 @@ mod success {
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 0);
         assert_eq!(owner_of(&owner1.contract, 0).await, None);
 
-        mint(1, &owner1.contract, minter.clone()).await;
+        let response = mint(1, &owner1.contract, minter.clone()).await;
+        let log = response.get_logs_with_type::<MintEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            MintEvent {
+                owner: minter.clone(),
+                token_id: 0,
+            }
+        );
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 1);
         assert_eq!(owner_of(&owner1.contract, 0).await, Some(minter.clone()));
         assert_eq!(approved(&owner1.contract, 0).await, None);
@@ -66,8 +85,30 @@ mod success {
         assert_eq!(owner_of(&owner1.contract, 2).await, None);
         assert_eq!(owner_of(&owner1.contract, 3).await, None);
 
-        mint(4, &owner1.contract, minter.clone()).await;
+        let response = mint(4, &owner1.contract, minter.clone()).await;
+        let log = response.get_logs_with_type::<MintEvent>().unwrap();
 
+        assert_eq!(
+            log,
+            vec![
+                MintEvent {
+                    owner: minter.clone(),
+                    token_id: 0,
+                },
+                MintEvent {
+                    owner: minter.clone(),
+                    token_id: 1,
+                },
+                MintEvent {
+                    owner: minter.clone(),
+                    token_id: 2,
+                },
+                MintEvent {
+                    owner: minter.clone(),
+                    token_id: 3,
+                }
+            ]
+        );
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 4);
         assert_eq!(tokens_minted(&owner1.contract).await, 4);
         assert_eq!(max_supply(&owner1.contract).await, Some(4));
@@ -113,8 +154,17 @@ mod success {
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 0);
         assert_eq!(owner_of(&owner1.contract, 0).await, None);
 
-        mint(1, &owner1.contract, minter.clone()).await;
+        let response = mint(1, &owner1.contract, minter.clone()).await;
+        let log = response.get_logs_with_type::<MintEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(
+            *event,
+            MintEvent {
+                owner: minter.clone(),
+                token_id: 0,
+            }
+        );
         assert_eq!(balance_of(&owner1.contract, minter.clone()).await, 1);
         assert_eq!(owner_of(&owner1.contract, 0).await, Some(minter.clone()));
         assert_eq!(approved(&owner1.contract, 0).await, None);
