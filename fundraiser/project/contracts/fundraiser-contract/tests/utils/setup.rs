@@ -1,7 +1,7 @@
 use fuels::{
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Bech32Address, Config, Contract,
-        StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+        abigen, launch_custom_provider_and_get_wallets, Bech32Address, Config, Configurables,
+        Contract, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
     tx::{ContractId, Salt},
     types::Identity,
@@ -102,6 +102,7 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
         &deployer_wallet,
         TxParameters::default(),
         StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
+        Configurables::default(),
         Salt::from([1u8; 32]),
     )
     .await
