@@ -8,3 +8,8 @@ mod return_deposit;
 mod take_payment;
 mod transfer_to_seller;
 mod withdraw_collateral;
+
+mod arbiter_proposal;
+mod assets;
+mod escrow_count;
+mod escrows;
