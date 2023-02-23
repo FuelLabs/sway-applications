@@ -37,7 +37,7 @@ pub async fn compute_transaction_hash(
     value: Option<u64>,
     asset_id: Option<ContractId>,
     target: Identity,
-    function_selector: Option<Bytes>,
+    function_selector: Option<Vec<u8>>,
     calldata: Option<Vec<u8>>,
     single_value_type_arg: Option<bool>,
     forwarded_gas: Option<u64>,
