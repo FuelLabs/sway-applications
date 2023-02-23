@@ -27,6 +27,7 @@ test.beforeAll(async () => {
 
   const zipFile = './packages/app/tests/fuel-wallet.zip';
   const zipFileStream = fs.createWriteStream(zipFile);
+  // TODO fetch the exact version of wallet to avoid breaking ci
   const zipPromise = new Promise((resolve, reject) => {
     https
       .get(extensionUrl, (res) => {
