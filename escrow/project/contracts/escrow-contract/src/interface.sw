@@ -135,7 +135,6 @@ abi Escrow {
     #[storage(read, write)]
     fn return_deposit(identifier: u64);
 
-    //
     /// If a user has deposited but not transferred in time & they have not disputed then the seller
     /// can take the payment themselves
     /// # Arguments
