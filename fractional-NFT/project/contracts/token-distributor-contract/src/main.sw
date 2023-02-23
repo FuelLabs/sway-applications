@@ -19,7 +19,7 @@ use events::{
     TokenPriceEvent,
     WithdrawEvent,
 };
-use interface::TokenDistributor;
+use interface::{Info, TokenDistributor};
 use std::{
     auth::msg_sender,
     call_frames::{
@@ -224,11 +224,6 @@ impl TokenDistributor for Contract {
         });
     }
 
-    #[storage(read)]
-    fn token_distribution(fractional_nft_id: ContractId) -> Option<TokenDistribution> {
-        storage.token_distributions.get(fractional_nft_id)
-    }
-
     #[storage(read, write)]
     fn withdraw(fractional_nft_id: ContractId) {
         require(storage.token_distributions.get(fractional_nft_id).is_some(), AccessError::DistributionDoesNotExist);
@@ -248,5 +243,12 @@ impl TokenDistributor for Contract {
             external_asset: token_distribution.external_asset,
             fractional_nft_id,
         });
+    }
+}
+
+impl Info for Contract {
+    #[storage(read)]
+    fn token_distribution(fractional_nft_id: ContractId) -> Option<TokenDistribution> {
+        storage.token_distributions.get(fractional_nft_id)
     }
 }

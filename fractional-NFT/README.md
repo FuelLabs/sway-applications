@@ -21,7 +21,7 @@
 
 The Fractional NFT Application will lock an NFT into a fractional-NFT(f-NFT) contract and allow users to purchase the newly minted fractionalized tokens. These tokens can then be bought and sold on an AMM or if a buyback is initiated, return them to the distribution contract. If all tokens are returned, the admin may unlock the NFT from the f-NFT contract and regain full ownership.
 
-More information can be found in the [specification](./projects/SPECIFICATION.md).
+More information can be found in the [specification](./project/SPECIFICATION.md).
 
 ## Repository structure
 

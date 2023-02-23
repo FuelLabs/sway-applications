@@ -7,6 +7,7 @@ use fuels::{signers::Signer, types::Identity};
 mod success {
 
     use super::*;
+    use crate::utils::{AdminEvent, SupplyEvent};
 
     #[tokio::test]
     async fn initalizes_with_access_control_and_supply() {
@@ -17,8 +18,19 @@ mod success {
         assert_eq!(admin(&owner1.contract).await, None);
 
         let admin_identity = Some(Identity::Address(owner1.wallet.address().into()));
-        constructor(admin_identity.clone(), &deploy_wallet.contract, Some(1)).await;
+        let response = constructor(admin_identity.clone(), &deploy_wallet.contract, Some(1)).await;
+        let log1 = response.get_logs_with_type::<AdminEvent>().unwrap();
+        let log2 = response.get_logs_with_type::<SupplyEvent>().unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
 
+        assert_eq!(
+            *event1,
+            AdminEvent {
+                admin: admin_identity.clone()
+            }
+        );
+        assert_eq!(*event2, SupplyEvent { supply: Some(1) });
         assert_eq!(tokens_minted(&owner1.contract).await, 0);
         assert_eq!(max_supply(&owner1.contract).await, Some(1));
         assert_eq!(admin(&owner1.contract).await, admin_identity.clone());
@@ -32,8 +44,14 @@ mod success {
         assert_eq!(max_supply(&owner1.contract).await, None);
         assert_eq!(admin(&owner1.contract).await, None);
 
-        constructor(None, &deploy_wallet.contract, Some(1)).await;
+        let response = constructor(None, &deploy_wallet.contract, Some(1)).await;
+        let log1 = response.get_logs_with_type::<AdminEvent>().unwrap();
+        let log2 = response.get_logs_with_type::<SupplyEvent>().unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
 
+        assert_eq!(*event1, AdminEvent { admin: None });
+        assert_eq!(*event2, SupplyEvent { supply: Some(1) });
         assert_eq!(tokens_minted(&owner1.contract).await, 0);
         assert_eq!(max_supply(&owner1.contract).await, Some(1));
         assert_eq!(admin(&owner1.contract).await, None);
@@ -48,8 +66,19 @@ mod success {
         assert_eq!(admin(&owner1.contract).await, None);
 
         let admin_identity = Some(Identity::Address(owner1.wallet.address().into()));
-        constructor(admin_identity.clone(), &deploy_wallet.contract, None).await;
+        let response = constructor(admin_identity.clone(), &deploy_wallet.contract, None).await;
+        let log1 = response.get_logs_with_type::<AdminEvent>().unwrap();
+        let log2 = response.get_logs_with_type::<SupplyEvent>().unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
 
+        assert_eq!(
+            *event1,
+            AdminEvent {
+                admin: admin_identity.clone()
+            }
+        );
+        assert_eq!(*event2, SupplyEvent { supply: None });
         assert_eq!(tokens_minted(&owner1.contract).await, 0);
         assert_eq!(max_supply(&owner1.contract).await, None);
         assert_eq!(admin(&owner1.contract).await, admin_identity.clone());
@@ -63,8 +92,14 @@ mod success {
         assert_eq!(max_supply(&owner1.contract).await, None);
         assert_eq!(admin(&owner1.contract).await, None);
 
-        constructor(None, &deploy_wallet.contract, None).await;
+        let response = constructor(None, &deploy_wallet.contract, None).await;
+        let log1 = response.get_logs_with_type::<AdminEvent>().unwrap();
+        let log2 = response.get_logs_with_type::<SupplyEvent>().unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
 
+        assert_eq!(*event1, AdminEvent { admin: None });
+        assert_eq!(*event2, SupplyEvent { supply: None });
         assert_eq!(tokens_minted(&owner1.contract).await, 0);
         assert_eq!(max_supply(&owner1.contract).await, None);
         assert_eq!(admin(&owner1.contract).await, None);
