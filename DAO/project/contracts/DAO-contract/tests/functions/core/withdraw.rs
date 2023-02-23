@@ -6,7 +6,11 @@ use fuels::{prelude::CallParameters, tx::AssetId};
 
 mod success {
     use super::*;
-    use crate::utils::interface::info::{balance, user_balance};
+    use crate::utils::{
+        interface::info::{balance, user_balance},
+        setup::WithdrawEvent,
+    };
+    use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
     async fn user_can_withdraw() {
@@ -35,7 +39,18 @@ mod success {
             asset_amount
         );
 
-        withdraw(&user.dao_voting, asset_amount).await;
+        let response = withdraw(&user.dao_voting, asset_amount).await;
+
+        let log = response.get_logs_with_type::<WithdrawEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            WithdrawEvent {
+                amount: asset_amount,
+                user: Identity::Address(Address::from(user.wallet.address()))
+            }
+        );
 
         assert_eq!(
             user_balance(&user.dao_voting, user.wallet.address()).await,
