@@ -1,7 +1,8 @@
 use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, AssetId, Bech32Address, CallParameters,
-        Contract, ContractId, Salt, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+        Contract, ContractId, Salt, StorageConfiguration, TxParameters, WalletUnlocked,
+        WalletsConfig,
     },
     programs::call_response::FuelCallResponse,
     types::Identity,
