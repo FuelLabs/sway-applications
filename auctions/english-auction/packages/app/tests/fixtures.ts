@@ -58,7 +58,6 @@ test.beforeAll(async () => {
 
 test.use({
   context: ({}, use) => {
-    console.log('fuck');
     use(context);
   },
 });
