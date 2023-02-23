@@ -6,6 +6,7 @@ use crate::utils::{
 mod success {
 
     use super::*;
+    use crate::utils::TransferredToSellerEvent;
 
     #[tokio::test]
     async fn transfers_to_seller() {
@@ -52,8 +53,13 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
-        transfer_to_seller(&buyer.contract, 0).await;
+        let response = transfer_to_seller(&buyer.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<TransferredToSellerEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(*event, TransferredToSellerEvent { identifier: 0 });
         assert_eq!(
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
@@ -107,8 +113,13 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
-        transfer_to_seller(&buyer.contract, 0).await;
+        let response = transfer_to_seller(&buyer.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<TransferredToSellerEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(*event, TransferredToSellerEvent { identifier: 0 });
         assert_eq!(
             defaults.asset_amount * 3,
             asset_amount(&defaults.asset_id, &seller.wallet).await
@@ -179,16 +190,26 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
-        transfer_to_seller(&buyer.contract, 0).await;
+        let response = transfer_to_seller(&buyer.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<TransferredToSellerEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(*event, TransferredToSellerEvent { identifier: 0 });
         assert_eq!(
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
 
-        transfer_to_seller(&buyer.contract, 1).await;
+        let response = transfer_to_seller(&buyer.contract, 1).await;
+        let log = response
+            .get_logs_with_type::<TransferredToSellerEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
 
+        assert_eq!(*event, TransferredToSellerEvent { identifier: 1 });
         assert_eq!(
             defaults.asset_amount * 4,
             asset_amount(&defaults.asset_id, &seller.wallet).await
