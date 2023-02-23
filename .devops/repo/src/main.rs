@@ -28,8 +28,8 @@ enum Mode {
 fn main() {
     let cli = Cli::parse();
 
-    let root = repo_root();
     let apps = read_applications();
+    let root = repo_root();
 
     match cli.command {
         Mode::Build => build::run(apps, root),
