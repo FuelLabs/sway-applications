@@ -110,7 +110,9 @@ abi DaoVoting {
     /// * When the proposal is still active
     #[storage(read, write)]
     fn unlock_votes(proposal_id: u64);
+}
 
+abi Info {
     /// Return the amount of governance tokens in this contract
     #[storage(read)]
     fn balance() -> u64;

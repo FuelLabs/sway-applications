@@ -20,10 +20,6 @@ abi FractionalNFT {
     #[storage(read, write)]
     fn deposit(admin: Option<Identity>, asset_id: ContractId, supply: u64, token_id: u64);
 
-    /// Returns the information of the NFT locked in the contract.
-    #[storage(read)]
-    fn nft_info() -> Option<NFTInfo>;
-
     /// Changes the identity which has permission to withdraw and change the admin.
     ///
     /// # Arguments
@@ -36,10 +32,6 @@ abi FractionalNFT {
     /// * When the caller is not the admin.
     #[storage(read, write)]
     fn set_admin(new_admin: Option<Identity>);
-
-    /// Returns the total supply of fractionalized tokens.
-    #[storage(read)]
-    fn supply() -> u64;
 
     /// Unlocks and relinquishes control of the NFT when all tokens have been returned.
     ///
@@ -54,4 +46,14 @@ abi FractionalNFT {
     /// * When all tokens have not been returned.
     #[storage(read, write)]
     fn withdraw(to: Identity);
+}
+
+abi Info {
+    /// Returns the information of the NFT locked in the contract.
+    #[storage(read)]
+    fn nft_info() -> Option<NFTInfo>;
+
+    /// Returns the total supply of fractionalized tokens.
+    #[storage(read)]
+    fn supply() -> u64;
 }
