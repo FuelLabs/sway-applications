@@ -1,9 +1,7 @@
 use std::process::Command;
 
 pub(crate) fn execute(command: &mut Command, errors: &mut Vec<String>, app: &String) {
-    let result = command.status();
-
-    match result {
+    match command.status() {
         Ok(status) => {
             if !status.success() {
                 errors.push(app.clone());
