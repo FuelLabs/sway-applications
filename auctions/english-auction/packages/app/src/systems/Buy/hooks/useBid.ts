@@ -1,6 +1,7 @@
 import type { BN, CoinQuantityLike } from 'fuels';
 import { Contract } from 'fuels';
 import { useMutation } from 'react-query';
+import { useWallet } from '~/systems/Core';
 
 import { useContract } from '~/systems/Core/hooks/useContract';
 import { handleError, queryClient } from '~/systems/Core/utils';
@@ -27,7 +28,8 @@ export const useBid = ({ auctionId, auctionAsset, setAssetAmount }: UseBidProps)
             .addContracts([
               new Contract(
                 auctionAsset.NFTAsset!.asset_id.value,
-                NFTAbi__factory.createInterface()
+                NFTAbi__factory.createInterface(),
+                contract.provider!
               ),
             ])
             .call()

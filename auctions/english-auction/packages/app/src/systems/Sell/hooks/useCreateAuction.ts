@@ -43,7 +43,7 @@ export function useCreateAuction(form: UseFormReturn<CreateAuctionFormValues>) {
         ? await contract.functions
             .create(bidAsset, duration, initialPrice, reservePrice, seller, sellAsset)
             .addContracts([
-              new Contract(sellAsset.NFTAsset.asset_id.value, NFTAbi__factory.createInterface()),
+              new Contract(sellAsset.NFTAsset.asset_id.value, NFTAbi__factory.createInterface(), contract.provider!),
             ])
             .call()
         : await contract.functions
