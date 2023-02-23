@@ -1,9 +1,8 @@
 mod success {
 
     use crate::utils::{
-        abi_calls::{create_escrow, escrows},
-        test_helpers::{create_arbiter, create_asset, mint, setup},
-        Buyer, EscrowInfo, Seller, State,
+        interface::{core::create_escrow, info::escrows},
+        setup::{create_arbiter, create_asset, mint, setup, Buyer, EscrowInfo, Seller, State},
     };
     use fuels::types::{Address, Identity};
 

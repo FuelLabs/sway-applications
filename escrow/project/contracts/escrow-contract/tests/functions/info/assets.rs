@@ -1,18 +1,18 @@
 mod success {
 
     use crate::utils::{
-        abi_calls::{create_escrow, escrow_count},
-        test_helpers::{create_arbiter, create_asset, mint, setup},
+        interface::{core::create_escrow, info::assets},
+        setup::{create_arbiter, create_asset, mint, setup},
     };
 
     #[tokio::test]
-    async fn returns_zero() {
+    async fn returns_none() {
         let (_arbiter, _buyer, seller, _defaults) = setup().await;
-        assert_eq!(0, escrow_count(&seller.contract).await);
+        assert!(matches!(assets(&seller.contract, 0).await, None));
     }
 
     #[tokio::test]
-    async fn returns_one() {
+    async fn returns_asset() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(
             arbiter.wallet.address(),
@@ -29,7 +29,7 @@ mod success {
         )
         .await;
 
-        assert_eq!(0, escrow_count(&seller.contract).await);
+        assert!(matches!(assets(&seller.contract, 0).await, None));
 
         create_escrow(
             defaults.asset_amount,
@@ -42,6 +42,6 @@ mod success {
         )
         .await;
 
-        assert_eq!(1, escrow_count(&seller.contract).await);
+        assert_eq!(assets(&seller.contract, 0).await.unwrap(), asset);
     }
 }
