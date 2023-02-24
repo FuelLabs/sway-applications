@@ -1,23 +1,10 @@
 use crate::utils::{
-<<<<<<< HEAD:fractional-NFT/project/token-distributor-contract/tests/functions/purchase.rs
-    asset_abi_calls::mint_and_send_to_address,
-    nft_abi_calls::{approve, mint},
-    test_helpers::{defaults, setup, wallet_balance},
-    token_distributor_abi_calls::{create, end, purchase, token_distribution},
-};
-use fuels::{
-    prelude::{Address, CallParameters, TxParameters},
-    signers::Signer,
-    tx::AssetId,
-    types::Identity,
-=======
     interface::core::{
         asset::mint_and_send_to_address,
         nft::{approve, mint},
         token_distributor::{create, end, purchase},
     },
     setup::{defaults, setup},
->>>>>>> origin/master:fractional-NFT/project/contracts/token-distributor-contract/tests/functions/core/purchase.rs
 };
 use fuels::{prelude::Address, types::Identity};
 

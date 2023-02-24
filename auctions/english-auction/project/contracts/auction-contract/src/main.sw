@@ -44,14 +44,6 @@ storage {
 }
 
 impl EnglishAuction for Contract {
-<<<<<<< HEAD:auctions/english-auction/project/auction-contract/src/main.sw
-    #[storage(read)]
-    fn auction_info(auction_id: u64) -> Option<Auction> {
-        storage.auctions.get(auction_id)
-    }
-
-=======
->>>>>>> origin/master:auctions/english-auction/project/contracts/auction-contract/src/main.sw
     #[payable, storage(read, write)]
     fn bid(auction_id: u64, bid_asset: AuctionAsset) {
         let auction = storage.auctions.get(auction_id);

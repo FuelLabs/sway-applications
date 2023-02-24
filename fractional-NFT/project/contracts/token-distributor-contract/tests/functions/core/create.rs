@@ -1,13 +1,4 @@
 use crate::utils::{
-<<<<<<< HEAD:fractional-NFT/project/token-distributor-contract/tests/functions/create.rs
-    abigen_bindings::token_distributor_mod::DistributionState,
-    fractional_nft_abi_calls::nft_info,
-    nft_abi_calls::{approve, mint, owner_of},
-    test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{create, token_distribution},
-};
-use fuels::{prelude::Bech32ContractId, signers::Signer, tx::AssetId, types::Identity};
-=======
     interface::core::{
         nft::{approve, mint},
         token_distributor::create,
@@ -15,7 +6,6 @@ use fuels::{prelude::Bech32ContractId, signers::Signer, tx::AssetId, types::Iden
     setup::{defaults, setup},
 };
 use fuels::types::Identity;
->>>>>>> origin/master:fractional-NFT/project/contracts/token-distributor-contract/tests/functions/core/create.rs
 
 mod success {
 

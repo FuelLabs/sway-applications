@@ -1,24 +1,10 @@
 use crate::utils::{
-<<<<<<< HEAD:fractional-NFT/project/token-distributor-contract/tests/functions/buyback.rs
-    abigen_bindings::token_distributor_mod::DistributionState,
-    asset_abi_calls::mint_and_send_to_address,
-    nft_abi_calls::{approve, mint},
-    test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{buyback, create, purchase, token_distribution},
-};
-use fuels::{
-    prelude::{Address, Bech32ContractId},
-    signers::Signer,
-    tx::AssetId,
-    types::Identity,
-=======
     interface::core::{
         asset::mint_and_send_to_address,
         nft::{approve, mint},
         token_distributor::{buyback, create, purchase},
     },
     setup::{defaults, setup},
->>>>>>> origin/master:fractional-NFT/project/contracts/token-distributor-contract/tests/functions/core/buyback.rs
 };
 use fuels::{prelude::Address, types::Identity};
 

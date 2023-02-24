@@ -4,11 +4,8 @@ use test_utils::interface::exchange::{pool_info, remove_liquidity};
 mod success {
     use super::*;
     use crate::utils::wallet_balances;
-<<<<<<< HEAD
-=======
     use fuels::prelude::ContractId;
     use test_utils::interface::{Asset, AssetPair, RemoveLiquidityEvent};
->>>>>>> origin/master
 
     #[tokio::test]
     async fn removes_all_liquidity_passing_exact_a_and_b_values() {
@@ -35,22 +32,17 @@ mod success {
             true,
         )
         .await;
-<<<<<<< HEAD
-=======
         let log = response
             .get_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
         let remove_liquidity_info = response.value;
->>>>>>> origin/master
 
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(
-<<<<<<< HEAD
-=======
             *event,
             RemoveLiquidityEvent {
                 removed_reserve: AssetPair {
@@ -70,7 +62,6 @@ mod success {
             }
         );
         assert_eq!(
->>>>>>> origin/master
             remove_liquidity_info.removed_amounts.a.amount,
             expected_a_removed
         );
@@ -133,9 +124,6 @@ mod success {
             true,
         )
         .await;
-<<<<<<< HEAD
-
-=======
         let log = response
             .get_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
@@ -143,13 +131,10 @@ mod success {
 
         let remove_liquidity_info = response.value;
 
->>>>>>> origin/master
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(
-<<<<<<< HEAD
-=======
             *event,
             RemoveLiquidityEvent {
                 removed_reserve: AssetPair {
@@ -169,7 +154,6 @@ mod success {
             }
         );
         assert_eq!(
->>>>>>> origin/master
             remove_liquidity_info.removed_amounts.a.amount,
             expected_a_removed
         );
@@ -232,9 +216,6 @@ mod success {
             true,
         )
         .await;
-<<<<<<< HEAD
-
-=======
         let log = response
             .get_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
@@ -242,13 +223,10 @@ mod success {
 
         let remove_liquidity_info = response.value;
 
->>>>>>> origin/master
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(
-<<<<<<< HEAD
-=======
             *event,
             RemoveLiquidityEvent {
                 removed_reserve: AssetPair {
@@ -268,7 +246,6 @@ mod success {
             }
         );
         assert_eq!(
->>>>>>> origin/master
             remove_liquidity_info.removed_amounts.a.amount,
             expected_a_removed
         );
@@ -331,9 +308,6 @@ mod success {
             true,
         )
         .await;
-<<<<<<< HEAD
-
-=======
         let log = response
             .get_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
@@ -341,13 +315,10 @@ mod success {
 
         let remove_liquidity_info = response.value;
 
->>>>>>> origin/master
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
         assert_eq!(
-<<<<<<< HEAD
-=======
             *event,
             RemoveLiquidityEvent {
                 removed_reserve: AssetPair {
@@ -367,7 +338,6 @@ mod success {
             }
         );
         assert_eq!(
->>>>>>> origin/master
             remove_liquidity_info.removed_amounts.a.amount,
             expected_a_removed
         );

@@ -5,11 +5,7 @@ use crate::utils::{
     },
     setup::{defaults, setup},
 };
-<<<<<<< HEAD:fractional-NFT/project/fractional-NFT-contract/tests/functions/set_admin.rs
-use fuels::{signers::Signer, types::Identity};
-=======
 use fuels::types::Identity;
->>>>>>> origin/master:fractional-NFT/project/contracts/fractional-NFT-contract/tests/functions/core/set_admin.rs
 
 mod success {
 

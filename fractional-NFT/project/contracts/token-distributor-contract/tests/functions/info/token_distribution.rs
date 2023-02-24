@@ -1,14 +1,3 @@
-<<<<<<< HEAD:fractional-NFT/project/token-distributor-contract/tests/functions/token_distribution.rs
-use crate::utils::{
-    abigen_bindings::token_distributor_mod::DistributionState,
-    nft_abi_calls::{approve, mint},
-    test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{create, token_distribution},
-};
-use fuels::{signers::Signer, types::Identity};
-
-=======
->>>>>>> origin/master:fractional-NFT/project/contracts/token-distributor-contract/tests/functions/info/token_distribution.rs
 mod success {
     use crate::utils::{
         interface::{

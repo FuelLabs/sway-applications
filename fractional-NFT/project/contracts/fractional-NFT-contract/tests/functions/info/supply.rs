@@ -1,13 +1,3 @@
-<<<<<<< HEAD:fractional-NFT/project/fractional-NFT-contract/tests/functions/supply.rs
-use crate::utils::{
-    fractional_nft_abi_calls::{deposit, supply},
-    nft_abi_calls::{approve, mint},
-    test_helpers::{defaults, setup},
-};
-use fuels::{signers::Signer, types::Identity};
-
-=======
->>>>>>> origin/master:fractional-NFT/project/contracts/fractional-NFT-contract/tests/functions/info/supply.rs
 mod success {
     use crate::utils::{
         interface::{

@@ -7,12 +7,7 @@ use crate::utils::{
     setup::{defaults, setup},
 };
 use fuels::{
-<<<<<<< HEAD:fractional-NFT/project/token-distributor-contract/tests/functions/sell.rs
-    prelude::{Address, Bech32ContractId, CallParameters, TxParameters},
-    signers::Signer,
-=======
     prelude::{Address, Bech32ContractId},
->>>>>>> origin/master:fractional-NFT/project/contracts/token-distributor-contract/tests/functions/core/sell.rs
     tx::AssetId,
     types::Identity,
 };

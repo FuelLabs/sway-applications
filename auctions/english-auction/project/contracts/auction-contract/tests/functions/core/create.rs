@@ -1,28 +1,12 @@
 use crate::utils::{
-<<<<<<< HEAD:auctions/english-auction/project/auction-contract/tests/functions/create.rs
-    abigen_bindings::english_auction_mod::State,
-    asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{auction_info, create},
-    nft_abi_calls::{approve, mint, set_approval_for_all},
-    test_helpers::{
-        create_auction_copy, defaults_nft, defaults_token, nft_asset, setup, token_asset,
-=======
     interface::core::{
         asset::mint_and_send_to_address,
         auction::create,
         nft::{approve, mint},
->>>>>>> origin/master:auctions/english-auction/project/contracts/auction-contract/tests/functions/core/create.rs
     },
     setup::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
 };
-<<<<<<< HEAD:auctions/english-auction/project/auction-contract/tests/functions/create.rs
-use fuels::{
-    prelude::{AssetId, CallParameters, TxParameters},
-    types::Identity,
-};
-=======
 use fuels::types::Identity;
->>>>>>> origin/master:auctions/english-auction/project/contracts/auction-contract/tests/functions/core/create.rs
 
 mod success {
 

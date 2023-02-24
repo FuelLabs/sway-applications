@@ -1,14 +1,3 @@
-<<<<<<< HEAD:auctions/english-auction/project/auction-contract/tests/functions/deposit_balance.rs
-use crate::utils::{
-    asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{bid, create, deposit_balance},
-    nft_abi_calls::{approve, mint},
-    test_helpers::{defaults_nft, defaults_token, nft_asset, setup, token_asset},
-};
-use fuels::types::Identity;
-
-=======
->>>>>>> origin/master:auctions/english-auction/project/contracts/auction-contract/tests/functions/info/deposit_balance.rs
 mod success {
     use crate::utils::{
         interface::{

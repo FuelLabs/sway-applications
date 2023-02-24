@@ -60,24 +60,16 @@ impl Exchange for Contract {
     fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64 {
         require(storage.pair.is_some(), InitError::AssetPairNotSet);
         require(deadline > height(), InputError::DeadlinePassed(deadline));
-<<<<<<< HEAD
-        require(msg_amount() == 0, InputError::ExpectedZeroAmount);
-=======
->>>>>>> origin/master
         require(MINIMUM_LIQUIDITY <= desired_liquidity, InputError::CannotAddLessThanMinimumLiquidity(desired_liquidity));
 
         let sender = msg_sender().unwrap();
         let reserves = storage.pair.unwrap();
-<<<<<<< HEAD
-        let deposits = AssetPair::new(Asset::new(reserves.a.id, storage.deposits.get((sender, reserves.a.id))), Asset::new(reserves.b.id, storage.deposits.get((sender, reserves.b.id))));
-=======
 
         let (deposit_a, deposit_b) = (
             storage.deposits.get((sender, reserves.a.id)).unwrap_or(0),
             storage.deposits.get((sender, reserves.b.id)).unwrap_or(0),
         );
         let deposits = AssetPair::new(Asset::new(reserves.a.id, deposit_a), Asset::new(reserves.b.id, deposit_b));
->>>>>>> origin/master
 
         // checking this because this will either result in a math error or adding no liquidity at all
         require(deposits.a.amount != 0, TransactionError::ExpectedNonZeroDeposit(deposits.a.id));
@@ -174,11 +166,7 @@ impl Exchange for Contract {
 
         let sender = msg_sender().unwrap();
         let amount = msg_amount();
-<<<<<<< HEAD
-        let new_balance = storage.deposits.get((sender, deposit_asset)) + amount;
-=======
         let new_balance = storage.deposits.get((sender, deposit_asset)).unwrap_or(0) + amount;
->>>>>>> origin/master
         storage.deposits.insert((sender, deposit_asset), new_balance);
 
         log(DepositEvent {
@@ -208,7 +196,6 @@ impl Exchange for Contract {
         let mut removed_assets = AssetPair::new(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
         removed_assets.a.amount = proportional_value(burned_liquidity.amount, reserves.a.amount, total_liquidity);
         removed_assets.b.amount = proportional_value(burned_liquidity.amount, reserves.b.amount, total_liquidity);
-<<<<<<< HEAD
 
         require(removed_assets.a.amount >= min_asset_a, TransactionError::DesiredAmountTooHigh(min_asset_a));
         require(removed_assets.b.amount >= min_asset_b, TransactionError::DesiredAmountTooHigh(min_asset_b));
@@ -217,16 +204,6 @@ impl Exchange for Contract {
         storage.liquidity_pool_supply = total_liquidity - burned_liquidity.amount;
         storage.pair = Option::Some(reserves - removed_assets);
 
-=======
-
-        require(removed_assets.a.amount >= min_asset_a, TransactionError::DesiredAmountTooHigh(min_asset_a));
-        require(removed_assets.b.amount >= min_asset_b, TransactionError::DesiredAmountTooHigh(min_asset_b));
-
-        burn(burned_liquidity.amount);
-        storage.liquidity_pool_supply = total_liquidity - burned_liquidity.amount;
-        storage.pair = Option::Some(reserves - removed_assets);
-
->>>>>>> origin/master
         let sender = msg_sender().unwrap();
         transfer(removed_assets.a.amount, removed_assets.a.id, sender);
         transfer(removed_assets.b.amount, removed_assets.b.id, sender);
@@ -283,21 +260,12 @@ impl Exchange for Contract {
 
         let input_amount = msg_amount();
         require(input_amount > 0, InputError::ExpectedNonZeroAmount(input_asset.id));
-<<<<<<< HEAD
 
         let sold = maximum_input_for_exact_output(output, input_asset.amount, output_asset.amount, LIQUIDITY_MINER_FEE);
 
         require(sold > 0, TransactionError::DesiredAmountTooLow(output));
         require(input_amount >= sold, TransactionError::DesiredAmountTooHigh(input_amount));
 
-=======
-
-        let sold = maximum_input_for_exact_output(output, input_asset.amount, output_asset.amount, LIQUIDITY_MINER_FEE);
-
-        require(sold > 0, TransactionError::DesiredAmountTooLow(output));
-        require(input_amount >= sold, TransactionError::DesiredAmountTooHigh(input_amount));
-
->>>>>>> origin/master
         let sender = msg_sender().unwrap();
 
         let refund = input_amount - sold;
@@ -326,11 +294,7 @@ impl Exchange for Contract {
         require(asset.id == storage.pair.unwrap().a.id || asset.id == storage.pair.unwrap().b.id, InputError::InvalidAsset);
 
         let sender = msg_sender().unwrap();
-<<<<<<< HEAD
-        let deposited_amount = storage.deposits.get((sender, asset.id));
-=======
         let deposited_amount = storage.deposits.get((sender, asset.id)).unwrap_or(0);
->>>>>>> origin/master
 
         require(deposited_amount >= asset.amount, TransactionError::DesiredAmountTooHigh(asset.amount));
 
@@ -349,11 +313,7 @@ impl Exchange for Contract {
         require(storage.pair.is_some(), InitError::AssetPairNotSet);
         require(asset_id == storage.pair.unwrap().a.id || asset_id == storage.pair.unwrap().b.id, InputError::InvalidAsset);
 
-<<<<<<< HEAD
-        storage.deposits.get((msg_sender().unwrap(), asset_id))
-=======
         storage.deposits.get((msg_sender().unwrap(), asset_id)).unwrap_or(0)
->>>>>>> origin/master
     }
 
     #[storage(read)]
@@ -373,10 +333,6 @@ impl Exchange for Contract {
         let sender = msg_sender().unwrap();
         let total_liquidity = storage.liquidity_pool_supply;
         let reserves = storage.pair.unwrap();
-<<<<<<< HEAD
-        let deposits = AssetPair::new(Asset::new(reserves.a.id, storage.deposits.get((sender, reserves.a.id))), Asset::new(reserves.b.id, storage.deposits.get((sender, reserves.b.id))));
-
-=======
 
         let (deposit_a, deposit_b) = (
             storage.deposits.get((sender, reserves.a.id)).unwrap_or(0),
@@ -384,7 +340,6 @@ impl Exchange for Contract {
         );
         let deposits = AssetPair::new(Asset::new(reserves.a.id, deposit_a), Asset::new(reserves.b.id, deposit_b));
 
->>>>>>> origin/master
         let mut added_assets = AssetPair::new(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
         let mut added_liquidity = 0;
 

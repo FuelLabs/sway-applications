@@ -1,13 +1,4 @@
-<<<<<<< HEAD:DAO/project/DAO-contract/tests/functions/proposal.rs
-use crate::utils::{
-    abi_calls::{constructor, create_proposal, proposal},
-    test_helpers::{proposal_transaction, setup},
-    ProposalInfo,
-};
-use fuels::types::Identity;
-=======
 use crate::utils::{interface::info::proposal, setup::setup};
->>>>>>> origin/master:DAO/project/contracts/DAO-contract/tests/functions/info/proposal.rs
 
 mod success {
     use super::*;

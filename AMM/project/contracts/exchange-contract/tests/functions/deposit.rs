@@ -3,12 +3,8 @@ use test_utils::interface::exchange::deposit;
 
 mod success {
     use super::*;
-<<<<<<< HEAD
-    use test_utils::interface::exchange::balance;
-=======
     use fuels::prelude::ContractId;
     use test_utils::interface::{exchange::balance, Asset, DepositEvent};
->>>>>>> origin/master
 
     #[tokio::test]
     async fn deposits() {
@@ -19,13 +15,9 @@ mod success {
         let initial_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
         let initial_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
 
-<<<<<<< HEAD
-        deposit(&exchange.instance, deposit_amount, exchange.pair.0).await;
-=======
         let response = deposit(&exchange.instance, deposit_amount, exchange.pair.0).await;
         let log = response.get_logs_with_type::<DepositEvent>().unwrap();
         let event = log.get(0).unwrap();
->>>>>>> origin/master
 
         let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let final_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
@@ -62,13 +54,9 @@ mod success {
 
         let contract_balance_after_deposit = balance(&exchange.instance, exchange.pair.0).await;
 
-<<<<<<< HEAD
-        deposit(&exchange.instance, second_deposit_amount, exchange.pair.0).await;
-=======
         let response = deposit(&exchange.instance, second_deposit_amount, exchange.pair.0).await;
         let log = response.get_logs_with_type::<DepositEvent>().unwrap();
         let event = log.get(0).unwrap();
->>>>>>> origin/master
 
         let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let final_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();

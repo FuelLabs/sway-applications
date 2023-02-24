@@ -1,14 +1,3 @@
-<<<<<<< HEAD:auctions/english-auction/project/auction-contract/tests/functions/auction_info.rs
-use crate::utils::{
-    abigen_bindings::english_auction_mod::State,
-    asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{auction_info, bid, create},
-    test_helpers::{create_auction_copy, defaults_token, setup, token_asset},
-};
-use fuels::types::Identity;
-
-=======
->>>>>>> origin/master:auctions/english-auction/project/contracts/auction-contract/tests/functions/info/auction_info.rs
 mod success {
     use crate::utils::{
         interface::{

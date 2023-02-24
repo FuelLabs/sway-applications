@@ -6,21 +6,13 @@ use test_utils::{
 
 mod success {
     use super::*;
-<<<<<<< HEAD
-    use test_utils::interface::amm::pool;
-=======
     use crate::utils::ordered_pair;
     use test_utils::interface::{amm::pool, RegisterPoolEvent};
->>>>>>> origin/master
 
     #[tokio::test]
     async fn adds_when_asset_pair_is_in_same_order() {
         let (wallet, amm_instance, asset_pairs) = setup(true).await;
         let pair = asset_pairs[0];
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
         let exchange = deploy_and_construct_exchange(
             &wallet,
             &ExchangeContractConfiguration::new(Some(pair), None, None, None),
@@ -28,12 +20,6 @@ mod success {
         .await;
 
         // adding pair to the AMM contract in the same order as the constructed exchange contract
-<<<<<<< HEAD
-        add_pool(&amm_instance, pair, exchange.id).await;
-
-        let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
-
-=======
         let response = add_pool(&amm_instance, pair, exchange.id).await;
         let log = response.get_logs_with_type::<RegisterPoolEvent>().unwrap();
         let event = log.get(0).unwrap();
@@ -47,7 +33,6 @@ mod success {
                 pool: exchange.id
             }
         );
->>>>>>> origin/master
         assert_ne!(exchange_contract_id_in_storage, None);
         assert_eq!(exchange_contract_id_in_storage.unwrap(), exchange.id);
     }
@@ -64,12 +49,6 @@ mod success {
         .await;
 
         // adding pair to the AMM contract in the reverse order as the constructed exchange contract
-<<<<<<< HEAD
-        add_pool(&amm_instance, (pair.1, pair.0), exchange.id).await;
-
-        let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
-
-=======
         let response = add_pool(&amm_instance, pair, exchange.id).await;
         let log = response.get_logs_with_type::<RegisterPoolEvent>().unwrap();
         let event = log.get(0).unwrap();
@@ -83,7 +62,6 @@ mod success {
                 pool: exchange.id
             }
         );
->>>>>>> origin/master
         assert_ne!(exchange_contract_id_in_storage, None);
         assert_eq!(exchange_contract_id_in_storage.unwrap(), exchange.id);
     }
@@ -105,10 +83,6 @@ mod success {
         )
         .await;
 
-<<<<<<< HEAD
-        add_pool(&amm_instance, pair_1, exchange_1.id).await;
-        add_pool(&amm_instance, pair_2, exchange_2.id).await;
-=======
         let response = add_pool(&amm_instance, pair_1, exchange_1.id).await;
         let log = response.get_logs_with_type::<RegisterPoolEvent>().unwrap();
         let event_1 = log.get(0).unwrap();
@@ -116,7 +90,6 @@ mod success {
         let response = add_pool(&amm_instance, pair_2, exchange_2.id).await;
         let log = response.get_logs_with_type::<RegisterPoolEvent>().unwrap();
         let event_2 = log.get(0).unwrap();
->>>>>>> origin/master
 
         let exchange_contract_id_in_storage_of_pair_1 = pool(&amm_instance, pair_1).await;
         let exchange_contract_id_in_storage_of_pair_2 = pool(&amm_instance, pair_2).await;

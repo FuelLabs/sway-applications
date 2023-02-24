@@ -1,16 +1,8 @@
 use crate::utils::{
-<<<<<<< HEAD:DAO/project/DAO-contract/tests/functions/vote.rs
-    abi_calls::{constructor, create_proposal, deposit, proposal, user_balance, user_votes, vote},
-    test_helpers::{mint, proposal_transaction, setup},
-    ProposalInfo, Votes,
-};
-use fuels::{prelude::CallParameters, tx::AssetId, types::Identity};
-=======
     interface::core::{constructor, create_proposal, deposit, vote},
     setup::{mint, proposal_transaction, setup},
 };
 use fuels::{prelude::CallParameters, tx::AssetId};
->>>>>>> origin/master:DAO/project/contracts/DAO-contract/tests/functions/core/vote.rs
 
 mod success {
     use super::*;

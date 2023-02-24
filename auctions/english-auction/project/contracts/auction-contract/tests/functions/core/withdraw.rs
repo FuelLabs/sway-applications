@@ -5,11 +5,7 @@ use crate::utils::{
     },
     setup::{defaults_token, setup, token_asset},
 };
-<<<<<<< HEAD:auctions/english-auction/project/auction-contract/tests/functions/withdraw.rs
-use fuels::{prelude::AssetId, types::Identity};
-=======
 use fuels::types::Identity;
->>>>>>> origin/master:auctions/english-auction/project/contracts/auction-contract/tests/functions/core/withdraw.rs
 
 mod success {
 

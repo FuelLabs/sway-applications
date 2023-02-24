@@ -1,9 +1,5 @@
 use crate::utils::{expected_liquidity, setup};
-<<<<<<< HEAD
-use fuels::prelude::*;
-=======
 use fuels::prelude::{ContractId, TxParameters};
->>>>>>> origin/master
 use test_utils::{
     data_structures::LiquidityParameters as TestLiquidityParameters,
     interface::{

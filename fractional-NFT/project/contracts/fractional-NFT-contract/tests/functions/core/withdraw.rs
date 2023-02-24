@@ -7,10 +7,6 @@ use crate::utils::{
 };
 use fuels::{
     prelude::{Bech32ContractId, TxParameters},
-<<<<<<< HEAD:fractional-NFT/project/fractional-NFT-contract/tests/functions/withdraw.rs
-    signers::Signer,
-=======
->>>>>>> origin/master:fractional-NFT/project/contracts/fractional-NFT-contract/tests/functions/core/withdraw.rs
     tx::AssetId,
     types::Identity,
 };

@@ -1,12 +1,6 @@
 use super::data_structures::{
     AMMContract, ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
 };
-<<<<<<< HEAD
-use fuels::{prelude::*, tx::Contract as TxContract};
-
-pub mod common {
-    use super::*;
-=======
 use fuels::{
     prelude::{
         Address, AssetId, Bech32Address, Contract, ContractId, Provider, Salt, SettableContract,
@@ -22,7 +16,6 @@ pub mod common {
         test_helpers::{setup_multiple_assets_coins, setup_test_provider},
     };
 
->>>>>>> origin/master
     use crate::{
         data_structures::WalletAssetConfiguration,
         interface::{
@@ -121,20 +114,11 @@ pub mod common {
         (id, instance)
     }
 
-<<<<<<< HEAD
-    // TODO: once the script is reliable enough, use it for this functionality
-    pub async fn deposit_and_add_liquidity(
-        liquidity_parameters: &LiquidityParameters,
-        exchange: &ExchangeContract,
-        override_gas_limit: bool,
-    ) -> u64 {
-=======
     pub async fn deposit_and_add_liquidity_with_response(
         liquidity_parameters: &LiquidityParameters,
         exchange: &ExchangeContract,
         override_gas_limit: bool,
     ) -> FuelCallResponse<u64> {
->>>>>>> origin/master
         deposit(
             &exchange.instance,
             liquidity_parameters.amounts.0,
@@ -158,8 +142,6 @@ pub mod common {
         .await
     }
 
-<<<<<<< HEAD
-=======
     // TODO: once the script is reliable enough, use it for this functionality
     pub async fn deposit_and_add_liquidity(
         liquidity_parameters: &LiquidityParameters,
@@ -171,7 +153,6 @@ pub mod common {
             .value
     }
 
->>>>>>> origin/master
     pub async fn exchange_bytecode_root() -> ContractId {
         let exchange_raw_code = Contract::load_contract(
             EXCHANGE_CONTRACT_BINARY_PATH,
@@ -207,10 +188,6 @@ pub mod scripts {
     use crate::{data_structures::TransactionParameters, interface::amm::add_pool};
     use common::{deploy_and_construct_exchange, deposit_and_add_liquidity};
     use fuels::{
-<<<<<<< HEAD
-        programs::contract::SettableContract,
-=======
->>>>>>> origin/master
         tx::{Input, Output, TxPointer},
         types::resource::Resource,
     };

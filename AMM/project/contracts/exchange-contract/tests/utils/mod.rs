@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-use fuels::prelude::*;
-=======
 use fuels::prelude::{AssetId, WalletUnlocked};
->>>>>>> origin/master
 use test_utils::{
     data_structures::{
         ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,

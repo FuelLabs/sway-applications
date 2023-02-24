@@ -5,11 +5,7 @@ use crate::utils::{
     },
     setup::{defaults, setup},
 };
-<<<<<<< HEAD:fractional-NFT/project/fractional-NFT-contract/tests/functions/deposit.rs
-use fuels::{signers::Signer, tx::AssetId, types::Identity};
-=======
 use fuels::types::Identity;
->>>>>>> origin/master:fractional-NFT/project/contracts/fractional-NFT-contract/tests/functions/core/deposit.rs
 
 mod success {
 

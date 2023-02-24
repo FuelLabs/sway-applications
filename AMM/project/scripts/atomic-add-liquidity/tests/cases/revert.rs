@@ -1,9 +1,5 @@
 use crate::utils::{expected_liquidity, setup};
-<<<<<<< HEAD
-use fuels::prelude::*;
-=======
 use fuels::prelude::{ContractId, TxParameters};
->>>>>>> origin/master
 use test_utils::interface::{
     abigen_bindings::shared_types::{Asset, AssetPair},
     LiquidityParameters, SCRIPT_GAS_LIMIT,

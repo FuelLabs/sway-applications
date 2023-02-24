@@ -1,12 +1,4 @@
 use crate::utils::{
-<<<<<<< HEAD:fractional-NFT/project/token-distributor-contract/tests/functions/set_token_price.rs
-    asset_abi_calls::mint_and_send_to_address,
-    nft_abi_calls::{approve, mint},
-    test_helpers::{defaults, setup},
-    token_distributor_abi_calls::{create, end, purchase, set_token_price, token_distribution},
-};
-use fuels::{prelude::Address, signers::Signer, types::Identity};
-=======
     interface::core::{
         nft::{approve, mint},
         token_distributor::{create, set_token_price},
@@ -14,7 +6,6 @@ use fuels::{prelude::Address, signers::Signer, types::Identity};
     setup::{defaults, setup},
 };
 use fuels::{prelude::Address, types::Identity};
->>>>>>> origin/master:fractional-NFT/project/contracts/token-distributor-contract/tests/functions/core/set_token_price.rs
 
 mod success {
 

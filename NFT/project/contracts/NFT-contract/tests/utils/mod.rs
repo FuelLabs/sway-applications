@@ -2,8 +2,8 @@ use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identi
 
 abigen!(Contract(
     name = "Nft",
-    abi = "./project/NFT-contract/out/debug/NFT-contract-abi.json"
-),);
+    abi = "./contracts/NFT-contract/out/debug/NFT-contract-abi.json"
+));
 
 pub struct Metadata {
     pub contract: Nft,

@@ -1,16 +1,9 @@
 use crate::utils::{
-<<<<<<< HEAD:auctions/english-auction/project/auction-contract/tests/functions/cancel.rs
-    abigen_bindings::english_auction_mod::State,
-    asset_abi_calls::mint_and_send_to_address,
-    english_auction_abi_calls::{auction_info, bid, cancel, create},
-    test_helpers::{defaults_token, setup, token_asset},
-=======
     interface::core::{
         asset::mint_and_send_to_address,
         auction::{bid, cancel, create},
     },
     setup::{defaults_token, setup, token_asset},
->>>>>>> origin/master:auctions/english-auction/project/contracts/auction-contract/tests/functions/core/cancel.rs
 };
 use fuels::types::Identity;
 

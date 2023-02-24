@@ -1,12 +1,4 @@
 use crate::utils::{
-<<<<<<< HEAD:fractional-NFT/project/token-distributor-contract/tests/functions/withdraw.rs
-    asset_abi_calls::mint_and_send_to_address,
-    nft_abi_calls::{approve, mint},
-    test_helpers::{defaults, setup, wallet_balance},
-    token_distributor_abi_calls::{create, purchase, token_distribution, withdraw},
-};
-use fuels::{prelude::Address, signers::Signer, types::Identity};
-=======
     interface::core::{
         asset::mint_and_send_to_address,
         nft::{approve, mint},
@@ -15,7 +7,6 @@ use fuels::{prelude::Address, signers::Signer, types::Identity};
     setup::{defaults, setup},
 };
 use fuels::{prelude::Address, types::Identity};
->>>>>>> origin/master:fractional-NFT/project/contracts/token-distributor-contract/tests/functions/core/withdraw.rs
 
 mod success {
 

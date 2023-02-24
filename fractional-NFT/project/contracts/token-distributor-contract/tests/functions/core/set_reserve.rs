@@ -5,11 +5,7 @@ use crate::utils::{
     },
     setup::{defaults, setup},
 };
-<<<<<<< HEAD:fractional-NFT/project/token-distributor-contract/tests/functions/set_reserve.rs
-use fuels::{signers::Signer, types::Identity};
-=======
 use fuels::types::Identity;
->>>>>>> origin/master:fractional-NFT/project/contracts/token-distributor-contract/tests/functions/core/set_reserve.rs
 
 mod success {
 

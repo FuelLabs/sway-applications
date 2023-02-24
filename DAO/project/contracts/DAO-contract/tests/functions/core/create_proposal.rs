@@ -2,10 +2,6 @@ use crate::utils::{
     interface::core::{constructor, create_proposal},
     setup::{proposal_transaction, setup},
 };
-<<<<<<< HEAD:DAO/project/DAO-contract/tests/functions/create_proposal.rs
-use fuels::types::Identity;
-=======
->>>>>>> origin/master:DAO/project/contracts/DAO-contract/tests/functions/core/create_proposal.rs
 
 mod success {
     use super::*;

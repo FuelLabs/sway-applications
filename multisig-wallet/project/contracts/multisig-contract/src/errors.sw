@@ -15,8 +15,4 @@ pub enum InitError {
     NotInitialized: (),
     ThresholdCannotBeZero: (),
     TotalWeightCannotBeLessThanThreshold: (),
-<<<<<<< HEAD:multisig-wallet/project/multisig-contract/src/errors.sw
-    WeightingCannotBeZero: (),
-=======
->>>>>>> origin/master:multisig-wallet/project/contracts/multisig-contract/src/errors.sw
 }

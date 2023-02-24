@@ -1,34 +1,6 @@
 Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
-<<<<<<< HEAD:AMM/SPECIFICATION.md
-    - [AMM Contract](#amm-contract)
-        - [Core Functionality](#core-functionality)
-            - [`initialize()`](#initialize)
-            - [`add_pool()`](#add_pool)
-        - [State Checks](#state-checks)
-            - [`pool()`](#pool)
-    - [Exchange Contract](#exchange-contract)
-        - [Core Functionality](#core-functionality-1)
-            - [`constructor()`](#constructor)
-            - [`deposit()`](#deposit)
-            - [`add_liquidity()`](#add_liquidity)
-            - [`remove_liquidity()`](#remove_liquidity)
-            - [`withdraw()`](#withdraw)
-            - [`swap_exact_input()`](#swap_exact_input)
-            - [`swap_exact_output()`](#swap_exact_output)
-        - [Previews](#previews)
-             - [`preview_add_liquidity()`](#preview_add_liquidity)
-            - [`preview_swap_exact_input()`](#preview_swap_exact_input)
-            - [`preview_swap_exact_output()`](#preview_swap_exact_output)
-        - [State Checks](#state-checks-1)
-            - [`balance()`](#balance)
-            - [`pool_info()`](#pool_info)
-    - [Scripts](#scripts)
-        - [Atomic Add Liquidity](#atomic-add-liquidity)
-        - [Swap Exact Input](#swap-exact-input)
-        - [Swap Exact Output](#swap-exact-output)
-=======
   - [AMM Contract](#amm-contract)
     - [Core Functionality](#core-functionality)
       - [`initialize()`](#initialize)
@@ -55,7 +27,6 @@ Table of Contents
     - [`atomic-add-liquidity`](#atomic-add-liquidity)
     - [`swap-exact-input`](#swap-exact-input)
     - [`swap-exact-output`](#swap-exact-output)
->>>>>>> origin/master:AMM/project/SPECIFICATION.md
 - [Sequence Diagram](#sequence-diagram)
 
 # Overview

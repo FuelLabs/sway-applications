@@ -4,12 +4,8 @@ use test_utils::interface::exchange::{preview_swap_exact_input, swap_exact_input
 mod success {
     use super::*;
     use crate::utils::wallet_balances;
-<<<<<<< HEAD
-    use test_utils::interface::exchange::pool_info;
-=======
     use fuels::prelude::ContractId;
     use test_utils::interface::{exchange::pool_info, Asset, SwapEvent};
->>>>>>> origin/master
 
     #[tokio::test]
     async fn swaps_a_for_b() {
@@ -36,19 +32,14 @@ mod success {
             true,
         )
         .await;
-<<<<<<< HEAD
-=======
         let log = response.get_logs_with_type::<SwapEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         let output_amount = response.value;
->>>>>>> origin/master
 
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-<<<<<<< HEAD
-=======
         assert_eq!(
             *event,
             SwapEvent {
@@ -62,7 +53,6 @@ mod success {
                 },
             }
         );
->>>>>>> origin/master
         assert!(output_amount >= min_output);
         assert_eq!(
             final_wallet_balances.asset_a,
@@ -107,19 +97,14 @@ mod success {
             true,
         )
         .await;
-<<<<<<< HEAD
-=======
         let log = response.get_logs_with_type::<SwapEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         let output_amount = response.value;
->>>>>>> origin/master
 
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
-<<<<<<< HEAD
-=======
         assert_eq!(
             *event,
             SwapEvent {
@@ -133,7 +118,6 @@ mod success {
                 },
             }
         );
->>>>>>> origin/master
         assert!(output_amount >= min_output);
         assert_eq!(
             final_wallet_balances.asset_b,
@@ -178,13 +162,10 @@ mod success {
             true,
         )
         .await;
-<<<<<<< HEAD
-=======
         let log = response.get_logs_with_type::<SwapEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         let output_amount = response.value;
->>>>>>> origin/master
 
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
