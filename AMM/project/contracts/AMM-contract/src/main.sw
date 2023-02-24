@@ -6,7 +6,7 @@ dep events;
 use errors::InitError;
 use events::{RegisterPoolEvent, SetExchangeBytecodeRootEvent};
 use libraries::{AMM, Exchange};
-use std::{constants::BASE_ASSET_ID, external::bytecode_root, logging::log};
+use std::{constants::BASE_ASSET_ID, external::bytecode_root};
 
 storage {
     /// The valid exchange contract bytecode root
@@ -56,11 +56,6 @@ impl AMM for Contract {
         } else {
             (asset_pair.1, asset_pair.0)
         };
-        let pool_id = storage.pools.get(ordered_asset_pair);
-        if pool_id == BASE_ASSET_ID {
-            Option::None
-        } else {
-            Option::Some(pool_id)
-        }
+        storage.pools.get(ordered_asset_pair)
     }
 }

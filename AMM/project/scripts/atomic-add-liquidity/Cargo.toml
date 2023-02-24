@@ -6,7 +6,11 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dev-dependencies]
+<<<<<<< HEAD
 fuels = { version = "0.34.0", features = ["fuel-core-lib"] }
+=======
+fuels = { version = "0.36.1", features = ["fuel-core-lib"] }
+>>>>>>> origin/master
 test-utils = { path = "../../test-utils" }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 

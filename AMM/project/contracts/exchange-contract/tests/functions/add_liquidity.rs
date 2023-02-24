@@ -7,7 +7,18 @@ use test_utils::{
 mod success {
     use super::*;
     use crate::utils::{contract_balances, wallet_balances};
+<<<<<<< HEAD
     use test_utils::interface::exchange::{deposit, pool_info};
+=======
+    use fuels::prelude::ContractId;
+    use test_utils::{
+        interface::{
+            exchange::{deposit, pool_info},
+            AddLiquidityEvent, Asset, AssetPair,
+        },
+        setup::common::deposit_and_add_liquidity_with_response,
+    };
+>>>>>>> origin/master
 
     #[tokio::test]
     async fn adds_when_liquidity_is_zero() {
@@ -34,18 +45,47 @@ mod success {
 
         let contract_balances_after_deposit = contract_balances(&exchange).await;
 
-        let added_liquidity = add_liquidity(
+        let response = add_liquidity(
             &exchange.instance,
             liquidity_parameters.liquidity,
             liquidity_parameters.deadline,
             false,
         )
         .await;
+<<<<<<< HEAD
+=======
+        let log = response.get_logs_with_type::<AddLiquidityEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        let added_liquidity = response.value;
+>>>>>>> origin/master
 
         let pool_info_after_adding_liquidity = pool_info(&exchange.instance).await;
         let wallet_balances_after_adding_liquidity = wallet_balances(&exchange, &wallet).await;
         let contract_balances_after_adding_liquidity = contract_balances(&exchange).await;
 
+<<<<<<< HEAD
+=======
+        assert_eq!(
+            *event,
+            AddLiquidityEvent {
+                added_assets: AssetPair {
+                    a: Asset {
+                        id: ContractId::new(*exchange.pair.0),
+                        amount: liquidity_parameters.amounts.0,
+                    },
+                    b: Asset {
+                        id: ContractId::new(*exchange.pair.1),
+                        amount: liquidity_parameters.amounts.1,
+                    },
+                },
+                liquidity: Asset {
+                    id: ContractId::new(*exchange.id),
+                    amount: liquidity_parameters.liquidity,
+                },
+            }
+        );
+>>>>>>> origin/master
         assert_eq!(initial_pool_info.reserves.a.amount, 0);
         assert_eq!(initial_pool_info.reserves.b.amount, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
@@ -107,13 +147,45 @@ mod success {
         let contract_balances_after_adding_liquidity_for_the_first_time =
             contract_balances(&exchange).await;
 
+<<<<<<< HEAD
         let added_liquidity =
             deposit_and_add_liquidity(&second_liquidity_parameters, &exchange, true).await;
+=======
+        let response =
+            deposit_and_add_liquidity_with_response(&second_liquidity_parameters, &exchange, true)
+                .await;
+        let log = response.get_logs_with_type::<AddLiquidityEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        let added_liquidity = response.value;
+>>>>>>> origin/master
 
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_contract_balances = contract_balances(&exchange).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
+<<<<<<< HEAD
+=======
+        assert_eq!(
+            *event,
+            AddLiquidityEvent {
+                added_assets: AssetPair {
+                    a: Asset {
+                        id: ContractId::new(*exchange.pair.0),
+                        amount: second_liquidity_parameters.amounts.0,
+                    },
+                    b: Asset {
+                        id: ContractId::new(*exchange.pair.1),
+                        amount: second_liquidity_parameters.amounts.1 / 2,
+                    },
+                },
+                liquidity: Asset {
+                    id: ContractId::new(*exchange.id),
+                    amount: second_liquidity_parameters.liquidity,
+                },
+            }
+        );
+>>>>>>> origin/master
         assert_eq!(initial_pool_info.reserves.a.amount, 0);
         assert_eq!(initial_pool_info.reserves.b.amount, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
@@ -181,13 +253,46 @@ mod success {
         let contract_balances_after_adding_liquidity_for_the_first_time =
             contract_balances(&exchange).await;
 
+<<<<<<< HEAD
         let added_liquidity =
             deposit_and_add_liquidity(&second_liquidity_parameters, &exchange, true).await;
 
+=======
+        let response =
+            deposit_and_add_liquidity_with_response(&second_liquidity_parameters, &exchange, true)
+                .await;
+        let log = response.get_logs_with_type::<AddLiquidityEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        let added_liquidity = response.value;
+
+>>>>>>> origin/master
         let final_pool_info = pool_info(&exchange.instance).await;
         let final_contract_balances = contract_balances(&exchange).await;
         let final_wallet_balances = wallet_balances(&exchange, &wallet).await;
 
+<<<<<<< HEAD
+=======
+        assert_eq!(
+            *event,
+            AddLiquidityEvent {
+                added_assets: AssetPair {
+                    a: Asset {
+                        id: ContractId::new(*exchange.pair.0),
+                        amount: second_liquidity_parameters.amounts.0 / 2,
+                    },
+                    b: Asset {
+                        id: ContractId::new(*exchange.pair.1),
+                        amount: second_liquidity_parameters.amounts.1,
+                    },
+                },
+                liquidity: Asset {
+                    id: ContractId::new(*exchange.id),
+                    amount: liquidity_parameters.liquidity,
+                },
+            }
+        );
+>>>>>>> origin/master
         assert_eq!(initial_pool_info.reserves.a.amount, 0);
         assert_eq!(initial_pool_info.reserves.b.amount, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
@@ -237,7 +342,10 @@ mod success {
 mod revert {
     use super::*;
     use crate::utils::setup;
+<<<<<<< HEAD
     use fuels::prelude::CallParameters;
+=======
+>>>>>>> origin/master
 
     #[tokio::test]
     #[should_panic(expected = "AssetPairNotSet")]
@@ -247,6 +355,7 @@ mod revert {
         let min_liquidity = 20000;
 
         add_liquidity(&exchange_instance, min_liquidity, deadline, false).await;
+<<<<<<< HEAD
     }
 
     #[tokio::test]
@@ -288,6 +397,26 @@ mod revert {
             .call()
             .await
             .unwrap();
+=======
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "DeadlinePassed")]
+    async fn when_deadline_passed() {
+        let (exchange, _wallet, liquidity_parameters, _asset_c_id) =
+            setup_and_construct(false, false).await;
+
+        let override_liquidity_parameters = LiquidityParameters::new(
+            Some((
+                liquidity_parameters.amounts.0,
+                liquidity_parameters.amounts.1,
+            )),
+            Some(0), // deadline too low
+            Some(liquidity_parameters.liquidity),
+        );
+
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
+>>>>>>> origin/master
     }
 
     #[tokio::test]

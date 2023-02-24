@@ -5,7 +5,11 @@ license = "Apache-2.0"
 name = "swap-exact-input"
 
 [constants]
+<<<<<<< HEAD
 AMM_ID = { type = "b256", value = "0x2cf873a3d03f35241a6dd401160b98a29f1bfd5e31911c8d6d43e582e6efcf80" }
+=======
+AMM_ID = { type = "b256", value = "0x07ceffb6c32b5fdf42fcbf47a6f325a9087c9577fc2021181c7e06973ffd9d7a" }
+>>>>>>> origin/master
 
 [dependencies]
 libraries = { path = "../../libraries" }

@@ -1,3 +1,3 @@
 target
-project/escrow-contract/out
-project/escrow-contract/tests/artifacts/asset/out
+project/contracts/escrow-contract/out
+project/contracts/escrow-contract/tests/artifacts/asset/out

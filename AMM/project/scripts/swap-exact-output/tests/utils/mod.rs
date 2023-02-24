@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 use fuels::prelude::*;
+=======
+use fuels::prelude::{AssetId, ContractId, TxParameters};
+>>>>>>> origin/master
 use test_utils::{
     data_structures::{
         AMMContract, SwapParameters, SwapResult, TransactionParameters, WalletAssetConfiguration,

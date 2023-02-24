@@ -45,7 +45,11 @@ fn main(
             gas: 10_000_000,
             coins: latest_bought, // forwarding coins of asset to sell
             asset_id: asset_pair.0.into(), // identifier of asset to sell
+<<<<<<< HEAD
         }(Option::None::<u64>(), deadline);
+=======
+        }(Option::None, deadline);
+>>>>>>> origin/master
 
         sold_asset_index += 1;
     }

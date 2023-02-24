@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 use fuels::prelude::*;
+=======
+use fuels::prelude::{AssetId, ContractId, WalletUnlocked};
+>>>>>>> origin/master
 use test_utils::{
     data_structures::WalletAssetConfiguration,
     interface::AMM,
@@ -17,6 +21,19 @@ pub async fn setup(initialize: bool) -> (WalletUnlocked, AMM, Vec<(AssetId, Asse
 
     // setup two asset pairs that will be used in tests
     let asset_pairs = vec![(asset_ids[0], asset_ids[1]), (asset_ids[1], asset_ids[2])];
+<<<<<<< HEAD
 
     (wallet, amm.instance, asset_pairs)
+=======
+
+    (wallet, amm.instance, asset_pairs)
+}
+
+pub fn ordered_pair(pair: (AssetId, AssetId)) -> (ContractId, ContractId) {
+    if pair.0 < pair.1 {
+        (ContractId::new(*pair.0), ContractId::new(*pair.1))
+    } else {
+        (ContractId::new(*pair.1), ContractId::new(*pair.0))
+    }
+>>>>>>> origin/master
 }

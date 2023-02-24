@@ -3,7 +3,12 @@ use test_utils::interface::exchange::{deposit, withdraw};
 
 mod success {
     use super::*;
+<<<<<<< HEAD
     use test_utils::interface::exchange::balance;
+=======
+    use fuels::prelude::ContractId;
+    use test_utils::interface::{exchange::balance, Asset, WithdrawEvent};
+>>>>>>> origin/master
 
     #[tokio::test]
     async fn withdraws_entire_deposit_of_asset_a() {
@@ -17,11 +22,27 @@ mod success {
         let initial_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let initial_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
+<<<<<<< HEAD
         withdraw(&exchange.instance, deposit_amount, exchange.pair.0).await;
+=======
+        let response = withdraw(&exchange.instance, withdraw_amount, exchange.pair.0).await;
+        let log = response.get_logs_with_type::<WithdrawEvent>().unwrap();
+        let event = log.get(0).unwrap();
+>>>>>>> origin/master
 
         let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let final_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
+        assert_eq!(
+            *event,
+            WithdrawEvent {
+                withdrawn_asset: Asset {
+                    id: ContractId::from(*exchange.pair.0),
+                    amount: withdraw_amount,
+                },
+                remaining_balance: final_contract_balance,
+            }
+        );
         assert_eq!(
             final_contract_balance,
             initial_contract_balance - withdraw_amount
@@ -44,11 +65,27 @@ mod success {
         let initial_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let initial_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
+<<<<<<< HEAD
         withdraw(&exchange.instance, withdraw_amount, exchange.pair.0).await;
+=======
+        let response = withdraw(&exchange.instance, withdraw_amount, exchange.pair.0).await;
+        let log = response.get_logs_with_type::<WithdrawEvent>().unwrap();
+        let event = log.get(0).unwrap();
+>>>>>>> origin/master
 
         let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
         let final_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
+        assert_eq!(
+            *event,
+            WithdrawEvent {
+                withdrawn_asset: Asset {
+                    id: ContractId::from(*exchange.pair.0),
+                    amount: withdraw_amount,
+                },
+                remaining_balance: final_contract_balance,
+            }
+        );
         assert_eq!(
             final_contract_balance,
             initial_contract_balance - withdraw_amount
