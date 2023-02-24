@@ -28,6 +28,18 @@ pub struct Caller {
     pub wallet: WalletUnlocked,
 }
 
+pub struct Transaction {
+    pub contract_identifier: ContractId,
+    pub nonce: u64,
+    pub value: Option<u64>,
+    pub asset_id: Option<ContractId>,
+    pub target: Identity,
+    pub function_selector: Option<Vec<u8>>,
+    pub calldata: Option<Vec<u8>>,
+    pub single_value_type_arg: Option<bool>,
+    pub forwarded_gas: Option<u64>,
+}
+
 pub fn base_asset_contract_id() -> ContractId {
     ContractId::new(BASE_ASSET_ID.try_into().unwrap())
 }
@@ -162,19 +174,25 @@ pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller)>
     Ok((private_key, deployer, non_owner))
 }
 
-pub fn transfer_parameters() -> (WalletUnlocked, Identity, Bits256) {
+pub async fn transfer_parameters(deployer: &Caller, nonce: u64) -> (WalletUnlocked, Transaction) {
     let receiver_wallet = WalletUnlocked::new_random(None);
 
-    let receiver = Identity::Address(receiver_wallet.address().try_into().unwrap());
+    let tx = Transaction {
+        contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+        nonce,
+        value: Some(DEFAULT_TRANSFER_AMOUNT),
+        asset_id: Some(base_asset_contract_id()),
+        target: Identity::Address(receiver_wallet.address().try_into().unwrap()),
+        function_selector: None,
+        calldata: None,
+        single_value_type_arg: None,
+        forwarded_gas: None,
+    };
 
-    let mut rng = StdRng::seed_from_u64(1000);
-    let data: Bytes32 = rng.gen();
-    let data = Bits256(*data);
-
-    (receiver_wallet, receiver, data)
+    (receiver_wallet, tx)
 }
 
-pub async fn transfer_signatures(private_key: SecretKey, tx_hash: Message) -> Vec<SignatureInfo> {
+pub async fn compute_signatures(private_key: SecretKey, tx_hash: Message) -> Vec<SignatureInfo> {
     // - Fuel signature. Fuel wallet. No format. No prefix.
     let fuel_signature = format_and_sign(
         private_key,
