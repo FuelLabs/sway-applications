@@ -68,14 +68,6 @@ contract or script/
 └── tests/harness.rs
 ```
 
-All contracts and scripts have the structure:
-
-```
-contract or script/
-├── src/main.sw
-└── tests/harness.rs
-```
-
 ## Running the project
 
 ### User interface
