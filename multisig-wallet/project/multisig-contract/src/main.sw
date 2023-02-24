@@ -195,8 +195,8 @@ impl MultiSignatureWallet for Contract {
                 call_params,
                 nonce: transaction_nonce,
                 target_contract_id,
-                function_selector: function_selector.into_vec_u8(),
-                calldata: calldata.into_vec_u8(),
+                // function_selector: function_selector.into_vec_u8(),
+                // calldata: calldata.into_vec_u8(),
             });
         }
     }
