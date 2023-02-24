@@ -2,21 +2,28 @@ use crate::utils::{
     interface::{
         core::{constructor, execute_transaction},
         info::{compute_transaction_hash, nonce},
+        test_contract::{check_counter_map, check_deposit_map},
     },
     setup::{
-        base_asset_contract_id, compute_signatures, default_users, setup_env, transfer_parameters,
-        DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
+        base_asset_contract_id, call_parameters, compute_signatures, default_users,
+        deploy_test_contract, setup_env, transfer_parameters, CallParams,
+        DEFAULT_CALLDATA_VALUE_PARAM, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
     },
 };
 use fuels::{
-    prelude::{TxParameters, BASE_ASSET_ID},
+    prelude::{ContractId, TxParameters, BASE_ASSET_ID},
     signers::fuel_crypto::Message,
 };
 
 mod success {
 
+    use fuels::types::{Bits256, Identity};
+
     use super::*;
-    use crate::utils::{interface::info::balance, setup::TransferEvent};
+    use crate::utils::{
+        interface::info::balance,
+        setup::{CallEvent, TransferEvent},
+    };
 
     #[tokio::test]
     async fn executes_transfer() {
@@ -119,9 +126,95 @@ mod success {
         assert!(final_receiver_balance > initial_receiver_balance);
     }
 
-    #[ignore]
     #[tokio::test]
-    async fn executes_call_without_value() {}
+    async fn executes_call_without_value() {
+        let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+        constructor(&deployer.contract, default_users()).await;
+
+        let initial_nonce = nonce(&deployer.contract).await.value;
+
+        deployer
+            .wallet
+            .force_transfer_to_contract(
+                deployer.contract.contract_id(),
+                DEFAULT_TRANSFER_AMOUNT,
+                BASE_ASSET_ID,
+                TxParameters::default(),
+            )
+            .await
+            .unwrap();
+
+        let test_contract = deploy_test_contract(deployer.wallet.clone()).await.unwrap();
+
+        let tx = call_parameters(&deployer, initial_nonce, &test_contract, false).await;
+
+        // Check counter_map pre-call
+        let initial_counter = check_counter_map(&test_contract, deployer.wallet.address().into())
+            .await
+            .value;
+
+        let tx_hash = compute_transaction_hash(
+            &deployer.contract,
+            tx.contract_identifier,
+            tx.nonce,
+            tx.value,
+            tx.asset_id,
+            tx.target.clone(),
+            tx.function_selector.clone(),
+            tx.calldata.clone(),
+            tx.single_value_type_arg,
+            tx.forwarded_gas,
+        )
+        .await
+        .value
+        .0;
+        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+
+        let signatures = compute_signatures(private_key, tx_hash).await;
+
+        let response = execute_transaction(
+            &deployer.contract,
+            tx.asset_id,
+            tx.calldata.clone(),
+            tx.forwarded_gas,
+            tx.function_selector.clone(),
+            signatures,
+            tx.single_value_type_arg,
+            tx.target.clone(),
+            tx.value,
+        )
+        .await;
+
+        let log = response.get_logs_with_type::<CallEvent>().unwrap();
+        let event = log.get(0).unwrap();
+        assert_eq!(
+            *event,
+            CallEvent {
+                call_params: CallParams {
+                    coins: tx.value.unwrap_or(0),
+                    asset_id: tx.asset_id.unwrap_or(base_asset_contract_id()),
+                    gas: tx.forwarded_gas.unwrap_or(0),
+                },
+                nonce: tx.nonce,
+                target_contract_id: match tx.target {
+                    Identity::ContractId(contract_identifier) => contract_identifier,
+                    _ => base_asset_contract_id(),
+                },
+                // function_selector: tx.function_selector.unwrap(), // Required SDK support for decoding Vectors within Structs
+                // calldata: tx.calldata.unwrap(),
+            }
+        );
+
+        // Check counter_map post-call
+        let final_counter = check_counter_map(&test_contract, deployer.wallet.address().into())
+            .await
+            .value;
+
+        assert_eq!(initial_counter, 0);
+        assert_eq!(final_counter, DEFAULT_CALLDATA_VALUE_PARAM);
+        assert_ne!(initial_counter, final_counter);
+    }
 
     #[ignore]
     #[tokio::test]
