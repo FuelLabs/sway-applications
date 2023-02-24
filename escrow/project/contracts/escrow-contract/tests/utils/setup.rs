@@ -1,8 +1,8 @@
 use fuels::{
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, AssetId, Bech32Address, Configurables,
-        Contract, ContractId, Salt, StorageConfiguration, TxParameters, WalletUnlocked,
-        WalletsConfig,
+        abigen, launch_custom_provider_and_get_wallets, Address, AssetId, Bech32Address,
+        Configurables, Contract, ContractId, Salt, StorageConfiguration, TxParameters,
+        WalletUnlocked, WalletsConfig,
     },
     types::Identity,
 };
@@ -76,6 +76,39 @@ pub(crate) async fn create_asset_with_salt(
     .unwrap();
 
     (asset_id.clone().into(), MyAsset::new(asset_id, wallet))
+}
+
+pub(crate) async fn escrow_info(
+    arbiter: Arbiter,
+    asset_count: u64,
+    buyer_address: &Bech32Address,
+    asset: Option<ContractId>,
+    deposited_amount: u64,
+    deadline: u64,
+    disputed: bool,
+    first_asset_index: u64,
+    seller_address: &Bech32Address,
+    state: bool,
+) -> EscrowInfo {
+    EscrowInfo {
+        arbiter,
+        asset_count,
+        buyer: Buyer {
+            address: Identity::Address(Address::from(buyer_address)),
+            asset,
+            deposited_amount,
+        },
+        deadline,
+        disputed,
+        first_asset_index,
+        seller: Seller {
+            address: Identity::Address(Address::from(seller_address)),
+        },
+        state: match state {
+            true => State::Completed,
+            false => State::Pending,
+        },
+    }
 }
 
 pub(crate) async fn mint(address: &Bech32Address, amount: u64, contract: &MyAsset) {
