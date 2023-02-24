@@ -1,8 +1,7 @@
-use clap::{Parser, ValueEnum};
-
 mod commands;
 mod utils;
 
+use clap::{Parser, ValueEnum};
 use commands::{build, bump, fmt, test};
 use utils::{read_applications, repo_root};
 

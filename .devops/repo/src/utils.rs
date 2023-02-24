@@ -1,3 +1,5 @@
+use anyhow::anyhow;
+use std::path::PathBuf;
 use std::process::Command;
 
 pub(crate) fn execute(command: &mut Command, errors: &mut Vec<String>, app: &String) {
@@ -34,4 +36,16 @@ pub(crate) fn repo_root() -> String {
     // /path/to/sway-applications/.devops/repo -> /path/to/sway-applications
     let root = absolute_path.split("/.devops").next().unwrap();
     root.into()
+}
+
+pub(crate) fn project_path(app: String, root: String) -> anyhow::Result<PathBuf> {
+    Ok(
+        std::fs::canonicalize(format!("{}/{}/project", root, app)).map_err(|error| {
+            anyhow!(
+                "Failed to canonicalize path to project for app '{}': {}",
+                app,
+                error
+            )
+        })?,
+    )
 }

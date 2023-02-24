@@ -1,5 +1,4 @@
-use crate::utils::{execute, print_applications};
-use anyhow::anyhow;
+use crate::utils::{execute, print_applications, project_path};
 use std::process::Command;
 
 const SWAY_MESSAGE: &str = "Sway formatting errors in";
@@ -12,14 +11,7 @@ pub(crate) fn run(apps: Vec<String>, root: String) -> anyhow::Result<()> {
     for app in apps {
         println!("\nFormatting {}", app);
 
-        let project =
-            std::fs::canonicalize(format!("{}/{}/project", root, app)).map_err(|error| {
-                anyhow!(
-                    "Failed to canonicalize path to project for app '{}': {}",
-                    app,
-                    error
-                )
-            })?;
+        let project = project_path(app.clone(), root.clone())?;
 
         execute(
             Command::new("forc").current_dir(project.clone()).arg("fmt"),
