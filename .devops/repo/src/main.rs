@@ -25,7 +25,7 @@ enum Mode {
     Test,
 }
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     let apps = read_applications();
