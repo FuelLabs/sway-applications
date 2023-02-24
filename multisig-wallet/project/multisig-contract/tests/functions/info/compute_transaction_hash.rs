@@ -4,7 +4,10 @@ mod success {
 
     use crate::utils::{
         interface::info::{compute_transaction_hash, nonce},
-        setup::{base_asset_contract_id, setup_env, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK},
+        setup::{
+            base_asset_contract_id, setup_env, transfer_parameters, DEFAULT_TRANSFER_AMOUNT,
+            VALID_SIGNER_PK,
+        },
     };
     use fuels::{
         core::abi_encoder::ABIEncoder,
@@ -29,18 +32,8 @@ mod success {
     async fn computes_transfer_transaction_hash() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        // Recreate Transaction instance
-        let tx = Transaction {
-            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
-            nonce: nonce(&deployer.contract).await.value,
-            value: Some(DEFAULT_TRANSFER_AMOUNT),
-            asset_id: Some(base_asset_contract_id()),
-            target: Identity::Address(deployer.wallet.address().try_into().unwrap()),
-            function_selector: None,
-            calldata: None,
-            single_value_type_arg: None,
-            forwarded_gas: None,
-        };
+        let (_receiver_wallet, tx) =
+            transfer_parameters(&deployer, nonce(&deployer.contract).await.value).await;
 
         let tx_token = Token::Struct(vec![
             tx.contract_identifier.into_token(),
