@@ -14,6 +14,13 @@ mod success {
     #[tokio::test]
     async fn disputes() {
         let (arbiter, buyer, seller, defaults) = setup().await;
+        let arbiter_obj = create_arbiter(
+            arbiter.wallet.address(),
+            defaults.asset_id,
+            defaults.asset_amount,
+        )
+        .await;
+        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
             seller.wallet.address(),
@@ -27,15 +34,6 @@ mod success {
             &defaults.asset,
         )
         .await;
-
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
-        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -72,10 +70,7 @@ mod success {
         );
 
         let response = dispute(&buyer.contract, 0).await;
-        let log = response.get_logs_with_type::<DisputeEvent>().unwrap();
-        let event = log.get(0).unwrap();
 
-        assert_eq!(*event, DisputeEvent { identifier: 0 });
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
             escrow_info(
@@ -92,11 +87,23 @@ mod success {
             )
             .await
         );
+
+        let log = response.get_logs_with_type::<DisputeEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(*event, DisputeEvent { identifier: 0 });
     }
 
     #[tokio::test]
     async fn disputes_in_two_escrows() {
         let (arbiter, buyer, seller, defaults) = setup().await;
+        let arbiter_obj = create_arbiter(
+            arbiter.wallet.address(),
+            defaults.asset_id,
+            defaults.asset_amount,
+        )
+        .await;
+        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
             seller.wallet.address(),
@@ -110,15 +117,6 @@ mod success {
             &defaults.asset,
         )
         .await;
-
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
-        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -139,7 +137,6 @@ mod success {
             defaults.deadline,
         )
         .await;
-
         deposit(
             defaults.asset_amount,
             &defaults.asset_id,
@@ -171,7 +168,6 @@ mod success {
             )
             .await
         );
-
         assert_eq!(
             escrows(&seller.contract, 1).await.unwrap(),
             escrow_info(
@@ -191,14 +187,6 @@ mod success {
 
         let response1 = dispute(&buyer.contract, 0).await;
         let response2 = dispute(&buyer.contract, 1).await;
-
-        let log1 = response1.get_logs_with_type::<DisputeEvent>().unwrap();
-        let log2 = response2.get_logs_with_type::<DisputeEvent>().unwrap();
-        let event1 = log1.get(0).unwrap();
-        let event2 = log2.get(0).unwrap();
-
-        assert_eq!(*event1, DisputeEvent { identifier: 0 });
-        assert_eq!(*event2, DisputeEvent { identifier: 1 });
 
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
@@ -232,6 +220,14 @@ mod success {
             )
             .await
         );
+
+        let log1 = response1.get_logs_with_type::<DisputeEvent>().unwrap();
+        let log2 = response2.get_logs_with_type::<DisputeEvent>().unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(*event1, DisputeEvent { identifier: 0 });
+        assert_eq!(*event2, DisputeEvent { identifier: 1 });
     }
 }
 
