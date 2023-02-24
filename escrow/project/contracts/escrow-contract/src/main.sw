@@ -107,6 +107,7 @@ impl Escrow for Contract {
             index += 1;
         }
 
+        // TODO: first asset index bug?
         let escrow = EscrowInfo::new(arbiter, assets.len(), buyer, deadline, storage.assets.len() - assets.len(), msg_sender().unwrap());
 
         storage.escrows.insert(storage.escrow_count, escrow);
