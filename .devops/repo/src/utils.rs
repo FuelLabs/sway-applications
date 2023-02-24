@@ -29,11 +29,13 @@ pub(crate) fn read_applications() -> Vec<String> {
 }
 
 pub(crate) fn repo_root() -> String {
-    let project = std::env::current_dir().unwrap();
+    let project = std::env::current_dir().expect("Failed to retrieve the current directory");
     let absolute_path = project.to_str().expect("Failed to convert root path");
-    // TODO: safety
     // /path/to/sway-applications/.devops/repo -> /path/to/sway-applications
-    let root = absolute_path.split("/.devops").next().unwrap();
+    let root = absolute_path
+        .split("/.devops")
+        .next()
+        .expect("Invalid repository path");
     root.into()
 }
 
