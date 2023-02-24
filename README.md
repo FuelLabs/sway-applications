@@ -72,7 +72,7 @@ If you wish to run any of the projects then clone this repository and go through
 
 Any instructions related to running a specific project will be found within the README.md in the root of that project. 
 
-The contracts are pinned to specific versions which can be seen at the top of the README.md inside the `/<app>/project` directory and inside the `fuel-toolchain.toml`.
+The projects are pinned to specific versions which can be seen at the top of the README.md inside the `/<app>/project` directory and inside the `fuel-toolchain.toml`.
 
 ## Contributing
 
