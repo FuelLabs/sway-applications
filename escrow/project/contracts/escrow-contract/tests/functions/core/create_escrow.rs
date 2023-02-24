@@ -29,11 +29,11 @@ mod success {
             &defaults.asset,
         )
         .await;
+
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
-
         assert_eq!(0, escrow_count(&seller.contract).await);
         assert!(matches!(assets(&seller.contract, 0).await, None));
         assert!(matches!(escrows(&seller.contract, 0).await, None));
@@ -48,6 +48,27 @@ mod success {
             defaults.deadline,
         )
         .await;
+
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(1, escrow_count(&seller.contract).await);
+        assert_eq!(assets(&seller.contract, 0).await.unwrap(), asset);
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                1,
+                buyer.wallet.address(),
+                None,
+                0,
+                defaults.deadline,
+                false,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+
         let log = response.get_logs_with_type::<CreatedEscrowEvent>().unwrap();
         let event = log.get(0).unwrap();
 
@@ -70,25 +91,6 @@ mod success {
                 identifier: 0
             }
         );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
-        assert_eq!(1, escrow_count(&seller.contract).await);
-        assert_eq!(assets(&seller.contract, 0).await.unwrap(), asset);
-        assert_eq!(
-            escrows(&seller.contract, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                1,
-                buyer.wallet.address(),
-                None,
-                0,
-                defaults.deadline,
-                false,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
     }
 
     #[tokio::test]
@@ -108,11 +110,11 @@ mod success {
             &defaults.asset,
         )
         .await;
+
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
-
         assert_eq!(0, escrow_count(&seller.contract).await);
         assert!(matches!(assets(&seller.contract, 0).await, None));
         assert!(matches!(escrows(&seller.contract, 0).await, None));
@@ -127,6 +129,29 @@ mod success {
             defaults.deadline,
         )
         .await;
+
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(1, escrow_count(&seller.contract).await);
+        assert_eq!(assets(&seller.contract, 0).await.unwrap(), asset);
+        assert_eq!(assets(&seller.contract, 1).await.unwrap(), asset);
+        assert_eq!(assets(&seller.contract, 2).await.unwrap(), asset);
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                3,
+                buyer.wallet.address(),
+                None,
+                0,
+                defaults.deadline,
+                false,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+
         let log = response.get_logs_with_type::<CreatedEscrowEvent>().unwrap();
         let event = log.get(0).unwrap();
 
@@ -149,27 +174,6 @@ mod success {
                 identifier: 0
             }
         );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
-        assert_eq!(1, escrow_count(&seller.contract).await);
-        assert_eq!(assets(&seller.contract, 0).await.unwrap(), asset);
-        assert_eq!(assets(&seller.contract, 1).await.unwrap(), asset);
-        assert_eq!(assets(&seller.contract, 2).await.unwrap(), asset);
-        assert_eq!(
-            escrows(&seller.contract, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                3,
-                buyer.wallet.address(),
-                None,
-                0,
-                defaults.deadline,
-                false,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
     }
 
     #[tokio::test]
@@ -189,16 +193,16 @@ mod success {
             &defaults.asset,
         )
         .await;
+
         assert_eq!(
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
-
         assert_eq!(0, escrow_count(&seller.contract).await);
         assert!(matches!(assets(&seller.contract, 0).await, None));
         assert!(matches!(escrows(&seller.contract, 0).await, None));
 
-        let response = create_escrow(
+        let response1 = create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
@@ -208,28 +212,7 @@ mod success {
             defaults.deadline,
         )
         .await;
-        let log = response.get_logs_with_type::<CreatedEscrowEvent>().unwrap();
-        let event = log.get(0).unwrap();
 
-        assert_eq!(
-            *event,
-            CreatedEscrowEvent {
-                escrow: escrow_info(
-                    arbiter_obj.clone(),
-                    1,
-                    buyer.wallet.address(),
-                    None,
-                    0,
-                    defaults.deadline,
-                    false,
-                    0,
-                    seller.wallet.address(),
-                    false
-                )
-                .await,
-                identifier: 0
-            }
-        );
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
@@ -253,7 +236,7 @@ mod success {
             .await
         );
 
-        let response = create_escrow(
+        let response2 = create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
@@ -263,28 +246,7 @@ mod success {
             defaults.deadline,
         )
         .await;
-        let log = response.get_logs_with_type::<CreatedEscrowEvent>().unwrap();
-        let event = log.get(0).unwrap();
 
-        assert_eq!(
-            *event,
-            CreatedEscrowEvent {
-                escrow: escrow_info(
-                    arbiter_obj.clone(),
-                    1,
-                    buyer.wallet.address(),
-                    None,
-                    0,
-                    defaults.deadline,
-                    false,
-                    1,
-                    seller.wallet.address(),
-                    false
-                )
-                .await,
-                identifier: 1
-            }
-        );
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
         assert_eq!(2, escrow_count(&seller.contract).await);
         assert_eq!(assets(&seller.contract, 1).await.unwrap(), asset);
@@ -303,6 +265,55 @@ mod success {
                 false
             )
             .await
+        );
+
+        let log1 = response1
+            .get_logs_with_type::<CreatedEscrowEvent>()
+            .unwrap();
+        let log2 = response2
+            .get_logs_with_type::<CreatedEscrowEvent>()
+            .unwrap();
+
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(
+            *event1,
+            CreatedEscrowEvent {
+                escrow: escrow_info(
+                    arbiter_obj.clone(),
+                    1,
+                    buyer.wallet.address(),
+                    None,
+                    0,
+                    defaults.deadline,
+                    false,
+                    0,
+                    seller.wallet.address(),
+                    false
+                )
+                .await,
+                identifier: 0
+            }
+        );
+        assert_eq!(
+            *event2,
+            CreatedEscrowEvent {
+                escrow: escrow_info(
+                    arbiter_obj.clone(),
+                    1,
+                    buyer.wallet.address(),
+                    None,
+                    0,
+                    defaults.deadline,
+                    false,
+                    1,
+                    seller.wallet.address(),
+                    false
+                )
+                .await,
+                identifier: 1
+            }
         );
     }
 }
