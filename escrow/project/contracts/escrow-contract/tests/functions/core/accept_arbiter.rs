@@ -48,16 +48,9 @@ mod success {
         )
         .await;
 
-        assert!(matches!(arbiter_proposal(&seller.contract, 0).await, None));
-
         propose_arbiter(arbiter_obj2.clone(), &seller.contract, 0).await;
 
         assert_eq!(1, asset_amount(&defaults.asset_id, &seller.wallet).await);
-        assert_eq!(
-            arbiter_proposal(&seller.contract, 0).await.unwrap(),
-            arbiter_obj2.clone()
-        );
-
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
             escrow_info(
@@ -76,12 +69,7 @@ mod success {
         );
 
         let response = accept_arbiter(&buyer.contract, 0).await;
-        let log = response
-            .get_logs_with_type::<AcceptedArbiterEvent>()
-            .unwrap();
-        let event = log.get(0).unwrap();
 
-        assert_eq!(*event, AcceptedArbiterEvent { identifier: 0 });
         assert_eq!(
             defaults.asset_amount + 1,
             asset_amount(&defaults.asset_id, &seller.wallet).await
@@ -102,6 +90,13 @@ mod success {
             )
             .await
         );
+
+        let log = response
+            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(*event, AcceptedArbiterEvent { identifier: 0 });
     }
 
     #[tokio::test]
@@ -127,7 +122,6 @@ mod success {
             &defaults.asset,
         )
         .await;
-
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -148,32 +142,21 @@ mod success {
             defaults.deadline,
         )
         .await;
-
-        assert_eq!(
-            defaults.asset_amount * 2,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
-
-        assert!(matches!(arbiter_proposal(&seller.contract, 0).await, None));
 
         propose_arbiter(arbiter_obj2.clone(), &seller.contract, 0).await;
-        assert_eq!(
-            defaults.asset_amount + 1,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
+        propose_arbiter(arbiter_obj2.clone(), &seller.contract, 1).await;
+
+        assert_eq!(2, asset_amount(&defaults.asset_id, &seller.wallet).await);
+
         assert_eq!(
             arbiter_proposal(&seller.contract, 0).await.unwrap(),
-            arbiter_obj2.clone()
+            arbiter_obj2
         );
-
-        assert!(matches!(arbiter_proposal(&seller.contract, 1).await, None));
-
-        propose_arbiter(arbiter_obj2.clone(), &seller.contract, 1).await;
-        assert_eq!(2, asset_amount(&defaults.asset_id, &seller.wallet).await);
         assert_eq!(
             arbiter_proposal(&seller.contract, 1).await.unwrap(),
             arbiter_obj2
         );
+
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
             escrow_info(
@@ -190,19 +173,35 @@ mod success {
             )
             .await
         );
-
-        let response = accept_arbiter(&buyer.contract, 0).await;
-        let log = response
-            .get_logs_with_type::<AcceptedArbiterEvent>()
-            .unwrap();
-        let event = log.get(0).unwrap();
-
-        assert_eq!(*event, AcceptedArbiterEvent { identifier: 0 });
-
         assert_eq!(
-            defaults.asset_amount + 2,
+            escrows(&seller.contract, 1).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                None,
+                0,
+                defaults.deadline,
+                false,
+                2,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+
+        let response1 = accept_arbiter(&buyer.contract, 0).await;
+        let asset_amount1 = asset_amount(&defaults.asset_id, &seller.wallet).await;
+        let response2 = accept_arbiter(&buyer.contract, 1).await;
+
+        assert_eq!(defaults.asset_amount + 2, asset_amount1);
+        assert_eq!(
+            defaults.asset_amount * 2 + 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
+
+        assert_eq!(arbiter_proposal(&seller.contract, 0).await, None);
+        assert_eq!(arbiter_proposal(&seller.contract, 1).await, None);
 
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
@@ -220,36 +219,6 @@ mod success {
             )
             .await
         );
-
-        assert_eq!(
-            escrows(&seller.contract, 1).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                None,
-                0,
-                defaults.deadline,
-                false,
-                2,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
-
-        let response = accept_arbiter(&buyer.contract, 1).await;
-        let log = response
-            .get_logs_with_type::<AcceptedArbiterEvent>()
-            .unwrap();
-        let event = log.get(0).unwrap();
-
-        assert_eq!(*event, AcceptedArbiterEvent { identifier: 1 });
-        assert_eq!(
-            defaults.asset_amount * 2 + 2,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
-
         assert_eq!(
             escrows(&seller.contract, 1).await.unwrap(),
             escrow_info(
@@ -266,6 +235,19 @@ mod success {
             )
             .await
         );
+
+        let log1 = response1
+            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .unwrap();
+        let log2 = response2
+            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .unwrap();
+
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(*event1, AcceptedArbiterEvent { identifier: 0 });
+        assert_eq!(*event2, AcceptedArbiterEvent { identifier: 1 });
     }
 }
 
