@@ -1,6 +1,5 @@
 use anyhow::anyhow;
-use std::path::PathBuf;
-use std::process::Command;
+use std::{path::PathBuf, process::Command};
 
 pub(crate) fn execute(command: &mut Command, errors: &mut Vec<String>, app: &String) {
     match command.status() {
