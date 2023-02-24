@@ -5,6 +5,18 @@
     </picture>
 </p>
 
+<p align="center">
+    <a href="https://crates.io/crates/forc/0.33.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.33.1-orange" />
+    </a>
+    <a href="https://crates.io/crates/fuel-core/0.15.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.15.3-yellow" />
+    </a>
+    <a href="https://crates.io/crates/fuels/0.34.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.34.0-blue" />
+    </a>
+</p>
+
 ## Overview
 
 The name registry application allows users to use human readable names instead of addresses to send and receive payments, making it easier to transfer cryptocurrency. 
@@ -14,48 +26,49 @@ In this implementation the price is paid in the base asset on the Fuel network.
 
 Both the asset and the price per 100 seconds are configuration time constants so can be easily changed to different values.
 
-More information can be found in the [specification](./SPECIFICATION.md).
+More information can be found in the [specification](./project/SPECIFICATION.md).
 
-## Project Structure
+## Project structure
 
 The project consists of a smart contract.
 
 <!--Only show most important files e.g. script to run, build etc.-->
 
-```
-name-registry/
-├── project/
-|   └── registry-contract/
-|       ├── src/main.sw
-|       └── tests/harness.rs
-├── README.md
-└── SPECIFICATION.md
+```sh
+name-registry
+├── project
+│   ├── contracts
+│   │   └── registry-contract
+│   │       ├── src/main.sw
+│   │       └── tests/harness.rs
+│   ├── README.md
+│   └── SPECIFICATION.md
+├── ui
+│   ├── README.md
+│   └── SPECIFICATION.md
+└── README.md
 ```
 
 ## Running the project
 
-### User Interface
+### User interface
 
-TODO: UI does not currently exist
+TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
 
-### Tests
+### Project
 
-In order to run the tests make sure that you are in the root of this project i.e. `/path/to/name-registry/<you are here>`
+In order to run the subsequent commands change into the following directory `/path/to/name-registry/project/<here>`.
 
-Build the contract:
+#### Program compilation
 
 ```bash
 forc build
 ```
 
-Run the tests:
+#### Running the tests
+
+Before running the tests the programs must be compiled with the command above.
 
 ```bash
 cargo test
 ```
-
-## Specification
-
-The specification contains a non-technical overview of the contract indicating the flow of information from the start to the end of the name-registry.
-
-Check [SPECIFICATION.md](./SPECIFICATION.md) for more info!

@@ -9,9 +9,6 @@
     <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
         <img src="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml/badge.svg" />
     </a>
-    <a href="https://crates.io/crates/forc/0.33.1" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.33.1-orange" />
-    </a>
     <a href="./LICENSE" alt="forc">
         <img src="https://img.shields.io/github/license/FuelLabs/sway-applications" />
     </a>
@@ -73,10 +70,9 @@ sway-applications/
 
 If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/) steps required to use our tools.
 
-Any instructions related to running a specific project should be found within the README.md of that project.
+Any instructions related to running a specific project will be found within the README.md in the root of that project. 
 
-> **Note**
-> All projects currently use `forc 0.33.1`, `fuel-core 0.15.3`, and `rust 1.66.0`.
+The projects are pinned to specific versions which can be seen at the top of the README.md inside the `/<app>/project` directory and inside the `fuel-toolchain.toml`.
 
 ## Contributing
 
