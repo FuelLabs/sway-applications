@@ -9,9 +9,6 @@
     <a href="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml" alt="CI">
         <img src="https://github.com/FuelLabs/sway-applications/actions/workflows/ci.yml/badge.svg" />
     </a>
-    <a href="https://crates.io/crates/forc/0.33.1" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.33.1-orange" />
-    </a>
     <a href="./LICENSE" alt="forc">
         <img src="https://img.shields.io/github/license/FuelLabs/sway-applications" />
     </a>
@@ -51,8 +48,6 @@ sway-applications/
 
 #### Decentralized Applications
 
-#### Decentralized Applications
-
 - [Airdrop](./airdrop/) is a token distribution program where users are able to claim tokens given a valid merkle proof.
 - [Automated Market Maker (AMM)](./AMM/) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines prices algorithmically while exchanging assets.
 - [Decentralized Autonomous Organization (DAO)](./DAO) is an organization where users get to vote on governance proposals using governance tokens.
@@ -60,17 +55,11 @@ sway-applications/
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
 - [Fractional-NFT](./fractional-NFT/) allows multiple parties to claim ownership of an NFT directly proportional to the number of tokens they hold.
 - [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal.
-- [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal.
 - [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction.
 - [Name-Registry](./name-registry/) allows users to perform transactions with human readable names instead of addresses.
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
 - [OTC Swap Predicate](./OTC-swap-predicate) is a predicate that can be used to propose and execute an atomic swap between two parties without requiring any on-chain state.
-- [Timelock](./timelock) is a contract which restricts the execution of a transaction to a specified time range
-
-#### Games
-
-- [TicTacToe](./games/TicTacToe) is a game where two players compete to align three markers in a row.
 - [Timelock](./timelock) is a contract which restricts the execution of a transaction to a specified time range
 
 #### Games
@@ -84,8 +73,6 @@ If you wish to run any of the projects then clone this repository and go through
 Any instructions related to running a specific project will be found within the README.md in the root of that project. 
 
 The projects are pinned to specific versions which can be seen at the top of the README.md inside the `/<app>/project` directory and inside the `fuel-toolchain.toml`.
-> **Note**
-> All projects currently use `forc 0.33.1`, `fuel-core 0.15.3`, and `rust 1.66.0`.
 
 ## Contributing
 

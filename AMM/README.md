@@ -63,27 +63,9 @@ AMM
 All contracts and scripts have the structure:
 
 ```
-<<<<<<< HEAD
-AMM/
-├── project/
-|   ├── contracts/
-|   |   ├── AMM-contract/
-|   |   └── exchange-contract/
-|   ├── scripts/
-|   |   ├── atomic-add-liquidity/
-|   |   ├── swap-exact-input/
-|   |   └── swap-exact-output/
-|   ├── libraries/
-|   |   └── src/interface.sw
-|   └── test-utils/
-|       └── src/lib.rs
-├── README.md
-└── SPECIFICATION.md
-=======
 contract or script/
 ├── src/main.sw
 └── tests/harness.rs
->>>>>>> origin/master
 ```
 
 All contracts and scripts have the structure:
