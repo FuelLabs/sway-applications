@@ -1,4 +1,4 @@
-use crate::utils::{abi_calls::constructor, test_helpers::setup};
+use crate::utils::{interface::constructor, setup::setup};
 use fuels::types::Identity;
 
 mod success {

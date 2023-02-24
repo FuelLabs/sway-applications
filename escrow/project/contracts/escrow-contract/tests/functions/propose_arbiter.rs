@@ -12,6 +12,7 @@ use fuels::{
 mod success {
 
     use super::*;
+    use crate::utils::ProposedArbiterEvent;
 
     #[tokio::test]
     async fn proposes_arbiter() {
@@ -46,7 +47,19 @@ mod success {
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
-        propose_arbiter(arbiter_obj, &seller.contract, 0).await;
+        let response = propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<ProposedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ProposedArbiterEvent {
+                arbiter: arbiter_obj,
+                identifier: 0
+            }
+        );
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
     }
 
@@ -84,13 +97,37 @@ mod success {
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+        let response = propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<ProposedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ProposedArbiterEvent {
+                arbiter: arbiter_obj.clone(),
+                identifier: 0
+            }
+        );
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        propose_arbiter(arbiter_obj, &seller.contract, 0).await;
+        let response = propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<ProposedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ProposedArbiterEvent {
+                arbiter: arbiter_obj,
+                identifier: 0
+            }
+        );
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
@@ -141,13 +178,37 @@ mod success {
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+        let response = propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<ProposedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ProposedArbiterEvent {
+                arbiter: arbiter_obj.clone(),
+                identifier: 0
+            }
+        );
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        propose_arbiter(arbiter_obj, &seller.contract, 1).await;
+        let response = propose_arbiter(arbiter_obj.clone(), &seller.contract, 1).await;
+        let log = response
+            .get_logs_with_type::<ProposedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ProposedArbiterEvent {
+                arbiter: arbiter_obj,
+                identifier: 1
+            }
+        );
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
     }
 
@@ -195,25 +256,73 @@ mod success {
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+        let response = propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<ProposedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ProposedArbiterEvent {
+                arbiter: arbiter_obj.clone(),
+                identifier: 0
+            }
+        );
         assert_eq!(
             defaults.asset_amount * 3,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        propose_arbiter(arbiter_obj.clone(), &seller.contract, 1).await;
+        let response = propose_arbiter(arbiter_obj.clone(), &seller.contract, 1).await;
+        let log = response
+            .get_logs_with_type::<ProposedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ProposedArbiterEvent {
+                arbiter: arbiter_obj.clone(),
+                identifier: 1
+            }
+        );
         assert_eq!(
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+        let response = propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+        let log = response
+            .get_logs_with_type::<ProposedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ProposedArbiterEvent {
+                arbiter: arbiter_obj.clone(),
+                identifier: 0
+            }
+        );
         assert_eq!(
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
 
-        propose_arbiter(arbiter_obj, &seller.contract, 1).await;
+        let response = propose_arbiter(arbiter_obj.clone(), &seller.contract, 1).await;
+        let log = response
+            .get_logs_with_type::<ProposedArbiterEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ProposedArbiterEvent {
+                arbiter: arbiter_obj,
+                identifier: 1
+            }
+        );
         assert_eq!(
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
@@ -519,6 +628,7 @@ mod revert {
             .propose_arbiter(arbiter_obj, 0)
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .append_variable_outputs(1)
             .call()
             .await
@@ -594,6 +704,7 @@ mod revert {
             .propose_arbiter(arbiter_obj_unequal, 0)
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .append_variable_outputs(1)
             .call()
             .await
