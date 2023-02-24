@@ -35,12 +35,6 @@ mod success {
             &defaults.asset,
         )
         .await;
-
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &buyer.wallet).await
-        );
-
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -52,6 +46,10 @@ mod success {
         )
         .await;
 
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer.wallet).await
+        );
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
             escrow_info(
@@ -76,16 +74,7 @@ mod success {
             0,
         )
         .await;
-        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
-        let event = log.get(0).unwrap();
 
-        assert_eq!(
-            *event,
-            DepositEvent {
-                asset: defaults.asset_id,
-                identifier: 0
-            }
-        );
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
@@ -102,6 +91,17 @@ mod success {
                 false
             )
             .await
+        );
+
+        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            DepositEvent {
+                asset: defaults.asset_id,
+                identifier: 0
+            }
         );
     }
 
@@ -128,12 +128,6 @@ mod success {
             &defaults.asset,
         )
         .await;
-
-        assert_eq!(
-            defaults.asset_amount * 2,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
-
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -156,6 +150,10 @@ mod success {
         .await;
 
         assert_eq!(
+            defaults.asset_amount * 2,
+            asset_amount(&defaults.asset_id, &buyer.wallet).await
+        );
+        assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
             escrow_info(
                 arbiter_obj.clone(),
@@ -171,7 +169,6 @@ mod success {
             )
             .await
         );
-
         assert_eq!(
             escrows(&seller.contract, 1).await.unwrap(),
             escrow_info(
@@ -189,30 +186,29 @@ mod success {
             .await
         );
 
-        let response = deposit(
+        let response1 = deposit(
             defaults.asset_amount,
             &defaults.asset_id,
             &buyer.contract,
             0,
         )
         .await;
-        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
-        let event = log.get(0).unwrap();
 
-        assert_eq!(
-            *event,
-            DepositEvent {
-                asset: defaults.asset_id,
-                identifier: 0
-            }
-        );
-        assert_eq!(
+        let asset_amount1 = asset_amount(&defaults.asset_id, &buyer.wallet).await;
+        let escrow_info1 = escrows(&seller.contract, 0).await.unwrap();
+
+        let response2 = deposit(
             defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &buyer.wallet).await
-        );
+            &defaults.asset_id,
+            &buyer.contract,
+            1,
+        )
+        .await;
 
+        assert_eq!(defaults.asset_amount, asset_amount1);
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
         assert_eq!(
-            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info1,
             escrow_info(
                 arbiter_obj.clone(),
                 1,
@@ -227,25 +223,6 @@ mod success {
             )
             .await
         );
-
-        let response = deposit(
-            defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            1,
-        )
-        .await;
-        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
-        let event = log.get(0).unwrap();
-
-        assert_eq!(
-            *event,
-            DepositEvent {
-                asset: defaults.asset_id,
-                identifier: 1
-            }
-        );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
         assert_eq!(
             escrows(&seller.contract, 1).await.unwrap(),
             escrow_info(
@@ -261,6 +238,27 @@ mod success {
                 false
             )
             .await
+        );
+
+        let log1 = response1.get_logs_with_type::<DepositEvent>().unwrap();
+        let log2 = response2.get_logs_with_type::<DepositEvent>().unwrap();
+
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(
+            *event1,
+            DepositEvent {
+                asset: defaults.asset_id,
+                identifier: 0
+            }
+        );
+        assert_eq!(
+            *event2,
+            DepositEvent {
+                asset: defaults.asset_id,
+                identifier: 1
+            }
         );
     }
 }
