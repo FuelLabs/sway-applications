@@ -32,6 +32,8 @@ pub const TEST_CONTRACT_STORAGE_PATH: &str =
 
 pub const DEFAULT_THRESHOLD: u64 = 5;
 pub const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
+pub const DEFAULT_CALLDATA_VALUE_PARAM: u64 = 1;
+pub const DEFAULT_FORWARDED_GAS: u64 = 10_000_000;
 
 pub struct Caller {
     pub contract: MultiSig,
@@ -48,6 +50,20 @@ pub struct Transaction {
     pub calldata: Option<Vec<u8>>,
     pub single_value_type_arg: Option<bool>,
     pub forwarded_gas: Option<u64>,
+}
+
+#[macro_export]
+macro_rules! fn_selector {
+    ( $fn_name: ident ( $($fn_arg: ty),* )  ) => {
+         ::fuels::core::function_selector::resolve_fn_selector(stringify!($fn_name), &[$( <$fn_arg as ::fuels::types::traits::Parameterize>::param_type() ),*]).to_vec()
+    }
+}
+
+#[macro_export]
+macro_rules! calldata {
+    ( $($arg: expr),* ) => {
+        ::fuels::core::abi_encoder::ABIEncoder::encode(&[$(::fuels::types::traits::Tokenizable::into_token($arg)),*]).unwrap().resolve(0)
+    }
 }
 
 pub fn base_asset_contract_id() -> ContractId {
@@ -202,6 +218,44 @@ pub async fn transfer_parameters(deployer: &Caller, nonce: u64) -> (WalletUnlock
     (receiver_wallet, tx)
 }
 
+pub async fn call_parameters(
+    deployer: &Caller,
+    nonce: u64,
+    test_contract: &TestContract,
+    with_value: bool,
+) -> Transaction {
+    match with_value {
+        false => Transaction {
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+            nonce,
+            value: None,
+            asset_id: None,
+            target: Identity::ContractId(test_contract.contract_id().into()),
+            function_selector: Some(fn_selector!(change_mapping_without_value(Address, u64))),
+            calldata: Some(calldata!(
+                Address::from(deployer.wallet.address()),
+                DEFAULT_CALLDATA_VALUE_PARAM
+            )),
+            single_value_type_arg: Some(false),
+            forwarded_gas: Some(DEFAULT_FORWARDED_GAS),
+        },
+        true => Transaction {
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+            nonce,
+            value: Some(DEFAULT_TRANSFER_AMOUNT),
+            asset_id: Some(base_asset_contract_id()),
+            target: Identity::ContractId(test_contract.contract_id().into()),
+            function_selector: Some(fn_selector!(change_mapping_with_value(Address, u64))),
+            calldata: Some(calldata!(
+                Address::from(deployer.wallet.address()),
+                DEFAULT_CALLDATA_VALUE_PARAM
+            )),
+            single_value_type_arg: Some(false),
+            forwarded_gas: Some(DEFAULT_FORWARDED_GAS),
+        },
+    }
+}
+
 pub async fn compute_signatures(private_key: SecretKey, tx_hash: Message) -> Vec<SignatureInfo> {
     // - Fuel signature. Fuel wallet. No format. No prefix.
     let fuel_signature = format_and_sign(
@@ -225,20 +279,6 @@ pub async fn compute_signatures(private_key: SecretKey, tx_hash: Message) -> Vec
 
     // - Must comply with ascending signers requirement of Multisig's count_approvals
     vec![evm_signature, fuel_signature]
-}
-
-#[macro_export]
-macro_rules! fn_selector {
-    ( $fn_name: ident ( $($fn_arg: ty),* )  ) => {
-         ::fuels::core::function_selector::resolve_fn_selector(stringify!($fn_name), &[$( <$fn_arg as ::fuels::types::traits::Parameterize>::param_type() ),*]).to_vec()
-    }
-}
-
-#[macro_export]
-macro_rules! calldata {
-    ( $($arg: expr),* ) => {
-        ::fuels::core::abi_encoder::ABIEncoder::encode(&[$(::fuels::types::traits::Tokenizable::into_token($arg)),*]).unwrap().resolve(0)
-    }
 }
 
 pub async fn deploy_test_contract(deployer_wallet: WalletUnlocked) -> Result<TestContract> {
