@@ -3,7 +3,7 @@ use fuels::{
     types::{ContractId, Identity},
 };
 
-use crate::utils::setup::{MultiSig, SignatureInfo, User};
+use crate::utils::setup::{base_asset_contract_id, MultiSig, SignatureInfo, User};
 
 pub async fn cancel_transaction(contract: &MultiSig) -> FuelCallResponse<()> {
     contract
@@ -29,20 +29,43 @@ pub async fn execute_transaction(
     target: Identity,
     value: Option<u64>,
 ) -> FuelCallResponse<()> {
-    contract
-        .methods()
-        .execute_transaction(
-            asset_id,
-            calldata,
-            forwarded_gas,
-            function_selector,
-            signatures,
-            single_value_type_arg,
-            target,
-            value,
-        )
-        .append_variable_outputs(1)
-        .call()
-        .await
-        .unwrap()
+    if function_selector.is_none() {
+        contract
+            .methods()
+            .execute_transaction(
+                asset_id,
+                calldata,
+                forwarded_gas,
+                function_selector,
+                signatures,
+                single_value_type_arg,
+                target.clone(),
+                value,
+            )
+            .append_variable_outputs(1)
+            .call()
+            .await
+            .unwrap()
+    } else {
+        contract
+            .methods()
+            .execute_transaction(
+                asset_id,
+                calldata,
+                forwarded_gas,
+                function_selector,
+                signatures,
+                single_value_type_arg,
+                target.clone(),
+                value,
+            )
+            .append_variable_outputs(1)
+            .set_contract_ids(&[match target {
+                Identity::ContractId(contract_identifier) => contract_identifier.into(),
+                _ => base_asset_contract_id().into(),
+            }])
+            .call()
+            .await
+            .unwrap()
+    }
 }
