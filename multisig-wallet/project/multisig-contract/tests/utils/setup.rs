@@ -8,10 +8,16 @@ use fuels::{
 use rand::{rngs::StdRng, Rng, SeedableRng};
 use sha3::{Digest, Keccak256};
 
-abigen!(Contract(
-    name = "MultiSig",
-    abi = "./project/multisig-contract/out/debug/multisig-contract-abi.json"
-));
+abigen!(
+    Contract(
+        name = "MultiSig",
+        abi = "./project/multisig-contract/out/debug/multisig-contract-abi.json"
+    ),
+    Contract(
+        name = "TestContract",
+        abi = "./project/multisig-contract/tests/artifacts/callable-contract/out/debug/callable-contract-abi.json"
+    )
+);
 
 // Test-only private key
 pub const VALID_SIGNER_PK: &str =
@@ -19,6 +25,10 @@ pub const VALID_SIGNER_PK: &str =
 
 pub const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
 pub const MULTISIG_CONTRACT_STORAGE_PATH: &str = "./out/debug/multisig-contract-storage_slots.json";
+pub const TEST_CONTRACT_BINARY_PATH: &str =
+    "./tests/artifacts/callable-contract/out/debug/callable-contract.bin";
+pub const TEST_CONTRACT_STORAGE_PATH: &str =
+    "./tests/artifacts/callable-contract/out/debug/callable-contract-storage_slots.json";
 
 pub const DEFAULT_THRESHOLD: u64 = 5;
 pub const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
@@ -229,4 +239,18 @@ macro_rules! calldata {
     ( $($arg: expr),* ) => {
         ::fuels::core::abi_encoder::ABIEncoder::encode(&[$(::fuels::types::traits::Tokenizable::into_token($arg)),*]).unwrap().resolve(0)
     }
+}
+
+pub async fn deploy_test_contract(deployer_wallet: WalletUnlocked) -> Result<TestContract> {
+    let test_contract_id = Contract::deploy(
+        TEST_CONTRACT_BINARY_PATH,
+        &deployer_wallet,
+        TxParameters::default(),
+        StorageConfiguration::with_storage_path(Some(TEST_CONTRACT_STORAGE_PATH.to_string())),
+    )
+    .await?;
+
+    let test_contract = TestContract::new(test_contract_id, deployer_wallet);
+
+    Ok(test_contract)
 }
