@@ -1,0 +1,97 @@
+name: "Deploy Contracts"
+
+on:
+  workflow_dispatch:
+    inputs:
+      provider_url:
+        description: 'Provider url'
+        required: true
+        default: 'https://node-beta-2.fuel.network/graphql'
+        type: string
+      wallet_secret:
+        description: 'Wallet secret used to deploy and initialize nfts'
+        type: string
+      gas_price:
+        description: 'Min gas price required from the provider'
+        required: true
+        default: 1
+        type: number
+      initiate_supply:
+        description: 'Should initialize nfts'
+        required: true
+        default: false
+        type: boolean
+      commit_changes:
+        description: 'Commit .env.production on the current branch'
+        required: true
+        default: true
+        type: boolean
+
+env:
+  RUST_VERSION: 1.61.0
+  NODE_VERSION: 16
+  PNPM_VERSION: 7.0.0
+  COMPOSE_VERSION: 2.6.0
+  WALLET_SECRET: ${{ github.event.inputs.wallet_secret || secrets.WALLET_SECRET }}
+  PROVIDER_URL: ${{ github.event.inputs.provider_url }}
+  GAS_PRICE: ${{ github.event.inputs.gas_price }}
+  TOKEN_AMOUNT: ${{ github.event.inputs.token_amount }}
+  ETH_AMOUNT: ${{ github.event.inputs.eth_amount }}
+  OUTPUT_ENV: .env.production
+
+jobs:
+  cancel-previous-run:
+    name: Cancel previous actions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: n1hility/cancel-previous-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  test_inputs:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Check provider_url format
+          run: |
+            if ! [[ "${{ github.event.inputs.provider_url }}" =~ ^https?:\/\/([a-z0-9\.-]){1,}(:[0-9]{1,4})?\/graphql$ ]]; then
+              echo "Provider url is not valid";
+              process 1;
+            fi
+          shell: bash
+
+  build-and-deploy:
+    needs: test_inputs
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-node
+      - uses: ./.github/actions/setup-rust
+
+      - name: Run PNPM install
+        id: pnpm-cache
+        run:
+          pnpm recursive install --frozen-lockfile
+
+      - name: Setup scripts
+        run: |
+          pnpm scripts:setup
+
+      - name: Deploy contracts
+        run: |
+          pnpm exec swayswap-scripts run
+
+      - name: Mint and approve nfts
+        if: ${{ github.event.inputs.initialize_nfts }}
+        run: |
+          pnpm contracts:init
+        env:
+          NODE_ENV: production
+
+      - name: Commit .env.production
+        if: ${{ github.event.inputs.commit_changes && github.ref != 'refs/heads/master' }}
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'chore: update contract ids'
+          add: './packages/app/.env.production'

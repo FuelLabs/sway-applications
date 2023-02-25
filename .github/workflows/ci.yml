@@ -34,13 +34,70 @@ jobs:
           version: '0.1'
       - name: Run Cargo.toml linter
         run: git ls-files | grep Cargo.toml$ | xargs --verbose -n 1 cargo-toml-lint
+      
+  frontend:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        project: ["auctions/english-auction"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Fuel toolchain
+        uses: FuelLabs/action-fuel-toolchain@v0.2.0
+        with:
+          name: my-toolchain
+          components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Setup Docker
+        uses: ./.github/actions/setup-docker
+        with:
+            password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Run Lint
+        run: |
+          cd ${{ matrix.project }}
+          pnpm install
+          pnpm build
+          pnpm lint
+
+      - name: Initialization
+        run: |
+          cd ${{ matrix.project }}
+          pnpm services:setup-test
+        
+      - name: Install Playwright
+        run: |
+          cd ${{ matrix.project }}
+          pnpm exec playwright install --with-deps chromium
+      
+      - name: Run E2E Tests
+        run: |
+          cd ${{ matrix.project }}
+          xvfb-run --auto-servernum -- pnpm test
+        env:
+          NODE_ENV: test
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: playwright-report
+          path: auctions/english-auction/packages/app/playwright-report/
+          retention-days: 30
 
   build:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        project: ["airdrop", "AMM", "auctions", "DAO", "escrow", "fractional-NFT", "fundraiser", "multisig-wallet", "name-registry", "NFT", "oracle", "OTC-swap-predicate", ".template"]
+        project: ["airdrop", "AMM", "auctions/english-auction/packages/contracts", "DAO", "escrow", "fractional-NFT", "fundraiser", "multisig-wallet", "name-registry", "NFT", "oracle", "OTC-swap-predicate", ".template"]
 
     steps:
       - name: Checkout repository
