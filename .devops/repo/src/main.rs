@@ -1,39 +1,32 @@
+mod cli;
 mod commands;
 mod utils;
 
-use clap::{Parser, ValueEnum};
+use clap::Parser;
+use cli::{Cli, Mode};
 use commands::{build, bump, fmt, test};
 use utils::{read_applications, repo_root};
 
-#[derive(Parser)]
-#[command(about = "Utility crate for maintaining the repository")]
-struct Cli {
-    #[arg(value_enum)]
-    command: Mode,
-}
-
-#[derive(Clone, ValueEnum)]
-enum Mode {
-    /// Build the Sway contracts for each project
-    Build,
-    /// Bump each project from its current `fuel-toolchain.toml` to the one in this repository
-    Bump,
-    /// Format the Sway and Rust files in each project
-    Fmt,
-    /// Run the Rust tests for each project
-    Test,
-}
-
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
-
-    let apps = read_applications();
     let root = repo_root();
 
     match cli.command {
-        Mode::Build => build::run(apps, root),
-        Mode::Bump => bump::run(apps, root),
-        Mode::Fmt => fmt::run(apps, root),
-        Mode::Test => test::run(apps, root),
+        Mode::Build(opt) => match opt.apps {
+            Some(apps) => build::run(apps, root),
+            None => build::run(read_applications(), root),
+        },
+        Mode::Bump(opt) => match opt.apps {
+            Some(apps) => bump::run(apps, root),
+            None => bump::run(read_applications(), root),
+        },
+        Mode::Fmt(opt) => match opt.apps {
+            Some(apps) => fmt::run(apps, root),
+            None => fmt::run(read_applications(), root),
+        },
+        Mode::Test(opt) => match opt.apps {
+            Some(apps) => test::run(apps, root),
+            None => test::run(read_applications(), root),
+        },
     }
 }
