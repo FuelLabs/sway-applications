@@ -70,7 +70,9 @@ sway-applications/
 
 If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/) steps required to use our tools.
 
-Any instructions related to running a specific project should be found within the README.md of that project.
+Any instructions related to running a specific project will be found within the README.md in the root of that project. 
+
+The projects are pinned to specific versions which can be seen at the top of the README.md inside the `/<app>/project` directory and inside the `fuel-toolchain.toml`.
 
 ## Contributing
 
