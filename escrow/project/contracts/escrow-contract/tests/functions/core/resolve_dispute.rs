@@ -7,8 +7,11 @@ mod success {
 
     use super::*;
     use crate::utils::{
-        interface::core::propose_arbiter,
-        setup::{asset_amount, ResolvedDisputeEvent},
+        interface::{
+            core::propose_arbiter,
+            info::{arbiter_proposal, escrows},
+        },
+        setup::{asset_amount, escrow_info, ResolvedDisputeEvent},
     };
     use fuels::{prelude::Address, types::Identity};
 
@@ -59,6 +62,24 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &arbiter.wallet).await);
 
         dispute(&buyer.contract, 0).await;
+
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+
         let response = resolve_dispute(
             &arbiter.contract,
             0,
@@ -66,6 +87,33 @@ mod success {
             buyer.wallet.address(),
         )
         .await;
+
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer.wallet).await
+        );
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &arbiter.wallet).await
+        );
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                true
+            )
+            .await
+        );
+
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
@@ -77,15 +125,6 @@ mod success {
                 identifier: 0,
                 user: Identity::Address(Address::from(buyer.wallet.address()))
             }
-        );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &buyer.wallet).await
-        );
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &arbiter.wallet).await
         );
     }
 
@@ -135,6 +174,24 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
         dispute(&buyer.contract, 0).await;
+
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+
         let response = resolve_dispute(
             &arbiter.contract,
             0,
@@ -142,6 +199,34 @@ mod success {
             buyer.wallet.address(),
         )
         .await;
+
+        assert_eq!(1, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer.wallet).await
+        );
+        assert_eq!(
+            defaults.asset_amount - 1,
+            asset_amount(&defaults.asset_id, &arbiter.wallet).await
+        );
+
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                true
+            )
+            .await
+        );
+
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
@@ -153,16 +238,6 @@ mod success {
                 identifier: 0,
                 user: Identity::Address(Address::from(buyer.wallet.address()))
             }
-        );
-
-        assert_eq!(1, asset_amount(&defaults.asset_id, &seller.wallet).await);
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &buyer.wallet).await
-        );
-        assert_eq!(
-            defaults.asset_amount - 1,
-            asset_amount(&defaults.asset_id, &arbiter.wallet).await
         );
     }
 
@@ -212,6 +287,24 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
         dispute(&buyer.contract, 0).await;
+
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+
         let response = resolve_dispute(
             &arbiter.contract,
             0,
@@ -219,6 +312,33 @@ mod success {
             seller.wallet.address(),
         )
         .await;
+
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller.wallet).await
+        );
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &arbiter.wallet).await
+        );
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                true
+            )
+            .await
+        );
+
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
@@ -230,15 +350,6 @@ mod success {
                 identifier: 0,
                 user: Identity::Address(Address::from(seller.wallet.address()))
             }
-        );
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &arbiter.wallet).await
         );
     }
 
@@ -288,6 +399,24 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
         dispute(&buyer.contract, 0).await;
+
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+
         let response = resolve_dispute(
             &arbiter.contract,
             0,
@@ -295,6 +424,33 @@ mod success {
             seller.wallet.address(),
         )
         .await;
+
+        assert_eq!(
+            defaults.asset_amount + 1,
+            asset_amount(&defaults.asset_id, &seller.wallet).await
+        );
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
+        assert_eq!(
+            defaults.asset_amount - 1,
+            asset_amount(&defaults.asset_id, &arbiter.wallet).await
+        );
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                true
+            )
+            .await
+        );
+
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
@@ -306,15 +462,6 @@ mod success {
                 identifier: 0,
                 user: Identity::Address(Address::from(seller.wallet.address()))
             }
-        );
-        assert_eq!(
-            defaults.asset_amount + 1,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-        assert_eq!(
-            defaults.asset_amount - 1,
-            asset_amount(&defaults.asset_id, &arbiter.wallet).await
         );
     }
 
@@ -365,6 +512,28 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
         dispute(&buyer.contract, 0).await;
+
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+        assert_eq!(
+            arbiter_proposal(&seller.contract, 0).await.unwrap(),
+            arbiter_obj.clone()
+        );
+
         let response = resolve_dispute(
             &arbiter.contract,
             0,
@@ -372,18 +541,7 @@ mod success {
             buyer.wallet.address(),
         )
         .await;
-        let log = response
-            .get_logs_with_type::<ResolvedDisputeEvent>()
-            .unwrap();
-        let event = log.get(0).unwrap();
 
-        assert_eq!(
-            *event,
-            ResolvedDisputeEvent {
-                identifier: 0,
-                user: Identity::Address(Address::from(buyer.wallet.address()))
-            }
-        );
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
@@ -395,6 +553,36 @@ mod success {
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &arbiter.wallet).await
+        );
+        assert!(matches!(arbiter_proposal(&seller.contract, 0).await, None));
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                true
+            )
+            .await
+        );
+
+        let log = response
+            .get_logs_with_type::<ResolvedDisputeEvent>()
+            .unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(
+            *event,
+            ResolvedDisputeEvent {
+                identifier: 0,
+                user: Identity::Address(Address::from(buyer.wallet.address()))
+            }
         );
     }
 
@@ -463,25 +651,32 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &arbiter.wallet).await);
 
         dispute(&buyer.contract, 0).await;
-        let response = resolve_dispute(
+
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+
+        let response1 = resolve_dispute(
             &arbiter.contract,
             0,
             arbiter_obj.fee_amount,
             buyer.wallet.address(),
         )
         .await;
-        let log = response
-            .get_logs_with_type::<ResolvedDisputeEvent>()
-            .unwrap();
-        let event = log.get(0).unwrap();
 
-        assert_eq!(
-            *event,
-            ResolvedDisputeEvent {
-                identifier: 0,
-                user: Identity::Address(Address::from(buyer.wallet.address()))
-            }
-        );
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
         assert_eq!(
             defaults.asset_amount,
@@ -492,26 +687,50 @@ mod success {
             asset_amount(&defaults.asset_id, &arbiter.wallet).await
         );
 
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                0,
+                seller.wallet.address(),
+                true
+            )
+            .await
+        );
+
         dispute(&buyer.contract, 1).await;
-        let response = resolve_dispute(
+
+        assert_eq!(
+            escrows(&seller.contract, 1).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                2,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+
+        let response2 = resolve_dispute(
             &arbiter.contract,
             1,
             arbiter_obj.fee_amount,
             seller.wallet.address(),
         )
         .await;
-        let log = response
-            .get_logs_with_type::<ResolvedDisputeEvent>()
-            .unwrap();
-        let event = log.get(0).unwrap();
 
-        assert_eq!(
-            *event,
-            ResolvedDisputeEvent {
-                identifier: 1,
-                user: Identity::Address(Address::from(seller.wallet.address()))
-            }
-        );
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller.wallet).await
@@ -523,6 +742,47 @@ mod success {
         assert_eq!(
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &arbiter.wallet).await
+        );
+
+        assert_eq!(
+            escrows(&seller.contract, 1).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                defaults.deadline,
+                true,
+                2,
+                seller.wallet.address(),
+                true
+            )
+            .await
+        );
+
+        let log1 = response1
+            .get_logs_with_type::<ResolvedDisputeEvent>()
+            .unwrap();
+        let log2 = response2
+            .get_logs_with_type::<ResolvedDisputeEvent>()
+            .unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(
+            *event1,
+            ResolvedDisputeEvent {
+                identifier: 0,
+                user: Identity::Address(Address::from(buyer.wallet.address()))
+            }
+        );
+        assert_eq!(
+            *event2,
+            ResolvedDisputeEvent {
+                identifier: 1,
+                user: Identity::Address(Address::from(seller.wallet.address()))
+            }
         );
     }
 }
