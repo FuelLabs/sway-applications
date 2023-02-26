@@ -2,7 +2,7 @@ library interface;
 
 dep data_structures;
 
-use data_structures::ClaimData;
+use data_structures::ClaimState;
 
 abi AirdropDistributor {
     /// This function will let users claim their airdrop.
@@ -15,7 +15,6 @@ abi AirdropDistributor {
     ///
     /// * `amount` - The quantity of an asset allotted to the user to claim.
     /// * 'key' - The index of the leaf which will be proven on the Merkle Tree.
-    /// * `num_leaves` - The number of leaves in the Merkle Tree.
     /// * `proof` - The Merkle proof to verify the user is authorized to claim.
     /// * `to` - The user which has been allotted a quantity of the asset.
     ///
@@ -25,7 +24,10 @@ abi AirdropDistributor {
     /// * When the `to` `Identity` has already claimed.
     /// * When the merkle proof verification failed.
     #[storage(read, write)]
-    fn claim(amount: u64, key: u64, num_leaves: u64, proof: Vec<b256>, to: Identity);
+    fn claim(amount: u64, key: u64, proof: Vec<b256>, to: Identity);
+
+    #[storage(read, write)]
+    fn clawback();
 
     /// Initialized the contract and starts the airdrop.
     ///
@@ -37,12 +39,13 @@ abi AirdropDistributor {
     /// * `asset` - The contract which is to be distributed.
     /// * `claim_time` - The number fo blocks the claiming period should last.
     /// * `merkleRoot` - The root of the merkle proof used to verify claiming.
+    /// * `num_leaves` - The number of leaves in the Merkle Tree.
     ///
     /// # Reverts
     ///
     /// * The constructor has already been called.
     #[storage(read, write)]
-    fn constructor(asset: ContractId, claim_time: u64, merkleRoot: b256);
+    fn constructor(asset: ContractId, claim_time: u64, merkleRoot: b256, num_leaves: u64);
 }
 
 abi Info {
@@ -50,21 +53,21 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `identity` - The user whose ClaimData will be returned
+    /// * `identity` - The user whose ClaimState will be returned
     #[storage(read)]
-    fn claim_data(identity: Identity) -> ClaimData;
+    fn claim_data(identity: Identity) -> ClaimState;
 
     /// Returns the block at which the airdrop ends
     #[storage(read)]
     fn end_block() -> u64;
 
-    /// Returns the merkle root of the airdrop used to verify proofs
-    ///
-    /// # Reverts
-    ///
-    /// * When the contract has not yet been initalized
+    /// Returns whether the airdrop is active and tokens can be claimed
     #[storage(read)]
-    fn merkle_root() -> b256;
+    fn is_active() -> bool;
+
+    /// Returns the merkle root of the airdrop used to verify proofs
+    #[storage(read)]
+    fn merkle_root() -> Option<b256>;
 }
 
 abi SimpleAsset {

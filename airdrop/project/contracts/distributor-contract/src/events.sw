@@ -14,4 +14,6 @@ pub struct CreateAirdropEvent {
     end_block: u64,
     /// The computed merkle root that will be used to verify claims.
     merkle_root: b256,
+    /// The total number of leaves in the merkle tree
+    num_leaves: u64,
 }
