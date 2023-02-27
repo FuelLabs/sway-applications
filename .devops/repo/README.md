@@ -19,28 +19,24 @@ After building the executable you may run it directly from `/repo/target/debug/r
 
 ### Usage
 
-The tool has 4 modes. 
-
-Each command may be used on its own in which case it will be performed on all applications within the repository. Alternatively, a list of applications may be specified.
-
-The commands all follow the same format.
-
 ```sh
-cargo run <command> app1 app2 ...
+Utility crate for maintaining the repository
+
+Usage: repo <COMMAND>
+
+Commands:
+  build  Compile the Sway and Rust programs in each project
+  bump   Bump each project from its current `fuel-toolchain.toml` to the one in this repository
+  fmt    Format the Sway and Rust files in each project
+  test   Run the Rust tests for each project
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help  Print help
 ```
 
-#### `build`
+For more information about each command run
 
-Build the Sway contracts for each project
-
-#### `test`
-
-Run the Rust tests for each project
-
-#### `fmt`
-
-Format the Sway and Rust files in each project
-
-#### `bump`
-
-Bump each project from its current `fuel-toolchain.toml` to the one in this repository. If the bump fails then the project will be restored to its previous toolchain
+```sh
+cargo run <command> --help
+```

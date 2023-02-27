@@ -13,18 +13,18 @@ fn main() -> anyhow::Result<()> {
 
     match cli.command {
         Mode::Build(opt) => match opt.apps {
-            Some(apps) => build::run(apps, root),
-            None => build::run(read_applications(), root),
+            Some(apps) => build::run(apps, opt.program, root),
+            None => build::run(read_applications(), opt.program, root),
         },
-        Mode::Bump(opt) => match opt.apps {
+        Mode::Bump { apps } => match apps {
             Some(apps) => bump::run(apps, root),
             None => bump::run(read_applications(), root),
         },
         Mode::Fmt(opt) => match opt.apps {
-            Some(apps) => fmt::run(apps, root),
-            None => fmt::run(read_applications(), root),
+            Some(apps) => fmt::run(apps, opt.program, root),
+            None => fmt::run(read_applications(), opt.program, root),
         },
-        Mode::Test(opt) => match opt.apps {
+        Mode::Test { apps } => match apps {
             Some(apps) => test::run(apps, root),
             None => test::run(read_applications(), root),
         },

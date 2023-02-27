@@ -1,4 +1,4 @@
-use clap::{Args, Parser, Subcommand};
+use clap::{Args, Parser, Subcommand, ValueEnum};
 
 #[derive(Parser)]
 #[command(about = "Utility crate for maintaining the repository")]
@@ -9,18 +9,38 @@ pub(crate) struct Cli {
 
 #[derive(Clone, Subcommand)]
 pub(crate) enum Mode {
-    /// Build the Sway contracts for each project
+    /// Compile the Sway and Rust programs in each project
     Build(Opt),
-    /// Bump each project from its current `fuel-toolchain.toml` to the one in this repository
-    Bump(Opt),
+    /// Bump each project from its current `fuel-toolchain.toml` to the one in this repository.
+    ///
+    /// Any errors when bumping will result in returning to the original toolchain
+    Bump {
+        /// Provide a list of applications or omit to operate on all applications
+        apps: Option<Vec<String>>,
+    },
     /// Format the Sway and Rust files in each project
     Fmt(Opt),
     /// Run the Rust tests for each project
-    Test(Opt),
+    Test {
+        /// Provide a list of applications or omit to operate on all applications
+        apps: Option<Vec<String>>,
+    },
 }
 
 #[derive(Args, Clone)]
 pub(crate) struct Opt {
-    /// Provide a list of applications or omit to operate on all applications
+    /// Program type to operate on: `rust`, `sway` or `all` to operate on both
+    pub(crate) program: Program,
+    /// List of applications to run the command on e.g AMM escrow fundraiser ...
     pub(crate) apps: Option<Vec<String>>,
+}
+
+#[derive(Clone, ValueEnum)]
+pub(crate) enum Program {
+    /// Rust and Sway files
+    All,
+    /// Rust files
+    Rust,
+    /// Sway files
+    Sway,
 }
