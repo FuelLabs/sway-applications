@@ -8,8 +8,8 @@ pub enum ClaimState {
 impl core::ops::Eq for ClaimState {
     fn eq(self, other: Self) -> bool {
         match (self, other) {
-            (ClaimState::Claimed(owner1), ClaimState::Claimed(owner2)) => {
-                owner1 == owner2
+            (ClaimState::Claimed(balance1), ClaimState::Claimed(balance2)) => {
+                balance1 == balance2
             },
             (ClaimState::Unclaimed, ClaimState::Unclaimed) => true,
             _ => false,

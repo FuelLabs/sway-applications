@@ -13,47 +13,56 @@ abi AirdropDistributor {
     ///
     /// # Arguments
     ///
-    /// * `amount` - The quantity of an asset allotted to the user to claim.
+    /// * `amount` - The quantity of tokens allotted to the user to claim.
     /// * 'key' - The index of the leaf which will be proven on the Merkle Tree.
     /// * `proof` - The Merkle proof to verify the user is authorized to claim.
-    /// * `to` - The user which has been allotted a quantity of the asset.
+    /// * `to` - The user which has been allotted a quantity of the tokens.
     ///
     /// # Reverts
     ///
     /// * When the claiming period has ended.
     /// * When the `to` `Identity` has already claimed.
+    /// * When the contract's balance is less than the `amount` to claim.
     /// * When the merkle proof verification failed.
     #[storage(read, write)]
     fn claim(amount: u64, key: u64, proof: Vec<b256>, to: Identity);
 
-    #[storage(read, write)]
+    /// Returns any unclaimed tokens when the claiming period of the airdrop has ended.
+    ///
+    /// # Reverts
+    ///
+    /// * When the sender is not the contract's admin.
+    /// * When the claiming period is still active.
+    #[storage(read)]
     fn clawback();
 
-    /// Initialized the contract and starts the airdrop.
-    ///
-    /// Note: The `asset` contract will need to have a `mint_to` function implemented which this
-    /// airdrop contract may call.
+    /// Initializes the contract and starts the airdrop.
     ///
     /// # Arguments
     ///
-    /// * `asset` - The contract which is to be distributed.
+    /// * `admin` - Thee user which has the ability to clawback any unclaimed tokens.
     /// * `claim_time` - The number fo blocks the claiming period should last.
     /// * `merkleRoot` - The root of the merkle proof used to verify claiming.
     /// * `num_leaves` - The number of leaves in the Merkle Tree.
     ///
     /// # Reverts
     ///
-    /// * The constructor has already been called.
+    /// * When the constructor has already been called.
+    /// * When no tokens are sent to the airdrop contract.
     #[storage(read, write)]
-    fn constructor(asset: ContractId, claim_time: u64, merkleRoot: b256, num_leaves: u64);
+    fn constructor(admin: Identity, claim_time: u64, merkleRoot: b256, num_leaves: u64);
 }
 
 abi Info {
-    /// Returns the claim data stored on the given identity
+    /// Returns the user which has the ability to clawback any unclaimed tokens.
+    #[storage(read)]
+    fn admin() -> Option<Identity>;
+
+    /// Returns the claim data stored on the given identity.
     ///
     /// # Arguments
     ///
-    /// * `identity` - The user whose ClaimState will be returned
+    /// * `identity` - The user whose ClaimState will be returned.
     #[storage(read)]
     fn claim_data(identity: Identity) -> ClaimState;
 
@@ -61,13 +70,17 @@ abi Info {
     #[storage(read)]
     fn end_block() -> u64;
 
-    /// Returns whether the airdrop is active and tokens can be claimed
+    /// Returns whether the airdrop is active and tokens can be claimed.
     #[storage(read)]
     fn is_active() -> bool;
 
-    /// Returns the merkle root of the airdrop used to verify proofs
+    /// Returns the merkle root of the airdrop used to verify proofs.
     #[storage(read)]
     fn merkle_root() -> Option<b256>;
+
+    /// Returns the number of leaves within the merkle tree.
+    #[storage(read)]
+    fn num_leaves() -> u64;
 }
 
 abi SimpleAsset {
