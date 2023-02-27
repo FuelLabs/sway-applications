@@ -93,12 +93,12 @@ jobs:
       - name: Build Sway
         run: |
           cd ${{ matrix.project }}/project
-          forc build
+          forc build --locked
 
       - name: Run Rust tests
         run: |
           cd ${{ matrix.project }}/project
-          cargo test
+          cargo test --locked
 
   contributing-book:
     runs-on: ubuntu-latest
@@ -125,10 +125,10 @@ jobs:
         run: rustup component add rustfmt
 
       - name: Install Fuel toolchain
-        uses: FuelLabs/action-fuel-toolchain@v0.4.0
+        uses: FuelLabs/action-fuel-toolchain@v0.5.0
         with:
           toolchain: latest
-          date: 2023-01-18
+          date: 2023-02-22
 
       - name: Check Sway formatting
         run: |
@@ -138,4 +138,4 @@ jobs:
       - name: Build Sway
         run: |
           cd ${{ matrix.project }}
-          forc build
+          forc build --locked
