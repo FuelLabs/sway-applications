@@ -29,10 +29,13 @@ pub(crate) enum Mode {
 
 #[derive(Args, Clone)]
 pub(crate) struct Opt {
-    /// Program type to operate on: `rust`, `sway` or `all` to operate on both
-    pub(crate) program: Program,
     /// List of applications to run the command on e.g AMM escrow fundraiser ...
+    #[clap(index = 2)]
     pub(crate) apps: Option<Vec<String>>,
+
+    /// Program type to operate on: `rust`, `sway` or `all` to operate on both
+    #[clap(index = 1)]
+    pub(crate) program: Program,
 }
 
 #[derive(Clone, ValueEnum)]
