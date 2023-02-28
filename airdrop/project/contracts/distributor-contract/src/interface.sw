@@ -49,7 +49,7 @@ abi AirdropDistributor {
     ///
     /// * When the constructor has already been called.
     /// * When no tokens are sent to the airdrop contract.
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn constructor(admin: Identity, claim_time: u64, merkleRoot: b256, num_leaves: u64);
 }
 

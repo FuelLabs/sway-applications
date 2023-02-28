@@ -62,7 +62,8 @@ impl AirdropDistributor for Contract {
 
         log(ClaimEvent {
             amount,
-            to: sender,
+            claimer: sender,
+            to,
         });
     }
 
@@ -83,7 +84,7 @@ impl AirdropDistributor for Contract {
         })
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn constructor(
         admin: Identity,
         claim_time: u64,

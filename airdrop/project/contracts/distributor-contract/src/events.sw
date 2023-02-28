@@ -3,7 +3,9 @@ library events;
 pub struct ClaimEvent {
     /// The quantity of an asset which is to be transfered to the user.
     amount: u64,
-    /// The user that will recieve the transfered asset.
+    /// The user that has a claim to tokens with a valid proof.
+    claimer: Identity,
+    /// The identity that will recieve the transfered asset.
     to: Identity,
 }
 
