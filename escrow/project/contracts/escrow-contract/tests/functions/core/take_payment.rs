@@ -7,7 +7,7 @@ mod success {
 
     use super::*;
     use crate::utils::{
-        interface::{core::propose_arbiter, info::escrows},
+        interface::{core::propose_arbiter, info::{arbiter_proposal, escrows}},
         setup::{asset_amount, escrow_info, PaymentTakenEvent},
     };
 
@@ -168,6 +168,10 @@ mod success {
             )
             .await
         );
+        assert_eq!(
+            arbiter_proposal(&seller.contract, 0).await.unwrap(),
+            arbiter_obj.clone()
+        );
 
         let response = take_payment(&seller.contract, 0).await;
 
@@ -176,7 +180,6 @@ mod success {
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
             escrow_info(
@@ -193,6 +196,7 @@ mod success {
             )
             .await
         );
+        assert!(matches!(arbiter_proposal(&seller.contract, 0).await, None));
 
         let log = response.get_logs_with_type::<PaymentTakenEvent>().unwrap();
         let event = log.get(0).unwrap();
