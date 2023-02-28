@@ -33,6 +33,7 @@ abi AirdropDistributor {
     ///
     /// * When the sender is not the contract's admin.
     /// * When the claiming period is still active.
+    /// * When there are no tokens to claim.
     #[storage(read)]
     fn clawback();
 

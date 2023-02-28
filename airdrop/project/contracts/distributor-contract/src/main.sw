@@ -73,9 +73,11 @@ impl AirdropDistributor for Contract {
         require(admin.is_some() && admin.unwrap() == msg_sender().unwrap(), AccessError::CallerNotAdmin);
         require(storage.end_block <= height(), StateError::ClaimPeriodActive);
 
-        // Send the remaining balance of tokens to the admin
         let asset = storage.asset.unwrap();
         let balance = this_balance(asset);
+        require(balance > 0, AccessError::NotEnoughTokens);
+
+        // Send the remaining balance of tokens to the admin
         transfer(balance, asset, admin.unwrap());
 
         log(ClawbackEvent {

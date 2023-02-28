@@ -48,6 +48,16 @@ pub(crate) async fn claim(
         .unwrap()
 }
 
+pub(crate) async fn clawback(contract: &AirdropDistributor) -> FuelCallResponse<()> {
+    contract
+        .methods()
+        .clawback()
+        .append_variable_outputs(1)
+        .call()
+        .await
+        .unwrap()
+}
+
 pub(crate) async fn airdrop_constructor(
     admin: Identity,
     amount: u64,
