@@ -1,6 +1,6 @@
 mod utils;
 
-use fuels::prelude::*;
+use fuels::prelude::AssetId;
 
 // These constants should match those hard-coded in the predicate
 const ASK_AMOUNT: u64 = 42;

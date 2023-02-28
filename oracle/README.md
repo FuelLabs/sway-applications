@@ -82,7 +82,7 @@ The project can be started by executing the following steps:
 5. Build the Oracle contract.
 
     ```bash
-    forc build
+    forc build --locked
     ```
 
 6. Deploy the Oracle contract.
@@ -117,7 +117,7 @@ In order to run the subsequent commands change into the following directory `/pa
 #### Program compilation
 
 ```bash
-forc build
+forc build --locked
 ```
 
 #### Running the tests
@@ -125,5 +125,5 @@ forc build
 Before running the tests the programs must be compiled with the command above.
 
 ```bash
-cargo test
+cargo test --locked
 ```
