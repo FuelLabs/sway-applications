@@ -7,7 +7,10 @@ mod success {
 
     use super::*;
     use crate::utils::{
-        interface::{core::propose_arbiter, info::escrows},
+        interface::{
+            core::propose_arbiter,
+            info::{arbiter_proposal, escrows},
+        },
         setup::{asset_amount, escrow_info, ReturnedDepositEvent},
     };
 
@@ -146,7 +149,6 @@ mod success {
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
             escrow_info(
@@ -163,6 +165,10 @@ mod success {
             )
             .await
         );
+        assert_eq!(
+            arbiter_proposal(&seller.contract, 0).await.unwrap(),
+            arbiter_obj.clone()
+        );
 
         let response = return_deposit(&seller.contract, 0).await;
 
@@ -174,7 +180,6 @@ mod success {
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
-
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
             escrow_info(
@@ -191,6 +196,7 @@ mod success {
             )
             .await
         );
+        assert!(matches!(arbiter_proposal(&seller.contract, 0).await, None));
 
         let log = response
             .get_logs_with_type::<ReturnedDepositEvent>()
@@ -203,6 +209,13 @@ mod success {
     #[tokio::test]
     async fn returns_deposit_in_two_escrows() {
         let (arbiter, buyer, seller, defaults) = setup().await;
+        let arbiter_obj = create_arbiter(
+            arbiter.wallet.address(),
+            defaults.asset_id,
+            defaults.asset_amount,
+        )
+        .await;
+        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
             seller.wallet.address(),
@@ -216,15 +229,6 @@ mod success {
             &defaults.asset,
         )
         .await;
-
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
-        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -262,7 +266,6 @@ mod success {
         .await;
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
             escrow_info(
@@ -286,7 +289,6 @@ mod success {
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &buyer.wallet).await
         );
-
         assert_eq!(
             escrows(&seller.contract, 0).await.unwrap(),
             escrow_info(
@@ -303,7 +305,6 @@ mod success {
             )
             .await
         );
-
         assert_eq!(
             escrows(&seller.contract, 1).await.unwrap(),
             escrow_info(
@@ -327,7 +328,6 @@ mod success {
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &buyer.wallet).await
         );
-
         assert_eq!(
             escrows(&seller.contract, 1).await.unwrap(),
             escrow_info(
