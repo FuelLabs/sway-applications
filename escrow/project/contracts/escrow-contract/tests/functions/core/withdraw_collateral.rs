@@ -7,22 +7,17 @@ mod success {
 
     use super::*;
     use crate::utils::{
-        interface::core::propose_arbiter,
-        setup::{asset_amount, WithdrawnCollateralEvent},
+        interface::{
+            core::propose_arbiter,
+            info::{arbiter_proposal, escrows},
+        },
+        setup::{asset_amount, escrow_info, WithdrawnCollateralEvent},
     };
 
     #[tokio::test]
     #[ignore]
     async fn withdraws_collateral() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
         let arbiter_obj = create_arbiter(
             arbiter.wallet.address(),
             defaults.asset_id,
@@ -31,6 +26,12 @@ mod success {
         .await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
+        mint(
+            seller.wallet.address(),
+            defaults.asset_amount,
+            &defaults.asset,
+        )
+        .await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -43,32 +44,58 @@ mod success {
         .await;
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                6,
+                false,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
 
         // TODO: need to shift block by one, waiting on SDK
         let response = withdraw_collateral(&seller.contract, 0).await;
+
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller.wallet).await
+        );
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                6,
+                false,
+                0,
+                seller.wallet.address(),
+                true
+            )
+            .await
+        );
+
         let log = response
             .get_logs_with_type::<WithdrawnCollateralEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(*event, WithdrawnCollateralEvent { identifier: 0 });
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
     }
 
     #[tokio::test]
     async fn withdraws_collateral_after_proposing_arbiter() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount * 2,
-            &defaults.asset,
-        )
-        .await;
-
         let arbiter_obj = create_arbiter(
             arbiter.wallet.address(),
             defaults.asset_id,
@@ -77,6 +104,12 @@ mod success {
         .await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
+        mint(
+            seller.wallet.address(),
+            defaults.asset_amount * 2,
+            &defaults.asset,
+        )
+        .await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -87,22 +120,60 @@ mod success {
             5,
         )
         .await;
-
-        propose_arbiter(arbiter_obj, &seller.contract, 0).await;
+        propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                None,
+                0,
+                5,
+                false,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+        assert_eq!(
+            arbiter_proposal(&seller.contract, 0).await.unwrap(),
+            arbiter_obj.clone()
+        );
 
         let response = withdraw_collateral(&seller.contract, 0).await;
+
+        assert_eq!(
+            defaults.asset_amount * 2,
+            asset_amount(&defaults.asset_id, &seller.wallet).await
+        );
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                None,
+                0,
+                5,
+                false,
+                0,
+                seller.wallet.address(),
+                true
+            )
+            .await
+        );
+        assert!(matches!(arbiter_proposal(&seller.contract, 0).await, None));
+
         let log = response
             .get_logs_with_type::<WithdrawnCollateralEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(*event, WithdrawnCollateralEvent { identifier: 0 });
-        assert_eq!(
-            defaults.asset_amount * 2,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
     }
 
     #[tokio::test]
