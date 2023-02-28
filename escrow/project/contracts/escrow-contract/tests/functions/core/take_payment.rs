@@ -7,14 +7,21 @@ mod success {
 
     use super::*;
     use crate::utils::{
-        interface::core::propose_arbiter,
-        setup::{asset_amount, PaymentTakenEvent},
+        interface::{core::propose_arbiter, info::escrows},
+        setup::{asset_amount, escrow_info, PaymentTakenEvent},
     };
 
     #[tokio::test]
     #[ignore]
     async fn takes_payment() {
         let (arbiter, buyer, seller, defaults) = setup().await;
+        let arbiter_obj = create_arbiter(
+            arbiter.wallet.address(),
+            defaults.asset_id,
+            defaults.asset_amount,
+        )
+        .await;
+        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
             seller.wallet.address(),
@@ -28,15 +35,6 @@ mod success {
             &defaults.asset,
         )
         .await;
-
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
-        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -60,21 +58,63 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
 
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                6,
+                false,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
+
         // let response = take_payment(&seller.contract, 0).await;
+
+        // assert_eq!(defaults.asset_amount, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
+
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                6,
+                false,
+                0,
+                seller.wallet.address(),
+                true
+            )
+            .await
+        );
+
         // let log = response
         //     .get_logs_with_type::<PaymentTakenEvent>()
         //     .unwrap();
         // let event = log.get(0).unwrap();
 
         // assert_eq!(*event, PaymentTakenEvent { identifier: 0 });
-
-        // assert_eq!(defaults.asset_amount, asset_amount(&defaults.asset_id, &seller.wallet).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
     }
 
     #[tokio::test]
     async fn takes_payment_after_proposing_arbiter() {
         let (arbiter, buyer, seller, defaults) = setup().await;
+        let arbiter_obj = create_arbiter(
+            arbiter.wallet.address(),
+            defaults.asset_id,
+            defaults.asset_amount,
+        )
+        .await;
+        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(
             seller.wallet.address(),
@@ -88,15 +128,6 @@ mod success {
             &defaults.asset,
         )
         .await;
-
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
-        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -117,21 +148,56 @@ mod success {
 
         // This should really be above `deposit` but given SDK limitations for block manipulation
         // we put this here
-        propose_arbiter(arbiter_obj, &seller.contract, 0).await;
+        propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                7,
+                false,
+                0,
+                seller.wallet.address(),
+                false
+            )
+            .await
+        );
 
         let response = take_payment(&seller.contract, 0).await;
-        let log = response.get_logs_with_type::<PaymentTakenEvent>().unwrap();
-        let event = log.get(0).unwrap();
 
-        assert_eq!(*event, PaymentTakenEvent { identifier: 0 });
         assert_eq!(
             defaults.asset_amount * 3,
             asset_amount(&defaults.asset_id, &seller.wallet).await
         );
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
+
+        assert_eq!(
+            escrows(&seller.contract, 0).await.unwrap(),
+            escrow_info(
+                arbiter_obj.clone(),
+                2,
+                buyer.wallet.address(),
+                Some(defaults.asset_id),
+                defaults.asset_amount,
+                7,
+                false,
+                0,
+                seller.wallet.address(),
+                true
+            )
+            .await
+        );
+
+        let log = response.get_logs_with_type::<PaymentTakenEvent>().unwrap();
+        let event = log.get(0).unwrap();
+
+        assert_eq!(*event, PaymentTakenEvent { identifier: 0 });
     }
 
     #[tokio::test]
