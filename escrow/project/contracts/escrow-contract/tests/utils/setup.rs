@@ -1,8 +1,7 @@
 use fuels::{
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Address, AssetId, Bech32Address,
-        Configurables, Contract, ContractId, Salt, StorageConfiguration, TxParameters,
-        WalletUnlocked, WalletsConfig,
+        abigen, launch_custom_provider_and_get_wallets, Address, AssetId, Configurables, Contract,
+        ContractId, Salt, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
     types::Identity,
 };
@@ -36,21 +35,17 @@ pub(crate) struct User {
     pub(crate) wallet: WalletUnlocked,
 }
 
-pub(crate) async fn asset_amount(asset: &ContractId, wallet: &WalletUnlocked) -> u64 {
-    wallet
+pub(crate) async fn asset_amount(asset: &ContractId, user: &User) -> u64 {
+    user.wallet
         .clone()
         .get_asset_balance(&AssetId::from(**asset))
         .await
         .unwrap()
 }
 
-pub(crate) async fn create_arbiter(
-    address: &Bech32Address,
-    asset: ContractId,
-    fee_amount: u64,
-) -> Arbiter {
+pub(crate) async fn create_arbiter(user: &User, asset: ContractId, fee_amount: u64) -> Arbiter {
     Arbiter {
-        address: Identity::Address(address.into()),
+        address: Identity::Address(user.wallet.address().into()),
         asset,
         fee_amount,
     }
@@ -81,20 +76,20 @@ pub(crate) async fn create_asset_with_salt(
 pub(crate) async fn escrow_info(
     arbiter: Arbiter,
     asset_count: u64,
-    buyer_address: &Bech32Address,
+    buyer: &User,
     asset: Option<ContractId>,
     deposited_amount: u64,
     deadline: u64,
     disputed: bool,
     first_asset_index: u64,
-    seller_address: &Bech32Address,
+    seller: &User,
     state: bool,
 ) -> EscrowInfo {
     EscrowInfo {
         arbiter,
         asset_count,
         buyer: Buyer {
-            address: Identity::Address(Address::from(buyer_address)),
+            address: Identity::Address(Address::from(buyer.wallet.address())),
             asset,
             deposited_amount,
         },
@@ -102,7 +97,7 @@ pub(crate) async fn escrow_info(
         disputed,
         first_asset_index,
         seller: Seller {
-            address: Identity::Address(Address::from(seller_address)),
+            address: Identity::Address(Address::from(seller.wallet.address())),
         },
         state: match state {
             true => State::Completed,
@@ -111,10 +106,10 @@ pub(crate) async fn escrow_info(
     }
 }
 
-pub(crate) async fn mint(address: &Bech32Address, amount: u64, contract: &MyAsset) {
+pub(crate) async fn mint(user: &User, amount: u64, contract: &MyAsset) {
     contract
         .methods()
-        .mint_and_send_to_address(amount, address.into())
+        .mint_and_send_to_address(amount, user.wallet.address().into())
         .append_variable_outputs(1)
         .call()
         .await
