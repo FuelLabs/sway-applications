@@ -7,7 +7,10 @@ mod success {
 
     use super::*;
     use crate::utils::{
-        interface::{core::propose_arbiter, info::{arbiter_proposal, escrows}},
+        interface::{
+            core::propose_arbiter,
+            info::{arbiter_proposal, escrows},
+        },
         setup::{asset_amount, escrow_info, PaymentTakenEvent},
     };
 
