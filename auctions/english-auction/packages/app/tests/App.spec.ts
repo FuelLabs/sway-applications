@@ -58,8 +58,8 @@ async function walletSetup(context: BrowserContext, extensionId: string) {
   await addWallet(walletPage, extensionId, ACCOUNT2);
 
   // Navigate to add network and add test network
-  await walletPage.goto(`chrome-extension://${extensionId}/popup.html#/networks/add`);
-  await walletPage.reload({ waitUntil: 'load' });
+  await walletPage.locator('[aria-label="Selected Network"]').click();
+  await walletPage.locator('button').getByText('Add new network').click();
   await walletPage.locator('[aria-label="Network name"]').fill('test');
   await walletPage.locator('[aria-label="Network URL"]').fill(process.env.VITE_FUEL_PROVIDER_URL!);
   await walletPage.locator('button', { hasText: 'Create' }).click();
