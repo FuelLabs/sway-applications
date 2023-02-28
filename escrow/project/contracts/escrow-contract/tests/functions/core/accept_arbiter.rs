@@ -67,6 +67,10 @@ mod success {
             )
             .await
         );
+        assert_eq!(
+            arbiter_proposal(&seller.contract, 0).await.unwrap(),
+            arbiter_obj2.clone()
+        );
 
         let response = accept_arbiter(&buyer.contract, 0).await;
 
@@ -90,6 +94,7 @@ mod success {
             )
             .await
         );
+        assert!(matches!(arbiter_proposal(&seller.contract, 0).await, None));
 
         let log = response
             .get_logs_with_type::<AcceptedArbiterEvent>()
