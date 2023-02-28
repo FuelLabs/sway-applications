@@ -58,4 +58,5 @@ export type Config = {
     output: string;
   };
   contracts: Array<ContractConfig>;
+  isWorkspace?: boolean;
 };

@@ -89,4 +89,5 @@ export default createConfig({
   onSuccess: (event) => {
     replaceEventOnEnv(`./packages/app/${OUTPUT_ENV || getEnvName()}`, event);
   },
+  isWorkspace: true,
 });
