@@ -76,4 +76,4 @@ The projects are pinned to specific versions which can be seen at the top of the
 
 ## Contributing
 
-Check out the [book](https://fuellabs.github.io/sway-applications/book/index.html) for more info!
+Check out the [book](swayapps.fuel.network/book/) for more info!
