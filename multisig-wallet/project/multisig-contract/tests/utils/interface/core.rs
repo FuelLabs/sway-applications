@@ -1,10 +1,9 @@
 use fuels::{
     programs::call_response::FuelCallResponse,
-    signers::fuel_crypto::Error,
     types::{ContractId, Identity},
 };
 
-use crate::utils::setup::{base_asset_contract_id, MultiSig, SignatureInfo, User};
+use crate::utils::setup::{MultiSig, SignatureInfo, User};
 
 pub async fn cancel_transaction(contract: &MultiSig) -> FuelCallResponse<()> {
     contract

@@ -5,7 +5,6 @@ use fuels::{
     types::{Bits256, Identity, B512},
 };
 
-use rand::{rngs::StdRng, Rng, SeedableRng};
 use sha3::{Digest, Keccak256};
 
 abigen!(

@@ -33,7 +33,7 @@ mod revert {
     }
 
     #[tokio::test]
-    #[ignore]
+    #[ignore = "threshold is set by config time constant"]
     #[should_panic(expected = "ThresholdCannotBeZero")]
     async fn threshold_cannot_be_zero() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
