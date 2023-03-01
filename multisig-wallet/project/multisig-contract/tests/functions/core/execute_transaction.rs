@@ -797,10 +797,52 @@ mod revert {
             .unwrap();
         }
 
-        #[ignore]
         #[tokio::test]
         #[should_panic(expected = "InsufficientAssetAmount")]
-        async fn insufficient_asset_amount() {}
+        async fn insufficient_asset_amount() {
+            let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+            constructor(&deployer.contract, default_users()).await;
+
+            let initial_nonce = nonce(&deployer.contract).await.value;
+
+            let test_contract = deploy_test_contract(deployer.wallet.clone()).await.unwrap();
+
+            let tx = call_parameters(&deployer, initial_nonce, &test_contract, true).await;
+
+            let tx_hash = compute_transaction_hash(
+                &deployer.contract,
+                tx.contract_identifier,
+                tx.nonce,
+                tx.value,
+                tx.asset_id,
+                tx.target.clone(),
+                tx.function_selector.clone(),
+                tx.calldata.clone(),
+                tx.single_value_type_arg,
+                tx.forwarded_gas,
+            )
+            .await
+            .value
+            .0;
+            let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+
+            let signatures = compute_signatures(private_key, tx_hash).await;
+
+            execute_transaction(
+                &deployer.contract,
+                tx.asset_id,
+                tx.calldata.clone(),
+                tx.forwarded_gas,
+                tx.function_selector.clone(),
+                signatures,
+                tx.single_value_type_arg,
+                tx.target.clone(),
+                tx.value,
+            )
+            .await
+            .unwrap();
+        }
 
         #[ignore]
         #[tokio::test]
