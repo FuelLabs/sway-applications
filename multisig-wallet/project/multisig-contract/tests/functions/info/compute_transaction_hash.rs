@@ -46,7 +46,7 @@ mod success {
             tx.single_value_type_arg.into_token(),
             tx.forwarded_gas.into_token(),
         ]);
-        let encoded_tx_struct = ABIEncoder::encode(&vec![tx_token]).unwrap().resolve(0);
+        let encoded_tx_struct = ABIEncoder::encode(&[tx_token]).unwrap().resolve(0);
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
         let response = compute_transaction_hash(
@@ -91,27 +91,27 @@ mod success {
         // Manually encode in order to accurately match encoding of the `Bytes` type in the contract's `Transaction` type
         let mut encoded_tx_struct = Vec::new();
         encoded_tx_struct.append(
-            &mut ABIEncoder::encode(&vec![tx.contract_identifier.into_token()])
+            &mut ABIEncoder::encode(&[tx.contract_identifier.into_token()])
                 .unwrap()
                 .resolve(0),
         );
         encoded_tx_struct.append(
-            &mut ABIEncoder::encode(&vec![tx.nonce.into_token()])
+            &mut ABIEncoder::encode(&[tx.nonce.into_token()])
                 .unwrap()
                 .resolve(0),
         );
         encoded_tx_struct.append(
-            &mut ABIEncoder::encode(&vec![tx.value.into_token()])
+            &mut ABIEncoder::encode(&[tx.value.into_token()])
                 .unwrap()
                 .resolve(0),
         );
         encoded_tx_struct.append(
-            &mut ABIEncoder::encode(&vec![tx.asset_id.into_token()])
+            &mut ABIEncoder::encode(&[tx.asset_id.into_token()])
                 .unwrap()
                 .resolve(0),
         );
         encoded_tx_struct.append(
-            &mut ABIEncoder::encode(&vec![tx.target.clone().into_token()])
+            &mut ABIEncoder::encode(&[tx.target.clone().into_token()])
                 .unwrap()
                 .resolve(0),
         );
@@ -137,12 +137,12 @@ mod success {
         encoded_tx_struct.append(&mut encoded_calldata);
 
         encoded_tx_struct.append(
-            &mut ABIEncoder::encode(&vec![tx.single_value_type_arg.into_token()])
+            &mut ABIEncoder::encode(&[tx.single_value_type_arg.into_token()])
                 .unwrap()
                 .resolve(0),
         );
         encoded_tx_struct.append(
-            &mut ABIEncoder::encode(&vec![tx.forwarded_gas.into_token()])
+            &mut ABIEncoder::encode(&[tx.forwarded_gas.into_token()])
                 .unwrap()
                 .resolve(0),
         );
