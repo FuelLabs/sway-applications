@@ -44,10 +44,9 @@ mod success {
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
 
-        let escrow = escrows(&seller, 0).await.unwrap();
-        let asset_id = Some(defaults.asset_id);
-        assert!(matches!(escrow.buyer.asset, asset_id));
-        assert_eq!(defaults.asset_amount, escrow.buyer.deposited_amount);
+        let escrow = escrows(&seller, 0).await.unwrap().buyer;
+        assert_eq!(escrow.asset, Some(defaults.asset_id));
+        assert_eq!(defaults.asset_amount, escrow.deposited_amount);
 
         let log = response.get_logs_with_type::<DepositEvent>().unwrap();
         let event = log.get(0).unwrap();
@@ -97,6 +96,7 @@ mod success {
 
         let escrow1 = escrows(&seller, 0).await.unwrap();
         let escrow2 = escrows(&seller, 0).await.unwrap();
+
         assert!(matches!(escrow1.buyer.asset, None));
         assert!(matches!(escrow2.buyer.asset, None));
         assert_eq!(0, escrow1.buyer.deposited_amount);
@@ -105,21 +105,19 @@ mod success {
         let response1 = deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
         let asset_amount1 = asset_amount(&defaults.asset_id, &buyer).await;
-        let escrow_info1 = escrows(&seller, 0).await.unwrap();
 
         let response2 = deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 1).await;
 
         assert_eq!(defaults.asset_amount, asset_amount1);
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
 
-        let escrow3 = escrows(&seller, 0).await.unwrap();
-        let escrow4 = escrows(&seller, 0).await.unwrap();
-        let asset_id1 = Some(defaults.asset_id);
-        let asset_id2 = Some(defaults.asset_id);
-        assert!(matches!(escrow3.buyer.asset, asset_id1));
-        assert!(matches!(escrow4.buyer.asset, asset_id2));
-        assert_eq!(defaults.asset_amount, escrow3.buyer.deposited_amount);
-        assert_eq!(defaults.asset_amount, escrow4.buyer.deposited_amount);
+        let escrow3 = escrows(&seller, 0).await.unwrap().buyer;
+        let escrow4 = escrows(&seller, 0).await.unwrap().buyer;
+
+        assert_eq!(escrow3.asset, Some(defaults.asset_id));
+        assert_eq!(escrow4.asset, Some(defaults.asset_id));
+        assert_eq!(defaults.asset_amount, escrow3.deposited_amount);
+        assert_eq!(defaults.asset_amount, escrow4.deposited_amount);
 
         let log1 = response1.get_logs_with_type::<DepositEvent>().unwrap();
         let log2 = response2.get_logs_with_type::<DepositEvent>().unwrap();

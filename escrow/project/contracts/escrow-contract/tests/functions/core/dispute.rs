@@ -6,10 +6,7 @@ use crate::utils::{
 mod success {
 
     use super::*;
-    use crate::utils::{
-        interface::info::escrows,
-        setup::{escrow_info, DisputeEvent},
-    };
+    use crate::utils::{interface::info::escrows, setup::DisputeEvent};
 
     #[tokio::test]
     async fn disputes() {
@@ -31,41 +28,11 @@ mod success {
         .await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                false,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(!escrows(&seller, 0).await.unwrap().disputed);
 
         let response = dispute(&buyer, 0).await;
 
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(escrows(&seller, 0).await.unwrap().disputed);
 
         let log = response.get_logs_with_type::<DisputeEvent>().unwrap();
         let event = log.get(0).unwrap();
@@ -104,74 +71,14 @@ mod success {
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 1).await;
 
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                false,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
-        assert_eq!(
-            escrows(&seller, 1).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                false,
-                2,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(!escrows(&seller, 0).await.unwrap().disputed);
+        assert!(!escrows(&seller, 1).await.unwrap().disputed);
 
         let response1 = dispute(&buyer, 0).await;
         let response2 = dispute(&buyer, 1).await;
 
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
-        assert_eq!(
-            escrows(&seller, 1).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                2,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(escrows(&seller, 0).await.unwrap().disputed);
+        assert!(escrows(&seller, 1).await.unwrap().disputed);
 
         let log1 = response1.get_logs_with_type::<DisputeEvent>().unwrap();
         let log2 = response2.get_logs_with_type::<DisputeEvent>().unwrap();

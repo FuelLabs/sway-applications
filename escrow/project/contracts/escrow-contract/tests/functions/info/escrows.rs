@@ -37,13 +37,13 @@ mod success {
             escrow_info(
                 arbiter_obj,
                 1,
-                buyer.wallet.address(),
+                &buyer,
                 None,
                 0,
                 defaults.deadline,
                 false,
                 0,
-                seller.wallet.address(),
+                &seller,
                 false
             )
             .await

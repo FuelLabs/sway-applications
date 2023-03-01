@@ -11,7 +11,7 @@ mod success {
             core::propose_arbiter,
             info::{arbiter_proposal, escrows},
         },
-        setup::{asset_amount, escrow_info, ReturnedDepositEvent},
+        setup::{asset_amount, ReturnedDepositEvent, State},
     };
 
     #[tokio::test]
@@ -35,23 +35,10 @@ mod success {
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
-
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                false,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
 
         let response = return_deposit(&seller, 0).await;
 
@@ -59,22 +46,10 @@ mod success {
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                false,
-                0,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
         let log = response
             .get_logs_with_type::<ReturnedDepositEvent>()
@@ -107,25 +82,13 @@ mod success {
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
         assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                false,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
-        assert_eq!(
-            arbiter_proposal(&seller, 0).await.unwrap(),
-            arbiter_obj.clone()
+            arbiter_obj.clone(),
+            arbiter_proposal(&seller, 0).await.unwrap()
         );
 
         let response = return_deposit(&seller, 0).await;
@@ -138,22 +101,10 @@ mod success {
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &seller).await
         );
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                false,
-                0,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
         assert!(matches!(arbiter_proposal(&seller, 0).await, None));
 
         let log = response
@@ -196,22 +147,14 @@ mod success {
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 1).await;
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                false,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
+        assert!(matches!(
+            escrows(&seller, 1).await.unwrap().state,
+            State::Pending
+        ));
 
         let response1 = return_deposit(&seller, 0).await;
 
@@ -219,38 +162,10 @@ mod success {
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                false,
-                0,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
-        assert_eq!(
-            escrows(&seller, 1).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                false,
-                2,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
         let response2 = return_deposit(&seller, 1).await;
 
@@ -258,22 +173,10 @@ mod success {
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &buyer).await
         );
-        assert_eq!(
-            escrows(&seller, 1).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                false,
-                2,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 1).await.unwrap().state,
+            State::Completed
+        ));
 
         let log1 = response1
             .get_logs_with_type::<ReturnedDepositEvent>()

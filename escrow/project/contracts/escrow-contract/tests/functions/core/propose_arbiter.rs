@@ -61,9 +61,14 @@ mod success {
     #[tokio::test]
     async fn proposes_arbiter_twice() {
         let (arbiter, buyer, seller, defaults) = setup().await;
+        let payment_diff = 1;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
-        let arbiter_obj2 =
-            create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount - 1).await;
+        let arbiter_obj2 = create_arbiter(
+            &arbiter,
+            defaults.asset_id,
+            defaults.asset_amount - payment_diff,
+        )
+        .await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(&seller, defaults.asset_amount * 3, &defaults.asset).await;
@@ -95,7 +100,7 @@ mod success {
         let response2 = propose_arbiter(arbiter_obj2.clone(), &seller, 0).await;
 
         assert_eq!(
-            defaults.asset_amount + 1,
+            defaults.asset_amount + payment_diff,
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(arbiter_proposal(&seller, 0).await.unwrap(), arbiter_obj2);
@@ -171,12 +176,12 @@ mod success {
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
         assert_eq!(
-            arbiter_proposal(&seller, 0).await.unwrap(),
-            arbiter_obj.clone()
+            arbiter_obj.clone(),
+            arbiter_proposal(&seller, 0).await.unwrap()
         );
         assert_eq!(
-            arbiter_proposal(&seller, 1).await.unwrap(),
-            arbiter_obj.clone()
+            arbiter_obj.clone(),
+            arbiter_proposal(&seller, 1).await.unwrap()
         );
 
         let log1 = response1

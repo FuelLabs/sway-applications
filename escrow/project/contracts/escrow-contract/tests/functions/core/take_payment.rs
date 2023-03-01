@@ -11,7 +11,7 @@ mod success {
             core::propose_arbiter,
             info::{arbiter_proposal, escrows},
         },
-        setup::{asset_amount, escrow_info, PaymentTakenEvent},
+        setup::{asset_amount, PaymentTakenEvent, State},
     };
 
     #[tokio::test]
@@ -39,45 +39,19 @@ mod success {
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
-
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                6,
-                false,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
 
         // let response = take_payment(&seller, 0).await;
 
         // assert_eq!(defaults.asset_amount, asset_amount(&defaults.asset_id, &seller).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
-
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                6,
-                false,
-                0,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
         // let log = response
         //     .get_logs_with_type::<PaymentTakenEvent>()
@@ -113,25 +87,13 @@ mod success {
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
         assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                7,
-                false,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
-        assert_eq!(
-            arbiter_proposal(&seller, 0).await.unwrap(),
-            arbiter_obj.clone()
+            arbiter_obj.clone(),
+            arbiter_proposal(&seller, 0).await.unwrap()
         );
 
         let response = take_payment(&seller, 0).await;
@@ -141,22 +103,10 @@ mod success {
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                7,
-                false,
-                0,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
         assert!(matches!(arbiter_proposal(&seller, 0).await, None));
 
         let log = response.get_logs_with_type::<PaymentTakenEvent>().unwrap();

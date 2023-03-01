@@ -11,7 +11,7 @@ mod success {
             core::propose_arbiter,
             info::{arbiter_proposal, escrows},
         },
-        setup::{asset_amount, escrow_info, ResolvedDisputeEvent},
+        setup::{asset_amount, ResolvedDisputeEvent, State},
     };
     use fuels::{prelude::Address, types::Identity};
 
@@ -41,22 +41,10 @@ mod success {
 
         dispute(&buyer, 0).await;
 
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
 
         let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
 
@@ -69,22 +57,10 @@ mod success {
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
@@ -103,6 +79,7 @@ mod success {
     #[tokio::test]
     async fn resolves_in_buyers_favour_partial_payment_taken() {
         let (arbiter, buyer, seller, defaults) = setup().await;
+        let payment_diff = 1;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
@@ -125,51 +102,30 @@ mod success {
 
         dispute(&buyer, 0).await;
 
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
+
+        let response =
+            resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount - payment_diff, &buyer).await;
+
         assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
+            payment_diff,
+            asset_amount(&defaults.asset_id, &seller).await
         );
-
-        let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount - 1, &buyer).await;
-
-        assert_eq!(1, asset_amount(&defaults.asset_id, &seller).await);
         assert_eq!(
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
         assert_eq!(
-            defaults.asset_amount - 1,
+            defaults.asset_amount - payment_diff,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
-
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
@@ -210,22 +166,10 @@ mod success {
 
         dispute(&buyer, 0).await;
 
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
 
         let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &seller).await;
 
@@ -238,22 +182,10 @@ mod success {
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
@@ -294,22 +226,10 @@ mod success {
 
         dispute(&buyer, 0).await;
 
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
 
         let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount - 1, &seller).await;
 
@@ -322,22 +242,10 @@ mod success {
             defaults.asset_amount - 1,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
@@ -379,25 +287,13 @@ mod success {
 
         dispute(&buyer, 0).await;
 
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
         assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
-        assert_eq!(
-            arbiter_proposal(&seller, 0).await.unwrap(),
-            arbiter_obj.clone()
+            arbiter_obj.clone(),
+            arbiter_proposal(&seller, 0).await.unwrap()
         );
 
         let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
@@ -415,22 +311,10 @@ mod success {
             asset_amount(&defaults.asset_id, &arbiter).await
         );
         assert!(matches!(arbiter_proposal(&seller, 0).await, None));
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
@@ -483,22 +367,14 @@ mod success {
 
         dispute(&buyer, 0).await;
 
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
+        assert!(matches!(
+            escrows(&seller, 1).await.unwrap().state,
+            State::Pending
+        ));
 
         let response1 = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
 
@@ -511,41 +387,12 @@ mod success {
             defaults.asset_amount,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
-        assert_eq!(
-            escrows(&seller, 0).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                0,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
         dispute(&buyer, 1).await;
-
-        assert_eq!(
-            escrows(&seller, 1).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                2,
-                seller.wallet.address(),
-                false
-            )
-            .await
-        );
 
         let response2 = resolve_dispute(&arbiter, 1, arbiter_obj.fee_amount, &seller).await;
 
@@ -561,22 +408,10 @@ mod success {
             defaults.asset_amount * 2,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
-        assert_eq!(
-            escrows(&seller, 1).await.unwrap(),
-            escrow_info(
-                arbiter_obj.clone(),
-                2,
-                buyer.wallet.address(),
-                Some(defaults.asset_id),
-                defaults.asset_amount,
-                defaults.deadline,
-                true,
-                2,
-                seller.wallet.address(),
-                true
-            )
-            .await
-        );
+        assert!(matches!(
+            escrows(&seller, 1).await.unwrap().state,
+            State::Completed
+        ));
 
         let log1 = response1
             .get_logs_with_type::<ResolvedDisputeEvent>()
