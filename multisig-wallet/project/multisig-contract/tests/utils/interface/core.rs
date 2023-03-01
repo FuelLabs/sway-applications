@@ -1,5 +1,6 @@
 use fuels::{
     programs::call_response::FuelCallResponse,
+    signers::fuel_crypto::Error,
     types::{ContractId, Identity},
 };
 
@@ -28,9 +29,9 @@ pub async fn execute_transaction(
     single_value_type_arg: Option<bool>,
     target: Identity,
     value: Option<u64>,
-) -> FuelCallResponse<()> {
+) -> Result<FuelCallResponse<()>, ()> {
     if function_selector.is_none() {
-        contract
+        Ok(contract
             .methods()
             .execute_transaction(
                 asset_id,
@@ -45,9 +46,9 @@ pub async fn execute_transaction(
             .append_variable_outputs(1)
             .call()
             .await
-            .unwrap()
+            .unwrap())
     } else {
-        contract
+        Ok(contract
             .methods()
             .execute_transaction(
                 asset_id,
@@ -62,10 +63,12 @@ pub async fn execute_transaction(
             .append_variable_outputs(1)
             .set_contract_ids(&[match target {
                 Identity::ContractId(contract_identifier) => contract_identifier.into(),
-                _ => base_asset_contract_id().into(),
+                _ => {
+                    return Err(());
+                }
             }])
             .call()
             .await
-            .unwrap()
+            .unwrap())
     }
 }

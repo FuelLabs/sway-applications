@@ -89,7 +89,8 @@ mod success {
             tx.target.clone(),
             tx.value,
         )
-        .await;
+        .await
+        .unwrap();
 
         let log = response.get_logs_with_type::<TransferEvent>().unwrap();
         let event = log.get(0).unwrap();
@@ -173,7 +174,8 @@ mod success {
             tx.target.clone(),
             tx.value,
         )
-        .await;
+        .await
+        .unwrap();
 
         let log = response.get_logs_with_type::<CallEvent>().unwrap();
         let event = log.get(0).unwrap();
@@ -281,7 +283,8 @@ mod success {
             tx.target.clone(),
             tx.value,
         )
-        .await;
+        .await
+        .unwrap();
 
         let log = response.get_logs_with_type::<CallEvent>().unwrap();
         let event = log.get(0).unwrap();
@@ -388,7 +391,8 @@ mod revert {
             tx.target.clone(),
             tx.value,
         )
-        .await;
+        .await
+        .unwrap();
     }
 
     mod transfer {
@@ -437,7 +441,8 @@ mod revert {
                 tx.target.clone(),
                 tx.value,
             )
-            .await;
+            .await
+            .unwrap();
         }
 
         #[tokio::test]
@@ -482,7 +487,8 @@ mod revert {
                 tx.target.clone(),
                 tx.value,
             )
-            .await;
+            .await
+            .unwrap();
         }
 
         #[tokio::test]
@@ -526,7 +532,8 @@ mod revert {
                 tx.target.clone(),
                 tx.value,
             )
-            .await;
+            .await
+            .unwrap();
         }
 
         #[tokio::test]
@@ -582,16 +589,69 @@ mod revert {
                 tx.target.clone(),
                 tx.value,
             )
-            .await;
+            .await
+            .unwrap();
         }
     }
 
     mod call {
 
-        #[ignore]
+        use fuels::types::{Address, Identity};
+
+        use super::*;
+
         #[tokio::test]
         #[should_panic(expected = "CannotCallFunctionsOnAddresses")]
-        async fn cannot_call_functions_on_addresses() {}
+        async fn cannot_call_functions_on_addresses() {
+            let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+            constructor(&deployer.contract, default_users()).await;
+
+            let initial_nonce = nonce(&deployer.contract).await.value;
+
+            let test_contract = deploy_test_contract(deployer.wallet.clone()).await.unwrap();
+
+            let mut tx = call_parameters(&deployer, initial_nonce, &test_contract, true).await;
+            tx.target = Identity::Address(Address::new(test_contract.contract_id().hash.into()));
+
+            let tx_hash = compute_transaction_hash(
+                &deployer.contract,
+                tx.contract_identifier,
+                tx.nonce,
+                tx.value,
+                tx.asset_id,
+                tx.target.clone(),
+                tx.function_selector.clone(),
+                tx.calldata.clone(),
+                tx.single_value_type_arg,
+                tx.forwarded_gas,
+            )
+            .await
+            .value
+            .0;
+            let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+
+            let signatures = compute_signatures(private_key, tx_hash).await;
+
+            deployer
+                .contract
+                .methods()
+                .execute_transaction(
+                    tx.asset_id,
+                    tx.calldata,
+                    tx.forwarded_gas,
+                    tx.function_selector,
+                    signatures,
+                    tx.single_value_type_arg,
+                    tx.target.clone(),
+                    tx.value,
+                )
+                .append_variable_outputs(1)
+                .call()
+                .await
+                .unwrap()
+                .value
+        }
 
         #[ignore]
         #[tokio::test]
