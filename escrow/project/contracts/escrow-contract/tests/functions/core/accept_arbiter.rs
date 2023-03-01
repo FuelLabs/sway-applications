@@ -66,9 +66,10 @@ mod success {
     #[tokio::test]
     async fn accepts_proposal_in_two_escrows() {
         let (arbiter, buyer, seller, defaults) = setup().await;
+        let payment_diff = 1;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let arbiter_obj2 =
-            create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount - 1).await;
+            create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount - payment_diff).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(&seller, defaults.asset_amount * 4, &defaults.asset).await;
@@ -96,7 +97,7 @@ mod success {
         propose_arbiter(arbiter_obj2.clone(), &seller, 0).await;
         propose_arbiter(arbiter_obj2.clone(), &seller, 1).await;
 
-        assert_eq!(2, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(payment_diff * 2, asset_amount(&defaults.asset_id, &seller).await);
         assert_eq!(arbiter_obj2, arbiter_proposal(&seller, 0).await.unwrap());
         assert_eq!(arbiter_obj2, arbiter_proposal(&seller, 1).await.unwrap());
         assert_eq!(
@@ -112,9 +113,9 @@ mod success {
         let asset_amount1 = asset_amount(&defaults.asset_id, &seller).await;
         let response2 = accept_arbiter(&buyer, 1).await;
 
-        assert_eq!(defaults.asset_amount + 2, asset_amount1);
+        assert_eq!(defaults.asset_amount + payment_diff * 2, asset_amount1);
         assert_eq!(
-            defaults.asset_amount * 2 + 2,
+            defaults.asset_amount * 2 + payment_diff * 2,
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(arbiter_proposal(&seller, 0).await, None);
