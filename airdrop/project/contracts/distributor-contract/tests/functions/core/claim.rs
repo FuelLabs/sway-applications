@@ -444,10 +444,11 @@ mod revert {
     #[should_panic(expected = "ClaimPeriodNotActive")]
     async fn after_claim_period() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, _, _) =
+        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.clone()).await;
+        let provider = deploy_wallet.wallet.get_provider().unwrap();
 
         asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
         mint_to(asset_supply, &asset.asset, minter.clone()).await;
@@ -456,12 +457,14 @@ mod revert {
             minter,
             asset_supply,
             asset.asset_id,
-            1,
+            claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
             num_leaves,
         )
         .await;
+
+        let _ = provider.produce_blocks(claim_time + 1, Option::None).await;
 
         claim(
             airdrop_leaves[key as usize].1,
