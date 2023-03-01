@@ -68,8 +68,12 @@ mod success {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let payment_diff = 1;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
-        let arbiter_obj2 =
-            create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount - payment_diff).await;
+        let arbiter_obj2 = create_arbiter(
+            &arbiter,
+            defaults.asset_id,
+            defaults.asset_amount - payment_diff,
+        )
+        .await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(&seller, defaults.asset_amount * 4, &defaults.asset).await;
@@ -97,7 +101,10 @@ mod success {
         propose_arbiter(arbiter_obj2.clone(), &seller, 0).await;
         propose_arbiter(arbiter_obj2.clone(), &seller, 1).await;
 
-        assert_eq!(payment_diff * 2, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(
+            payment_diff * 2,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
         assert_eq!(arbiter_obj2, arbiter_proposal(&seller, 0).await.unwrap());
         assert_eq!(arbiter_obj2, arbiter_proposal(&seller, 1).await.unwrap());
         assert_eq!(
