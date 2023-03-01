@@ -7,65 +7,61 @@ mod success {
 
     use super::*;
     use crate::utils::{
-        interface::core::propose_arbiter,
-        setup::{asset_amount, ResolvedDisputeEvent},
+        interface::{
+            core::propose_arbiter,
+            info::{arbiter_proposal, escrows},
+        },
+        setup::{asset_amount, ResolvedDisputeEvent, State},
     };
     use fuels::{prelude::Address, types::Identity};
 
     #[tokio::test]
     async fn resolves_in_buyers_favour_full_payment_taken() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
+        mint(&seller, defaults.asset_amount, &defaults.asset).await;
+        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
-        deposit(
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(0, asset_amount(&defaults.asset_id, &arbiter).await);
+
+        dispute(&buyer, 0).await;
+
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
+
+        let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
+
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(
             defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &arbiter).await
+        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &arbiter.wallet).await);
-
-        dispute(&buyer.contract, 0).await;
-        let response = resolve_dispute(
-            &arbiter.contract,
-            0,
-            arbiter_obj.fee_amount,
-            buyer.wallet.address(),
-        )
-        .await;
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
@@ -77,71 +73,60 @@ mod success {
                 identifier: 0,
                 user: Identity::Address(Address::from(buyer.wallet.address()))
             }
-        );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &buyer.wallet).await
-        );
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &arbiter.wallet).await
         );
     }
 
     #[tokio::test]
     async fn resolves_in_buyers_favour_partial_payment_taken() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
+        let payment_diff = 1;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
+        mint(&seller, defaults.asset_amount, &defaults.asset).await;
+        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
-        deposit(
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+
+        dispute(&buyer, 0).await;
+
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
+
+        let response =
+            resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount - payment_diff, &buyer).await;
+
+        assert_eq!(
+            payment_diff,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
+        assert_eq!(
             defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.asset_amount - payment_diff,
+            asset_amount(&defaults.asset_id, &arbiter).await
+        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
-
-        dispute(&buyer.contract, 0).await;
-        let response = resolve_dispute(
-            &arbiter.contract,
-            0,
-            arbiter_obj.fee_amount - 1,
-            buyer.wallet.address(),
-        )
-        .await;
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
@@ -153,72 +138,55 @@ mod success {
                 identifier: 0,
                 user: Identity::Address(Address::from(buyer.wallet.address()))
             }
-        );
-
-        assert_eq!(1, asset_amount(&defaults.asset_id, &seller.wallet).await);
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &buyer.wallet).await
-        );
-        assert_eq!(
-            defaults.asset_amount - 1,
-            asset_amount(&defaults.asset_id, &arbiter.wallet).await
         );
     }
 
     #[tokio::test]
     async fn resolves_in_sellers_favour_full_payment_taken() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
+        mint(&seller, defaults.asset_amount, &defaults.asset).await;
+        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
-        deposit(
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+
+        dispute(&buyer, 0).await;
+
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
+
+        let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &seller).await;
+
+        assert_eq!(
             defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
+            asset_amount(&defaults.asset_id, &seller).await
+        );
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &arbiter).await
+        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
-
-        dispute(&buyer.contract, 0).await;
-        let response = resolve_dispute(
-            &arbiter.contract,
-            0,
-            arbiter_obj.fee_amount,
-            seller.wallet.address(),
-        )
-        .await;
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
@@ -230,71 +198,55 @@ mod success {
                 identifier: 0,
                 user: Identity::Address(Address::from(seller.wallet.address()))
             }
-        );
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &arbiter.wallet).await
         );
     }
 
     #[tokio::test]
     async fn resolves_in_sellers_favour_partial_payment_taken() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
+        mint(&seller, defaults.asset_amount, &defaults.asset).await;
+        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
-        deposit(
-            defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
 
-        dispute(&buyer.contract, 0).await;
-        let response = resolve_dispute(
-            &arbiter.contract,
-            0,
-            arbiter_obj.fee_amount - 1,
-            seller.wallet.address(),
-        )
-        .await;
+        dispute(&buyer, 0).await;
+
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
+
+        let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount - 1, &seller).await;
+
+        assert_eq!(
+            defaults.asset_amount + 1,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert_eq!(
+            defaults.asset_amount - 1,
+            asset_amount(&defaults.asset_id, &arbiter).await
+        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
+
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
@@ -306,72 +258,64 @@ mod success {
                 identifier: 0,
                 user: Identity::Address(Address::from(seller.wallet.address()))
             }
-        );
-        assert_eq!(
-            defaults.asset_amount + 1,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-        assert_eq!(
-            defaults.asset_amount - 1,
-            asset_amount(&defaults.asset_id, &arbiter.wallet).await
         );
     }
 
     #[tokio::test]
     async fn resolves_after_proposing_arbiter() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount * 2,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
+        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
+        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
-        deposit(
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+        propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
+
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+
+        dispute(&buyer, 0).await;
+
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
+        assert_eq!(
+            arbiter_obj.clone(),
+            arbiter_proposal(&seller, 0).await.unwrap()
+        );
+
+        let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
+
+        assert_eq!(
             defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
-        propose_arbiter(arbiter_obj.clone(), &seller.contract, 0).await;
+            asset_amount(&defaults.asset_id, &seller).await
+        );
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &arbiter).await
+        );
+        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
-
-        dispute(&buyer.contract, 0).await;
-        let response = resolve_dispute(
-            &arbiter.contract,
-            0,
-            arbiter_obj.fee_amount,
-            buyer.wallet.address(),
-        )
-        .await;
         let log = response
             .get_logs_with_type::<ResolvedDisputeEvent>()
             .unwrap();
@@ -383,52 +327,24 @@ mod success {
                 identifier: 0,
                 user: Identity::Address(Address::from(buyer.wallet.address()))
             }
-        );
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &buyer.wallet).await
-        );
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &arbiter.wallet).await
         );
     }
 
     #[tokio::test]
     async fn resolves_in_two_escrows() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount * 2,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount * 2,
-            &defaults.asset,
-        )
-        .await;
-
+        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
+        mint(&buyer, defaults.asset_amount * 2, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
@@ -437,92 +353,88 @@ mod success {
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 1).await;
 
-        deposit(
+        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(0, asset_amount(&defaults.asset_id, &arbiter).await);
+
+        dispute(&buyer, 0).await;
+
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Pending
+        ));
+        assert!(matches!(
+            escrows(&seller, 1).await.unwrap().state,
+            State::Pending
+        ));
+
+        let response1 = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
+
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(
             defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
-        deposit(
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
             defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            1,
-        )
-        .await;
+            asset_amount(&defaults.asset_id, &arbiter).await
+        );
+        assert!(matches!(
+            escrows(&seller, 0).await.unwrap().state,
+            State::Completed
+        ));
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer.wallet).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &arbiter.wallet).await);
+        dispute(&buyer, 1).await;
 
-        dispute(&buyer.contract, 0).await;
-        let response = resolve_dispute(
-            &arbiter.contract,
-            0,
-            arbiter_obj.fee_amount,
-            buyer.wallet.address(),
-        )
-        .await;
-        let log = response
-            .get_logs_with_type::<ResolvedDisputeEvent>()
-            .unwrap();
-        let event = log.get(0).unwrap();
+        let response2 = resolve_dispute(&arbiter, 1, arbiter_obj.fee_amount, &seller).await;
 
         assert_eq!(
-            *event,
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
+        assert_eq!(
+            defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.asset_amount * 2,
+            asset_amount(&defaults.asset_id, &arbiter).await
+        );
+        assert!(matches!(
+            escrows(&seller, 1).await.unwrap().state,
+            State::Completed
+        ));
+
+        let log1 = response1
+            .get_logs_with_type::<ResolvedDisputeEvent>()
+            .unwrap();
+        let log2 = response2
+            .get_logs_with_type::<ResolvedDisputeEvent>()
+            .unwrap();
+        let event1 = log1.get(0).unwrap();
+        let event2 = log2.get(0).unwrap();
+
+        assert_eq!(
+            *event1,
             ResolvedDisputeEvent {
                 identifier: 0,
                 user: Identity::Address(Address::from(buyer.wallet.address()))
             }
         );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller.wallet).await);
         assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &buyer.wallet).await
-        );
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &arbiter.wallet).await
-        );
-
-        dispute(&buyer.contract, 1).await;
-        let response = resolve_dispute(
-            &arbiter.contract,
-            1,
-            arbiter_obj.fee_amount,
-            seller.wallet.address(),
-        )
-        .await;
-        let log = response
-            .get_logs_with_type::<ResolvedDisputeEvent>()
-            .unwrap();
-        let event = log.get(0).unwrap();
-
-        assert_eq!(
-            *event,
+            *event2,
             ResolvedDisputeEvent {
                 identifier: 1,
                 user: Identity::Address(Address::from(seller.wallet.address()))
             }
-        );
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &seller.wallet).await
-        );
-        assert_eq!(
-            defaults.asset_amount,
-            asset_amount(&defaults.asset_id, &buyer.wallet).await
-        );
-        assert_eq!(
-            defaults.asset_amount * 2,
-            asset_amount(&defaults.asset_id, &arbiter.wallet).await
         );
     }
 }
@@ -535,216 +447,96 @@ mod revert {
     #[should_panic(expected = "StateNotPending")]
     async fn when_escrow_is_not_pending() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
+        mint(&seller, defaults.asset_amount, &defaults.asset).await;
+        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
-        deposit(
-            defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
-
-        dispute(&buyer.contract, 0).await;
-
-        resolve_dispute(
-            &arbiter.contract,
-            0,
-            arbiter_obj.fee_amount,
-            buyer.wallet.address(),
-        )
-        .await;
-        resolve_dispute(
-            &arbiter.contract,
-            0,
-            arbiter_obj.fee_amount,
-            buyer.wallet.address(),
-        )
-        .await;
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+        dispute(&buyer, 0).await;
+        resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
+        resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "NotDisputed")]
     async fn when_not_disputed() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
+        mint(&seller, defaults.asset_amount, &defaults.asset).await;
+        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
-        deposit(
-            defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
-        resolve_dispute(
-            &arbiter.contract,
-            0,
-            arbiter_obj.fee_amount,
-            buyer.wallet.address(),
-        )
-        .await;
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+        resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "Unauthorized")]
     async fn when_caller_is_not_arbiter() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
+        mint(&seller, defaults.asset_amount, &defaults.asset).await;
+        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
-        deposit(
-            defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
-        dispute(&buyer.contract, 0).await;
-        resolve_dispute(
-            &buyer.contract,
-            0,
-            arbiter_obj.fee_amount,
-            buyer.wallet.address(),
-        )
-        .await;
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+        dispute(&buyer, 0).await;
+        resolve_dispute(&buyer, 0, arbiter_obj.fee_amount, &buyer).await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "InvalidRecipient")]
     async fn when_user_is_not_buyer_or_seller() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
+        mint(&seller, defaults.asset_amount, &defaults.asset).await;
+        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
-        deposit(
-            defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
-        dispute(&buyer.contract, 0).await;
-        resolve_dispute(
-            &arbiter.contract,
-            0,
-            arbiter_obj.fee_amount,
-            arbiter.wallet.address(),
-        )
-        .await;
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+        dispute(&buyer, 0).await;
+        resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &arbiter).await;
     }
 
     #[tokio::test]
@@ -760,51 +552,23 @@ mod revert {
     #[should_panic(expected = "PaymentTooLarge")]
     async fn when_payment_amount_is_too_large() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let arbiter_obj = create_arbiter(
-            arbiter.wallet.address(),
-            defaults.asset_id,
-            defaults.asset_amount,
-        )
-        .await;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(
-            seller.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-        mint(
-            buyer.wallet.address(),
-            defaults.asset_amount,
-            &defaults.asset,
-        )
-        .await;
-
+        mint(&seller, defaults.asset_amount, &defaults.asset).await;
+        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
             &defaults.asset_id,
             vec![asset.clone(), asset.clone()],
-            buyer.wallet.address(),
-            &seller.contract,
+            &buyer,
+            &seller,
             defaults.deadline,
         )
         .await;
-        deposit(
-            defaults.asset_amount,
-            &defaults.asset_id,
-            &buyer.contract,
-            0,
-        )
-        .await;
-        dispute(&buyer.contract, 0).await;
-        resolve_dispute(
-            &arbiter.contract,
-            0,
-            arbiter_obj.fee_amount + 1,
-            buyer.wallet.address(),
-        )
-        .await;
+        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+        dispute(&buyer, 0).await;
+        resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount + 1, &buyer).await;
     }
 }

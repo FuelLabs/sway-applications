@@ -1,12 +1,13 @@
-use crate::utils::setup::{Arbiter, Asset, Escrow};
+use crate::utils::setup::{Arbiter, Asset, User};
 use fuels::{
-    prelude::{AssetId, Bech32Address, CallParameters, ContractId, TxParameters},
+    prelude::{AssetId, CallParameters, ContractId, TxParameters},
     programs::call_response::FuelCallResponse,
     types::Identity,
 };
 
-pub(crate) async fn accept_arbiter(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
-    contract
+pub(crate) async fn accept_arbiter(caller: &User, identifier: u64) -> FuelCallResponse<()> {
+    caller
+        .contract
         .methods()
         .accept_arbiter(identifier)
         .append_variable_outputs(1)
@@ -20,20 +21,21 @@ pub(crate) async fn create_escrow(
     arbiter: &Arbiter,
     asset: &ContractId,
     assets: Vec<Asset>,
-    buyer: &Bech32Address,
-    contract: &Escrow,
+    buyer: &User,
+    caller: &User,
     deadline: u64,
 ) -> FuelCallResponse<()> {
     let tx_params = TxParameters::new(None, Some(1_000_000), None);
     let call_params =
         CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(1_000_000));
 
-    contract
+    caller
+        .contract
         .methods()
         .create_escrow(
             arbiter.clone(),
             assets,
-            Identity::Address(buyer.into()),
+            Identity::Address(buyer.wallet.address().into()),
             deadline,
         )
         .tx_params(tx_params)
@@ -47,14 +49,15 @@ pub(crate) async fn create_escrow(
 pub(crate) async fn deposit(
     amount: u64,
     asset: &ContractId,
-    contract: &Escrow,
+    caller: &User,
     identifier: u64,
 ) -> FuelCallResponse<()> {
     let tx_params = TxParameters::new(None, Some(1_000_000), None);
     let call_params =
         CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(1_000_000));
 
-    contract
+    caller
+        .contract
         .methods()
         .deposit(identifier)
         .tx_params(tx_params)
@@ -65,13 +68,19 @@ pub(crate) async fn deposit(
         .unwrap()
 }
 
-pub(crate) async fn dispute(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
-    contract.methods().dispute(identifier).call().await.unwrap()
+pub(crate) async fn dispute(caller: &User, identifier: u64) -> FuelCallResponse<()> {
+    caller
+        .contract
+        .methods()
+        .dispute(identifier)
+        .call()
+        .await
+        .unwrap()
 }
 
 pub(crate) async fn propose_arbiter(
     arbiter: Arbiter,
-    contract: &Escrow,
+    caller: &User,
     identifier: u64,
 ) -> FuelCallResponse<()> {
     let tx_params = TxParameters::new(None, Some(1_000_000), None);
@@ -81,7 +90,8 @@ pub(crate) async fn propose_arbiter(
         Some(1_000_000),
     );
 
-    contract
+    caller
+        .contract
         .methods()
         .propose_arbiter(arbiter, identifier)
         .tx_params(tx_params)
@@ -94,22 +104,28 @@ pub(crate) async fn propose_arbiter(
 }
 
 pub(crate) async fn resolve_dispute(
-    contract: &Escrow,
+    caller: &User,
     identifier: u64,
     payment_amount: u64,
-    user: &Bech32Address,
+    user: &User,
 ) -> FuelCallResponse<()> {
-    contract
+    caller
+        .contract
         .methods()
-        .resolve_dispute(identifier, payment_amount, Identity::Address(user.into()))
+        .resolve_dispute(
+            identifier,
+            payment_amount,
+            Identity::Address(user.wallet.address().into()),
+        )
         .append_variable_outputs(4)
         .call()
         .await
         .unwrap()
 }
 
-pub(crate) async fn return_deposit(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
-    contract
+pub(crate) async fn return_deposit(caller: &User, identifier: u64) -> FuelCallResponse<()> {
+    caller
+        .contract
         .methods()
         .return_deposit(identifier)
         .append_variable_outputs(3)
@@ -118,8 +134,9 @@ pub(crate) async fn return_deposit(contract: &Escrow, identifier: u64) -> FuelCa
         .unwrap()
 }
 
-pub(crate) async fn take_payment(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
-    contract
+pub(crate) async fn take_payment(caller: &User, identifier: u64) -> FuelCallResponse<()> {
+    caller
+        .contract
         .methods()
         .take_payment(identifier)
         .append_variable_outputs(3)
@@ -128,8 +145,9 @@ pub(crate) async fn take_payment(contract: &Escrow, identifier: u64) -> FuelCall
         .unwrap()
 }
 
-pub(crate) async fn transfer_to_seller(contract: &Escrow, identifier: u64) -> FuelCallResponse<()> {
-    contract
+pub(crate) async fn transfer_to_seller(caller: &User, identifier: u64) -> FuelCallResponse<()> {
+    caller
+        .contract
         .methods()
         .transfer_to_seller(identifier)
         .append_variable_outputs(3)
@@ -138,11 +156,9 @@ pub(crate) async fn transfer_to_seller(contract: &Escrow, identifier: u64) -> Fu
         .unwrap()
 }
 
-pub(crate) async fn withdraw_collateral(
-    contract: &Escrow,
-    identifier: u64,
-) -> FuelCallResponse<()> {
-    contract
+pub(crate) async fn withdraw_collateral(caller: &User, identifier: u64) -> FuelCallResponse<()> {
+    caller
+        .contract
         .methods()
         .withdraw_collateral(identifier)
         .append_variable_outputs(2)
