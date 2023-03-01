@@ -1,6 +1,7 @@
 contract;
 
-// use std::inputs::input_amount;
+use std::context::msg_amount;
+
 abi CallableContract {
     #[storage(write)]
     fn change_mapping_without_value(address: Address, value: u64);
@@ -31,7 +32,7 @@ impl CallableContract for Contract {
     #[storage(write)]
     fn change_mapping_with_value(address: Address, value: u64) {
         storage.counter_map.insert(address, value);
-        // storage.deposit_map.insert(address, input_amount(0).unwrap_or(0));
+        storage.deposit_map.insert(address, msg_amount());
     }
 
     #[storage(read)]
