@@ -7,6 +7,7 @@ import { AuctionAssetInfo } from "./AuctionAssetInfo";
 import { AuctionEndInfo } from "./AuctionEndInfo";
 
 import type { AuctionOutput } from "~/types/contracts/AuctionContractAbi";
+import { AuctionIdentityInfo } from "./AuctionIdentityInfo";
 
 interface AuctionPageProps {
   currentAuction: AuctionOutput;
@@ -67,6 +68,14 @@ export const AuctionPage = ({
       <AuctionEndInfo
         auctionState={currentAuction.state}
         endBlock={currentAuction.end_block}
+      />
+
+      <AuctionIdentityInfo
+        sellerAddress={
+          currentAuction.seller.Address?.value ||
+          currentAuction.seller.ContractId!.value
+        }
+        highestBidder={currentAuction.highest_bidder}
       />
     </Stack>
   );
