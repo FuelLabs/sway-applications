@@ -1,6 +1,7 @@
-import { Stack, Flex } from "@fuel-ui/react";
+import { Stack } from "@fuel-ui/react";
 
-import { AssetOutput } from "~/systems/Core";
+import { AuctionAssetInfo } from "./AuctionAssetInfo";
+
 import type {
   NFTAssetOutput,
   TokenAssetOutput,
@@ -27,28 +28,15 @@ export const AuctionPage = ({
 }: AuctionPageProps) => {
   return (
     <Stack>
-      <Flex>
-        <AssetOutput
-          assetId={sellAsset.asset_id.value}
-          assetAmount={sellAssetAmount}
-          heading="Selling"
-          isNFT={isSellAssetNFT}
-        />
-
-        <AssetOutput
-          assetId={bidAsset.asset_id.value}
-          assetAmount={bidAssetAmount}
-          heading="Highest Bid"
-          isNFT={isBidAssetNFT}
-        />
-
-        <AssetOutput
-          assetId={bidAsset.asset_id.value}
-          assetAmount={initialPrice}
-          heading="Initial Price"
-          isNFT={isBidAssetNFT}
-        />
-      </Flex>
+     <AuctionAssetInfo
+        sellAsset={sellAsset}
+        sellAssetAmount={sellAssetAmount}
+        isSellAssetNFT={isSellAssetNFT}
+        bidAsset={bidAsset}
+        bidAssetAmount={bidAssetAmount}
+        isBidAssetNFT={isBidAssetNFT}
+        initialPrice={initialPrice}
+     />
     </Stack>
   );
 };
