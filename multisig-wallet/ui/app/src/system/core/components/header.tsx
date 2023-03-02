@@ -1,8 +1,11 @@
 import { BoxCentered, ButtonLink, Flex, FuelLogo, Heading, toast } from "@fuel-ui/react";
 import { WalletState } from "./wallet_state";
 import { CreatePage } from "../../create/pages";
+import { ExecutePage } from "../../execute/pages";
+import { UpdatePage } from "../../update/pages";
+import { ViewPage } from "../../view/pages";
 
-export const Header = () => {
+export const Header = props => {
 
     async function doNothing() {
         toast.error("Unimplemented!", { duration: 4000 });
@@ -21,19 +24,19 @@ export const Header = () => {
             </BoxCentered>
 
             <BoxCentered css={{ background: 'rgb(63 149 57)', gap: "25px", paddingRight: "20px", justifyContent: 'space-evenly', boxShadow: "11px 1px 8px 0px black", borderBottom: "1px solid black" }}>
-                <ButtonLink onClick={CreatePage} css={{ color: 'black', fontWeight: 'bolder' }}>
+                <ButtonLink onClick={() => props.setPage(CreatePage)} css={{ color: 'black', fontWeight: 'bolder' }}>
                     Create
                 </ButtonLink>
 
-                <ButtonLink onClick={doNothing} css={{ color: 'black', fontWeight: 'bolder' }}>
+                <ButtonLink onClick={() => props.setPage(ExecutePage)} css={{ color: 'black', fontWeight: 'bolder' }}>
                     Execute
                 </ButtonLink>
 
-                <ButtonLink onClick={doNothing} css={{ color: 'black', fontWeight: 'bolder' }}>
+                <ButtonLink onClick={() => props.setPage(UpdatePage)} css={{ color: 'black', fontWeight: 'bolder' }}>
                     Update
                 </ButtonLink>
 
-                <ButtonLink onClick={doNothing} css={{ color: 'black', fontWeight: 'bolder' }}>
+                <ButtonLink onClick={() => props.setPage(ViewPage)} css={{ color: 'black', fontWeight: 'bolder' }}>
                     View
                 </ButtonLink>
 

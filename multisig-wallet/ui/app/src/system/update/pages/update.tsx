@@ -1,7 +1,7 @@
 import { PleaseConnect } from "../../core/components";
 import { useEffect, useState } from "react"
 
-export function CreatePage() {
+export function UpdatePage() {
     // const [connected, setPage] = useState(<PleaseConnect />)
 
     // useEffect(() => {
@@ -17,6 +17,6 @@ export function CreatePage() {
     // }, [connected]);
 
     return (
-        <>CreatePage</>
+        <>UpdatePage</>
     );
 }
