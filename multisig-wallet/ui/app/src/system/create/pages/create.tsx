@@ -1,5 +1,6 @@
 import { PleaseConnect } from "../../core/components";
 import { useEffect, useState } from "react"
+import { Button, toast } from "@fuel-ui/react";
 
 export function CreatePage() {
     // const [connected, setPage] = useState(<PleaseConnect />)
@@ -17,6 +18,16 @@ export function CreatePage() {
     // }, [connected]);
 
     return (
-        <>CreatePage</>
+        <>
+            <Button
+                color="accent"
+                onPress={function noRefCheck(){ toast.error("Unimplemented") }}
+                size="md"
+                variant="solid"
+                css={{ margin: "auto" }}
+            >
+                Create
+            </Button>
+        </>
     );
 }

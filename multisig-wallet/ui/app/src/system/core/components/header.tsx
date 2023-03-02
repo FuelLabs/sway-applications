@@ -1,11 +1,7 @@
 import { BoxCentered, ButtonLink, Flex, FuelLogo, Heading, Link, toast } from "@fuel-ui/react";
 import { WalletState } from "./wallet_state";
-import { CreatePage } from "../../create/pages";
-import { ExecutePage } from "../../execute/pages";
-import { UpdatePage } from "../../update/pages";
-import { ViewPage } from "../../view/pages";
 
-export const Header = props => {
+export const Header = () => {
     return (
         <Flex>
             <BoxCentered css={{ background: 'rgb(63 149 57)', justifyContent: 'flex-start', boxShadow: "11px 1px 8px 0px black", borderBottom: "1px solid black" }}>
@@ -20,30 +16,25 @@ export const Header = props => {
 
             <BoxCentered css={{ background: 'rgb(63 149 57)', gap: "25px", paddingRight: "20px", justifyContent: 'space-evenly', boxShadow: "11px 1px 8px 0px black", borderBottom: "1px solid black" }}>
 
-                <Link href="/create" css={{ color: 'yellow', fontWeight: 'bolder' }}>
+                <Link href="/create" css={{ color: 'black', fontWeight: 'bolder' }}>
                     Create
                 </Link>
-                
-                {/* <ButtonLink onClick={() => props.setPage(CreatePage)} css={{ color: 'black', fontWeight: 'bolder' }}>
-                    Create
-                </ButtonLink> */}
 
-                <ButtonLink onClick={() => props.setPage(ExecutePage)} css={{ color: 'black', fontWeight: 'bolder' }}>
+                <Link href="/execute" css={{ color: 'black', fontWeight: 'bolder' }}>
                     Execute
-                </ButtonLink>
+                </Link>
 
-                <ButtonLink onClick={() => props.setPage(UpdatePage)} css={{ color: 'black', fontWeight: 'bolder' }}>
+                <Link href="/update" css={{ color: 'black', fontWeight: 'bolder' }}>
                     Update
-                </ButtonLink>
+                </Link>
 
-                <ButtonLink onClick={() => props.setPage(ViewPage)} css={{ color: 'black', fontWeight: 'bolder' }}>
+                <Link href="/view" css={{ color: 'black', fontWeight: 'bolder' }}>
                     View
-                </ButtonLink>
+                </Link>
 
                 <WalletState />
 
             </BoxCentered>
         </Flex>
     );
-
 }
