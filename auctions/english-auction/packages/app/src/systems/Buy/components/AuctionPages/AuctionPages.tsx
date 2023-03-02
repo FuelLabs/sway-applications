@@ -19,45 +19,12 @@ export const AuctionPages = ({ auctions }: AuctionPagesProps) => {
     return <Heading>No Auctions</Heading>;
   }
 
-  const currentAuction = auctions[currentPageNumber - 1];
-
-  if (!currentAuction) return;
-
-  const isSellAssetNFT = Boolean(currentAuction?.sell_asset.NFTAsset);
-  const isBidAssetNFT = Boolean(currentAuction?.bid_asset.NFTAsset);
-
-  let sellAsset;
-  let sellAssetAmount;
-  if (isSellAssetNFT) {
-    sellAsset = currentAuction.sell_asset.NFTAsset!;
-    sellAssetAmount = "1";
-  } else {
-    sellAsset = currentAuction.sell_asset.TokenAsset!;
-    sellAssetAmount = currentAuction.sell_asset.TokenAsset!.amount.format()!;
-  }
-
-  let bidAsset;
-  let bidAssetAmount;
-  if (isBidAssetNFT) {
-    bidAsset = currentAuction.bid_asset.NFTAsset!;
-    bidAssetAmount = currentAuction.highest_bidder ? "1" : "0";
-  } else {
-    bidAsset = currentAuction.bid_asset.TokenAsset!;
-    bidAssetAmount = currentAuction.bid_asset.TokenAsset!.amount.format();
-  }
-
-  const initialPrice = isBidAssetNFT ? "1" : currentAuction.initial_price.format()!;
+  const currentAuction = auctions[currentPageNumber - 1]!;
 
   return (
     <Stack>
       <AuctionPage
-        sellAsset={sellAsset}
-        sellAssetAmount={sellAssetAmount}
-        isSellAssetNFT={isSellAssetNFT}
-        bidAsset={bidAsset}
-        bidAssetAmount={bidAssetAmount}
-        isBidAssetNFT={isBidAssetNFT}
-        initialPrice={initialPrice}
+        currentAuction={currentAuction}
       />
       <Pagination
         pagesCount={auctions.length}
