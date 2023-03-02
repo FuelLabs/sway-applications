@@ -1,4 +1,5 @@
 import { Pagination, Heading, Stack } from "@fuel-ui/react";
+import { bn } from "fuels";
 import { useState } from "react";
 
 import { AuctionPage } from "../AuctionPage/AuctionPage";
@@ -25,6 +26,7 @@ export const AuctionPages = ({ auctions }: AuctionPagesProps) => {
     <Stack>
       <AuctionPage
         currentAuction={currentAuction}
+        auctionId={bn(currentPageNumber - 1)}
       />
       <Pagination
         pagesCount={auctions.length}

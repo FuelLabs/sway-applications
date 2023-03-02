@@ -1,15 +1,21 @@
 import { Stack } from "@fuel-ui/react";
+import type { BN } from "fuels";
+
+import { PlaceBid } from "../PlaceBid";
 
 import { AuctionAssetInfo } from "./AuctionAssetInfo";
+import { AuctionEndInfo } from "./AuctionEndInfo";
 
 import type { AuctionOutput } from "~/types/contracts/AuctionContractAbi";
 
 interface AuctionPageProps {
-    currentAuction: AuctionOutput;
+  currentAuction: AuctionOutput;
+  auctionId: BN;
 }
 
 export const AuctionPage = ({
-currentAuction
+  currentAuction,
+  auctionId,
 }: AuctionPageProps) => {
   const isSellAssetNFT = Boolean(currentAuction?.sell_asset.NFTAsset);
   const isBidAssetNFT = Boolean(currentAuction?.bid_asset.NFTAsset);
@@ -48,6 +54,19 @@ currentAuction
         bidAssetAmount={bidAssetAmount}
         isBidAssetNFT={isBidAssetNFT}
         initialPrice={initialPrice}
+      />
+
+      {!currentAuction.state.Closed && (
+        <PlaceBid
+          auctionId={auctionId}
+          auctionAsset={currentAuction.bid_asset}
+          seller={currentAuction.seller!}
+        />
+      )}
+
+      <AuctionEndInfo
+        auctionState={currentAuction.state}
+        endBlock={currentAuction.end_block}
       />
     </Stack>
   );
