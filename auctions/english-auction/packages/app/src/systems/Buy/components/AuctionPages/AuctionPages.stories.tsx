@@ -15,4 +15,12 @@ export const Usage = () => {
             <AuctionPages auctions={MOCK_AUCTIONS} />
         </Box>
     );
-}
+};
+
+export const WithNoAuctions = () => {
+    return (
+        <Box css={{ widht: 320 }}>
+            <AuctionPages auctions={[]} />
+        </Box>
+    )
+};
