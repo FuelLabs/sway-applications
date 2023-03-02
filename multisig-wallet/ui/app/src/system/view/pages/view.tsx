@@ -1,8 +1,10 @@
+import { BoxCentered, Button, Card, Flex, FuelLogo, Heading, toast } from "@fuel-ui/react";
 import { PleaseConnect } from "../../core/components";
 import { useEffect, useState } from "react"
 
 export function ViewPage() {
-    // const [connected, setPage] = useState(<PleaseConnect />)
+    // const [nonce, setNonce] = useState(0)
+    // const [threshold, setThreshold] = useState(0)
 
     // useEffect(() => {
     //     async function main() {
@@ -16,7 +18,22 @@ export function ViewPage() {
     //     main();
     // }, [connected]);
 
+    async function updateNonce() {
+        // setNonce(nonce + 1);
+    }
+
     return (
-        <>ViewPage</>
+        <>
+            <Card>
+                <Card.Body>
+                    {/* Nonce: {nonce} */}
+                    ViewPage
+                </Card.Body>
+            </Card>
+            <Button onPress={updateNonce} variant="solid" css={{ color: 'black', fontWeight: 'bolder' }}>
+                Nonce
+            </Button>
+        </>
+        // <>ViewPage</>
     );
 }
