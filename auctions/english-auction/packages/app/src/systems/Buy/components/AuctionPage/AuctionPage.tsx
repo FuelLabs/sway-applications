@@ -4,10 +4,11 @@ import type { BN } from "fuels";
 import { PlaceBid } from "../PlaceBid";
 
 import { AuctionAssetInfo } from "./AuctionAssetInfo";
+import { AuctionEndActions } from "./AuctionEndActions";
 import { AuctionEndInfo } from "./AuctionEndInfo";
+import { AuctionIdentityInfo } from "./AuctionIdentityInfo";
 
 import type { AuctionOutput } from "~/types/contracts/AuctionContractAbi";
-import { AuctionIdentityInfo } from "./AuctionIdentityInfo";
 
 interface AuctionPageProps {
   currentAuction: AuctionOutput;
@@ -65,17 +66,25 @@ export const AuctionPage = ({
         />
       )}
 
-      <AuctionEndInfo
-        auctionState={currentAuction.state}
-        endBlock={currentAuction.end_block}
-      />
-
       <AuctionIdentityInfo
         sellerAddress={
           currentAuction.seller.Address?.value ||
           currentAuction.seller.ContractId!.value
         }
         highestBidder={currentAuction.highest_bidder}
+      />
+
+      <AuctionEndInfo
+        auctionState={currentAuction.state}
+        endBlock={currentAuction.end_block}
+      />
+
+      <AuctionEndActions
+        seller={currentAuction.seller}
+        auctionId={auctionId}
+        auctionState={currentAuction.state}
+        bidAsset={currentAuction.bid_asset}
+        sellAsset={currentAuction.sell_asset}
       />
     </Stack>
   );
