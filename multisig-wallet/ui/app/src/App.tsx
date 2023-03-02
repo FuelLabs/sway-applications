@@ -1,4 +1,4 @@
-import { Stack, ThemeProvider } from "@fuel-ui/react";
+import { ThemeProvider } from "@fuel-ui/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./system/core/utils/queryClient";
 import { Layout } from "./system/core/components";
@@ -9,9 +9,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <Layout>
-          <Stack>
-            {/* <CreatePage /> */}
-          </Stack>
+          <CreatePage />
         </Layout>
       </ThemeProvider>
     </QueryClientProvider>
