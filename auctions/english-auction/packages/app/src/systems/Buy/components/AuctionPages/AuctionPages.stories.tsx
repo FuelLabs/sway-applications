@@ -1,9 +1,10 @@
 import { Box } from "@fuel-ui/react";
-import { Providers } from "~/systems/Core";
 
 import { MOCK_AUCTIONS } from "../../__mocks__/auctions";
 
 import { AuctionPages } from "./AuctionPages";
+
+import { Providers } from "~/systems/Core";
 
 export default {
   component: AuctionPages,

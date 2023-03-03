@@ -1,6 +1,5 @@
 import { Button } from "@fuel-ui/react";
 import type { BN } from "fuels";
-import toast from "react-hot-toast";
 
 import { useDepositsBalance } from "../hooks/useDepositBalance";
 import { useWithdraw } from "../hooks/useWithdraw";
@@ -26,10 +25,8 @@ export const WithdrawButton = ({
 }: UseWithdrawButtonProps) => {
   const { wallet } = useWallet();
 
-  if (!wallet) toast.error("Error wallet not connected");
-
   const balance = useDepositsBalance(auctionId, {
-    Address: { value: wallet?.address.toHexString() },
+    Address: { value: wallet?.address.toHexString() || "" },
   });
 
   const withdrawMutation = useWithdraw({
