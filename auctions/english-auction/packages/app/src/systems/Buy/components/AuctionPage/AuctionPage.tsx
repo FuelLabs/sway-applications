@@ -1,4 +1,4 @@
-import { Stack } from "@fuel-ui/react";
+import { Stack, Card } from "@fuel-ui/react";
 import type { BN } from "fuels";
 
 import { PlaceBid } from "../PlaceBid";
@@ -47,45 +47,47 @@ export const AuctionPage = ({
     : currentAuction.initial_price.format()!;
 
   return (
-    <Stack>
-      <AuctionAssetInfo
-        sellAsset={sellAsset}
-        sellAssetAmount={sellAssetAmount}
-        isSellAssetNFT={isSellAssetNFT}
-        bidAsset={bidAsset}
-        bidAssetAmount={bidAssetAmount}
-        isBidAssetNFT={isBidAssetNFT}
-        initialPrice={initialPrice}
-      />
-
-      {!currentAuction.state.Closed && (
-        <PlaceBid
-          auctionId={auctionId}
-          auctionAsset={currentAuction.bid_asset}
-          seller={currentAuction.seller!}
+    <Card css={{ alignSelf: "flex-start" }}>
+      <Stack>
+        <AuctionAssetInfo
+          sellAsset={sellAsset}
+          sellAssetAmount={sellAssetAmount}
+          isSellAssetNFT={isSellAssetNFT}
+          bidAsset={bidAsset}
+          bidAssetAmount={bidAssetAmount}
+          isBidAssetNFT={isBidAssetNFT}
+          initialPrice={initialPrice}
         />
-      )}
 
-      <AuctionIdentityInfo
-        sellerAddress={
-          currentAuction.seller.Address?.value ||
-          currentAuction.seller.ContractId!.value
-        }
-        highestBidder={currentAuction.highest_bidder}
-      />
+        {!currentAuction.state.Closed && (
+          <PlaceBid
+            auctionId={auctionId}
+            auctionAsset={currentAuction.bid_asset}
+            seller={currentAuction.seller!}
+          />
+        )}
 
-      <AuctionEndInfo
-        auctionState={currentAuction.state}
-        endBlock={currentAuction.end_block}
-      />
+        <AuctionIdentityInfo
+          sellerAddress={
+            currentAuction.seller.Address?.value ||
+            currentAuction.seller.ContractId!.value
+          }
+          highestBidder={currentAuction.highest_bidder}
+        />
 
-      <AuctionEndActions
-        seller={currentAuction.seller}
-        auctionId={auctionId}
-        auctionState={currentAuction.state}
-        bidAsset={currentAuction.bid_asset}
-        sellAsset={currentAuction.sell_asset}
-      />
-    </Stack>
+        <AuctionEndInfo
+          auctionState={currentAuction.state}
+          endBlock={currentAuction.end_block}
+        />
+
+        <AuctionEndActions
+          seller={currentAuction.seller}
+          auctionId={auctionId}
+          auctionState={currentAuction.state}
+          bidAsset={currentAuction.bid_asset}
+          sellAsset={currentAuction.sell_asset}
+        />
+      </Stack>
+    </Card>
   );
 };
