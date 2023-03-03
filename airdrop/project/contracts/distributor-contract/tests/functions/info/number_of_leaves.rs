@@ -3,7 +3,7 @@ mod success {
     use crate::utils::{
         interface::{
             core::{airdrop_constructor, asset_constructor, mint_to},
-            info::num_leaves,
+            info::number_of_leaves,
         },
         setup::{defaults, setup},
     };
@@ -19,7 +19,10 @@ mod success {
         asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
         mint_to(asset_supply, &asset.asset, minter.clone()).await;
 
-        assert_eq!(0, num_leaves(&deploy_wallet.airdrop_distributor).await,);
+        assert_eq!(
+            0,
+            number_of_leaves(&deploy_wallet.airdrop_distributor).await,
+        );
 
         airdrop_constructor(
             minter.clone(),
@@ -34,7 +37,7 @@ mod success {
 
         assert_eq!(
             leaf_count,
-            num_leaves(&deploy_wallet.airdrop_distributor).await,
+            number_of_leaves(&deploy_wallet.airdrop_distributor).await,
         );
     }
 }

@@ -1,18 +1,18 @@
 library events;
 
 pub struct ClaimEvent {
-    /// The quantity of an asset which is to be transfered to the user.
+    /// The quantity of an asset which is to be transferred to the user.
     amount: u64,
     /// The user that has a claim to tokens with a valid proof.
     claimer: Identity,
-    /// The identity that will recieve the transfered asset.
+    /// The identity that will receive the transferred asset.
     to: Identity,
 }
 
 pub struct ClawbackEvent {
     /// The quantity of an asset which will be returned after the claiming period has ended.
     amount: u64,
-    /// The user that will recieve the remaining asset balance.
+    /// The user that will receive the remaining asset balance.
     to: Identity,
 }
 
@@ -26,5 +26,5 @@ pub struct CreateAirdropEvent {
     /// The computed merkle root that will be used to verify claims.
     merkle_root: b256,
     /// The total number of leaves in the merkle tree
-    num_leaves: u64,
+    number_of_leaves: u64,
 }

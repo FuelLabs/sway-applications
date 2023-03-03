@@ -7,6 +7,7 @@ use fuels::{
         abigen, launch_custom_provider_and_get_wallets, Config, Contract, ContractId,
         StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
+    tx::AssetId,
     types::{Bits256, Identity},
 };
 use sha2::{Digest, Sha256};
@@ -343,4 +344,8 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
     };
 
     (deployer, user1, user2, user3, asset)
+}
+
+pub(crate) async fn get_wallet_balance(wallet: &WalletUnlocked, asset: &AssetId) -> u64 {
+    wallet.get_asset_balance(asset).await.unwrap()
 }

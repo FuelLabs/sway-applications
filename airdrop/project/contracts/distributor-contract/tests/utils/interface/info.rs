@@ -27,6 +27,12 @@ pub(crate) async fn merkle_root(contract: &AirdropDistributor) -> Option<Bits256
     contract.methods().merkle_root().call().await.unwrap().value
 }
 
-pub(crate) async fn num_leaves(contract: &AirdropDistributor) -> u64 {
-    contract.methods().num_leaves().call().await.unwrap().value
+pub(crate) async fn number_of_leaves(contract: &AirdropDistributor) -> u64 {
+    contract
+        .methods()
+        .number_of_leaves()
+        .call()
+        .await
+        .unwrap()
+        .value
 }

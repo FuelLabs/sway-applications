@@ -27,7 +27,7 @@ storage {
     admin: Option<Identity> = Option::None,
     /// The contract of the tokens which is to be distributed.
     asset: Option<ContractId> = Option::None,
-    /// Stores the ClaimState struct of users that have interacted with the Airdrop Distrubutor contract.
+    /// Stores the ClaimState of users that have interacted with the Airdrop Distrubutor contract.
     /// Maps (user => claim)
     claims: StorageMap<Identity, ClaimState> = StorageMap {},
     /// The block at which the claiming period will end.
@@ -35,7 +35,7 @@ storage {
     /// The computed merkle root which is to be verified against.
     merkle_root: Option<b256> = Option::None,
     /// The number of leaves in the merkle tree
-    num_leaves: u64 = 0,
+    number_of_leaves: u64 = 0,
 }
 
 impl AirdropDistributor for Contract {
@@ -53,7 +53,7 @@ impl AirdropDistributor for Contract {
         require(this_balance(asset) >= amount, AccessError::NotEnoughTokens);
 
         // Verify the merkle proof against the user and amount
-        require(verify_proof(key, leaf_digest(sha256((sender, amount))), storage.merkle_root.unwrap(), storage.num_leaves, proof), VerificationError::MerkleProofFailed);
+        require(verify_proof(key, leaf_digest(sha256((sender, amount))), storage.merkle_root.unwrap(), storage.number_of_leaves, proof), VerificationError::MerkleProofFailed);
 
         storage.claims.insert(sender, ClaimState::Claimed(amount));
 
@@ -91,7 +91,7 @@ impl AirdropDistributor for Contract {
         admin: Identity,
         claim_time: u64,
         merkle_root: b256,
-        num_leaves: u64,
+        number_of_leaves: u64,
     ) {
         // If `end_block` is set to a value other than 0, we know that the contructor has already
         // been called.
@@ -102,7 +102,7 @@ impl AirdropDistributor for Contract {
         storage.end_block = height() + claim_time;
         storage.merkle_root = Option::Some(merkle_root);
         storage.asset = Option::Some(asset);
-        storage.num_leaves = num_leaves;
+        storage.number_of_leaves = number_of_leaves;
         storage.admin = Option::Some(admin);
 
         log(CreateAirdropEvent {
@@ -110,7 +110,7 @@ impl AirdropDistributor for Contract {
             asset: asset,
             end_block: claim_time,
             merkle_root,
-            num_leaves,
+            number_of_leaves,
         });
     }
 }
@@ -142,7 +142,7 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn num_leaves() -> u64 {
-        storage.num_leaves
+    fn number_of_leaves() -> u64 {
+        storage.number_of_leaves
     }
 }

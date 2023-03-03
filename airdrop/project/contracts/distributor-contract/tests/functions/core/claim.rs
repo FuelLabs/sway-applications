@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::core::{airdrop_constructor, asset_constructor, claim, mint_to},
-    setup::{build_tree, build_tree_manual, defaults, setup},
+    setup::{build_tree, build_tree_manual, defaults, get_wallet_balance, setup},
 };
 use fuels::tx::AssetId;
 
@@ -45,11 +45,7 @@ mod success {
         .await;
 
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
         assert_eq!(
@@ -78,11 +74,7 @@ mod success {
             }
         );
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             airdrop_leaves[key as usize].1
         );
         assert_eq!(
@@ -124,19 +116,11 @@ mod success {
         .await;
 
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
         assert_eq!(
-            wallet2
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet2.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
         assert_eq!(
@@ -169,19 +153,11 @@ mod success {
             }
         );
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
         assert_eq!(
-            wallet2
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet2.wallet, &AssetId::new(*asset.asset_id)).await,
             airdrop_leaves[key as usize].1
         );
         assert_eq!(
@@ -217,11 +193,7 @@ mod success {
         .await;
 
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
         assert_eq!(
@@ -254,11 +226,7 @@ mod success {
             }
         );
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             airdrop_leaves[key as usize].1
         );
         assert_eq!(
@@ -300,11 +268,7 @@ mod success {
         .await;
 
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
         assert_eq!(
@@ -336,11 +300,7 @@ mod success {
             }
         );
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             airdrop_leaves[key as usize].1
         );
         assert_eq!(
@@ -382,11 +342,7 @@ mod success {
         .await;
 
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
         assert_eq!(
@@ -418,11 +374,7 @@ mod success {
             }
         );
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             airdrop_leaves[key as usize].1
         );
         assert_eq!(
@@ -542,11 +494,7 @@ mod revert {
         .await;
 
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
 
@@ -560,11 +508,7 @@ mod revert {
         .await;
 
         assert_eq!(
-            wallet1
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             airdrop_leaves[key as usize].1
         );
 

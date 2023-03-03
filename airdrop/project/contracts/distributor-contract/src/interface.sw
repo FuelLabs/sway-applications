@@ -41,7 +41,7 @@ abi AirdropDistributor {
     ///
     /// # Arguments
     ///
-    /// * `admin` - Thee user which has the ability to clawback any unclaimed tokens.
+    /// * `admin` - The user which has the ability to clawback any unclaimed tokens.
     /// * `claim_time` - The number fo blocks the claiming period should last.
     /// * `merkleRoot` - The root of the merkle proof used to verify claiming.
     /// * `num_leaves` - The number of leaves in the Merkle Tree.
@@ -51,7 +51,7 @@ abi AirdropDistributor {
     /// * When the constructor has already been called.
     /// * When no tokens are sent to the airdrop contract.
     #[payable, storage(read, write)]
-    fn constructor(admin: Identity, claim_time: u64, merkleRoot: b256, num_leaves: u64);
+    fn constructor(admin: Identity, claim_time: u64, merkle_root: b256, num_leaves: u64);
 }
 
 abi Info {
@@ -81,7 +81,7 @@ abi Info {
 
     /// Returns the number of leaves within the merkle tree.
     #[storage(read)]
-    fn num_leaves() -> u64;
+    fn number_of_leaves() -> u64;
 }
 
 abi SimpleAsset {

@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::core::{airdrop_constructor, asset_constructor, claim, clawback, mint_to},
-    setup::{build_tree, defaults, setup},
+    setup::{build_tree, defaults, get_wallet_balance, setup},
 };
 use fuels::tx::AssetId;
 
@@ -34,22 +34,14 @@ mod success {
         let _ = provider.produce_blocks(claim_time + 1, Option::None).await;
 
         assert_eq!(
-            deploy_wallet
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&deploy_wallet.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
 
         clawback(&deploy_wallet.airdrop_distributor).await;
 
         assert_eq!(
-            deploy_wallet
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&deploy_wallet.wallet, &AssetId::new(*asset.asset_id)).await,
             asset_supply
         );
     }
@@ -99,22 +91,14 @@ mod success {
         let _ = provider.produce_blocks(claim_time + 1, Option::None).await;
 
         assert_eq!(
-            deploy_wallet
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&deploy_wallet.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
 
         clawback(&deploy_wallet.airdrop_distributor).await;
 
         assert_eq!(
-            deploy_wallet
-                .wallet
-                .get_asset_balance(&AssetId::new(*asset.asset_id))
-                .await
-                .unwrap(),
+            get_wallet_balance(&deploy_wallet.wallet, &AssetId::new(*asset.asset_id)).await,
             asset_supply - airdrop_leaves[key as usize].1
         );
     }

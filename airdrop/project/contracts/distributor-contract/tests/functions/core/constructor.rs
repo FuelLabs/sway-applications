@@ -45,7 +45,7 @@ mod success {
                 asset: asset.asset_id,
                 end_block: claim_time,
                 merkle_root: root,
-                num_leaves
+                number_of_leaves: num_leaves
             }
         );
 

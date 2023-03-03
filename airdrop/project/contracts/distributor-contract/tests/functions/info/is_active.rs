@@ -19,7 +19,7 @@ mod success {
         asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
         mint_to(asset_supply, &asset.asset, minter.clone()).await;
 
-        assert_eq!(is_active(&deploy_wallet.airdrop_distributor,).await, false);
+        assert!(!is_active(&deploy_wallet.airdrop_distributor,).await);
 
         airdrop_constructor(
             minter.clone(),
@@ -32,10 +32,10 @@ mod success {
         )
         .await;
 
-        assert_eq!(is_active(&deploy_wallet.airdrop_distributor,).await, true);
+        assert!(is_active(&deploy_wallet.airdrop_distributor,).await);
 
         let _ = provider.produce_blocks(claim_time + 1, Option::None).await;
 
-        assert_eq!(is_active(&deploy_wallet.airdrop_distributor,).await, false);
+        assert!(!is_active(&deploy_wallet.airdrop_distributor,).await);
     }
 }
