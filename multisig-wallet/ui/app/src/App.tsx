@@ -11,19 +11,19 @@ import { UpdatePage } from "./system/update/pages";
 import { ViewPage } from "./system/view/pages";
 
 function App() {
-  const [page, setPage] = useState(<PleaseConnect />)
+  // const [page, setPage] = useState(<PleaseConnect />)
 
-  useEffect(() => {
-    async function main() {
-        const isConnected = await window.fuel.isConnected();
-        if (!isConnected) {
-            setPage(<PleaseConnect />);
-        } else {
-            setPage(<></>);
-        }
-    }
-    main();
-  }, [page]);
+  // useEffect(() => {
+  //   async function main() {
+  //       const isConnected = await window.fuel.isConnected();
+  //       if (!isConnected) {
+  //           setPage(<PleaseConnect />);
+  //       } else {
+  //           setPage(<></>);
+  //       }
+  //   }
+  //   main();
+  // }, [page]);
 
   return (
     <BrowserRouter>

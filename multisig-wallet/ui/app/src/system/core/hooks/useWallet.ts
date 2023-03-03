@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useFuel } from "./useFuel";
 
 export const useWallet = () => {
-    const [fuel] = useFuel();
+    const fuel = useFuel();
 
     if (!fuel) toast.error("Error fuelWeb3 instance is not defined");
 
