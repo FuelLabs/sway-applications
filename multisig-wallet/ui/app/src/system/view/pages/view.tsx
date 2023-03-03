@@ -22,6 +22,8 @@ export function ViewPage() {
     // }, [connected]);
 
     async function updateNonce() {
+        console.log(contract);
+        console.log(isLoading);
         const { value } = await contract.functions.nonce().get();
         setNonce(Number(value));
     }
