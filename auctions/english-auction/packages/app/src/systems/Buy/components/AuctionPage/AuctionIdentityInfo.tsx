@@ -23,8 +23,7 @@ export const AuctionIdentityInfo = ({
 
       <AssetIdOutput
         assetId={
-          (highestBidder &&
-            getSlicedAddress(highestBidder.Address!.value)) ||
+          (highestBidder && getSlicedAddress(highestBidder.Address!.value)) ||
           "None"
         }
         heading="Highest Bidder"

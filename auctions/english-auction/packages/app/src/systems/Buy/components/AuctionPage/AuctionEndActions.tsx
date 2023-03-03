@@ -3,7 +3,11 @@ import type { BN } from "fuels";
 import { CancelAuctionButton } from "../CancelAuctionButton";
 import { WithdrawButton } from "../WithdrawButton";
 
-import type { AuctionAssetOutput, StateInput, IdentityOutput } from "~/types/contracts/AuctionContractAbi";
+import type {
+  AuctionAssetOutput,
+  StateInput,
+  IdentityOutput,
+} from "~/types/contracts/AuctionContractAbi";
 
 interface AuctionEndActionsProps {
   auctionState: StateInput;
@@ -18,7 +22,7 @@ export const AuctionEndActions = ({
   auctionId,
   seller,
   bidAsset,
-  sellAsset
+  sellAsset,
 }: AuctionEndActionsProps) => {
   return (
     <>

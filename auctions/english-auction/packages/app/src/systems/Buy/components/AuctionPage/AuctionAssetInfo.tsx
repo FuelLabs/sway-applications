@@ -1,7 +1,10 @@
 import { Flex } from "@fuel-ui/react";
 
 import { AssetOutput } from "~/systems/Core";
-import type { NFTAssetOutput, TokenAssetOutput } from "~/types/contracts/AuctionContractAbi";
+import type {
+  NFTAssetOutput,
+  TokenAssetOutput,
+} from "~/types/contracts/AuctionContractAbi";
 
 interface AuctionAssetInfoProps {
   sellAsset: NFTAssetOutput | TokenAssetOutput;
@@ -14,13 +17,13 @@ interface AuctionAssetInfoProps {
 }
 
 export const AuctionAssetInfo = ({
-    sellAsset,
-    sellAssetAmount,
-    isSellAssetNFT,
-    bidAsset,
-    bidAssetAmount,
-    isBidAssetNFT,
-    initialPrice,
+  sellAsset,
+  sellAssetAmount,
+  isSellAssetNFT,
+  bidAsset,
+  bidAssetAmount,
+  isBidAssetNFT,
+  initialPrice,
 }: AuctionAssetInfoProps) => {
   return (
     <Flex>

@@ -5,7 +5,6 @@ import { EndBlock } from "../EndBlock";
 
 import type { StateInput } from "~/types/contracts/AuctionContractAbi";
 
-
 interface AuctionEndInfoProps {
   auctionState: StateInput;
   endBlock: BN;

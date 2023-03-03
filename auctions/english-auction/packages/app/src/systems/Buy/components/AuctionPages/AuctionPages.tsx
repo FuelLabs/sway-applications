@@ -4,9 +4,7 @@ import { useState } from "react";
 
 import { AuctionPage } from "../AuctionPage/AuctionPage";
 
-import type {
-  AuctionOutput,
-} from "~/types/contracts/AuctionContractAbi";
+import type { AuctionOutput } from "~/types/contracts/AuctionContractAbi";
 import type { Option } from "~/types/contracts/common";
 
 interface AuctionPagesProps {
