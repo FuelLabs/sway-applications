@@ -29,7 +29,7 @@ export const WithdrawButton = ({
   if (!wallet) toast.error("Error wallet not connected");
 
   const balance = useDepositsBalance(auctionId, {
-    Address: { value: wallet!.address.toHexString() },
+    Address: { value: wallet?.address.toHexString() },
   });
 
   const withdrawMutation = useWithdraw({

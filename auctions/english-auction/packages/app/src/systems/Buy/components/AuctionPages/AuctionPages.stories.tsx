@@ -1,4 +1,5 @@
 import { Box } from "@fuel-ui/react";
+import { Providers } from "~/systems/Core";
 
 import { MOCK_AUCTIONS } from "../../__mocks__/auctions";
 
@@ -12,7 +13,9 @@ export default {
 export const ClosedAuction = () => {
   return (
     <Box css={{ width: 320 }}>
-      <AuctionPages auctions={MOCK_AUCTIONS} />
+      <Providers>
+        <AuctionPages auctions={MOCK_AUCTIONS} />
+      </Providers>
     </Box>
   );
 };
@@ -20,7 +23,9 @@ export const ClosedAuction = () => {
 export const WithNoAuctions = () => {
   return (
     <Box css={{ widht: 320 }}>
-      <AuctionPages auctions={[]} />
+      <Providers>
+        <AuctionPages auctions={[]} />Ï
+      </Providers>
     </Box>
   );
 };
