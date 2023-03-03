@@ -13,7 +13,7 @@ use data_structures::Auction;
 use errors::{SetupError, TimeError, UserError};
 use events::{CancelledAuctionEvent, ChangedAsset, CreatedAuctionEvent, WinningBidEvent};
 use utils::{calculate_price, eq_identity, sender_indentity, transfer_to_identity, validate_id};
-use sway_libs::storagemapvec::StorageMapVec;
+use storagemapvec::StorageMapVec;
 
 storage {
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
@@ -32,7 +32,7 @@ impl DutchAuction for Contract {
     #[storage(read)]
     fn price(auction_id: u64) -> u64 {
         validate_id(auction_id, storage.auction_count);
-        calculate_price(storage.auctions.get(auction_id))
+        calculate_price(storage.auctions.get(auction_id).unwrap())
     }
 
     #[storage(read, write)]
@@ -40,7 +40,7 @@ impl DutchAuction for Contract {
         // In a Dutch auction the first bid wins
         validate_id(auction_id, storage.auction_count);
 
-        let mut auction = storage.auctions.get(auction_id);
+        let mut auction = storage.auctions.get(auction_id).unwrap();
 
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
@@ -70,7 +70,7 @@ impl DutchAuction for Contract {
 
         on_win(auction, price);
 
-        let _ = storage.active_auctions_of_author.pop(auction.author);
+        let _ = storage.active_auctions_of_author.pop(auction.author); // I dont think this is correct, as the author can have multiple active auctions
 
         storage.auctions_won.push(sender_indentity(), auction_id);
 
@@ -123,7 +123,7 @@ impl DutchAuction for Contract {
     fn cancel_auction(auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
 
-        let mut auction = storage.auctions.get(auction_id);
+        let mut auction = storage.auctions.get(auction_id).unwrap();
 
         // Only the author can end the auction (prematurely)
         require(eq_identity(sender_indentity(), auction.author), UserError::SenderNotAuthor);
@@ -143,13 +143,13 @@ impl DutchAuction for Contract {
     #[storage(read)]
     fn auction(auction_id: u64) -> Auction {
         validate_id(auction_id, storage.auction_count);
-        storage.auctions.get(auction_id)
+        storage.auctions.get(auction_id).unwrap()
     }
 
     #[storage(read, write)]
     fn change_asset(new_asset: ContractId, auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
-        let mut auction = storage.auctions.get(auction_id);
+        let mut auction = storage.auctions.get(auction_id).unwrap();
 
         // Only the author can change the bidding asset
         require(eq_identity(sender_indentity(), auction.author), UserError::SenderNotAuthor);
@@ -169,7 +169,7 @@ impl DutchAuction for Contract {
     #[storage(read, write)]
     fn change_beneficiary(new_beneficiary: Identity, auction_id: u64) {
         validate_id(auction_id, storage.auction_count);
-        let mut auction = storage.auctions.get(auction_id);
+        let mut auction = storage.auctions.get(auction_id).unwrap();
 
         // Only the author can change the beneficiary
         require(eq_identity(sender_indentity(), auction.author), UserError::SenderNotAuthor);
@@ -181,20 +181,21 @@ impl DutchAuction for Contract {
         storage.auctions.insert(auction_id, auction);
     }
 
-    #[storage(read)]
-    fn active_auctions_of_author(author: Identity) -> Vec<u64> {
-        storage.active_auctions_of_author.to_vec(author)
-    }
+    // TODO: SDK does not support returning vectors
+    // #[storage(read)]
+    // fn active_auctions_of_author(author: Identity) -> Vec<u64> {
+    //     storage.active_auctions_of_author.to_vec(author)
+    // }
 
-    #[storage(read)]
-    fn auctions_of_author(author: Identity) -> Vec<u64> {
-        storage.auctions_of_author.to_vec(author)
-    }
+    // #[storage(read)]
+    // fn auctions_of_author(author: Identity) -> Vec<u64> {
+    //     storage.auctions_of_author.to_vec(author)
+    // }
 
-    #[storage(read)]
-    fn auctions_won(bidder: Identity) -> Vec<u64> {
-        storage.auctions_won.to_vec(bidder)
-    }
+    // #[storage(read)]
+    // fn auctions_won(bidder: Identity) -> Vec<u64> {
+    //     storage.auctions_won.to_vec(bidder)
+    // }
 }
 
 /// This function is called whenever a winning bid is recieved.

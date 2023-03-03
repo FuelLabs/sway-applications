@@ -10,8 +10,8 @@ abi DutchAuction {
     /// # Argumets
     ///
     /// * `author` - The user which may have started auctions
-    #[storage(read)]
-    fn active_auctions_of_author(author: Identity) -> Vec<u64>;
+    // #[storage(read)]
+    // fn active_auctions_of_author(author: Identity) -> Vec<u64>;
 
     /// Returns the auction data for the specified auction ID
     ///
@@ -29,15 +29,15 @@ abi DutchAuction {
     /// # Arguments
     ///
     /// * `author` - The user which may have started auctions
-    #[storage(read)]
-    fn auctions_of_author(author: Identity) -> Vec<u64>;
+    // #[storage(read)]
+    // fn auctions_of_author(author: Identity) -> Vec<u64>;
     /// Returns the auction ids of the auctions some user has won
     ///
     /// # Arguments
     ///
     /// * `bidder` - The user which may have won auctions
-    #[storage(read)]
-    fn auctions_won(bidder: Identity) -> Vec<u64>;
+    // #[storage(read)]
+    // fn auctions_won(bidder: Identity) -> Vec<u64>;
     /// Bids on the specified auction
     ///
     /// # Arguments
