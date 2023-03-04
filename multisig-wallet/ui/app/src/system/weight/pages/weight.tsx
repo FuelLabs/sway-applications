@@ -117,10 +117,10 @@ export function WeightPage() {
                             <Input.Field name="weight-hash-data" placeholder="Optional data"/>
                         </Input>
                         <Input size="lg">
-                            <Input.Field name="weight-hash-nonce" placeholder="Nonce"/>
+                            <Input.Number name="weight-hash-nonce" placeholder="Nonce"/>
                         </Input>
                         <Input size="lg">
-                            <Input.Field name="weight-hash-address" placeholder="User address"/>
+                            <Input.Field name="weight-hash-address" placeholder="Recipient address"/>
                         </Input>
                         <Input size="lg">
                             <Input.Number name="weight-hash" placeholder="New weight"/>
@@ -149,7 +149,7 @@ export function WeightPage() {
                     <Input.Field name="weight-signatures" placeholder="Signature"/>
                 </Input>
                 <Input size="lg">
-                    <Input.Field name="weight-address" placeholder="User address"/>
+                    <Input.Field name="weight-address" placeholder="Recipient address"/>
                 </Input>
                 <Input size="lg">
                     <Input.Number name="weight" placeholder="New weight"/>
