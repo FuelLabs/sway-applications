@@ -71,7 +71,7 @@ export function ExecuteTransactionPage() {
 
                     <Stack>
 
-                        <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1"}}>
+                        <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1" }}>
                             Check current nonce
                         </Heading>
 
@@ -88,21 +88,21 @@ export function ExecuteTransactionPage() {
 
                     <Stack>
 
-                        <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1"}}>
+                        <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1" }}>
                             Create transaction hash to sign
                         </Heading>
 
                         <Input size="lg">
-                            <Input.Field name="execute-hash-data" placeholder="Optional data"/>
+                            <Input.Field name="execute-hash-data" placeholder="Optional data" />
                         </Input>
                         <Input size="lg">
-                            <Input.Number name="execute-hash-nonce" placeholder="Nonce"/>
+                            <Input.Number name="execute-hash-nonce" placeholder="Nonce" />
                         </Input>
                         <Input size="lg">
-                            <Input.Field name="execute-hash-address" placeholder="Recipient address"/>
+                            <Input.Field name="execute-hash-address" placeholder="Recipient address" />
                         </Input>
                         <Input size="lg">
-                            <Input.Number name="execute-hash-value" placeholder="Value"/>
+                            <Input.Number name="execute-hash-value" placeholder="Value" />
                         </Input>
                         <Button
                             color="accent"
