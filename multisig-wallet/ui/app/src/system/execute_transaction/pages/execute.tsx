@@ -65,7 +65,7 @@ export function ExecuteTransactionPage() {
     return (
         <BoxCentered css={{ marginTop: "8%" }}>
 
-            <Stack gap="$1" css={{ minWidth: "100%"}}>
+            <Stack gap="$1" css={{ minWidth: "100%" }}>
 
                 <Flex gap="$24" css={{ marginBottom: "$14" }}>
 
@@ -117,7 +117,7 @@ export function ExecuteTransactionPage() {
 
                 </Flex>
 
-                <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginBottom: "$10", color: "$accent1"}}>
+                <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginBottom: "$10", color: "$accent1" }}>
                     Execute a transaction
                 </Heading>
 
@@ -142,7 +142,7 @@ export function ExecuteTransactionPage() {
                     Execute
                 </Button>
 
-                <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$14", color: "$accent1"}}>
+                <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$14", color: "$accent1" }}>
                     Recipient Type
                 </Heading>
 

@@ -74,12 +74,12 @@ export function WeightPage() {
 
                     <Stack>
 
-                        <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1"}}>
+                        <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1" }}>
                             Check user approval weight
                         </Heading>
 
                         <Input size="lg">
-                            <Input.Field name="user-weight" placeholder="User address"/>
+                            <Input.Field name="user-weight" placeholder="User address" />
                         </Input>
 
                         <Button
@@ -92,7 +92,7 @@ export function WeightPage() {
                             Get weight
                         </Button>
 
-                        <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$14", color: "$accent1"}}>
+                        <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$14", color: "$accent1" }}>
                             Check current nonce
                         </Heading>
 
@@ -109,21 +109,21 @@ export function WeightPage() {
 
                     <Stack>
 
-                        <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1"}}>
+                        <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1" }}>
                             Create transaction hash to sign
                         </Heading>
 
                         <Input size="lg">
-                            <Input.Field name="weight-hash-data" placeholder="Optional data"/>
+                            <Input.Field name="weight-hash-data" placeholder="Optional data" />
                         </Input>
                         <Input size="lg">
-                            <Input.Number name="weight-hash-nonce" placeholder="Nonce"/>
+                            <Input.Number name="weight-hash-nonce" placeholder="Nonce" />
                         </Input>
                         <Input size="lg">
-                            <Input.Field name="weight-hash-address" placeholder="Recipient address"/>
+                            <Input.Field name="weight-hash-address" placeholder="Recipient address" />
                         </Input>
                         <Input size="lg">
-                            <Input.Number name="weight-hash" placeholder="New weight"/>
+                            <Input.Number name="weight-hash" placeholder="New weight" />
                         </Input>
                         <Button
                             color="accent"
@@ -138,21 +138,21 @@ export function WeightPage() {
 
                 </Flex>
 
-                <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginBottom: "$10", marginTop: "$10", color: "$accent1"}}>
+                <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginBottom: "$10", marginTop: "$10", color: "$accent1" }}>
                     Change the approval weight of a user
                 </Heading>
 
                 <Input size="lg">
-                    <Input.Field name="weight-data" placeholder="Optional data"/>
+                    <Input.Field name="weight-data" placeholder="Optional data" />
                 </Input>
                 <Input size="lg">
-                    <Input.Field name="weight-signatures" placeholder="Signature"/>
+                    <Input.Field name="weight-signatures" placeholder="Signature" />
                 </Input>
                 <Input size="lg">
-                    <Input.Field name="weight-address" placeholder="Recipient address"/>
+                    <Input.Field name="weight-address" placeholder="Recipient address" />
                 </Input>
                 <Input size="lg">
-                    <Input.Number name="weight" placeholder="New weight"/>
+                    <Input.Number name="weight" placeholder="New weight" />
                 </Input>
                 <Button
                     color="accent"
