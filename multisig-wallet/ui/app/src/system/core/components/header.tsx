@@ -1,4 +1,4 @@
-import { BoxCentered, ButtonLink, Flex, FuelLogo, Heading, Link, toast } from "@fuel-ui/react";
+import { BoxCentered, Flex, FuelLogo, Heading, Link } from "@fuel-ui/react";
 import { WalletState } from "./wallet_state";
 
 export const Header = () => {
@@ -24,8 +24,16 @@ export const Header = () => {
                     Execute
                 </Link>
 
-                <Link href="/update" css={{ color: 'black', fontWeight: 'bolder' }}>
-                    Update
+                <Link href="/transfer" css={{ color: 'black', fontWeight: 'bolder' }}>
+                    Transfer
+                </Link>
+
+                <Link href="/update-threshold" css={{ color: 'black', fontWeight: 'bolder' }}>
+                    Threshold
+                </Link>
+
+                <Link href="/update-weight" css={{ color: 'black', fontWeight: 'bolder' }}>
+                    Weight
                 </Link>
 
                 <Link href="/view" css={{ color: 'black', fontWeight: 'bolder' }}>
