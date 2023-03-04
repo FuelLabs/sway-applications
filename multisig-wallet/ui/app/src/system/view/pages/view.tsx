@@ -1,4 +1,3 @@
-// import { BoxCentered, Button, Card, Flex, FuelLogo, Heading, toast } from "@fuel-ui/react";
 import { useEffect, useState } from "react"
 import { Button, Text, toast } from "@fuel-ui/react";
 import { useContract } from "../../core/hooks";
