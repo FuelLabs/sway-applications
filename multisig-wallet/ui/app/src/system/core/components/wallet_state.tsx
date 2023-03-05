@@ -1,11 +1,14 @@
 import { ButtonLink, toast } from "@fuel-ui/react";
 import { useEffect, useState } from "react"
+import { useFuel } from "../hooks";
 
 export const WalletState = () => {
   const [connected, setConnection] = useState("Connect")
+  const fuel = useFuel()
 
   useEffect(() => {
     async function main() {
+      // const isConnected = await fuel!.isConnected();
       const isConnected = await window.fuel.isConnected();
       if (!isConnected) {
         setConnection("Connect");
@@ -17,12 +20,15 @@ export const WalletState = () => {
   }, [connected]);
 
   async function handleWalletConnection() {
+    // const isConnected = await fuel!.isConnected();
     const isConnected = await window.fuel.isConnected();
     if (!isConnected) {
-      await fuel.connect();
+      await window.fuel.connect();
+      // await fuel!.connect();
       toast.success("Connected!", { duration: 4000 });
     } else {
-      await fuel.disconnect();
+      await window.fuel.disconnect();
+      // await fuel!.disconnect();
       toast.success("Disconnected!", { duration: 4000 });
     }
 

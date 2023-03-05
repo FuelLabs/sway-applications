@@ -11,6 +11,7 @@ export function AppRoutes() {
     return (
         <>
             <Routes>
+              <Route path="/" element={<ConstructorPage />} />
               <Route path="/create" element={<ConstructorPage />} />
               <Route path="/execute" element={<ExecuteTransactionPage />} />
               <Route path="/transfer" element={<TransferPage />} />
