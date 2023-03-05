@@ -36,6 +36,10 @@ export const Header = () => {
                     Weight
                 </Link>
 
+                <Link href="/hash" css={{ color: 'black', fontWeight: 'bolder' }}>
+                    Hash
+                </Link>
+
                 <Link href="/view" css={{ color: 'black', fontWeight: 'bolder' }}>
                     View
                 </Link>

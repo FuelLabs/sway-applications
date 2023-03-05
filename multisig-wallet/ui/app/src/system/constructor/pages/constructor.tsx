@@ -26,9 +26,9 @@ export function ConstructorPage() {
     return (
         <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
 
-            <Stack gap="$1" css={{ minWidth: "100%" }}>
+            <Stack css={{ minWidth: "100%" }}>
 
-                <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1"}}>
+                <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginBottom: "$10", color: "$accent1"}}>
                     Create a new wallet
                 </Heading>
 
