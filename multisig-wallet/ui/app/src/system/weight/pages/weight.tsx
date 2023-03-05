@@ -1,7 +1,9 @@
-import { BoxCentered, Button, Heading, Input, Stack, toast } from "@fuel-ui/react";
+import { BoxCentered, Button, Heading, Input, RadioGroup, Stack, toast } from "@fuel-ui/react";
+import { useState } from "react";
 import { useContract } from "../../core/hooks";
 
 export function WeightPage() {
+    const [radio, setRadio] = useState("address")
     const { contract, isLoading, isError } = useContract()
 
     async function useWeight() {
@@ -53,6 +55,21 @@ export function WeightPage() {
                 >
                     Set weight
                 </Button>
+
+                <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$14", color: "$accent1"}}>
+                    Recipient Type
+                </Heading>
+
+                <RadioGroup defaultValue="address" direction="row" css={{ margin: "auto" }}>
+                    {/* 
+                        TODO: 
+                            change labels to be the color black
+                            increase the size of the buttons and text 
+                    */}
+                    <RadioGroup.Item onClick={() => setRadio("address")} label="Address" value="address" />
+                    <RadioGroup.Item onClick={() => setRadio("contract")} label="Contract" value="contract" />
+                </RadioGroup>
+
 
             </Stack>
             

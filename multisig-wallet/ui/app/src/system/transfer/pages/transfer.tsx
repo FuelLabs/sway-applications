@@ -1,4 +1,4 @@
-import { BoxCentered, Button, Flex, Heading, Input, RadioGroup, toast, Stack } from "@fuel-ui/react";
+import { BoxCentered, Button, Heading, Input, RadioGroup, toast, Stack } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 
