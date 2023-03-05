@@ -1,4 +1,4 @@
-import { BoxCentered, Button, Flex, Heading, Input, RadioGroup, toast, Stack } from "@fuel-ui/react";
+import { BoxCentered, Button, Heading, Input, RadioGroup, Text, toast, Stack } from "@fuel-ui/react";
 import { useContract } from "../../core/hooks";
 import { UserInput } from "../../../contracts/MultisigContractAbi";
 
@@ -32,11 +32,14 @@ export function ConstructorPage() {
                     Create a new wallet
                 </Heading>
 
+                <Text color="blackA12">Recipient address</Text>
                 <Input size="lg">
-                    <Input.Field name="create-recipient" placeholder="Recipient address" />
+                    <Input.Field name="create-recipient" placeholder="0x80d5e8c2be..." />
                 </Input>
+
+                <Text color="blackA12">Recipient weight</Text>
                 <Input size="lg">
-                    <Input.Number name="create-weight" placeholder="Recipient weight"/>
+                    <Input.Number name="create-weight" placeholder="2"/>
                 </Input>
                 <Button
                     color="accent"

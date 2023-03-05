@@ -1,4 +1,4 @@
-import { BoxCentered, Button, Heading, Input, RadioGroup, toast, Stack } from "@fuel-ui/react";
+import { BoxCentered, Button, Heading, Input, RadioGroup, Text, toast, Stack } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 
@@ -36,18 +36,26 @@ export function ExecuteTransactionPage() {
                     Execute a transaction
                 </Heading>
 
+                <Text color="blackA12">Recipient address</Text>
                 <Input size="lg">
-                    <Input.Field name="transaction-data" placeholder="Optional data" />
+                    <Input.Field name="transaction-recipient" placeholder="0x80d5e8c2be..." />
                 </Input>
+
+                <Text color="blackA12">Asset amount</Text>
                 <Input size="lg">
-                    <Input.Field name="transaction-signature" placeholder="Signature" />
+                    <Input.Number name="execute-value" placeholder="1.0" />
                 </Input>
+
+                <Text color="blackA12">Signature</Text>
                 <Input size="lg">
-                    <Input.Field name="transaction-recipient" placeholder="Recipient address" />
+                    <Input.Field name="transaction-signature" placeholder="9c3f5ae085a4..." />
                 </Input>
+
+                <Text color="blackA12">Optional data</Text>
                 <Input size="lg">
-                    <Input.Number name="execute-value" placeholder="Value" />
+                    <Input.Field name="transaction-data" placeholder="0x252afeeb6e..." />
                 </Input>
+                
                 <Button
                     color="accent"
                     onPress={useExecuteTransaction}

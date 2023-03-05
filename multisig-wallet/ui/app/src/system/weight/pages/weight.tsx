@@ -1,4 +1,4 @@
-import { BoxCentered, Button, Heading, Input, RadioGroup, Stack, toast } from "@fuel-ui/react";
+import { BoxCentered, Button, Heading, Input, RadioGroup, Text, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 
@@ -35,18 +35,26 @@ export function WeightPage() {
                     Change approval weight of user
                 </Heading>
 
+                <Text color="blackA12">Recipient address</Text>
                 <Input size="lg">
-                    <Input.Field name="weight-data" placeholder="Optional data" />
+                    <Input.Field name="weight-address" placeholder="0x80d5e8c2be..." />
                 </Input>
+
+                <Text color="blackA12">New weight</Text>
                 <Input size="lg">
-                    <Input.Field name="weight-signatures" placeholder="Signature" />
+                    <Input.Number name="weight" placeholder="2" />
                 </Input>
+
+                <Text color="blackA12">Signature</Text>
                 <Input size="lg">
-                    <Input.Field name="weight-address" placeholder="Recipient address" />
+                    <Input.Field name="weight-signatures" placeholder="9c3f5ae085a4..." />
                 </Input>
+
+                <Text color="blackA12">Optional data</Text>
                 <Input size="lg">
-                    <Input.Number name="weight" placeholder="New weight" />
+                    <Input.Field name="weight-data" placeholder="0x252afeeb6e..." />
                 </Input>
+
                 <Button
                     color="accent"
                     onPress={useWeight}

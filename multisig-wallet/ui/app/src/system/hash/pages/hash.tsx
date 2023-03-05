@@ -1,4 +1,4 @@
-import { BoxCentered, Button, Flex, Heading, Input, RadioGroup, Stack, toast } from "@fuel-ui/react";
+import { BoxCentered, Button, Flex, Heading, Input, RadioGroup, Stack, Text, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { IdentityInput, UserInput } from "../../../contracts/MultisigContractAbi";
@@ -115,7 +115,7 @@ export function HashPage() {
     }
 
     return (
-        <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
+        <BoxCentered css={{ marginTop: "3%", width: "30%" }}>
 
             <Stack>
 
@@ -126,18 +126,26 @@ export function HashPage() {
                             Hash for execution
                         </Heading>
 
+                        <Text color="blackA12">Recipient address</Text>
                         <Input size="lg">
-                            <Input.Field name="execute-hash-data" placeholder="Optional data" />
+                            <Input.Field name="execute-hash-address" placeholder="0x80d5e8c2be..." />
                         </Input>
+
+                        <Text color="blackA12">Asset amount</Text>
                         <Input size="lg">
-                            <Input.Number name="execute-hash-nonce" placeholder="Nonce" />
+                            <Input.Number name="execute-hash-value" placeholder="1.0" />
                         </Input>
+
+                        <Text color="blackA12">Nonce</Text>
                         <Input size="lg">
-                            <Input.Field name="execute-hash-address" placeholder="Recipient address" />
+                            <Input.Number name="execute-hash-nonce" placeholder="3" />
                         </Input>
+
+                        <Text color="blackA12">Optional data</Text>
                         <Input size="lg">
-                            <Input.Number name="execute-hash-value" placeholder="Value" />
+                            <Input.Field name="execute-hash-data" placeholder="0x252afeeb6e..." />
                         </Input>
+
                         <Button
                             color="accent"
                             onPress={getExecuteHash}
@@ -153,18 +161,26 @@ export function HashPage() {
                             Hash for user weight
                         </Heading>
 
+                        <Text color="blackA12">Recipient address</Text>
                         <Input size="lg">
-                            <Input.Field name="weight-hash-data" placeholder="Optional data" />
+                            <Input.Field name="weight-hash-address" placeholder="0x80d5e8c2be..." />
                         </Input>
+
+                        <Text color="blackA12">New weight</Text>
                         <Input size="lg">
-                            <Input.Number name="weight-hash-nonce" placeholder="Nonce" />
+                            <Input.Number name="weight-hash" placeholder="2" />
                         </Input>
+
+                        <Text color="blackA12">Nonce</Text>
                         <Input size="lg">
-                            <Input.Field name="weight-hash-address" placeholder="Recipient address" />
+                            <Input.Number name="weight-hash-nonce" placeholder="3" />
                         </Input>
+
+                        <Text color="blackA12">Optional data</Text>
                         <Input size="lg">
-                            <Input.Number name="weight-hash" placeholder="New weight" />
+                            <Input.Field name="weight-hash-data" placeholder="0x252afeeb6e..." />
                         </Input>
+
                         <Button
                             color="accent"
                             onPress={getWeightHash}
@@ -184,21 +200,31 @@ export function HashPage() {
                             Hash for transfer
                         </Heading>
 
+                        <Text color="blackA12">Recipient address</Text>
                         <Input size="lg">
-                            <Input.Field name="transfer-hash-asset" placeholder="Asset Id" />
+                            <Input.Field name="transfer-hash-address" placeholder="0x80d5e8c2be..." />
                         </Input>
+
+                        <Text color="blackA12">Asset id</Text>
                         <Input size="lg">
-                            <Input.Field name="transfer-hash-data" placeholder="Optional data" />
+                            <Input.Field name="transfer-hash-asset" placeholder="0x0000000000..." />
                         </Input>
+
+                        <Text color="blackA12">Asset amount</Text>
                         <Input size="lg">
-                            <Input.Number name="transfer-hash-nonce" placeholder="Nonce" />
+                            <Input.Number name="transfer-hash-value" placeholder="1.0" />
                         </Input>
+
+                        <Text color="blackA12">Nonce</Text>
                         <Input size="lg">
-                            <Input.Field name="transfer-hash-address" placeholder="Recipient address" />
+                            <Input.Number name="transfer-hash-nonce" placeholder="3" />
                         </Input>
+
+                        <Text color="blackA12">Optional data</Text>
                         <Input size="lg">
-                            <Input.Number name="transfer-hash-value" placeholder="Value" />
+                            <Input.Field name="transfer-hash-data" placeholder="0x252afeeb6e..." />
                         </Input>
+
                         <Button
                             color="accent"
                             onPress={getTransferHash}
@@ -214,15 +240,21 @@ export function HashPage() {
                             Hash for threshold 
                         </Heading>
 
+                        <Text color="blackA12">Threshold</Text>
                         <Input size="lg">
-                            <Input.Field name="threshold-hash-data" placeholder="Optional data" />
+                            <Input.Number name="threshold-hash" placeholder="8" />
                         </Input>
+
+                        <Text color="blackA12">Nonce</Text>
                         <Input size="lg">
-                            <Input.Number name="threshold-hash-nonce" placeholder="Nonce" />
+                            <Input.Number name="threshold-hash-nonce" placeholder="3" />
                         </Input>
+
+                        <Text color="blackA12">Optional data</Text>
                         <Input size="lg">
-                            <Input.Number name="threshold-hash" placeholder="New threshold" />
+                            <Input.Field name="threshold-hash-data" placeholder="0x252afeeb6e..." />
                         </Input>
+
                         <Button
                             color="accent"
                             onPress={getThresholdHash}

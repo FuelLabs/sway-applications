@@ -1,4 +1,4 @@
-import { BoxCentered, Button, Heading, Input, toast, Stack } from "@fuel-ui/react";
+import { BoxCentered, Button, Heading, Input, Text, toast, Stack } from "@fuel-ui/react";
 import { useContract } from "../../core/hooks";
 
 export function ThresholdPage() {
@@ -29,15 +29,21 @@ export function ThresholdPage() {
                     Change threshold for execution
                 </Heading>
 
+                <Text color="blackA12">Threshold</Text>
                 <Input size="lg">
-                    <Input.Field name="threshold-data" placeholder="Optional data" />
+                    <Input.Number name="threshold" placeholder="8" />
                 </Input>
+
+                <Text color="blackA12">Signature</Text>
                 <Input size="lg">
-                    <Input.Field name="threshold-signature" placeholder="Signature" />
+                    <Input.Field name="threshold-signature" placeholder="9c3f5ae085a4..." />
                 </Input>
+
+                <Text color="blackA12">Optional data</Text>
                 <Input size="lg">
-                    <Input.Number name="threshold" placeholder="Threshold" />
+                    <Input.Field name="threshold-data" placeholder="0x252afeeb6e..." />
                 </Input>
+
                 <Button
                     color="accent"
                     onPress={useThreshold}

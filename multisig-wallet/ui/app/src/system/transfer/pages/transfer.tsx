@@ -1,4 +1,4 @@
-import { BoxCentered, Button, Heading, Input, RadioGroup, toast, Stack } from "@fuel-ui/react";
+import { BoxCentered, Button, Heading, Input, RadioGroup, Text, toast, Stack } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 
@@ -39,21 +39,31 @@ export function TransferPage() {
                     Execute a transfer
                 </Heading>
 
+                <Text color="blackA12">Recipient address</Text>
                 <Input size="lg">
-                    <Input.Field name="transfer-asset" placeholder="Asset id" />
+                    <Input.Field name="transfer-recipient" placeholder="0x80d5e8c2be..." />
                 </Input>
+
+                <Text color="blackA12">Asset id</Text>
                 <Input size="lg">
-                    <Input.Field name="transfer-data" placeholder="Optional data" />
+                    <Input.Field name="transfer-asset" placeholder="0x0000000000..." />
                 </Input>
+
+                <Text color="blackA12">Asset amount</Text>
                 <Input size="lg">
-                    <Input.Field name="transfer-signatures" placeholder="Signature" />
+                    <Input.Number name="transfer-value" placeholder="1.0" />
                 </Input>
+
+                <Text color="blackA12">Signature</Text>
                 <Input size="lg">
-                    <Input.Field name="transfer-recipient" placeholder="Recipient" />
+                    <Input.Field name="transfer-signatures" placeholder="9c3f5ae085a4..." />
                 </Input>
+
+                <Text color="blackA12">Optional data</Text>
                 <Input size="lg">
-                    <Input.Number name="transfer-value" placeholder="Value" />
+                    <Input.Field name="transfer-data" placeholder="0x252afeeb6e..." />
                 </Input>
+
                 <Button
                     color="accent"
                     onPress={useTransfer}
