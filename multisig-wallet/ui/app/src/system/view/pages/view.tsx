@@ -1,15 +1,20 @@
 import { BoxCentered, Button, Flex, Heading, Input, Stack, Text, toast } from "@fuel-ui/react";
+import { Address, isBech32, isB256 } from "fuels";
 import { useContract } from "../../core/hooks";
 import { ContractIdInput } from "../../../contracts/MultisigContractAbi";
 import { InputFieldComponent } from "../../common/input_field";
+import { useState } from "react";
 
 export function ViewPage() {
     const { contract, isLoading, isError } = useContract()
+    const [address, setAddress] = useState("")
+    const [asset, setAsset] = useState("")
 
     async function getBalance() {
-        const asset = document.querySelector<HTMLInputElement>(
-            `[name="view-asset"]`
-        )!.value;
+        if (!isB256(asset)) {
+            toast.error("That ain't no contract id dummy", { duration: 10000 });
+            return;
+        }
 
         let assetId: ContractIdInput = {
             value: asset
@@ -24,18 +29,25 @@ export function ViewPage() {
         toast.success(`Current nonce: ${value}`, { duration: 10000 });
     }
 
-    async function getWeight() {
-        const user = document.querySelector<HTMLInputElement>(
-            `[name="user-weight"]`
-        )!.value;
-
-        const { value } = await contract!.functions.approval_weight(user).get();
-        toast.success(`User weight: ${value}`, { duration: 10000 });
-    }
-
     async function getThreshold() {
         const { value } = await contract!.functions.threshold().get();
         toast.success(`Threshold: ${value}`, { duration: 10000 });
+    }
+
+    async function getWeight() {
+        let user: string;
+
+        if (isBech32(address)) {
+            user = Address.fromString(address).toB256()
+        } else if (isB256(address)) {
+            user = address;
+        } else {
+            toast.error("Oh fuck, I can't believe you've done this", { duration: 10000 });
+            return;
+        }
+
+        const { value } = await contract!.functions.approval_weight(user).get();
+        toast.success(`User weight: ${value}`, { duration: 10000 });
     }
 
     return (
@@ -48,7 +60,7 @@ export function ViewPage() {
                         Check user approval weight
                     </Heading>
 
-                    <InputFieldComponent text="User address" placeholder="0x80d5e8c2be..." name="user-weight" />
+                    <InputFieldComponent onChange={setAddress} text="User address" placeholder="0x80d5e8c2be..." name="user-weight" />
 
                     <Button
                         color="accent"
@@ -66,7 +78,7 @@ export function ViewPage() {
                         Check balance of asset
                     </Heading>
 
-                    <InputFieldComponent text="Asset id" placeholder="0x0000000000..." name="view-asset" />
+                    <InputFieldComponent onChange={setAsset} text="Asset id" placeholder="0x0000000000..." name="view-asset" />
 
                     <Button
                         color="accent"
