@@ -1,9 +1,12 @@
-import { BoxCentered, Button, Heading, Input, RadioGroup, Text, Stack, toast } from "@fuel-ui/react";
+import { BoxCentered, Button, Checkbox, Flex, Form, Heading, Input, RadioGroup, Text, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
+import { SignatureComponent } from "../../common/signature";
 
 export function WeightPage() {
     const [radio, setRadio] = useState("address")
+    const [optionalData, setOptionalData] = useState(false)
+    const [signatures, setSignatures] = useState([<SignatureComponent id={1} name="transfer" />])
     const { contract, isLoading, isError } = useContract()
 
     async function useWeight() {
@@ -26,6 +29,19 @@ export function WeightPage() {
         toast.error("Unimplemented")
     }
 
+    async function addSignature() {
+        setSignatures([...signatures, <SignatureComponent id={signatures.length+1} name="weight" /> ]);
+    }
+
+    async function removeSignature() {
+        if (signatures.length === 1) {
+            toast.error("Cannot remove the last signature")
+            return;
+        }
+
+        setSignatures([...signatures.splice(0, signatures.length - 1)]);
+    }
+
     return (
         <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
 
@@ -45,26 +61,59 @@ export function WeightPage() {
                     <Input.Number name="weight" placeholder="2" />
                 </Input>
 
-                <Text color="blackA12">Signature</Text>
-                <Input size="lg">
-                    <Input.Field name="weight-signatures" placeholder="9c3f5ae085a4..." />
-                </Input>
+                {signatures.map((signatureComponent, index) => signatureComponent)}
 
-                <Text color="blackA12">Optional data</Text>
-                <Input size="lg">
-                    <Input.Field name="weight-data" placeholder="0x252afeeb6e..." />
-                </Input>
+                {optionalData && 
+                    <>
+                        <Text color="blackA12">Optional data</Text>
+                        <Input size="lg">
+                            <Input.Field name="weight-data" placeholder="0x252afeeb6e..." />
+                        </Input>
+                    </>
+                }
 
                 <Button
                     color="accent"
                     onPress={useWeight}
                     size="lg"
                     variant="solid"
+                    css={{ marginTop: "$1" }}
                 >
                     Set weight
                 </Button>
 
-                <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$14", color: "$accent1"}}>
+                <Flex gap="$1" css={{ marginTop: "$1" }}>
+                    <Button
+                        color="accent"
+                        onPress={addSignature}
+                        size="lg"
+                        variant="solid"
+                        css={{ width: "50%" }}
+                    >
+                        Add signature
+                    </Button>
+
+                    <Button
+                        color="accent"
+                        onPress={removeSignature}
+                        size="lg"
+                        variant="solid"
+                        css={{ width: "50%" }}
+                    >
+                        Remove Signature
+                    </Button>
+                </Flex>
+
+                <BoxCentered css={{ marginTop: "$8" }}>
+                    <Form.Control css={{ flexDirection: 'row' }}>
+                        <Checkbox onClick={() => setOptionalData(!optionalData)} id="optional-data"/>
+                        <Form.Label htmlFor="optional-data">
+                            Optional data
+                        </Form.Label>
+                    </Form.Control>
+                </BoxCentered>
+
+                <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$8", color: "$accent1"}}>
                     Recipient Type
                 </Heading>
 
@@ -77,7 +126,6 @@ export function WeightPage() {
                     <RadioGroup.Item onClick={() => setRadio("address")} label="Address" value="address" />
                     <RadioGroup.Item onClick={() => setRadio("contract")} label="Contract" value="contract" />
                 </RadioGroup>
-
 
             </Stack>
             
