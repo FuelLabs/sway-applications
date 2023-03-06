@@ -1,6 +1,7 @@
 import { BoxCentered, Button, Flex, Heading, Input, Stack, Text, toast } from "@fuel-ui/react";
 import { useContract } from "../../core/hooks";
 import { ContractIdInput } from "../../../contracts/MultisigContractAbi";
+import { InputFieldComponent } from "../../common/input_field";
 
 export function ViewPage() {
     const { contract, isLoading, isError } = useContract()
@@ -47,10 +48,7 @@ export function ViewPage() {
                         Check user approval weight
                     </Heading>
 
-                    <Text color="blackA12">User address</Text>
-                    <Input size="lg">
-                        <Input.Field name="user-weight" placeholder="0x80d5e8c2be..." />
-                    </Input>
+                    <InputFieldComponent text="User address" placeholder="0x80d5e8c2be..." name="user-weight" />
 
                     <Button
                         color="accent"
@@ -68,10 +66,8 @@ export function ViewPage() {
                         Check balance of asset
                     </Heading>
 
-                    <Text color="blackA12">Asset id</Text>
-                    <Input size="lg">
-                        <Input.Field name="view-asset" placeholder="0x0000000000..." />
-                    </Input>
+                    <InputFieldComponent text="Asset id" placeholder="0x0000000000..." name="view-asset" />
+
                     <Button
                         color="accent"
                         onPress={getBalance}

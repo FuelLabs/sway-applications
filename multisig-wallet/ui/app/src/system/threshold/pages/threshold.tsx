@@ -2,6 +2,8 @@ import { BoxCentered, Button, Checkbox, Flex, Form, Heading, Input, Text, toast,
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/signature";
+import { InputFieldComponent } from "../../common/input_field";
+import { InputNumberComponent } from "../../common/input_number";
 
 export function ThresholdPage() {
     const [optionalData, setOptionalData] = useState(false)
@@ -46,21 +48,11 @@ export function ThresholdPage() {
                     Change threshold for execution
                 </Heading>
 
-                <Text color="blackA12">Threshold</Text>
-                <Input size="lg">
-                    <Input.Number name="threshold" placeholder="8" />
-                </Input>
+                <InputNumberComponent text="Threshold" placeholder="8" name="threshold" />
 
                 {signatures.map((signatureComponent, index) => signatureComponent)}
 
-                {optionalData && 
-                    <>
-                        <Text color="blackA12">Optional data</Text>
-                        <Input size="lg">
-                            <Input.Field name="threshold-data" placeholder="0x252afeeb6e..." />
-                        </Input>
-                    </>
-                }
+                {optionalData && <InputFieldComponent text="Optional data" placeholder="0x252afeeb6e..." name="trathresholdnsfer-data" />}
 
                 <Button
                     color="accent"

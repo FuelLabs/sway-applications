@@ -2,6 +2,8 @@ import { BoxCentered, Button, Checkbox, Flex, Form, Heading, Input, RadioGroup, 
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { IdentityInput, UserInput } from "../../../contracts/MultisigContractAbi";
+import { InputFieldComponent } from "../../common/input_field";
+import { InputNumberComponent } from "../../common/input_number";
 
 export function HashPage() {
     const [radio, setRadio] = useState("address")
@@ -127,29 +129,11 @@ export function HashPage() {
                             Hash for execution
                         </Heading>
 
-                        <Text color="blackA12">Recipient address</Text>
-                        <Input size="lg">
-                            <Input.Field name="execute-hash-address" placeholder="0x80d5e8c2be..." />
-                        </Input>
+                        <InputFieldComponent text="Recipient address" placeholder="0x80d5e8c2be..." name="execute-hash-address" />
+                        <InputNumberComponent text="Asset amount" placeholder="1.0" name="execute-hash-value" />
+                        <InputNumberComponent text="Nonce" placeholder="3" name="execute-hash-nonce" />
 
-                        <Text color="blackA12">Asset amount</Text>
-                        <Input size="lg">
-                            <Input.Number name="execute-hash-value" placeholder="1.0" />
-                        </Input>
-
-                        <Text color="blackA12">Nonce</Text>
-                        <Input size="lg">
-                            <Input.Number name="execute-hash-nonce" placeholder="3" />
-                        </Input>
-
-                        {optionalData && 
-                            <>
-                                <Text color="blackA12">Optional data</Text>
-                                <Input size="lg">
-                                    <Input.Field name="execute-hash-data" placeholder="0x252afeeb6e..." />
-                                </Input>
-                            </>
-                        }
+                        {optionalData && <InputFieldComponent text="Optional data" placeholder="0x252afeeb6e..." name="execute-hash-data" />}
 
                         <Button
                             color="accent"
@@ -167,29 +151,11 @@ export function HashPage() {
                             Hash for user weight
                         </Heading>
 
-                        <Text color="blackA12">Recipient address</Text>
-                        <Input size="lg">
-                            <Input.Field name="weight-hash-address" placeholder="0x80d5e8c2be..." />
-                        </Input>
+                        <InputFieldComponent text="Recipient address" placeholder="0x80d5e8c2be..." name="weight-hash-address" />
+                        <InputNumberComponent text="New weight" placeholder="2" name="weight-hash" />
+                        <InputNumberComponent text="Nonce" placeholder="3" name="weight-hash-nonce" />
 
-                        <Text color="blackA12">New weight</Text>
-                        <Input size="lg">
-                            <Input.Number name="weight-hash" placeholder="2" />
-                        </Input>
-
-                        <Text color="blackA12">Nonce</Text>
-                        <Input size="lg">
-                            <Input.Number name="weight-hash-nonce" placeholder="3" />
-                        </Input>
-
-                        {optionalData && 
-                            <>
-                                <Text color="blackA12">Optional data</Text>
-                                <Input size="lg">
-                                    <Input.Field name="weight-hash-data" placeholder="0x252afeeb6e..." />
-                                </Input>
-                            </>
-                        }
+                        {optionalData && <InputFieldComponent text="Optional data" placeholder="0x252afeeb6e..." name="weight-hash-data" />}
 
                         <Button
                             color="accent"
@@ -211,34 +177,12 @@ export function HashPage() {
                             Hash for transfer
                         </Heading>
 
-                        <Text color="blackA12">Recipient address</Text>
-                        <Input size="lg">
-                            <Input.Field name="transfer-hash-address" placeholder="0x80d5e8c2be..." />
-                        </Input>
+                        <InputFieldComponent text="Recipient address" placeholder="0x80d5e8c2be..." name="transfer-hash-address" />
+                        <InputFieldComponent text="Asset id" placeholder="0x0000000000..." name="transfer-hash-asset" />
+                        <InputNumberComponent text="Asset amount" placeholder="1.0" name="transfer-hash-value" />
+                        <InputNumberComponent text="Nonce" placeholder="3" name="transfer-hash-nonce" />
 
-                        <Text color="blackA12">Asset id</Text>
-                        <Input size="lg">
-                            <Input.Field name="transfer-hash-asset" placeholder="0x0000000000..." />
-                        </Input>
-
-                        <Text color="blackA12">Asset amount</Text>
-                        <Input size="lg">
-                            <Input.Number name="transfer-hash-value" placeholder="1.0" />
-                        </Input>
-
-                        <Text color="blackA12">Nonce</Text>
-                        <Input size="lg">
-                            <Input.Number name="transfer-hash-nonce" placeholder="3" />
-                        </Input>
-
-                        {optionalData && 
-                            <>
-                                <Text color="blackA12">Optional data</Text>
-                                <Input size="lg">
-                                    <Input.Field name="transfer-hash-data" placeholder="0x252afeeb6e..." />
-                                </Input>
-                            </>
-                        }
+                        {optionalData && <InputFieldComponent text="Optional data" placeholder="0x252afeeb6e..." name="transfer-hash-data" />}
 
                         <Button
                             color="accent"
@@ -256,24 +200,10 @@ export function HashPage() {
                             Hash for threshold 
                         </Heading>
 
-                        <Text color="blackA12">Threshold</Text>
-                        <Input size="lg">
-                            <Input.Number name="threshold-hash" placeholder="8" />
-                        </Input>
+                        <InputNumberComponent text="Threshold" placeholder="8" name="threshold-hash" />
+                        <InputNumberComponent text="Nonce" placeholder="3" name="threshold-hash-nonce" />
 
-                        <Text color="blackA12">Nonce</Text>
-                        <Input size="lg">
-                            <Input.Number name="threshold-hash-nonce" placeholder="3" />
-                        </Input>
-
-                        {optionalData && 
-                            <>
-                                <Text color="blackA12">Optional data</Text>
-                                <Input size="lg">
-                                    <Input.Field name="threshold-hash-data" placeholder="0x252afeeb6e..." />
-                                </Input>
-                            </>
-                        }
+                        {optionalData && <InputFieldComponent text="Optional data" placeholder="0x252afeeb6e..." name="threshold-hash-data" />}
 
                         <Button
                             color="accent"

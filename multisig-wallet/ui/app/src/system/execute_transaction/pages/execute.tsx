@@ -2,6 +2,8 @@ import { BoxCentered, Button, Checkbox, Flex, Form, Heading, Input, RadioGroup, 
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/signature";
+import { InputFieldComponent } from "../../common/input_field";
+import { InputNumberComponent } from "../../common/input_number";
 
 export function ExecuteTransactionPage() {
     const [radio, setRadio] = useState("address")
@@ -51,26 +53,12 @@ export function ExecuteTransactionPage() {
                     Execute a transaction
                 </Heading>
 
-                <Text color="blackA12">Recipient address</Text>
-                <Input size="lg">
-                    <Input.Field name="transaction-recipient" placeholder="0x80d5e8c2be..." />
-                </Input>
-
-                <Text color="blackA12">Asset amount</Text>
-                <Input size="lg">
-                    <Input.Number name="transaction-value" placeholder="1.0" />
-                </Input>
+                <InputFieldComponent text="Recipient address" placeholder="0x80d5e8c2be..." name="transaction-recipient" />
+                <InputNumberComponent text="Asset amount" placeholder="1.0" name="transaction-value" />
 
                 {signatures.map((signatureComponent, index) => signatureComponent)}
 
-                {optionalData && 
-                    <>
-                        <Text color="blackA12">Optional data</Text>
-                        <Input size="lg">
-                            <Input.Field name="transaction-data" placeholder="0x252afeeb6e..." />
-                        </Input>
-                    </>
-                }
+                {optionalData && <InputFieldComponent text="Optional data" placeholder="0x252afeeb6e..." name="transaction-data" />}
                 
                 <Button
                     color="accent"

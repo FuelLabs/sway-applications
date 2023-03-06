@@ -2,6 +2,8 @@ import { BoxCentered, Button, Checkbox, Flex, Form, Heading, Input, RadioGroup, 
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/signature";
+import { InputFieldComponent } from "../../common/input_field";
+import { InputNumberComponent } from "../../common/input_number";
 
 export function WeightPage() {
     const [radio, setRadio] = useState("address")
@@ -51,26 +53,12 @@ export function WeightPage() {
                     Change approval weight of user
                 </Heading>
 
-                <Text color="blackA12">Recipient address</Text>
-                <Input size="lg">
-                    <Input.Field name="weight-address" placeholder="0x80d5e8c2be..." />
-                </Input>
-
-                <Text color="blackA12">New weight</Text>
-                <Input size="lg">
-                    <Input.Number name="weight" placeholder="2" />
-                </Input>
+                <InputFieldComponent text="Recipient address" placeholder="0x80d5e8c2be..." name="weight-address" />
+                <InputNumberComponent text="New weight" placeholder="2" name="transaction-value" />
 
                 {signatures.map((signatureComponent, index) => signatureComponent)}
 
-                {optionalData && 
-                    <>
-                        <Text color="blackA12">Optional data</Text>
-                        <Input size="lg">
-                            <Input.Field name="weight-data" placeholder="0x252afeeb6e..." />
-                        </Input>
-                    </>
-                }
+                {optionalData && <InputFieldComponent text="Optional data" placeholder="0x252afeeb6e..." name="weight-data" />}
 
                 <Button
                     color="accent"

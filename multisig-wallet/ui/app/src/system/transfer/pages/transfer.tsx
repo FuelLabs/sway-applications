@@ -2,6 +2,8 @@ import { BoxCentered, Button, Checkbox, Flex, Form, Heading, Input, RadioGroup, 
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/signature";
+import { InputFieldComponent } from "../../common/input_field";
+import { InputNumberComponent } from "../../common/input_number";
 
 export function TransferPage() {
     const [radio, setRadio] = useState("address")
@@ -53,31 +55,13 @@ export function TransferPage() {
                     Execute a transfer
                 </Heading>
 
-                <Text color="blackA12">Recipient address</Text>
-                <Input size="lg">
-                    <Input.Field name="transfer-recipient" placeholder="0x80d5e8c2be..." />
-                </Input>
-
-                <Text color="blackA12">Asset id</Text>
-                <Input size="lg">
-                    <Input.Field name="transfer-asset" placeholder="0x0000000000..." />
-                </Input>
-
-                <Text color="blackA12">Asset amount</Text>
-                <Input size="lg">
-                    <Input.Number name="transfer-value" placeholder="1.0" />
-                </Input>
+                <InputFieldComponent text="Recipient address" placeholder="0x80d5e8c2be..." name="transfer-recipient" />
+                <InputFieldComponent text="Asset id" placeholder="0x0000000000..." name="transfer-asset" />
+                <InputNumberComponent text="Asset amount" placeholder="1.0" name="transfer-value" />
 
                 {signatures.map((signatureComponent, index) => signatureComponent)}
 
-                {optionalData && 
-                    <>
-                        <Text color="blackA12">Optional data</Text>
-                        <Input size="lg">
-                            <Input.Field name="transfer-data" placeholder="0x252afeeb6e..." />
-                        </Input>
-                    </>
-                }
+                {optionalData && <InputFieldComponent text="Optional data" placeholder="0x252afeeb6e..." name="transfer-data" />}
 
                 <Button
                     color="accent"
