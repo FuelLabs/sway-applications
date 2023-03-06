@@ -100,7 +100,7 @@ export function ExecuteTransactionPage() {
                         variant="solid"
                         css={{ width: "50%" }}
                     >
-                        Remove Signature
+                        Remove signature
                     </Button>
                 </Flex>
 
