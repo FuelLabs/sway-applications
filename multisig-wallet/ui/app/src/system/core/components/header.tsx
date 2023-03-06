@@ -16,31 +16,31 @@ export const Header = () => {
 
             <BoxCentered css={{ background: 'rgb(63 149 57)', gap: "25px", paddingRight: "20px", justifyContent: 'space-evenly', boxShadow: "11px 1px 8px 0px black", borderBottom: "1px solid black" }}>
 
-                <Link href="/create" css={{ color: 'black', fontWeight: 'bolder' }}>
+                <Link href="/create" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
                     Create
                 </Link>
 
-                <Link href="/execute" css={{ color: 'black', fontWeight: 'bolder' }}>
+                <Link href="/execute" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
                     Execute
                 </Link>
 
-                <Link href="/transfer" css={{ color: 'black', fontWeight: 'bolder' }}>
+                <Link href="/transfer" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
                     Transfer
                 </Link>
 
-                <Link href="/update-threshold" css={{ color: 'black', fontWeight: 'bolder' }}>
+                <Link href="/update-threshold" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
                     Threshold
                 </Link>
 
-                <Link href="/update-weight" css={{ color: 'black', fontWeight: 'bolder' }}>
+                <Link href="/update-weight" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
                     Weight
                 </Link>
 
-                <Link href="/hash" css={{ color: 'black', fontWeight: 'bolder' }}>
+                <Link href="/hash" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
                     Hash
                 </Link>
 
-                <Link href="/view" css={{ color: 'black', fontWeight: 'bolder' }}>
+                <Link href="/view" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
                     View
                 </Link>
 
