@@ -5,7 +5,6 @@ import { SignatureComponent } from "../../common/signature";
 
 export function TransferPage() {
     const [radio, setRadio] = useState("address")
-    const [signatureCount, setSignatureCount] = useState(1)
     const [optionalData, setOptionalData] = useState(false)
     const [signatures, setSignatures] = useState([<SignatureComponent id={1} name="transfer" />])
     const { contract, isLoading, isError } = useContract()
@@ -33,18 +32,16 @@ export function TransferPage() {
     }
 
     async function addSignature() {
-        setSignatures([...signatures, <SignatureComponent id={signatureCount+1} name="transfer" /> ]);
-        setSignatureCount(signatureCount + 1);
+        setSignatures([...signatures, <SignatureComponent id={signatures.length+1} name="transfer" /> ]);
     }
 
     async function removeSignature() {
-        if (signatureCount === 1) {
+        if (signatures.length === 1) {
             toast.error("Cannot remove the last signature")
             return;
         }
 
         setSignatures([...signatures.splice(0, signatures.length - 1)]);
-        setSignatureCount(signatureCount - 1);
     }
 
     return (
