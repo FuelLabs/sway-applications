@@ -1,10 +1,11 @@
-import { BoxCentered, Button, Heading, Input, RadioGroup, Text, toast, Stack } from "@fuel-ui/react";
-import { useContract } from "../../core/hooks";
+import { BoxCentered, Button, Flex, Heading, toast, Stack } from "@fuel-ui/react";
+import { useState } from "react";
 import { UserInput } from "../../../contracts/MultisigContractAbi";
-import { InputFieldComponent } from "../../common/input_field";
-import { InputNumberComponent } from "../../common/input_number";
+import { useContract } from "../../core/hooks";
+import { NewUserComponent } from "./new_user";
 
 export function CreateWallet() {
+    const [users, setUsers] = useState([<NewUserComponent id={1} />])
     const { contract, isLoading, isError } = useContract()
 
     async function useConstructor() {
@@ -25,8 +26,21 @@ export function CreateWallet() {
         toast.success("Wallet created!", { duration: 10000 });
     }
 
+    async function addUser() {
+        setUsers([...users, <NewUserComponent id={users.length+1} /> ]);
+    }
+
+    async function removeUser() {
+        if (users.length === 1) {
+            toast.error("Cannot remove the last user")
+            return;
+        }
+
+        setUsers([...users.splice(0, users.length - 1)]);
+    }
+
     return (
-        <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
+        <BoxCentered css={{ marginTop: "12%", width: "50%" }}>
 
             <Stack css={{ minWidth: "100%" }}>
 
@@ -34,17 +48,39 @@ export function CreateWallet() {
                     Create a new wallet
                 </Heading>
 
-                <InputFieldComponent text="User address" placeholder="0x80d5e8c2be..." name="create-recipient" />
-                <InputNumberComponent text="Recipient weight" placeholder="2" name="create-weight" />
+                {users.map((userComponent, index) => userComponent)}
 
                 <Button
                     color="accent"
                     onPress={useConstructor}
                     size="lg"
                     variant="solid"
+                    css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$2", width: "100%" }}
                 >
-                    Create
+                    Create wallet
                 </Button>
+
+                <Flex gap="$1" css={{ marginTop: "$1" }}>
+                    <Button
+                        color="accent"
+                        onPress={addUser}
+                        size="lg"
+                        variant="solid"
+                        css={{ width: "50%" }}
+                    >
+                        Add user
+                    </Button>
+
+                    <Button
+                        color="accent"
+                        onPress={removeUser}
+                        size="lg"
+                        variant="solid"
+                        css={{ width: "50%" }}
+                    >
+                        Remove user
+                    </Button>
+                </Flex>
             </Stack>
             
         </BoxCentered>
