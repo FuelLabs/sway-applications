@@ -1,10 +1,11 @@
-import { BoxCentered, Button, Flex, Heading, Input, RadioGroup, Stack, Text, toast } from "@fuel-ui/react";
+import { BoxCentered, Button, Checkbox, Flex, Form, Heading, Input, RadioGroup, Stack, Text, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { IdentityInput, UserInput } from "../../../contracts/MultisigContractAbi";
 
 export function HashPage() {
     const [radio, setRadio] = useState("address")
+    const [optionalData, setOptionalData] = useState(false)
     const { contract, isLoading, isError } = useContract()
 
     async function getExecuteHash() {
@@ -141,16 +142,21 @@ export function HashPage() {
                             <Input.Number name="execute-hash-nonce" placeholder="3" />
                         </Input>
 
-                        <Text color="blackA12">Optional data</Text>
-                        <Input size="lg">
-                            <Input.Field name="execute-hash-data" placeholder="0x252afeeb6e..." />
-                        </Input>
+                        {optionalData && 
+                            <>
+                                <Text color="blackA12">Optional data</Text>
+                                <Input size="lg">
+                                    <Input.Field name="execute-hash-data" placeholder="0x252afeeb6e..." />
+                                </Input>
+                            </>
+                        }
 
                         <Button
                             color="accent"
                             onPress={getExecuteHash}
                             size="lg"
                             variant="solid"
+                            css={{ marginTop: "$1" }}
                         >
                             Create hash
                         </Button>
@@ -176,16 +182,21 @@ export function HashPage() {
                             <Input.Number name="weight-hash-nonce" placeholder="3" />
                         </Input>
 
-                        <Text color="blackA12">Optional data</Text>
-                        <Input size="lg">
-                            <Input.Field name="weight-hash-data" placeholder="0x252afeeb6e..." />
-                        </Input>
+                        {optionalData && 
+                            <>
+                                <Text color="blackA12">Optional data</Text>
+                                <Input size="lg">
+                                    <Input.Field name="weight-hash-data" placeholder="0x252afeeb6e..." />
+                                </Input>
+                            </>
+                        }
 
                         <Button
                             color="accent"
                             onPress={getWeightHash}
                             size="lg"
                             variant="solid"
+                            css={{ marginTop: "$1" }}
                         >
                             Create hash
                         </Button>
@@ -193,7 +204,7 @@ export function HashPage() {
 
                 </Flex>
 
-                <Flex gap="130px" css={{ marginBottom: "$14" }}>
+                <Flex gap="130px" css={{ marginBottom: "$10" }}>
 
                     <Stack>
                         <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1"}}>
@@ -220,16 +231,21 @@ export function HashPage() {
                             <Input.Number name="transfer-hash-nonce" placeholder="3" />
                         </Input>
 
-                        <Text color="blackA12">Optional data</Text>
-                        <Input size="lg">
-                            <Input.Field name="transfer-hash-data" placeholder="0x252afeeb6e..." />
-                        </Input>
+                        {optionalData && 
+                            <>
+                                <Text color="blackA12">Optional data</Text>
+                                <Input size="lg">
+                                    <Input.Field name="transfer-hash-data" placeholder="0x252afeeb6e..." />
+                                </Input>
+                            </>
+                        }
 
                         <Button
                             color="accent"
                             onPress={getTransferHash}
                             size="lg"
                             variant="solid"
+                            css={{ marginTop: "$1" }}
                         >
                             Create hash
                         </Button>
@@ -250,16 +266,21 @@ export function HashPage() {
                             <Input.Number name="threshold-hash-nonce" placeholder="3" />
                         </Input>
 
-                        <Text color="blackA12">Optional data</Text>
-                        <Input size="lg">
-                            <Input.Field name="threshold-hash-data" placeholder="0x252afeeb6e..." />
-                        </Input>
+                        {optionalData && 
+                            <>
+                                <Text color="blackA12">Optional data</Text>
+                                <Input size="lg">
+                                    <Input.Field name="threshold-hash-data" placeholder="0x252afeeb6e..." />
+                                </Input>
+                            </>
+                        }
 
                         <Button
                             color="accent"
                             onPress={getThresholdHash}
                             size="lg"
                             variant="solid"
+                            css={{ marginTop: "$1" }}
                         >
                             Create hash
                         </Button>
@@ -267,7 +288,16 @@ export function HashPage() {
 
                 </Flex>
 
-                <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1" }}>
+                <BoxCentered css={{ marginTop: "$8" }}>
+                    <Form.Control css={{ flexDirection: 'row' }}>
+                        <Checkbox onClick={() => setOptionalData(!optionalData)} id="optional-data"/>
+                        <Form.Label htmlFor="optional-data">
+                            Optional data
+                        </Form.Label>
+                    </Form.Control>
+                </BoxCentered>
+
+                <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$8", color: "$accent1" }}>
                     Recipient Type
                 </Heading>
 
