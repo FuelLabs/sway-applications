@@ -7,6 +7,7 @@ use fuels::{
         abigen, launch_custom_provider_and_get_wallets, Config, Contract, ContractId,
         StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
+    tx::AssetId,
     types::{Bits256, Identity},
 };
 use sha2::{Digest, Sha256};
@@ -29,7 +30,6 @@ pub(crate) struct Asset {
 
 pub(crate) struct Metadata {
     pub(crate) airdrop_distributor: AirdropDistributor,
-    pub(crate) contract_id: ContractId,
     pub(crate) wallet: WalletUnlocked,
 }
 
@@ -225,7 +225,7 @@ pub(crate) async fn defaults(
     let identity_a = Identity::Address(wallet1.wallet.address().into());
     let identity_b = Identity::Address(wallet2.wallet.address().into());
     let identity_c = Identity::Address(wallet3.wallet.address().into());
-    let minter = Identity::ContractId(deploy_wallet.contract_id);
+    let minter = Identity::Address(deploy_wallet.wallet.address().into());
     let key = 0;
     let asset_supply = 10;
     let claim_time = 15;
@@ -311,7 +311,6 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
             airdrop_distributor_id.clone(),
             wallet1.clone(),
         ),
-        contract_id: ContractId::new(*airdrop_distributor_id.hash()),
         wallet: wallet1.clone(),
     };
 
@@ -320,7 +319,6 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
             airdrop_distributor_id.clone(),
             wallet2.clone(),
         ),
-        contract_id: ContractId::new(*airdrop_distributor_id.hash()),
         wallet: wallet2,
     };
 
@@ -329,7 +327,6 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
             airdrop_distributor_id.clone(),
             wallet3.clone(),
         ),
-        contract_id: ContractId::new(*airdrop_distributor_id.hash()),
         wallet: wallet3,
     };
 
@@ -338,7 +335,6 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
             airdrop_distributor_id.clone(),
             wallet4.clone(),
         ),
-        contract_id: ContractId::new(*airdrop_distributor_id.hash()),
         wallet: wallet4,
     };
 
@@ -348,4 +344,8 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
     };
 
     (deployer, user1, user2, user3, asset)
+}
+
+pub(crate) async fn get_wallet_balance(wallet: &WalletUnlocked, asset: &AssetId) -> u64 {
+    wallet.get_asset_balance(asset).await.unwrap()
 }
