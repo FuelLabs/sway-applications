@@ -61,15 +61,15 @@ mod success {
 
         let tx_hash = compute_transaction_hash(
             &deployer.contract,
-            tx.contract_identifier,
-            tx.nonce,
-            tx.value,
             tx.asset_id,
-            tx.target.clone(),
-            tx.function_selector.clone(),
             tx.calldata.clone(),
-            tx.single_value_type_arg,
+            tx.contract_identifier,
             tx.forwarded_gas,
+            tx.function_selector.clone(),
+            tx.nonce,
+            tx.single_value_type_arg,
+            tx.target.clone(),
+            tx.value,
         )
         .await
         .value
@@ -146,15 +146,15 @@ mod success {
 
         let tx_hash = compute_transaction_hash(
             &deployer.contract,
-            tx.contract_identifier,
-            tx.nonce,
-            tx.value,
             tx.asset_id,
-            tx.target.clone(),
-            tx.function_selector.clone(),
             tx.calldata.clone(),
-            tx.single_value_type_arg,
+            tx.contract_identifier,
             tx.forwarded_gas,
+            tx.function_selector.clone(),
+            tx.nonce,
+            tx.single_value_type_arg,
+            tx.target.clone(),
+            tx.value,
         )
         .await
         .value
@@ -255,15 +255,15 @@ mod success {
 
         let tx_hash = compute_transaction_hash(
             &deployer.contract,
-            tx.contract_identifier,
-            tx.nonce,
-            tx.value,
             tx.asset_id,
-            tx.target.clone(),
-            tx.function_selector.clone(),
             tx.calldata.clone(),
-            tx.single_value_type_arg,
+            tx.contract_identifier,
             tx.forwarded_gas,
+            tx.function_selector.clone(),
+            tx.nonce,
+            tx.single_value_type_arg,
+            tx.target.clone(),
+            tx.value,
         )
         .await
         .value
@@ -363,15 +363,15 @@ mod revert {
 
         let tx_hash = compute_transaction_hash(
             &deployer.contract,
-            tx.contract_identifier,
-            tx.nonce,
-            tx.value,
             tx.asset_id,
-            tx.target.clone(),
-            tx.function_selector.clone(),
             tx.calldata.clone(),
-            tx.single_value_type_arg,
+            tx.contract_identifier,
             tx.forwarded_gas,
+            tx.function_selector.clone(),
+            tx.nonce,
+            tx.single_value_type_arg,
+            tx.target.clone(),
+            tx.value,
         )
         .await
         .value
@@ -413,15 +413,15 @@ mod revert {
 
             let tx_hash = compute_transaction_hash(
                 &deployer.contract,
-                tx.contract_identifier,
-                tx.nonce,
-                tx.value,
                 tx.asset_id,
-                tx.target.clone(),
-                tx.function_selector.clone(),
                 tx.calldata.clone(),
-                tx.single_value_type_arg,
+                tx.contract_identifier,
                 tx.forwarded_gas,
+                tx.function_selector.clone(),
+                tx.nonce,
+                tx.single_value_type_arg,
+                tx.target.clone(),
+                tx.value,
             )
             .await
             .value
@@ -459,15 +459,15 @@ mod revert {
 
             let tx_hash = compute_transaction_hash(
                 &deployer.contract,
-                tx.contract_identifier,
-                tx.nonce,
-                tx.value,
                 tx.asset_id,
-                tx.target.clone(),
-                tx.function_selector.clone(),
                 tx.calldata.clone(),
-                tx.single_value_type_arg,
+                tx.contract_identifier,
                 tx.forwarded_gas,
+                tx.function_selector.clone(),
+                tx.nonce,
+                tx.single_value_type_arg,
+                tx.target.clone(),
+                tx.value,
             )
             .await
             .value
@@ -504,15 +504,15 @@ mod revert {
 
             let tx_hash = compute_transaction_hash(
                 &deployer.contract,
-                tx.contract_identifier,
-                tx.nonce,
-                tx.value,
                 tx.asset_id,
-                tx.target.clone(),
-                tx.function_selector.clone(),
                 tx.calldata.clone(),
-                tx.single_value_type_arg,
+                tx.contract_identifier,
                 tx.forwarded_gas,
+                tx.function_selector.clone(),
+                tx.nonce,
+                tx.single_value_type_arg,
+                tx.target.clone(),
+                tx.value,
             )
             .await
             .value
@@ -560,15 +560,15 @@ mod revert {
 
             let tx_hash = compute_transaction_hash(
                 &deployer.contract,
-                tx.contract_identifier,
-                tx.nonce,
-                tx.value,
                 tx.asset_id,
-                tx.target.clone(),
-                tx.function_selector.clone(),
                 tx.calldata.clone(),
-                tx.single_value_type_arg,
+                tx.contract_identifier,
                 tx.forwarded_gas,
+                tx.function_selector.clone(),
+                tx.nonce,
+                tx.single_value_type_arg,
+                tx.target.clone(),
+                tx.value,
             )
             .await
             .value
@@ -616,15 +616,15 @@ mod revert {
 
             let tx_hash = compute_transaction_hash(
                 &deployer.contract,
-                tx.contract_identifier,
-                tx.nonce,
-                tx.value,
                 tx.asset_id,
-                tx.target.clone(),
-                tx.function_selector.clone(),
                 tx.calldata.clone(),
-                tx.single_value_type_arg,
+                tx.contract_identifier,
                 tx.forwarded_gas,
+                tx.function_selector.clone(),
+                tx.nonce,
+                tx.single_value_type_arg,
+                tx.target.clone(),
+                tx.value,
             )
             .await
             .value
@@ -669,15 +669,15 @@ mod revert {
 
             let tx_hash = compute_transaction_hash(
                 &deployer.contract,
-                tx.contract_identifier,
-                tx.nonce,
-                tx.value,
                 tx.asset_id,
-                tx.target.clone(),
-                tx.function_selector.clone(),
                 tx.calldata.clone(),
-                tx.single_value_type_arg,
+                tx.contract_identifier,
                 tx.forwarded_gas,
+                tx.function_selector.clone(),
+                tx.nonce,
+                tx.single_value_type_arg,
+                tx.target.clone(),
+                tx.value,
             )
             .await
             .value
@@ -717,15 +717,15 @@ mod revert {
 
             let tx_hash = compute_transaction_hash(
                 &deployer.contract,
-                tx.contract_identifier,
-                tx.nonce,
-                tx.value,
                 tx.asset_id,
-                tx.target.clone(),
-                tx.function_selector.clone(),
                 tx.calldata.clone(),
-                tx.single_value_type_arg,
+                tx.contract_identifier,
                 tx.forwarded_gas,
+                tx.function_selector.clone(),
+                tx.nonce,
+                tx.single_value_type_arg,
+                tx.target.clone(),
+                tx.value,
             )
             .await
             .value
@@ -765,15 +765,15 @@ mod revert {
 
             let tx_hash = compute_transaction_hash(
                 &deployer.contract,
-                tx.contract_identifier,
-                tx.nonce,
-                tx.value,
                 tx.asset_id,
-                tx.target.clone(),
-                tx.function_selector.clone(),
                 tx.calldata.clone(),
-                tx.single_value_type_arg,
+                tx.contract_identifier,
                 tx.forwarded_gas,
+                tx.function_selector.clone(),
+                tx.nonce,
+                tx.single_value_type_arg,
+                tx.target.clone(),
+                tx.value,
             )
             .await
             .value
@@ -812,15 +812,15 @@ mod revert {
 
             let tx_hash = compute_transaction_hash(
                 &deployer.contract,
-                tx.contract_identifier,
-                tx.nonce,
-                tx.value,
                 tx.asset_id,
-                tx.target.clone(),
-                tx.function_selector.clone(),
                 tx.calldata.clone(),
-                tx.single_value_type_arg,
+                tx.contract_identifier,
                 tx.forwarded_gas,
+                tx.function_selector.clone(),
+                tx.nonce,
+                tx.single_value_type_arg,
+                tx.target.clone(),
+                tx.value,
             )
             .await
             .value
@@ -870,15 +870,15 @@ mod revert {
 
             let tx_hash = compute_transaction_hash(
                 &deployer.contract,
-                tx.contract_identifier,
-                tx.nonce,
-                tx.value,
                 tx.asset_id,
-                tx.target.clone(),
-                tx.function_selector.clone(),
                 tx.calldata.clone(),
-                tx.single_value_type_arg,
+                tx.contract_identifier,
                 tx.forwarded_gas,
+                tx.function_selector.clone(),
+                tx.nonce,
+                tx.single_value_type_arg,
+                tx.target.clone(),
+                tx.value,
             )
             .await
             .value

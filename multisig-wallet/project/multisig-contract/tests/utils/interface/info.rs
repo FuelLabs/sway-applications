@@ -32,28 +32,28 @@ pub async fn compute_hash(
 
 pub async fn compute_transaction_hash(
     contract: &MultiSig,
-    contract_identifier: ContractId,
-    nonce: u64,
-    value: Option<u64>,
     asset_id: Option<ContractId>,
-    target: Identity,
-    function_selector: Option<Vec<u8>>,
     calldata: Option<Vec<u8>>,
-    single_value_type_arg: Option<bool>,
+    contract_identifier: ContractId,
     forwarded_gas: Option<u64>,
+    function_selector: Option<Vec<u8>>,
+    nonce: u64,
+    single_value_type_arg: Option<bool>,
+    target: Identity,
+    value: Option<u64>,
 ) -> FuelCallResponse<Bits256> {
     contract
         .methods()
         .compute_transaction_hash(
-            contract_identifier,
-            nonce,
-            value,
             asset_id,
-            target,
-            function_selector,
             calldata,
-            single_value_type_arg,
+            contract_identifier,
             forwarded_gas,
+            function_selector,
+            nonce,
+            single_value_type_arg,
+            target,
+            value,
         )
         .call()
         .await

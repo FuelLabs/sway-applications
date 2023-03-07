@@ -29,10 +29,10 @@ pub const TEST_CONTRACT_BINARY_PATH: &str =
 pub const TEST_CONTRACT_STORAGE_PATH: &str =
     "./tests/artifacts/callable-contract/out/debug/callable-contract-storage_slots.json";
 
-pub const DEFAULT_THRESHOLD: u64 = 5;
-pub const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
 pub const DEFAULT_CALLDATA_VALUE_PARAM: u64 = 1;
 pub const DEFAULT_FORWARDED_GAS: u64 = 10_000_000;
+pub const DEFAULT_THRESHOLD: u64 = 5;
+pub const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
 
 pub struct Caller {
     pub contract: MultiSig,
@@ -40,28 +40,28 @@ pub struct Caller {
 }
 
 pub struct Transaction {
-    pub contract_identifier: ContractId,
-    pub nonce: u64,
-    pub value: Option<u64>,
     pub asset_id: Option<ContractId>,
-    pub target: Identity,
-    pub function_selector: Option<Vec<u8>>,
     pub calldata: Option<Vec<u8>>,
-    pub single_value_type_arg: Option<bool>,
+    pub contract_identifier: ContractId,
     pub forwarded_gas: Option<u64>,
-}
-
-#[macro_export]
-macro_rules! fn_selector {
-    ( $fn_name: ident ( $($fn_arg: ty),* )  ) => {
-         ::fuels::core::function_selector::resolve_fn_selector(stringify!($fn_name), &[$( <$fn_arg as ::fuels::types::traits::Parameterize>::param_type() ),*]).to_vec()
-    }
+    pub function_selector: Option<Vec<u8>>,
+    pub nonce: u64,
+    pub single_value_type_arg: Option<bool>,
+    pub target: Identity,
+    pub value: Option<u64>,
 }
 
 #[macro_export]
 macro_rules! calldata {
     ( $($arg: expr),* ) => {
         ::fuels::core::abi_encoder::ABIEncoder::encode(&[$(::fuels::types::traits::Tokenizable::into_token($arg)),*]).unwrap().resolve(0)
+    }
+}
+
+#[macro_export]
+macro_rules! fn_selector {
+    ( $fn_name: ident ( $($fn_arg: ty),* )  ) => {
+         ::fuels::core::function_selector::resolve_fn_selector(stringify!($fn_name), &[$( <$fn_arg as ::fuels::types::traits::Parameterize>::param_type() ),*]).to_vec()
     }
 }
 
@@ -203,15 +203,15 @@ pub async fn transfer_parameters(deployer: &Caller, nonce: u64) -> (WalletUnlock
     let receiver_wallet = WalletUnlocked::new_random(None);
 
     let tx = Transaction {
-        contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
-        nonce,
-        value: Some(DEFAULT_TRANSFER_AMOUNT),
         asset_id: Some(base_asset_contract_id()),
-        target: Identity::Address(receiver_wallet.address().try_into().unwrap()),
-        function_selector: None,
         calldata: None,
-        single_value_type_arg: None,
+        contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
         forwarded_gas: None,
+        function_selector: None,
+        nonce,
+        single_value_type_arg: None,
+        target: Identity::Address(receiver_wallet.address().try_into().unwrap()),
+        value: Some(DEFAULT_TRANSFER_AMOUNT),
     };
 
     (receiver_wallet, tx)
@@ -225,32 +225,32 @@ pub async fn call_parameters(
 ) -> Transaction {
     match with_value {
         false => Transaction {
-            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
-            nonce,
-            value: None,
             asset_id: None,
-            target: Identity::ContractId(test_contract.contract_id().into()),
-            function_selector: Some(fn_selector!(change_mapping_without_value(Address, u64))),
             calldata: Some(calldata!(
                 Address::from(deployer.wallet.address()),
                 DEFAULT_CALLDATA_VALUE_PARAM
             )),
-            single_value_type_arg: Some(false),
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             forwarded_gas: Some(DEFAULT_FORWARDED_GAS),
+            function_selector: Some(fn_selector!(change_mapping_without_value(Address, u64))),
+            nonce,
+            single_value_type_arg: Some(false),
+            target: Identity::ContractId(test_contract.contract_id().into()),
+            value: None,
         },
         true => Transaction {
-            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
-            nonce,
-            value: Some(DEFAULT_TRANSFER_AMOUNT),
             asset_id: Some(base_asset_contract_id()),
-            target: Identity::ContractId(test_contract.contract_id().into()),
-            function_selector: Some(fn_selector!(change_mapping_with_value(Address, u64))),
             calldata: Some(calldata!(
                 Address::from(deployer.wallet.address()),
                 DEFAULT_CALLDATA_VALUE_PARAM
             )),
-            single_value_type_arg: Some(false),
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             forwarded_gas: Some(DEFAULT_FORWARDED_GAS),
+            function_selector: Some(fn_selector!(change_mapping_with_value(Address, u64))),
+            nonce,
+            single_value_type_arg: Some(false),
+            target: Identity::ContractId(test_contract.contract_id().into()),
+            value: Some(DEFAULT_TRANSFER_AMOUNT),
         },
     }
 }

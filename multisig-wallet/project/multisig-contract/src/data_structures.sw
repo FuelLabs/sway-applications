@@ -1,6 +1,6 @@
 library data_structures;
 
-use std::{alloc::realloc_bytes, b512::B512, bytes::Bytes, constants::ZERO_B256};
+use std::{b512::B512, bytes::Bytes, constants::ZERO_B256};
 
 impl Bytes {
     pub fn from_copy_type<T>(value: T) -> Bytes {
@@ -11,8 +11,8 @@ impl Bytes {
         asm(buffer, ptr: value, dst: bytes.buf.ptr, len: 8) {
             move buffer sp; // Make `buffer` point to the current top of the stack
             cfei i8; // Grow stack by 1 word
-            sw buffer ptr i0; // Save value in register at `ptr` to memory at `buffer`
-            mcp dst buffer len; // Copy `len` bytes in memory starting from `buffer`, to `dst`
+            sw   buffer ptr i0; // Save value in register at `ptr` to memory at `buffer`
+            mcp  dst buffer len; // Copy `len` bytes in memory starting from `buffer`, to `dst`
             cfsi i8; // Shrink stack by 1 word
         }
 
@@ -77,40 +77,40 @@ pub struct SignatureInfo {
     wallet_type: WalletType,
 }
 
-pub struct User {
-    /// The wallet address of a user.
-    address: b256,
-    /// The number of approvals the user provides when approving.
-    weight: u64,
-}
-
 pub struct Transaction {
-    contract_identifier: ContractId,
-    nonce: u64,
-    value: Option<u64>,
     asset_id: Option<ContractId>,
-    target: Identity,
-    function_selector: Option<Bytes>,
     calldata: Option<Bytes>,
-    single_value_type_arg: Option<bool>,
+    contract_identifier: ContractId,
     forwarded_gas: Option<u64>,
+    function_selector: Option<Bytes>,
+    nonce: u64,
+    single_value_type_arg: Option<bool>,
+    target: Identity,
+    value: Option<u64>,
 }
 
 impl IntoBytes for Transaction { // Needed as `Transaction` contains `Bytes` which can only be correctly hashed by the Bytes.sha256() method, 
                                  // as such the whole struct must be converted to `Bytes`.
     fn into_bytes(self) -> Bytes {
         let mut bytes = Bytes::new();
-        bytes.append(Bytes::from_reference_type(self.contract_identifier));
-        bytes.append(Bytes::from_copy_type(self.nonce));
-        bytes.append(Bytes::from_reference_type(self.value));
         bytes.append(Bytes::from_reference_type(self.asset_id));
-        bytes.append(Bytes::from_reference_type(self.target));
-        bytes.append(Bytes::from_option_bytes(self.function_selector));
         bytes.append(Bytes::from_option_bytes(self.calldata));
-        bytes.append(Bytes::from_reference_type(self.single_value_type_arg));
+        bytes.append(Bytes::from_reference_type(self.contract_identifier));
         bytes.append(Bytes::from_reference_type(self.forwarded_gas));
+        bytes.append(Bytes::from_option_bytes(self.function_selector));
+        bytes.append(Bytes::from_copy_type(self.nonce));
+        bytes.append(Bytes::from_reference_type(self.single_value_type_arg));
+        bytes.append(Bytes::from_reference_type(self.target));
+        bytes.append(Bytes::from_reference_type(self.value));
         bytes
     }
+}
+
+pub struct User {
+    /// The wallet address of a user.
+    address: b256,
+    /// The number of approvals the user provides when approving.
+    weight: u64,
 }
 
 pub enum TypeToHash {

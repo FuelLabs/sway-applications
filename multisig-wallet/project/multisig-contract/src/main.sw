@@ -106,12 +106,7 @@ impl MultiSignatureWallet for Contract {
             require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
             let transaction_hash = Transaction {
-                contract_identifier: contract_id(),
-                nonce: storage.nonce,
-                value: Option::Some(value),
                 asset_id: Option::Some(asset_id),
-                target,
-                function_selector: Option::None,
                 calldata: match calldata {
                     Option::None => Option::None,
                     Option::Some(vec) => {
@@ -119,8 +114,13 @@ impl MultiSignatureWallet for Contract {
                         Option::Some(Bytes::from_vec_u8(vec))
                     },
                 },
-                single_value_type_arg,
+                contract_identifier: contract_id(),
                 forwarded_gas,
+                function_selector: Option::None,
+                nonce: storage.nonce,
+                single_value_type_arg,
+                target,
+                value: Option::Some(value),
             }.into_bytes().sha256();
             let approval_count = count_approvals(signatures, transaction_hash);
             require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
@@ -156,15 +156,15 @@ impl MultiSignatureWallet for Contract {
             }
 
             let transaction_hash = Transaction {
-                contract_identifier: contract_id(),
-                nonce: storage.nonce,
-                value,
                 asset_id,
-                target,
-                function_selector: Option::Some(function_selector),
                 calldata: Option::Some(calldata),
-                single_value_type_arg: Option::Some(single_value_type_arg),
+                contract_identifier: contract_id(),
                 forwarded_gas,
+                function_selector: Option::Some(function_selector),
+                nonce: storage.nonce,
+                single_value_type_arg: Option::Some(single_value_type_arg),
+                target,
+                value,
             }.into_bytes().sha256();
             let approval_count = count_approvals(signatures, transaction_hash);
             require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
@@ -215,29 +215,18 @@ impl Info for Contract {
 
     fn compute_transaction_hash( // Needed for hashing the `Transaction` type, as `Bytes are not supported by SDK`, and Vectors as fields in a struct are not supported by the SDK.
                                  // Once `Bytes` are supported in the SDK, this can be deprecated and compute_hash can be used for hashing the `Transaction` type.
-        contract_identifier: ContractId,
-        nonce: u64,
-        value: Option<u64>,
         asset_id: Option<ContractId>,
-        target: Identity,
-        function_selector: Option<Vec<u8>>,
         calldata: Option<Vec<u8>>,
-        single_value_type_arg: Option<bool>,
+        contract_identifier: ContractId,
         forwarded_gas: Option<u64>,
+        function_selector: Option<Vec<u8>>,
+        nonce: u64,
+        single_value_type_arg: Option<bool>,
+        target: Identity,
+        value: Option<u64>,
     ) -> b256 {
         Transaction {
-            contract_identifier,
-            nonce,
-            value,
             asset_id,
-            target,
-            function_selector: match function_selector {
-                Option::None => Option::None,
-                Option::Some(vec) => {
-                    let mut vec = vec;
-                    Option::Some(Bytes::from_vec_u8(vec))
-                },
-            },
             calldata: match calldata {
                 Option::None => Option::None,
                 Option::Some(vec) => {
@@ -245,8 +234,19 @@ impl Info for Contract {
                     Option::Some(Bytes::from_vec_u8(vec))
                 },
             },
-            single_value_type_arg,
+            contract_identifier,
             forwarded_gas,
+            function_selector: match function_selector {
+                Option::None => Option::None,
+                Option::Some(vec) => {
+                    let mut vec = vec;
+                    Option::Some(Bytes::from_vec_u8(vec))
+                },
+            },
+            nonce,
+            single_value_type_arg,
+            target,
+            value,
         }.into_bytes().sha256()
     }
 }

@@ -47,16 +47,8 @@ abi MultiSignatureWallet {
     /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// * When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn execute_transaction(
-        asset_id: Option<ContractId>,
-        calldata: Option<Vec<u8>>, //Convert to Bytes when SDK supports
-        forwarded_gas: Option<u64>,
-        function_selector: Option<Vec<u8>>, //Convert to Bytes when SDK supports
-        signatures: Vec<SignatureInfo>,
-        single_value_type_arg: Option<bool>,
-        target: Identity,
-        value: Option<u64>,
-        );
+    fn execute_transaction(asset_id: Option<ContractId>, calldata: Option<Vec<u8>>, forwarded_gas: Option<u64>, function_selector: Option<Vec<u8>>, signatures: Vec<SignatureInfo>, single_value_type_arg: Option<bool>, target: Identity, value: Option<u64>); //Convert to Bytes when SDK supports
+    //Convert to Bytes when SDK supports
 }
 
 abi Info {
@@ -77,15 +69,5 @@ abi Info {
 
     fn compute_hash(type_to_hash: TypeToHash) -> b256;
 
-    fn compute_transaction_hash(
-        contract_identifier: ContractId, 
-        nonce: u64, 
-        value: Option<u64>, 
-        asset_id: Option<ContractId>, 
-        target: Identity, 
-        function_selector: Option<Vec<u8>>, 
-        calldata: Option<Vec<u8>>, 
-        single_value_type_arg: Option<bool>, 
-        forwarded_gas: Option<u64>,
-        ) -> b256;
+    fn compute_transaction_hash(asset_id: Option<ContractId>, calldata: Option<Vec<u8>>, contract_identifier: ContractId, forwarded_gas: Option<u64>, function_selector: Option<Vec<u8>>, nonce: u64, single_value_type_arg: Option<bool>, target: Identity, value: Option<u64>) -> b256;
 }
