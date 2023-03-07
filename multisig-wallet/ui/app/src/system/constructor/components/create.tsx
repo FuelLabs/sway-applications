@@ -1,54 +1,70 @@
 import { BoxCentered, Button, Flex, Heading, toast, Stack } from "@fuel-ui/react";
 import { useState } from "react";
-import { UserInput } from "../../../contracts/MultisigContractAbi";
 import { useContract } from "../../core/hooks";
 import { NewUserComponent } from "./new_user";
+import { UserInput } from "../../../contracts/MultisigContractAbi";
 
 export function CreateWallet() {
-    const [users, setUsers] = useState([<NewUserComponent id={1} />])
+    // Used for our component listeners
+    const [users, setUsers] = useState<UserInput[]>([])
+
+    const [userComponents, setUserComponents] = useState([<NewUserComponent onChange={createUser} id={1} />])
     const { contract, isLoading, isError } = useContract()
 
     async function useConstructor() {
-        const userAddress = document.querySelector<HTMLInputElement>(
-            `[name="create-recipient"]`
-        )!.value;
+        // const userAddress = document.querySelector<HTMLInputElement>(
+        //     `[name="create-recipient"]`
+        // )!.value;
 
-        const userWeight = document.querySelector<HTMLInputElement>(
-            `[name="create-weight"]`
-        )!.value;
+        // const userWeight = document.querySelector<HTMLInputElement>(
+        //     `[name="create-weight"]`
+        // )!.value;
 
-        let user: UserInput = {
-            address: userAddress,
-            weight: userWeight
-        }
+        // let user: UserInput = {
+        //     address: userAddress,
+        //     weight: userWeight
+        // }
 
-        await contract!.functions.constructor([user]).call();
+        console.log(userComponents);
+
+        // await contract!.functions.constructor([user]).call();
+        // await contract!.functions.constructor([]).call();
         toast.success("Wallet created!", { duration: 10000 });
     }
 
+    async function createUser(address: string, weight: number) {
+        let userArray: UserInput[] = [];
+
+        for (let user of users) {
+            userArray.push(user);
+        }
+
+        let user: UserInput = { address, weight };
+        setUsers([...userArray, user ]);
+        // setUsers([...users, user ]);
+    }
+
     async function addUser() {
-        setUsers([...users, <NewUserComponent id={users.length+1} /> ]);
+        setUserComponents([...userComponents, <NewUserComponent onChange={createUser} id={userComponents.length+1} /> ]);
     }
 
     async function removeUser() {
-        if (users.length === 1) {
+        if (userComponents.length === 1) {
             toast.error("Cannot remove the last user")
             return;
         }
 
-        setUsers([...users.splice(0, users.length - 1)]);
+        setUserComponents([...userComponents.splice(0, userComponents.length - 1)]);
     }
 
     return (
         <BoxCentered css={{ marginTop: "12%", width: "50%" }}>
-
             <Stack css={{ minWidth: "100%" }}>
-
                 <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginBottom: "$10", color: "$accent1"}}>
                     Create a new wallet
                 </Heading>
 
-                {users.map((userComponent, index) => userComponent)}
+                {userComponents.map((userComponent, index) => userComponent)}
 
                 <Button
                     color="accent"
@@ -82,7 +98,6 @@ export function CreateWallet() {
                     </Button>
                 </Flex>
             </Stack>
-            
         </BoxCentered>
     );
 }

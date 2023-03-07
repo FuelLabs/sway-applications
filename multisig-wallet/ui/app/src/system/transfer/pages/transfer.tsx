@@ -1,4 +1,4 @@
-import { BoxCentered, Button, Checkbox, Flex, Form, Heading, Input, RadioGroup, Text, toast, Stack } from "@fuel-ui/react";
+import { BoxCentered, Button, Flex, Heading, Stack, toast } from "@fuel-ui/react";
 import { Address, isBech32, isB256 } from "fuels";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
@@ -6,6 +6,8 @@ import { SignatureComponent } from "../../common/signature";
 import { InputFieldComponent } from "../../common/input_field";
 import { InputNumberComponent } from "../../common/input_number";
 import { ContractIdInput, IdentityInput } from "../../../contracts/MultisigContractAbi";
+import { OptionalCheckBoxComponent } from "../../common/optional_data_checkbox";
+import { RadioGroupComponent } from "../../common/radio_group";
 
 export function TransferPage() {
     // Used for our component listeners
@@ -14,7 +16,7 @@ export function TransferPage() {
     const [assetAmount, setAssetAmount] = useState(0)
     const [data, setData] = useState("")
 
-    const [radio, setRadio] = useState("address")
+    const [recipient, setRecipient] = useState("address")
     const [optionalData, setOptionalData] = useState(false)
     const [signatures, setSignatures] = useState([<SignatureComponent id={1} name="transfer" />])
     const { contract, isLoading, isError } = useContract()
@@ -22,7 +24,7 @@ export function TransferPage() {
     async function useTransfer() {
         let identity: IdentityInput;
 
-        if (radio === "address") {
+        if (recipient === "address") {
             let user: string;
 
             if (isBech32(address)) {
@@ -80,7 +82,6 @@ export function TransferPage() {
 
     return (
         <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
-
             <Stack css={{ minWidth: "100%" }}>
 
                 <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginBottom: "$10", color: "$accent1"}}>
@@ -127,31 +128,9 @@ export function TransferPage() {
                     </Button>
                 </Flex>
 
-                <BoxCentered css={{ marginTop: "$8" }}>
-                    <Form.Control css={{ flexDirection: 'row' }}>
-                        <Checkbox onClick={() => setOptionalData(!optionalData)} id="optional-data"/>
-                        <Form.Label htmlFor="optional-data">
-                            Optional data
-                        </Form.Label>
-                    </Form.Control>
-                </BoxCentered>
-
-                <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$8", color: "$accent1"}}>
-                    Recipient Type
-                </Heading>
-
-                <RadioGroup defaultValue="address" direction="row" css={{ margin: "auto" }}>
-                    {/* 
-                        TODO: 
-                            change labels to be the color black
-                            increase the size of the buttons and text 
-                    */}
-                    <RadioGroup.Item onClick={() => setRadio("address")} label="Address" value="address" />
-                    <RadioGroup.Item onClick={() => setRadio("contract")} label="Contract" value="contract" />
-                </RadioGroup>
-
+                <OptionalCheckBoxComponent setOptionalData={setOptionalData} optionalData={optionalData} />
+                <RadioGroupComponent setRecipient={setRecipient} />
             </Stack>
-            
         </BoxCentered>
     );
 }

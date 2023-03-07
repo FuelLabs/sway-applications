@@ -1,9 +1,9 @@
-import { BoxCentered, Button, Flex, Heading, Input, Stack, Text, toast } from "@fuel-ui/react";
+import { BoxCentered, Button, Flex, Heading, Stack, toast } from "@fuel-ui/react";
 import { Address, isBech32, isB256 } from "fuels";
+import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { ContractIdInput } from "../../../contracts/MultisigContractAbi";
 import { InputFieldComponent } from "../../common/input_field";
-import { useState } from "react";
 
 export function ViewPage() {
     // Used for our component listeners 
@@ -54,9 +54,7 @@ export function ViewPage() {
 
     return (
         <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
-
             <Stack css={{ minWidth: "100%" }}>
-
                 <Stack>
                     <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1" }}>
                         Check user approval weight
@@ -75,7 +73,6 @@ export function ViewPage() {
                 </Stack>
 
                 <Stack css={{ minWidth: "100%", marginTop: "$10" }}>
-
                     <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1" }}>
                         Check balance of asset
                     </Heading>
@@ -123,9 +120,7 @@ export function ViewPage() {
                         </Button>
                     </Stack>
                 </Flex>
-
             </Stack>
-            
         </BoxCentered>
     );
 }

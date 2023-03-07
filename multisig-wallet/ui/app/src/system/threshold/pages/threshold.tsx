@@ -1,10 +1,11 @@
-import { BoxCentered, Button, Checkbox, Flex, Form, Heading, toast, Stack } from "@fuel-ui/react";
+import { BoxCentered, Button, Flex, Heading, toast, Stack } from "@fuel-ui/react";
 import { isB256 } from "fuels";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/signature";
 import { InputFieldComponent } from "../../common/input_field";
 import { InputNumberComponent } from "../../common/input_number";
+import { OptionalCheckBoxComponent } from "../../common/optional_data_checkbox";
 
 export function ThresholdPage() {
     // Used for our component listeners
@@ -47,9 +48,7 @@ export function ThresholdPage() {
 
     return (
         <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
-
             <Stack css={{ minWidth: "100%" }}>
-
                 <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginBottom: "$10", color: "$accent1"}}>
                     Change threshold for execution
                 </Heading>
@@ -92,17 +91,8 @@ export function ThresholdPage() {
                     </Button>
                 </Flex>
 
-                <BoxCentered css={{ marginTop: "$8" }}>
-                    <Form.Control css={{ flexDirection: 'row' }}>
-                        <Checkbox onClick={() => setOptionalData(!optionalData)} id="optional-data"/>
-                        <Form.Label htmlFor="optional-data">
-                            Optional data
-                        </Form.Label>
-                    </Form.Control>
-                </BoxCentered>
-
+                <OptionalCheckBoxComponent setOptionalData={setOptionalData} optionalData={optionalData} />
             </Stack>
-            
         </BoxCentered>
     );
 }
