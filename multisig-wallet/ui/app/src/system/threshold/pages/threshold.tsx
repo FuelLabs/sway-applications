@@ -1,4 +1,5 @@
-import { BoxCentered, Button, Checkbox, Flex, Form, Heading, Input, Text, toast, Stack } from "@fuel-ui/react";
+import { BoxCentered, Button, Checkbox, Flex, Form, Heading, toast, Stack } from "@fuel-ui/react";
+import { isB256 } from "fuels";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/signature";
@@ -6,24 +7,29 @@ import { InputFieldComponent } from "../../common/input_field";
 import { InputNumberComponent } from "../../common/input_number";
 
 export function ThresholdPage() {
+    // Used for our component listeners
+    const [data, setData] = useState("")
+    const [threshold, setThreshold] = useState(0)
+
     const [optionalData, setOptionalData] = useState(false)
     const [signatures, setSignatures] = useState([<SignatureComponent id={1} name="transfer" />])
     const { contract, isLoading, isError } = useContract()
 
     async function useThreshold() {
-        const data = document.querySelector<HTMLInputElement>(
-            `[name="threshold-data"]`
-        )!.value;
+        // const signatures = document.querySelector<HTMLInputElement>(
+        //     `[name="threshold-signature"]`
+        // )!.value;
 
-        const signatures = document.querySelector<HTMLInputElement>(
-            `[name="threshold-signature"]`
-        )!.value;
+        let userData: string | undefined = data;
+        if (userData === "") {
+            userData = undefined;
+        } else if (!isB256(userData)) {
+            toast.error("I don't know about that data format chief", { duration: 10000 });
+            return;
+        }
 
-        const threshold = document.querySelector<HTMLInputElement>(
-            `[name="threshold"]`
-        )!.value;
-
-        toast.error("Unimplemented")
+        await contract!.functions.set_threshold(userData, [], threshold).call();
+        toast.success("Updated threshold!")
     }
 
     async function addSignature() {
@@ -48,11 +54,11 @@ export function ThresholdPage() {
                     Change threshold for execution
                 </Heading>
 
-                <InputNumberComponent text="Threshold" placeholder="8" name="threshold" />
+                <InputNumberComponent onChange={setThreshold} text="Threshold" placeholder="8" name="threshold" />
 
                 {signatures.map((signatureComponent, index) => signatureComponent)}
 
-                {optionalData && <InputFieldComponent text="Optional data" placeholder="0x252afeeb6e..." name="trathresholdnsfer-data" />}
+                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." name="trathresholdnsfer-data" />}
 
                 <Button
                     color="accent"

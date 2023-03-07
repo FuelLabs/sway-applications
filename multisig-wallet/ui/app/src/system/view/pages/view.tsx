@@ -6,10 +6,12 @@ import { InputFieldComponent } from "../../common/input_field";
 import { useState } from "react";
 
 export function ViewPage() {
-    const { contract, isLoading, isError } = useContract()
+    // Used for our component listeners 
     const [address, setAddress] = useState("")
     const [asset, setAsset] = useState("")
 
+    const { contract, isLoading, isError } = useContract()
+    
     async function getBalance() {
         if (!isB256(asset)) {
             toast.error("That ain't no contract id dummy", { duration: 10000 });
