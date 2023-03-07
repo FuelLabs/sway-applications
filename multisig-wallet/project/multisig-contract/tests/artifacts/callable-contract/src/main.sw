@@ -37,11 +37,11 @@ impl CallableContract for Contract {
 
     #[storage(read)]
     fn check_counter_map(address: Address) -> u64 {
-        storage.counter_map.get(address)
+        storage.counter_map.get(address).unwrap_or(0)
     }
 
     #[storage(read)]
     fn check_deposit_map(address: Address) -> u64 {
-        storage.deposit_map.get(address)
+        storage.deposit_map.get(address).unwrap_or(0)
     }
 }

@@ -25,18 +25,6 @@ use std::{
     token::transfer,
 };
 
-impl Bytes {
-    ////////////////////////////////////// not in this forc version /////////////////////////////////////////////////////
-    pub fn sha256(self) -> b256 {
-        let mut result_buffer = b256::min();
-        asm(hash: result_buffer, ptr: self.buf.ptr, bytes: self.len) {
-            s256 hash ptr bytes;
-            hash: b256
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-}
-
 use data_structures::{SignatureInfo, Transaction, TypeToHash, User};
 use errors::{AccessControlError, ExecutionError, InitError};
 use events::{CallEvent, CancelEvent, SetThresholdEvent, TransferEvent};
@@ -62,7 +50,7 @@ impl MultiSignatureWallet for Contract {
             Identity::Address(address) => address.value,
             Identity::ContractId(contract_identifier) => contract_identifier.value,
         };
-        require(storage.weighting.get(sender) > 0, AccessControlError::CanOnlyBeAccessedByAnOwner);
+        require(storage.weighting.get(sender).unwrap_or(0) > 0, AccessControlError::CanOnlyBeAccessedByAnOwner);
 
         storage.nonce += 1;
 
@@ -280,7 +268,7 @@ fn count_approvals(signatures: Vec<SignatureInfo>, transaction_hash: b256) -> u6
         require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
 
         previous_signer = signer;
-        approval_count += storage.weighting.get(signer);
+        approval_count += storage.weighting.get(signer).unwrap_or(0);
 
         if storage.threshold <= approval_count {
             break;

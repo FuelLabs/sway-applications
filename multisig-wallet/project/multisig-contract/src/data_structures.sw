@@ -3,40 +3,6 @@ library data_structures;
 use std::{alloc::realloc_bytes, b512::B512, bytes::Bytes, constants::ZERO_B256};
 
 impl Bytes {
-    ////////////////////////////////////// not in this forc version //////////////////////////////////////////////////////
-    pub fn append(ref mut self, ref other: self) {
-        if other.len == 0 {
-            return
-        };
-
-        // optimization for when starting with empty bytes and appending to it
-        if self.len == 0 {
-            self = other;
-            other.clear();
-            return;
-        };
-
-        let both_len = self.len + other.len;
-        let other_start = self.len;
-
-        // reallocate with combined capacity, write `other`, set buffer capacity
-        self.buf.ptr = realloc_bytes(self.buf.ptr(), self.buf.capacity(), both_len);
-
-        let mut i = 0;
-        while i < other.len {
-            let new_ptr = self.buf.ptr().add_uint_offset(other_start);
-            new_ptr.add_uint_offset(i).write_byte(other.buf.ptr.add_uint_offset(i).read_byte());
-            i += 1;
-        }
-
-        // set capacity and length
-        self.buf.cap = both_len;
-        self.len = both_len;
-
-        // clear `other`
-        other.clear();
-    }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     pub fn from_copy_type<T>(value: T) -> Bytes {
     // Artificially create bytes with capacity and len
         let mut bytes = Bytes::with_capacity(8);
