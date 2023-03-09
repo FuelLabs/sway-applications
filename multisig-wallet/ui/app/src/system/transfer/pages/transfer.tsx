@@ -84,18 +84,18 @@ export function TransferPage() {
                     onPress={useTransfer}
                     size="lg"
                     variant="solid"
-                    css={{ marginTop: "$1" }}
+                    css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}
                 >
                     Transfer
                 </Button>
 
-                <Flex gap="$1" css={{ marginTop: "$1" }}>
+                <Flex gap="$2" css={{ marginTop: "$1" }}>
                     <Button
                         color="accent"
                         onPress={addSignature}
                         size="lg"
                         variant="solid"
-                        css={{ width: "50%" }}
+                        css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
                     >
                         Add signature
                     </Button>
@@ -105,7 +105,7 @@ export function TransferPage() {
                         onPress={removeSignature}
                         size="lg"
                         variant="solid"
-                        css={{ width: "50%" }}
+                        css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
                     >
                         Remove signature
                     </Button>

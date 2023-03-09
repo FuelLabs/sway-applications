@@ -71,18 +71,18 @@ export function CreateWallet() {
                     onPress={useConstructor}
                     size="lg"
                     variant="solid"
-                    css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$2", width: "100%" }}
+                    css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$2", width: "100%", boxShadow: "0px 0px 1px 1px" }}
                 >
                     Create wallet
                 </Button>
 
-                <Flex gap="$1" css={{ marginTop: "$1" }}>
+                <Flex gap="$2" css={{ marginTop: "$1" }}>
                     <Button
                         color="accent"
                         onPress={addUser}
                         size="lg"
                         variant="solid"
-                        css={{ width: "50%" }}
+                        css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
                     >
                         Add user
                     </Button>
@@ -92,7 +92,7 @@ export function CreateWallet() {
                         onPress={removeUser}
                         size="lg"
                         variant="solid"
-                        css={{ width: "50%" }}
+                        css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
                     >
                         Remove user
                     </Button>

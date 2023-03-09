@@ -45,7 +45,7 @@ export function ThresholdHashComponent( { optionalData }: ComponentInput ) {
                     onPress={getThresholdHash}
                     size="lg"
                     variant="solid"
-                    css={{ marginTop: "$1" }}
+                    css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}
                 >
                     Create hash
                 </Button>

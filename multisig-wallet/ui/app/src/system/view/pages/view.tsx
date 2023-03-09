@@ -58,6 +58,7 @@ export function ViewPage() {
                         onPress={getWeight}
                         size="lg"
                         variant="solid"
+                        css={{ boxShadow: "0px 0px 1px 1px" }}
                     >
                         Get weight
                     </Button>
@@ -75,13 +76,14 @@ export function ViewPage() {
                         onPress={getBalance}
                         size="lg"
                         variant="solid"
+                        css={{ boxShadow: "0px 0px 1px 1px" }}
                     >
                         Get balance
                     </Button>
                 </Stack>
 
-                <Flex gap="$1" css={{ minWidth: "100%", marginTop: "$10" }}>
-                    <Stack css={{ minWidth: "50%" }}>
+                <Flex gap="$2" css={{ minWidth: "100%", marginTop: "$10" }}>
+                    <Stack css={{ minWidth: "49%" }}>
                         <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$14", color: "$accent1" }}>
                             Check nonce
                         </Heading>
@@ -91,12 +93,13 @@ export function ViewPage() {
                             onPress={getNonce}
                             size="lg"
                             variant="solid"
+                            css={{ boxShadow: "0px 0px 1px 1px" }}
                         >
                             Get nonce
                         </Button>
                     </Stack>
 
-                    <Stack css={{ minWidth: "50%" }}>
+                    <Stack css={{ minWidth: "49%" }}>
                         <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$14", color: "$accent1" }}>
                             Check threshold
                         </Heading>
@@ -106,6 +109,7 @@ export function ViewPage() {
                             onPress={getThreshold}
                             size="lg"
                             variant="solid"
+                            css={{ boxShadow: "0px 0px 1px 1px" }}
                         >
                             Get threshold
                         </Button>
