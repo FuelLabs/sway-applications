@@ -99,7 +99,6 @@ impl MultiSignatureWallet for Contract {
         single_value_type_arg: Option<bool>,
         target: Identity,
         value: Option<u64>,
-        
     ) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
