@@ -9,7 +9,7 @@ export function validateAddress(address: string) {
     } else if (isB256(address)) {
         address = address;
     } else {
-        toast.error("Sir... SIR, that's not a valid address", { duration: 10000 });
+        // toast.error("Sir... SIR, that's not a valid address", { duration: 10000 });
         isError = true;
     }
 

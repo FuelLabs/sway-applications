@@ -11,7 +11,7 @@ export function RadioGroupComponent( { setRecipient }: ComponentInput ) {
                 Recipient Type
             </Heading>
 
-            <RadioGroup defaultValue="address" direction="row" css={{ margin: "auto" }}>
+            <RadioGroup defaultValue="address" direction="row" css={{ margin: "auto", ".fuel_form--label": { color: "$blackA12" } }} >
                 {/* 
                     TODO: 
                         change labels to be the color black

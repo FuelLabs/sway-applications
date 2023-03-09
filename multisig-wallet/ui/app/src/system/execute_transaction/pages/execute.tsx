@@ -22,7 +22,7 @@ export function ExecuteTransactionPage() {
     const [signatures, setSignatures] = useState([<SignatureComponent id={1} name="transfer" />])
     const { contract, isLoading, isError } = useContract()
 
-    async function useExecuteTransaction() {
+    async function executeTransaction() {
         // const signature = document.querySelector<HTMLInputElement>(
         //     `[name="transaction-signature"]`
         // )!.value;
@@ -44,8 +44,12 @@ export function ExecuteTransactionPage() {
         const { data: validatedData, isError } = validateData(data);
         if (isError) return;
 
-        await contract!.functions.execute_transaction(validatedData, [], identity, assetAmount).call();
-        toast.success("Transaction complete!")
+        try {
+            await contract!.functions.execute_transaction(validatedData, [], identity, assetAmount).call();
+            toast.success("Transaction complete!")
+        } catch (err) {
+            toast.error("oh fuck me");
+        }
     }
 
     async function addSignature() {
@@ -77,7 +81,7 @@ export function ExecuteTransactionPage() {
                 
                 <Button
                     color="accent"
-                    onPress={useExecuteTransaction}
+                    onPress={executeTransaction}
                     size="lg"
                     variant="solid"
                     css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}

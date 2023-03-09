@@ -13,6 +13,7 @@
     "@fuel-ui/react": "^0.12.3",
     "@fuel-wallet/sdk": "^0.5.1",
     "@tanstack/react-query": "^4.24.6",
+    "dotenv": "^16.0.3",
     "fuels": "^0.30.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

@@ -23,7 +23,7 @@ export function TransferPage() {
     const [signatures, setSignatures] = useState([<SignatureComponent id={1} name="transfer" />])
     const { contract, isLoading, isError } = useContract()
 
-    async function useTransfer() {
+    async function transfer() {
         let identity: IdentityInput;
 
         if (recipient === "address") {
@@ -81,7 +81,7 @@ export function TransferPage() {
 
                 <Button
                     color="accent"
-                    onPress={useTransfer}
+                    onPress={transfer}
                     size="lg"
                     variant="solid"
                     css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}

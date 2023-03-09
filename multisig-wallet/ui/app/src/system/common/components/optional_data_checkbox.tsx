@@ -11,7 +11,7 @@ export function OptionalCheckBoxComponent( { setOptionalData, optionalData }: Co
             <BoxCentered css={{ marginTop: "$8" }}>
                 <Form.Control css={{ flexDirection: 'row' }}>
                     <Checkbox onClick={() => setOptionalData(!optionalData)} id="optional-data"/>
-                    <Form.Label htmlFor="optional-data">
+                    <Form.Label htmlFor="optional-data" css={{ color: "$blackA12" }}>
                         Optional data
                     </Form.Label>
                 </Form.Control>

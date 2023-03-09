@@ -22,10 +22,7 @@ export function ThresholdPage() {
         // )!.value;
 
         const { validatedData, isError } = validateOptionalData(data);
-         
-        if (isError) {
-            return;
-        }
+        if (isError) return;
 
         await contract!.functions.set_threshold(validatedData, [], threshold).call();
         toast.success("Updated threshold!")

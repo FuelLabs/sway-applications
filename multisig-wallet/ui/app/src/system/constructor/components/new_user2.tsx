@@ -2,13 +2,15 @@ import { Flex, Stack } from "@fuel-ui/react";
 import { InputFieldComponent } from "../../common/components/input_field";
 import { InputNumberComponent } from "../../common/components/input_number";
 import { useEffect, useState } from "react";
+import { UserInput } from "../../../contracts/MultisigContractAbi";
 
 interface NewUserInput {
     id: number,
-    onChange: (address: string, value: number) => void
+    onChange: (address: string, value: number) => void,
+    user: UserInput
 }
 
-export const NewUserComponent = ({ id, onChange }: NewUserInput) => {
+export const NewUserComponent2 = ({ id, onChange, user }: NewUserInput) => {
     // Used for our component listeners
     const [address, setAddress] = useState("")
     const [weight, setWeight] = useState(0)

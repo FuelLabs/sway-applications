@@ -17,12 +17,9 @@ export function ThresholdHashComponent( { optionalData }: ComponentInput ) {
     
     const { contract, isLoading, isError } = useContract()
 
-    async function getThresholdHash() {
+    async function getHash() {
         const { validatedData, isError } = validateOptionalData(data);
-         
-        if (isError) {
-            return;
-        }
+        if (isError) return;
 
         const { value } = await contract!.functions.threshold_hash(validatedData, nonce, threshold).get();
         toast.success(`Hash: ${value}`, { duration: 10000 });
@@ -42,7 +39,7 @@ export function ThresholdHashComponent( { optionalData }: ComponentInput ) {
 
                 <Button
                     color="accent"
-                    onPress={getThresholdHash}
+                    onPress={getHash}
                     size="lg"
                     variant="solid"
                     css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}

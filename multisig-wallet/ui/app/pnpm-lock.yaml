@@ -8,6 +8,7 @@ specifiers:
   '@types/react': ^18.0.27
   '@types/react-dom': ^18.0.10
   '@vitejs/plugin-react': ^3.1.0
+  dotenv: ^16.0.3
   fuels: ^0.30.0
   react: ^18.2.0
   react-dom: ^18.2.0
@@ -20,6 +21,7 @@ dependencies:
   '@fuel-ui/react': 0.12.3_c6mc5dj2lvpczaqlkcypbolpey
   '@fuel-wallet/sdk': 0.5.1_fuels@0.30.0
   '@tanstack/react-query': 4.24.6_biqbaboplfbrettd7655fr4n2y
+  dotenv: 16.0.3
   fuels: 0.30.0
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
@@ -4194,6 +4196,11 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       webidl-conversions: 7.0.0
+    dev: false
+
+  /dotenv/16.0.3:
+    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
     dev: false
 
   /electron-to-chromium/1.4.295:
