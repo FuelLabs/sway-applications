@@ -2,7 +2,7 @@ import { toast } from "@fuel-ui/react";
 import { QueryClient } from "@tanstack/react-query";
 
 export const panicError = (msg: string) => {
-    <div>Unexpected block execution error</div>;
+    return <div>Unexpected block execution error</div>;
 };
 
 export function handleError(error: any) {

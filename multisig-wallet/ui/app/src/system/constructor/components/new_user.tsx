@@ -1,6 +1,6 @@
 import { Flex, Stack } from "@fuel-ui/react";
-import { InputFieldComponent } from "../../common/input_field";
-import { InputNumberComponent } from "../../common/input_number";
+import { InputFieldComponent } from "../../common/components/input_field";
+import { InputNumberComponent } from "../../common/components/input_number";
 import { useEffect, useState } from "react";
 
 interface NewUserInput {

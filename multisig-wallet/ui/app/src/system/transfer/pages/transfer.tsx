@@ -1,13 +1,15 @@
 import { BoxCentered, Button, Flex, Heading, Stack, toast } from "@fuel-ui/react";
-import { Address, isBech32, isB256 } from "fuels";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
-import { SignatureComponent } from "../../common/signature";
-import { InputFieldComponent } from "../../common/input_field";
-import { InputNumberComponent } from "../../common/input_number";
+import { SignatureComponent } from "../../common/components/signature";
+import { InputFieldComponent } from "../../common/components/input_field";
+import { InputNumberComponent } from "../../common/components/input_number";
 import { ContractIdInput, IdentityInput } from "../../../contracts/MultisigContractAbi";
-import { OptionalCheckBoxComponent } from "../../common/optional_data_checkbox";
-import { RadioGroupComponent } from "../../common/radio_group";
+import { OptionalCheckBoxComponent } from "../../common/components/optional_data_checkbox";
+import { RadioGroupComponent } from "../../common/components/radio_group";
+import { validateData } from "../../common/utils/validate_data";
+import { validateAddress } from "../../common/utils/validate_address";
+import { validateContractId } from "../../common/utils/validate_contract_id";
 
 export function TransferPage() {
     // Used for our component listeners
@@ -25,45 +27,26 @@ export function TransferPage() {
         let identity: IdentityInput;
 
         if (recipient === "address") {
-            let user: string;
-
-            if (isBech32(address)) {
-                user = Address.fromString(address).toB256()
-            } else if (isB256(address)) {
-                user = address;
-            } else {
-                toast.error("Sir... SIR, that's not a valid address", { duration: 10000 });
-                return;
-            }
+            let { address: user, isError } = validateAddress(address);
+            if (isError) return;
 
             identity = { Address: { value: user } };
         } else {
-            if (!isB256(address)) {
-                toast.error("Ha! Take a look at this contract id...", { duration: 10000 });
-                return;
-            }
+            let { address: user, isError } = validateContractId(address);
+            if (isError) return;
 
-            identity = { ContractId: { value: address } };
+            identity = { ContractId: { value: user } };
         }
 
-        if (!isB256(asset)) {
-            toast.error("That ain't no contract id dummy", { duration: 10000 });
-            return;
-        }
+        let { address: validatedAsset, isError: error} = validateContractId(asset);
+        if (error) return;
 
-        let assetId: ContractIdInput = {
-            value: asset
-        }
+        const { data: validatedData, isError } = validateData(data);
+        if (isError) return;
 
-        let userData = data;
-        if (optionalData && !isB256(userData)) {
-            toast.error("That data looks a bit off my dude", { duration: 10000 });
-            return;
-        } else if (!optionalData) {
-            userData = "0x0000000000000000000000000000000000000000000000000000000000000000";
-        }
+        let assetId: ContractIdInput = { value: validatedAsset };
 
-        await contract!.functions.transfer(assetId, userData, [], identity, assetAmount).call();
+        await contract!.functions.transfer(assetId, validatedData, [], identity, assetAmount).call();
         toast.success("Transfer complete!")
     }
 

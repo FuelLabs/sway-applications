@@ -1,9 +1,10 @@
 import { BoxCentered, Button, Flex, Heading, Stack, toast } from "@fuel-ui/react";
-import { Address, isBech32, isB256 } from "fuels";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { ContractIdInput } from "../../../contracts/MultisigContractAbi";
-import { InputFieldComponent } from "../../common/input_field";
+import { InputFieldComponent } from "../../common/components/input_field";
+import { validateAddress } from "../../common/utils/validate_address";
+import { validateContractId } from "../../common/utils/validate_contract_id";
 
 export function ViewPage() {
     // Used for our component listeners 
@@ -13,13 +14,11 @@ export function ViewPage() {
     const { contract, isLoading, isError } = useContract()
     
     async function getBalance() {
-        if (!isB256(asset)) {
-            toast.error("That ain't no contract id dummy", { duration: 10000 });
-            return;
-        }
+        let { address: userAsset, isError } = validateContractId(asset);
+        if (isError) return;
 
         let assetId: ContractIdInput = {
-            value: asset
+            value: userAsset
         } 
 
         const { value } = await contract!.functions.balance(assetId).get();
@@ -37,16 +36,8 @@ export function ViewPage() {
     }
 
     async function getWeight() {
-        let user: string;
-
-        if (isBech32(address)) {
-            user = Address.fromString(address).toB256()
-        } else if (isB256(address)) {
-            user = address;
-        } else {
-            toast.error("Oh fuck, I can't believe you've done this", { duration: 10000 });
-            return;
-        }
+        let { address: user, isError } = validateAddress(address);
+        if (isError) return;
 
         const { value } = await contract!.functions.approval_weight(user).get();
         toast.success(`User weight: ${value}`, { duration: 10000 });

@@ -2,8 +2,10 @@ import { Button, Heading, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { UserInput } from "../../../contracts/MultisigContractAbi";
-import { InputFieldComponent } from "../../common/input_field";
-import { InputNumberComponent } from "../../common/input_number";
+import { InputFieldComponent } from "../../common/components/input_field";
+import { InputNumberComponent } from "../../common/components/input_number";
+import { validateOptionalData } from "../../common/utils/validate_optional_data";
+import { validateAddress } from "../../common/utils/validate_address";
 
 interface ComponentInput {
     optionalData: boolean,
@@ -19,12 +21,18 @@ export function WeightHashComponent( { optionalData }: ComponentInput ) {
     const { contract, isLoading, isError } = useContract()
 
     async function getHash() {
+        let { address: userAddress, isError: error } = validateAddress(address);
+        if (error) return;
+
+        const { validatedData, isError } = validateOptionalData(data);
+        if (isError) return;
+
         let user: UserInput = {
-            address: address,
+            address: userAddress,
             weight: weight
         }
 
-        const { value } = await contract!.functions.weight_hash(data, nonce, user).get();
+        const { value } = await contract!.functions.weight_hash(validatedData, nonce, user).get();
         toast.success(`Hash: ${value}`, { duration: 10000 });
     }
 

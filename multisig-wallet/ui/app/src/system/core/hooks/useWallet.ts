@@ -1,6 +1,5 @@
 import { toast } from "@fuel-ui/react";
 import { useQuery } from "@tanstack/react-query";
-
 import { useFuel } from "./useFuel";
 
 export const useWallet = () => {
@@ -17,7 +16,9 @@ export const useWallet = () => {
         async () => {
             const isConnected = await fuel.isConnected();
             if (!isConnected) {
-                await fuel.connect();
+                toast.error("Connect your wallet sucka!");
+                return;
+                // await fuel.connect();
             }
             const selectedAccount = (await fuel.currentAccount()) as string;
             const selectedWallet = await fuel.getWallet(selectedAccount);

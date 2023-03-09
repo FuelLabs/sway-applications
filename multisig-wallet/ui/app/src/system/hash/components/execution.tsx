@@ -2,8 +2,11 @@ import { Button, Heading, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { IdentityInput } from "../../../contracts/MultisigContractAbi";
-import { InputFieldComponent } from "../../common/input_field";
-import { InputNumberComponent } from "../../common/input_number";
+import { InputFieldComponent } from "../../common/components/input_field";
+import { InputNumberComponent } from "../../common/components/input_number";
+import { validateData } from "../../common/utils/validate_data";
+import { validateAddress } from "../../common/utils/validate_address";
+import { validateContractId } from "../../common/utils/validate_contract_id";
 
 interface ComponentInput {
     optionalData: boolean,
@@ -23,12 +26,21 @@ export function ExecuteHashComponent( { optionalData, recipient }: ComponentInpu
         let identity: IdentityInput;
 
         if (recipient === "address") {
-            identity = { Address: { value: address } };
+            let { address: user, isError } = validateAddress(address);
+            if (isError) return;
+
+            identity = { Address: { value: user } };
         } else {
-            identity = { ContractId: { value: address } };
+            let { address: user, isError } = validateContractId(address);
+            if (isError) return;
+
+            identity = { ContractId: { value: user } };
         }
 
-        const { value } = await contract!.functions.transaction_hash(data, nonce, identity, assetAmount).get();
+        const { data: validatedData, isError } = validateData(data);
+        if (isError) return;
+
+        const { value } = await contract!.functions.transaction_hash(validatedData, nonce, identity, assetAmount).get();
         toast.success(`Hash: ${value}`, { duration: 10000 });
     }
 

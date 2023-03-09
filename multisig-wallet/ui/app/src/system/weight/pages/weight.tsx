@@ -1,12 +1,13 @@
 import { BoxCentered, Button, Flex, Heading, Stack, toast } from "@fuel-ui/react";
-import { Address, isBech32, isB256 } from "fuels";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
-import { SignatureComponent } from "../../common/signature";
-import { InputFieldComponent } from "../../common/input_field";
-import { InputNumberComponent } from "../../common/input_number";
-import { OptionalCheckBoxComponent } from "../../common/optional_data_checkbox";
+import { SignatureComponent } from "../../common/components/signature";
+import { InputFieldComponent } from "../../common/components/input_field";
+import { InputNumberComponent } from "../../common/components/input_number";
+import { OptionalCheckBoxComponent } from "../../common/components/optional_data_checkbox";
 import { UserInput } from "../../../contracts/MultisigContractAbi";
+import { validateOptionalData } from "../../common/utils/validate_optional_data";
+import { validateAddress } from "../../common/utils/validate_address";
 
 export function WeightPage() {
     // Used for our component listeners
@@ -23,23 +24,18 @@ export function WeightPage() {
         //     `[name="weight-signatures"]`
         // )!.value;
 
-        let userAddress = address;
+        let { address: userAddress, isError } = validateAddress(address);
+        if (isError) return;
 
-        if (isBech32(address)) {
-            userAddress = Address.fromString(address).toB256();
-        } else if (isB256(address)) {
-            userAddress = address;
-        } else {
-            toast.error("Summimasen, wtf is that address", { duration: 10000 });
-            return;
-        }
+        const { validatedData, isError: error } = validateOptionalData(data);
+        if (error) return;
 
         let user: UserInput = {
             address: userAddress,
             weight: weight
         }
 
-        await contract!.functions.set_weight(data, [], user).call();
+        await contract!.functions.set_weight(validatedData, [], user).call();
         toast.success("Updated user weight!")
     }
 

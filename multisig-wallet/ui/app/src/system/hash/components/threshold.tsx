@@ -1,8 +1,9 @@
 import { Button, Heading, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
-import { InputFieldComponent } from "../../common/input_field";
-import { InputNumberComponent } from "../../common/input_number";
+import { InputFieldComponent } from "../../common/components/input_field";
+import { InputNumberComponent } from "../../common/components/input_number";
+import { validateOptionalData } from "../../common/utils/validate_optional_data";
 
 interface ComponentInput {
     optionalData: boolean,
@@ -17,7 +18,13 @@ export function ThresholdHashComponent( { optionalData }: ComponentInput ) {
     const { contract, isLoading, isError } = useContract()
 
     async function getThresholdHash() {
-        const { value } = await contract!.functions.threshold_hash(data, nonce, threshold).get();
+        const { validatedData, isError } = validateOptionalData(data);
+         
+        if (isError) {
+            return;
+        }
+
+        const { value } = await contract!.functions.threshold_hash(validatedData, nonce, threshold).get();
         toast.success(`Hash: ${value}`, { duration: 10000 });
     }
 

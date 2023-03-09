@@ -4,8 +4,8 @@ import { ExecuteHashComponent } from "../components/execution";
 import { WeightHashComponent } from "../components/weight";
 import { TransferHashComponent } from "../components/transfer";
 import { ThresholdHashComponent } from "../components/threshold";
-import { RadioGroupComponent } from "../../common/radio_group";
-import { OptionalCheckBoxComponent } from "../../common/optional_data_checkbox";
+import { RadioGroupComponent } from "../../common/components/radio_group";
+import { OptionalCheckBoxComponent } from "../../common/components/optional_data_checkbox";
 
 export function HashPage() {
     const [recipient, setRecipient] = useState("address")

@@ -1,13 +1,15 @@
 import { BoxCentered, Button, Flex, Heading, toast, Stack } from "@fuel-ui/react";
-import { Address, isBech32, isB256 } from "fuels";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
-import { SignatureComponent } from "../../common/signature";
-import { InputFieldComponent } from "../../common/input_field";
-import { InputNumberComponent } from "../../common/input_number";
+import { SignatureComponent } from "../../common/components/signature";
+import { InputFieldComponent } from "../../common/components/input_field";
+import { InputNumberComponent } from "../../common/components/input_number";
 import { IdentityInput } from "../../../contracts/MultisigContractAbi";
-import { OptionalCheckBoxComponent } from "../../common/optional_data_checkbox";
-import { RadioGroupComponent } from "../../common/radio_group";
+import { OptionalCheckBoxComponent } from "../../common/components/optional_data_checkbox";
+import { RadioGroupComponent } from "../../common/components/radio_group";
+import { validateData } from "../../common/utils/validate_data";
+import { validateAddress } from "../../common/utils/validate_address";
+import { validateContractId } from "../../common/utils/validate_contract_id";
 
 export function ExecuteTransactionPage() {
     // Used for our component listeners
@@ -28,36 +30,21 @@ export function ExecuteTransactionPage() {
         let identity: IdentityInput;
 
         if (recipient === "address") {
-            let user: string;
-
-            if (isBech32(address)) {
-                user = Address.fromString(address).toB256()
-            } else if (isB256(address)) {
-                user = address;
-            } else {
-                toast.error("Sir... SIR, that's not a valid address", { duration: 10000 });
-                return;
-            }
+            let { address: user, isError } = validateAddress(address);
+            if (isError) return;
 
             identity = { Address: { value: user } };
         } else {
-            if (!isB256(address)) {
-                toast.error("Ha! Take a look at this contract id...", { duration: 10000 });
-                return;
-            }
+            let { address: user, isError } = validateContractId(address);
+            if (isError) return;
 
-            identity = { ContractId: { value: address } };
+            identity = { ContractId: { value: user } };
         }
 
-        let userData = data;
-        if (optionalData && !isB256(userData)) {
-            toast.error("That data looks a bit off my dude", { duration: 10000 });
-            return;
-        } else if (!optionalData) {
-            userData = "0x0000000000000000000000000000000000000000000000000000000000000000";
-        }
+        const { data: validatedData, isError } = validateData(data);
+        if (isError) return;
 
-        await contract!.functions.execute_transaction(userData, [], identity, assetAmount).call();
+        await contract!.functions.execute_transaction(validatedData, [], identity, assetAmount).call();
         toast.success("Transaction complete!")
     }
 

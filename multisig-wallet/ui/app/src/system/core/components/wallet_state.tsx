@@ -34,6 +34,9 @@ export const WalletState = () => {
 
     // trigger useEffect
     setConnection("");
+
+    // User needs to refresh without this to be able to interact with the contract / UI
+    window.location.reload();
   }
 
   return (

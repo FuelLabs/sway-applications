@@ -1,11 +1,11 @@
 import { BoxCentered, Button, Flex, Heading, toast, Stack } from "@fuel-ui/react";
-import { isB256 } from "fuels";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
-import { SignatureComponent } from "../../common/signature";
-import { InputFieldComponent } from "../../common/input_field";
-import { InputNumberComponent } from "../../common/input_number";
-import { OptionalCheckBoxComponent } from "../../common/optional_data_checkbox";
+import { SignatureComponent } from "../../common/components/signature";
+import { InputFieldComponent } from "../../common/components/input_field";
+import { InputNumberComponent } from "../../common/components/input_number";
+import { OptionalCheckBoxComponent } from "../../common/components/optional_data_checkbox";
+import { validateOptionalData } from "../../common/utils/validate_optional_data";
 
 export function ThresholdPage() {
     // Used for our component listeners
@@ -21,15 +21,13 @@ export function ThresholdPage() {
         //     `[name="threshold-signature"]`
         // )!.value;
 
-        let userData: string | undefined = data;
-        if (userData === "") {
-            userData = undefined;
-        } else if (!isB256(userData)) {
-            toast.error("I don't know about that data format chief", { duration: 10000 });
+        const { validatedData, isError } = validateOptionalData(data);
+         
+        if (isError) {
             return;
         }
 
-        await contract!.functions.set_threshold(userData, [], threshold).call();
+        await contract!.functions.set_threshold(validatedData, [], threshold).call();
         toast.success("Updated threshold!")
     }
 
