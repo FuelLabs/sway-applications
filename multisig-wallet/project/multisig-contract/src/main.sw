@@ -84,6 +84,11 @@ impl MultiSignatureWallet for Contract {
         storage.total_weight = total_weight;
     }
 
+    // execute_transaction TODO: Refactor arguments to the below once Bytes/Vectors in structs are supported by SDK. https://github.com/FuelLabs/fuels-rs/issues/723.
+    // ContractCallParams {function_selector, calldata, single_value_type_arg, forwarded_gas}
+    // signatures
+    // target
+    // TransferParams {asset_id, value}
     #[storage(read, write)]
     fn execute_transaction( // TODO: Convert `Option<Vec<u8>>` to `Option<Bytes>` when SDK supports `Bytes`. https://github.com/FuelLabs/fuels-rs/issues/723.
         asset_id: Option<ContractId>,
@@ -94,6 +99,7 @@ impl MultiSignatureWallet for Contract {
         single_value_type_arg: Option<bool>,
         target: Identity,
         value: Option<u64>,
+        
     ) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
