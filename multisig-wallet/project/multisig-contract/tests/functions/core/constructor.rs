@@ -14,6 +14,17 @@ mod success {
         constructor(&deployer.contract, default_users()).await;
 
         assert_eq!(nonce(&deployer.contract).await.value, 1);
+
+        println!(
+            "Estimated transaction cost: {:?}",
+            &deployer
+                .contract
+                .methods()
+                .constructor(default_users())
+                .estimate_transaction_cost(Some(0.0))
+                .await
+                .unwrap()
+        );
     }
 }
 

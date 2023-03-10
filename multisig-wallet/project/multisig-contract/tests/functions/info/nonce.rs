@@ -17,5 +17,16 @@ mod success {
 
         assert_eq!(initial_nonce, 0);
         assert_eq!(final_nonce, initial_nonce + 1);
+
+        println!(
+            "Estimated transaction cost: {:?}",
+            &deployer
+                .contract
+                .methods()
+                .nonce()
+                .estimate_transaction_cost(Some(0.0))
+                .await
+                .unwrap()
+        );
     }
 }

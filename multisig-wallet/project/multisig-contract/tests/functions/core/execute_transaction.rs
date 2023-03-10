@@ -81,10 +81,10 @@ mod success {
         let response = execute_transaction(
             &deployer.contract,
             tx.asset_id,
-            tx.calldata,
+            tx.calldata.clone(),
             tx.forwarded_gas,
-            tx.function_selector,
-            signatures,
+            tx.function_selector.clone(),
+            signatures.clone(),
             tx.single_value_type_arg,
             tx.target.clone(),
             tx.value,
@@ -99,7 +99,7 @@ mod success {
             TransferEvent {
                 asset: tx.asset_id.unwrap(),
                 nonce: tx.nonce,
-                target: tx.target,
+                target: tx.target.clone(),
                 value: tx.value.unwrap(),
             }
         );
@@ -125,6 +125,26 @@ mod success {
 
         assert!(final_contract_balance < initial_contract_balance);
         assert!(final_receiver_balance > initial_receiver_balance);
+
+        println!(
+            "Estimated transaction cost: {:?}",
+            &deployer
+                .contract
+                .methods()
+                .execute_transaction(
+                    tx.asset_id,
+                    tx.calldata,
+                    tx.forwarded_gas,
+                    tx.function_selector,
+                    signatures,
+                    tx.single_value_type_arg,
+                    tx.target,
+                    tx.value,
+                )
+                .estimate_transaction_cost(Some(0.0))
+                .await
+                .unwrap()
+        );
     }
 
     #[tokio::test]
@@ -169,7 +189,7 @@ mod success {
             tx.calldata.clone(),
             tx.forwarded_gas,
             tx.function_selector.clone(),
-            signatures,
+            signatures.clone(),
             tx.single_value_type_arg,
             tx.target.clone(),
             tx.value,
@@ -205,6 +225,26 @@ mod success {
         assert_eq!(initial_counter, 0);
         assert_eq!(final_counter, DEFAULT_CALLDATA_VALUE_PARAM);
         assert_ne!(initial_counter, final_counter);
+
+        println!(
+            "Estimated transaction cost: {:?}",
+            &deployer
+                .contract
+                .methods()
+                .execute_transaction(
+                    tx.asset_id,
+                    tx.calldata,
+                    tx.forwarded_gas,
+                    tx.function_selector,
+                    signatures,
+                    tx.single_value_type_arg,
+                    tx.target,
+                    tx.value,
+                )
+                .estimate_transaction_cost(Some(0.0))
+                .await
+                .unwrap()
+        );
     }
 
     #[tokio::test]
@@ -278,7 +318,7 @@ mod success {
             tx.calldata.clone(),
             tx.forwarded_gas,
             tx.function_selector.clone(),
-            signatures,
+            signatures.clone(),
             tx.single_value_type_arg,
             tx.target.clone(),
             tx.value,
@@ -345,6 +385,26 @@ mod success {
 
         assert!(final_multisig_balance < initial_multisig_balance);
         assert!(final_test_contract_balance > initial_test_contract_balance);
+
+        println!(
+            "Estimated transaction cost: {:?}",
+            &deployer
+                .contract
+                .methods()
+                .execute_transaction(
+                    tx.asset_id,
+                    tx.calldata,
+                    tx.forwarded_gas,
+                    tx.function_selector,
+                    signatures,
+                    tx.single_value_type_arg,
+                    tx.target,
+                    tx.value,
+                )
+                .estimate_transaction_cost(Some(0.0))
+                .await
+                .unwrap()
+        );
     }
 }
 

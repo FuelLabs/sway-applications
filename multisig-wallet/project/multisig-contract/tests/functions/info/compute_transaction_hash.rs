@@ -52,6 +52,27 @@ mod success {
         .value;
 
         assert_eq!(Bits256(expected_hash.into()), response);
+
+        println!(
+            "Estimated transaction cost: {:?}",
+            &deployer
+                .contract
+                .methods()
+                .compute_transaction_hash(
+                    tx.asset_id,
+                    tx.calldata,
+                    tx.contract_identifier,
+                    tx.forwarded_gas,
+                    tx.function_selector,
+                    tx.nonce,
+                    tx.single_value_type_arg,
+                    tx.target,
+                    tx.value,
+                )
+                .estimate_transaction_cost(Some(0.0))
+                .await
+                .unwrap()
+        );
     }
 
     #[tokio::test]
@@ -158,5 +179,26 @@ mod success {
         .value;
 
         assert_eq!(Bits256(expected_hash.into()), response);
+
+        println!(
+            "Estimated transaction cost: {:?}",
+            &deployer
+                .contract
+                .methods()
+                .compute_transaction_hash(
+                    tx.asset_id,
+                    tx.calldata,
+                    tx.contract_identifier,
+                    tx.forwarded_gas,
+                    tx.function_selector,
+                    tx.nonce,
+                    tx.single_value_type_arg,
+                    tx.target,
+                    tx.value,
+                )
+                .estimate_transaction_cost(Some(0.0))
+                .await
+                .unwrap()
+        );
     }
 }

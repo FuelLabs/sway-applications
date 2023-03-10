@@ -32,5 +32,16 @@ mod success {
         assert_eq!(initial_balance, 0);
         assert_eq!(final_balance, DEFAULT_TRANSFER_AMOUNT);
         assert!(final_balance > initial_balance);
+
+        println!(
+            "Estimated transaction cost: {:?}",
+            &deployer
+                .contract
+                .methods()
+                .balance(base_asset_contract_id())
+                .estimate_transaction_cost(Some(0.0))
+                .await
+                .unwrap()
+        );
     }
 }

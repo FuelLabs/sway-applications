@@ -14,5 +14,16 @@ mod success {
         let current_threshold = threshold(&deployer.contract).await.value;
 
         assert_eq!(DEFAULT_THRESHOLD, current_threshold);
+
+        println!(
+            "Estimated transaction cost: {:?}",
+            &deployer
+                .contract
+                .methods()
+                .threshold()
+                .estimate_transaction_cost(Some(0.0))
+                .await
+                .unwrap()
+        );
     }
 }
