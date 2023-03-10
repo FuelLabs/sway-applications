@@ -24,8 +24,8 @@ export function HashPage() {
                     <ThresholdHashComponent optionalData={optionalData} />
                 </Flex>
 
-                <OptionalCheckBoxComponent setOptionalData={setOptionalData} optionalData={optionalData} />
-                <RadioGroupComponent setRecipient={setRecipient} />
+                <OptionalCheckBoxComponent handler={setOptionalData} optionalData={optionalData} />
+                <RadioGroupComponent handler={setRecipient} />
             </Stack>
         </BoxCentered>
     );

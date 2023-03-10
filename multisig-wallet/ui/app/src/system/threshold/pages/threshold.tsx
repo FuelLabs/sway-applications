@@ -1,4 +1,4 @@
-import { BoxCentered, Button, Flex, Heading, toast, Stack } from "@fuel-ui/react";
+import { BoxCentered, Button, Heading, toast, Stack } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/components/signature";
@@ -6,30 +6,48 @@ import { InputFieldComponent } from "../../common/components/input_field";
 import { InputNumberComponent } from "../../common/components/input_number";
 import { OptionalCheckBoxComponent } from "../../common/components/optional_data_checkbox";
 import { validateOptionalData } from "../../common/utils/validate_optional_data";
+import { SignatureButtonComponent } from "../../common/components/signature_buttons";
+import { SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
 
 export function ThresholdPage() {
-    // Used for our component listeners
-    const [data, setData] = useState("")
     const [threshold, setThreshold] = useState(0)
+    const [signatures, setSignatures] = useState<SignatureInfoInput[]>([{ 
+        message_format: { None: [] }, 
+        message_prefix: { None: [] }, 
+        signature: { bytes: ["", ""] }, 
+        wallet_type: { Fuel: [] }
+    }])
+    const [data, setData] = useState("")
 
     const [optionalData, setOptionalData] = useState(false)
-    const [signatures, setSignatures] = useState([<SignatureComponent id={1} name="transfer" />])
     const { contract, isLoading, isError } = useContract()
 
-    async function useThreshold() {
-        // const signatures = document.querySelector<HTMLInputElement>(
-        //     `[name="threshold-signature"]`
-        // )!.value;
-
+    async function executeThreshold() {
         const { validatedData, isError } = validateOptionalData(data);
         if (isError) return;
 
-        await contract!.functions.set_threshold(validatedData, [], threshold).call();
-        toast.success("Updated threshold!")
+        try {
+            await contract!.functions.set_threshold(validatedData, signatures, threshold).call();
+            toast.success("Updated threshold!", { duration: 10000 })
+        } catch (err) {
+            toast.error("I don't know about that transfer chief", { duration: 10000 });
+        }
+    }     
+
+    async function updateSignature(index: number, signature: string) {
+        const localSignatures = [...signatures];
+        localSignatures[index].signature.bytes = [signature, ""];
+        setSignatures(localSignatures);
     }
 
     async function addSignature() {
-        setSignatures([...signatures, <SignatureComponent id={signatures.length+1} name="threshold" /> ]);
+        let signature: SignatureInfoInput = { 
+            message_format: { None: [] }, 
+            message_prefix: { None: [] }, 
+            signature: { bytes: ["", ""] }, 
+            wallet_type: { Fuel: [] }
+        };
+        setSignatures([...signatures, signature ]);
     }
 
     async function removeSignature() {
@@ -48,15 +66,19 @@ export function ThresholdPage() {
                     Change threshold for execution
                 </Heading>
 
-                <InputNumberComponent onChange={setThreshold} text="Threshold" placeholder="8" name="threshold" />
+                <InputNumberComponent onChange={setThreshold} text="Threshold" placeholder="8" />
 
-                {signatures.map((signatureComponent, index) => signatureComponent)}
+                {
+                    signatures.map((signature, index) => {
+                        return <SignatureComponent handler={updateSignature} index={index+1} />;
+                    })
+                }
 
-                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." name="trathresholdnsfer-data" />}
+                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." />}
 
                 <Button
                     color="accent"
-                    onPress={useThreshold}
+                    onPress={executeThreshold}
                     size="lg"
                     variant="solid"
                     css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}
@@ -64,29 +86,8 @@ export function ThresholdPage() {
                     Set threshold
                 </Button>
 
-                <Flex gap="$2" css={{ marginTop: "$1" }}>
-                    <Button
-                        color="accent"
-                        onPress={addSignature}
-                        size="lg"
-                        variant="solid"
-                        css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
-                    >
-                        Add signature
-                    </Button>
-
-                    <Button
-                        color="accent"
-                        onPress={removeSignature}
-                        size="lg"
-                        variant="solid"
-                        css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
-                    >
-                        Remove signature
-                    </Button>
-                </Flex>
-
-                <OptionalCheckBoxComponent setOptionalData={setOptionalData} optionalData={optionalData} />
+                <SignatureButtonComponent addHandler={addSignature} removeHandler={removeSignature}/>
+                <OptionalCheckBoxComponent handler={setOptionalData} optionalData={optionalData} />
             </Stack>
         </BoxCentered>
     );

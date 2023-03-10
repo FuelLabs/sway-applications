@@ -1,19 +1,17 @@
-import { Input, Text } from "@fuel-ui/react";
+import { Input, Stack, Text } from "@fuel-ui/react";
 
 interface SignatureInput {
-    id: number,
-    name: string,
+    handler: (index: number, signature: string) => void,
+    index: number,
 }
 
-export const SignatureComponent = ({id, name}: SignatureInput) => {
-    name = name + "-signature";
-
+export const SignatureComponent = ({ handler, index }: SignatureInput) => {
     return (
-        <>
-            <Text color="blackA12">Signature: {id}</Text>
+        <Stack css={{ width: "100%" }}>
+            <Text color="blackA12">Signature: {index}</Text>
             <Input size="lg">
-                <Input.Field name={name} placeholder="9c3f5ae085a4..." />
+                <Input.Field onChange={(event) => handler(index, event.target.value)} placeholder="9c3f5ae085a4..." />
             </Input>
-        </>
+        </Stack>
     );
 }

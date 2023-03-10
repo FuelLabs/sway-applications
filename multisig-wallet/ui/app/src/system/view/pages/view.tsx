@@ -7,7 +7,6 @@ import { validateAddress } from "../../common/utils/validate_address";
 import { validateContractId } from "../../common/utils/validate_contract_id";
 
 export function ViewPage() {
-    // Used for our component listeners 
     const [address, setAddress] = useState("")
     const [asset, setAsset] = useState("")
 
@@ -19,28 +18,44 @@ export function ViewPage() {
 
         let assetId: ContractIdInput = {
             value: userAsset
-        } 
+        }
 
-        const { value } = await contract!.functions.balance(assetId).get();
-        toast.success(`Balance: ${value}`, { duration: 10000 });
+        try {
+            const { value } = await contract!.functions.balance(assetId).get();
+            toast.success(`Balance: ${value}`, { duration: 10000 });
+        } catch (err) {
+            toast.error("The contract did an oopsie", { duration: 10000 });
+        }
     }
 
     async function getNonce() {
-        const { value } = await contract!.functions.nonce().get();
-        toast.success(`Current nonce: ${value}`, { duration: 10000 });
+        try {
+            const { value } = await contract!.functions.nonce().get();
+            toast.success(`Current nonce: ${value}`, { duration: 10000 });
+        } catch (err) {
+            toast.error("Sorry, contract is playing hard to get", { duration: 10000 });
+        }
     }
 
     async function getThreshold() {
-        const { value } = await contract!.functions.threshold().get();
-        toast.success(`Threshold: ${value}`, { duration: 10000 });
+        try {
+            const { value } = await contract!.functions.threshold().get();
+            toast.success(`Threshold: ${value}`, { duration: 10000 });
+        } catch (err) {
+            toast.error("The matrix is glitching out, can't get the value", { duration: 10000 });
+        }
     }
 
     async function getWeight() {
         let { address: user, isError } = validateAddress(address);
         if (isError) return;
 
-        const { value } = await contract!.functions.approval_weight(user).get();
-        toast.success(`User weight: ${value}`, { duration: 10000 });
+        try {
+            const { value } = await contract!.functions.approval_weight(user).get();
+            toast.success(`User weight: ${value}`, { duration: 10000 });
+        } catch (err) {
+            toast.error("I'm not feeling great rn, try again later?", { duration: 10000 });
+        }
     }
 
     return (
@@ -51,7 +66,7 @@ export function ViewPage() {
                         Check user approval weight
                     </Heading>
 
-                    <InputFieldComponent onChange={setAddress} text="User address" placeholder="0x80d5e8c2be..." name="user-weight" />
+                    <InputFieldComponent onChange={setAddress} text="User address" placeholder="0x80d5e8c2be..." />
 
                     <Button
                         color="accent"
@@ -69,7 +84,7 @@ export function ViewPage() {
                         Check balance of asset
                     </Heading>
 
-                    <InputFieldComponent onChange={setAsset} text="Asset id" placeholder="0x0000000000..." name="view-asset" />
+                    <InputFieldComponent onChange={setAsset} text="Asset id" placeholder="0x0000000000..." />
 
                     <Button
                         color="accent"
@@ -83,7 +98,7 @@ export function ViewPage() {
                 </Stack>
 
                 <Flex gap="$2" css={{ minWidth: "100%", marginTop: "$10" }}>
-                    <Stack css={{ minWidth: "49%" }}>
+                    <Stack css={{ minWidth: "50%" }}>
                         <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$14", color: "$accent1" }}>
                             Check nonce
                         </Heading>
@@ -99,7 +114,7 @@ export function ViewPage() {
                         </Button>
                     </Stack>
 
-                    <Stack css={{ minWidth: "49%" }}>
+                    <Stack css={{ minWidth: "50%" }}>
                         <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$14", color: "$accent1" }}>
                             Check threshold
                         </Heading>

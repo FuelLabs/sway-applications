@@ -12,7 +12,6 @@ interface ComponentInput {
 }
 
 export function WeightHashComponent( { optionalData }: ComponentInput ) {
-    // Used for our component listeners
     const [address, setAddress] = useState("")
     const [weight, setWeight] = useState(0)
     const [nonce, setNonce] = useState(0)
@@ -32,8 +31,12 @@ export function WeightHashComponent( { optionalData }: ComponentInput ) {
             weight: weight
         }
 
-        const { value } = await contract!.functions.weight_hash(validatedData, nonce, user).get();
-        toast.success(`Hash: ${value}`, { duration: 10000 });
+        try {
+            const { value } = await contract!.functions.weight_hash(validatedData, nonce, user).get();
+            toast.success(`Hash: ${value}`, { duration: 10000 });
+        } catch (err) {
+            toast.error("Ah! Math is hard rn, sorry", { duration: 10000 });
+        }
     }
 
     return (
@@ -43,11 +46,11 @@ export function WeightHashComponent( { optionalData }: ComponentInput ) {
                     Hash for user weight
                 </Heading>
 
-                <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." name="weight-hash-address" />
-                <InputNumberComponent onChange={setWeight} text="New weight" placeholder="2" name="weight-hash" />
-                <InputNumberComponent onChange={setNonce} text="Nonce" placeholder="3" name="weight-hash-nonce" />
+                <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." />
+                <InputNumberComponent onChange={setWeight} text="New weight" placeholder="2" />
+                <InputNumberComponent onChange={setNonce} text="Nonce" placeholder="3" />
 
-                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." name="weight-hash-data" />}
+                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." />}
 
                 <Button
                     color="accent"

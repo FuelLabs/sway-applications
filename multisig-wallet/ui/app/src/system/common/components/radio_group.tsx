@@ -1,10 +1,10 @@
 import { Heading, RadioGroup } from "@fuel-ui/react";
 
 interface ComponentInput {
-    setRecipient: (recipient: string) => void,
+    handler: (recipient: string) => void,
 }
 
-export function RadioGroupComponent( { setRecipient }: ComponentInput ) {
+export function RadioGroupComponent( { handler }: ComponentInput ) {
     return (
         <>
             <Heading as="h4" css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$8", color: "$accent1" }}>
@@ -12,13 +12,8 @@ export function RadioGroupComponent( { setRecipient }: ComponentInput ) {
             </Heading>
 
             <RadioGroup defaultValue="address" direction="row" css={{ margin: "auto", ".fuel_form--label": { color: "$blackA12" } }} >
-                {/* 
-                    TODO: 
-                        change labels to be the color black
-                        increase the size of the buttons and text 
-                */}
-                <RadioGroup.Item onClick={() => setRecipient("address")} label="Address" value="address" />
-                <RadioGroup.Item onClick={() => setRecipient("contract")} label="Contract" value="contract" />
+                <RadioGroup.Item onClick={() => handler("address")} label="Address" value="address" />
+                <RadioGroup.Item onClick={() => handler("contract")} label="Contract" value="contract" />
             </RadioGroup>
         </>
     );

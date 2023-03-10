@@ -14,7 +14,6 @@ interface ComponentInput {
 }
 
 export function TransferHashComponent( { optionalData, recipient }: ComponentInput ) {
-    // Used for our component listeners
     const [address, setAddress] = useState("")
     const [asset, setAsset] = useState("")
     const [assetAmount, setAssetAmount] = useState(0)
@@ -41,9 +40,13 @@ export function TransferHashComponent( { optionalData, recipient }: ComponentInp
         const { data: validatedData, isError } = validateData(data);
         if (isError) return;
 
-        // TODO: merge in new hashing function and use instead of this incorrect one
-        const { value } = await contract!.functions.transaction_hash(validatedData, nonce, identity, assetAmount).get();
-        toast.success(`Hash: ${value}`, { duration: 10000 });
+        try {
+            // TODO: merge in new hashing function and use instead of this incorrect one
+            const { value } = await contract!.functions.transaction_hash(validatedData, nonce, identity, assetAmount).get();
+            toast.success(`Hash: ${value}`, { duration: 10000 });
+        } catch (err) {
+            toast.error("Ah! Math is hard rn, sorry", { duration: 10000 });
+        }        
     }
 
     return (
@@ -53,12 +56,12 @@ export function TransferHashComponent( { optionalData, recipient }: ComponentInp
                     Hash for transfer
                 </Heading>
 
-                <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." name="transfer-hash-address" />
-                <InputFieldComponent onChange={setAsset} text="Asset id" placeholder="0x0000000000..." name="transfer-hash-asset" />
-                <InputNumberComponent onChange={setAssetAmount} text="Asset amount" placeholder="1.0" name="transfer-hash-value" />
-                <InputNumberComponent onChange={setNonce} text="Nonce" placeholder="3" name="transfer-hash-nonce" />
+                <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." />
+                <InputFieldComponent onChange={setAsset} text="Asset id" placeholder="0x0000000000..." />
+                <InputNumberComponent onChange={setAssetAmount} text="Asset amount" placeholder="1.0" />
+                <InputNumberComponent onChange={setNonce} text="Nonce" placeholder="3" />
 
-                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." name="transfer-hash-data" />}
+                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." />}
 
                 <Button
                     color="accent"

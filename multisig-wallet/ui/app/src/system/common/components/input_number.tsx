@@ -1,18 +1,17 @@
 import { Input, Text } from "@fuel-ui/react";
 
 interface InputNumberInput {
-    name: string,
+    onChange: (value: number) => void,
     placeholder: string,
     text: string,
-    onChange: (value: number) => void
 }
 
-export const InputNumberComponent = ({name, placeholder, text, onChange}: InputNumberInput) => {
+export const InputNumberComponent = ({ onChange, placeholder, text }: InputNumberInput) => {
     return (
         <>
             <Text color="blackA12">{text}</Text>
             <Input size="lg">
-                <Input.Number onChange={(event) => onChange(Number(event.target.value))} name={name} placeholder={placeholder} />
+                <Input.Number onChange={(event) => onChange(Number(event.target.value))} placeholder={placeholder} />
             </Input>
         </>
     );

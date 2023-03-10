@@ -5,7 +5,7 @@ export function validateContractId(address: string) {
     let isError = false;
 
     if (!isB256(address)) {
-        toast.error("Ha! Take a look at this contract id...", { duration: 10000 });
+        // toast.error("Ha! Take a look at this contract id...", { duration: 10000 });
         isError = true;
     }
 

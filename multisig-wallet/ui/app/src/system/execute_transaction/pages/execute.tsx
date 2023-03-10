@@ -1,4 +1,4 @@
-import { BoxCentered, Button, Flex, Heading, toast, Stack } from "@fuel-ui/react";
+import { BoxCentered, Button, Heading, toast, Stack } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/components/signature";
@@ -10,23 +10,25 @@ import { RadioGroupComponent } from "../../common/components/radio_group";
 import { validateData } from "../../common/utils/validate_data";
 import { validateAddress } from "../../common/utils/validate_address";
 import { validateContractId } from "../../common/utils/validate_contract_id";
+import { SignatureButtonComponent } from "../../common/components/signature_buttons";
+import { SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
 
 export function ExecuteTransactionPage() {
-    // Used for our component listeners
     const [address, setAddress] = useState("")
     const [assetAmount, setAssetAmount] = useState(0)
+    const [signatures, setSignatures] = useState<SignatureInfoInput[]>([{ 
+        message_format: { None: [] }, 
+        message_prefix: { None: [] }, 
+        signature: { bytes: ["", ""] }, 
+        wallet_type: { Fuel: [] }
+    }])
     const [data, setData] = useState("")
 
     const [recipient, setRecipient] = useState("address")
     const [optionalData, setOptionalData] = useState(false)
-    const [signatures, setSignatures] = useState([<SignatureComponent id={1} name="transfer" />])
     const { contract, isLoading, isError } = useContract()
 
     async function executeTransaction() {
-        // const signature = document.querySelector<HTMLInputElement>(
-        //     `[name="transaction-signature"]`
-        // )!.value;
-
         let identity: IdentityInput;
 
         if (recipient === "address") {
@@ -45,15 +47,27 @@ export function ExecuteTransactionPage() {
         if (isError) return;
 
         try {
-            await contract!.functions.execute_transaction(validatedData, [], identity, assetAmount).call();
+            await contract!.functions.execute_transaction(validatedData, signatures, identity, assetAmount).call();
             toast.success("Transaction complete!")
         } catch (err) {
-            toast.error("oh fuck me");
+            toast.error("Excuse me... it appears that something went wrong");
         }
     }
 
+    async function updateSignature(index: number, signature: string) {
+        const localSignatures = [...signatures];
+        localSignatures[index].signature.bytes = [signature, ""];
+        setSignatures(localSignatures);
+    }
+
     async function addSignature() {
-        setSignatures([...signatures, <SignatureComponent id={signatures.length+1} name="transaction" /> ]);
+        let signature: SignatureInfoInput = { 
+            message_format: { None: [] }, 
+            message_prefix: { None: [] }, 
+            signature: { bytes: ["", ""] }, 
+            wallet_type: { Fuel: [] }
+        };
+        setSignatures([...signatures, signature ]);
     }
 
     async function removeSignature() {
@@ -72,12 +86,16 @@ export function ExecuteTransactionPage() {
                     Execute a transaction
                 </Heading>
 
-                <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." name="transaction-recipient" />
-                <InputNumberComponent onChange={setAssetAmount} text="Asset amount" placeholder="1.0" name="transaction-value" />
+                <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." />
+                <InputNumberComponent onChange={setAssetAmount} text="Asset amount" placeholder="1.0" />
 
-                {signatures.map((signatureComponent, index) => signatureComponent)}
+                {
+                    signatures.map((signature, index) => {
+                        return <SignatureComponent handler={updateSignature} index={index+1} />;
+                    })
+                }
 
-                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." name="transaction-data" />}
+                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." />}
                 
                 <Button
                     color="accent"
@@ -89,30 +107,9 @@ export function ExecuteTransactionPage() {
                     Execute
                 </Button>
 
-                <Flex gap="$2" css={{ marginTop: "$1" }}>
-                    <Button
-                        color="accent"
-                        onPress={addSignature}
-                        size="lg"
-                        variant="solid"
-                        css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
-                    >
-                        Add signature
-                    </Button>
-
-                    <Button
-                        color="accent"
-                        onPress={removeSignature}
-                        size="lg"
-                        variant="solid"
-                        css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
-                    >
-                        Remove signature
-                    </Button>
-                </Flex>
-
-                <OptionalCheckBoxComponent setOptionalData={setOptionalData} optionalData={optionalData} />
-                <RadioGroupComponent setRecipient={setRecipient} />
+                <SignatureButtonComponent addHandler={addSignature} removeHandler={removeSignature}/>
+                <OptionalCheckBoxComponent handler={setOptionalData} optionalData={optionalData} />
+                <RadioGroupComponent handler={setRecipient} />
             </Stack>
         </BoxCentered>
     );

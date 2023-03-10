@@ -10,7 +10,6 @@ interface ComponentInput {
 }
 
 export function ThresholdHashComponent( { optionalData }: ComponentInput ) {
-    // Used for our component listeners
     const [threshold, setThreshold] = useState(0)
     const [nonce, setNonce] = useState(0)
     const [data, setData] = useState("")
@@ -21,8 +20,12 @@ export function ThresholdHashComponent( { optionalData }: ComponentInput ) {
         const { validatedData, isError } = validateOptionalData(data);
         if (isError) return;
 
-        const { value } = await contract!.functions.threshold_hash(validatedData, nonce, threshold).get();
-        toast.success(`Hash: ${value}`, { duration: 10000 });
+        try {
+            const { value } = await contract!.functions.threshold_hash(validatedData, nonce, threshold).get();
+            toast.success(`Hash: ${value}`, { duration: 10000 });
+        } catch (err) {
+            toast.error("Ah! Math is hard rn, sorry", { duration: 10000 });
+        }
     }
 
     return (
@@ -32,10 +35,10 @@ export function ThresholdHashComponent( { optionalData }: ComponentInput ) {
                     Hash for threshold 
                 </Heading>
 
-                <InputNumberComponent onChange={setThreshold} text="Threshold" placeholder="8" name="threshold-hash" />
-                <InputNumberComponent onChange={setNonce} text="Nonce" placeholder="3" name="threshold-hash-nonce" />
+                <InputNumberComponent onChange={setThreshold} text="Threshold" placeholder="8" />
+                <InputNumberComponent onChange={setNonce} text="Nonce" placeholder="3" />
 
-                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." name="threshold-hash-data" />}
+                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." />}
 
                 <Button
                     color="accent"

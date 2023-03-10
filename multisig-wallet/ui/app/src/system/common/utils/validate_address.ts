@@ -1,4 +1,3 @@
-import { toast } from "@fuel-ui/react";
 import { Address, isBech32, isB256 } from "fuels";
 
 export function validateAddress(address: string) {
@@ -9,7 +8,6 @@ export function validateAddress(address: string) {
     } else if (isB256(address)) {
         address = address;
     } else {
-        // toast.error("Sir... SIR, that's not a valid address", { duration: 10000 });
         isError = true;
     }
 
