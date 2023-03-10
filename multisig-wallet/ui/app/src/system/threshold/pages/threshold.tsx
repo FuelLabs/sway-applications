@@ -8,6 +8,7 @@ import { OptionalCheckBoxComponent } from "../../common/components/optional_data
 import { validateOptionalData } from "../../common/utils/validate_optional_data";
 import { SignatureButtonComponent } from "../../common/components/signature_buttons";
 import { SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
+import { useIsConnected } from "../../core/hooks/useIsConnected";
 
 export function ThresholdPage() {
     const [threshold, setThreshold] = useState(0)
@@ -21,6 +22,7 @@ export function ThresholdPage() {
 
     const [optionalData, setOptionalData] = useState(false)
     const { contract, isLoading, isError } = useContract()
+    const [isConnected] = useIsConnected();
 
     async function executeThreshold() {
         const { validatedData, isError } = validateOptionalData(data);
@@ -30,7 +32,7 @@ export function ThresholdPage() {
             await contract!.functions.set_threshold(validatedData, signatures, threshold).call();
             toast.success("Updated threshold!", { duration: 10000 })
         } catch (err) {
-            toast.error("I don't know about that transfer chief", { duration: 10000 });
+            toast.error("Well... that didn't go as planned", { duration: 10000 });
         }
     }     
 
@@ -70,7 +72,7 @@ export function ThresholdPage() {
 
                 {
                     signatures.map((signature, index) => {
-                        return <SignatureComponent handler={updateSignature} index={index+1} />;
+                        return <SignatureComponent handler={updateSignature} index={index} />;
                     })
                 }
 
@@ -81,6 +83,7 @@ export function ThresholdPage() {
                     onPress={executeThreshold}
                     size="lg"
                     variant="solid"
+                    isDisabled={!isConnected}
                     css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}
                 >
                     Set threshold

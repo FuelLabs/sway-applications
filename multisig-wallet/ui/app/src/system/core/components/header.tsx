@@ -1,7 +1,7 @@
 import { BoxCentered, Flex, FuelLogo, Heading, Link } from "@fuel-ui/react";
 import { WalletState } from "./wallet_state";
 
-export const Header = () => {
+export function Header() {
     return (
         <Flex>
             <BoxCentered css={{ background: 'rgb(63 149 57)', justifyContent: 'flex-start', boxShadow: "11px 1px 8px 0px black", borderBottom: "1px solid black" }}>
@@ -15,38 +15,27 @@ export const Header = () => {
             </BoxCentered>
 
             <BoxCentered css={{ background: 'rgb(63 149 57)', gap: "25px", paddingRight: "20px", justifyContent: 'space-evenly', boxShadow: "11px 1px 8px 0px black", borderBottom: "1px solid black" }}>
-
-                <Link href="/create" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
-                    Create
-                </Link>
-
-                <Link href="/execute" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
-                    Execute
-                </Link>
-
-                <Link href="/transfer" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
-                    Transfer
-                </Link>
-
-                <Link href="/update-threshold" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
-                    Threshold
-                </Link>
-
-                <Link href="/update-weight" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
-                    Weight
-                </Link>
-
-                <Link href="/hash" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
-                    Hash
-                </Link>
-
-                <Link href="/view" css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
-                    View
-                </Link>
-
+                <LinkComponent text="create" />
+                <LinkComponent text="execute" />
+                <LinkComponent text="transfer" />
+                <LinkComponent text="threshold" />
+                <LinkComponent text="weight" />
+                <LinkComponent text="hash" />
+                <LinkComponent text="view" />
                 <WalletState />
-
             </BoxCentered>
         </Flex>
+    );
+}
+
+interface LinkInput {
+    text: string
+}
+
+function LinkComponent( { text }: LinkInput) {
+    return (
+        <Link href={`/${text}`} css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
+            {text[0].toUpperCase() + text.slice(1)}
+        </Link>
     );
 }

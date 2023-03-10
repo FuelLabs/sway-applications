@@ -1,5 +1,5 @@
 import { BoxCentered, Button, Heading, Stack, toast } from "@fuel-ui/react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/components/signature";
 import { InputFieldComponent } from "../../common/components/input_field";
@@ -10,6 +10,7 @@ import { validateOptionalData } from "../../common/utils/validate_optional_data"
 import { validateAddress } from "../../common/utils/validate_address";
 import { SignatureButtonComponent } from "../../common/components/signature_buttons";
 import { SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
+import { useIsConnected } from "../../core/hooks/useIsConnected";
 
 export function WeightPage() {
     const [address, setAddress] = useState("")
@@ -24,6 +25,7 @@ export function WeightPage() {
 
     const [optionalData, setOptionalData] = useState(false)
     const { contract, isLoading, isError } = useContract()
+    const [isConnected] = useIsConnected();
 
     async function executeWeight() {
         let { address: userAddress, isError } = validateAddress(address);
@@ -41,7 +43,7 @@ export function WeightPage() {
             await contract!.functions.set_weight(validatedData, signatures, user).call();
             toast.success("Updated user weight!", { duration: 10000 })
         } catch (err) {
-            toast.error("I don't know about that transfer chief", { duration: 10000 });
+            toast.error("I tried but today is just not your day...", { duration: 10000 });
         }
     }
 
@@ -82,7 +84,7 @@ export function WeightPage() {
 
                 {
                     signatures.map((signature, index) => {
-                        return <SignatureComponent handler={updateSignature} index={index+1} />;
+                        return <SignatureComponent handler={updateSignature} index={index} />;
                     })
                 }
 
@@ -93,6 +95,7 @@ export function WeightPage() {
                     onPress={executeWeight}
                     size="lg"
                     variant="solid"
+                    isDisabled={!isConnected}
                     css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}
                 >
                     Set weight

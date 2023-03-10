@@ -6,6 +6,7 @@ import { InputFieldComponent } from "../../common/components/input_field";
 import { InputNumberComponent } from "../../common/components/input_number";
 import { validateOptionalData } from "../../common/utils/validate_optional_data";
 import { validateAddress } from "../../common/utils/validate_address";
+import { useIsConnected } from "../../core/hooks/useIsConnected";
 
 interface ComponentInput {
     optionalData: boolean,
@@ -18,13 +19,21 @@ export function WeightHashComponent( { optionalData }: ComponentInput ) {
     const [data, setData] = useState("")
     
     const { contract, isLoading, isError } = useContract()
+    const [isConnected] = useIsConnected();
 
     async function getHash() {
         let { address: userAddress, isError: error } = validateAddress(address);
         if (error) return;
 
-        const { validatedData, isError } = validateOptionalData(data);
-        if (isError) return;
+        let validatedData: string | undefined;
+        
+        if (optionalData) {
+            validatedData = undefined;
+        } else {
+            const { validatedData: optData, isError } = validateOptionalData(data);
+            if (isError) return;
+            validatedData = optData;
+        }
 
         let user: UserInput = {
             address: userAddress,
@@ -57,6 +66,7 @@ export function WeightHashComponent( { optionalData }: ComponentInput ) {
                     onPress={getHash}
                     size="lg"
                     variant="solid"
+                    isDisabled={!isConnected}
                     css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}
                 >
                     Create hash

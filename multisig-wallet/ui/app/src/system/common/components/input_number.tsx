@@ -1,4 +1,5 @@
 import { Input, Text } from "@fuel-ui/react";
+import { useIsConnected } from "../../core/hooks/useIsConnected";
 
 interface InputNumberInput {
     onChange: (value: number) => void,
@@ -7,10 +8,12 @@ interface InputNumberInput {
 }
 
 export const InputNumberComponent = ({ onChange, placeholder, text }: InputNumberInput) => {
+    const [isConnected] = useIsConnected();
+
     return (
         <>
             <Text color="blackA12">{text}</Text>
-            <Input size="lg">
+            <Input isDisabled={!isConnected} size="lg">
                 <Input.Number onChange={(event) => onChange(Number(event.target.value))} placeholder={placeholder} />
             </Input>
         </>

@@ -4,6 +4,7 @@ import { useFuel } from "../hooks";
 
 export const WalletState = () => {
   const [connected, setConnection] = useState("Connect")
+  // TODO: how do I get this to work?
   const fuel = useFuel()
 
   useEffect(() => {

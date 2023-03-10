@@ -1,6 +1,5 @@
 import { Stack } from "@fuel-ui/react";
 import type { ReactNode } from "react";
-
 import { Header } from "./header";
 
 type LayoutProps = {

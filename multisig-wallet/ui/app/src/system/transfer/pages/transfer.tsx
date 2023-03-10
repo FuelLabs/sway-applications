@@ -5,13 +5,13 @@ import { SignatureComponent } from "../../common/components/signature";
 import { InputFieldComponent } from "../../common/components/input_field";
 import { InputNumberComponent } from "../../common/components/input_number";
 import { ContractIdInput, IdentityInput } from "../../../contracts/MultisigContractAbi";
-import { OptionalCheckBoxComponent } from "../../common/components/optional_data_checkbox";
 import { RadioGroupComponent } from "../../common/components/radio_group";
 import { validateData } from "../../common/utils/validate_data";
 import { validateAddress } from "../../common/utils/validate_address";
 import { validateContractId } from "../../common/utils/validate_contract_id";
 import { SignatureButtonComponent } from "../../common/components/signature_buttons";
 import { SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
+import { useIsConnected } from "../../core/hooks/useIsConnected";
 
 export function TransferPage() {
     const [address, setAddress] = useState("")
@@ -26,8 +26,8 @@ export function TransferPage() {
     const [data, setData] = useState("")
 
     const [recipient, setRecipient] = useState("address")
-    const [optionalData, setOptionalData] = useState(false)
     const { contract, isLoading, isError } = useContract()
+    const [isConnected] = useIsConnected();
 
     async function transfer() {
         let identity: IdentityInput;
@@ -56,7 +56,7 @@ export function TransferPage() {
             await contract!.functions.transfer(assetId, validatedData, signatures, identity, assetAmount).call();
             toast.success("Transfer complete!", { duration: 10000 });
         } catch (err) {
-            toast.error("I don't know about that transfer chief", { duration: 10000 });
+            toast.error("Captain, that didn't go as planned", { duration: 10000 });
         }
     }
 
@@ -99,24 +99,24 @@ export function TransferPage() {
 
                 {
                     signatures.map((signature, index) => {
-                        return <SignatureComponent handler={updateSignature} index={index+1} />;
+                        return <SignatureComponent handler={updateSignature} index={index} />;
                     })
                 }
 
-                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." />}
+                <InputFieldComponent onChange={setData} text="Data" placeholder="0x252afeeb6e..." />
 
                 <Button
                     color="accent"
                     onPress={transfer}
                     size="lg"
                     variant="solid"
+                    isDisabled={!isConnected}
                     css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}
                 >
                     Transfer
                 </Button>
 
                 <SignatureButtonComponent addHandler={addSignature} removeHandler={removeSignature}/>
-                <OptionalCheckBoxComponent handler={setOptionalData} optionalData={optionalData} />
                 <RadioGroupComponent handler={setRecipient} />
             </Stack>
         </BoxCentered>

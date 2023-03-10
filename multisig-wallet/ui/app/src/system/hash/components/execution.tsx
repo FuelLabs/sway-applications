@@ -7,19 +7,20 @@ import { InputNumberComponent } from "../../common/components/input_number";
 import { validateData } from "../../common/utils/validate_data";
 import { validateAddress } from "../../common/utils/validate_address";
 import { validateContractId } from "../../common/utils/validate_contract_id";
+import { useIsConnected } from "../../core/hooks/useIsConnected";
 
 interface ComponentInput {
-    optionalData: boolean,
     recipient: string
 }
 
-export function ExecuteHashComponent( { optionalData, recipient }: ComponentInput ) {
+export function ExecuteHashComponent( { recipient }: ComponentInput ) {
     const [address, setAddress] = useState("")
     const [assetAmount, setAssetAmount] = useState(0)
     const [nonce, setNonce] = useState(0)
     const [data, setData] = useState("")
     
     const { contract, isLoading, isError } = useContract()
+    const [isConnected] = useIsConnected();
 
     async function getHash() {
         let identity: IdentityInput;
@@ -57,14 +58,14 @@ export function ExecuteHashComponent( { optionalData, recipient }: ComponentInpu
                 <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." />
                 <InputNumberComponent onChange={setAssetAmount} text="Asset amount" placeholder="1.0" />
                 <InputNumberComponent onChange={setNonce} text="Nonce" placeholder="3" />
-
-                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." />}
+                <InputFieldComponent onChange={setData} text="Data" placeholder="0x252afeeb6e..." />
 
                 <Button
                     color="accent"
                     onPress={getHash}
                     size="lg"
                     variant="solid"
+                    isDisabled={!isConnected}
                     css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}
                 >
                     Create hash

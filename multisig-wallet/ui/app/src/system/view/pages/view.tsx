@@ -3,15 +3,18 @@ import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { ContractIdInput } from "../../../contracts/MultisigContractAbi";
 import { InputFieldComponent } from "../../common/components/input_field";
+import { ButtonComponent } from "../../common/components/button";
 import { validateAddress } from "../../common/utils/validate_address";
 import { validateContractId } from "../../common/utils/validate_contract_id";
+import { useIsConnected } from "../../core/hooks/useIsConnected";
 
 export function ViewPage() {
     const [address, setAddress] = useState("")
     const [asset, setAsset] = useState("")
 
     const { contract, isLoading, isError } = useContract()
-    
+    const [isConnected] = useIsConnected();
+
     async function getBalance() {
         let { address: userAsset, isError } = validateContractId(asset);
         if (isError) return;
@@ -58,6 +61,15 @@ export function ViewPage() {
         }
     }
 
+    async function cancelTransaction() {
+        try {
+            await contract!.functions.cancel_transaction().call();
+            toast.success("Cancelled transaction.", { duration: 10000 });
+        } catch (err) {
+            toast.error("I don't know how to tell you this but there was a problem...", { duration: 10000 });
+        }
+    }
+
     return (
         <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
             <Stack css={{ minWidth: "100%" }}>
@@ -67,16 +79,7 @@ export function ViewPage() {
                     </Heading>
 
                     <InputFieldComponent onChange={setAddress} text="User address" placeholder="0x80d5e8c2be..." />
-
-                    <Button
-                        color="accent"
-                        onPress={getWeight}
-                        size="lg"
-                        variant="solid"
-                        css={{ boxShadow: "0px 0px 1px 1px" }}
-                    >
-                        Get weight
-                    </Button>
+                    <ButtonComponent handler={getWeight} isConnected={isConnected} text="Get weight" />
                 </Stack>
 
                 <Stack css={{ minWidth: "100%", marginTop: "$10" }}>
@@ -85,16 +88,7 @@ export function ViewPage() {
                     </Heading>
 
                     <InputFieldComponent onChange={setAsset} text="Asset id" placeholder="0x0000000000..." />
-
-                    <Button
-                        color="accent"
-                        onPress={getBalance}
-                        size="lg"
-                        variant="solid"
-                        css={{ boxShadow: "0px 0px 1px 1px" }}
-                    >
-                        Get balance
-                    </Button>
+                    <ButtonComponent handler={getBalance} isConnected={isConnected} text="Get balance" />
                 </Stack>
 
                 <Flex gap="$2" css={{ minWidth: "100%", marginTop: "$10" }}>
@@ -103,15 +97,7 @@ export function ViewPage() {
                             Check nonce
                         </Heading>
 
-                        <Button
-                            color="accent"
-                            onPress={getNonce}
-                            size="lg"
-                            variant="solid"
-                            css={{ boxShadow: "0px 0px 1px 1px" }}
-                        >
-                            Get nonce
-                        </Button>
+                        <ButtonComponent handler={getNonce} isConnected={isConnected} text="Get nonce" />
                     </Stack>
 
                     <Stack css={{ minWidth: "50%" }}>
@@ -119,17 +105,17 @@ export function ViewPage() {
                             Check threshold
                         </Heading>
 
-                        <Button
-                            color="accent"
-                            onPress={getThreshold}
-                            size="lg"
-                            variant="solid"
-                            css={{ boxShadow: "0px 0px 1px 1px" }}
-                        >
-                            Get threshold
-                        </Button>
+                        <ButtonComponent handler={getThreshold} isConnected={isConnected} text="Get threshold" />
                     </Stack>
                 </Flex>
+
+                <Stack css={{ minWidth: "100%", marginTop: "$24" }}>
+                    <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1" }}>
+                        Cancel next transaction
+                    </Heading>
+
+                    <ButtonComponent handler={cancelTransaction} isConnected={isConnected} text="Cancel transaction" />
+                </Stack>
             </Stack>
         </BoxCentered>
     );
