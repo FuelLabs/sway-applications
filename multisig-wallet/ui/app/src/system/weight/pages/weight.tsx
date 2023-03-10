@@ -1,5 +1,5 @@
 import { BoxCentered, Button, Heading, Stack, toast } from "@fuel-ui/react";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/components/signature";
 import { InputFieldComponent } from "../../common/components/input_field";
