@@ -6,7 +6,7 @@ abi CallableContract {
     #[storage(write)]
     fn change_mapping_without_value(address: Address, value: u64);
 
-    //payable
+    #[payable]
     #[storage(write)]
     fn change_mapping_with_value(address: Address, value: u64);
 
@@ -28,7 +28,7 @@ impl CallableContract for Contract {
         storage.counter_map.insert(address, value);
     }
 
-    //payable
+    #[payable]
     #[storage(write)]
     fn change_mapping_with_value(address: Address, value: u64) {
         storage.counter_map.insert(address, value);
