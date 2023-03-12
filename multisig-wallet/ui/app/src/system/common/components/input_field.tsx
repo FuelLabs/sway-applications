@@ -1,5 +1,5 @@
 import { Input, Text } from "@fuel-ui/react";
-import { useIsConnected } from "../../core/hooks/useIsConnected";
+import { useIsConnected } from "../../core/hooks";
 
 interface InputFieldInput {
     onChange: (address: string) => void,

@@ -1,10 +1,8 @@
 import { Button, Heading, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
-import { useContract } from "../../core/hooks";
-import { InputFieldComponent } from "../../common/components/input_field";
-import { InputNumberComponent } from "../../common/components/input_number";
-import { validateData } from "../../common/utils/validate_data";
-import { useIsConnected } from "../../core/hooks/useIsConnected";
+import { useContract, useIsConnected } from "../../core/hooks";
+import { InputFieldComponent, InputNumberComponent } from "../../common/components";
+import { validateData } from "../../common/utils";
 
 export function ThresholdHashComponent() {
     const [threshold, setThreshold] = useState(0)

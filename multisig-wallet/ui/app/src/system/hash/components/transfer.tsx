@@ -1,13 +1,9 @@
 import { Button, Heading, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
-import { useContract } from "../../core/hooks";
+import { useContract, useIsConnected } from "../../core/hooks";
+import { InputFieldComponent, InputNumberComponent } from "../../common/components";
+import { validateAddress, validateContractId, validateData } from "../../common/utils";
 import { IdentityInput } from "../../../contracts/MultisigContractAbi";
-import { InputFieldComponent } from "../../common/components/input_field";
-import { InputNumberComponent } from "../../common/components/input_number";
-import { validateData } from "../../common/utils/validate_data";
-import { validateAddress } from "../../common/utils/validate_address";
-import { validateContractId } from "../../common/utils/validate_contract_id";
-import { useIsConnected } from "../../core/hooks/useIsConnected";
 
 interface ComponentInput {
     recipient: string

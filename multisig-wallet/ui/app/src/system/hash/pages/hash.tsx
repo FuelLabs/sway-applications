@@ -1,10 +1,7 @@
 import { BoxCentered, Flex, Stack } from "@fuel-ui/react";
 import { useState } from "react";
-import { ExecuteHashComponent } from "../components/execution";
-import { WeightHashComponent } from "../components/weight";
-import { TransferHashComponent } from "../components/transfer";
-import { ThresholdHashComponent } from "../components/threshold";
-import { RadioGroupComponent } from "../../common/components/radio_group";
+import { ExecuteHashComponent, ThresholdHashComponent, TransferHashComponent, WeightHashComponent } from "../components";
+import { RadioGroupComponent } from "../../common/components";
 
 export function HashPage() {
     const [recipient, setRecipient] = useState("address")

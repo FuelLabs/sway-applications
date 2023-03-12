@@ -1,15 +1,9 @@
 import { BoxCentered, Button, Heading, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
-import { useContract } from "../../core/hooks";
-import { SignatureComponent } from "../../common/components/signature";
-import { InputFieldComponent } from "../../common/components/input_field";
-import { InputNumberComponent } from "../../common/components/input_number";
-import { UserInput } from "../../../contracts/MultisigContractAbi";
-import { validateData } from "../../common/utils/validate_data";
-import { validateAddress } from "../../common/utils/validate_address";
-import { SignatureButtonComponent } from "../../common/components/signature_buttons";
-import { SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
-import { useIsConnected } from "../../core/hooks/useIsConnected";
+import { useContract, useIsConnected,  } from "../../core/hooks";
+import { InputFieldComponent, InputNumberComponent, SignatureButtonComponent, SignatureComponent } from "../../common/components";
+import { validateAddress, validateData } from "../../common/utils";
+import { SignatureInfoInput, UserInput } from "../../../contracts/MultisigContractAbi";
 
 export function WeightPage() {
     const [address, setAddress] = useState("")

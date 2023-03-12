@@ -1,13 +1,9 @@
 import { BoxCentered, Flex, Heading, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
-import { useContract } from "../../core/hooks";
+import { useContract, useFuel, useIsConnected } from "../../core/hooks";
 import { ContractIdInput } from "../../../contracts/MultisigContractAbi";
-import { InputFieldComponent } from "../../common/components/input_field";
-import { ButtonComponent } from "../../common/components/button";
-import { validateAddress } from "../../common/utils/validate_address";
-import { validateContractId } from "../../common/utils/validate_contract_id";
-import { useIsConnected } from "../../core/hooks/useIsConnected";
-import { useFuel } from "../../core/hooks";
+import { ButtonComponent, InputFieldComponent } from "../../common/components";
+import { validateAddress, validateContractId } from "../../common/utils";
 
 export function UtilsPage() {
     const [address, setAddress] = useState("")

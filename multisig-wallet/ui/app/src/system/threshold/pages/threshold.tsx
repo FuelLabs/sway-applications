@@ -1,13 +1,9 @@
 import { BoxCentered, Button, Heading, toast, Stack } from "@fuel-ui/react";
 import { useState } from "react";
-import { useContract } from "../../core/hooks";
-import { SignatureComponent } from "../../common/components/signature";
-import { InputFieldComponent } from "../../common/components/input_field";
-import { InputNumberComponent } from "../../common/components/input_number";
+import { useContract, useIsConnected } from "../../core/hooks";
+import { InputFieldComponent, InputNumberComponent, SignatureButtonComponent, SignatureComponent } from "../../common/components";
 import { validateData } from "../../common/utils/validate_data";
-import { SignatureButtonComponent } from "../../common/components/signature_buttons";
 import { SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
-import { useIsConnected } from "../../core/hooks/useIsConnected";
 
 export function ThresholdPage() {
     const [threshold, setThreshold] = useState(0)

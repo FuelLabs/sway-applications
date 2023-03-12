@@ -1,17 +1,9 @@
 import { BoxCentered, Button, Heading, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
-import { useContract } from "../../core/hooks";
-import { SignatureComponent } from "../../common/components/signature";
-import { InputFieldComponent } from "../../common/components/input_field";
-import { InputNumberComponent } from "../../common/components/input_number";
-import { ContractIdInput, IdentityInput } from "../../../contracts/MultisigContractAbi";
-import { RadioGroupComponent } from "../../common/components/radio_group";
-import { validateData } from "../../common/utils/validate_data";
-import { validateAddress } from "../../common/utils/validate_address";
-import { validateContractId } from "../../common/utils/validate_contract_id";
-import { SignatureButtonComponent } from "../../common/components/signature_buttons";
-import { SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
-import { useIsConnected } from "../../core/hooks/useIsConnected";
+import { useContract, useIsConnected } from "../../core/hooks";
+import { InputFieldComponent, InputNumberComponent, RadioGroupComponent, SignatureButtonComponent, SignatureComponent } from "../../common/components"
+import { validateAddress, validateContractId, validateData } from "../../common/utils";
+import { ContractIdInput, IdentityInput, SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
 
 export function TransferPage() {
     const [address, setAddress] = useState("")

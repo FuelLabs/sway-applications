@@ -1,5 +1,5 @@
 import { Input, Stack, Text } from "@fuel-ui/react";
-import { useIsConnected } from "../../core/hooks/useIsConnected";
+import { useIsConnected } from "../../core/hooks";
 
 interface SignatureInput {
     handler: (index: number, signature: string) => void,
