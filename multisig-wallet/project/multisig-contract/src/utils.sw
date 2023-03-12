@@ -1,6 +1,7 @@
 library utils;
 
-dep data_structures;
+dep data_structures/hashing;
+dep data_structures/signatures;
 
 use std::{
     bytes::Bytes,
@@ -13,7 +14,8 @@ use std::{
     vm::evm::ecr::ec_recover_evm_address,
 };
 
-use data_structures::{MessageFormat, MessagePrefix, SignatureInfo, Transaction, WalletType};
+use hashing::Transaction;
+use signatures::{MessageFormat, MessagePrefix, SignatureInfo, WalletType};
 
 const EIP191_INITIAL_BYTE = 0x19u8;
 const EIP191_VERSION_BYTE = 0x45u8;
