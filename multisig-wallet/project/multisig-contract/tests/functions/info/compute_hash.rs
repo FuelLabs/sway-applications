@@ -35,10 +35,21 @@ mod success {
             .resolve(0);
         let expected_hash = Hasher::hash(encoded_threshold_struct);
 
-        let response = compute_hash(&deployer.contract, TypeToHash::Threshold(threshold))
+        let response = compute_hash(&deployer.contract, TypeToHash::Threshold(threshold.clone()))
             .await
             .value;
 
         assert_eq!(Bits256(expected_hash.into()), response);
+
+        println!(
+            "Estimated transaction cost: {:?}",
+            &deployer
+                .contract
+                .methods()
+                .compute_hash(TypeToHash::Threshold(threshold))
+                .estimate_transaction_cost(Some(0.0))
+                .await
+                .unwrap()
+        );
     }
 }
