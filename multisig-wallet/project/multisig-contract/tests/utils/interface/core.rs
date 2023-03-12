@@ -71,3 +71,16 @@ pub async fn execute_transaction(
             .unwrap())
     }
 }
+
+pub async fn set_threshold(
+    contract: &MultiSig,
+    signatures_data: Vec<SignatureInfo>,
+    threshold: u64,
+) -> FuelCallResponse<()> {
+    contract
+        .methods()
+        .set_threshold(signatures_data, threshold)
+        .call()
+        .await
+        .unwrap()
+}
