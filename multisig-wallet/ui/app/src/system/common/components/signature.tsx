@@ -13,7 +13,7 @@ export const SignatureComponent = ({ handler, index }: SignatureInput) => {
         <Stack css={{ width: "100%" }}>
             <Text color="blackA12">Signature: {index+1}</Text>
             <Input isDisabled={!isConnected} size="lg">
-                <Input.Field onChange={(event) => handler(index, event.target.value)} placeholder="9c3f5ae085a4..." />
+                <Input.Field onChange={(event) => handler(index, event.target.value)} placeholder="0x7b3f1693f3..." />
             </Input>
         </Stack>
     );

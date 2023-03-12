@@ -4,9 +4,8 @@ import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/components/signature";
 import { InputFieldComponent } from "../../common/components/input_field";
 import { InputNumberComponent } from "../../common/components/input_number";
-import { OptionalCheckBoxComponent } from "../../common/components/optional_data_checkbox";
 import { UserInput } from "../../../contracts/MultisigContractAbi";
-import { validateOptionalData } from "../../common/utils/validate_optional_data";
+import { validateData } from "../../common/utils/validate_data";
 import { validateAddress } from "../../common/utils/validate_address";
 import { SignatureButtonComponent } from "../../common/components/signature_buttons";
 import { SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
@@ -15,15 +14,14 @@ import { useIsConnected } from "../../core/hooks/useIsConnected";
 export function WeightPage() {
     const [address, setAddress] = useState("")
     const [weight, setWeight] = useState(0)
+    const [data, setData] = useState("")
     const [signatures, setSignatures] = useState<SignatureInfoInput[]>([{ 
         message_format: { None: [] }, 
         message_prefix: { None: [] }, 
         signature: { bytes: ["", ""] }, 
         wallet_type: { Fuel: [] }
     }])
-    const [data, setData] = useState("")
 
-    const [optionalData, setOptionalData] = useState(false)
     const { contract, isLoading, isError } = useContract()
     const [isConnected] = useIsConnected();
 
@@ -31,20 +29,26 @@ export function WeightPage() {
         let { address: userAddress, isError } = validateAddress(address);
         if (isError) return;
 
-        const { validatedData, isError: error } = validateOptionalData(data);
-        if (error) return;
+        const { data: validatedData, isError: err } = validateData(data);
+        if (err) return;
 
         let user: UserInput = {
             address: userAddress,
             weight: weight
         }
 
-        try {
-            await contract!.functions.set_weight(validatedData, signatures, user).call();
-            toast.success("Updated user weight!", { duration: 10000 })
-        } catch (err) {
-            toast.error("I tried but today is just not your day...", { duration: 10000 });
-        }
+        // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
+        //       This is here to catch the error in the console rather than hide it via toast atm
+        //       Once stable go back to toast
+        await contract!.functions.set_weight(validatedData, signatures, user).call();
+        toast.success("Updated user weight!", { duration: 10000 })
+
+        // try {
+        //     await contract!.functions.set_weight(validatedData, signatures, user).call();
+        //     toast.success("Updated user weight!", { duration: 10000 })
+        // } catch (err) {
+        //     toast.error("I tried but today is just not your day...", { duration: 10000 });
+        // }
     }
 
     async function updateSignature(index: number, signature: string) {
@@ -81,14 +85,13 @@ export function WeightPage() {
 
                 <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." />
                 <InputNumberComponent onChange={setWeight} text="New weight" placeholder="2" />
+                <InputFieldComponent onChange={setData} text="Data to sign" placeholder="0x252afeeb6e..." />
 
                 {
                     signatures.map((signature, index) => {
                         return <SignatureComponent handler={updateSignature} index={index} />;
                     })
                 }
-
-                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." />}
 
                 <Button
                     color="accent"
@@ -102,7 +105,6 @@ export function WeightPage() {
                 </Button>
 
                 <SignatureButtonComponent addHandler={addSignature} removeHandler={removeSignature}/>
-                <OptionalCheckBoxComponent handler={setOptionalData} optionalData={optionalData} />
             </Stack>
         </BoxCentered>
     );

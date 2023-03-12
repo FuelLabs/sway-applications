@@ -58,7 +58,7 @@ export function ExecuteHashComponent( { recipient }: ComponentInput ) {
                 <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." />
                 <InputNumberComponent onChange={setAssetAmount} text="Asset amount" placeholder="1.0" />
                 <InputNumberComponent onChange={setNonce} text="Nonce" placeholder="3" />
-                <InputFieldComponent onChange={setData} text="Data" placeholder="0x252afeeb6e..." />
+                <InputFieldComponent onChange={setData} text="Data to sign" placeholder="0x252afeeb6e..." />
 
                 <Button
                     color="accent"

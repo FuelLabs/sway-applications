@@ -1,4 +1,4 @@
-import { BoxCentered, Button, Flex, Heading, Stack, toast } from "@fuel-ui/react";
+import { BoxCentered, Flex, Heading, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { ContractIdInput } from "../../../contracts/MultisigContractAbi";
@@ -7,12 +7,15 @@ import { ButtonComponent } from "../../common/components/button";
 import { validateAddress } from "../../common/utils/validate_address";
 import { validateContractId } from "../../common/utils/validate_contract_id";
 import { useIsConnected } from "../../core/hooks/useIsConnected";
+import { useFuel } from "../../core/hooks";
 
-export function ViewPage() {
+export function UtilsPage() {
     const [address, setAddress] = useState("")
     const [asset, setAsset] = useState("")
+    const [data, setSignature] = useState("")
 
     const { contract, isLoading, isError } = useContract()
+    const fuel = useFuel();
     const [isConnected] = useIsConnected();
 
     async function getBalance() {
@@ -70,8 +73,15 @@ export function ViewPage() {
         }
     }
 
+    async function signData() {
+        const address = await fuel.currentAccount();
+        const wallet = await fuel.getWallet(address);
+        const signature = await wallet.signMessage(data);
+        toast.success(`Signature: ${signature}`, { duration: 10000 });
+    }
+
     return (
-        <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
+        <BoxCentered css={{ marginTop: "5%", width: "30%" }}>
             <Stack css={{ minWidth: "100%" }}>
                 <Stack>
                     <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1" }}>
@@ -89,6 +99,15 @@ export function ViewPage() {
 
                     <InputFieldComponent onChange={setAsset} text="Asset id" placeholder="0x0000000000..." />
                     <ButtonComponent handler={getBalance} isConnected={isConnected} text="Get balance" />
+                </Stack>
+
+                <Stack css={{ minWidth: "100%", marginTop: "$10" }}>
+                    <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", color: "$accent1" }}>
+                        Sign data
+                    </Heading>
+
+                    <InputFieldComponent onChange={setSignature} text="Data to sign" placeholder="0x252afeeb6e..." />
+                    <ButtonComponent handler={signData} isConnected={isConnected} text="Sign data" />
                 </Stack>
 
                 <Flex gap="$2" css={{ minWidth: "100%", marginTop: "$10" }}>

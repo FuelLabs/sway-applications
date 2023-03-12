@@ -3,14 +3,10 @@ import { useState } from "react";
 import { useContract } from "../../core/hooks";
 import { InputFieldComponent } from "../../common/components/input_field";
 import { InputNumberComponent } from "../../common/components/input_number";
-import { validateOptionalData } from "../../common/utils/validate_optional_data";
+import { validateData } from "../../common/utils/validate_data";
 import { useIsConnected } from "../../core/hooks/useIsConnected";
 
-interface ComponentInput {
-    optionalData: boolean,
-}
-
-export function ThresholdHashComponent( { optionalData }: ComponentInput ) {
+export function ThresholdHashComponent() {
     const [threshold, setThreshold] = useState(0)
     const [nonce, setNonce] = useState(0)
     const [data, setData] = useState("")
@@ -19,15 +15,8 @@ export function ThresholdHashComponent( { optionalData }: ComponentInput ) {
     const [isConnected] = useIsConnected();
 
     async function getHash() {
-        let validatedData: string | undefined;
-        
-        if (optionalData) {
-            validatedData = undefined;
-        } else {
-            const { validatedData: optData, isError } = validateOptionalData(data);
-            if (isError) return;
-            validatedData = optData;
-        }
+        const { data: validatedData, isError } = validateData(data);
+        if (isError) return;
         
         try {
             const { value } = await contract!.functions.threshold_hash(validatedData, nonce, threshold).get();
@@ -46,8 +35,7 @@ export function ThresholdHashComponent( { optionalData }: ComponentInput ) {
 
                 <InputNumberComponent onChange={setThreshold} text="Threshold" placeholder="8" />
                 <InputNumberComponent onChange={setNonce} text="Nonce" placeholder="3" />
-
-                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." />}
+                <InputFieldComponent onChange={setData} text="Data to sign" placeholder="0x252afeeb6e..." />
 
                 <Button
                     color="accent"

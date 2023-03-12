@@ -4,28 +4,26 @@ import { useContract } from "../../core/hooks";
 import { SignatureComponent } from "../../common/components/signature";
 import { InputFieldComponent } from "../../common/components/input_field";
 import { InputNumberComponent } from "../../common/components/input_number";
-import { OptionalCheckBoxComponent } from "../../common/components/optional_data_checkbox";
-import { validateOptionalData } from "../../common/utils/validate_optional_data";
+import { validateData } from "../../common/utils/validate_data";
 import { SignatureButtonComponent } from "../../common/components/signature_buttons";
 import { SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
 import { useIsConnected } from "../../core/hooks/useIsConnected";
 
 export function ThresholdPage() {
     const [threshold, setThreshold] = useState(0)
+    const [data, setData] = useState("")
     const [signatures, setSignatures] = useState<SignatureInfoInput[]>([{ 
         message_format: { None: [] }, 
         message_prefix: { None: [] }, 
         signature: { bytes: ["", ""] }, 
         wallet_type: { Fuel: [] }
     }])
-    const [data, setData] = useState("")
 
-    const [optionalData, setOptionalData] = useState(false)
     const { contract, isLoading, isError } = useContract()
     const [isConnected] = useIsConnected();
 
     async function executeThreshold() {
-        const { validatedData, isError } = validateOptionalData(data);
+        const { data: validatedData, isError } = validateData(data);
         if (isError) return;
 
         try {
@@ -69,14 +67,13 @@ export function ThresholdPage() {
                 </Heading>
 
                 <InputNumberComponent onChange={setThreshold} text="Threshold" placeholder="8" />
-
+                <InputFieldComponent onChange={setData} text="Data to sign" placeholder="0x252afeeb6e..." />
+                
                 {
                     signatures.map((signature, index) => {
                         return <SignatureComponent handler={updateSignature} index={index} />;
                     })
                 }
-
-                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." />}
 
                 <Button
                     color="accent"
@@ -90,7 +87,6 @@ export function ThresholdPage() {
                 </Button>
 
                 <SignatureButtonComponent addHandler={addSignature} removeHandler={removeSignature}/>
-                <OptionalCheckBoxComponent handler={setOptionalData} optionalData={optionalData} />
             </Stack>
         </BoxCentered>
     );

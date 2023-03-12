@@ -4,15 +4,11 @@ import { useContract } from "../../core/hooks";
 import { UserInput } from "../../../contracts/MultisigContractAbi";
 import { InputFieldComponent } from "../../common/components/input_field";
 import { InputNumberComponent } from "../../common/components/input_number";
-import { validateOptionalData } from "../../common/utils/validate_optional_data";
+import { validateData } from "../../common/utils/validate_data";
 import { validateAddress } from "../../common/utils/validate_address";
 import { useIsConnected } from "../../core/hooks/useIsConnected";
 
-interface ComponentInput {
-    optionalData: boolean,
-}
-
-export function WeightHashComponent( { optionalData }: ComponentInput ) {
+export function WeightHashComponent() {
     const [address, setAddress] = useState("")
     const [weight, setWeight] = useState(0)
     const [nonce, setNonce] = useState(0)
@@ -25,15 +21,8 @@ export function WeightHashComponent( { optionalData }: ComponentInput ) {
         let { address: userAddress, isError: error } = validateAddress(address);
         if (error) return;
 
-        let validatedData: string | undefined;
-        
-        if (optionalData) {
-            validatedData = undefined;
-        } else {
-            const { validatedData: optData, isError } = validateOptionalData(data);
-            if (isError) return;
-            validatedData = optData;
-        }
+        const { data: validatedData, isError } = validateData(data);
+        if (isError) return;
 
         let user: UserInput = {
             address: userAddress,
@@ -58,8 +47,7 @@ export function WeightHashComponent( { optionalData }: ComponentInput ) {
                 <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." />
                 <InputNumberComponent onChange={setWeight} text="New weight" placeholder="2" />
                 <InputNumberComponent onChange={setNonce} text="Nonce" placeholder="3" />
-
-                {optionalData && <InputFieldComponent onChange={setData} text="Optional data" placeholder="0x252afeeb6e..." />}
+                <InputFieldComponent onChange={setData} text="Data to sign" placeholder="0x252afeeb6e..." />
 
                 <Button
                     color="accent"

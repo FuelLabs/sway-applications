@@ -21,7 +21,7 @@ export function Header() {
                 <LinkComponent text="threshold" />
                 <LinkComponent text="weight" />
                 <LinkComponent text="hash" />
-                <LinkComponent text="view" />
+                <LinkComponent text="utils" />
                 <WalletState />
             </BoxCentered>
         </Flex>

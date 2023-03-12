@@ -17,13 +17,13 @@ export function TransferPage() {
     const [address, setAddress] = useState("")
     const [asset, setAsset] = useState("")
     const [assetAmount, setAssetAmount] = useState(0)
+    const [data, setData] = useState("")
     const [signatures, setSignatures] = useState<SignatureInfoInput[]>([{ 
         message_format: { None: [] }, 
         message_prefix: { None: [] }, 
         signature: { bytes: ["", ""] }, 
         wallet_type: { Fuel: [] }
     }])
-    const [data, setData] = useState("")
 
     const [recipient, setRecipient] = useState("address")
     const { contract, isLoading, isError } = useContract()
@@ -96,14 +96,13 @@ export function TransferPage() {
                 <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." />
                 <InputFieldComponent onChange={setAsset} text="Asset id" placeholder="0x0000000000..." />
                 <InputNumberComponent onChange={setAssetAmount} text="Asset amount" placeholder="1.0" />
+                <InputFieldComponent onChange={setData} text="Data to sign" placeholder="0x252afeeb6e..." />
 
                 {
                     signatures.map((signature, index) => {
                         return <SignatureComponent handler={updateSignature} index={index} />;
                     })
                 }
-
-                <InputFieldComponent onChange={setData} text="Data" placeholder="0x252afeeb6e..." />
 
                 <Button
                     color="accent"
