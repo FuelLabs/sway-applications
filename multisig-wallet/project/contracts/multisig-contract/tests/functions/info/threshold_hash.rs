@@ -15,7 +15,7 @@ mod success {
 
     struct Threshold {
         contract_identifier: ContractId,
-        data: Option<Bits256>,
+        data: Bits256,
         nonce: u64,
         threshold: u64,
     }
@@ -33,7 +33,7 @@ mod success {
         // Recreate Threshold instance
         let tx = Threshold {
             contract_identifier: deployer.contract.get_contract_id().try_into().unwrap(),
-            data: Some(data),
+            data: data,
             nonce,
             threshold,
         };
@@ -48,7 +48,7 @@ mod success {
         let encoded_tx_struct = ABIEncoder::encode(&vec![tx_token]).unwrap().resolve(0);
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
-        let response = threshold_hash(&deployer.contract, Some(data), nonce, threshold)
+        let response = threshold_hash(&deployer.contract, data, nonce, threshold)
             .await
             .value;
 

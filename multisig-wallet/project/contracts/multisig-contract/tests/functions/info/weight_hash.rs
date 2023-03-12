@@ -15,7 +15,7 @@ mod success {
 
     struct Weight {
         contract_identifier: ContractId,
-        data: Option<Bits256>,
+        data: Bits256,
         nonce: u64,
         user: User,
     }
@@ -33,7 +33,7 @@ mod success {
         // Recreate Weight instance
         let tx = Weight {
             contract_identifier: deployer.contract.get_contract_id().try_into().unwrap(),
-            data: Some(data),
+            data,
             nonce,
             user: user.clone(),
         };
@@ -48,7 +48,7 @@ mod success {
         let encoded_tx_struct = ABIEncoder::encode(&vec![tx_token]).unwrap().resolve(0);
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
-        let response = weight_hash(&deployer.contract, Some(data), nonce, user)
+        let response = weight_hash(&deployer.contract, data, nonce, user)
             .await
             .value;
 

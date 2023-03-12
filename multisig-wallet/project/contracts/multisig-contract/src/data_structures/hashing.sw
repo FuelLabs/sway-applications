@@ -23,7 +23,7 @@ pub struct Threshold {
     /// instance of the multisig.
     contract_identifier: ContractId,
     /// Payload sent to destination  // TODO: change to Bytes when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723
-    data: Option<b256>,
+    data: b256,
     /// Value used to prevent double spending.
     nonce: u64,
     /// The number of approvals required to enable a transaction to be sent.
@@ -35,7 +35,7 @@ pub struct Weight {
     /// instance of the multisig.
     contract_identifier: ContractId,
     /// Payload sent to destination  // TODO: change to Bytes when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723
-    data: Option<b256>,
+    data: b256,
     /// Value used to prevent double spending.
     nonce: u64,
     /// The user of the multisig, who can sign transactions to add their approval.

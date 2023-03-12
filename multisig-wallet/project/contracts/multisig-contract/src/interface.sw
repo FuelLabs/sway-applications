@@ -66,7 +66,7 @@ abi MultiSignatureWallet {
     /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// * When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn set_threshold(data: Option<b256>, signatures: Vec<SignatureInfo>, threshold: u64);
+    fn set_threshold(data: b256, signatures: Vec<SignatureInfo>, threshold: u64);
 
     /// Changes the approval weights of a user in the contract.
     ///
@@ -83,7 +83,7 @@ abi MultiSignatureWallet {
     /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// * When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn set_weight(data: Option<b256>, signatures: Vec<SignatureInfo>, user: User);
+    fn set_weight(data: b256, signatures: Vec<SignatureInfo>, user: User);
 
     /// Transfers assets to outputs & contracts if the signatures meet the threshold requirement.
     ///
@@ -147,7 +147,7 @@ abi Info {
     /// * `data` - The data field of the transaction.
     /// * `nonce` - The nonce field of the transaction.
     /// * `threshold` - The number of approvals required to enable a transaction to be sent.
-    fn threshold_hash(data: Option<b256>, nonce: u64, threshold: u64) -> b256;
+    fn threshold_hash(data: b256, nonce: u64, threshold: u64) -> b256;
 
     /// Creates a hash which is used to make updates to the weight of a user.
     ///
@@ -156,5 +156,5 @@ abi Info {
     /// * `data` - The data field of the transaction.
     /// * `nonce` - The nonce field of the transaction.
     /// * `user` - The user of the multisig, who can sign transactions to add their approval.
-    fn weight_hash(data: Option<b256>, nonce: u64, user: User) -> b256;
+    fn weight_hash(data: b256, nonce: u64, user: User) -> b256;
 }

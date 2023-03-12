@@ -44,7 +44,7 @@ pub async fn transaction_hash(
 
 pub async fn threshold_hash(
     contract: &MultiSig,
-    data: Option<Bits256>,
+    data: Bits256,
     nonce: u64,
     threshold: u64,
 ) -> FuelCallResponse<Bits256> {
@@ -58,7 +58,7 @@ pub async fn threshold_hash(
 
 pub async fn weight_hash(
     contract: &MultiSig,
-    data: Option<Bits256>,
+    data: Bits256,
     nonce: u64,
     user: User,
 ) -> FuelCallResponse<Bits256> {

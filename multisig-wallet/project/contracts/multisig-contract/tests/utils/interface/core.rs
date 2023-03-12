@@ -37,7 +37,7 @@ pub async fn execute_transaction(
 
 pub async fn set_threshold(
     contract: &MultiSig,
-    data: Option<Bits256>,
+    data: Bits256,
     signatures_data: Vec<SignatureInfo>,
     threshold: u64,
 ) -> FuelCallResponse<()> {
@@ -51,7 +51,7 @@ pub async fn set_threshold(
 
 pub async fn set_weight(
     contract: &MultiSig,
-    data: Option<Bits256>,
+    data: Bits256,
     signatures_data: Vec<SignatureInfo>,
     user: User,
 ) -> FuelCallResponse<()> {

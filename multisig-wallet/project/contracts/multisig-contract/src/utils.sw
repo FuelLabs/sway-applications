@@ -34,7 +34,7 @@ pub fn hash_transaction(data: b256, nonce: u64, to: Identity, value: u64) -> b25
 }
 
 /// Takes in transaction data and hashes it into a unique transaction hash.
-pub fn hash_threshold(data: Option<b256>, nonce: u64, threshold: u64) -> b256 {
+pub fn hash_threshold(data: b256, nonce: u64, threshold: u64) -> b256 {
     sha256(Threshold {
         contract_identifier: contract_id(),
         data,
@@ -44,7 +44,7 @@ pub fn hash_threshold(data: Option<b256>, nonce: u64, threshold: u64) -> b256 {
 }
 
 /// Takes in transaction data and hashes it into a unique transaction hash.
-pub fn hash_weight(data: Option<b256>, nonce: u64, user: User) -> b256 {
+pub fn hash_weight(data: b256, nonce: u64, user: User) -> b256 {
     sha256(Weight {
         contract_identifier: contract_id(),
         data,

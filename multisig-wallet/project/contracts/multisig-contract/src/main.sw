@@ -94,11 +94,7 @@ impl MultiSignatureWallet for Contract {
     }
 
     #[storage(read, write)]
-    fn set_threshold(
-        data: Option<b256>,
-        signatures: Vec<SignatureInfo>,
-        threshold: u64,
-    ) {
+    fn set_threshold(data: b256, signatures: Vec<SignatureInfo>, threshold: u64) {
         require(storage.nonce != 0, InitError::NotInitialized);
         require(threshold != 0, InitError::ThresholdCannotBeZero);
         require(threshold <= storage.total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
@@ -120,11 +116,7 @@ impl MultiSignatureWallet for Contract {
     }
 
     #[storage(read, write)]
-    fn set_weight(
-        data: Option<b256>,
-        signatures: Vec<SignatureInfo>,
-        user: User,
-    ) {
+    fn set_weight(data: b256, signatures: Vec<SignatureInfo>, user: User) {
         require(storage.nonce != 0, InitError::NotInitialized);
 
         let transaction_hash = hash_weight(data, storage.nonce, user);
@@ -201,11 +193,11 @@ impl Info for Contract {
         hash_transaction(data, nonce, to, value)
     }
 
-    fn threshold_hash(data: Option<b256>, nonce: u64, threshold: u64) -> b256 {
+    fn threshold_hash(data: b256, nonce: u64, threshold: u64) -> b256 {
         hash_threshold(data, nonce, threshold)
     }
 
-    fn weight_hash(data: Option<b256>, nonce: u64, user: User) -> b256 {
+    fn weight_hash(data: b256, nonce: u64, user: User) -> b256 {
         hash_weight(data, nonce, user)
     }
 }
