@@ -13,7 +13,7 @@ export const SignatureButtonComponent = ({ addHandler, removeHandler }: Signatur
                 onPress={addHandler}
                 size="lg"
                 variant="solid"
-                css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
+                css={{ width: "50%", boxShadow: "0px 0px 3px 1px", fontWeight: "$semibold" }}
             >
                 Add signature
             </Button>
@@ -23,7 +23,7 @@ export const SignatureButtonComponent = ({ addHandler, removeHandler }: Signatur
                 onPress={removeHandler}
                 size="lg"
                 variant="solid"
-                css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
+                css={{ width: "50%", boxShadow: "0px 0px 3px 1px", fontWeight: "$semibold" }}
             >
                 Remove signature
             </Button>

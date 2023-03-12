@@ -69,15 +69,15 @@ export function ConstructorPage() {
                         return (
                             <Flex gap="$1">
                                 <Stack css={{ width: "100%" }}>
-                                    <Text color="blackA12">User address: {index+1}</Text>
-                                    <Input isDisabled={!isConnected} size="lg">
+                                    <Text color="blackA12" css={{ fontWeight: "$semibold" }}>User address: {index+1}</Text>
+                                    <Input isDisabled={!isConnected} size="lg" css={{ marginBottom: "$1", boxShadow: "1px 1px 5px 2px grey" }}>
                                         <Input.Field onChange={(event) => updateUser(index, { ...user, address: event.target.value })} placeholder="0x80d5e8c2be..." />
                                     </Input>
                                 </Stack>
 
                                 <Stack css={{ width: "100%" }}>
-                                    <Text color="blackA12">Recipient weight: {index+1}</Text>
-                                    <Input isDisabled={!isConnected} size="lg">
+                                    <Text color="blackA12" css={{ fontWeight: "$semibold" }}>Recipient weight: {index+1}</Text>
+                                    <Input isDisabled={!isConnected} size="lg" css={{ marginBottom: "$1", boxShadow: "1px 1px 5px 2px grey" }}>
                                         <Input.Number onChange={(event) => updateUser(index, { ...user, weight: event.target.value })} placeholder="1" />
                                     </Input>
                                 </Stack>
@@ -92,7 +92,7 @@ export function ConstructorPage() {
                     size="lg"
                     variant="solid"
                     isDisabled={!isConnected}
-                    css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$2", width: "100%", boxShadow: "0px 0px 1px 1px" }}
+                    css={{ marginLeft: "auto", marginRight: "auto", marginTop: "$2", width: "100%", boxShadow: "0px 0px 3px 1px", fontWeight: "$semibold" }}
                 >
                     Create wallet
                 </Button>
@@ -103,7 +103,7 @@ export function ConstructorPage() {
                         onPress={addUser}
                         size="lg"
                         variant="solid"
-                        css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
+                        css={{ width: "50%", boxShadow: "0px 0px 3px 1px", fontWeight: "$semibold" }}
                     >
                         Add user
                     </Button>
@@ -113,7 +113,7 @@ export function ConstructorPage() {
                         onPress={removeUser}
                         size="lg"
                         variant="solid"
-                        css={{ width: "50%", boxShadow: "0px 0px 1px 1px" }}
+                        css={{ width: "50%", boxShadow: "0px 0px 3px 1px", fontWeight: "$semibold" }}
                     >
                         Remove user
                     </Button>

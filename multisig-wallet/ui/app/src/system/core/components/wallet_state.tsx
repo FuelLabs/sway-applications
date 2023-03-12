@@ -41,7 +41,7 @@ export const WalletState = () => {
   }
 
   return (
-    <ButtonLink onClick={handleWalletConnection} css={{ color: 'black', fontWeight: 'bolder' }}>
+    <ButtonLink onClick={handleWalletConnection} css={{ color: 'black', fontWeight: '$semibold' }}>
       {connected}
     </ButtonLink>
   );

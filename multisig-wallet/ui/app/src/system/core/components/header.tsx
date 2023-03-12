@@ -34,7 +34,7 @@ interface LinkInput {
 
 function LinkComponent( { text }: LinkInput) {
     return (
-        <Link href={`/${text}`} css={{ color: 'black', fontWeight: 'bolder', '&:visited': {color: 'black'} }}>
+        <Link href={`/${text}`} css={{ color: 'black', fontWeight: '$semibold', '&:visited': {color: 'black'} }}>
             {text[0].toUpperCase() + text.slice(1)}
         </Link>
     );

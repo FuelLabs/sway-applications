@@ -9,12 +9,12 @@ export function HashPage() {
     return (
         <BoxCentered css={{ marginTop: "3%", width: "30%" }}>
             <Stack>
-                <Flex gap="130px" css={{ marginBottom: "$14" }}>
+                <Flex gap="130px" css={{ marginBottom: "$8" }}>
                     <ExecuteHashComponent recipient={recipient} />
                     <TransferHashComponent recipient={recipient} />
                 </Flex>
 
-                <Flex gap="130px" css={{ marginBottom: "$10" }}>
+                <Flex gap="130px" css={{ marginBottom: "$5" }}>
                     <WeightHashComponent />
                     <ThresholdHashComponent />
                 </Flex>

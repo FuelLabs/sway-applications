@@ -59,7 +59,7 @@ export function WeightHashComponent() {
                     size="lg"
                     variant="solid"
                     isDisabled={!isConnected}
-                    css={{ marginTop: "$1", boxShadow: "0px 0px 1px 1px" }}
+                    css={{ marginTop: "$2", boxShadow: "0px 0px 3px 1px", fontWeight: "$semibold" }}
                 >
                     Create hash
                 </Button>

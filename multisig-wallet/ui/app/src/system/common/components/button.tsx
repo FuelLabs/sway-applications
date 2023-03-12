@@ -15,7 +15,7 @@ export const ButtonComponent = ({ handler, isConnected, text }: ButtonInput) => 
             size="lg"
             variant="solid"
             isDisabled={!isConnected}
-            css={{ boxShadow: "0px 0px 1px 1px" }}
+            css={{ marginTop: "$1", boxShadow: "0px 0px 3px 1px", fontWeight: "$semibold" }}
         >
             {text}
         </Button>
