@@ -25,7 +25,7 @@ export function UtilsPage() {
         const { value } = await contract!.functions.balance(assetId).get().then(
             null,
             (error) => {
-                if (error.logs.length === 0) {
+                if (error.logs === undefined || error.logs.length === 0) {
                     toast.error("Unknown error occurred during contract call.", { duration: 10000 });
                 } else {
                     toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
@@ -41,7 +41,7 @@ export function UtilsPage() {
         const { value } = await contract!.functions.nonce().get().then(
             null,
             (error) => {
-                if (error.logs.length === 0) {
+                if (error.logs === undefined || error.logs.length === 0) {
                     toast.error("Unknown error occurred during contract call.", { duration: 10000 });
                 } else {
                     toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
@@ -57,7 +57,7 @@ export function UtilsPage() {
         const { value } = await contract!.functions.threshold().get().then(
             null,
             (error) => {
-                if (error.logs.length === 0) {
+                if (error.logs === undefined || error.logs.length === 0) {
                     toast.error("Unknown error occurred during contract call.", { duration: 10000 });
                 } else {
                     toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
@@ -76,7 +76,7 @@ export function UtilsPage() {
         const { value } = await contract!.functions.approval_weight(user).get().then(
             null,
             (error) => {
-                if (error.logs.length === 0) {
+                if (error.logs === undefined || error.logs.length === 0) {
                     toast.error("Unknown error occurred during contract call.", { duration: 10000 });
                 } else {
                     toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
@@ -94,7 +94,7 @@ export function UtilsPage() {
                 toast.success("Cancelled transaction.", { duration: 10000 });
             },
             (error) => {
-                if (error.logs.length === 0) {
+                if (error.logs === undefined || error.logs.length === 0) {
                     toast.error("Unknown error occurred during contract call.", { duration: 10000 });
                 } else {
                     toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });

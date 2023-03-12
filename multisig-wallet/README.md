@@ -48,7 +48,7 @@ multisig-wallet
 
 ### User interface
 
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+Information about the user interface can be found in the [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md).
 
 ### Project
 

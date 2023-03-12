@@ -43,7 +43,7 @@ export function ExecuteTransactionPage() {
                 toast.success("Transaction complete!", { duration: 10000 });
             },
             (error) => {
-                if (error.logs.length === 0) {
+                if (error.logs === undefined || error.logs.length === 0) {
                     toast.error("Unknown error occurred during contract call.", { duration: 10000 });
                 } else {
                     toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });

@@ -1,4 +1,4 @@
-import { ButtonLink, toast } from "@fuel-ui/react";
+import { ButtonLink } from "@fuel-ui/react";
 import { useEffect, useState } from "react"
 import { useFuel } from "../hooks";
 
@@ -26,11 +26,9 @@ export const WalletState = () => {
     if (!isConnected) {
       await window.fuel.connect();
       // await fuel!.connect();
-      toast.success("Connected!", { duration: 4000 });
     } else {
       await window.fuel.disconnect();
       // await fuel!.disconnect();
-      toast.success("Disconnected!", { duration: 4000 });
     }
 
     // trigger useEffect

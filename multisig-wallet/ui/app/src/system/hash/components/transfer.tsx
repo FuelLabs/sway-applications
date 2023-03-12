@@ -41,7 +41,7 @@ export function TransferHashComponent( { recipient }: ComponentInput ) {
         const { value } = await contract!.functions.transaction_hash(validatedData, nonce, identity, assetAmount).get().then(
             null,
             (error) => {
-                if (error.logs.length === 0) {
+                if (error.logs === undefined || error.logs.length === 0) {
                     toast.error("Unknown error occurred during contract call.", { duration: 10000 });
                 } else {
                     toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
