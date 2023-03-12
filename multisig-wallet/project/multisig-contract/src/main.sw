@@ -1,6 +1,8 @@
 contract;
 
-dep data_structures;
+dep data_structures/hashing;
+dep data_structures/signatures;
+dep data_structures/user;
 dep errors;
 dep events;
 dep interface;
@@ -25,7 +27,9 @@ use std::{
     token::transfer,
 };
 
-use data_structures::{SignatureInfo, Transaction, TypeToHash, User};
+use hashing::{Threshold, Transaction, TypeToHash};
+use signatures::SignatureInfo;
+use user::User;
 use errors::{AccessControlError, ExecutionError, InitError};
 use events::{CallEvent, CancelEvent, SetThresholdEvent, TransferEvent};
 use interface::{Info, MultiSignatureWallet};
@@ -193,6 +197,37 @@ impl MultiSignatureWallet for Contract {
             });
         }
     }
+
+    #[storage(read, write)]
+    fn set_threshold(
+        signatures: Vec<SignatureInfo>,
+        threshold: u64,
+    ) {
+        require(storage.nonce != 0, InitError::NotInitialized);
+        require(threshold != 0, InitError::ThresholdCannotBeZero);
+        require(threshold <= storage.total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
+
+        let threshold_hash = sha256(
+            Threshold {
+                contract_identifier: contract_id(),
+                nonce: storage.nonce,
+                threshold,
+            }
+        );
+        let approval_count = count_approvals(signatures, threshold_hash);
+
+        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
+
+        let previous_threshold = storage.threshold;
+
+        storage.nonce += 1;
+        storage.threshold = threshold;
+
+        log(SetThresholdEvent {
+            previous_threshold,
+            threshold,
+        });
+    }
 }
 
 impl Info for Contract {
@@ -210,10 +245,11 @@ impl Info for Contract {
         storage.threshold
     }
 
-    fn compute_hash(type_to_hash: TypeToHash) -> b256 { // Currently won't work for the `Transaction` type as the SDK doesn't support `Bytes` (https://github.com/FuelLabs/fuels-rs/issues/723), 
+    fn compute_hash(type_to_hash: TypeToHash) -> b256 { // Currently won't work for the `Transaction` variant as the SDK doesn't support `Bytes` (https://github.com/FuelLabs/fuels-rs/issues/723), 
                                                         // to hash `Transaction` use `compute_transaction_hash` instead.
         match type_to_hash {
             //TypeToHash::Transaction(transaction) => transaction.into_bytes().sha256(),
+            TypeToHash::Threshold(threshold) => sha256(threshold),
             TypeToHash::User(user) => sha256(user),
         }
     }
