@@ -92,5 +92,4 @@ pub struct Threshold {
 pub enum TypeToHash {
     //Transaction: Transaction, // TODO: Uncomment when the RustSDK supports `Bytes`. https://github.com/FuelLabs/fuels-rs/issues/723.
     Threshold: Threshold,
-    User: User,
 }

@@ -250,7 +250,6 @@ impl Info for Contract {
         match type_to_hash {
             //TypeToHash::Transaction(transaction) => transaction.into_bytes().sha256(),
             TypeToHash::Threshold(threshold) => sha256(threshold),
-            TypeToHash::User(user) => sha256(user),
         }
     }
 
