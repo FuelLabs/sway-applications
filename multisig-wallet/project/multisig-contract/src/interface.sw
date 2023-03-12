@@ -1,8 +1,12 @@
 library interface;
 
-dep data_structures;
+dep data_structures/hashing;
+dep data_structures/signatures;
+dep data_structures/user;
 
-use data_structures::{SignatureInfo, TypeToHash, User};
+use hashing::TypeToHash;
+use signatures::SignatureInfo;
+use user::User;
 
 abi MultiSignatureWallet {
     /// Cancel the next transaction by spending the current nonce.
@@ -47,8 +51,26 @@ abi MultiSignatureWallet {
     /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
     /// * When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
-    fn execute_transaction(asset_id: Option<ContractId>, calldata: Option<Vec<u8>>, forwarded_gas: Option<u64>, function_selector: Option<Vec<u8>>, signatures: Vec<SignatureInfo>, single_value_type_arg: Option<bool>, target: Identity, value: Option<u64>); //Convert to Bytes when SDK supports
-    //Convert to Bytes when SDK supports
+    fn execute_transaction(asset_id: Option<ContractId>, calldata: Option<Vec<u8>>, forwarded_gas: Option<u64>, function_selector: Option<Vec<u8>>, signatures: Vec<SignatureInfo>, single_value_type_arg: Option<bool>, target: Identity, value: Option<u64>);
+
+    /// Updates the threshold required for execution.
+    ///
+    /// # Arguments
+    ///
+    /// * `data` - The data field of the transaction.
+    /// * `signatures` - The information for each user's signature for a specific transaction.
+    /// * `threshold` - The number of approvals required to enable a transaction to be sent.
+    ///
+    /// # Reverts
+    ///
+    /// * When the constructor has not been called to initialize the contract.
+    /// * When the threshold is zero.
+    /// * When the threshold is a value greater than the sum of the weights.
+    /// * When the public key cannot be recovered from a signature.
+    /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
+    /// * When the total approval count is less than the required threshold for execution.
+    #[storage(read, write)]
+    fn set_threshold(signatures: Vec<SignatureInfo>, threshold: u64);
 }
 
 abi Info {
