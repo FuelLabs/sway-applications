@@ -4,8 +4,6 @@ import { MultisigContractAbi__factory } from "../../../contracts";
 
 export const useContract = () => {
     const { wallet, isLoading, isError } = useWallet();
-    // TODO: factor out
-    const CONTRACT_ID = "0xde841dfb22ce3155150e06c8a4b79ca94aa11e64ddac7e60467cd1a364b890e4";
 
     const {
         data: contract,
@@ -14,7 +12,7 @@ export const useContract = () => {
     } = useQuery(
         ["contract", wallet],
         () => {
-            return MultisigContractAbi__factory.connect(CONTRACT_ID, wallet!);
+            return MultisigContractAbi__factory.connect(import.meta.env.VITE_CONTRACT_ID, wallet!);
         },
         {
             enabled: !isLoading && !isError && !!wallet,
