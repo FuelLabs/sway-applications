@@ -199,21 +199,16 @@ impl MultiSignatureWallet for Contract {
     }
 
     #[storage(read, write)]
-    fn set_threshold(
-        signatures: Vec<SignatureInfo>,
-        threshold: u64,
-    ) {
+    fn set_threshold(signatures: Vec<SignatureInfo>, threshold: u64) {
         require(storage.nonce != 0, InitError::NotInitialized);
         require(threshold != 0, InitError::ThresholdCannotBeZero);
         require(threshold <= storage.total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
 
-        let threshold_hash = sha256(
-            Threshold {
-                contract_identifier: contract_id(),
-                nonce: storage.nonce,
-                threshold,
-            }
-        );
+        let threshold_hash = sha256(Threshold {
+            contract_identifier: contract_id(),
+            nonce: storage.nonce,
+            threshold,
+        });
         let approval_count = count_approvals(signatures, threshold_hash);
 
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
