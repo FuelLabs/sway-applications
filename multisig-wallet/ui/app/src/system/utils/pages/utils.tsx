@@ -22,51 +22,85 @@ export function UtilsPage() {
             value: userAsset
         }
 
-        try {
-            const { value } = await contract!.functions.balance(assetId).get();
-            toast.success(`Balance: ${value}`, { duration: 10000 });
-        } catch (err) {
-            toast.error("The contract did an oopsie", { duration: 10000 });
-        }
+        const { value } = await contract!.functions.balance(assetId).get().then(
+            null,
+            (error) => {
+                if (error.logs.length === 0) {
+                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
+                } else {
+                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
+                }
+                return;
+            }
+        );
+
+        toast.success(`Balance: ${value}`, { duration: 10000 });
     }
 
     async function getNonce() {
-        try {
-            const { value } = await contract!.functions.nonce().get();
-            toast.success(`Current nonce: ${value}`, { duration: 10000 });
-        } catch (err) {
-            toast.error("Sorry, contract is playing hard to get", { duration: 10000 });
-        }
+        const { value } = await contract!.functions.nonce().get().then(
+            null,
+            (error) => {
+                if (error.logs.length === 0) {
+                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
+                } else {
+                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
+                }
+                return;
+            }
+        );
+
+        toast.success(`Current nonce: ${value}`, { duration: 10000 });
     }
 
     async function getThreshold() {
-        try {
-            const { value } = await contract!.functions.threshold().get();
-            toast.success(`Threshold: ${value}`, { duration: 10000 });
-        } catch (err) {
-            toast.error("The matrix is glitching out, can't get the value", { duration: 10000 });
-        }
+        const { value } = await contract!.functions.threshold().get().then(
+            null,
+            (error) => {
+                if (error.logs.length === 0) {
+                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
+                } else {
+                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
+                }
+                return;
+            }
+        );
+
+        toast.success(`Threshold: ${value}`, { duration: 10000 });
     }
 
     async function getWeight() {
         let { address: user, isError } = validateAddress(address);
         if (isError) return;
 
-        try {
-            const { value } = await contract!.functions.approval_weight(user).get();
-            toast.success(`User weight: ${value}`, { duration: 10000 });
-        } catch (err) {
-            toast.error("I'm not feeling great rn, try again later?", { duration: 10000 });
-        }
+        const { value } = await contract!.functions.approval_weight(user).get().then(
+            null,
+            (error) => {
+                if (error.logs.length === 0) {
+                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
+                } else {
+                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
+                }
+                return;
+            }
+        );
+
+        toast.success(`User weight: ${value}`, { duration: 10000 });
     }
 
     async function cancelTransaction() {
-        try {
-            await contract!.functions.cancel_transaction().call();
-            toast.success("Cancelled transaction.", { duration: 10000 });
-        } catch (err) {
-            toast.error("I don't know how to tell you this but there was a problem...", { duration: 10000 });
-        }
+        await contract!.functions.cancel_transaction().call().then(
+            (success) => {
+                toast.success("Cancelled transaction.", { duration: 10000 });
+            },
+            (error) => {
+                if (error.logs.length === 0) {
+                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
+                } else {
+                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
+                }
+            }
+        );
     }
 
     async function signData() {

@@ -31,23 +31,24 @@ export function WeightPage() {
             weight: weight
         }
 
-        // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
-        //       This is here to catch the error in the console rather than hide it via toast atm
-        //       Once stable go back to toast
-        await contract!.functions.set_weight(validatedData, signatures, user).call();
-        toast.success("Updated user weight!", { duration: 10000 })
-
-        // try {
-        //     await contract!.functions.set_weight(validatedData, signatures, user).call();
-        //     toast.success("Updated user weight!", { duration: 10000 })
-        // } catch (err) {
-        //     toast.error("I tried but today is just not your day...", { duration: 10000 });
-        // }
+        await contract!.functions.set_weight(validatedData, signatures, user).call().then(
+            (success) => {
+                toast.success("Updated user weight!", { duration: 10000 });
+            },
+            (error) => {
+                if (error.logs.length === 0) {
+                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
+                } else {
+                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
+                }
+            }
+        );
     }
 
     async function updateSignature(index: number, signature: string) {
         const localSignatures = [...signatures];
-        localSignatures[index].signature.bytes = [signature, ""];
+        // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
+        localSignatures[index].signature.bytes = [signature, signature];
         setSignatures(localSignatures);
     }
 

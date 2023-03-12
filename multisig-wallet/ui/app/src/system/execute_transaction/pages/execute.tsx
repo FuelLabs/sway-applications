@@ -38,17 +38,24 @@ export function ExecuteTransactionPage() {
         const { data: validatedData, isError } = validateData(data);
         if (isError) return;
 
-        try {
-            await contract!.functions.execute_transaction(validatedData, signatures, identity, assetAmount).call();
-            toast.success("Transaction complete!")
-        } catch (err) {
-            toast.error("Excuse me... it appears that something went wrong");
-        }
+        await contract!.functions.execute_transaction(validatedData, signatures, identity, assetAmount).call().then(
+            (success) => {
+                toast.success("Transaction complete!", { duration: 10000 });
+            },
+            (error) => {
+                if (error.logs.length === 0) {
+                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
+                } else {
+                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
+                }
+            }
+        );
     }
 
     async function updateSignature(index: number, signature: string) {
         const localSignatures = [...signatures];
-        localSignatures[index].signature.bytes = [signature, ""];
+        // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
+        localSignatures[index].signature.bytes = [signature, signature];
         setSignatures(localSignatures);
     }
 

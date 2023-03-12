@@ -44,17 +44,24 @@ export function TransferPage() {
 
         let assetId: ContractIdInput = { value: validatedAsset };
 
-        try {
-            await contract!.functions.transfer(assetId, validatedData, signatures, identity, assetAmount).call();
-            toast.success("Transfer complete!", { duration: 10000 });
-        } catch (err) {
-            toast.error("Captain, that didn't go as planned", { duration: 10000 });
-        }
+        await contract!.functions.transfer(assetId, validatedData, signatures, identity, assetAmount).call().then(
+            (success) => {
+                toast.success("Transfer complete!", { duration: 10000 });
+            },
+            (error) => {
+                if (error.logs.length === 0) {
+                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
+                } else {
+                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
+                }
+            }
+        );
     }
 
     async function updateSignature(index: number, signature: string) {
         const localSignatures = [...signatures];
-        localSignatures[index].signature.bytes = [signature, ""];
+        // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
+        localSignatures[index].signature.bytes = [signature, signature];
         setSignatures(localSignatures);
     }
 

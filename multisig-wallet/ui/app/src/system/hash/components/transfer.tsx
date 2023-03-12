@@ -37,13 +37,20 @@ export function TransferHashComponent( { recipient }: ComponentInput ) {
         const { data: validatedData, isError } = validateData(data);
         if (isError) return;
 
-        try {
-            // TODO: merge in new hashing function and use instead of this incorrect one
-            const { value } = await contract!.functions.transaction_hash(validatedData, nonce, identity, assetAmount).get();
-            toast.success(`Hash: ${value}`, { duration: 10000 });
-        } catch (err) {
-            toast.error("Ah! Math is hard rn, sorry", { duration: 10000 });
-        }        
+        // TODO: merge in new hashing function and use instead of this incorrect one
+        const { value } = await contract!.functions.transaction_hash(validatedData, nonce, identity, assetAmount).get().then(
+            null,
+            (error) => {
+                if (error.logs.length === 0) {
+                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
+                } else {
+                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
+                }
+                return;
+            }
+        );
+
+        toast.success(`Hash: ${value}`, { duration: 10000 });      
     }
 
     return (

@@ -24,12 +24,18 @@ export function ConstructorPage() {
 
         if (error) return;
 
-        try {
-            await contract!.functions.constructor(users).call();
-            toast.success("Wallet created!", { duration: 10000 });
-        } catch (err) {
-            toast.error("Oof, something went wrong, and like, good luck with that", { duration: 10000 });
-        }
+        await contract!.functions.constructor(users).call().then(
+            (success) => {
+                toast.success("Wallet created!", { duration: 10000 });
+            },
+            (error) => {
+                if (error.logs.length === 0) {
+                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
+                } else {
+                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
+                }
+            }
+        );
     }
 
     async function addUser() {

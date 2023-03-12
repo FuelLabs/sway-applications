@@ -22,17 +22,24 @@ export function ThresholdPage() {
         const { data: validatedData, isError } = validateData(data);
         if (isError) return;
 
-        try {
-            await contract!.functions.set_threshold(validatedData, signatures, threshold).call();
-            toast.success("Updated threshold!", { duration: 10000 })
-        } catch (err) {
-            toast.error("Well... that didn't go as planned", { duration: 10000 });
-        }
+        await contract!.functions.set_threshold(validatedData, signatures, threshold).call().then(
+            (success) => {
+                toast.success("Updated threshold!", { duration: 10000 });
+            },
+            (error) => {
+                if (error.logs.length === 0) {
+                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
+                } else {
+                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
+                }
+            }
+        );
     }     
 
     async function updateSignature(index: number, signature: string) {
         const localSignatures = [...signatures];
-        localSignatures[index].signature.bytes = [signature, ""];
+        // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
+        localSignatures[index].signature.bytes = [signature, signature];
         setSignatures(localSignatures);
     }
 
