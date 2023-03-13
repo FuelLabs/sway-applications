@@ -196,8 +196,8 @@ mod success {
             get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
-        assert!(
-            !claim_data(
+        assert_eq!(
+            claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
@@ -229,7 +229,7 @@ mod success {
             get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             airdrop_leaves[key as usize].1
         );
-        assert!(
+        assert_eq!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
@@ -271,8 +271,8 @@ mod success {
             get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
-        assert!(
-            !claim_data(
+        assert_eq!(
+            claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
@@ -303,7 +303,7 @@ mod success {
             get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             airdrop_leaves[key as usize].1
         );
-        assert!(
+        assert_eq!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
@@ -345,8 +345,8 @@ mod success {
             get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             0
         );
-        assert!(
-            !claim_data(
+        assert_eq!(
+            claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
             )
@@ -377,7 +377,7 @@ mod success {
             get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
             airdrop_leaves[key as usize].1
         );
-        assert!(
+        assert_eq!(
             claim_data(
                 &deploy_wallet.airdrop_distributor,
                 airdrop_leaves[key as usize].0.clone()
