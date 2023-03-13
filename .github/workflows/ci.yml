@@ -13,9 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  REGISTRY: ghcr.io
   RUST_VERSION: 1.67.0
-  PATH_TO_SCRIPTS: .github/scripts
 
 jobs:
   lint-toml-files:
