@@ -28,12 +28,13 @@ impl SimpleAsset for Contract {
         storage.asset_supply = asset_supply;
     }
 
-    #[storage(read)]
+    #[storage(read, write)]
     fn mint_to(amount: u64, to: Identity) {
         // Ensure that the sender is the minter.
         require(storage.minter.is_some() && msg_sender().unwrap() == storage.minter.unwrap(), AccessError::SenderNotPermittedToMint);
         require(amount + storage.asset_minted <= storage.asset_supply, InputError::GreaterThanMaximumSupply);
 
+        storage.asset_minted += amount;
         mint_to(amount, to);
     }
 }
