@@ -27,7 +27,7 @@ abi AirdropDistributor {
     #[storage(read, write)]
     fn claim(amount: u64, key: u64, proof: Vec<b256>, to: Identity);
 
-    /// Returns any unclaimed tokens when the claiming period of the airdrop has ended.
+    /// Returns any unclaimed tokens to 'admin' when the claiming period of the airdrop has ended.
     ///
     /// # Reverts
     ///
