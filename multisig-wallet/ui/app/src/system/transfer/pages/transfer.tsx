@@ -1,122 +1,173 @@
 import { BoxCentered, Button, Heading, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract, useIsConnected } from "../../core/hooks";
-import { InputFieldComponent, InputNumberComponent, RadioGroupComponent, SignatureButtonComponent, SignatureComponent } from "../../common/components"
-import { validateAddress, validateContractId, validateData } from "../../common/utils";
-import { ContractIdInput, IdentityInput, SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
+import {
+  InputFieldComponent,
+  InputNumberComponent,
+  RadioGroupComponent,
+  SignatureButtonComponent,
+  SignatureComponent,
+} from "../../common/components";
+import {
+  validateAddress,
+  validateContractId,
+  validateData,
+} from "../../common/utils";
+import {
+  ContractIdInput,
+  IdentityInput,
+  SignatureInfoInput,
+} from "../../../contracts/MultisigContractAbi";
 
 export function TransferPage() {
-    const [address, setAddress] = useState("")
-    const [asset, setAsset] = useState("")
-    const [assetAmount, setAssetAmount] = useState(0)
-    const [data, setData] = useState("")
-    const [signatures, setSignatures] = useState<SignatureInfoInput[]>([{ 
-        message_format: { None: [] }, 
-        message_prefix: { None: [] }, 
-        signature: { bytes: ["", ""] }, 
-        wallet_type: { Fuel: [] }
-    }])
+  const [address, setAddress] = useState("");
+  const [asset, setAsset] = useState("");
+  const [assetAmount, setAssetAmount] = useState(0);
+  const [data, setData] = useState("");
+  const [signatures, setSignatures] = useState<SignatureInfoInput[]>([
+    {
+      message_format: { None: [] },
+      message_prefix: { None: [] },
+      signature: { bytes: ["", ""] },
+      wallet_type: { Fuel: [] },
+    },
+  ]);
 
-    const [recipient, setRecipient] = useState("address")
-    const { contract, isLoading, isError } = useContract()
-    const [isConnected] = useIsConnected();
+  const [recipient, setRecipient] = useState("address");
+  const { contract, isLoading, isError } = useContract();
+  const [isConnected] = useIsConnected();
 
-    async function transfer() {
-        let identity: IdentityInput;
+  async function transfer() {
+    let identity: IdentityInput;
 
-        if (recipient === "address") {
-            let { address: user, isError } = validateAddress(address);
-            if (isError) return;
+    if (recipient === "address") {
+      let { address: user, isError } = validateAddress(address);
+      if (isError) return;
 
-            identity = { Address: { value: user } };
-        } else {
-            let { address: user, isError } = validateContractId(address);
-            if (isError) return;
+      identity = { Address: { value: user } };
+    } else {
+      let { address: user, isError } = validateContractId(address);
+      if (isError) return;
 
-            identity = { ContractId: { value: user } };
+      identity = { ContractId: { value: user } };
+    }
+
+    let { address: validatedAsset, isError: error } = validateContractId(asset);
+    if (error) return;
+
+    const { data: validatedData, isError } = validateData(data);
+    if (isError) return;
+
+    let assetId: ContractIdInput = { value: validatedAsset };
+
+    await contract!.functions
+      .transfer(assetId, validatedData, signatures, identity, assetAmount)
+      .call()
+      .then(
+        (success) => {
+          toast.success("Transfer complete!", { duration: 10000 });
+        },
+        (error) => {
+          if (error.logs === undefined || error.logs.length === 0) {
+            toast.error("Unknown error occurred during contract call.", {
+              duration: 10000,
+            });
+          } else {
+            toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, {
+              duration: 10000,
+            });
+          }
         }
+      );
+  }
 
-        let { address: validatedAsset, isError: error} = validateContractId(asset);
-        if (error) return;
+  async function updateSignature(index: number, signature: string) {
+    const localSignatures = [...signatures];
+    // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
+    localSignatures[index].signature.bytes = [signature, signature];
+    setSignatures(localSignatures);
+  }
 
-        const { data: validatedData, isError } = validateData(data);
-        if (isError) return;
+  async function addSignature() {
+    let signature: SignatureInfoInput = {
+      message_format: { None: [] },
+      message_prefix: { None: [] },
+      signature: { bytes: ["", ""] },
+      wallet_type: { Fuel: [] },
+    };
+    setSignatures([...signatures, signature]);
+  }
 
-        let assetId: ContractIdInput = { value: validatedAsset };
-
-        await contract!.functions.transfer(assetId, validatedData, signatures, identity, assetAmount).call().then(
-            (success) => {
-                toast.success("Transfer complete!", { duration: 10000 });
-            },
-            (error) => {
-                if (error.logs === undefined || error.logs.length === 0) {
-                    toast.error("Unknown error occurred during contract call.", { duration: 10000 });
-                } else {
-                    toast.error(`Error: ${Object.keys(error.logs[0])[0]}`, { duration: 10000 });
-                }
-            }
-        );
+  async function removeSignature() {
+    if (signatures.length === 1) {
+      toast.error("Cannot remove the last signature");
+      return;
     }
 
-    async function updateSignature(index: number, signature: string) {
-        const localSignatures = [...signatures];
-        // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
-        localSignatures[index].signature.bytes = [signature, signature];
-        setSignatures(localSignatures);
-    }
+    setSignatures([...signatures.splice(0, signatures.length - 1)]);
+  }
 
-    async function addSignature() {
-        let signature: SignatureInfoInput = { 
-            message_format: { None: [] }, 
-            message_prefix: { None: [] }, 
-            signature: { bytes: ["", ""] }, 
-            wallet_type: { Fuel: [] }
-        };
-        setSignatures([...signatures, signature ]);
-    }
+  return (
+    <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
+      <Stack css={{ minWidth: "100%" }}>
+        <Heading
+          as="h3"
+          css={{
+            marginLeft: "auto",
+            marginRight: "auto",
+            marginBottom: "$10",
+            color: "$accent1",
+          }}
+        >
+          Execute a transfer
+        </Heading>
 
-    async function removeSignature() {
-        if (signatures.length === 1) {
-            toast.error("Cannot remove the last signature")
-            return;
-        }
+        <InputFieldComponent
+          onChange={setAddress}
+          text="Recipient address"
+          placeholder="0x80d5e8c2be..."
+        />
+        <InputFieldComponent
+          onChange={setAsset}
+          text="Asset id"
+          placeholder="0x0000000000..."
+        />
+        <InputNumberComponent
+          onChange={setAssetAmount}
+          text="Asset amount"
+          placeholder="1.0"
+        />
+        <InputFieldComponent
+          onChange={setData}
+          text="Data to sign"
+          placeholder="0x252afeeb6e..."
+        />
 
-        setSignatures([...signatures.splice(0, signatures.length - 1)]);
-    }
+        {signatures.map((signature, index) => {
+          return <SignatureComponent handler={updateSignature} index={index} />;
+        })}
 
-    return (
-        <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
-            <Stack css={{ minWidth: "100%" }}>
+        <Button
+          color="accent"
+          onPress={transfer}
+          size="lg"
+          variant="solid"
+          isDisabled={!isConnected}
+          css={{
+            marginTop: "$2",
+            boxShadow: "0px 0px 3px 1px",
+            fontWeight: "$semibold",
+          }}
+        >
+          Transfer
+        </Button>
 
-                <Heading as="h3" css={{ marginLeft: "auto", marginRight: "auto", marginBottom: "$10", color: "$accent1"}}>
-                    Execute a transfer
-                </Heading>
-
-                <InputFieldComponent onChange={setAddress} text="Recipient address" placeholder="0x80d5e8c2be..." />
-                <InputFieldComponent onChange={setAsset} text="Asset id" placeholder="0x0000000000..." />
-                <InputNumberComponent onChange={setAssetAmount} text="Asset amount" placeholder="1.0" />
-                <InputFieldComponent onChange={setData} text="Data to sign" placeholder="0x252afeeb6e..." />
-
-                {
-                    signatures.map((signature, index) => {
-                        return <SignatureComponent handler={updateSignature} index={index} />;
-                    })
-                }
-
-                <Button
-                    color="accent"
-                    onPress={transfer}
-                    size="lg"
-                    variant="solid"
-                    isDisabled={!isConnected}
-                    css={{ marginTop: "$2", boxShadow: "0px 0px 3px 1px", fontWeight: "$semibold" }}
-                >
-                    Transfer
-                </Button>
-
-                <SignatureButtonComponent addHandler={addSignature} removeHandler={removeSignature}/>
-                <RadioGroupComponent handler={setRecipient} />
-            </Stack>
-        </BoxCentered>
-    );
+        <SignatureButtonComponent
+          addHandler={addSignature}
+          removeHandler={removeSignature}
+        />
+        <RadioGroupComponent handler={setRecipient} />
+      </Stack>
+    </BoxCentered>
+  );
 }

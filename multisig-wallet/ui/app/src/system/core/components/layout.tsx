@@ -10,7 +10,12 @@ export function Layout({ children }: LayoutProps) {
   return (
     <>
       <Header />
-      <Stack align="center" css={{ background: 'rgb(209 226 237)', height: "100vh" }}>{children}</Stack>
+      <Stack
+        align="center"
+        css={{ background: "rgb(209 226 237)", height: "100vh" }}
+      >
+        {children}
+      </Stack>
     </>
   );
 }

@@ -8,16 +8,16 @@ import { UtilsPage } from "../../utils/pages";
 import { WeightPage } from "../../weight/pages";
 
 export function AppRoutes() {
-    return (
-        <Routes>
-            <Route path="/" element={<ConstructorPage />} />
-            <Route path="/create" element={<ConstructorPage />} />
-            <Route path="/execute" element={<ExecuteTransactionPage />} />
-            <Route path="/transfer" element={<TransferPage />} />
-            <Route path="/threshold" element={<ThresholdPage />} />
-            <Route path="/weight" element={<WeightPage />} />
-            <Route path="/hash" element={<HashPage />} />
-            <Route path="/utils" element={<UtilsPage />} />
-        </Routes>
-    );
+  return (
+    <Routes>
+      <Route path="/" element={<ConstructorPage />} />
+      <Route path="/create" element={<ConstructorPage />} />
+      <Route path="/execute" element={<ExecuteTransactionPage />} />
+      <Route path="/transfer" element={<TransferPage />} />
+      <Route path="/threshold" element={<ThresholdPage />} />
+      <Route path="/weight" element={<WeightPage />} />
+      <Route path="/hash" element={<HashPage />} />
+      <Route path="/utils" element={<UtilsPage />} />
+    </Routes>
+  );
 }

@@ -1,11 +1,11 @@
 import { ButtonLink } from "@fuel-ui/react";
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import { useFuel } from "../hooks";
 
 export const WalletState = () => {
-  const [connected, setConnection] = useState("Connect")
+  const [connected, setConnection] = useState("Connect");
   // TODO: how do I get this to work?
-  const fuel = useFuel()
+  const fuel = useFuel();
 
   useEffect(() => {
     async function main() {
@@ -39,8 +39,11 @@ export const WalletState = () => {
   }
 
   return (
-    <ButtonLink onClick={handleWalletConnection} css={{ color: 'black', fontWeight: '$semibold' }}>
+    <ButtonLink
+      onClick={handleWalletConnection}
+      css={{ color: "black", fontWeight: "$semibold" }}
+    >
       {connected}
     </ButtonLink>
   );
-}
+};
