@@ -1,18 +1,18 @@
-use crate::utils::{interface::info::merkle_root, setup::setup};
-
 mod success {
 
-    use super::*;
     use crate::utils::{
-        interface::core::{airdrop_constructor, asset_constructor, mint_to},
-        setup::defaults,
+        interface::{
+            core::{airdrop_constructor, asset_constructor, mint_to},
+            info::number_of_leaves,
+        },
+        setup::{defaults, setup},
     };
     use fuels::types::Bits256;
 
     #[tokio::test]
-    async fn returns_root() {
+    async fn returns_end_block() {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (_, _, _, minter, _, num_leaves, asset_supply, _, claim_time, _) =
+        let (_, _, _, minter, _, leaf_count, asset_supply, _, claim_time, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
         let root = Bits256([2u8; 32]);
 
@@ -20,8 +20,8 @@ mod success {
         mint_to(asset_supply, &asset.asset, minter.clone()).await;
 
         assert_eq!(
-            merkle_root(&deploy_wallet.airdrop_distributor).await,
-            Option::None
+            0,
+            number_of_leaves(&deploy_wallet.airdrop_distributor).await,
         );
 
         airdrop_constructor(
@@ -31,15 +31,13 @@ mod success {
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
-            num_leaves,
+            leaf_count,
         )
         .await;
 
         assert_eq!(
-            merkle_root(&deploy_wallet.airdrop_distributor)
-                .await
-                .unwrap(),
-            root
-        )
+            leaf_count,
+            number_of_leaves(&deploy_wallet.airdrop_distributor).await,
+        );
     }
 }

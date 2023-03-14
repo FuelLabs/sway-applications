@@ -141,13 +141,25 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "GreaterThanMaximumSupply")]
-    async fn when_mint_more_than_supply() {
+    async fn when_mint_more_than_supply_in_one_transaction() {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());
         constructor(total_supply, &deployer.simple_asset, identity.clone()).await;
 
         mint_to(total_supply + 1, &deployer.simple_asset, identity.clone()).await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "GreaterThanMaximumSupply")]
+    async fn when_mint_more_than_supply_in_two_transactions() {
+        let (deployer, _, total_supply) = setup().await;
+
+        let identity = Identity::Address(deployer.wallet.address().into());
+        constructor(total_supply, &deployer.simple_asset, identity.clone()).await;
+
+        mint_to(total_supply - 1, &deployer.simple_asset, identity.clone()).await;
+        mint_to(2, &deployer.simple_asset, identity.clone()).await;
     }
 
     #[tokio::test]
