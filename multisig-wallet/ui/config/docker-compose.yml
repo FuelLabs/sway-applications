@@ -1,0 +1,7 @@
+version: '3'
+services:
+
+    user-interface:
+        build:
+            context: ../../
+            dockerfile: ./ui/config/Dockerfile
