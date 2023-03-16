@@ -10,7 +10,7 @@ export const SignatureButtonComponent = ({
   removeHandler,
 }: SignatureButtonInput) => {
   return (
-    <Flex gap="$2" css={{ marginTop: "$1" }}>
+    <Flex gap="$2" css={{ marginTop: "$2" }}>
       <Button
         color="accent"
         onPress={addHandler}

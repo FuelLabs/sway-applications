@@ -1,7 +1,8 @@
-import { Button, Heading, Stack, toast } from "@fuel-ui/react";
+import { Heading, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract, useIsConnected } from "../../core/hooks";
 import {
+  ButtonComponent,
   InputFieldComponent,
   InputNumberComponent,
 } from "../../common/components";
@@ -12,8 +13,8 @@ export function ThresholdHashComponent() {
   const [nonce, setNonce] = useState(0);
   const [data, setData] = useState("");
 
-  const { contract, isLoading, isError } = useContract();
-  const [isConnected] = useIsConnected();
+  const contract = useContract();
+  const isConnected = useIsConnected();
 
   async function getHash() {
     const { data: validatedData, isError } = validateData(data);
@@ -63,21 +64,11 @@ export function ThresholdHashComponent() {
           text="Data to sign"
           placeholder="0x252afeeb6e..."
         />
-
-        <Button
-          color="accent"
-          onPress={getHash}
-          size="lg"
-          variant="solid"
-          isDisabled={!isConnected}
-          css={{
-            marginTop: "$2",
-            boxShadow: "0px 0px 3px 1px",
-            fontWeight: "$semibold",
-          }}
-        >
-          Create hash
-        </Button>
+        <ButtonComponent
+          handler={getHash}
+          isConnected={isConnected}
+          text="Create hash"
+        />
       </Stack>
     </>
   );

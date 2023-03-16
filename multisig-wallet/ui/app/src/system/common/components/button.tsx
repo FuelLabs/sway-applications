@@ -19,7 +19,7 @@ export const ButtonComponent = ({
       variant="solid"
       isDisabled={!isConnected}
       css={{
-        marginTop: "$1",
+        marginTop: "$2",
         boxShadow: "0px 0px 3px 1px",
         fontWeight: "$semibold",
       }}

@@ -1,13 +1,21 @@
-import { BoxCentered, Button, Heading, Stack, toast } from "@fuel-ui/react";
+import { BoxCentered, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract, useIsConnected } from "../../core/hooks";
 import {
+  ButtonComponent,
+  HeadingComponent,
   InputFieldComponent,
   InputNumberComponent,
   SignatureButtonComponent,
   SignatureComponent,
 } from "../../common/components";
-import { validateAddress, validateData } from "../../common/utils";
+import {
+  addSignature,
+  removeSignature,
+  updateSignature,
+  validateAddress,
+  validateData,
+} from "../../common/utils";
 import {
   SignatureInfoInput,
   UserInput,
@@ -26,8 +34,8 @@ export function WeightPage() {
     },
   ]);
 
-  const { contract, isLoading, isError } = useContract();
-  const [isConnected] = useIsConnected();
+  const contract = useContract();
+  const isConnected = useIsConnected();
 
   async function executeWeight() {
     let { address: userAddress, isError } = validateAddress(address);
@@ -62,47 +70,10 @@ export function WeightPage() {
       );
   }
 
-  async function updateSignature(index: number, signature: string) {
-    const localSignatures = [...signatures];
-    // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
-    localSignatures[index].signature.bytes = [signature, signature];
-    setSignatures(localSignatures);
-  }
-
-  async function addSignature() {
-    let signature: SignatureInfoInput = {
-      message_format: { None: [] },
-      message_prefix: { None: [] },
-      signature: { bytes: ["", ""] },
-      wallet_type: { Fuel: [] },
-    };
-    setSignatures([...signatures, signature]);
-  }
-
-  async function removeSignature() {
-    if (signatures.length === 1) {
-      toast.error("Cannot remove the last signature");
-      return;
-    }
-
-    setSignatures([...signatures.splice(0, signatures.length - 1)]);
-  }
-
   return (
     <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
       <Stack css={{ minWidth: "100%" }}>
-        <Heading
-          as="h3"
-          css={{
-            marginLeft: "auto",
-            marginRight: "auto",
-            marginBottom: "$10",
-            color: "$accent1",
-          }}
-        >
-          Change approval weight of user
-        </Heading>
-
+        <HeadingComponent text="Change approval weight of user" />
         <InputFieldComponent
           onChange={setAddress}
           text="Recipient address"
@@ -120,27 +91,25 @@ export function WeightPage() {
         />
 
         {signatures.map((signature, index) => {
-          return <SignatureComponent handler={updateSignature} index={index} />;
+          return (
+            <SignatureComponent
+              key={`weight-signature-${index}`}
+              updateHandler={updateSignature}
+              handler={setSignatures}
+              signatures={signatures}
+              index={index}
+            />
+          );
         })}
 
-        <Button
-          color="accent"
-          onPress={executeWeight}
-          size="lg"
-          variant="solid"
-          isDisabled={!isConnected}
-          css={{
-            marginTop: "$2",
-            boxShadow: "0px 0px 3px 1px",
-            fontWeight: "$semibold",
-          }}
-        >
-          Set weight
-        </Button>
-
+        <ButtonComponent
+          handler={executeWeight}
+          isConnected={isConnected}
+          text="Set weight"
+        />
         <SignatureButtonComponent
-          addHandler={addSignature}
-          removeHandler={removeSignature}
+          addHandler={() => addSignature(setSignatures, signatures)}
+          removeHandler={() => removeSignature(setSignatures, signatures)}
         />
       </Stack>
     </BoxCentered>

@@ -1,25 +1,25 @@
-import { useEffect, useState } from "react";
-import { useFuel } from "./useFuel";
+import { useEffect, useState } from 'react';
+import { useFuel } from './useFuel';
 
 export function useIsConnected() {
   const fuel = useFuel();
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
+    if (!fuel) return;
+
     async function handleConnection() {
-      const isConnected = await fuel.isConnected();
+      const isConnected = await fuel!.isConnected();
       setIsConnected(isConnected);
     }
 
-    if (fuel) {
-      handleConnection();
-    }
+    handleConnection();
 
-    fuel?.on(fuel.events.connection, handleConnection);
+    fuel.on(fuel.events.connection, handleConnection);
     return () => {
-      fuel?.off(fuel.events.connection, handleConnection);
+      fuel.off(fuel.events.connection, handleConnection);
     };
   }, [fuel]);
 
-  return [isConnected];
+  return isConnected;
 }

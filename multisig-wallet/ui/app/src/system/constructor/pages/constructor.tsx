@@ -16,8 +16,8 @@ import { useIsConnected } from "../../core/hooks/useIsConnected";
 
 export function ConstructorPage() {
   const [users, setUsers] = useState<UserInput[]>([{ address: "", weight: 1 }]);
-  const { contract, isLoading, isError } = useContract();
-  const [isConnected] = useIsConnected();
+  const contract = useContract();
+  const isConnected = useIsConnected();
 
   async function createMultisig() {
     let error = false;
@@ -90,7 +90,7 @@ export function ConstructorPage() {
 
         {users.map((user, index) => {
           return (
-            <Flex gap="$1">
+            <Flex key={`constructor-user-${index}`} gap="$1">
               <Stack css={{ width: "100%" }}>
                 <Text color="blackA12" css={{ fontWeight: "$semibold" }}>
                   User address: {index + 1}

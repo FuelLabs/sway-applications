@@ -1,13 +1,20 @@
-import { BoxCentered, Button, Heading, toast, Stack } from "@fuel-ui/react";
+import { BoxCentered, toast, Stack } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract, useIsConnected } from "../../core/hooks";
 import {
+  ButtonComponent,
+  HeadingComponent,
   InputFieldComponent,
   InputNumberComponent,
   SignatureButtonComponent,
   SignatureComponent,
 } from "../../common/components";
-import { validateData } from "../../common/utils/validate_data";
+import {
+  addSignature,
+  removeSignature,
+  updateSignature,
+  validateData,
+} from "../../common/utils";
 import { SignatureInfoInput } from "../../../contracts/MultisigContractAbi";
 
 export function ThresholdPage() {
@@ -22,8 +29,8 @@ export function ThresholdPage() {
     },
   ]);
 
-  const { contract, isLoading, isError } = useContract();
-  const [isConnected] = useIsConnected();
+  const contract = useContract();
+  const isConnected = useIsConnected();
 
   async function executeThreshold() {
     const { data: validatedData, isError } = validateData(data);
@@ -50,47 +57,10 @@ export function ThresholdPage() {
       );
   }
 
-  async function updateSignature(index: number, signature: string) {
-    const localSignatures = [...signatures];
-    // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
-    localSignatures[index].signature.bytes = [signature, signature];
-    setSignatures(localSignatures);
-  }
-
-  async function addSignature() {
-    let signature: SignatureInfoInput = {
-      message_format: { None: [] },
-      message_prefix: { None: [] },
-      signature: { bytes: ["", ""] },
-      wallet_type: { Fuel: [] },
-    };
-    setSignatures([...signatures, signature]);
-  }
-
-  async function removeSignature() {
-    if (signatures.length === 1) {
-      toast.error("Cannot remove the last signature");
-      return;
-    }
-
-    setSignatures([...signatures.splice(0, signatures.length - 1)]);
-  }
-
   return (
     <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
       <Stack css={{ minWidth: "100%" }}>
-        <Heading
-          as="h3"
-          css={{
-            marginLeft: "auto",
-            marginRight: "auto",
-            marginBottom: "$10",
-            color: "$accent1",
-          }}
-        >
-          Change threshold for execution
-        </Heading>
-
+        <HeadingComponent text="Change threshold for execution" />
         <InputNumberComponent
           onChange={setThreshold}
           text="Threshold"
@@ -103,27 +73,25 @@ export function ThresholdPage() {
         />
 
         {signatures.map((signature, index) => {
-          return <SignatureComponent handler={updateSignature} index={index} />;
+          return (
+            <SignatureComponent
+              key={`threshold-signature-${index}`}
+              updateHandler={updateSignature}
+              handler={setSignatures}
+              signatures={signatures}
+              index={index}
+            />
+          );
         })}
 
-        <Button
-          color="accent"
-          onPress={executeThreshold}
-          size="lg"
-          variant="solid"
-          isDisabled={!isConnected}
-          css={{
-            marginTop: "$2",
-            boxShadow: "0px 0px 3px 1px",
-            fontWeight: "$semibold",
-          }}
-        >
-          Set threshold
-        </Button>
-
+        <ButtonComponent
+          handler={executeThreshold}
+          isConnected={isConnected}
+          text="Set threshold"
+        />
         <SignatureButtonComponent
-          addHandler={addSignature}
-          removeHandler={removeSignature}
+          addHandler={() => addSignature(setSignatures, signatures)}
+          removeHandler={() => removeSignature(setSignatures, signatures)}
         />
       </Stack>
     </BoxCentered>

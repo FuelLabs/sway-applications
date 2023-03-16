@@ -1,0 +1,29 @@
+{
+  "overrides": [
+    {
+      "files": ["*.js", "*.ts", ".tsx"],
+      "options": {
+        "printWidth": 120,
+        "semi": true,
+        "tabWidth": 2,
+        "useTabs": false,
+        "singleQuote": true,
+        "bracketSpacing": true,
+        "bracketSameLine": true,
+        "arrowParens": "always"
+      }
+    },
+    {
+      "files": ["*.json"],
+      "options": {
+        "useTabs": false
+      }
+    },
+    {
+      "files": "*.md",
+      "options": {
+        "useTabs": false
+      }
+    }
+  ]
+}

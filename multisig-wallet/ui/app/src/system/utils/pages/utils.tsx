@@ -10,9 +10,9 @@ export function UtilsPage() {
   const [asset, setAsset] = useState("");
   const [data, setSignature] = useState("");
 
-  const { contract, isLoading, isError } = useContract();
+  const contract = useContract();
   const fuel = useFuel();
-  const [isConnected] = useIsConnected();
+  const isConnected = useIsConnected();
 
   async function getBalance() {
     let { address: userAsset, isError } = validateContractId(asset);
@@ -127,8 +127,8 @@ export function UtilsPage() {
   }
 
   async function signData() {
-    const address = await fuel.currentAccount();
-    const wallet = await fuel.getWallet(address);
+    const address = await fuel!.currentAccount();
+    const wallet = await fuel!.getWallet(address);
     const signature = await wallet.signMessage(data);
     toast.success(`Signature: ${signature}`, { duration: 10000 });
   }

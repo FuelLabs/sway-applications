@@ -4,13 +4,13 @@ import { useFuel } from "../hooks";
 
 export const WalletState = () => {
   const [connected, setConnection] = useState("Connect");
-  // TODO: how do I get this to work?
   const fuel = useFuel();
 
   useEffect(() => {
+    if (!fuel) return;
+
     async function main() {
-      // const isConnected = await fuel!.isConnected();
-      const isConnected = await window.fuel.isConnected();
+      const isConnected = await fuel!.isConnected();
       if (!isConnected) {
         setConnection("Connect");
       } else {
@@ -18,17 +18,14 @@ export const WalletState = () => {
       }
     }
     main();
-  }, [connected]);
+  }, [connected, fuel]);
 
   async function handleWalletConnection() {
-    // const isConnected = await fuel!.isConnected();
-    const isConnected = await window.fuel.isConnected();
+    const isConnected = await fuel!.isConnected();
     if (!isConnected) {
-      await window.fuel.connect();
-      // await fuel!.connect();
+      await fuel!.connect();
     } else {
-      await window.fuel.disconnect();
-      // await fuel!.disconnect();
+      await fuel!.disconnect();
     }
 
     // trigger useEffect

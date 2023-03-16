@@ -12,7 +12,7 @@ export const InputNumberComponent = ({
   placeholder,
   text,
 }: InputNumberInput) => {
-  const [isConnected] = useIsConnected();
+  const isConnected = useIsConnected();
 
   return (
     <>

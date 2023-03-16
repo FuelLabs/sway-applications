@@ -9,6 +9,6 @@
   Fuel-Core version: 0.15.1
 */
 
-export type { MultisigContractAbi } from "./MultisigContractAbi";
+export type { MultisigContractAbi } from './MultisigContractAbi';
 
-export { MultisigContractAbi__factory } from "./factories/MultisigContractAbi__factory";
+export { MultisigContractAbi__factory } from './factories/MultisigContractAbi__factory';

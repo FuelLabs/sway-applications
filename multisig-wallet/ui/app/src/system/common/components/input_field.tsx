@@ -12,7 +12,7 @@ export const InputFieldComponent = ({
   placeholder,
   text,
 }: InputFieldInput) => {
-  const [isConnected] = useIsConnected();
+  const isConnected = useIsConnected();
 
   return (
     <>

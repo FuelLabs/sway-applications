@@ -1,7 +1,9 @@
-import { BoxCentered, Button, Heading, Stack, toast } from "@fuel-ui/react";
+import { BoxCentered, Stack, toast } from "@fuel-ui/react";
 import { useState } from "react";
 import { useContract, useIsConnected } from "../../core/hooks";
 import {
+  ButtonComponent,
+  HeadingComponent,
   InputFieldComponent,
   InputNumberComponent,
   RadioGroupComponent,
@@ -9,6 +11,9 @@ import {
   SignatureComponent,
 } from "../../common/components";
 import {
+  addSignature,
+  removeSignature,
+  updateSignature,
   validateAddress,
   validateContractId,
   validateData,
@@ -34,8 +39,8 @@ export function TransferPage() {
   ]);
 
   const [recipient, setRecipient] = useState("address");
-  const { contract, isLoading, isError } = useContract();
-  const [isConnected] = useIsConnected();
+  const contract = useContract();
+  const isConnected = useIsConnected();
 
   async function transfer() {
     let identity: IdentityInput;
@@ -81,47 +86,10 @@ export function TransferPage() {
       );
   }
 
-  async function updateSignature(index: number, signature: string) {
-    const localSignatures = [...signatures];
-    // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
-    localSignatures[index].signature.bytes = [signature, signature];
-    setSignatures(localSignatures);
-  }
-
-  async function addSignature() {
-    let signature: SignatureInfoInput = {
-      message_format: { None: [] },
-      message_prefix: { None: [] },
-      signature: { bytes: ["", ""] },
-      wallet_type: { Fuel: [] },
-    };
-    setSignatures([...signatures, signature]);
-  }
-
-  async function removeSignature() {
-    if (signatures.length === 1) {
-      toast.error("Cannot remove the last signature");
-      return;
-    }
-
-    setSignatures([...signatures.splice(0, signatures.length - 1)]);
-  }
-
   return (
     <BoxCentered css={{ marginTop: "12%", width: "30%" }}>
       <Stack css={{ minWidth: "100%" }}>
-        <Heading
-          as="h3"
-          css={{
-            marginLeft: "auto",
-            marginRight: "auto",
-            marginBottom: "$10",
-            color: "$accent1",
-          }}
-        >
-          Execute a transfer
-        </Heading>
-
+        <HeadingComponent text="Execute a transfer" />
         <InputFieldComponent
           onChange={setAddress}
           text="Recipient address"
@@ -144,27 +112,25 @@ export function TransferPage() {
         />
 
         {signatures.map((signature, index) => {
-          return <SignatureComponent handler={updateSignature} index={index} />;
+          return (
+            <SignatureComponent
+              key={`transfer-signature-${index}`}
+              updateHandler={updateSignature}
+              handler={setSignatures}
+              signatures={signatures}
+              index={index}
+            />
+          );
         })}
 
-        <Button
-          color="accent"
-          onPress={transfer}
-          size="lg"
-          variant="solid"
-          isDisabled={!isConnected}
-          css={{
-            marginTop: "$2",
-            boxShadow: "0px 0px 3px 1px",
-            fontWeight: "$semibold",
-          }}
-        >
-          Transfer
-        </Button>
-
+        <ButtonComponent
+          handler={transfer}
+          isConnected={isConnected}
+          text="Transfer"
+        />
         <SignatureButtonComponent
-          addHandler={addSignature}
-          removeHandler={removeSignature}
+          addHandler={() => addSignature(setSignatures, signatures)}
+          removeHandler={() => removeSignature(setSignatures, signatures)}
         />
         <RadioGroupComponent handler={setRecipient} />
       </Stack>

@@ -18,9 +18,9 @@ import type {
   BigNumberish,
   InvokeFunction,
   BN,
-} from "fuels";
+} from 'fuels';
 
-import type { Option, Enum, Vec } from "./common";
+import type { Option, Enum, Vec } from './common';
 
 export type AccessControlErrorInput = Enum<{ CanOnlyBeAccessedByAnOwner: [] }>;
 export type AccessControlErrorOutput = AccessControlErrorInput;
@@ -125,108 +125,51 @@ interface MultisigContractAbiInterface extends Interface {
     weight_hash: FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: 'cancel_transaction', values: []): Uint8Array;
+  encodeFunctionData(functionFragment: 'constructor', values: [Vec<UserInput>]): Uint8Array;
   encodeFunctionData(
-    functionFragment: "cancel_transaction",
-    values: []
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "constructor",
-    values: [Vec<UserInput>]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "execute_transaction",
+    functionFragment: 'execute_transaction',
     values: [string, Vec<SignatureInfoInput>, IdentityInput, BigNumberish]
   ): Uint8Array;
   encodeFunctionData(
-    functionFragment: "set_threshold",
+    functionFragment: 'set_threshold',
     values: [Option<string>, Vec<SignatureInfoInput>, BigNumberish]
   ): Uint8Array;
   encodeFunctionData(
-    functionFragment: "set_weight",
+    functionFragment: 'set_weight',
     values: [Option<string>, Vec<SignatureInfoInput>, UserInput]
   ): Uint8Array;
   encodeFunctionData(
-    functionFragment: "transfer",
-    values: [
-      ContractIdInput,
-      string,
-      Vec<SignatureInfoInput>,
-      IdentityInput,
-      BigNumberish
-    ]
+    functionFragment: 'transfer',
+    values: [ContractIdInput, string, Vec<SignatureInfoInput>, IdentityInput, BigNumberish]
   ): Uint8Array;
+  encodeFunctionData(functionFragment: 'approval_weight', values: [string]): Uint8Array;
+  encodeFunctionData(functionFragment: 'balance', values: [ContractIdInput]): Uint8Array;
+  encodeFunctionData(functionFragment: 'nonce', values: []): Uint8Array;
+  encodeFunctionData(functionFragment: 'threshold', values: []): Uint8Array;
   encodeFunctionData(
-    functionFragment: "approval_weight",
-    values: [string]
-  ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "balance",
-    values: [ContractIdInput]
-  ): Uint8Array;
-  encodeFunctionData(functionFragment: "nonce", values: []): Uint8Array;
-  encodeFunctionData(functionFragment: "threshold", values: []): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "threshold_hash",
+    functionFragment: 'threshold_hash',
     values: [Option<string>, BigNumberish, BigNumberish]
   ): Uint8Array;
   encodeFunctionData(
-    functionFragment: "transaction_hash",
+    functionFragment: 'transaction_hash',
     values: [string, BigNumberish, IdentityInput, BigNumberish]
   ): Uint8Array;
-  encodeFunctionData(
-    functionFragment: "weight_hash",
-    values: [Option<string>, BigNumberish, UserInput]
-  ): Uint8Array;
+  encodeFunctionData(functionFragment: 'weight_hash', values: [Option<string>, BigNumberish, UserInput]): Uint8Array;
 
-  decodeFunctionData(
-    functionFragment: "cancel_transaction",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "constructor",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "execute_transaction",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "set_threshold",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "set_weight",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "transfer",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "approval_weight",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "balance",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(functionFragment: "nonce", data: BytesLike): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "threshold",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "threshold_hash",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "transaction_hash",
-    data: BytesLike
-  ): DecodedValue;
-  decodeFunctionData(
-    functionFragment: "weight_hash",
-    data: BytesLike
-  ): DecodedValue;
+  decodeFunctionData(functionFragment: 'cancel_transaction', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'constructor', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'execute_transaction', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'set_threshold', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'set_weight', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'transfer', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'approval_weight', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'balance', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'nonce', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'threshold', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'threshold_hash', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'transaction_hash', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'weight_hash', data: BytesLike): DecodedValue;
 }
 
 export class MultisigContractAbi extends Contract {
@@ -235,30 +178,14 @@ export class MultisigContractAbi extends Contract {
     cancel_transaction: InvokeFunction<[], void>;
     constructor: InvokeFunction<[users: Vec<UserInput>], void>;
     execute_transaction: InvokeFunction<
-      [
-        data: string,
-        signatures: Vec<SignatureInfoInput>,
-        to: IdentityInput,
-        value: BigNumberish
-      ],
+      [data: string, signatures: Vec<SignatureInfoInput>, to: IdentityInput, value: BigNumberish],
       void
     >;
     set_threshold: InvokeFunction<
-      [
-        data: Option<string>,
-        signatures: Vec<SignatureInfoInput>,
-        threshold: BigNumberish
-      ],
+      [data: Option<string>, signatures: Vec<SignatureInfoInput>, threshold: BigNumberish],
       void
     >;
-    set_weight: InvokeFunction<
-      [
-        data: Option<string>,
-        signatures: Vec<SignatureInfoInput>,
-        user: UserInput
-      ],
-      void
-    >;
+    set_weight: InvokeFunction<[data: Option<string>, signatures: Vec<SignatureInfoInput>, user: UserInput], void>;
     transfer: InvokeFunction<
       [
         asset_id: ContractIdInput,
@@ -273,22 +200,11 @@ export class MultisigContractAbi extends Contract {
     balance: InvokeFunction<[asset_id: ContractIdInput], BN>;
     nonce: InvokeFunction<[], BN>;
     threshold: InvokeFunction<[], BN>;
-    threshold_hash: InvokeFunction<
-      [data: Option<string>, nonce: BigNumberish, threshold: BigNumberish],
-      string
-    >;
+    threshold_hash: InvokeFunction<[data: Option<string>, nonce: BigNumberish, threshold: BigNumberish], string>;
     transaction_hash: InvokeFunction<
-      [
-        data: string,
-        nonce: BigNumberish,
-        to: IdentityInput,
-        value: BigNumberish
-      ],
+      [data: string, nonce: BigNumberish, to: IdentityInput, value: BigNumberish],
       string
     >;
-    weight_hash: InvokeFunction<
-      [data: Option<string>, nonce: BigNumberish, user: UserInput],
-      string
-    >;
+    weight_hash: InvokeFunction<[data: Option<string>, nonce: BigNumberish, user: UserInput], string>;
   };
 }

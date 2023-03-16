@@ -9,27 +9,24 @@
   Fuel-Core version: 0.15.1
 */
 
-import { Interface, Contract } from "fuels";
-import type { Provider, BaseWalletLocked, AbstractAddress } from "fuels";
-import type {
-  MultisigContractAbi,
-  MultisigContractAbiInterface,
-} from "../MultisigContractAbi";
+import { Interface, Contract } from 'fuels';
+import type { Provider, BaseWalletLocked, AbstractAddress } from 'fuels';
+import type { MultisigContractAbi, MultisigContractAbiInterface } from '../MultisigContractAbi';
 
 const _abi = {
   types: [
     {
       typeId: 0,
-      type: "()",
+      type: '()',
       components: [],
       typeParameters: null,
     },
     {
       typeId: 1,
-      type: "[_; 2]",
+      type: '[_; 2]',
       components: [
         {
-          name: "__array_element",
+          name: '__array_element',
           type: 2,
           typeArguments: null,
         },
@@ -38,16 +35,16 @@ const _abi = {
     },
     {
       typeId: 2,
-      type: "b256",
+      type: 'b256',
       components: null,
       typeParameters: null,
     },
     {
       typeId: 3,
-      type: "enum AccessControlError",
+      type: 'enum AccessControlError',
       components: [
         {
-          name: "CanOnlyBeAccessedByAnOwner",
+          name: 'CanOnlyBeAccessedByAnOwner',
           type: 0,
           typeArguments: null,
         },
@@ -56,20 +53,20 @@ const _abi = {
     },
     {
       typeId: 4,
-      type: "enum ExecutionError",
+      type: 'enum ExecutionError',
       components: [
         {
-          name: "IncorrectSignerOrdering",
+          name: 'IncorrectSignerOrdering',
           type: 0,
           typeArguments: null,
         },
         {
-          name: "InsufficientAssetAmount",
+          name: 'InsufficientAssetAmount',
           type: 0,
           typeArguments: null,
         },
         {
-          name: "InsufficientApprovals",
+          name: 'InsufficientApprovals',
           type: 0,
           typeArguments: null,
         },
@@ -78,15 +75,15 @@ const _abi = {
     },
     {
       typeId: 5,
-      type: "enum Identity",
+      type: 'enum Identity',
       components: [
         {
-          name: "Address",
+          name: 'Address',
           type: 13,
           typeArguments: null,
         },
         {
-          name: "ContractId",
+          name: 'ContractId',
           type: 16,
           typeArguments: null,
         },
@@ -95,25 +92,25 @@ const _abi = {
     },
     {
       typeId: 6,
-      type: "enum InitError",
+      type: 'enum InitError',
       components: [
         {
-          name: "CannotReinitialize",
+          name: 'CannotReinitialize',
           type: 0,
           typeArguments: null,
         },
         {
-          name: "NotInitialized",
+          name: 'NotInitialized',
           type: 0,
           typeArguments: null,
         },
         {
-          name: "ThresholdCannotBeZero",
+          name: 'ThresholdCannotBeZero',
           type: 0,
           typeArguments: null,
         },
         {
-          name: "TotalWeightCannotBeLessThanThreshold",
+          name: 'TotalWeightCannotBeLessThanThreshold',
           type: 0,
           typeArguments: null,
         },
@@ -122,15 +119,15 @@ const _abi = {
     },
     {
       typeId: 7,
-      type: "enum MessageFormat",
+      type: 'enum MessageFormat',
       components: [
         {
-          name: "None",
+          name: 'None',
           type: 0,
           typeArguments: null,
         },
         {
-          name: "EIP191PersonalSign",
+          name: 'EIP191PersonalSign',
           type: 0,
           typeArguments: null,
         },
@@ -139,15 +136,15 @@ const _abi = {
     },
     {
       typeId: 8,
-      type: "enum MessagePrefix",
+      type: 'enum MessagePrefix',
       components: [
         {
-          name: "None",
+          name: 'None',
           type: 0,
           typeArguments: null,
         },
         {
-          name: "Ethereum",
+          name: 'Ethereum',
           type: 0,
           typeArguments: null,
         },
@@ -156,15 +153,15 @@ const _abi = {
     },
     {
       typeId: 9,
-      type: "enum Option",
+      type: 'enum Option',
       components: [
         {
-          name: "None",
+          name: 'None',
           type: 0,
           typeArguments: null,
         },
         {
-          name: "Some",
+          name: 'Some',
           type: 11,
           typeArguments: null,
         },
@@ -173,15 +170,15 @@ const _abi = {
     },
     {
       typeId: 10,
-      type: "enum WalletType",
+      type: 'enum WalletType',
       components: [
         {
-          name: "Fuel",
+          name: 'Fuel',
           type: 0,
           typeArguments: null,
         },
         {
-          name: "EVM",
+          name: 'EVM',
           type: 0,
           typeArguments: null,
         },
@@ -190,22 +187,22 @@ const _abi = {
     },
     {
       typeId: 11,
-      type: "generic T",
+      type: 'generic T',
       components: null,
       typeParameters: null,
     },
     {
       typeId: 12,
-      type: "raw untyped ptr",
+      type: 'raw untyped ptr',
       components: null,
       typeParameters: null,
     },
     {
       typeId: 13,
-      type: "struct Address",
+      type: 'struct Address',
       components: [
         {
-          name: "value",
+          name: 'value',
           type: 2,
           typeArguments: null,
         },
@@ -214,10 +211,10 @@ const _abi = {
     },
     {
       typeId: 14,
-      type: "struct B512",
+      type: 'struct B512',
       components: [
         {
-          name: "bytes",
+          name: 'bytes',
           type: 1,
           typeArguments: null,
         },
@@ -226,15 +223,15 @@ const _abi = {
     },
     {
       typeId: 15,
-      type: "struct CancelEvent",
+      type: 'struct CancelEvent',
       components: [
         {
-          name: "cancelled_nonce",
+          name: 'cancelled_nonce',
           type: 26,
           typeArguments: null,
         },
         {
-          name: "user",
+          name: 'user',
           type: 2,
           typeArguments: null,
         },
@@ -243,10 +240,10 @@ const _abi = {
     },
     {
       typeId: 16,
-      type: "struct ContractId",
+      type: 'struct ContractId',
       components: [
         {
-          name: "value",
+          name: 'value',
           type: 2,
           typeArguments: null,
         },
@@ -255,10 +252,10 @@ const _abi = {
     },
     {
       typeId: 17,
-      type: "struct EvmAddress",
+      type: 'struct EvmAddress',
       components: [
         {
-          name: "value",
+          name: 'value',
           type: 2,
           typeArguments: null,
         },
@@ -267,25 +264,25 @@ const _abi = {
     },
     {
       typeId: 18,
-      type: "struct ExecutedEvent",
+      type: 'struct ExecutedEvent',
       components: [
         {
-          name: "data",
+          name: 'data',
           type: 2,
           typeArguments: null,
         },
         {
-          name: "nonce",
+          name: 'nonce',
           type: 26,
           typeArguments: null,
         },
         {
-          name: "to",
+          name: 'to',
           type: 5,
           typeArguments: null,
         },
         {
-          name: "value",
+          name: 'value',
           type: 26,
           typeArguments: null,
         },
@@ -294,15 +291,15 @@ const _abi = {
     },
     {
       typeId: 19,
-      type: "struct RawVec",
+      type: 'struct RawVec',
       components: [
         {
-          name: "ptr",
+          name: 'ptr',
           type: 12,
           typeArguments: null,
         },
         {
-          name: "cap",
+          name: 'cap',
           type: 26,
           typeArguments: null,
         },
@@ -311,15 +308,15 @@ const _abi = {
     },
     {
       typeId: 20,
-      type: "struct SetThresholdEvent",
+      type: 'struct SetThresholdEvent',
       components: [
         {
-          name: "previous_threshold",
+          name: 'previous_threshold',
           type: 26,
           typeArguments: null,
         },
         {
-          name: "threshold",
+          name: 'threshold',
           type: 26,
           typeArguments: null,
         },
@@ -328,10 +325,10 @@ const _abi = {
     },
     {
       typeId: 21,
-      type: "struct SetWeightEvent",
+      type: 'struct SetWeightEvent',
       components: [
         {
-          name: "user",
+          name: 'user',
           type: 24,
           typeArguments: null,
         },
@@ -340,25 +337,25 @@ const _abi = {
     },
     {
       typeId: 22,
-      type: "struct SignatureInfo",
+      type: 'struct SignatureInfo',
       components: [
         {
-          name: "message_format",
+          name: 'message_format',
           type: 7,
           typeArguments: null,
         },
         {
-          name: "message_prefix",
+          name: 'message_prefix',
           type: 8,
           typeArguments: null,
         },
         {
-          name: "signature",
+          name: 'signature',
           type: 14,
           typeArguments: null,
         },
         {
-          name: "wallet_type",
+          name: 'wallet_type',
           type: 10,
           typeArguments: null,
         },
@@ -367,25 +364,25 @@ const _abi = {
     },
     {
       typeId: 23,
-      type: "struct TransferEvent",
+      type: 'struct TransferEvent',
       components: [
         {
-          name: "asset",
+          name: 'asset',
           type: 16,
           typeArguments: null,
         },
         {
-          name: "nonce",
+          name: 'nonce',
           type: 26,
           typeArguments: null,
         },
         {
-          name: "to",
+          name: 'to',
           type: 5,
           typeArguments: null,
         },
         {
-          name: "value",
+          name: 'value',
           type: 26,
           typeArguments: null,
         },
@@ -394,15 +391,15 @@ const _abi = {
     },
     {
       typeId: 24,
-      type: "struct User",
+      type: 'struct User',
       components: [
         {
-          name: "address",
+          name: 'address',
           type: 2,
           typeArguments: null,
         },
         {
-          name: "weight",
+          name: 'weight',
           type: 26,
           typeArguments: null,
         },
@@ -411,21 +408,21 @@ const _abi = {
     },
     {
       typeId: 25,
-      type: "struct Vec",
+      type: 'struct Vec',
       components: [
         {
-          name: "buf",
+          name: 'buf',
           type: 19,
           typeArguments: [
             {
-              name: "",
+              name: '',
               type: 11,
               typeArguments: null,
             },
           ],
         },
         {
-          name: "len",
+          name: 'len',
           type: 26,
           typeArguments: null,
         },
@@ -434,7 +431,7 @@ const _abi = {
     },
     {
       typeId: 26,
-      type: "u64",
+      type: 'u64',
       components: null,
       typeParameters: null,
     },
@@ -442,253 +439,253 @@ const _abi = {
   functions: [
     {
       inputs: [],
-      name: "cancel_transaction",
+      name: 'cancel_transaction',
       output: {
-        name: "",
+        name: '',
         type: 0,
         typeArguments: null,
       },
       attributes: [
         {
-          name: "storage",
-          arguments: ["read", "write"],
+          name: 'storage',
+          arguments: ['read', 'write'],
         },
       ],
     },
     {
       inputs: [
         {
-          name: "users",
+          name: 'users',
           type: 25,
           typeArguments: [
             {
-              name: "",
+              name: '',
               type: 24,
               typeArguments: null,
             },
           ],
         },
       ],
-      name: "constructor",
+      name: 'constructor',
       output: {
-        name: "",
+        name: '',
         type: 0,
         typeArguments: null,
       },
       attributes: [
         {
-          name: "storage",
-          arguments: ["read", "write"],
+          name: 'storage',
+          arguments: ['read', 'write'],
         },
       ],
     },
     {
       inputs: [
         {
-          name: "data",
+          name: 'data',
           type: 2,
           typeArguments: null,
         },
         {
-          name: "signatures",
+          name: 'signatures',
           type: 25,
           typeArguments: [
             {
-              name: "",
+              name: '',
               type: 22,
               typeArguments: null,
             },
           ],
         },
         {
-          name: "to",
+          name: 'to',
           type: 5,
           typeArguments: null,
         },
         {
-          name: "value",
+          name: 'value',
           type: 26,
           typeArguments: null,
         },
       ],
-      name: "execute_transaction",
+      name: 'execute_transaction',
       output: {
-        name: "",
+        name: '',
         type: 0,
         typeArguments: null,
       },
       attributes: [
         {
-          name: "storage",
-          arguments: ["read", "write"],
+          name: 'storage',
+          arguments: ['read', 'write'],
         },
       ],
     },
     {
       inputs: [
         {
-          name: "data",
+          name: 'data',
           type: 9,
           typeArguments: [
             {
-              name: "",
+              name: '',
               type: 2,
               typeArguments: null,
             },
           ],
         },
         {
-          name: "signatures",
+          name: 'signatures',
           type: 25,
           typeArguments: [
             {
-              name: "",
+              name: '',
               type: 22,
               typeArguments: null,
             },
           ],
         },
         {
-          name: "threshold",
+          name: 'threshold',
           type: 26,
           typeArguments: null,
         },
       ],
-      name: "set_threshold",
+      name: 'set_threshold',
       output: {
-        name: "",
+        name: '',
         type: 0,
         typeArguments: null,
       },
       attributes: [
         {
-          name: "storage",
-          arguments: ["read", "write"],
+          name: 'storage',
+          arguments: ['read', 'write'],
         },
       ],
     },
     {
       inputs: [
         {
-          name: "data",
+          name: 'data',
           type: 9,
           typeArguments: [
             {
-              name: "",
+              name: '',
               type: 2,
               typeArguments: null,
             },
           ],
         },
         {
-          name: "signatures",
+          name: 'signatures',
           type: 25,
           typeArguments: [
             {
-              name: "",
+              name: '',
               type: 22,
               typeArguments: null,
             },
           ],
         },
         {
-          name: "user",
+          name: 'user',
           type: 24,
           typeArguments: null,
         },
       ],
-      name: "set_weight",
+      name: 'set_weight',
       output: {
-        name: "",
+        name: '',
         type: 0,
         typeArguments: null,
       },
       attributes: [
         {
-          name: "storage",
-          arguments: ["read", "write"],
+          name: 'storage',
+          arguments: ['read', 'write'],
         },
       ],
     },
     {
       inputs: [
         {
-          name: "asset_id",
+          name: 'asset_id',
           type: 16,
           typeArguments: null,
         },
         {
-          name: "data",
+          name: 'data',
           type: 2,
           typeArguments: null,
         },
         {
-          name: "signatures",
+          name: 'signatures',
           type: 25,
           typeArguments: [
             {
-              name: "",
+              name: '',
               type: 22,
               typeArguments: null,
             },
           ],
         },
         {
-          name: "to",
+          name: 'to',
           type: 5,
           typeArguments: null,
         },
         {
-          name: "value",
+          name: 'value',
           type: 26,
           typeArguments: null,
         },
       ],
-      name: "transfer",
+      name: 'transfer',
       output: {
-        name: "",
+        name: '',
         type: 0,
         typeArguments: null,
       },
       attributes: [
         {
-          name: "storage",
-          arguments: ["read", "write"],
+          name: 'storage',
+          arguments: ['read', 'write'],
         },
       ],
     },
     {
       inputs: [
         {
-          name: "user",
+          name: 'user',
           type: 2,
           typeArguments: null,
         },
       ],
-      name: "approval_weight",
+      name: 'approval_weight',
       output: {
-        name: "",
+        name: '',
         type: 26,
         typeArguments: null,
       },
       attributes: [
         {
-          name: "storage",
-          arguments: ["read"],
+          name: 'storage',
+          arguments: ['read'],
         },
       ],
     },
     {
       inputs: [
         {
-          name: "asset_id",
+          name: 'asset_id',
           type: 16,
           typeArguments: null,
         },
       ],
-      name: "balance",
+      name: 'balance',
       output: {
-        name: "",
+        name: '',
         type: 26,
         typeArguments: null,
       },
@@ -696,61 +693,61 @@ const _abi = {
     },
     {
       inputs: [],
-      name: "nonce",
+      name: 'nonce',
       output: {
-        name: "",
+        name: '',
         type: 26,
         typeArguments: null,
       },
       attributes: [
         {
-          name: "storage",
-          arguments: ["read"],
+          name: 'storage',
+          arguments: ['read'],
         },
       ],
     },
     {
       inputs: [],
-      name: "threshold",
+      name: 'threshold',
       output: {
-        name: "",
+        name: '',
         type: 26,
         typeArguments: null,
       },
       attributes: [
         {
-          name: "storage",
-          arguments: ["read"],
+          name: 'storage',
+          arguments: ['read'],
         },
       ],
     },
     {
       inputs: [
         {
-          name: "data",
+          name: 'data',
           type: 9,
           typeArguments: [
             {
-              name: "",
+              name: '',
               type: 2,
               typeArguments: null,
             },
           ],
         },
         {
-          name: "nonce",
+          name: 'nonce',
           type: 26,
           typeArguments: null,
         },
         {
-          name: "threshold",
+          name: 'threshold',
           type: 26,
           typeArguments: null,
         },
       ],
-      name: "threshold_hash",
+      name: 'threshold_hash',
       output: {
-        name: "",
+        name: '',
         type: 2,
         typeArguments: null,
       },
@@ -759,29 +756,29 @@ const _abi = {
     {
       inputs: [
         {
-          name: "data",
+          name: 'data',
           type: 2,
           typeArguments: null,
         },
         {
-          name: "nonce",
+          name: 'nonce',
           type: 26,
           typeArguments: null,
         },
         {
-          name: "to",
+          name: 'to',
           type: 5,
           typeArguments: null,
         },
         {
-          name: "value",
+          name: 'value',
           type: 26,
           typeArguments: null,
         },
       ],
-      name: "transaction_hash",
+      name: 'transaction_hash',
       output: {
-        name: "",
+        name: '',
         type: 2,
         typeArguments: null,
       },
@@ -790,30 +787,30 @@ const _abi = {
     {
       inputs: [
         {
-          name: "data",
+          name: 'data',
           type: 9,
           typeArguments: [
             {
-              name: "",
+              name: '',
               type: 2,
               typeArguments: null,
             },
           ],
         },
         {
-          name: "nonce",
+          name: 'nonce',
           type: 26,
           typeArguments: null,
         },
         {
-          name: "user",
+          name: 'user',
           type: 24,
           typeArguments: null,
         },
       ],
-      name: "weight_hash",
+      name: 'weight_hash',
       output: {
-        name: "",
+        name: '',
         type: 2,
         typeArguments: null,
       },
@@ -824,7 +821,7 @@ const _abi = {
     {
       logId: 0,
       loggedType: {
-        name: "",
+        name: '',
         type: 3,
         typeArguments: [],
       },
@@ -832,7 +829,7 @@ const _abi = {
     {
       logId: 1,
       loggedType: {
-        name: "",
+        name: '',
         type: 15,
         typeArguments: [],
       },
@@ -840,7 +837,7 @@ const _abi = {
     {
       logId: 2,
       loggedType: {
-        name: "",
+        name: '',
         type: 6,
         typeArguments: [],
       },
@@ -848,7 +845,7 @@ const _abi = {
     {
       logId: 3,
       loggedType: {
-        name: "",
+        name: '',
         type: 6,
         typeArguments: [],
       },
@@ -856,7 +853,7 @@ const _abi = {
     {
       logId: 4,
       loggedType: {
-        name: "",
+        name: '',
         type: 6,
         typeArguments: [],
       },
@@ -864,7 +861,7 @@ const _abi = {
     {
       logId: 5,
       loggedType: {
-        name: "",
+        name: '',
         type: 6,
         typeArguments: [],
       },
@@ -872,7 +869,7 @@ const _abi = {
     {
       logId: 6,
       loggedType: {
-        name: "",
+        name: '',
         type: 13,
         typeArguments: [],
       },
@@ -880,7 +877,7 @@ const _abi = {
     {
       logId: 7,
       loggedType: {
-        name: "",
+        name: '',
         type: 17,
         typeArguments: [],
       },
@@ -888,7 +885,7 @@ const _abi = {
     {
       logId: 8,
       loggedType: {
-        name: "",
+        name: '',
         type: 17,
         typeArguments: [],
       },
@@ -896,7 +893,7 @@ const _abi = {
     {
       logId: 9,
       loggedType: {
-        name: "",
+        name: '',
         type: 4,
         typeArguments: [],
       },
@@ -904,7 +901,7 @@ const _abi = {
     {
       logId: 10,
       loggedType: {
-        name: "",
+        name: '',
         type: 4,
         typeArguments: [],
       },
@@ -912,7 +909,7 @@ const _abi = {
     {
       logId: 11,
       loggedType: {
-        name: "",
+        name: '',
         type: 18,
         typeArguments: [],
       },
@@ -920,7 +917,7 @@ const _abi = {
     {
       logId: 12,
       loggedType: {
-        name: "",
+        name: '',
         type: 6,
         typeArguments: [],
       },
@@ -928,7 +925,7 @@ const _abi = {
     {
       logId: 13,
       loggedType: {
-        name: "",
+        name: '',
         type: 6,
         typeArguments: [],
       },
@@ -936,7 +933,7 @@ const _abi = {
     {
       logId: 14,
       loggedType: {
-        name: "",
+        name: '',
         type: 6,
         typeArguments: [],
       },
@@ -944,7 +941,7 @@ const _abi = {
     {
       logId: 15,
       loggedType: {
-        name: "",
+        name: '',
         type: 13,
         typeArguments: [],
       },
@@ -952,7 +949,7 @@ const _abi = {
     {
       logId: 16,
       loggedType: {
-        name: "",
+        name: '',
         type: 17,
         typeArguments: [],
       },
@@ -960,7 +957,7 @@ const _abi = {
     {
       logId: 17,
       loggedType: {
-        name: "",
+        name: '',
         type: 17,
         typeArguments: [],
       },
@@ -968,7 +965,7 @@ const _abi = {
     {
       logId: 18,
       loggedType: {
-        name: "",
+        name: '',
         type: 4,
         typeArguments: [],
       },
@@ -976,7 +973,7 @@ const _abi = {
     {
       logId: 19,
       loggedType: {
-        name: "",
+        name: '',
         type: 4,
         typeArguments: [],
       },
@@ -984,7 +981,7 @@ const _abi = {
     {
       logId: 20,
       loggedType: {
-        name: "",
+        name: '',
         type: 20,
         typeArguments: [],
       },
@@ -992,7 +989,7 @@ const _abi = {
     {
       logId: 21,
       loggedType: {
-        name: "",
+        name: '',
         type: 6,
         typeArguments: [],
       },
@@ -1000,7 +997,7 @@ const _abi = {
     {
       logId: 22,
       loggedType: {
-        name: "",
+        name: '',
         type: 13,
         typeArguments: [],
       },
@@ -1008,7 +1005,7 @@ const _abi = {
     {
       logId: 23,
       loggedType: {
-        name: "",
+        name: '',
         type: 17,
         typeArguments: [],
       },
@@ -1016,7 +1013,7 @@ const _abi = {
     {
       logId: 24,
       loggedType: {
-        name: "",
+        name: '',
         type: 17,
         typeArguments: [],
       },
@@ -1024,7 +1021,7 @@ const _abi = {
     {
       logId: 25,
       loggedType: {
-        name: "",
+        name: '',
         type: 4,
         typeArguments: [],
       },
@@ -1032,7 +1029,7 @@ const _abi = {
     {
       logId: 26,
       loggedType: {
-        name: "",
+        name: '',
         type: 4,
         typeArguments: [],
       },
@@ -1040,7 +1037,7 @@ const _abi = {
     {
       logId: 27,
       loggedType: {
-        name: "",
+        name: '',
         type: 6,
         typeArguments: [],
       },
@@ -1048,7 +1045,7 @@ const _abi = {
     {
       logId: 28,
       loggedType: {
-        name: "",
+        name: '',
         type: 21,
         typeArguments: [],
       },
@@ -1056,7 +1053,7 @@ const _abi = {
     {
       logId: 29,
       loggedType: {
-        name: "",
+        name: '',
         type: 6,
         typeArguments: [],
       },
@@ -1064,7 +1061,7 @@ const _abi = {
     {
       logId: 30,
       loggedType: {
-        name: "",
+        name: '',
         type: 4,
         typeArguments: [],
       },
@@ -1072,7 +1069,7 @@ const _abi = {
     {
       logId: 31,
       loggedType: {
-        name: "",
+        name: '',
         type: 13,
         typeArguments: [],
       },
@@ -1080,7 +1077,7 @@ const _abi = {
     {
       logId: 32,
       loggedType: {
-        name: "",
+        name: '',
         type: 17,
         typeArguments: [],
       },
@@ -1088,7 +1085,7 @@ const _abi = {
     {
       logId: 33,
       loggedType: {
-        name: "",
+        name: '',
         type: 17,
         typeArguments: [],
       },
@@ -1096,7 +1093,7 @@ const _abi = {
     {
       logId: 34,
       loggedType: {
-        name: "",
+        name: '',
         type: 4,
         typeArguments: [],
       },
@@ -1104,7 +1101,7 @@ const _abi = {
     {
       logId: 35,
       loggedType: {
-        name: "",
+        name: '',
         type: 4,
         typeArguments: [],
       },
@@ -1112,7 +1109,7 @@ const _abi = {
     {
       logId: 36,
       loggedType: {
-        name: "",
+        name: '',
         type: 23,
         typeArguments: [],
       },
@@ -1127,14 +1124,7 @@ export class MultisigContractAbi__factory {
   static createInterface(): MultisigContractAbiInterface {
     return new Interface(_abi) as unknown as MultisigContractAbiInterface;
   }
-  static connect(
-    id: string | AbstractAddress,
-    walletOrProvider: BaseWalletLocked | Provider
-  ): MultisigContractAbi {
-    return new Contract(
-      id,
-      _abi,
-      walletOrProvider
-    ) as unknown as MultisigContractAbi;
+  static connect(id: string | AbstractAddress, walletOrProvider: BaseWalletLocked | Provider): MultisigContractAbi {
+    return new Contract(id, _abi, walletOrProvider) as unknown as MultisigContractAbi;
   }
 }
