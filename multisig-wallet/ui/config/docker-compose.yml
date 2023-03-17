@@ -1,7 +1,16 @@
 version: '3'
 services:
 
+    client:
+        build:
+            context: ../../
+            dockerfile: ./ui/config/Dockerfile-client
+        ports:
+            - "4000:4000"
+
     user-interface:
         build:
             context: ../../
-            dockerfile: ./ui/config/Dockerfile
+            dockerfile: ./ui/config/Dockerfile-ui
+        ports:
+            - "5173:8080"

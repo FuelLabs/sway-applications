@@ -1,0 +1,14 @@
+FROM ghcr.io/fuellabs/fuel-core:v0.15.3
+
+ARG IP=0.0.0.0
+ARG PORT=4000
+
+WORKDIR /root
+
+COPY ./ui/config/chainConfig.json .
+
+CMD ./fuel-core \
+    --ip ${IP} \
+    --port ${PORT} \
+    --db-type in-memory \
+    --chain ./chainConfig.json

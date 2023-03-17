@@ -1,37 +1,45 @@
 ## Start the user interface
 
-### Build the contracts
+### Contracts
 
-Change into `/multisig-wallet/project` and run
+Run the following commands from the following directory: `/multisig-wallet/project`
+
+#### Build the contracts
 
 ```sh
 forc build
 ```
 
-### Start a local node
+#### Run a local client
 
-Run the script `start_node.sh` which is inside `/multisig-wallet/ui/scripts`
+To fund your local browser wallet copy the address and put it into the `chainConfig.json`
 
-### Deploy contracts to a local node
+```sh
+fuel-core run --ip 127.0.0.1 --port 4000 --chain ../ui/config/chainConfig.json --db-type in-memory
+```
 
-Change into `/multisig-wallet/project` and run
+#### Deploy the contract
 
 ```sh
 forc deploy --unsigned
 ```
 
-### Install dependencies
+### User interface
 
-Change into `/multisig-wallet/ui/app` and run
+The user interface is run inside of `docker`.
 
-```sh
-pnpm install
-```
+Change into `/multisig-wallet/ui/config`
 
-### Start the user interface in your default browser
-
-Inside `/multisig-wallet/ui/app` run
+#### Build the image
 
 ```sh
-pnpm run dev --open
+docker-compose build user-interface
 ```
+
+#### Start the user interface
+
+```sh
+docker-compose run user-interface
+```
+
+The terminal will present a `Network` URL. Copy that into your browser to open the UI.
