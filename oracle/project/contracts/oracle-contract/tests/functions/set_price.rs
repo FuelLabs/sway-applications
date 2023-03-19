@@ -24,7 +24,7 @@ mod success {
                 price: set_price_amount
             }
         );
-        assert_eq!(price, set_price_amount);
+        assert_eq!(price, Option::Some(set_price_amount));
     }
 }
 
