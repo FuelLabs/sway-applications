@@ -61,6 +61,7 @@ export function AssetPage({
                     marginBottom: "$1",
                     width: "100%",
                     background: "hsl(128deg 90% 38% / 91%)",
+                    border: "1px solid black"
                   }}
                 >
                   <Input.Field
@@ -87,6 +88,7 @@ export function AssetPage({
                     marginBottom: "$1",
                     width: "100%",
                     background: "hsl(128deg 90% 38% / 91%)",
+                    border: "1px solid black"
                   }}
                 >
                   <Input.Number
