@@ -27,7 +27,7 @@ export function BuyerDeadlinePage( { setBuyer, setDeadline, setRecipient, setPag
                 placeholder="621"
             />
 
-            <RadioGroupComponent handler={setRecipient} />
+            <RadioGroupComponent text="Buyer" handler={setRecipient} />
 
             <Flex gap="$1" css={{ marginTop: "$10" }}>
                 <Button

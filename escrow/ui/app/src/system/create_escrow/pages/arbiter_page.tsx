@@ -1,16 +1,17 @@
 import { Button, Stack } from "@fuel-ui/react";
-import { InputFieldComponent, InputNumberComponent } from "../../common/components";
+import { InputFieldComponent, InputNumberComponent, RadioGroupComponent } from "../../common/components";
 import { useIsConnected } from "../../core/hooks";
 
 interface ArbiterInterface {
     setArbiter: (address: string) => void,
     setAsset: (asset: string) => void,
     setAssetAmount: (amount: number) => void,
+    setRecipient: (type: string) => void,
     setPage: (page: number) => void,
     currentPage: number,
 }
 
-export function ArbiterPage( { setArbiter, setAsset, setAssetAmount, setPage, currentPage } : ArbiterInterface) {
+export function ArbiterPage( { setArbiter, setAsset, setAssetAmount, setRecipient, setPage, currentPage } : ArbiterInterface) {
     const isConnected = useIsConnected();
 
     return (
@@ -33,6 +34,8 @@ export function ArbiterPage( { setArbiter, setAsset, setAssetAmount, setPage, cu
                 placeholder="1.0"
             />
 
+            <RadioGroupComponent text="Arbiter" handler={setRecipient} />
+
             <Button
                 color="accent"
                 onPress={() => setPage(currentPage + 1)}
@@ -40,7 +43,7 @@ export function ArbiterPage( { setArbiter, setAsset, setAssetAmount, setPage, cu
                 variant="solid"
                 isDisabled={!isConnected}
                 css={{
-                    marginTop: "$2",
+                    marginTop: "$10",
                     fontWeight: "$semibold",
                     background: "$pink6",
                     color: "pink",

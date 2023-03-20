@@ -2,9 +2,6 @@ import { Button, BoxCentered, Dropdown, Flex, FuelLogo, Heading, Link, Text } fr
 import { WalletState } from "./wallet_state";
 
 export function Header() {
-
-  async function t() {}
-
   return (
     <Flex css={{ height: "$20", background: "transparent" }}>
       <BoxCentered>
@@ -80,21 +77,14 @@ function LinkComponent({ text }: LinkInput) {
     <Link
       href={`/${ref}`}
       css={{
-        "&:hover": { textDecoration: "none", background: "$pink8" },
-        // border: "1px solid black",
-        // borderRadius: "8px",
-        width: "100%",
-        background: "$pink6",
-        height: "$12"
+        marginLeft: "auto",
+        marginRight: "auto",
       }}
     >
         <Text 
             css={{
                 color: "pink",
                 fontWeight: "$semibold",
-                textAlign: "center",
-                marginLeft: "auto",
-                marginRight: "auto",
             }}
         >
             {text}

@@ -2,9 +2,10 @@ import { Heading, RadioGroup } from "@fuel-ui/react";
 
 interface ComponentInput {
   handler: (recipient: string) => void;
+  text: string
 }
 
-export function RadioGroupComponent({ handler }: ComponentInput) {
+export function RadioGroupComponent({ handler, text }: ComponentInput) {
   return (
     <>
       <Heading
@@ -16,7 +17,7 @@ export function RadioGroupComponent({ handler }: ComponentInput) {
           color: "$accent1",
         }}
       >
-        Recipient Type
+        {text} Type
       </Heading>
 
       <RadioGroup
