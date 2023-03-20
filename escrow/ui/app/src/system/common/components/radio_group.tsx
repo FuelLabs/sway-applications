@@ -2,7 +2,7 @@ import { Heading, RadioGroup } from "@fuel-ui/react";
 
 interface ComponentInput {
   handler: (recipient: string) => void;
-  text: string
+  text: string;
 }
 
 export function RadioGroupComponent({ handler, text }: ComponentInput) {
@@ -14,7 +14,7 @@ export function RadioGroupComponent({ handler, text }: ComponentInput) {
           marginLeft: "auto",
           marginRight: "auto",
           marginTop: "$8",
-          color: "$accent1",
+          color: "$blackA12",
         }}
       >
         {text} Type

@@ -1,7 +1,18 @@
-import { Button, BoxCentered, Dropdown, Flex, FuelLogo, Heading, Link, Text } from "@fuel-ui/react";
+import {
+  Button,
+  BoxCentered,
+  Dropdown,
+  Flex,
+  FuelLogo,
+  Heading,
+  Text,
+} from "@fuel-ui/react";
+import { useNavigate } from "react-router-dom";
 import { WalletState } from "./wallet_state";
 
 export function Header() {
+  const navigate = useNavigate();
+
   return (
     <Flex css={{ height: "$20", background: "transparent" }}>
       <BoxCentered>
@@ -29,29 +40,35 @@ export function Header() {
       </BoxCentered>
 
       <BoxCentered gap="$2" css={{ paddingRight: "20px" }}>
-
         <Dropdown>
           <Dropdown.Trigger>
             <Button
-                variant="ghost"
-                css={{ background: "$pink6", color: "pink", fontWeight: "$semibold" }}
-              >
+              variant="ghost"
+              css={{
+                background: "rgb(34 196 53)",
+                color: "$blackA12",
+                fontWeight: "$semibold",
+                border: "1px solid black",
+              }}
+            >
               Navigation
             </Button>
           </Dropdown.Trigger>
-          
-          <Dropdown.Menu css={{ background: "$pink6" }}>
-            
+
+          <Dropdown.Menu
+            onAction={(key) => {
+              navigate(key as string);
+            }}
+            css={{ background: "rgb(34 196 53)" }}
+          >
             <Dropdown.MenuItem key="create-escrow" textValue="create-escrow">
-              <LinkComponent text="Create Escrow" />
+              <TextComponent text="Create Escrow" />
             </Dropdown.MenuItem>
 
             <Dropdown.MenuItem key="manage-escrows" textValue="manage-escrows">
-              <LinkComponent text="Manage Escrows" />
+              <TextComponent text="Manage Escrows" />
             </Dropdown.MenuItem>
-
           </Dropdown.Menu>
-
         </Dropdown>
 
         <WalletState />
@@ -60,35 +77,22 @@ export function Header() {
   );
 }
 
-interface LinkInput {
+interface TextDropdownInterface {
   text: string;
 }
 
-function LinkComponent({ text }: LinkInput) {
-  let tokens = text.split(" ");
-
-  for (let i = 0; i < tokens.length; i++) {
-    tokens[i] = tokens[i][0].toLowerCase() + tokens[i].slice(1);
-  }
-
-  const ref = tokens.join("-");
-
+function TextComponent({ text }: TextDropdownInterface) {
   return (
-    <Link
-      href={`/${ref}`}
+    <Text
       css={{
+        color: "$blackA12",
+        fontWeight: "$semibold",
+        textAlign: "center",
         marginLeft: "auto",
         marginRight: "auto",
       }}
     >
-        <Text 
-            css={{
-                color: "pink",
-                fontWeight: "$semibold",
-            }}
-        >
-            {text}
-        </Text>
-    </Link>
+      {text}
+    </Text>
   );
 }

@@ -19,8 +19,9 @@ export const AssetButtonComponent = ({
         css={{
           width: "100%",
           fontWeight: "$semibold",
-          background: "$pink6",
-          color: "pink",
+          background: "hsl(128deg 90% 38% / 91%)",
+          color: "$blackA12",
+          border: "1px solid black",
         }}
       >
         Add asset
@@ -34,8 +35,9 @@ export const AssetButtonComponent = ({
         css={{
           width: "100%",
           fontWeight: "$semibold",
-          background: "$pink6",
-          color: "pink",
+          background: "hsl(128deg 90% 38% / 91%)",
+          color: "$blackA12",
+          border: "1px solid black",
         }}
       >
         Remove asset

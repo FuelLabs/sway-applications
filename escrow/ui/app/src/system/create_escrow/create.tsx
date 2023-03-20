@@ -1,21 +1,27 @@
 import { useState } from "react";
 import { BoxCentered, Heading, Stack, toast } from "@fuel-ui/react";
-import { AssetInput, ArbiterInput, IdentityInput } from "../../contracts/EscrowContractAbi";
+import {
+  AssetInput,
+  ArbiterInput,
+  IdentityInput,
+} from "../../contracts/EscrowContractAbi";
 import { ArbiterPage, AssetPage, BuyerDeadlinePage } from "./pages";
 import { validateAddress, validateContractId } from "../common/utils";
 import { useContract } from "../core/hooks";
 
 export function CreateEscrow() {
-  const [arbiterAddress, setArbiterAddress] = useState("")
-  const [arbiterAsset, setArbiterAsset] = useState("")
+  const [arbiterAddress, setArbiterAddress] = useState("");
+  const [arbiterAsset, setArbiterAsset] = useState("");
   const [arbiterAssetAmount, setArbiterAssetAmount] = useState(0);
   const [deadline, setDeadline] = useState(0);
   const [buyerAddress, setBuyerAddress] = useState("");
   const [buyerType, setBuyerType] = useState("address");
   const [arbiterType, setArbiterType] = useState("address");
-  const [assets, setAssets] = useState<AssetInput[]>([{ amount: 0, id: { value: "" } }]);
-  const [page, setPage] = useState(1)
-  const contract = useContract()
+  const [assets, setAssets] = useState<AssetInput[]>([
+    { amount: 0, id: { value: "" } },
+  ]);
+  const [page, setPage] = useState(1);
+  const contract = useContract();
 
   async function createEscrow() {
     // TODO: deadline validation?
@@ -37,12 +43,17 @@ export function CreateEscrow() {
 
     let { address, isError } = validateContractId(arbiterAsset);
     if (isError) {
-      toast.error(`Arbiter asset: ${arbiterAsset} is invalid.`, { duration: 10000 });
+      toast.error(`Arbiter asset: ${arbiterAsset} is invalid.`, {
+        duration: 10000,
+      });
       return;
     }
 
     if (arbiterAssetAmount <= 0) {
-      toast.error(`Arbiter asset: ${arbiterAssetAmount} must be greater than 0.`, { duration: 10000 });
+      toast.error(
+        `Arbiter asset: ${arbiterAssetAmount} must be greater than 0.`,
+        { duration: 10000 }
+      );
       return;
     }
 
@@ -54,9 +65,9 @@ export function CreateEscrow() {
     } else {
       let { address: user, isError } = validateContractId(buyerAddress);
       if (isError) {
-        toast.error('Buyer address is invalid.', { duration: 10000 });
+        toast.error("Buyer address is invalid.", { duration: 10000 });
         return;
-      };
+      }
 
       buyerIdentity = { ContractId: { value: user } };
     }
@@ -64,21 +75,25 @@ export function CreateEscrow() {
     assets.forEach((asset) => {
       let { address, isError } = validateContractId(asset.id.value);
       if (isError) {
-        toast.error(`Asset: ${asset.id.value} is invalid.`, { duration: 10000 });
+        toast.error(`Asset: ${asset.id.value} is invalid.`, {
+          duration: 10000,
+        });
         return;
       }
 
       if (asset.amount <= 0) {
-        toast.error(`Asset: ${asset.id.value} must be greater than 0.`, { duration: 10000 });
+        toast.error(`Asset: ${asset.id.value} must be greater than 0.`, {
+          duration: 10000,
+        });
         return;
       }
-    })
+    });
 
     let arbiter: ArbiterInput = {
       address: arbiterIdentity,
       asset: { value: arbiterAsset },
-      fee_amount: arbiterAssetAmount
-    }
+      fee_amount: arbiterAssetAmount,
+    };
 
     console.log("arbiterAddress: ", arbiterIdentity);
     console.log("arbiterAsset: ", arbiterAsset);
@@ -112,47 +127,49 @@ export function CreateEscrow() {
 
   return (
     <BoxCentered css={{ color: "$blackA12", fontWeight: "$semibold" }}>
-      
       <Stack css={{ width: "100%" }}>
-        <Heading css={{ marginLeft: "auto", marginRight: "auto", color: "$pink6", marginBottom: "$14" }}>
+        <Heading
+          css={{
+            marginLeft: "auto",
+            marginRight: "auto",
+            color: "$blackA12",
+            marginBottom: "$20",
+          }}
+        >
           Create Escrow
         </Heading>
 
-        {
-          page === 1 && 
-          <ArbiterPage 
-            setArbiter={setArbiterAddress} 
-            setAsset={setArbiterAsset} 
-            setAssetAmount={setArbiterAssetAmount} 
-            setRecipient={setArbiterType} 
-            setPage={setPage} 
+        {page === 1 && (
+          <ArbiterPage
+            setArbiter={setArbiterAddress}
+            setAsset={setArbiterAsset}
+            setAssetAmount={setArbiterAssetAmount}
+            setRecipient={setArbiterType}
+            setPage={setPage}
             currentPage={page}
           />
-        }
+        )}
 
-        {
-          page === 2 && 
-          <BuyerDeadlinePage 
-            setBuyer={setBuyerAddress} 
-            setDeadline={setDeadline} 
-            setRecipient={setBuyerType} 
-            setPage={setPage} 
+        {page === 2 && (
+          <BuyerDeadlinePage
+            setBuyer={setBuyerAddress}
+            setDeadline={setDeadline}
+            setRecipient={setBuyerType}
+            setPage={setPage}
             currentPage={page}
           />
-        }
+        )}
 
-        {
-          page == 3 &&
-          <AssetPage 
-            setAssets={setAssets} 
+        {page == 3 && (
+          <AssetPage
+            setAssets={setAssets}
             setPage={setPage}
             currentPage={page}
             assets={assets}
             createEscrow={createEscrow}
           />
-        }
+        )}
       </Stack>
-
     </BoxCentered>
   );
 }

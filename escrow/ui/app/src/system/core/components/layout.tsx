@@ -11,7 +11,8 @@ export function Layout({ children }: LayoutProps) {
     <Stack
       css={{
         background:
-          "linear-gradient(rgb(255 120 229) 30%, rgb(125 85 255) 130%)",
+          // "linear-gradient(197.05deg, rgb(14, 34, 27) 0%, rgb(7, 22, 20) 22.2%, rgb(12, 14, 13) 40.7%)"
+          "linear-gradient(190deg, rgb(30, 113, 84) 10%, rgb(33 91 73) 63%)",
       }}
     >
       <Header />

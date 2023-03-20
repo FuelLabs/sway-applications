@@ -16,13 +16,15 @@ export const InputFieldComponent = ({
 
   return (
     <Stack>
-      <Text color="blackA12" css={{ fontWeight: "$semibold" }}>
-        {text}
-      </Text>
+      <Text css={{ fontWeight: "$semibold", color: "$blackA12" }}>{text}</Text>
       <Input
         isDisabled={!isConnected}
         size="lg"
-        css={{ marginBottom: "$1", boxShadow: "1px 1px 5px 2px grey" }}
+        css={{
+          marginBottom: "$2",
+          background: "hsl(128deg 90% 38% / 91%)",
+          border: "1px solid black",
+        }}
       >
         <Input.Field
           onChange={(event) => onChange(event.target.value)}

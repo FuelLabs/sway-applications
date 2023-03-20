@@ -16,13 +16,15 @@ export const InputNumberComponent = ({
 
   return (
     <>
-      <Text color="blackA12" css={{ fontWeight: "$semibold" }}>
-        {text}
-      </Text>
+      <Text css={{ fontWeight: "$semibold", color: "$blackA12" }}>{text}</Text>
       <Input
         isDisabled={!isConnected}
         size="lg"
-        css={{ marginBottom: "$1", boxShadow: "1px 1px 5px 2px grey" }}
+        css={{
+          marginBottom: "$1",
+          background: "hsl(128deg 90% 38% / 91%)",
+          border: "1px solid black",
+        }}
       >
         <Input.Number
           onChange={(event) => onChange(Number(event.target.value))}

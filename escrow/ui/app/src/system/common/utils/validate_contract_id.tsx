@@ -1,4 +1,4 @@
-import { isB256 } from 'fuels';
+import { isB256 } from "fuels";
 
 export function validateContractId(address: string) {
   let isError = false;

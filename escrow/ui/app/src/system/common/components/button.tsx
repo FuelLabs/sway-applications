@@ -6,11 +6,8 @@ interface ButtonInput {
   text: string;
 }
 
-export const ButtonComponent = ({
-  handler,
-  text,
-}: ButtonInput) => {
-    const isConnected = useIsConnected();
+export const ButtonComponent = ({ handler, text }: ButtonInput) => {
+  const isConnected = useIsConnected();
 
   return (
     <Button
@@ -22,8 +19,9 @@ export const ButtonComponent = ({
       css={{
         marginTop: "$2",
         fontWeight: "$semibold",
-        background: "$pink6",
-        color: "pink",
+        background: "hsl(128deg 90% 38% / 91%)",
+        color: "$blackA12",
+        border: "1px solid black",
       }}
     >
       {text}

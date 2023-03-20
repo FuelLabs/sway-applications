@@ -39,7 +39,12 @@ export const WalletState = () => {
     <Button
       onPress={handleWalletConnection}
       variant="ghost"
-      css={{ background: "$pink6", color: "pink", fontWeight: "$semibold" }}
+      css={{
+        background: "rgb(34 196 53)",
+        color: "$blackA12",
+        fontWeight: "$semibold",
+        border: "1px solid black",
+      }}
     >
       {connected}
     </Button>
