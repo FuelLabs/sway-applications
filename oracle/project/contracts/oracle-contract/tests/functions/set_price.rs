@@ -24,7 +24,7 @@ mod success {
                 price: set_price_amount
             }
         );
-        assert!(matches!(price, Some(set_price_amount)));
+        assert_eq!(price, Some(set_price_amount));
     }
 }
 
