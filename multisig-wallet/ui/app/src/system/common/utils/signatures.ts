@@ -8,8 +8,7 @@ export async function updateSignature(
   signatures: SignatureInfoInput[]
 ) {
   const localSignatures = [...signatures];
-  // TODO: Figure out how to convert the signed message into a B512 in the SignatureInfo
-  localSignatures[index].signature.bytes = [signature, signature];
+  localSignatures[index].signature = signature;
   handler(localSignatures);
 }
 
@@ -20,7 +19,7 @@ export async function addSignature(
   let signature: SignatureInfoInput = {
     message_format: { None: [] },
     message_prefix: { None: [] },
-    signature: { bytes: ['', ''] },
+    signature: "",
     wallet_type: { Fuel: [] },
   };
   handler([...signatures, signature]);

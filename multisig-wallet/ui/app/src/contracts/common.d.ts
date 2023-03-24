@@ -4,9 +4,9 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.30.0
-  Forc version: 0.32.2
-  Fuel-Core version: 0.15.1
+  Fuels version: 0.36.0
+  Forc version: 0.35.3
+  Fuel-Core version: 0.17.3
 */
 
 /*
@@ -14,7 +14,8 @@
   does not raise error on multiple pairs.
   This is done in the abi-coder
 */
-export type Enum<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U];
+export type Enum<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
+  U[keyof U];
 
 /*
   Mimics Sway Option and Vectors.

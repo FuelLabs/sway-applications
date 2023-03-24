@@ -29,7 +29,7 @@ export function WeightPage() {
     {
       message_format: { None: [] },
       message_prefix: { None: [] },
-      signature: { bytes: ["", ""] },
+      signature: "",
       wallet_type: { Fuel: [] },
     },
   ]);
@@ -57,6 +57,7 @@ export function WeightPage() {
           toast.success("Updated user weight!", { duration: 10000 });
         },
         (error) => {
+          console.log(error);
           if (error.logs === undefined || error.logs.length === 0) {
             toast.error("Unknown error occurred during contract call.", {
               duration: 10000,
