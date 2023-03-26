@@ -15,7 +15,6 @@ mod success {
     };
 
     #[tokio::test]
-    #[ignore]
     async fn takes_payment() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
@@ -23,6 +22,10 @@ mod success {
 
         mint(&seller, defaults.asset_amount, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
+
+        let provider = buyer.wallet.get_provider().unwrap();
+        let origin_block = provider.latest_block_height().await.unwrap();
+
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -30,12 +33,16 @@ mod success {
             vec![asset.clone(), asset.clone()],
             &buyer,
             &seller,
-            6,
+            defaults.deadline,
         )
         .await;
+
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
-        // TODO: need to shift block by one, waiting on SDK then uncomment below
+        provider
+            .produce_blocks(origin_block + defaults.deadline, None)
+            .await
+            .unwrap();
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
@@ -44,21 +51,23 @@ mod success {
             State::Pending
         ));
 
-        // let response = take_payment(&seller, 0).await;
+        let response = take_payment(&seller, 0).await;
 
-        // assert_eq!(defaults.asset_amount, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(
+            // buyer deposit + arbiter deposit
+            2 * defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
         assert!(matches!(
             escrows(&seller, 0).await.unwrap().state,
             State::Completed
         ));
 
-        // let log = response
-        //     .get_logs_with_type::<PaymentTakenEvent>()
-        //     .unwrap();
-        // let event = log.get(0).unwrap();
+        let log = response.get_logs_with_type::<PaymentTakenEvent>().unwrap();
+        let event = log.get(0).unwrap();
 
-        // assert_eq!(*event, PaymentTakenEvent { identifier: 0 });
+        assert_eq!(*event, PaymentTakenEvent { identifier: 0 });
     }
 
     #[tokio::test]
@@ -69,6 +78,10 @@ mod success {
 
         mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
+
+        let provider = buyer.wallet.get_provider().unwrap();
+        let origin_block = provider.latest_block_height().await.unwrap();
+
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -76,14 +89,17 @@ mod success {
             vec![asset.clone(), asset.clone()],
             &buyer,
             &seller,
-            7,
+            defaults.deadline,
         )
         .await;
+        propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
+
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
-        // This should really be above `deposit` but given SDK limitations for block manipulation
-        // we put this here
-        propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
+        provider
+            .produce_blocks(origin_block + defaults.deadline, None)
+            .await
+            .unwrap();
 
         assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
@@ -175,16 +191,18 @@ mod revert {
     }
 
     #[tokio::test]
-    #[ignore]
     #[should_panic(expected = "CannotTakePaymentDuringDispute")]
     async fn when_disputed() {
-        // Test passes when deadline requirement is met. Ignored till SDK manipulation to prevent failure
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(&seller, defaults.asset_amount, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
+
+        let provider = buyer.wallet.get_provider().unwrap();
+        let origin_block = provider.latest_block_height().await.unwrap();
+
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -196,21 +214,29 @@ mod revert {
         )
         .await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+
+        provider
+            .produce_blocks(origin_block + defaults.deadline, None)
+            .await
+            .unwrap();
+
         dispute(&buyer, 0).await;
         take_payment(&seller, 0).await;
     }
 
     #[tokio::test]
-    #[ignore]
     #[should_panic(expected = "Unauthorized")]
     async fn when_caller_is_not_seller() {
-        // Test passes when deadline requirement is met. Ignored till SDK manipulation to prevent failure
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(&seller, defaults.asset_amount, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
+
+        let provider = buyer.wallet.get_provider().unwrap();
+        let origin_block = provider.latest_block_height().await.unwrap();
+
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -222,20 +248,28 @@ mod revert {
         )
         .await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+
+        provider
+            .produce_blocks(origin_block + defaults.deadline, None)
+            .await
+            .unwrap();
+
         take_payment(&buyer, 0).await;
     }
 
     #[tokio::test]
-    #[ignore]
     #[should_panic(expected = "CannotTransferBeforeDesposit")]
     async fn when_buyer_has_not_deposited() {
-        // Test passes when deadline requirement is met. Ignored till SDK manipulation to prevent failure
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(&seller, defaults.asset_amount, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
+
+        let provider = buyer.wallet.get_provider().unwrap();
+        let origin_block = provider.latest_block_height().await.unwrap();
+
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -246,6 +280,12 @@ mod revert {
             defaults.deadline,
         )
         .await;
-        take_payment(&buyer, 0).await;
+
+        provider
+            .produce_blocks(origin_block + defaults.deadline, None)
+            .await
+            .unwrap();
+
+        take_payment(&seller, 0).await;
     }
 }

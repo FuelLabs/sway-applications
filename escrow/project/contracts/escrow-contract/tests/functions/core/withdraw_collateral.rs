@@ -15,13 +15,16 @@ mod success {
     };
 
     #[tokio::test]
-    #[ignore]
     async fn withdraws_collateral() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(&seller, defaults.asset_amount, &defaults.asset).await;
+
+        let provider = buyer.wallet.get_provider().unwrap();
+        let origin_block = provider.latest_block_height().await.unwrap();
+
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -29,7 +32,7 @@ mod success {
             vec![asset.clone(), asset.clone()],
             &buyer,
             &seller,
-            6,
+            defaults.deadline,
         )
         .await;
 
@@ -39,7 +42,11 @@ mod success {
             State::Pending
         ));
 
-        // TODO: need to shift block by one, waiting on SDK
+        provider
+            .produce_blocks(origin_block + defaults.deadline, None)
+            .await
+            .unwrap();
+
         let response = withdraw_collateral(&seller, 0).await;
 
         assert_eq!(
@@ -168,16 +175,18 @@ mod revert {
     }
 
     #[tokio::test]
-    #[ignore]
     #[should_panic(expected = "Unauthorized")]
     async fn when_caller_is_not_seller() {
-        // Test passes when deadline requirement is met. Ignored till SDK manipulation to prevent failure
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(&seller, defaults.asset_amount, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
+
+        let provider = buyer.wallet.get_provider().unwrap();
+        let origin_block = provider.latest_block_height().await.unwrap();
+
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -188,21 +197,28 @@ mod revert {
             defaults.deadline,
         )
         .await;
-        deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
-        withdraw_collateral(&seller, 0).await;
+
+        provider
+            .produce_blocks(origin_block + defaults.deadline, None)
+            .await
+            .unwrap();
+
+        withdraw_collateral(&buyer, 0).await;
     }
 
     #[tokio::test]
-    #[ignore]
     #[should_panic(expected = "CannotWithdrawAfterDesposit")]
     async fn when_buyer_has_deposited() {
-        // Test passes when deadline requirement is met. Ignored till SDK manipulation to prevent failure
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         mint(&seller, defaults.asset_amount, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
+
+        let provider = buyer.wallet.get_provider().unwrap();
+        let origin_block = provider.latest_block_height().await.unwrap();
+
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -214,6 +230,11 @@ mod revert {
         )
         .await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
+        provider
+            .produce_blocks(origin_block + defaults.deadline, None)
+            .await
+            .unwrap();
+
         withdraw_collateral(&seller, 0).await;
     }
 }
