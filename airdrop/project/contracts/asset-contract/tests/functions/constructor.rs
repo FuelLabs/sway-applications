@@ -1,5 +1,5 @@
-use crate::utils::{abi_calls::constructor, test_helpers::setup};
-use fuels::prelude::Identity;
+use crate::utils::{interface::constructor, setup::setup};
+use fuels::types::Identity;
 
 mod success {
 
@@ -20,7 +20,7 @@ mod revert {
 
     #[tokio::test]
     #[should_panic(expected = "AlreadyInitialized")]
-    async fn when_initalized_twice() {
+    async fn when_initialized_twice() {
         let (deployer, _, total_supply) = setup().await;
 
         let identity = Identity::Address(deployer.wallet.address().into());

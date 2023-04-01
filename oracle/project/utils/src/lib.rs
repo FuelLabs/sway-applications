@@ -1,9 +1,11 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*, signers::wallet::Wallet};
+use fuels::{
+    prelude::*, programs::call_response::FuelCallResponse, signers::wallet::Wallet, types::Identity,
+};
 
-abigen!(
-    Oracle,
-    "./project/oracle-contract/out/debug/oracle-contract-abi.json"
-);
+abigen!(Contract(
+    name = "Oracle",
+    abi = "./contracts/oracle-contract/out/debug/oracle-contract-abi.json"
+));
 
 pub struct Metadata {
     pub oracle: Oracle,
@@ -22,7 +24,7 @@ pub mod abi_calls {
         contract.methods().owner().call().await.unwrap().value
     }
 
-    pub async fn price(contract: &Oracle) -> u64 {
+    pub async fn price(contract: &Oracle) -> Option<u64> {
         contract.methods().price().call().await.unwrap().value
     }
 

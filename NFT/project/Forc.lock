@@ -1,0 +1,21 @@
+[[package]]
+name = 'NFT-contract'
+source = 'member'
+dependencies = [
+    'nft',
+    'std',
+]
+
+[[package]]
+name = 'core'
+source = 'path+from-root-F3A20BA79C738864'
+
+[[package]]
+name = 'nft'
+source = 'git+https://github.com/FuelLabs/sway-libs?tag=v0.5.0#c265eff441efeca7e9ee9459d11323181444f05f'
+dependencies = ['std']
+
+[[package]]
+name = 'std'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.33.1#acd4c1e0fbdc406800a06c845430a80dd3560fcc'
+dependencies = ['core']
