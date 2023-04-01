@@ -10,8 +10,8 @@ abi DutchAuction {
     /// # Argumets
     ///
     /// * `author` - The user which may have started auctions
-    // #[storage(read)]
-    // fn active_auctions_of_author(author: Identity) -> Vec<u64>;
+    #[storage(read)]
+    fn active_auctions_of_author(author: Identity) -> Vec<u64>;
 
     /// Returns the auction data for the specified auction ID
     ///
@@ -24,20 +24,23 @@ abi DutchAuction {
     /// * When the auction_id is 0 or greater than storage.auction_count
     #[storage(read)]
     fn auction(auction_id: u64) -> Auction;
+
     /// Returns the auction ids of the auctions created by any author
     ///
     /// # Arguments
     ///
     /// * `author` - The user which may have started auctions
-    // #[storage(read)]
-    // fn auctions_of_author(author: Identity) -> Vec<u64>;
+    #[storage(read)]
+    fn auctions_of_author(author: Identity) -> Vec<u64>;
+
     /// Returns the auction ids of the auctions some user has won
     ///
     /// # Arguments
     ///
     /// * `bidder` - The user which may have won auctions
-    // #[storage(read)]
-    // fn auctions_won(bidder: Identity) -> Vec<u64>;
+    #[storage(read)]
+    fn auctions_won(bidder: Identity) -> Vec<u64>;
+
     /// Bids on the specified auction
     ///
     /// # Arguments
@@ -97,6 +100,7 @@ abi DutchAuction {
     /// * When the auction has already ended
     #[storage(read, write)]
     fn change_beneficiary(new_beneficiary: Identity, auction_id: u64);
+    
     /// Creates a new auction
     ///
     /// # Arguments
@@ -114,6 +118,7 @@ abi DutchAuction {
     /// * When the start_time is greater than end_time
     #[storage(read, write)]
     fn create_auction(opening_price: u64, reserve_price: u64, start_time: u64, end_time: u64, beneficiary: Identity, asset: ContractId);
+
     /// Returns the current price for the auction corresponding to the auction_id
     ///
     /// # Arguments

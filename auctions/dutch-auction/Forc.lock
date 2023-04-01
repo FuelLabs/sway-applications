@@ -1,0 +1,21 @@
+[[package]]
+name = 'core'
+source = 'path+from-root-2C66FC65A00ECA96'
+
+[[package]]
+name = 'dutch-auction'
+source = 'member'
+dependencies = [
+    'std',
+    'storagemapvec',
+]
+
+[[package]]
+name = 'std'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.35.5#49eae2dd93a1957e2a2c2fb3f51b11eb3791fc24'
+dependencies = ['core']
+
+[[package]]
+name = 'storagemapvec'
+source = 'git+https://github.com/FuelLabs/sway-libs?default-branch#4c0c99aa98194475671fd1571ab99488c4cdd4e1'
+dependencies = ['std']

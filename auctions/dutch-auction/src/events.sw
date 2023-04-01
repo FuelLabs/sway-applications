@@ -9,8 +9,8 @@ pub struct CancelledAuctionEvent {
 }
 
 pub struct ChangedAsset {
-    new_asset: ContractId,
     id: u64,
+    new_asset: ContractId,
 }
 
 pub struct CreatedAuctionEvent {

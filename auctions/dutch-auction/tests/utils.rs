@@ -3,7 +3,7 @@ use fuels::{prelude::*, types::Identity};
 // Load abi from json
 abigen!(Contract(
     name = "DutchAuction",
-    abi = "dutch-auction/out/debug/dutch-auction-abi.json"
+    abi = "out/debug/dutch-auction-abi.json"
 ));
 
 pub async fn get_contract_instance() -> DutchAuction {
@@ -13,10 +13,7 @@ pub async fn get_contract_instance() -> DutchAuction {
     let id = Contract::deploy(
         "./out/debug/dutch-auction.bin",
         &wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(
-            "./out/debug/dutch-auction-storage_slots.json".to_string(),
-        )),
+        DeployConfiguration::default(),
     )
     .await
     .unwrap();
@@ -38,7 +35,7 @@ pub async fn bid(instance: &DutchAuction, auction_id: u64, amount: u64) {
     instance
         .methods()
         .bid(auction_id)
-        .call_params(CallParameters::new(Some(amount), Some(AssetId::BASE), None))
+        .call_params(CallParameters::default().set_amount(amount).set_asset_id(AssetId::BASE))
         .unwrap()
         .call()
         .await

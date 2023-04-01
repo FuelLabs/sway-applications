@@ -4,10 +4,6 @@ dep data_structures;
 dep errors;
 
 use std::{
-    auth::{
-        AuthError,
-        msg_sender,
-    },
     block::height,
     hash::sha256,
     storage::{
@@ -44,46 +40,6 @@ pub fn calculate_price(auction: Auction) -> u64 {
 
     // price_shift * blocks_into_auction tells us how much the price has reduced by now
     auction.opening_price - (price_shift * blocks_into_auction)
-}
-
-/// Helper function to compare identities
-pub fn eq_identity(id_1: Identity, id_2: Identity) -> bool {
-    match id_1 {
-        Identity::Address(address1) => {
-            match id_2 {
-                Identity::Address(address2) => {
-                    address1 == address2
-                },
-                _ => false,
-            }
-        },
-        Identity::ContractId(contract_id_1) => {
-            match id_2 {
-                Identity::ContractId(contract_id_2) => {
-                    contract_id_1 == contract_id_2
-                },
-                _ => false,
-            }
-        },
-    }
-}
-
-/// Helper function to avoid having to repeat this code
-pub fn sender_indentity() -> Identity {
-    let sender: Result<Identity, AuthError> = msg_sender();
-    sender.unwrap()
-}
-
-/// Helper function to transfer assets to an identity
-pub fn transfer_to_identity(amount: u64, asset_id: ContractId, reciever: Identity) {
-    match reciever {
-        Identity::Address(address) => {
-            transfer_to_address(amount, asset_id, address);
-        },
-        Identity::ContractId(contractid) => {
-            force_transfer_to_contract(amount, asset_id, contractid);
-        },
-    };
 }
 
 /// Validates an auction_id to make sure it corresponds to an auction

@@ -6,13 +6,13 @@ dep errors;
 dep events;
 dep utils;
 
-use std::{block::height, call_frames::msg_asset_id, context::msg_amount, logging::log};
+use std::{auth::msg_sender, block::height, call_frames::msg_asset_id, context::msg_amount, logging::log, token::transfer};
 
 use interface::DutchAuction;
 use data_structures::Auction;
 use errors::{SetupError, TimeError, UserError};
 use events::{CancelledAuctionEvent, ChangedAsset, CreatedAuctionEvent, WinningBidEvent};
-use utils::{calculate_price, eq_identity, sender_indentity, transfer_to_identity, validate_id};
+use utils::{calculate_price, validate_id};
 use storagemapvec::StorageMapVec;
 
 storage {
@@ -59,24 +59,24 @@ impl DutchAuction for Contract {
 
         // Disallows furthur bids
         auction.ended = true;
-        auction.winner = Option::Some(sender_indentity());
+        auction.winner = Option::Some(msg_sender().unwrap());
         storage.auctions.insert(auction_id, auction);
 
         // If someone sends more than the current price, refunds the extra amount
         if msg_amount() > price {
             let return_amount = msg_amount() - price;
-            transfer_to_identity(return_amount, auction.asset_id, sender_indentity());
+            transfer(return_amount, auction.asset_id, msg_sender().unwrap());
         }
 
         on_win(auction, price);
 
         let _ = storage.active_auctions_of_author.pop(auction.author); // I dont think this is correct, as the author can have multiple active auctions
 
-        storage.auctions_won.push(sender_indentity(), auction_id);
+        storage.auctions_won.push(msg_sender().unwrap(), auction_id);
 
         log(WinningBidEvent {
             id: auction_id,
-            winner: sender_indentity(),
+            winner: msg_sender().unwrap(),
         });
     }
 
@@ -101,7 +101,7 @@ impl DutchAuction for Contract {
             end_time,
             beneficiary,
             asset_id: asset,
-            author: sender_indentity(),
+            author: msg_sender().unwrap(),
             ended: false,
             winner: Option::None,
         };
@@ -109,9 +109,9 @@ impl DutchAuction for Contract {
         storage.auction_count = storage.auction_count + 1;
         storage.auctions.insert(storage.auction_count, auction);
 
-        storage.active_auctions_of_author.push(sender_indentity(), storage.auction_count);
+        storage.active_auctions_of_author.push(msg_sender().unwrap(), storage.auction_count);
 
-        storage.auctions_of_author.push(sender_indentity(), storage.auction_count);
+        storage.auctions_of_author.push(msg_sender().unwrap(), storage.auction_count);
 
         log(CreatedAuctionEvent {
             auction,
@@ -126,14 +126,14 @@ impl DutchAuction for Contract {
         let mut auction = storage.auctions.get(auction_id).unwrap();
 
         // Only the author can end the auction (prematurely)
-        require(eq_identity(sender_indentity(), auction.author), UserError::SenderNotAuthor);
+        require(msg_sender().unwrap() == auction.author, UserError::SenderNotAuthor);
         // Cannot cancel an auction that has already ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
 
-        let _ = storage.active_auctions_of_author.pop(sender_indentity());
+        let _ = storage.active_auctions_of_author.pop(msg_sender().unwrap());
 
         log(CancelledAuctionEvent {
             id: auction_id,
@@ -152,7 +152,7 @@ impl DutchAuction for Contract {
         let mut auction = storage.auctions.get(auction_id).unwrap();
 
         // Only the author can change the bidding asset
-        require(eq_identity(sender_indentity(), auction.author), UserError::SenderNotAuthor);
+        require(msg_sender().unwrap() == auction.author, UserError::SenderNotAuthor);
         // Cannot edit an auction that has ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
@@ -172,7 +172,7 @@ impl DutchAuction for Contract {
         let mut auction = storage.auctions.get(auction_id).unwrap();
 
         // Only the author can change the beneficiary
-        require(eq_identity(sender_indentity(), auction.author), UserError::SenderNotAuthor);
+        require(msg_sender().unwrap() == auction.author, UserError::SenderNotAuthor);
         // Cannot edit an auction that has ended
         require(!auction.ended, TimeError::AuctionAlreadyEnded);
 
@@ -180,26 +180,25 @@ impl DutchAuction for Contract {
 
         storage.auctions.insert(auction_id, auction);
     }
+    
+    #[storage(read)]
+    fn active_auctions_of_author(author: Identity) -> Vec<u64> {
+        storage.active_auctions_of_author.to_vec(author)
+    }
 
-    // TODO: SDK does not support returning vectors
-    // #[storage(read)]
-    // fn active_auctions_of_author(author: Identity) -> Vec<u64> {
-    //     storage.active_auctions_of_author.to_vec(author)
-    // }
+    #[storage(read)]
+    fn auctions_of_author(author: Identity) -> Vec<u64> {
+        storage.auctions_of_author.to_vec(author)
+    }
 
-    // #[storage(read)]
-    // fn auctions_of_author(author: Identity) -> Vec<u64> {
-    //     storage.auctions_of_author.to_vec(author)
-    // }
-
-    // #[storage(read)]
-    // fn auctions_won(bidder: Identity) -> Vec<u64> {
-    //     storage.auctions_won.to_vec(bidder)
-    // }
+    #[storage(read)]
+    fn auctions_won(bidder: Identity) -> Vec<u64> {
+        storage.auctions_won.to_vec(bidder)
+    }
 }
 
 /// This function is called whenever a winning bid is recieved.
 fn on_win(auction: Auction, winning_amount: u64) {
     // Add custom logic for winning the auction here
-    transfer_to_identity(winning_amount, auction.asset_id, auction.beneficiary);
+    transfer(winning_amount, auction.asset_id, auction.beneficiary);
 }
