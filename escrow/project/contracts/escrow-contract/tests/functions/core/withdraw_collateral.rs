@@ -116,9 +116,92 @@ mod success {
     }
 
     #[tokio::test]
-    #[ignore]
     async fn withdraws_collateral_in_two_escrows() {
-        // TODO: skipping similar to withdraws_collateral
+        let (arbiter, buyer, seller, defaults) = setup().await;
+        let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
+        let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
+
+        mint(&seller, 2 * defaults.asset_amount, &defaults.asset).await;
+
+        let provider = buyer.wallet.get_provider().unwrap();
+        let origin_block = provider.latest_block_height().await.unwrap();
+
+        create_escrow(
+            defaults.asset_amount,
+            &arbiter_obj,
+            &defaults.asset_id,
+            vec![asset.clone(), asset.clone()],
+            &buyer,
+            &seller,
+            defaults.deadline,
+        )
+        .await;
+        let escrow_id_0 = 0;
+        assert!(matches!(
+            escrows(&seller, escrow_id_0).await.unwrap().state,
+            State::Pending
+        ));
+
+        create_escrow(
+            defaults.asset_amount,
+            &arbiter_obj,
+            &defaults.asset_id,
+            vec![asset.clone(), asset.clone()],
+            &buyer,
+            &seller,
+            defaults.deadline,
+        )
+        .await;
+        let escrow_id_1 = 1;
+        assert!(matches!(
+            escrows(&seller, escrow_id_1).await.unwrap().state,
+            State::Pending
+        ));
+
+        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+
+        provider
+            .produce_blocks(origin_block + defaults.deadline, None)
+            .await
+            .unwrap();
+
+        let response0 = withdraw_collateral(&seller, escrow_id_0).await;
+        let response1 = withdraw_collateral(&seller, escrow_id_1).await;
+
+        assert_eq!(
+            2 * defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
+        assert!(matches!(
+            escrows(&seller, escrow_id_0).await.unwrap().state,
+            State::Completed
+        ));
+        assert!(matches!(
+            escrows(&seller, escrow_id_1).await.unwrap().state,
+            State::Completed
+        ));
+
+        let log0 = response0
+            .get_logs_with_type::<WithdrawnCollateralEvent>()
+            .unwrap();
+        let event0 = log0.get(0).unwrap();
+        assert_eq!(
+            *event0,
+            WithdrawnCollateralEvent {
+                identifier: escrow_id_0
+            }
+        );
+
+        let log1 = response1
+            .get_logs_with_type::<WithdrawnCollateralEvent>()
+            .unwrap();
+        let event1 = log1.get(0).unwrap();
+        assert_eq!(
+            *event1,
+            WithdrawnCollateralEvent {
+                identifier: escrow_id_1
+            }
+        );
     }
 }
 
