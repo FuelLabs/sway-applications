@@ -1,7 +1,8 @@
 use fuels::{
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Address, AssetId, Configurables, Contract,
-        ContractId, Salt, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+        abigen, launch_custom_provider_and_get_wallets, Address, AssetId, Config, Configurables,
+        Contract, ContractId, Salt, StorageConfiguration, TxParameters, WalletUnlocked,
+        WalletsConfig,
     },
     types::Identity,
 };
@@ -121,13 +122,18 @@ pub(crate) async fn setup() -> (User, User, User, Defaults) {
     let coins_per_wallet = 1;
     let amount_per_coin = 1_000_000;
 
-    let config = WalletsConfig::new(
+    let wallet_config = WalletsConfig::new(
         Some(number_of_wallets),
         Some(coins_per_wallet),
         Some(amount_per_coin),
     );
+    let provider_config = Config {
+        manual_blocks_enabled: true,
+        ..Config::local_node()
+    };
 
-    let mut wallets = launch_custom_provider_and_get_wallets(config, None, None).await;
+    let mut wallets =
+        launch_custom_provider_and_get_wallets(wallet_config, Some(provider_config), None).await;
 
     let deployer_wallet = wallets.pop().unwrap();
     let arbiter_wallet = wallets.pop().unwrap();
