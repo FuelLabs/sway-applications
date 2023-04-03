@@ -6,9 +6,15 @@ abigen!(Contract(
     abi = "out/debug/dutch-auction-abi.json"
 ));
 
-pub async fn get_contract_instance() -> DutchAuction {
+pub async fn get_contract_instance() -> (DutchAuction, WalletUnlocked) {
     // Launch a local network and deploy the contract
-    let wallet = launch_provider_and_get_wallet().await;
+    let config = Config {
+        manual_blocks_enabled: true, // Necessary so the `produce_blocks` API can be used locally
+        ..Config::local_node()
+    };
+    let mut wallets =
+        launch_custom_provider_and_get_wallets(WalletsConfig::default(), Some(config), None).await;
+    let wallet = wallets.pop().unwrap();
 
     let id = Contract::deploy(
         "./out/debug/dutch-auction.bin",
@@ -18,7 +24,17 @@ pub async fn get_contract_instance() -> DutchAuction {
     .await
     .unwrap();
 
-    DutchAuction::new(id, wallet)
+    (DutchAuction::new(id, wallet.clone()), wallet)
+}
+
+pub async fn active_auctions_of_author(instance: &DutchAuction, author: Identity) -> Vec<u64> {
+    instance
+        .methods()
+        .active_auctions_of_author(author)
+        .call()
+        .await
+        .unwrap()
+        .value
 }
 
 pub async fn auction(instance: &DutchAuction, auction_id: u64) -> Auction {
@@ -31,12 +47,33 @@ pub async fn auction(instance: &DutchAuction, auction_id: u64) -> Auction {
         .value
 }
 
+pub async fn auctions_of_author(instance: &DutchAuction, author: Identity) -> Vec<u64> {
+    instance
+        .methods()
+        .auctions_of_author(author)
+        .call()
+        .await
+        .unwrap()
+        .value
+}
+
+pub async fn auctions_won(instance: &DutchAuction, bidder: Identity) -> Vec<u64> {
+    instance
+        .methods()
+        .auctions_won(bidder)
+        .call()
+        .await
+        .unwrap()
+        .value
+}
+
 pub async fn bid(instance: &DutchAuction, auction_id: u64, amount: u64) {
     instance
         .methods()
         .bid(auction_id)
         .call_params(CallParameters::default().set_amount(amount).set_asset_id(AssetId::BASE))
         .unwrap()
+        .append_message_outputs(1)
         .call()
         .await
         .unwrap();
