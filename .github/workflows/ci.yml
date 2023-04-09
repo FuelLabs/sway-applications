@@ -51,7 +51,7 @@ jobs:
             "NFT",
             "oracle",
             "OTC-swap-predicate",
-            ".template",
+            ".devops/.template",
             "timelock",
           ]
 
