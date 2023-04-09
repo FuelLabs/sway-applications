@@ -46,21 +46,30 @@ sway-applications/
 
 ### Projects
 
-#### Decentralized Applications
+#### Asset Management
 
 - [Airdrop](./airdrop/) is a token distribution program where users are able to claim tokens given a valid merkle proof.
-- [Automated Market Maker (AMM)](./AMM/) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines prices algorithmically while exchanging assets.
-- [Decentralized Autonomous Organization (DAO)](./DAO) is an organization where users get to vote on governance proposals using governance tokens.
-- [English Auction](./auctions/english-auction/) is an auction where users bid up the price of an asset until the bidding period has ended or a reserve has been met.
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
 - [Fractional-NFT](./fractional-NFT/) allows multiple parties to claim ownership of an NFT directly proportional to the number of tokens they hold.
-- [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal.
-- [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction.
-- [Name-Registry](./name-registry/) allows users to perform transactions with human readable names instead of addresses.
 - [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
-- [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
+- [Timelock](./timelock) is a contract which restricts the execution of a transaction to a specified time range.
+
+#### Decentralized Finance
+
+- [Automated Market Maker (AMM)](./AMM/) is a decentralized exchange protocol that manages liquidity pools supplied by its users and determines prices algorithmically while exchanging assets.
+- [English Auction](./auctions/english-auction/) is an auction where users bid up the price of an asset until the bidding period has ended or a reserve has been met.
+- [Fundraiser](./fundraiser/) is a program allowing users to pledge towards a goal.
 - [OTC Swap Predicate](./OTC-swap-predicate) is a predicate that can be used to propose and execute an atomic swap between two parties without requiring any on-chain state.
-- [Timelock](./timelock) is a contract which restricts the execution of a transaction to a specified time range
+
+#### Governance
+
+- [Decentralized Autonomous Organization (DAO)](./DAO) is an organization where users get to vote on governance proposals using governance tokens.
+- [Multi-Signature Wallet](./multisig-wallet) is a wallet that requires multiple signatures to execute a transaction.
+
+#### Other
+
+- [Name-Registry](./name-registry/) allows users to perform transactions with human readable names instead of addresses.
+- [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
 
 #### Games
 
