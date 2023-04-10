@@ -1,4 +1,4 @@
-library events;
+library;
 
 use std::bytes::Bytes;
 

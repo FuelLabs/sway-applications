@@ -1,15 +1,15 @@
 contract;
 
-dep data_structures;
-dep errors;
-dep events;
-dep interface;
-dep utils;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
+mod utils;
 
-use data_structures::ExecutionRange;
-use errors::{AccessControlError, FundingError, TransactionError};
-use events::{CancelEvent, ExecuteEvent, QueueEvent};
-use interface::{Info, Timelock};
+use ::data_structures::ExecutionRange;
+use ::errors::{AccessControlError, FundingError, TransactionError};
+use ::events::{CancelEvent, ExecuteEvent, QueueEvent};
+use ::interface::{Info, Timelock};
 use std::{
     auth::msg_sender,
     block::timestamp as now,
@@ -17,9 +17,13 @@ use std::{
     call_frames::msg_asset_id,
     context::this_balance,
 };
-use utils::create_hash;
+use ::utils::create_hash;
 
-const ADMIN: Identity = Identity::Address(Address::from(OWNER));
+configurable {
+    MAXIMUM_DELAY: u64 = 1000,
+    MINIMUM_DELAY: u64 = 100,
+    ADMIN: Identity = Identity::Address(Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db)),
+}
 
 storage {
     /// Mapping transaction hash to time range of available execution
@@ -32,7 +36,7 @@ impl Timelock for Contract {
         require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
         require(storage.queue.get(id).is_some(), TransactionError::InvalidTransaction(id));
 
-        storage.queue.remove(id);
+        let _ = storage.queue.remove(id);
 
         log(CancelEvent { id })
     }
@@ -61,7 +65,7 @@ impl Timelock for Contract {
             require(value.unwrap() <= this_balance(asset_id.unwrap()), FundingError::InsufficientContractBalance((this_balance(asset_id.unwrap()))));
         }
 
-        storage.queue.remove(id);
+        let _ = storage.queue.remove(id);
 
         // TODO: execute arbitrary call...
         log(ExecuteEvent {

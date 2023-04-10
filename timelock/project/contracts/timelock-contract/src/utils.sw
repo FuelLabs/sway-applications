@@ -1,4 +1,4 @@
-library utils;
+library;
 
 use std::{bytes::Bytes, hash::sha256};
 

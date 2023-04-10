@@ -1,8 +1,6 @@
-library interface;
+library;
 
-dep data_structures;
-
-use data_structures::ExecutionRange;
+use ::data_structures::ExecutionRange;
 use std::bytes::Bytes;
 
 abi Timelock {

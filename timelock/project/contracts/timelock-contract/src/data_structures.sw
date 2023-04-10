@@ -1,4 +1,4 @@
-library data_structures;
+library;
 
 /// Represents the time range in which a transaction may be executed
 pub struct ExecutionRange {
