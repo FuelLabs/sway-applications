@@ -14,6 +14,11 @@ Table of Content
     - [`return_deposit()`](#return_deposit)
     - [`take_payment()`](#take_payment)
     - [`withdraw_collateral()`](#withdraw_collateral)
+  - [State Checks](#state-checks)
+    - [`arbiter_proposal()`](#arbiter_proposal)
+    - [`assets()`](#assets)
+    - [`escrows()`](#escrows)
+    - [`escrow_count()`](#escrow_count)
   - [Sequence diagram](#sequence-diagram)
 
 # Overview
@@ -95,6 +100,38 @@ If you are interested in a functional overview then this is the section for you.
 ### `withdraw_collateral()`
 
 1. If the seller creates an escrow and the buyer never deposits then the seller has to be able to withdraw the arbiter collateral. Once the deadline is past and no deposit has been made then the seller can withdraw
+
+## State Checks
+
+### `arbiter_proposal()`
+
+1. Returns the proposed arbiter for resolution
+   1. Address identifying the arbiter
+   2. The asset that the arbiter will be paid in upon resolution
+   3. The quantity of asset to be taken as payment
+
+### `assets()`
+
+1. Returns the information about the asset used in an escrow
+   1. Amount of asset the user must deposit
+   2. The id used to identify the asset for deposit
+
+### `escrows()`
+
+1. Returns information about an escrow
+   1. Address identifying the arbiter
+   2. Total number of assets the escrow accepts
+   3. The authorized user who is able to make a payment into the escrow
+   4. End height after which the buyer can no longer deposit and the seller can take payment
+   5. Marker set by the buyer to lock the escrow and prevent the seller from taking payment
+   6. Index of the first asset the escrow accepts
+   7. The authorized user who is the recipient of payments made by the buyer
+   8. The state of the escrow i.e. Pending, Completed
+
+### `escrow_count()`
+
+1. Returns the total number of escrows created in the contract
+
 
 ## Sequence diagram
 

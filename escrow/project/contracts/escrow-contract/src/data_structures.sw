@@ -69,7 +69,7 @@ impl EscrowInfo {
             asset_count,
             buyer: Buyer {
                 address: buyer,
-                asset: Option::None::<ContractId>(),
+                asset: Option::None,
                 deposited_amount: 0,
             },
             deadline,

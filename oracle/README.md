@@ -82,13 +82,13 @@ The project can be started by executing the following steps:
 5. Build the Oracle contract.
 
     ```bash
-    forc build
+    forc build --locked
     ```
 
 6. Deploy the Oracle contract.
 
     ```bash
-    forc-deploy --path project/oracle-contract --url localhost:4000 --unsigned
+    forc-deploy --path project/contracts/oracle-contract --node-url localhost:4000 --unsigned
     ```
 
     This will allow the node to interact with the oracle contract deployed to our local `fuel-core` instance.
@@ -117,7 +117,7 @@ In order to run the subsequent commands change into the following directory `/pa
 #### Program compilation
 
 ```bash
-forc build
+forc build --locked
 ```
 
 #### Running the tests
@@ -125,5 +125,5 @@ forc build
 Before running the tests the programs must be compiled with the command above.
 
 ```bash
-cargo test
+cargo test --locked
 ```
