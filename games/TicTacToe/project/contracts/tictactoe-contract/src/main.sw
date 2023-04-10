@@ -1,18 +1,18 @@
 contract;
 
-dep data_structures;
-dep errors;
-dep events;
-dep interface;
-dep utils;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
+mod utils;
 
 use core::ops::Eq;
-use data_structures::State;
-use errors::{GameStateError, PlayerError, PositionError};
-use events::{GameDrawnEvent, GameWonEvent, NewGameEvent};
-use interface::Game;
+use ::data_structures::State;
+use ::errors::{GameStateError, PlayerError, PositionError};
+use ::events::{GameDrawnEvent, GameWonEvent, NewGameEvent};
+use ::interface::Game;
 use std::auth::msg_sender;
-use utils::{draw, win_check};
+use ::utils::{draw, win_check};
 
 // This is needed for comparing the position when the cell is not empty.
 // We only need to check if there is an Identity in the cell but we don't care about its value.
@@ -53,7 +53,7 @@ impl Game for Contract {
         // Once a game has been played we need to reset all values.
         let mut position = 0;
         while position < 9 {
-            storage.board.remove(position);
+            let _ = storage.board.remove(position);
             position += 1;
         }
         storage.move_counter = 0;

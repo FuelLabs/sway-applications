@@ -1,4 +1,4 @@
-library utils;
+library;
 
 // A list of all the winning combinations.
 const MATCHES = [
