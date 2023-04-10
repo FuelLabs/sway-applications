@@ -76,7 +76,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
           toolchain: latest
-          date: 2023-03-24
+          date: 2023-04-10
 
       - name: Check Sway formatting
         run: |
@@ -126,7 +126,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
           toolchain: latest
-          date: 2023-03-24
+          date: 2023-04-10
 
       - name: Check Sway formatting
         run: |
