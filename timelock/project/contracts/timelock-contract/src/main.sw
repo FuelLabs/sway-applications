@@ -6,7 +6,7 @@ mod events;
 mod interface;
 mod utils;
 
-use ::data_structures::ExecutionRange;
+use ::data_structures::{Asset, ExecutionRange};
 use ::errors::{AccessControlError, FundingError, TransactionError};
 use ::events::{CancelEvent, ExecuteEvent, QueueEvent};
 use ::interface::{Info, Timelock};
@@ -44,14 +44,13 @@ impl Timelock for Contract {
     #[storage(read, write)]
     fn execute(
         recipient: Identity,
-        value: Option<u64>,
-        asset_id: Option<ContractId>,
+        asset: Option<Asset>,
         data: Bytes,
         timestamp: u64,
     ) {
         require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
 
-        let id = create_hash(recipient, value, asset_id, data, timestamp);
+        let id = create_hash(recipient, asset, data, timestamp);
         let transaction = storage.queue.get(id);
 
         require(transaction.is_some(), TransactionError::InvalidTransaction(id));
@@ -61,34 +60,32 @@ impl Timelock for Contract {
         // to prevent going over the MAXIMUM_DELAY
         require(timestamp <= now() && now() <= transaction.unwrap().end, TransactionError::TimestampNotInRange((timestamp, transaction.unwrap().end, now())));
 
-        if value.is_some() {
-            require(value.unwrap() <= this_balance(asset_id.unwrap()), FundingError::InsufficientContractBalance((this_balance(asset_id.unwrap()))));
+        if asset.is_some() {
+            require(asset.unwrap().amount <= this_balance(asset.unwrap().id), FundingError::InsufficientContractBalance((this_balance(asset.unwrap().id))));
         }
 
         let _ = storage.queue.remove(id);
 
         // TODO: execute arbitrary call...
         log(ExecuteEvent {
-            asset_id,
+            asset,
             data,
             id,
             recipient,
             timestamp,
-            value,
         })
     }
 
     #[storage(read, write)]
     fn queue(
         recipient: Identity,
-        value: Option<u64>,
-        asset_id: Option<ContractId>,
+        asset: Option<Asset>,
         data: Bytes,
         timestamp: u64,
     ) {
         require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
 
-        let id = create_hash(recipient, value, asset_id, data, timestamp);
+        let id = create_hash(recipient, asset, data, timestamp);
         let transaction = storage.queue.get(id);
 
         require(transaction.is_none(), TransactionError::DuplicateTransaction(id));
@@ -101,12 +98,11 @@ impl Timelock for Contract {
         storage.queue.insert(id, ExecutionRange { start, end });
 
         log(QueueEvent {
-            asset_id,
+            asset,
             data,
             id,
             recipient,
             timestamp,
-            value,
         })
     }
 }
@@ -127,11 +123,10 @@ impl Info for Contract {
 
     fn transaction_hash(
         recipient: Identity,
-        value: Option<u64>,
-        asset_id: Option<ContractId>,
+        asset: Option<Asset>,
         data: Bytes,
         timestamp: u64,
     ) -> b256 {
-        create_hash(recipient, value, asset_id, data, timestamp)
+        create_hash(recipient, asset, data, timestamp)
     }
 }

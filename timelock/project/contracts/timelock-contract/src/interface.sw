@@ -1,6 +1,6 @@
 library;
 
-use ::data_structures::ExecutionRange;
+use ::data_structures::{Asset, ExecutionRange};
 use std::bytes::Bytes;
 
 abi Timelock {
@@ -22,8 +22,7 @@ abi Timelock {
     /// # Arguments
     ///
     /// - `recipient`: The target of the call
-    /// - `value`: Optional amount of an asset sent
-    /// - `asset_id`: Optional identifier of an asset
+    /// - `asset`: Native asset that is transferred
     /// - `data`: Payload associated with transaction
     /// - `timestamp`: Time after which the transaction may be executed
     ///
@@ -34,15 +33,14 @@ abi Timelock {
     /// * When the execution occurs outside of the available time range
     /// * When the contract does not have enough of the asset to transfer
     #[storage(read, write)]
-    fn execute(recipient: Identity, value: Option<u64>, asset_id: Option<ContractId>, data: Bytes, timestamp: u64);
+    fn execute(recipient: Identity, asset: Option<Asset>, data: Bytes, timestamp: u64);
 
     /// Stores a transaction for future execution
     ///
     /// # Arguments
     ///
     /// - `recipient`: The target of the call
-    /// - `value`: Optional amount of an asset sent
-    /// - `asset_id`: Optional identifier of an asset
+    /// - `asset`: Native asset that will be transferred
     /// - `data`: Payload associated with transaction
     /// - `timestamp`: Time after which the transaction may be executed
     ///
@@ -52,7 +50,7 @@ abi Timelock {
     /// * When the transaction id already exists
     /// * When the timestamp is outside of the valid MINIMUM_DELAY / MAXIMUM_DELAY range
     #[storage(read, write)]
-    fn queue(recipient: Identity, value: Option<u64>, asset_id: Option<ContractId>, data: Bytes, timestamp: u64);
+    fn queue(recipient: Identity, asset: Option<Asset>, data: Bytes, timestamp: u64);
 }
 
 abi Info {
@@ -79,9 +77,8 @@ abi Info {
     /// # Arguments
     ///
     /// - `recipient`: The target of the call
-    /// - `value`: Optional amount of an asset sent
-    /// - `asset_id`: Optional identifier of an asset
+    /// - `asset`: Native asset that will be transferred
     /// - `data`: Payload associated with transaction
     /// - `timestamp`: Time after which the transaction may be executed
-    fn transaction_hash(recipient: Identity, value: Option<u64>, asset_id: Option<ContractId>, data: Bytes, timestamp: u64) -> b256;
+    fn transaction_hash(recipient: Identity, asset: Option<Asset>, data: Bytes, timestamp: u64) -> b256;
 }
