@@ -9,20 +9,20 @@ Once `cargo` and `forc` are installed you may proceed to the subsequent sections
 
 ### Build the tool
 
-Change into the following directory `/path/to/sway-applications/.devops/repo/<here>` and run
+Change into the following directory `/path/to/sway-applications/.devops/aurora/<here>` and run
 
 ```sh
 cargo build
 ```
 
-After building the executable you may run it directly from `/repo/target/debug/repo <command>` or with the usage below.
+After building the executable you may run it directly from `/aurora/target/debug/aurora <command>` or with the usage below.
 
 ### Usage
 
 ```sh
 Utility crate for maintaining the repository
 
-Usage: repo <COMMAND>
+Usage: aurora <COMMAND>
 
 Commands:
   build  Compile the Sway and Rust programs in each project
