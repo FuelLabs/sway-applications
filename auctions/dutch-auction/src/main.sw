@@ -201,5 +201,5 @@ impl DutchAuction for Contract {
 /// This function is called whenever a winning bid is recieved.
 fn on_win(auction: Auction, winning_amount: u64) {
     // Add custom logic for winning the auction here
-    transfer(winning_amount, auction.asset_id, auction.beneficiary);
+    // transfer(winning_amount, auction.asset_id, auction.beneficiary);
 }
