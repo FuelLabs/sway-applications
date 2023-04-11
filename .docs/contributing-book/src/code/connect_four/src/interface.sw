@@ -1,9 +1,7 @@
 // ANCHOR: interface
-library interface;
+library;
 
-dep data_structures;
-
-use data_structures::{Game, Player};
+use ::data_structures::{Game, Player};
 
 abi ConnectFour {
     /// Creates a new game

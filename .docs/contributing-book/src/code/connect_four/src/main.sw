@@ -1,10 +1,10 @@
 contract;
 
-dep data_structures;
-dep interface;
+mod data_structures;
+mod interface;
 
-use data_structures::{Game, Player};
-use interface::ConnectFour;
+use ::data_structures::{Game, Player};
+use ::interface::ConnectFour;
 
 impl ConnectFour for Contract {
     fn create_game(player_one: Player, player_two: Player) -> Game {
