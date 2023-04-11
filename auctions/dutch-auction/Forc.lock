@@ -17,5 +17,5 @@ dependencies = ['core']
 
 [[package]]
 name = 'storagemapvec'
-source = 'git+https://github.com/FuelLabs/sway-libs?default-branch#4c0c99aa98194475671fd1571ab99488c4cdd4e1'
+source = 'git+https://github.com/FuelLabs/sway-libs?default-branch#2e25453eb2b8050996b9d3143d02821a3ed1632e'
 dependencies = ['std']

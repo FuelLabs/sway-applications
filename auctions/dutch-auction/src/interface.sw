@@ -55,6 +55,7 @@ abi DutchAuction {
     /// * When the Incorrect asset is sent to the auction
     /// * When the bid is less than the current price
     #[storage(read, write)]
+    #[payable]
     fn bid(auction_id: u64);
 
     /// Cancels an auction preventing any bids from being placed

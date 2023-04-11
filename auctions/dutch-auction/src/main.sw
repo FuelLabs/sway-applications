@@ -36,6 +36,7 @@ impl DutchAuction for Contract {
     }
 
     #[storage(read, write)]
+    #[payable]
     fn bid(auction_id: u64) {
         // In a Dutch auction the first bid wins
         validate_id(auction_id, storage.auction_count);

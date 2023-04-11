@@ -1,9 +1,9 @@
 pub mod passing {
     use fuels::types::{Identity, ContractId};
-    use crate::utils::{create_auction, get_contract_instance, bid};
+    use crate::utils::{create_auction, get_contract_instance, bid, auctions_won};
 
     #[tokio::test]
-    async fn bid_is_correct() {
+    async fn can_bid() {
         let (instance, wallet) = get_contract_instance().await;
 
         create_auction(
@@ -16,7 +16,7 @@ pub mod passing {
             ContractId::zeroed(),            
         ).await;
 
-        bid(&instance, 1, 100).await;
+        bid(&instance, 1, 400).await;
 
         assert_eq!(auctions_won(&instance, Identity::Address(wallet.address().into())).await, vec![1]);
     }
