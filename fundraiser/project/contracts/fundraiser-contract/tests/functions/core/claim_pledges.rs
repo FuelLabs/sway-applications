@@ -10,13 +10,13 @@ mod success {
         interface::info::campaign_info,
         setup::{identity, CampaignState, ClaimedEvent},
     };
-    use fuels::tx::AssetId;
+    use fuels::{accounts::ViewOnlyAccount, tx::AssetId};
 
     #[tokio::test]
     async fn claims() {
         let (author, user, asset, _, defaults) = setup().await;
         let beneficiary = identity(author.wallet.address()).await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 4;
 
         mint(
@@ -130,7 +130,7 @@ mod revert {
     #[should_panic(expected = "DeadlineNotReached")]
     async fn when_claiming_before_deadline() {
         let (author, user, asset, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 7;
 
         mint(
@@ -157,7 +157,7 @@ mod revert {
     #[should_panic(expected = "TargetNotReached")]
     async fn when_target_amount_is_not_reached() {
         let (author, _, _, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 2;
 
         create_campaign(
@@ -177,7 +177,7 @@ mod revert {
     #[should_panic(expected = "AlreadyClaimed")]
     async fn when_claiming_more_than_once() {
         let (author, user, asset, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 4;
 
         mint(
@@ -205,7 +205,7 @@ mod revert {
     #[should_panic(expected = "CampaignHasBeenCancelled")]
     async fn when_cancelled() {
         let (author, user, asset, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 5;
 
         mint(

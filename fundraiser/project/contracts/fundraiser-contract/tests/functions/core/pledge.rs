@@ -10,7 +10,7 @@ mod success {
         interface::info::{asset_info_by_count, campaign_info, pledge_count, pledged},
         setup::{identity, AssetInfo, PledgedEvent},
     };
-    use fuels::tx::AssetId;
+    use fuels::{accounts::ViewOnlyAccount, tx::AssetId};
 
     #[tokio::test]
     async fn pledges() {
@@ -466,7 +466,7 @@ mod revert {
     #[should_panic(expected = "CampaignEnded")]
     async fn when_pledging_after_deadline() {
         let (author, user, asset, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 3;
 
         mint(
@@ -541,7 +541,7 @@ mod revert {
     #[should_panic(expected = "CampaignHasBeenCancelled")]
     async fn when_pledging_to_cancelled_campaign() {
         let (author, user, asset, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 5;
 
         mint(

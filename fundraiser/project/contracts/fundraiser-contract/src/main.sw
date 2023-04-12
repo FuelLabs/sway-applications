@@ -1,28 +1,26 @@
 contract;
 
-dep data_structures/asset_info;
-dep data_structures/campaign_info;
-dep data_structures/campaign;
-dep data_structures/pledge;
-dep data_structures/campaign_state;
-dep errors;
-dep events;
-dep interface;
-dep utils;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
+mod utils;
 
-use asset_info::AssetInfo;
-use campaign_info::CampaignInfo;
-use campaign::Campaign;
-use errors::{CampaignError, CreationError, UserError};
-use events::{
+use ::data_structures::{
+    asset_info::AssetInfo,
+    campaign::Campaign,
+    campaign_info::CampaignInfo,
+    campaign_state::CampaignState,
+    pledge::Pledge,
+};
+use ::errors::{CampaignError, CreationError, UserError};
+use ::events::{
     CancelledCampaignEvent,
     ClaimedEvent,
     CreatedCampaignEvent,
     PledgedEvent,
     UnpledgedEvent,
 };
-use pledge::Pledge;
-use campaign_state::CampaignState;
 use std::{
     auth::msg_sender,
     block::height,
@@ -31,8 +29,8 @@ use std::{
     context::msg_amount,
     token::transfer,
 };
-use interface::{Fundraiser, Info};
-use utils::validate_campaign_id;
+use ::interface::{Fundraiser, Info};
+use ::utils::validate_campaign_id;
 
 storage {
     /// Total number of unique assets used across all campaigns
@@ -226,7 +224,7 @@ impl Fundraiser for Contract {
             storage.pledge_history.insert((user, pledge_history_index), pledge);
         } else {
             // Pledging to a new campaign
-            
+
             // First time pledge to this campaign therefore increment everything by 1
             storage.pledge_count.insert(user, pledge_count + 1);
 

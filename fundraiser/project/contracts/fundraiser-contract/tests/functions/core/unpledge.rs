@@ -10,7 +10,7 @@ mod success {
         interface::info::{asset_info_by_count, campaign_info, pledge_count, pledged},
         setup::{identity, AssetInfo, UnpledgedEvent},
     };
-    use fuels::tx::AssetId;
+    use fuels::{accounts::ViewOnlyAccount, tx::AssetId};
 
     #[tokio::test]
     async fn unpledges_full_amount() {
@@ -569,7 +569,7 @@ mod revert {
     #[should_panic(expected = "AlreadyClaimed")]
     async fn after_claimed() {
         let (author, user, asset, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 4;
 
         mint(

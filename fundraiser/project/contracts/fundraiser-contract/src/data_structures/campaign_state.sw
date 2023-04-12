@@ -1,4 +1,4 @@
-library campaign_state;
+library;
 
 use core::ops::Eq;
 
