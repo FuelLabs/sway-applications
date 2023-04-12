@@ -1,9 +1,9 @@
 use fuels::{
+    accounts::fuel_crypto::{Message, SecretKey, Signature},
     prelude::{
-        abigen, setup_single_asset_coins, setup_test_provider, Contract, Error,
-        StorageConfiguration, TxParameters, WalletUnlocked, BASE_ASSET_ID,
+        abigen, setup_single_asset_coins, setup_test_provider, Contract, DeployConfiguration,
+        Error, StorageConfiguration, WalletUnlocked, BASE_ASSET_ID,
     },
-    signers::fuel_crypto::{Message, SecretKey, Signature},
     tx::{Bytes32, Bytes64, ContractId},
     types::{Bits256, Identity, B512},
 };
@@ -27,7 +27,7 @@ pub(crate) const DEFAULT_THRESHOLD: u64 = 5;
 pub(crate) const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
 
 pub(crate) struct Caller {
-    pub(crate) contract: MultiSig,
+    pub(crate) contract: MultiSig<WalletUnlocked>,
     pub(crate) wallet: WalletUnlocked,
 }
 
@@ -144,11 +144,13 @@ pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, C
     deployer_wallet.set_provider(provider.clone());
     non_owner_wallet.set_provider(provider);
 
+    let storage_configuration = StorageConfiguration::default()
+        .set_storage_path(MULTISIG_CONTRACT_STORAGE_PATH.to_string());
+
     let multisig_contract_id = Contract::deploy(
         MULTISIG_CONTRACT_BINARY_PATH,
         &deployer_wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(MULTISIG_CONTRACT_STORAGE_PATH.to_string())),
+        DeployConfiguration::default().set_storage_configuration(storage_configuration),
     )
     .await?;
 

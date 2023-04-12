@@ -3,20 +3,22 @@ contract;
 // TODO:
 //      - change the "data" in the Tx hashing from b256 to Bytes type when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723.
 //    
-dep data_structures/signatures;
-dep data_structures/user;
-dep errors;
-dep events;
-dep interface;
-dep utils;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
+mod utils;
 
-use errors::{AccessControlError, ExecutionError, InitError};
-use events::{CancelEvent, ExecutedEvent, SetThresholdEvent, SetWeightEvent, TransferEvent};
-use interface::{Info, MultiSignatureWallet};
-use signatures::SignatureInfo;
-use std::{auth::msg_sender, context::this_balance, logging::log, token::transfer};
-use user::User;
-use utils::{hash_threshold, hash_transaction, hash_weight, recover_signer};
+use ::errors::{AccessControlError, ExecutionError, InitError};
+use ::events::{CancelEvent, ExecutedEvent, SetThresholdEvent, SetWeightEvent, TransferEvent};
+use ::interface::{Info, MultiSignatureWallet};
+use ::data_structures::{signatures::SignatureInfo, user::User};
+use std::{auth::msg_sender, context::this_balance, token::transfer};
+use ::utils::{hash_threshold, hash_transaction, hash_weight, recover_signer};
+
+configurable {
+    THRESHOLD: u64 = 5,
+}
 
 storage {
     /// Used to add entropy into hashing of transaction to decrease the probability of collisions / double

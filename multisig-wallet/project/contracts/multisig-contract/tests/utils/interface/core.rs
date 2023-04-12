@@ -1,4 +1,5 @@
 use fuels::{
+    prelude::WalletUnlocked,
     programs::call_response::FuelCallResponse,
     tx::ContractId,
     types::{Bits256, Identity},
@@ -6,7 +7,9 @@ use fuels::{
 
 use crate::utils::setup::{MultiSig, SignatureInfo, User};
 
-pub(crate) async fn cancel_transaction(contract: &MultiSig) -> FuelCallResponse<()> {
+pub(crate) async fn cancel_transaction(
+    contract: &MultiSig<WalletUnlocked>,
+) -> FuelCallResponse<()> {
     contract
         .methods()
         .cancel_transaction()
@@ -15,12 +18,15 @@ pub(crate) async fn cancel_transaction(contract: &MultiSig) -> FuelCallResponse<
         .unwrap()
 }
 
-pub(crate) async fn constructor(contract: &MultiSig, users: Vec<User>) -> FuelCallResponse<()> {
+pub(crate) async fn constructor(
+    contract: &MultiSig<WalletUnlocked>,
+    users: Vec<User>,
+) -> FuelCallResponse<()> {
     contract.methods().constructor(users).call().await.unwrap()
 }
 
 pub(crate) async fn execute_transaction(
-    contract: &MultiSig,
+    contract: &MultiSig<WalletUnlocked>,
     to: Identity,
     value: u64,
     data: Bits256,
@@ -36,7 +42,7 @@ pub(crate) async fn execute_transaction(
 }
 
 pub(crate) async fn set_threshold(
-    contract: &MultiSig,
+    contract: &MultiSig<WalletUnlocked>,
     data: Option<Bits256>,
     signatures_data: Vec<SignatureInfo>,
     threshold: u64,
@@ -50,7 +56,7 @@ pub(crate) async fn set_threshold(
 }
 
 pub(crate) async fn set_weight(
-    contract: &MultiSig,
+    contract: &MultiSig<WalletUnlocked>,
     data: Option<Bits256>,
     signatures_data: Vec<SignatureInfo>,
     user: User,
@@ -64,7 +70,7 @@ pub(crate) async fn set_weight(
 }
 
 pub(crate) async fn transfer(
-    contract: &MultiSig,
+    contract: &MultiSig<WalletUnlocked>,
     to: Identity,
     asset_id: ContractId,
     value: u64,

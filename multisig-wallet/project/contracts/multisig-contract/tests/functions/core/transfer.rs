@@ -9,8 +9,8 @@ use crate::utils::{
     },
 };
 use fuels::{
+    accounts::{fuel_crypto::Message, Account},
     prelude::{TxParameters, BASE_ASSET_ID},
-    signers::fuel_crypto::Message,
 };
 
 mod success {
@@ -44,7 +44,7 @@ mod success {
 
         let initial_receiver_balance = deployer
             .wallet
-            .get_provider()
+            .provider()
             .unwrap()
             .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
             .await
@@ -94,7 +94,7 @@ mod success {
 
         let final_receiver_balance = deployer
             .wallet
-            .get_provider()
+            .provider()
             .unwrap()
             .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
             .await

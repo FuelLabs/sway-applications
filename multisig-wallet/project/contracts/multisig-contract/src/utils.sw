@@ -1,8 +1,4 @@
-library utils;
-
-dep data_structures/hashing;
-dep data_structures/signatures;
-dep data_structures/user;
+library;
 
 use std::{
     call_frames::contract_id,
@@ -14,9 +10,9 @@ use std::{
     vm::evm::ecr::ec_recover_evm_address,
 };
 
-use hashing::{Threshold, Transaction, Weight};
-use signatures::{MessageFormat, MessagePrefix, SignatureInfo, WalletType};
-use user::User;
+use ::data_structures::hashing::{Threshold, Transaction, Weight};
+use ::data_structures::signatures::{MessageFormat, MessagePrefix, SignatureInfo, WalletType};
+use ::data_structures::user::User;
 
 const EIP191_INITIAL_BYTE = 0x19u8;
 const EIP191_VERSION_BYTE = 0x45u8;

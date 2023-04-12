@@ -5,9 +5,9 @@ mod success {
         setup::{setup_env, VALID_SIGNER_PK},
     };
     use fuels::{
+        accounts::fuel_crypto::Hasher,
         core::abi_encoder::ABIEncoder,
         prelude::ContractId,
-        signers::fuel_crypto::Hasher,
         tx::Bytes32,
         types::{traits::Tokenizable, Bits256, Token},
     };
