@@ -1,8 +1,6 @@
-library events;
+library;
 
-dep data_structures/user;
-
-use user::User;
+use ::data_structures::user::User;
 
 pub struct CancelEvent {
     cancelled_nonce: u64,

@@ -1,4 +1,4 @@
-library events;
+library;
 
 pub struct GameDrawnEvent {
     player_one: Identity,
