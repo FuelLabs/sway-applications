@@ -1,4 +1,4 @@
-library pledge;
+library;
 
 /// Used to track the amount pledged by a user to a specific campaign
 pub struct Pledge {

@@ -30,12 +30,12 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            CampaignState::Funding()
+            CampaignState::Funding
         ));
 
         let response = cancel_campaign(&author.contract, 1).await;
         let log = response
-            .get_logs_with_type::<CancelledCampaignEvent>()
+            .decode_logs_with_type::<CancelledCampaignEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
@@ -46,7 +46,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            CampaignState::Cancelled()
+            CampaignState::Cancelled
         ));
     }
 
@@ -77,7 +77,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            CampaignState::Funding()
+            CampaignState::Funding
         ));
         assert!(matches!(
             campaign_info(&author.contract, 2)
@@ -85,17 +85,17 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            CampaignState::Funding()
+            CampaignState::Funding
         ));
 
         let response1 = cancel_campaign(&author.contract, 1).await;
         let response2 = cancel_campaign(&author.contract, 2).await;
 
         let log1 = response1
-            .get_logs_with_type::<CancelledCampaignEvent>()
+            .decode_logs_with_type::<CancelledCampaignEvent>()
             .unwrap();
         let log2 = response2
-            .get_logs_with_type::<CancelledCampaignEvent>()
+            .decode_logs_with_type::<CancelledCampaignEvent>()
             .unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();
@@ -109,7 +109,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            CampaignState::Cancelled()
+            CampaignState::Cancelled
         ));
         assert!(matches!(
             campaign_info(&author.contract, 2)
@@ -117,7 +117,7 @@ mod success {
                 .value
                 .unwrap()
                 .state,
-            CampaignState::Cancelled()
+            CampaignState::Cancelled
         ));
     }
 }
@@ -157,7 +157,7 @@ mod revert {
     #[should_panic(expected = "UnauthorizedUser")]
     async fn when_sender_is_not_author() {
         let (author, user, _, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 2;
 
         create_campaign(
@@ -177,7 +177,7 @@ mod revert {
     #[should_panic(expected = "CampaignEnded")]
     async fn when_calling_after_deadline() {
         let (author, _, _, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 2;
 
         create_campaign(
