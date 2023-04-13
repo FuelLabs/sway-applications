@@ -1,8 +1,8 @@
 use fuels::{
     accounts::fuel_crypto::{Message, SecretKey, Signature},
     prelude::{
-        abigen, setup_single_asset_coins, setup_test_provider, Contract, DeployConfiguration,
-        Error, StorageConfiguration, WalletUnlocked, BASE_ASSET_ID,
+        abigen, setup_single_asset_coins, setup_test_provider, Contract, Error, LoadConfiguration,
+        StorageConfiguration, TxParameters, WalletUnlocked, BASE_ASSET_ID,
     },
     tx::{Bytes32, Bytes64, ContractId},
     types::{Bits256, Identity, B512},
@@ -144,15 +144,14 @@ pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, C
     deployer_wallet.set_provider(provider.clone());
     non_owner_wallet.set_provider(provider);
 
-    let storage_configuration = StorageConfiguration::default()
-        .set_storage_path(MULTISIG_CONTRACT_STORAGE_PATH.to_string());
+    let storage_configuration = StorageConfiguration::load_from(MULTISIG_CONTRACT_STORAGE_PATH);
+    let configuration =
+        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
 
-    let multisig_contract_id = Contract::deploy(
-        MULTISIG_CONTRACT_BINARY_PATH,
-        &deployer_wallet,
-        DeployConfiguration::default().set_storage_configuration(storage_configuration),
-    )
-    .await?;
+    let multisig_contract_id = Contract::load_from(MULTISIG_CONTRACT_BINARY_PATH, configuration)
+        .unwrap()
+        .deploy(&deployer_wallet, TxParameters::default())
+        .await?;
 
     let deployer = Caller {
         contract: MultiSig::new(multisig_contract_id.clone(), deployer_wallet.clone()),
