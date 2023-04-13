@@ -1,10 +1,10 @@
 contract;
 
-dep interface;
-dep data_structures;
-dep errors;
-dep events;
-dep utils;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
+mod utils;
 
 use std::{
     auth::msg_sender,
@@ -17,10 +17,9 @@ use std::{
     token::transfer,
 };
 
-use interface::{DaoVoting, Info};
-use data_structures::{Proposal, ProposalInfo, State, Votes};
-use errors::{CreationError, InitializationError, ProposalError, UserError};
-use events::{
+use ::data_structures::{Proposal, ProposalInfo, State, Votes};
+use ::errors::{CreationError, InitializationError, ProposalError, UserError};
+use ::events::{
     CreateProposalEvent,
     DepositEvent,
     ExecuteEvent,
@@ -29,8 +28,8 @@ use events::{
     VoteEvent,
     WithdrawEvent,
 };
-
-use utils::validate_id;
+use ::interface::{DaoVoting, Info};
+use ::utils::validate_id;
 
 storage {
     /// The amount of governance tokens a user has deposited
@@ -85,7 +84,8 @@ impl DaoVoting for Contract {
         });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn deposit() {
         require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
         require(storage.token == msg_asset_id(), UserError::IncorrectAssetSent);

@@ -1,4 +1,4 @@
-library data_structures;
+library;
 
 use std::block::height;
 use core::ops::Eq;
