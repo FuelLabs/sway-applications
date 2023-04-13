@@ -357,11 +357,11 @@ mod revert {
         )
         .await;
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None);
+        let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(
-            Some((purchase_amount * token_price) + 1),
-            Some(AssetId::from(*asset_contract)),
-            None,
+            (purchase_amount * token_price) + 1,
+            AssetId::from(*asset_contract),
+            1_000_000,
         );
 
         owner2

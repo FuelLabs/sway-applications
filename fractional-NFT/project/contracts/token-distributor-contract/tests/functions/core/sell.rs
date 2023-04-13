@@ -33,7 +33,7 @@ mod success {
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
         let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
@@ -363,11 +363,11 @@ mod revert {
         )
         .await;
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None);
+        let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(
-            Some(asset_supply - (purchase_amount * token_price)),
-            Some(AssetId::from(*asset_contract)),
-            None,
+            asset_supply - (purchase_amount * token_price),
+            AssetId::from(*asset_contract),
+            1_000_000,
         );
 
         owner2
