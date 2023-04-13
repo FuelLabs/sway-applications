@@ -2,7 +2,7 @@
 name = 'NFT'
 source = 'member'
 dependencies = [
-    'nft git+https://github.com/FuelLabs/sway-libs?tag=v0.7.0#d22dd193bc696160dc37ea31830c864a5049a6a8',
+    'nft',
     'std',
 ]
 
@@ -10,7 +10,7 @@ dependencies = [
 name = 'NFT-1'
 source = 'member'
 dependencies = [
-    'nft git+https://github.com/FuelLabs/sway-libs?tag=v0.8.0#f6bb5c234e020d556e1bc688e0f1f368dc9b0f9a',
+    'nft',
     'std',
 ]
 
@@ -27,14 +27,9 @@ source = 'path+from-root-FDF4A5DCC6ECD181'
 name = 'fractional-NFT-contract'
 source = 'member'
 dependencies = [
-    'nft git+https://github.com/FuelLabs/sway-libs?tag=v0.8.0#f6bb5c234e020d556e1bc688e0f1f368dc9b0f9a',
+    'nft',
     'std',
 ]
-
-[[package]]
-name = 'nft'
-source = 'git+https://github.com/FuelLabs/sway-libs?tag=v0.7.0#d22dd193bc696160dc37ea31830c864a5049a6a8'
-dependencies = ['std']
 
 [[package]]
 name = 'nft'
