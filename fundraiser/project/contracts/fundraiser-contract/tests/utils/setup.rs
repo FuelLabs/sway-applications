@@ -1,7 +1,7 @@
 use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Bech32Address, Config, Contract,
-        DeployConfiguration, StorageConfiguration, WalletUnlocked, WalletsConfig,
+        LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
     tx::ContractId,
     types::Identity,
@@ -83,34 +83,33 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
     let author_wallet = wallets.pop().unwrap();
     let user_wallet = wallets.pop().unwrap();
 
-    let fundraiser_configuration = StorageConfiguration::default()
-        .set_storage_path(FUNDRAISER_CONTRACT_STORAGE_PATH.to_string());
-    let asset_configuration =
-        StorageConfiguration::default().set_storage_path(ASSET_CONTRACT_STORAGE_PATH.to_string());
+    let fundraiser_storage_configuration =
+        StorageConfiguration::load_from(FUNDRAISER_CONTRACT_STORAGE_PATH);
+    let asset_storage_configuration = StorageConfiguration::load_from(ASSET_CONTRACT_STORAGE_PATH);
 
-    let id = Contract::deploy(
-        FUNDRAISER_CONTRACT_BINARY_PATH,
-        &deployer_wallet,
-        DeployConfiguration::default().set_storage_configuration(fundraiser_configuration),
-    )
-    .await
-    .unwrap();
+    let fundraiser_configuration = LoadConfiguration::default()
+        .set_storage_configuration(fundraiser_storage_configuration.unwrap());
+    let asset_configuration = LoadConfiguration::default()
+        .set_storage_configuration(asset_storage_configuration.unwrap());
 
-    let asset_id = Contract::deploy(
+    let id = Contract::load_from(FUNDRAISER_CONTRACT_BINARY_PATH, fundraiser_configuration)
+        .unwrap()
+        .deploy(&deployer_wallet, TxParameters::default())
+        .await
+        .unwrap();
+
+    let asset_id = Contract::load_from(ASSET_CONTRACT_BINARY_PATH, asset_configuration.clone())
+        .unwrap()
+        .deploy(&deployer_wallet, TxParameters::default())
+        .await
+        .unwrap();
+
+    let asset2_id = Contract::load_from(
         ASSET_CONTRACT_BINARY_PATH,
-        &deployer_wallet,
-        DeployConfiguration::default().set_storage_configuration(asset_configuration.clone()),
+        asset_configuration.set_salt([1u8; 32]),
     )
-    .await
-    .unwrap();
-
-    let asset2_id = Contract::deploy(
-        ASSET_CONTRACT_BINARY_PATH,
-        &deployer_wallet,
-        DeployConfiguration::default()
-            .set_storage_configuration(asset_configuration)
-            .set_salt([1u8; 32]),
-    )
+    .unwrap()
+    .deploy(&deployer_wallet, TxParameters::default())
     .await
     .unwrap();
 

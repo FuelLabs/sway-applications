@@ -63,7 +63,7 @@ mod success {
                 .unwrap()
         );
 
-        let log = response.get_logs_with_type::<PledgedEvent>().unwrap();
+        let log = response.decode_logs_with_type::<PledgedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -151,7 +151,7 @@ mod success {
                 .unwrap()
         );
 
-        let log = response1.get_logs_with_type::<PledgedEvent>().unwrap();
+        let log = response1.decode_logs_with_type::<PledgedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -196,7 +196,7 @@ mod success {
                 .unwrap()
         );
 
-        let log = response2.get_logs_with_type::<PledgedEvent>().unwrap();
+        let log = response2.decode_logs_with_type::<PledgedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -313,8 +313,8 @@ mod success {
         let response1 = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         let response2 = pledge(&user.contract, 2, &asset2, defaults.target_amount).await;
 
-        let log1 = response1.get_logs_with_type::<PledgedEvent>().unwrap();
-        let log2 = response2.get_logs_with_type::<PledgedEvent>().unwrap();
+        let log1 = response1.decode_logs_with_type::<PledgedEvent>().unwrap();
+        let log2 = response2.decode_logs_with_type::<PledgedEvent>().unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();
 
