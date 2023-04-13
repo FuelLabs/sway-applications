@@ -1,8 +1,6 @@
-library interface;
+library;
 
-dep data_structures;
-
-use data_structures::{Proposal, ProposalInfo, Votes};
+use ::data_structures::{Proposal, ProposalInfo, Votes};
 
 abi DaoVoting {
     /// Initialize the dao with the governance token.
