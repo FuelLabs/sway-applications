@@ -10,7 +10,7 @@ mod success {
         interface::info::{asset_info_by_count, campaign_info, pledge_count, pledged},
         setup::{identity, AssetInfo, UnpledgedEvent},
     };
-    use fuels::tx::AssetId;
+    use fuels::{accounts::ViewOnlyAccount, tx::AssetId};
 
     #[tokio::test]
     async fn unpledges_full_amount() {
@@ -66,7 +66,7 @@ mod success {
 
         let response = unpledge(&user.contract, 1, defaults.target_amount).await;
 
-        let log = response.get_logs_with_type::<UnpledgedEvent>().unwrap();
+        let log = response.decode_logs_with_type::<UnpledgedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -175,7 +175,7 @@ mod success {
                 .unwrap()
         );
 
-        let log = response.get_logs_with_type::<UnpledgedEvent>().unwrap();
+        let log = response.decode_logs_with_type::<UnpledgedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -327,8 +327,8 @@ mod success {
         let response1 = unpledge(&user.contract, 1, defaults.target_amount).await;
         let response2 = unpledge(&user.contract, 2, defaults.target_amount).await;
 
-        let log1 = response1.get_logs_with_type::<UnpledgedEvent>().unwrap();
-        let log2 = response2.get_logs_with_type::<UnpledgedEvent>().unwrap();
+        let log1 = response1.decode_logs_with_type::<UnpledgedEvent>().unwrap();
+        let log2 = response2.decode_logs_with_type::<UnpledgedEvent>().unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();
 
@@ -473,7 +473,7 @@ mod success {
                 .unwrap()
         );
 
-        let log = response.get_logs_with_type::<UnpledgedEvent>().unwrap();
+        let log = response.decode_logs_with_type::<UnpledgedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -569,7 +569,7 @@ mod revert {
     #[should_panic(expected = "AlreadyClaimed")]
     async fn after_claimed() {
         let (author, user, asset, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 4;
 
         mint(

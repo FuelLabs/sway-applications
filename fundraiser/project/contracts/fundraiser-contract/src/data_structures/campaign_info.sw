@@ -1,8 +1,6 @@
-library campaign_info;
+library;
 
-dep campaign_state;
-
-use campaign_state::CampaignState;
+use ::data_structures::campaign_state::CampaignState;
 
 /// General data structure containing information about a campaign
 pub struct CampaignInfo {

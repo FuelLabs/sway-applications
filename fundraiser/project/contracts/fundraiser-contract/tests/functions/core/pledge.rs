@@ -10,7 +10,7 @@ mod success {
         interface::info::{asset_info_by_count, campaign_info, pledge_count, pledged},
         setup::{identity, AssetInfo, PledgedEvent},
     };
-    use fuels::tx::AssetId;
+    use fuels::{accounts::ViewOnlyAccount, tx::AssetId};
 
     #[tokio::test]
     async fn pledges() {
@@ -63,7 +63,7 @@ mod success {
                 .unwrap()
         );
 
-        let log = response.get_logs_with_type::<PledgedEvent>().unwrap();
+        let log = response.decode_logs_with_type::<PledgedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -151,7 +151,7 @@ mod success {
                 .unwrap()
         );
 
-        let log = response1.get_logs_with_type::<PledgedEvent>().unwrap();
+        let log = response1.decode_logs_with_type::<PledgedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -196,7 +196,7 @@ mod success {
                 .unwrap()
         );
 
-        let log = response2.get_logs_with_type::<PledgedEvent>().unwrap();
+        let log = response2.decode_logs_with_type::<PledgedEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -313,8 +313,8 @@ mod success {
         let response1 = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         let response2 = pledge(&user.contract, 2, &asset2, defaults.target_amount).await;
 
-        let log1 = response1.get_logs_with_type::<PledgedEvent>().unwrap();
-        let log2 = response2.get_logs_with_type::<PledgedEvent>().unwrap();
+        let log1 = response1.decode_logs_with_type::<PledgedEvent>().unwrap();
+        let log2 = response2.decode_logs_with_type::<PledgedEvent>().unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();
 
@@ -466,7 +466,7 @@ mod revert {
     #[should_panic(expected = "CampaignEnded")]
     async fn when_pledging_after_deadline() {
         let (author, user, asset, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 3;
 
         mint(
@@ -541,7 +541,7 @@ mod revert {
     #[should_panic(expected = "CampaignHasBeenCancelled")]
     async fn when_pledging_to_cancelled_campaign() {
         let (author, user, asset, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 5;
 
         mint(
