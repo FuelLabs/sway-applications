@@ -1,4 +1,4 @@
-library data_structures;
+library;
 
 /// Contains information on the NFT this contract holds.
 pub struct NFTInfo {

@@ -1,8 +1,6 @@
-library interface;
+library;
 
-dep data_structures;
-
-use data_structures::TokenDistribution;
+use ::data_structures::TokenDistribution;
 
 abi TokenDistributor {
     /// Allows for the token admin to start a buyback of tokens at a set price.
