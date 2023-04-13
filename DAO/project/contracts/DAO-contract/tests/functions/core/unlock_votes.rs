@@ -24,11 +24,7 @@ mod success {
         )
         .await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
@@ -49,7 +45,9 @@ mod success {
 
         let response = unlock_votes(&user.dao_voting, 0).await;
 
-        let log = response.get_logs_with_type::<UnlockVotesEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<UnlockVotesEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -90,11 +88,7 @@ mod success {
         create_proposal(&user.dao_voting, 1, 3, proposal_transaction.clone()).await;
         create_proposal(&user.dao_voting, 10, 4, proposal_transaction.clone()).await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
         vote(&user.dao_voting, true, 0, asset_amount / 2).await;
@@ -120,7 +114,9 @@ mod success {
 
         let response1 = unlock_votes(&user.dao_voting, 0).await;
 
-        let log1 = response1.get_logs_with_type::<UnlockVotesEvent>().unwrap();
+        let log1 = response1
+            .decode_logs_with_type::<UnlockVotesEvent>()
+            .unwrap();
         let event1 = log1.get(0).unwrap();
 
         assert_eq!(
@@ -146,7 +142,9 @@ mod success {
 
         let response2 = unlock_votes(&user.dao_voting, 1).await;
 
-        let log2 = response2.get_logs_with_type::<UnlockVotesEvent>().unwrap();
+        let log2 = response2
+            .decode_logs_with_type::<UnlockVotesEvent>()
+            .unwrap();
         let event2 = log2.get(0).unwrap();
 
         assert_eq!(
@@ -182,11 +180,7 @@ mod success {
         )
         .await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
@@ -207,7 +201,9 @@ mod success {
 
         let response1 = unlock_votes(&user.dao_voting, 0).await;
 
-        let log1 = response1.get_logs_with_type::<UnlockVotesEvent>().unwrap();
+        let log1 = response1
+            .decode_logs_with_type::<UnlockVotesEvent>()
+            .unwrap();
         let event1 = log1.get(0).unwrap();
 
         assert_eq!(
@@ -248,7 +244,9 @@ mod success {
 
         let response2 = unlock_votes(&user.dao_voting, 1).await;
 
-        let log2 = response2.get_logs_with_type::<UnlockVotesEvent>().unwrap();
+        let log2 = response2
+            .decode_logs_with_type::<UnlockVotesEvent>()
+            .unwrap();
         let event2 = log2.get(0).unwrap();
 
         assert_eq!(
@@ -297,11 +295,7 @@ mod revert {
         )
         .await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);

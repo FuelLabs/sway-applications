@@ -4,7 +4,10 @@ mod success {
         interface::info::balance,
         setup::{base_asset_contract_id, setup_env, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK},
     };
-    use fuels::prelude::{TxParameters, BASE_ASSET_ID};
+    use fuels::{
+        accounts::Account,
+        prelude::{TxParameters, BASE_ASSET_ID},
+    };
 
     #[tokio::test]
     async fn gets_balance() {
@@ -17,7 +20,7 @@ mod success {
         deployer
             .wallet
             .force_transfer_to_contract(
-                deployer.contract.get_contract_id(),
+                deployer.contract.contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),

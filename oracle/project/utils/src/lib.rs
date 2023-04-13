@@ -24,7 +24,7 @@ pub mod abi_calls {
         contract.methods().owner().call().await.unwrap().value
     }
 
-    pub async fn price(contract: &Oracle) -> u64 {
+    pub async fn price(contract: &Oracle) -> Option<u64> {
         contract.methods().price().call().await.unwrap().value
     }
 

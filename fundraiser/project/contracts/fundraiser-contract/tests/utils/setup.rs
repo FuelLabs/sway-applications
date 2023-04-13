@@ -1,9 +1,9 @@
 use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Bech32Address, Config, Contract,
-        StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+        LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
-    tx::{ContractId, Salt},
+    tx::ContractId,
     types::Identity,
 };
 
@@ -24,28 +24,32 @@ const ASSET_CONTRACT_STORAGE_PATH: &str =
 const FUNDRAISER_CONTRACT_BINARY_PATH: &str = "./out/debug/fundraiser-contract.bin";
 const FUNDRAISER_CONTRACT_STORAGE_PATH: &str = "./out/debug/fundraiser-contract-storage_slots.json";
 
-pub struct Coin {
-    pub contract: Asset,
-    pub id: ContractId,
+pub(crate) struct Coin {
+    pub(crate) contract: Asset<WalletUnlocked>,
+    pub(crate) id: ContractId,
 }
 
-pub struct DefaultParameters {
-    pub asset_id: ContractId,
-    pub beneficiary: Identity,
-    pub deadline: u64,
-    pub target_amount: u64,
+pub(crate) struct DefaultParameters {
+    pub(crate) asset_id: ContractId,
+    pub(crate) beneficiary: Identity,
+    pub(crate) deadline: u64,
+    pub(crate) target_amount: u64,
 }
 
-pub struct User {
-    pub contract: Fundraiser,
-    pub wallet: WalletUnlocked,
+pub(crate) struct User {
+    pub(crate) contract: Fundraiser<WalletUnlocked>,
+    pub(crate) wallet: WalletUnlocked,
 }
 
-pub async fn identity(address: &Bech32Address) -> Identity {
+pub(crate) async fn identity(address: &Bech32Address) -> Identity {
     Identity::Address(address.into())
 }
 
-pub async fn mint(contract: &Asset, amount: u64, address: &Bech32Address) -> bool {
+pub(crate) async fn mint(
+    contract: &Asset<WalletUnlocked>,
+    amount: u64,
+    address: &Bech32Address,
+) -> bool {
     contract
         .methods()
         .mint_and_send_to_address(amount, address.into())
@@ -56,7 +60,7 @@ pub async fn mint(contract: &Asset, amount: u64, address: &Bech32Address) -> boo
         .value
 }
 
-pub async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
+pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
     let number_of_wallets = 3;
     let coins_per_wallet = 1;
     let amount_per_coin = 1_000_000;
@@ -79,31 +83,33 @@ pub async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
     let author_wallet = wallets.pop().unwrap();
     let user_wallet = wallets.pop().unwrap();
 
-    let id = Contract::deploy(
-        FUNDRAISER_CONTRACT_BINARY_PATH,
-        &deployer_wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(FUNDRAISER_CONTRACT_STORAGE_PATH.to_string())),
-    )
-    .await
-    .unwrap();
+    let fundraiser_storage_configuration =
+        StorageConfiguration::load_from(FUNDRAISER_CONTRACT_STORAGE_PATH);
+    let asset_storage_configuration = StorageConfiguration::load_from(ASSET_CONTRACT_STORAGE_PATH);
 
-    let asset_id = Contract::deploy(
-        ASSET_CONTRACT_BINARY_PATH,
-        &deployer_wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
-    )
-    .await
-    .unwrap();
+    let fundraiser_configuration = LoadConfiguration::default()
+        .set_storage_configuration(fundraiser_storage_configuration.unwrap());
+    let asset_configuration = LoadConfiguration::default()
+        .set_storage_configuration(asset_storage_configuration.unwrap());
 
-    let asset2_id = Contract::deploy_with_parameters(
+    let id = Contract::load_from(FUNDRAISER_CONTRACT_BINARY_PATH, fundraiser_configuration)
+        .unwrap()
+        .deploy(&deployer_wallet, TxParameters::default())
+        .await
+        .unwrap();
+
+    let asset_id = Contract::load_from(ASSET_CONTRACT_BINARY_PATH, asset_configuration.clone())
+        .unwrap()
+        .deploy(&deployer_wallet, TxParameters::default())
+        .await
+        .unwrap();
+
+    let asset2_id = Contract::load_from(
         ASSET_CONTRACT_BINARY_PATH,
-        &deployer_wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
-        Salt::from([1u8; 32]),
+        asset_configuration.set_salt([1u8; 32]),
     )
+    .unwrap()
+    .deploy(&deployer_wallet, TxParameters::default())
     .await
     .unwrap();
 

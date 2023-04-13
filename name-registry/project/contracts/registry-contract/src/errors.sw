@@ -1,4 +1,4 @@
-library errors;
+library;
 
 pub enum AssetError {
     InsufficientPayment: (),

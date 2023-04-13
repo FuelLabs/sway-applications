@@ -1,9 +1,9 @@
 use fuels::{
+    accounts::fuel_crypto::{Message, SecretKey, Signature},
     prelude::{
-        abigen, setup_single_asset_coins, setup_test_provider, Contract, Error,
+        abigen, setup_single_asset_coins, setup_test_provider, Contract, Error, LoadConfiguration,
         StorageConfiguration, TxParameters, WalletUnlocked, BASE_ASSET_ID,
     },
-    signers::fuel_crypto::{Message, SecretKey, Signature},
     tx::{Bytes32, Bytes64, ContractId},
     types::{Bits256, Identity, B512},
 };
@@ -17,25 +17,25 @@ abigen!(Contract(
 ));
 
 // Test-only private key
-pub const VALID_SIGNER_PK: &str =
+pub(crate) const VALID_SIGNER_PK: &str =
     "862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301";
 
-pub const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
-pub const MULTISIG_CONTRACT_STORAGE_PATH: &str = "./out/debug/multisig-contract-storage_slots.json";
+const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
+const MULTISIG_CONTRACT_STORAGE_PATH: &str = "./out/debug/multisig-contract-storage_slots.json";
 
-pub const DEFAULT_THRESHOLD: u64 = 5;
-pub const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
+pub(crate) const DEFAULT_THRESHOLD: u64 = 5;
+pub(crate) const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
 
-pub struct Caller {
-    pub contract: MultiSig,
-    pub wallet: WalletUnlocked,
+pub(crate) struct Caller {
+    pub(crate) contract: MultiSig<WalletUnlocked>,
+    pub(crate) wallet: WalletUnlocked,
 }
 
-pub fn base_asset_contract_id() -> ContractId {
+pub(crate) fn base_asset_contract_id() -> ContractId {
     ContractId::new(BASE_ASSET_ID.try_into().unwrap())
 }
 
-pub fn default_users() -> Vec<User> {
+pub(crate) fn default_users() -> Vec<User> {
     let fuel_user_1 = User {
         address: Bits256::from_hex_str(
             "0xe10f526b192593793b7a1559a391445faba82a1d669e3eb2dcd17f9c121b24b1",
@@ -75,7 +75,7 @@ fn ethereum_prefix(formatted_message: Message) -> Message {
     unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) } // TODO: Remove use of unsafe when feature is available: https://github.com/FuelLabs/fuels-rs/issues/698
 }
 
-pub async fn format_and_sign(
+pub(crate) async fn format_and_sign(
     private_key: SecretKey,
     message_hash: Message,
     message_format: MessageFormat,
@@ -83,13 +83,13 @@ pub async fn format_and_sign(
     wallet_type: WalletType,
 ) -> SignatureInfo {
     let formatted_message = match message_format {
-        MessageFormat::None() => message_hash,
-        MessageFormat::EIP191PersonalSign() => eip_191_personal_sign_format(message_hash),
+        MessageFormat::None => message_hash,
+        MessageFormat::EIP191PersonalSign => eip_191_personal_sign_format(message_hash),
     };
 
     let prefixed_message = match message_prefix {
-        MessagePrefix::None() => formatted_message,
-        MessagePrefix::Ethereum() => ethereum_prefix(formatted_message),
+        MessagePrefix::None => formatted_message,
+        MessagePrefix::Ethereum => ethereum_prefix(formatted_message),
     };
 
     let signature = Signature::sign(&private_key, &prefixed_message);
@@ -120,7 +120,7 @@ where
     <[u8; Bytes32::LEN]>::from(hasher.finalize()).into()
 }
 
-pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller), Error> {
+pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller), Error> {
     let private_key: SecretKey = private_key.parse().unwrap();
     let mut deployer_wallet = WalletUnlocked::new_from_private_key(private_key, None);
 
@@ -144,13 +144,14 @@ pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller),
     deployer_wallet.set_provider(provider.clone());
     non_owner_wallet.set_provider(provider);
 
-    let multisig_contract_id = Contract::deploy(
-        MULTISIG_CONTRACT_BINARY_PATH,
-        &deployer_wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(MULTISIG_CONTRACT_STORAGE_PATH.to_string())),
-    )
-    .await?;
+    let storage_configuration = StorageConfiguration::load_from(MULTISIG_CONTRACT_STORAGE_PATH);
+    let configuration =
+        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
+
+    let multisig_contract_id = Contract::load_from(MULTISIG_CONTRACT_BINARY_PATH, configuration)
+        .unwrap()
+        .deploy(&deployer_wallet, TxParameters::default())
+        .await?;
 
     let deployer = Caller {
         contract: MultiSig::new(multisig_contract_id.clone(), deployer_wallet.clone()),
@@ -165,7 +166,7 @@ pub async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, Caller),
     Ok((private_key, deployer, non_owner))
 }
 
-pub fn transfer_parameters() -> (WalletUnlocked, Identity, Bits256) {
+pub(crate) fn transfer_parameters() -> (WalletUnlocked, Identity, Bits256) {
     let receiver_wallet = WalletUnlocked::new_random(None);
 
     let receiver = Identity::Address(receiver_wallet.address().try_into().unwrap());
@@ -177,14 +178,17 @@ pub fn transfer_parameters() -> (WalletUnlocked, Identity, Bits256) {
     (receiver_wallet, receiver, data)
 }
 
-pub async fn transfer_signatures(private_key: SecretKey, tx_hash: Message) -> Vec<SignatureInfo> {
+pub(crate) async fn transfer_signatures(
+    private_key: SecretKey,
+    tx_hash: Message,
+) -> Vec<SignatureInfo> {
     // - Fuel signature. Fuel wallet. No format. No prefix.
     let fuel_signature = format_and_sign(
         private_key,
         tx_hash,
-        MessageFormat::None(),
-        MessagePrefix::None(),
-        WalletType::Fuel(),
+        MessageFormat::None,
+        MessagePrefix::None,
+        WalletType::Fuel,
     )
     .await;
 
@@ -192,9 +196,9 @@ pub async fn transfer_signatures(private_key: SecretKey, tx_hash: Message) -> Ve
     let evm_signature = format_and_sign(
         private_key,
         tx_hash,
-        MessageFormat::EIP191PersonalSign(),
-        MessagePrefix::Ethereum(),
-        WalletType::EVM(),
+        MessageFormat::EIP191PersonalSign,
+        MessagePrefix::Ethereum,
+        WalletType::EVM,
     )
     .await;
 

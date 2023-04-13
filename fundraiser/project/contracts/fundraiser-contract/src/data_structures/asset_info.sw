@@ -1,4 +1,4 @@
-library asset_info;
+library;
 
 /// Used to track the total amount pledged to an asset
 pub struct AssetInfo {

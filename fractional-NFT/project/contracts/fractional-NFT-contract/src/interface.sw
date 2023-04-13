@@ -1,8 +1,6 @@
-library interface;
+library;
 
-dep data_structures;
-
-use data_structures::NFTInfo;
+use ::data_structures::NFTInfo;
 
 abi FractionalNFT {
     /// Locks an NFT into this contract and sends tokens to the caller.

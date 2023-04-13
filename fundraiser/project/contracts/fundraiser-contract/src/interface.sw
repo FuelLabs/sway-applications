@@ -1,14 +1,11 @@
-library interface;
+library;
 
-dep data_structures/asset_info;
-dep data_structures/campaign_info;
-dep data_structures/campaign;
-dep data_structures/pledge;
-
-use asset_info::AssetInfo;
-use campaign_info::CampaignInfo;
-use campaign::Campaign;
-use pledge::Pledge;
+use ::data_structures::{
+    asset_info::AssetInfo,
+    campaign::Campaign,
+    campaign_info::CampaignInfo,
+    pledge::Pledge,
+};
 
 abi Fundraiser {
     /// Marks a campaign as cancelled preventing further pledges or a claim to be made
