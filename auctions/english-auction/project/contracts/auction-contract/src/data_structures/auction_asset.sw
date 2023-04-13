@@ -1,12 +1,6 @@
-library auction_asset;
+library;
 
-dep nft_asset;
-dep token_asset;
-dep traits;
-
-use nft_asset::NFTAsset;
-use token_asset::TokenAsset;
-use traits::Asset;
+use ::data_structures::{nft_asset::NFTAsset, token_asset::TokenAsset, traits::Asset};
 
 pub enum AuctionAsset {
     NFTAsset: NFTAsset,

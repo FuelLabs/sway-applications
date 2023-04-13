@@ -1,9 +1,7 @@
-library token_asset;
-
-dep traits;
+library;
 
 use ::errors::AssetError;
-use traits::Asset;
+use ::data_structures::traits::Asset;
 
 pub struct TokenAsset {
     /// The amount of the native asset that the struct is representing.

@@ -1,21 +1,15 @@
 contract;
 
-dep data_structures/state;
-dep errors;
-dep events;
-dep interface;
-dep utils;
+mod errors;
+mod data_structures;
+mod events;
+mod interface;
+mod utils;
 
-// TODO: Move these into alphabetical order once https://github.com/FuelLabs/sway/issues/409 is resolved
-dep data_structures/auction_asset;
-dep data_structures/auction;
-
-use auction_asset::AuctionAsset;
-use auction::Auction;
-use errors::{AccessError, InitError, InputError, UserError};
-use events::{BidEvent, CancelAuctionEvent, CreateAuctionEvent, WithdrawEvent};
-use interface::{EnglishAuction, Info};
-use state::State;
+use ::data_structures::{auction::Auction, auction_asset::AuctionAsset, state::State};
+use ::errors::{AccessError, InitError, InputError, UserError};
+use ::events::{BidEvent, CancelAuctionEvent, CreateAuctionEvent, WithdrawEvent};
+use ::interface::{EnglishAuction, Info};
 use std::{
     auth::msg_sender,
     block::height,
@@ -25,13 +19,12 @@ use std::{
     },
     context::msg_amount,
 };
-use utils::{transfer_asset, transfer_nft};
+use ::utils::{transfer_asset, transfer_nft};
 
 storage {
     /// Stores the auction information based on auction ID.
     /// Map(auction id => auction)
-    auctions: StorageMap<u64, Auction> = StorageMap {}, 
-    
+    auctions: StorageMap<u64, Auction> = StorageMap {},
     // TODO: Move deposits into the Auction struct when StorageMaps are supported inside structs
     // This issue can be tracked here: https://github.com/FuelLabs/sway/issues/2465
     /// Stores the deposits made based on the user and auction ID.
@@ -42,7 +35,8 @@ storage {
 }
 
 impl EnglishAuction for Contract {
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn bid(auction_id: u64, bid_asset: AuctionAsset) {
         let auction = storage.auctions.get(auction_id);
         require(auction.is_some(), InputError::AuctionDoesNotExist);
@@ -124,7 +118,8 @@ impl EnglishAuction for Contract {
         log(CancelAuctionEvent { auction_id });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn create(
         bid_asset: AuctionAsset,
         duration: u64,

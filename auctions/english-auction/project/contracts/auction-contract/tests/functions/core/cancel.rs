@@ -158,7 +158,7 @@ mod revert {
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_token_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_token_contract_id, 0).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 

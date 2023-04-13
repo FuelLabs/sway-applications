@@ -609,7 +609,7 @@ mod revert {
         let sell_asset = token_asset(sell_token_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_token_contract_id, 0).await;
         let bid_asset = token_asset(buy_token_contract_id, initial_price).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
         mint_and_send_to_address(reserve_price, &buyer1.asset, buyer1.wallet.address().into())
@@ -752,11 +752,11 @@ mod revert {
         )
         .await;
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None);
+        let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(
-            Some(initial_price),
-            Some(AssetId::from(*sell_token_contract_id)),
-            None,
+            initial_price,
+            AssetId::from(*sell_token_contract_id),
+            1_000_000,
         );
 
         buyer1
@@ -798,11 +798,11 @@ mod revert {
         )
         .await;
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None);
+        let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(
-            Some(initial_price + 1),
-            Some(AssetId::from(*buy_token_contract_id)),
-            None,
+            initial_price + 1,
+            AssetId::from(*buy_token_contract_id),
+            1_000_000,
         );
 
         buyer1

@@ -1,10 +1,6 @@
-library auction;
+library;
 
-dep auction_asset;
-dep state;
-
-use auction_asset::AuctionAsset;
-use state::State;
+use ::data_structures::{auction_asset::AuctionAsset, state::State};
 
 pub struct Auction {
     /// The asset which will be accepted in return for the selling asset.
