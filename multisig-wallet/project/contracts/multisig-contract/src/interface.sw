@@ -1,10 +1,7 @@
-library interface;
+library;
 
-dep data_structures/signatures;
-dep data_structures/user;
-
-use signatures::SignatureInfo;
-use user::User;
+use ::data_structures::signatures::SignatureInfo;
+use ::data_structures::user::User;
 
 abi MultiSignatureWallet {
     /// Cancel the next transaction by spending the current nonce.

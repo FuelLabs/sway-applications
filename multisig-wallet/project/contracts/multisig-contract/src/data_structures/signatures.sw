@@ -1,4 +1,4 @@
-library signatures;
+library;
 
 use std::b512::B512;
 

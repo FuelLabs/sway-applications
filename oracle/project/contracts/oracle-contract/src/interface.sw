@@ -8,7 +8,7 @@ abi Oracle {
 
     /// Return price of asset
     #[storage(read)]
-    fn price() -> u64;
+    fn price() -> Option<u64>;
 
     /// Changes the price in storage to the value of `price`
     ///
