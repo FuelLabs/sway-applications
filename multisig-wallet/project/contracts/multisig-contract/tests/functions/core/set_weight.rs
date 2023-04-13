@@ -42,7 +42,7 @@ mod success {
             .await
             .value;
 
-        let log = response.get_logs_with_type::<SetWeightEvent>().unwrap();
+        let log = response.decode_logs_with_type::<SetWeightEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(*event, SetWeightEvent { user: user.clone() });
