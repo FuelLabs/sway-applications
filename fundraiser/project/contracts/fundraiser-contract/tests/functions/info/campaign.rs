@@ -16,7 +16,7 @@ mod success {
     #[tokio::test]
     async fn returns_info() {
         let (author, _, _, _, defaults) = setup().await;
-        let provider = author.wallet.get_provider().unwrap();
+        let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 3;
 
         create_campaign(

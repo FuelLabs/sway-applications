@@ -1,13 +1,15 @@
-use fuels::{programs::call_response::FuelCallResponse, tx::ContractId, types::Identity};
-
 use crate::utils::setup::{AssetInfo, Campaign, CampaignInfo, Fundraiser, Pledge};
+use fuels::{
+    prelude::WalletUnlocked, programs::call_response::FuelCallResponse, tx::ContractId,
+    types::Identity,
+};
 
-pub async fn asset_count(contract: &Fundraiser) -> u64 {
+pub(crate) async fn asset_count(contract: &Fundraiser<WalletUnlocked>) -> u64 {
     contract.methods().asset_count().call().await.unwrap().value
 }
 
-pub async fn asset_info_by_id(
-    contract: &Fundraiser,
+pub(crate) async fn asset_info_by_id(
+    contract: &Fundraiser<WalletUnlocked>,
     asset: &ContractId,
 ) -> FuelCallResponse<Option<AssetInfo>> {
     contract
@@ -18,8 +20,8 @@ pub async fn asset_info_by_id(
         .unwrap()
 }
 
-pub async fn asset_info_by_count(
-    contract: &Fundraiser,
+pub(crate) async fn asset_info_by_count(
+    contract: &Fundraiser<WalletUnlocked>,
     id: u64,
 ) -> FuelCallResponse<Option<AssetInfo>> {
     contract
@@ -30,30 +32,30 @@ pub async fn asset_info_by_count(
         .unwrap()
 }
 
-pub async fn campaign(
-    contract: &Fundraiser,
+pub(crate) async fn campaign(
+    contract: &Fundraiser<WalletUnlocked>,
     id: u64,
     user: Identity,
 ) -> FuelCallResponse<Option<Campaign>> {
     contract.methods().campaign(id, user).call().await.unwrap()
 }
 
-pub async fn campaign_info(
-    contract: &Fundraiser,
+pub(crate) async fn campaign_info(
+    contract: &Fundraiser<WalletUnlocked>,
     id: u64,
 ) -> FuelCallResponse<Option<CampaignInfo>> {
     contract.methods().campaign_info(id).call().await.unwrap()
 }
 
-pub async fn pledged(
-    contract: &Fundraiser,
+pub(crate) async fn pledged(
+    contract: &Fundraiser<WalletUnlocked>,
     id: u64,
     user: Identity,
 ) -> FuelCallResponse<Option<Pledge>> {
     contract.methods().pledged(id, user).call().await.unwrap()
 }
 
-pub async fn pledge_count(contract: &Fundraiser, user: Identity) -> u64 {
+pub(crate) async fn pledge_count(contract: &Fundraiser<WalletUnlocked>, user: Identity) -> u64 {
     contract
         .methods()
         .pledge_count(user)
@@ -63,7 +65,7 @@ pub async fn pledge_count(contract: &Fundraiser, user: Identity) -> u64 {
         .value
 }
 
-pub async fn total_campaigns(contract: &Fundraiser) -> u64 {
+pub(crate) async fn total_campaigns(contract: &Fundraiser<WalletUnlocked>) -> u64 {
     contract
         .methods()
         .total_campaigns()
@@ -73,7 +75,10 @@ pub async fn total_campaigns(contract: &Fundraiser) -> u64 {
         .value
 }
 
-pub async fn user_campaign_count(contract: &Fundraiser, user: Identity) -> u64 {
+pub(crate) async fn user_campaign_count(
+    contract: &Fundraiser<WalletUnlocked>,
+    user: Identity,
+) -> u64 {
     contract
         .methods()
         .user_campaign_count(user)
