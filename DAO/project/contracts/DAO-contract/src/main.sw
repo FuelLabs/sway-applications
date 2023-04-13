@@ -1,10 +1,10 @@
 contract;
 
-dep interface;
-dep data_structures;
-dep errors;
-dep events;
-dep utils;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
+mod utils;
 
 use std::{
     auth::msg_sender,
@@ -14,14 +14,12 @@ use std::{
         msg_amount,
         this_balance,
     },
-    logging::log,
     token::transfer,
 };
 
-use interface::{DaoVoting, Info};
-use data_structures::{Proposal, ProposalInfo, State, Votes};
-use errors::{CreationError, InitializationError, ProposalError, UserError};
-use events::{
+use ::data_structures::{Proposal, ProposalInfo, State, Votes};
+use ::errors::{CreationError, InitializationError, ProposalError, UserError};
+use ::events::{
     CreateProposalEvent,
     DepositEvent,
     ExecuteEvent,
@@ -30,8 +28,8 @@ use events::{
     VoteEvent,
     WithdrawEvent,
 };
-
-use utils::validate_id;
+use ::interface::{DaoVoting, Info};
+use ::utils::validate_id;
 
 storage {
     /// The amount of governance tokens a user has deposited
@@ -86,7 +84,8 @@ impl DaoVoting for Contract {
         });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn deposit() {
         require(storage.state == State::Initialized, InitializationError::ContractNotInitialized);
         require(storage.token == msg_asset_id(), UserError::IncorrectAssetSent);
@@ -94,7 +93,7 @@ impl DaoVoting for Contract {
 
         let user = msg_sender().unwrap();
 
-        storage.balances.insert(user, msg_amount() + storage.balances.get(user));
+        storage.balances.insert(user, msg_amount() + storage.balances.get(user).unwrap_or(0));
 
         log(DepositEvent {
             amount: msg_amount(),
@@ -105,9 +104,9 @@ impl DaoVoting for Contract {
     #[storage(read, write)]
     fn withdraw(amount: u64) {
         require(0 < amount, UserError::AmountCannotBeZero);
-        let user: Identity = msg_sender().unwrap();
+        let user = msg_sender().unwrap();
 
-        let prev_balance = storage.balances.get(user);
+        let prev_balance = storage.balances.get(user).unwrap_or(0);
         require(amount <= prev_balance, UserError::InsufficientBalance);
 
         storage.balances.insert(user, prev_balance - amount);
@@ -123,15 +122,15 @@ impl DaoVoting for Contract {
         validate_id(proposal_id, storage.proposal_count);
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
 
-        let mut proposal = storage.proposals.get(proposal_id);
+        let mut proposal = storage.proposals.get(proposal_id).unwrap();
         require(height() <= proposal.deadline, ProposalError::ProposalExpired);
 
         let user = msg_sender().unwrap();
-        let user_balance = storage.balances.get(user);
+        let user_balance = storage.balances.get(user).unwrap_or(0);
 
         require(vote_amount <= user_balance, UserError::InsufficientBalance);
 
-        let mut votes = storage.votes.get((user, proposal_id));
+        let mut votes = storage.votes.get((user, proposal_id)).unwrap_or(Votes::default());
         if approve {
             proposal.yes_votes += vote_amount;
             votes.yes_votes += vote_amount;
@@ -155,7 +154,7 @@ impl DaoVoting for Contract {
     fn execute(proposal_id: u64) {
         validate_id(proposal_id, storage.proposal_count);
 
-        let mut proposal = storage.proposals.get(proposal_id);
+        let mut proposal = storage.proposals.get(proposal_id).unwrap();
         require(!proposal.executed, ProposalError::ProposalExecuted);
         require(proposal.deadline < height(), ProposalError::ProposalStillActive);
 
@@ -184,19 +183,16 @@ impl DaoVoting for Contract {
     fn unlock_votes(proposal_id: u64) {
         validate_id(proposal_id, storage.proposal_count);
 
-        let proposal = storage.proposals.get(proposal_id);
+        let proposal = storage.proposals.get(proposal_id).unwrap();
         require(proposal.deadline < height(), ProposalError::ProposalStillActive);
 
-        let user: Identity = msg_sender().unwrap();
-        let votes = storage.votes.get((user, proposal_id));
+        let user = msg_sender().unwrap();
+        let votes = storage.votes.get((user, proposal_id)).unwrap_or(Votes::default());
 
-        storage.votes.insert((user, proposal_id), Votes {
-            no_votes: 0,
-            yes_votes: 0,
-        });
+        storage.votes.insert((user, proposal_id), Votes::default());
 
         let vote_amount = votes.yes_votes + votes.no_votes;
-        storage.balances.insert(user, storage.balances.get(user) + vote_amount);
+        storage.balances.insert(user, storage.balances.get(user).unwrap_or(0) + vote_amount);
 
         log(UnlockVotesEvent {
             id: proposal_id,
@@ -214,19 +210,19 @@ impl Info for Contract {
 
     #[storage(read)]
     fn user_balance(user: Identity) -> u64 {
-        storage.balances.get(user)
+        storage.balances.get(user).unwrap_or(0)
     }
 
     #[storage(read)]
     fn user_votes(proposal_id: u64, user: Identity) -> Votes {
         validate_id(proposal_id, storage.proposal_count);
-        storage.votes.get((user, proposal_id))
+        storage.votes.get((user, proposal_id)).unwrap_or(Votes::default())
     }
 
     #[storage(read)]
     fn proposal(proposal_id: u64) -> ProposalInfo {
         validate_id(proposal_id, storage.proposal_count);
-        storage.proposals.get(proposal_id)
+        storage.proposals.get(proposal_id).unwrap()
     }
 
     #[storage(read)]
