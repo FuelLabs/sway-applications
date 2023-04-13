@@ -39,7 +39,9 @@ mod success {
         let final_nonce = nonce(&deployer.contract).await.value;
         let threshold = threshold(&deployer.contract).await.value;
 
-        let log = response.get_logs_with_type::<SetThresholdEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<SetThresholdEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(

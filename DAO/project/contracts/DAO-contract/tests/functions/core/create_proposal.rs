@@ -21,7 +21,7 @@ mod success {
             create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
         let log = response
-            .get_logs_with_type::<CreateProposalEvent>()
+            .decode_logs_with_type::<CreateProposalEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
@@ -55,7 +55,7 @@ mod success {
             create_proposal(&user.dao_voting, 10, 10, proposal_transaction.clone()).await;
 
         let log = response
-            .get_logs_with_type::<CreateProposalEvent>()
+            .decode_logs_with_type::<CreateProposalEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
@@ -91,7 +91,7 @@ mod success {
             create_proposal(&user.dao_voting, 20, 20, proposal_transaction.clone()).await;
 
         let log = response
-            .get_logs_with_type::<CreateProposalEvent>()
+            .decode_logs_with_type::<CreateProposalEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 

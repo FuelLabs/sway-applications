@@ -1,8 +1,6 @@
-library events;
+library;
 
-dep data_structures;
-
-use data_structures::ProposalInfo;
+use ::data_structures::ProposalInfo;
 
 pub struct CreateProposalEvent {
     /// The unique Identifier for the proposal
