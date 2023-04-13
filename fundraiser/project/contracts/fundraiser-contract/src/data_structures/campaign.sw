@@ -1,4 +1,4 @@
-library campaign;
+library;
 
 /// Used to track the campaigns that a user has created
 pub struct Campaign {

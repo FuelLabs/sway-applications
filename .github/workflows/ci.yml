@@ -13,9 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  REGISTRY: ghcr.io
-  RUST_VERSION: 1.67.0
-  PATH_TO_SCRIPTS: .github/scripts
+  RUST_VERSION: 1.68.2
 
 jobs:
   lint-toml-files:
@@ -53,7 +51,7 @@ jobs:
             "NFT",
             "oracle",
             "OTC-swap-predicate",
-            ".template",
+            ".devops/.template",
             "timelock",
           ]
 
@@ -75,10 +73,10 @@ jobs:
         run: rustup component add rustfmt
 
       - name: Install Fuel toolchain
-        uses: FuelLabs/action-fuel-toolchain@v0.5.0
+        uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
           toolchain: latest
-          date: 2023-02-22
+          date: 2023-04-10
 
       - name: Check Sway formatting
         run: |
@@ -93,12 +91,12 @@ jobs:
       - name: Build Sway
         run: |
           cd ${{ matrix.project }}/project
-          forc build
+          forc build --locked
 
       - name: Run Rust tests
         run: |
           cd ${{ matrix.project }}/project
-          cargo test
+          cargo test --locked
 
   contributing-book:
     runs-on: ubuntu-latest
@@ -125,10 +123,10 @@ jobs:
         run: rustup component add rustfmt
 
       - name: Install Fuel toolchain
-        uses: FuelLabs/action-fuel-toolchain@v0.4.0
+        uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
           toolchain: latest
-          date: 2023-01-18
+          date: 2023-04-10
 
       - name: Check Sway formatting
         run: |
@@ -138,4 +136,4 @@ jobs:
       - name: Build Sway
         run: |
           cd ${{ matrix.project }}
-          forc build
+          forc build --locked

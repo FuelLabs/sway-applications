@@ -9,8 +9,8 @@ use crate::utils::{
     },
 };
 use fuels::{
+    accounts::{fuel_crypto::Message, Account},
     prelude::{TxParameters, BASE_ASSET_ID},
-    signers::fuel_crypto::Message,
 };
 
 mod success {
@@ -29,7 +29,7 @@ mod success {
         deployer
             .wallet
             .force_transfer_to_contract(
-                deployer.contract.get_contract_id(),
+                deployer.contract.contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),
@@ -44,7 +44,7 @@ mod success {
 
         let initial_receiver_balance = deployer
             .wallet
-            .get_provider()
+            .provider()
             .unwrap()
             .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
             .await
@@ -94,7 +94,7 @@ mod success {
 
         let final_receiver_balance = deployer
             .wallet
-            .get_provider()
+            .provider()
             .unwrap()
             .get_asset_balance(receiver_wallet.address(), BASE_ASSET_ID)
             .await
@@ -197,7 +197,7 @@ mod revert {
         deployer
             .wallet
             .force_transfer_to_contract(
-                deployer.contract.get_contract_id(),
+                deployer.contract.contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),
@@ -245,7 +245,7 @@ mod revert {
         deployer
             .wallet
             .force_transfer_to_contract(
-                deployer.contract.get_contract_id(),
+                deployer.contract.contract_id(),
                 DEFAULT_TRANSFER_AMOUNT,
                 BASE_ASSET_ID,
                 TxParameters::default(),

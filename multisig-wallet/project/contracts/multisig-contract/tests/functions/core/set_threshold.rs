@@ -5,7 +5,7 @@ use crate::utils::{
     },
     setup::{default_users, setup_env, transfer_signatures, DEFAULT_THRESHOLD, VALID_SIGNER_PK},
 };
-use fuels::{signers::fuel_crypto::Message, types::Bits256};
+use fuels::{accounts::fuel_crypto::Message, types::Bits256};
 
 mod success {
 
