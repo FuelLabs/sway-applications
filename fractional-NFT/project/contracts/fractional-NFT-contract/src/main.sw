@@ -1,17 +1,17 @@
 contract;
 
-dep data_structures;
-dep errors;
-dep events;
-dep interface;
-dep utils;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
+mod utils;
 
-use data_structures::NFTInfo;
-use errors::{AccessError, AssetError};
-use events::{AdminEvent, DepositEvent, WithdrawEvent};
-use interface::{FractionalNFT, Info};
+use ::data_structures::NFTInfo;
+use ::errors::{AccessError, AssetError};
+use ::events::{AdminEvent, DepositEvent, WithdrawEvent};
+use ::interface::{FractionalNFT, Info};
 use std::{auth::msg_sender, call_frames::contract_id, context::this_balance, token::mint_to};
-use utils::transfer_nft;
+use ::utils::transfer_nft;
 
 storage {
     /// Stores the relevant information on the NFT that is locked in the contract.

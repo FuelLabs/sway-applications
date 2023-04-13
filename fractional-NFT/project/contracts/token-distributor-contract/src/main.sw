@@ -1,14 +1,14 @@
 contract;
 
-dep data_structures;
-dep errors;
-dep events;
-dep interface;
-dep utils;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
+mod utils;
 
-use data_structures::{DistributionState, TokenDistribution};
-use errors::{AccessError, AssetError};
-use events::{
+use ::data_structures::{DistributionState, TokenDistribution};
+use ::errors::{AccessError, AssetError};
+use ::events::{
     BuybackEvent,
     CreateEvent,
     EndEvent,
@@ -19,7 +19,7 @@ use events::{
     TokenPriceEvent,
     WithdrawEvent,
 };
-use interface::{Info, TokenDistributor};
+use ::interface::{Info, TokenDistributor};
 use std::{
     auth::msg_sender,
     call_frames::{
@@ -30,10 +30,9 @@ use std::{
         msg_amount,
         this_balance,
     },
-    logging::log,
     token::transfer,
 };
-use utils::{create_fractional_nft, fractional_nft_supply, withdraw_fractional_nft};
+use ::utils::{create_fractional_nft, fractional_nft_supply, withdraw_fractional_nft};
 
 storage {
     /// Maintains a mapping of information on every token distribution started using this contract.
@@ -42,7 +41,8 @@ storage {
 }
 
 impl TokenDistributor for Contract {
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn buyback(fractional_nft_id: ContractId, token_price: u64) {
         require(storage.token_distributions.get(fractional_nft_id).is_some(), AccessError::DistributionDoesNotExist);
         let mut token_distribution = storage.token_distributions.get(fractional_nft_id).unwrap();
@@ -118,7 +118,8 @@ impl TokenDistributor for Contract {
         });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn purchase(amount: u64, fractional_nft_id: ContractId) {
         require(storage.token_distributions.get(fractional_nft_id).is_some(), AccessError::DistributionDoesNotExist);
         let mut token_distribution = storage.token_distributions.get(fractional_nft_id).unwrap();
@@ -144,7 +145,8 @@ impl TokenDistributor for Contract {
         });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn purchase_admin(
         admin: Option<Identity>,
         fractional_nft_id: ContractId,
@@ -173,7 +175,8 @@ impl TokenDistributor for Contract {
         });
     }
 
-    #[payable, storage(read)]
+    #[payable]
+    #[storage(read)]
     fn sell(fractional_nft_id: ContractId) {
         require(storage.token_distributions.get(fractional_nft_id).is_some(), AccessError::DistributionDoesNotExist);
         let mut token_distribution = storage.token_distributions.get(fractional_nft_id).unwrap();
