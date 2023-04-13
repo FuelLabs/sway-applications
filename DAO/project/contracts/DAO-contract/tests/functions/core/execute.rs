@@ -22,11 +22,7 @@ mod success {
         )
         .await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
@@ -35,7 +31,7 @@ mod success {
 
         let response = execute(&user.dao_voting, 0).await;
 
-        let log = response.get_logs_with_type::<ExecuteEvent>().unwrap();
+        let log = response.decode_logs_with_type::<ExecuteEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -75,11 +71,7 @@ mod revert {
         )
         .await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
@@ -103,11 +95,7 @@ mod revert {
         )
         .await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
@@ -130,11 +118,7 @@ mod revert {
         )
         .await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);

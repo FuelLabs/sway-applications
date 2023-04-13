@@ -1,6 +1,6 @@
 use fuels::prelude::{
     abigen, launch_custom_provider_and_get_wallets, Bech32Address, Contract, ContractId,
-    StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+    LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
 };
 
 abigen!(
@@ -15,8 +15,8 @@ abigen!(
 );
 
 pub(crate) struct Metadata {
-    pub(crate) dao_voting: DaoVoting,
-    pub(crate) gov_token: Option<GovToken>,
+    pub(crate) dao_voting: DaoVoting<WalletUnlocked>,
+    pub(crate) gov_token: Option<GovToken<WalletUnlocked>>,
     pub(crate) wallet: WalletUnlocked,
 }
 
@@ -26,7 +26,11 @@ const GOVERNANCE_TOKEN_BINARY_PATH: &str = "./tests/artifacts/gov_token/out/debu
 const GOVERNANCE_TOKEN_STORAGE_PATH: &str =
     "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json";
 
-pub(crate) async fn mint(contract: &GovToken, amount: u64, address: &Bech32Address) -> bool {
+pub(crate) async fn mint(
+    contract: &GovToken<WalletUnlocked>,
+    amount: u64,
+    address: &Bech32Address,
+) -> bool {
     contract
         .methods()
         .mint_and_send_to_address(amount, address.into())
@@ -52,7 +56,13 @@ pub(crate) fn proposal_transaction(asset_id: ContractId) -> Proposal {
     }
 }
 
-pub(crate) async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {
+pub(crate) async fn setup() -> (
+    GovToken<WalletUnlocked>,
+    ContractId,
+    Metadata,
+    Metadata,
+    u64,
+) {
     let number_of_wallets = 2;
     let coins_per_wallet = 1;
     let amount_per_coin = 1_000_000;
@@ -67,23 +77,26 @@ pub(crate) async fn setup() -> (GovToken, ContractId, Metadata, Metadata, u64) {
     let deployer_wallet = wallets.pop().unwrap();
     let user_wallet = wallets.pop().unwrap();
 
-    let dao_voting_id = Contract::deploy(
-        DAO_CONTRACT_BINARY_PATH,
-        &deployer_wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(DAO_CONTRACT_STORAGE_PATH.to_string())),
-    )
-    .await
-    .unwrap();
+    let storage_configuration = StorageConfiguration::load_from(DAO_CONTRACT_STORAGE_PATH);
+    let token_storage_configuration =
+        StorageConfiguration::load_from(GOVERNANCE_TOKEN_STORAGE_PATH);
 
-    let gov_token_id = Contract::deploy(
-        GOVERNANCE_TOKEN_BINARY_PATH,
-        &deployer_wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(GOVERNANCE_TOKEN_STORAGE_PATH.to_string())),
-    )
-    .await
-    .unwrap();
+    let configuration =
+        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
+    let token_configuration = LoadConfiguration::default()
+        .set_storage_configuration(token_storage_configuration.unwrap());
+
+    let dao_voting_id = Contract::load_from(DAO_CONTRACT_BINARY_PATH, configuration)
+        .unwrap()
+        .deploy(&deployer_wallet, TxParameters::default())
+        .await
+        .unwrap();
+
+    let gov_token_id = Contract::load_from(GOVERNANCE_TOKEN_BINARY_PATH, token_configuration)
+        .unwrap()
+        .deploy(&deployer_wallet, TxParameters::default())
+        .await
+        .unwrap();
 
     let gov_token = GovToken::new(gov_token_id.clone(), deployer_wallet.clone());
 

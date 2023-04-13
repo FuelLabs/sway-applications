@@ -20,11 +20,7 @@ mod sucess {
         )
         .await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
         let proposal_transaction = proposal_transaction(gov_token_id);
         create_proposal(&user.dao_voting, 10, 10, proposal_transaction).await;

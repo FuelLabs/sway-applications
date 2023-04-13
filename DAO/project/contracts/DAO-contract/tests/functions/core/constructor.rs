@@ -10,7 +10,7 @@ mod success {
         let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
         let response = constructor(&deployer.dao_voting, gov_token_id).await;
 
-        let log = response.get_logs_with_type::<InitializeEvent>().unwrap();
+        let log = response.decode_logs_with_type::<InitializeEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
