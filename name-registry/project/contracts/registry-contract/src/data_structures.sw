@@ -1,4 +1,4 @@
-library data_structures;
+library;
 
 pub struct Record {
     /// The timestamp at which the name expires, and someone else can re-register the same name
