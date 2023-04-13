@@ -5,7 +5,7 @@ dependencies = ['std']
 
 [[package]]
 name = 'core'
-source = 'path+from-root-F3A20BA79C738864'
+source = 'path+from-root-FDF4A5DCC6ECD181'
 
 [[package]]
 name = 'fundraiser-contract'
@@ -14,5 +14,5 @@ dependencies = ['std']
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.33.1#acd4c1e0fbdc406800a06c845430a80dd3560fcc'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.37.0#607ac50176db8bef936f91bacf435d0ea37d041e'
 dependencies = ['core']
