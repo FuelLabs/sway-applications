@@ -1,8 +1,6 @@
-library hashing;
+library;
 
-dep user;
-
-use user::User;
+use ::data_structures::user::User;
 
 pub struct Transaction {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another

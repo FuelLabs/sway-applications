@@ -2,14 +2,14 @@ library interface;
 
 dep data_structures;
 
-use data_structures::{Arbiter, Asset};
+use data_structures::{Arbiter, Asset, EscrowInfo};
 
 abi Escrow {
     /// Buyer accepts proposal to change arbiter details
     ///
     /// # Arguments
     ///
-    /// * `identifier` - Identifier used to find a specific escrow
+    /// * `identifier`: Identifier used to find a specific escrow
     ///
     /// # Reverts
     ///
@@ -25,10 +25,10 @@ abi Escrow {
     ///
     /// # Arguments
     ///
-    /// * `arbiter` - A third party which decides how a dispute is resolved
-    /// * `assets` - The assets, with the required deposit amounts, that the campaign accepts
-    /// * `buyer` - User who deposits funds into the escrow
-    /// * `deadline` - End height after which the buyer can no longer deposit and the seller can take payment
+    /// * `arbiter`: A third party which decides how a dispute is resolved
+    /// * `assets`: The assets, with the required deposit amounts, that the campaign accepts
+    /// * `buyer`: User who deposits funds into the escrow
+    /// * `deadline`: End height after which the buyer can no longer deposit and the seller can take payment
     ///
     /// # Reverts
     ///
@@ -48,7 +48,7 @@ abi Escrow {
     ///
     /// # Arguments
     ///
-    /// * `identifier` - Identifier used to find a specific escrow
+    /// * `identifier`: Identifier used to find a specific escrow
     ///
     /// # Reverts
     ///
@@ -68,7 +68,7 @@ abi Escrow {
     ///
     /// # Arguments
     ///
-    /// * `identifier` - Identifier used to find a specific escrow
+    /// * `identifier`: Identifier used to find a specific escrow
     ///
     /// # Reverts
     ///
@@ -87,8 +87,8 @@ abi Escrow {
     ///
     /// # Arguments
     ///
-    /// * `arbiter` - A third party which decides how a dispute is resolved
-    /// * `identifier` - Identifier used to find a specific escrow
+    /// * `arbiter`: A third party which decides how a dispute is resolved
+    /// * `identifier`: Identifier used to find a specific escrow
     ///
     /// # Reverts
     ///
@@ -106,9 +106,9 @@ abi Escrow {
     ///
     /// # Arguments
     ///
-    /// * `identifier` - Identifier used to find a specific escrow
-    /// * `payment_amount` - The amount the arbiter will take as a payment for their work
-    /// * `user` - The user who the deposit from the buyer will be sent to (either buyer or seller)
+    /// * `identifier`: Identifier used to find a specific escrow
+    /// * `payment_amount`: The amount the arbiter will take as a payment for their work
+    /// * `user`: The user who the deposit from the buyer will be sent to (either buyer or seller)
     ///
     /// # Reverts
     ///
@@ -125,7 +125,7 @@ abi Escrow {
     ///
     /// # Arguments
     ///
-    /// * `identifier` - Identifier used to find a specific escrow
+    /// * `identifier`: Identifier used to find a specific escrow
     ///
     /// # Reverts
     ///
@@ -137,10 +137,10 @@ abi Escrow {
 
     /// If a user has deposited but not transferred in time & they have not disputed then the seller
     /// can take the payment themselves
-    //
+    ///
     /// # Arguments
     ///
-    /// * `identifier` - Identifier used to find a specific escrow
+    /// * `identifier`: Identifier used to find a specific escrow
     ///
     /// # Reverts
     ///
@@ -156,7 +156,7 @@ abi Escrow {
     ///
     /// # Arguments
     ///
-    /// * `identifier` - Identifier used to find a specific escrow
+    /// * `identifier`: Identifier used to find a specific escrow
     ///
     /// # Reverts
     ///
@@ -171,7 +171,7 @@ abi Escrow {
     ///
     /// # Arguments
     ///
-    /// * `identifier` - Identifier used to find a specific escrow
+    /// * `identifier`: Identifier used to find a specific escrow
     ///
     /// # Reverts
     ///
@@ -182,4 +182,34 @@ abi Escrow {
     /// * When the buyer deposited
     #[storage(read, write)]
     fn withdraw_collateral(identifier: u64);
+}
+
+abi Info {
+    /// Returns the proposed arbiter for resolution
+    ///
+    /// # Arguments
+    ///
+    /// * `identifier`: Identifier used to find a specific escrow
+    #[storage(read)]
+    fn arbiter_proposal(identifier: u64) -> Option<Arbiter>;
+
+    /// Returns the information about the asset used in an escrow
+    ///
+    /// # Arguments
+    ///
+    /// * `identifier`: Identifier used to find a specific escrow
+    #[storage(read)]
+    fn assets(identifier: u64) -> Option<Asset>;
+
+    /// Returns information about an escrow
+    ///
+    /// # Arguments
+    ///
+    /// * `identifier`: Identifier used to find a specific escrow
+    #[storage(read)]
+    fn escrows(identifier: u64) -> Option<EscrowInfo>;
+
+    /// Returns the total number of escrows created in the contract
+    #[storage(read)]
+    fn escrow_count() -> u64;
 }
