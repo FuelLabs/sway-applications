@@ -183,7 +183,8 @@ impl Fundraiser for Contract {
         });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn pledge(campaign_id: u64) {
         // User cannot interact with a non-existent campaign
         validate_campaign_id(campaign_id, storage.total_campaigns);
