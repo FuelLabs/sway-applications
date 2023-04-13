@@ -1,12 +1,13 @@
 use fuel_merkle::{
     binary::in_memory::MerkleTree,
-    common::{empty_sum_sha256, Bytes32},
+    common::{empty_sum_sha256, Bytes32, LEAF, NODE},
 };
 use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Config, Contract, ContractId,
         StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
+    tx::AssetId,
     types::{Bits256, Identity},
 };
 use sha2::{Digest, Sha256};
@@ -29,7 +30,6 @@ pub(crate) struct Asset {
 
 pub(crate) struct Metadata {
     pub(crate) airdrop_distributor: AirdropDistributor,
-    pub(crate) contract_id: ContractId,
     pub(crate) wallet: WalletUnlocked,
 }
 
@@ -116,7 +116,6 @@ pub(crate) async fn build_tree_manual(
     let mut nodes: Vec<Node> = Vec::new();
     let mut leaf_hash: Bytes32 = *empty_sum_sha256();
     let mut proof: Vec<Bits256> = Vec::new();
-    let leaf_u64: u64 = 0;
 
     assert!(key <= num_leaves as u64);
 
@@ -139,7 +138,7 @@ pub(crate) async fn build_tree_manual(
         let hash_leaf_data: Bytes32 = hasher.finalize().try_into().unwrap();
 
         let mut hasher2 = Sha256::new();
-        hasher2.update(leaf_u64.to_be_bytes());
+        hasher2.update(&[LEAF]);
         hasher2.update(hash_leaf_data);
         let hash2_leaf: Bytes32 = hasher2.finalize().try_into().unwrap();
 
@@ -150,7 +149,6 @@ pub(crate) async fn build_tree_manual(
         }
     }
 
-    let node_u64: u64 = 1;
     let mut iterator = 0;
     // Build tree
     for i in 0..height {
@@ -159,7 +157,7 @@ pub(crate) async fn build_tree_manual(
         // Create new depth
         while iterator < current_num_leaves {
             let mut hasher = Sha256::new();
-            hasher.update(node_u64.to_be_bytes());
+            hasher.update(&[NODE]);
             hasher.update(nodes[iterator].hash);
             hasher.update(nodes[iterator + 1].hash);
             let hash: Bytes32 = hasher.finalize().try_into().unwrap();
@@ -227,7 +225,7 @@ pub(crate) async fn defaults(
     let identity_a = Identity::Address(wallet1.wallet.address().into());
     let identity_b = Identity::Address(wallet2.wallet.address().into());
     let identity_c = Identity::Address(wallet3.wallet.address().into());
-    let minter = Identity::ContractId(deploy_wallet.contract_id);
+    let minter = Identity::Address(deploy_wallet.wallet.address().into());
     let key = 0;
     let asset_supply = 10;
     let claim_time = 15;
@@ -313,7 +311,6 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
             airdrop_distributor_id.clone(),
             wallet1.clone(),
         ),
-        contract_id: ContractId::new(*airdrop_distributor_id.hash()),
         wallet: wallet1.clone(),
     };
 
@@ -322,7 +319,6 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
             airdrop_distributor_id.clone(),
             wallet2.clone(),
         ),
-        contract_id: ContractId::new(*airdrop_distributor_id.hash()),
         wallet: wallet2,
     };
 
@@ -331,7 +327,6 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
             airdrop_distributor_id.clone(),
             wallet3.clone(),
         ),
-        contract_id: ContractId::new(*airdrop_distributor_id.hash()),
         wallet: wallet3,
     };
 
@@ -340,7 +335,6 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
             airdrop_distributor_id.clone(),
             wallet4.clone(),
         ),
-        contract_id: ContractId::new(*airdrop_distributor_id.hash()),
         wallet: wallet4,
     };
 
@@ -350,4 +344,8 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
     };
 
     (deployer, user1, user2, user3, asset)
+}
+
+pub(crate) async fn get_wallet_balance(wallet: &WalletUnlocked, asset: &AssetId) -> u64 {
+    wallet.get_asset_balance(asset).await.unwrap()
 }

@@ -14,8 +14,7 @@ use interface::Oracle;
 
 storage {
     // Current price of tracked asset
-    // TODO use option when https://github.com/FuelLabs/fuels-rs/issues/415 is fixed
-    price: u64 = 0,
+    price: Option<u64> = Option::None,
 }
 
 // TODO treat owner as an identity once https://github.com/FuelLabs/sway/issues/2647 is fixed
@@ -25,7 +24,7 @@ impl Oracle for Contract {
     }
 
     #[storage(read)]
-    fn price() -> u64 {
+    fn price() -> Option<u64> {
         storage.price
     }
 
@@ -33,7 +32,7 @@ impl Oracle for Contract {
     fn set_price(price: u64) {
         require(msg_sender().unwrap() == Identity::Address(Address::from(OWNER)), AccessError::NotOwner);
 
-        storage.price = price;
+        storage.price = Option::Some(price);
 
         log(PriceUpdateEvent { price });
     }

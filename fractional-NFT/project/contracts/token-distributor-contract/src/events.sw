@@ -1,8 +1,6 @@
-library events;
+library;
 
-dep data_structures;
-
-use data_structures::TokenDistribution;
+use ::data_structures::TokenDistribution;
 
 pub struct BuybackEvent {
     /// The token contract that holds the NFT.

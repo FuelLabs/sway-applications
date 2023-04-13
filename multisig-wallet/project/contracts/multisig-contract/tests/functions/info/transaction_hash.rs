@@ -5,11 +5,11 @@ mod success {
         setup::{setup_env, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK},
     };
     use fuels::{
-        core::{abi_encoder::ABIEncoder, traits::Tokenizable},
+        accounts::fuel_crypto::Hasher,
+        core::abi_encoder::ABIEncoder,
         prelude::ContractId,
-        signers::fuel_crypto::Hasher,
         tx::Bytes32,
-        types::{Bits256, Identity, Token},
+        types::{traits::Tokenizable, Bits256, Identity, Token},
     };
     use rand::{rngs::StdRng, Rng, SeedableRng};
 
@@ -33,7 +33,7 @@ mod success {
 
         // Recreate Transaction instance
         let tx = Transaction {
-            contract_identifier: deployer.contract.get_contract_id().try_into().unwrap(),
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             data,
             destination: to.clone(),
             nonce,

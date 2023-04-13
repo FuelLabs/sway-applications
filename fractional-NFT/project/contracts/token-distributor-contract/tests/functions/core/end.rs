@@ -93,7 +93,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Buyback()
+            DistributionState::Buyback
         ));
 
         end(
@@ -109,7 +109,7 @@ mod success {
         assert_eq!(owner_of(&owner1.nft, 0).await, Some(owner_identity.clone()));
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Ended()
+            DistributionState::Ended
         ));
     }
 
@@ -130,7 +130,7 @@ mod success {
         let owner_identity = Identity::Address(owner1.wallet.address().into());
         let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
         let token_distributor_identity = Identity::ContractId(token_distributor_contract);
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
@@ -171,7 +171,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Started()
+            DistributionState::Started
         ));
 
         end(
@@ -200,7 +200,7 @@ mod success {
         assert_eq!(nft_struct.clone().unwrap().admin, None);
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Ended()
+            DistributionState::Ended
         ));
     }
 }

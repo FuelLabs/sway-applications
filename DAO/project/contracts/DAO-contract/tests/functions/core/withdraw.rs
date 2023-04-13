@@ -25,11 +25,7 @@ mod success {
 
         constructor(&deployer.dao_voting, gov_token_id).await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
 
         assert_eq!(balance(&user.dao_voting).await, asset_amount);
@@ -41,7 +37,7 @@ mod success {
 
         let response = withdraw(&user.dao_voting, asset_amount).await;
 
-        let log = response.get_logs_with_type::<WithdrawEvent>().unwrap();
+        let log = response.decode_logs_with_type::<WithdrawEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -78,11 +74,7 @@ mod revert {
 
         constructor(&deployer.dao_voting, gov_token_id).await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
         withdraw(&user.dao_voting, 0).await;
     }
@@ -101,11 +93,7 @@ mod revert {
 
         constructor(&deployer.dao_voting, gov_token_id).await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
         withdraw(&user.dao_voting, asset_amount * 100).await;
     }

@@ -1,4 +1,4 @@
-library user;
+library;
 
 pub struct User {
     /// The wallet address of a user.

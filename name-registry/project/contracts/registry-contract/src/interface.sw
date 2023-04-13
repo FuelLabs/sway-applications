@@ -1,8 +1,6 @@
-library interface;
+library;
 
-dep errors;
-
-use errors::RegistrationValidityError;
+use ::errors::RegistrationValidityError;
 
 abi NameRegistry {
     /// Extends the duration of ownership for the name

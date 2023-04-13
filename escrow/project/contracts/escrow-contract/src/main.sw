@@ -30,7 +30,7 @@ use events::{
     WithdrawnCollateralEvent,
 };
 
-use interface::Escrow;
+use interface::{Escrow, Info};
 use std::{
     auth::msg_sender,
     block::height,
@@ -355,5 +355,27 @@ impl Escrow for Contract {
         }
 
         log(WithdrawnCollateralEvent { identifier });
+    }
+}
+
+impl Info for Contract {
+    #[storage(read)]
+    fn arbiter_proposal(identifier: u64) -> Option<Arbiter> {
+        storage.arbiter_proposal.get(identifier)
+    }
+
+    #[storage(read)]
+    fn assets(identifier: u64) -> Option<Asset> {
+        storage.assets.get(identifier)
+    }
+
+    #[storage(read)]
+    fn escrows(identifier: u64) -> Option<EscrowInfo> {
+        storage.escrows.get(identifier)
+    }
+
+    #[storage(read)]
+    fn escrow_count() -> u64 {
+        storage.escrow_count
     }
 }

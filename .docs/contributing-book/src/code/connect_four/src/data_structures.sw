@@ -1,4 +1,4 @@
-library data_structures;
+library;
 
 pub struct Game {
     player_one: Player,

@@ -20,11 +20,7 @@ mod success {
         )
         .await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         assert_eq!(
             user_balance(&user.dao_voting, user.wallet.address()).await,
             0

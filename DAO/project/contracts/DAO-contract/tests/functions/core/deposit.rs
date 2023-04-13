@@ -32,14 +32,10 @@ mod success {
             0
         );
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         let response = deposit(&user.dao_voting, call_params).await;
 
-        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
+        let log = response.decode_logs_with_type::<DepositEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -66,8 +62,8 @@ mod revert {
     use super::*;
     use crate::utils::setup::GovToken;
     use fuels::{
-        prelude::{Contract, StorageConfiguration, TxParameters},
-        tx::{ContractId, Salt},
+        prelude::{Contract, LoadConfiguration, StorageConfiguration, TxParameters},
+        tx::ContractId,
     };
 
     #[tokio::test]
@@ -82,11 +78,7 @@ mod revert {
         )
         .await;
 
-        let call_params = CallParameters::new(
-            Some(asset_amount),
-            Some(AssetId::from(*gov_token_id)),
-            Some(100_000),
-        );
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
     }
 
@@ -95,15 +87,19 @@ mod revert {
     async fn with_incorrect_asset() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
-        let another_asset_id = Contract::deploy_with_parameters(
+        let storage_configuration = StorageConfiguration::load_from(
+            "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json",
+        );
+        let configuration = LoadConfiguration::default()
+            .set_storage_configuration(storage_configuration.unwrap())
+            .set_salt([1u8; 32]);
+
+        let another_asset_id = Contract::load_from(
             "./tests/artifacts/gov_token/out/debug/gov_token.bin",
-            &deployer.wallet,
-            TxParameters::default(),
-            StorageConfiguration::with_storage_path(Some(
-                "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json".to_string(),
-            )),
-            Salt::from([1u8; 32]),
+            configuration,
         )
+        .unwrap()
+        .deploy(&deployer.wallet, TxParameters::default())
         .await
         .unwrap();
 
@@ -114,8 +110,7 @@ mod revert {
 
         constructor(&deployer.dao_voting, gov_token_id).await;
 
-        let call_params =
-            CallParameters::new(Some(asset_amount), Some(AssetId::from(*id)), Some(100_000));
+        let call_params = CallParameters::new(asset_amount, AssetId::from(*id), 100_000);
         deposit(&user.dao_voting, call_params).await;
     }
 
@@ -133,8 +128,7 @@ mod revert {
 
         constructor(&deployer.dao_voting, gov_token_id).await;
 
-        let call_params =
-            CallParameters::new(Some(0), Some(AssetId::from(*gov_token_id)), Some(100_000));
+        let call_params = CallParameters::new(0, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
     }
 }

@@ -31,7 +31,7 @@ mod success {
         )
         .await;
         let log = response
-            .get_logs_with_type::<CreatedCampaignEvent>()
+            .decode_logs_with_type::<CreatedCampaignEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
@@ -63,7 +63,7 @@ mod success {
         assert_eq!(info.asset, defaults.asset_id);
         assert_eq!(info.author, identity(author.wallet.address()).await);
         assert_eq!(info.beneficiary, defaults.beneficiary);
-        assert!(matches!(info.state, CampaignState::Funding()));
+        assert!(matches!(info.state, CampaignState::Funding));
         assert_eq!(info.deadline, defaults.deadline);
         assert_eq!(info.target_amount, defaults.target_amount);
         assert_eq!(info.total_pledge, 0);
@@ -104,10 +104,10 @@ mod success {
         let info2 = campaign_info(&author.contract, 2).await.value.unwrap();
 
         let log1 = response1
-            .get_logs_with_type::<CreatedCampaignEvent>()
+            .decode_logs_with_type::<CreatedCampaignEvent>()
             .unwrap();
         let log2 = response2
-            .get_logs_with_type::<CreatedCampaignEvent>()
+            .decode_logs_with_type::<CreatedCampaignEvent>()
             .unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();
@@ -179,10 +179,10 @@ mod success {
         let info2 = campaign_info(&author.contract, 2).await.value.unwrap();
 
         let log1 = response1
-            .get_logs_with_type::<CreatedCampaignEvent>()
+            .decode_logs_with_type::<CreatedCampaignEvent>()
             .unwrap();
         let log2 = response2
-            .get_logs_with_type::<CreatedCampaignEvent>()
+            .decode_logs_with_type::<CreatedCampaignEvent>()
             .unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();

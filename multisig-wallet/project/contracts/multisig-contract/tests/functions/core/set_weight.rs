@@ -5,7 +5,7 @@ use crate::utils::{
     },
     setup::{default_users, setup_env, transfer_signatures, VALID_SIGNER_PK},
 };
-use fuels::signers::fuel_crypto::Message;
+use fuels::accounts::fuel_crypto::Message;
 
 mod success {
 
@@ -42,7 +42,7 @@ mod success {
             .await
             .value;
 
-        let log = response.get_logs_with_type::<SetWeightEvent>().unwrap();
+        let log = response.decode_logs_with_type::<SetWeightEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(*event, SetWeightEvent { user: user.clone() });
