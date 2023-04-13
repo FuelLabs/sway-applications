@@ -1,8 +1,6 @@
-library interface;
+library;
 
-dep data_structures;
-
-use data_structures::TokenMetadata;
+use ::data_structures::TokenMetadata;
 
 abi Auxiliary {
     /// Sets the inital state and unlocks the functionality for the rest of the contract.

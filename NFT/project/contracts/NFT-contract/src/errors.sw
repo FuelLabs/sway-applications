@@ -1,4 +1,4 @@
-library errors;
+library;
 
 pub enum InitError {
     CannotReinitialize: (),

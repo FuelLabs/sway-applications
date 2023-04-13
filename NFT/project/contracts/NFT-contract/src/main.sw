@@ -1,40 +1,42 @@
 contract;
 
-dep data_structures;
-dep errors;
-dep interface;
+mod data_structures;
+mod errors;
+mod interface;
 
-use data_structures::{State, TokenMetadata};
-use errors::{InitError, ValidityError};
-use interface::Auxiliary;
+use ::data_structures::{State, TokenMetadata};
+use ::errors::{InitError, ValidityError};
+use ::interface::Auxiliary;
 use std::auth::msg_sender;
 use nft::{
-    administrator::{
-        admin,
-        Administrator,
-        set_admin,
+    extensions::{
+        administrator::{
+            admin,
+            Administrator,
+            set_admin,
+        },
+        burnable::{
+            burn,
+            Burn,
+        },
+        supply::{
+            max_supply,
+            set_max_supply,
+            Supply,
+        },
+        token_metadata::{
+            set_token_metadata,
+            token_metadata,
+        },
     },
     approve,
     approved,
     balance_of,
-    burnable::{
-        burn,
-        Burn,
-    },
     is_approved_for_all,
     mint,
     NFT,
     owner_of,
     set_approval_for_all,
-    supply::{
-        max_supply,
-        set_max_supply,
-        Supply,
-    },
-    token_metadata::{
-        set_token_metadata,
-        token_metadata,
-    },
     tokens_minted,
     transfer,
 };
