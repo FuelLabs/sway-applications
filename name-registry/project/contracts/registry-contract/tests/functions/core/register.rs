@@ -23,7 +23,7 @@ mod success {
         .await;
 
         let log = response
-            .get_logs_with_type::<NameRegisteredEvent>()
+            .decode_logs_with_type::<NameRegisteredEvent>()
             .unwrap();
 
         assert_eq!(
