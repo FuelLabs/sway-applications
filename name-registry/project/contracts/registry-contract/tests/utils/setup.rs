@@ -1,12 +1,12 @@
 use core::fmt::Debug;
 use fuels::{
-    core::traits::Tokenizable,
+    accounts::Account as FuelAccount,
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Address, Contract, StorageConfiguration,
-        TxParameters, WalletUnlocked, WalletsConfig,
+        abigen, launch_custom_provider_and_get_wallets, Address, Contract, LoadConfiguration,
+        StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
     programs::{call_response::FuelCallResponse, contract::ContractCallHandler},
-    types::{Identity, SizedAsciiString},
+    types::{traits::Tokenizable, Identity, SizedAsciiString},
 };
 
 abigen!(Contract(
@@ -38,7 +38,7 @@ impl Account {
     }
 }
 
-pub(crate) async fn setup() -> (NameRegistry, Account, WalletUnlocked) {
+pub(crate) async fn setup() -> (NameRegistry<WalletUnlocked>, Account, WalletUnlocked) {
     let number_of_wallets = 2;
     let coins_per_wallet = 1;
     let amount_per_coin = 1_000_000_000;
@@ -54,14 +54,15 @@ pub(crate) async fn setup() -> (NameRegistry, Account, WalletUnlocked) {
     let wallet = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
 
-    let id = Contract::deploy(
-        CONTRACT_BINARY_PATH,
-        &wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(CONTRACT_STORAGE_PATH.to_string())),
-    )
-    .await
-    .unwrap();
+    let storage_configuration = StorageConfiguration::load_from(CONTRACT_STORAGE_PATH);
+    let configuration =
+        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
+
+    let id = Contract::load_from(CONTRACT_BINARY_PATH, configuration)
+        .unwrap()
+        .deploy(&wallet, TxParameters::default())
+        .await
+        .unwrap();
 
     let instance = NameRegistry::new(id, wallet.clone());
 
@@ -72,11 +73,12 @@ pub(crate) fn string_to_ascii(name: &String) -> SizedAsciiString<8> {
     SizedAsciiString::<8>::new(name.to_owned()).unwrap()
 }
 
-pub(crate) async fn get_timestamp_and_call<T>(
-    handler: ContractCallHandler<T>,
-) -> (FuelCallResponse<T>, u64)
+pub(crate) async fn get_timestamp_and_call<T, D>(
+    handler: ContractCallHandler<T, D>,
+) -> (FuelCallResponse<D>, u64)
 where
-    T: Tokenizable + Debug,
+    T: FuelAccount,
+    D: Tokenizable + Debug,
 {
     let call_response = handler.call().await.unwrap();
 

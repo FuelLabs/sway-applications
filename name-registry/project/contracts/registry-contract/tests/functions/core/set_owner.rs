@@ -34,7 +34,9 @@ mod success {
 
         assert_eq!(new_owner.value.unwrap(), wallet_identity2);
 
-        let log = response.get_logs_with_type::<OwnerChangedEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<OwnerChangedEvent>()
+            .unwrap();
         assert_eq!(
             log,
             vec![OwnerChangedEvent {
@@ -67,7 +69,7 @@ mod revert {
         .await;
 
         set_owner(
-            &instance.with_wallet(wallet2).unwrap(),
+            &instance.with_account(wallet2).unwrap(),
             &acc1.name,
             wallet_identity2.clone(),
         )
