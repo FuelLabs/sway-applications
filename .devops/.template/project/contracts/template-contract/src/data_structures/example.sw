@@ -1,1 +1,1 @@
-library example;
+library;
