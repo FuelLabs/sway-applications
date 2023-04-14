@@ -3,7 +3,7 @@ use test_utils::interface::exchange::{deposit, withdraw};
 
 mod success {
     use super::*;
-    use fuels::prelude::ContractId;
+    use fuels::{accounts::ViewOnlyAccount, prelude::ContractId};
     use test_utils::interface::{exchange::balance, Asset, WithdrawEvent};
 
     #[tokio::test]
@@ -19,7 +19,7 @@ mod success {
         let initial_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
         let response = withdraw(&exchange.instance, withdraw_amount, exchange.pair.0).await;
-        let log = response.get_logs_with_type::<WithdrawEvent>().unwrap();
+        let log = response.decode_logs_with_type::<WithdrawEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
@@ -58,7 +58,7 @@ mod success {
         let initial_wallet_balance = wallet.get_asset_balance(&exchange.pair.0).await.unwrap();
 
         let response = withdraw(&exchange.instance, withdraw_amount, exchange.pair.0).await;
-        let log = response.get_logs_with_type::<WithdrawEvent>().unwrap();
+        let log = response.decode_logs_with_type::<WithdrawEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;

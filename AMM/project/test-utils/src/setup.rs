@@ -1,12 +1,9 @@
 use super::data_structures::{
     AMMContract, ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
 };
-use fuels::{
-    prelude::{
-        Address, AssetId, Bech32Address, Contract, ContractId, Provider, Salt, SettableContract,
-        StorageConfiguration, TxParameters, WalletUnlocked,
-    },
-    tx::Contract as TxContract,
+use fuels::prelude::{
+    Address, AssetId, Bech32Address, Contract, ContractId, LoadConfiguration, Provider,
+    SettableContract, StorageConfiguration, TxParameters, WalletUnlocked,
 };
 
 pub mod common {
@@ -32,17 +29,15 @@ pub mod common {
     use std::collections::HashMap;
 
     pub async fn deploy_amm(wallet: &WalletUnlocked) -> AMMContract {
-        let contract_id = Contract::deploy(
-            AMM_CONTRACT_BINARY_PATH,
-            wallet,
-            TxParameters::default(),
-            StorageConfiguration {
-                storage_path: Some(AMM_CONTRACT_STORAGE_PATH.to_string()),
-                manual_storage_vec: None,
-            },
-        )
-        .await
-        .unwrap();
+        let storage_configuration = StorageConfiguration::load_from(AMM_CONTRACT_STORAGE_PATH);
+        let configuration =
+            LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
+
+        let contract_id = Contract::load_from(AMM_CONTRACT_BINARY_PATH, configuration)
+            .unwrap()
+            .deploy(wallet, TxParameters::default())
+            .await
+            .unwrap();
 
         let instance = AMM::new(contract_id.clone(), wallet.clone());
 
@@ -82,7 +77,7 @@ pub mod common {
     pub async fn deploy_exchange(
         wallet: &WalletUnlocked,
         config: &ExchangeContractConfiguration,
-    ) -> (ContractId, Exchange) {
+    ) -> (ContractId, Exchange<WalletUnlocked>) {
         let binary_path = if config.malicious {
             MALICIOUS_EXCHANGE_CONTRACT_BINARY_PATH
         } else {
@@ -95,18 +90,16 @@ pub mod common {
         }
         .to_string();
 
-        let contract_id = Contract::deploy_with_parameters(
-            binary_path,
-            wallet,
-            TxParameters::default(),
-            StorageConfiguration {
-                storage_path: Some(storage_path),
-                manual_storage_vec: None,
-            },
-            Salt::from(config.salt),
-        )
-        .await
-        .unwrap();
+        let storage_configuration = StorageConfiguration::load_from(&storage_path);
+        let configuration = LoadConfiguration::default()
+            .set_storage_configuration(storage_configuration.unwrap())
+            .set_salt(config.salt);
+
+        let contract_id = Contract::load_from(binary_path, configuration)
+            .unwrap()
+            .deploy(wallet, TxParameters::default())
+            .await
+            .unwrap();
 
         let id = ContractId::from(contract_id.clone());
         let instance = Exchange::new(contract_id, wallet.clone());
@@ -154,13 +147,9 @@ pub mod common {
     }
 
     pub async fn exchange_bytecode_root() -> ContractId {
-        let exchange_raw_code = Contract::load_contract(
-            EXCHANGE_CONTRACT_BINARY_PATH,
-            &StorageConfiguration::default().storage_path,
-        )
-        .unwrap()
-        .raw;
-        (*TxContract::root_from_code(exchange_raw_code)).into()
+        Contract::load_from(EXCHANGE_CONTRACT_BINARY_PATH, LoadConfiguration::default())
+            .unwrap()
+            .contract_id()
     }
 
     pub async fn setup_wallet_and_provider(
@@ -188,6 +177,7 @@ pub mod scripts {
     use crate::{data_structures::TransactionParameters, interface::amm::add_pool};
     use common::{deploy_and_construct_exchange, deposit_and_add_liquidity};
     use fuels::{
+        prelude::ResourceFilter,
         tx::{Input, Output, TxPointer},
         types::resource::Resource,
     };
@@ -265,7 +255,12 @@ pub mod scripts {
         amount: u64,
     ) -> Vec<Input> {
         let coins = &provider
-            .get_spendable_resources(from, asset_id, amount)
+            .get_spendable_resources(ResourceFilter {
+                from: from.clone(),
+                asset_id,
+                amount,
+                ..Default::default()
+            })
             .await
             .unwrap();
 

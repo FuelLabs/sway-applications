@@ -1,7 +1,8 @@
 use super::interface::{Exchange, AMM};
 use fuels::{
-    prelude::{AssetId, ContractId},
+    prelude::{AssetId, ContractId, WalletUnlocked},
     tx::{Input, Output},
+    // types::input::Input,
 };
 use std::collections::HashMap;
 
@@ -14,14 +15,14 @@ pub const NUMBER_OF_ASSETS: u64 = 5;
 
 pub struct AMMContract {
     pub id: ContractId,
-    pub instance: AMM,
+    pub instance: AMM<WalletUnlocked>,
     pub pools: HashMap<(AssetId, AssetId), ExchangeContract>,
 }
 
 pub struct ExchangeContract {
     pub bytecode_root: Option<ContractId>,
     pub id: ContractId,
-    pub instance: Exchange,
+    pub instance: Exchange<WalletUnlocked>,
     pub pair: (AssetId, AssetId),
 }
 

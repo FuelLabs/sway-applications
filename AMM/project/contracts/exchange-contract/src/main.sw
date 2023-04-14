@@ -1,11 +1,11 @@
 contract;
 
-dep errors;
-dep events;
-dep utils;
+mod errors;
+mod events;
+mod utils;
 
-use errors::{InitError, InputError, TransactionError};
-use events::{
+use ::errors::{InitError, InputError, TransactionError};
+use ::events::{
     AddLiquidityEvent,
     DefineAssetPairEvent,
     DepositEvent,
@@ -39,12 +39,17 @@ use std::{
         transfer,
     },
 };
-use utils::{
+use ::utils::{
     determine_assets,
     maximum_input_for_exact_output,
     minimum_output_given_exact_input,
     proportional_value,
 };
+
+configurable {
+    LIQUIDITY_MINER_FEE: u64 = 333,
+    MINIMUM_LIQUIDITY: u64 = 100,
+}
 
 storage {
     /// Deposit amounts per (depositer, asset) that can be used to add liquidity or be withdrawn.
@@ -156,7 +161,8 @@ impl Exchange for Contract {
         });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn deposit() {
         require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
@@ -175,7 +181,8 @@ impl Exchange for Contract {
         });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo {
         require(storage.pair.is_some(), InitError::AssetPairNotSet);
 
@@ -219,7 +226,8 @@ impl Exchange for Contract {
         }
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64 {
         require(deadline >= height(), InputError::DeadlinePassed(deadline));
 
@@ -249,7 +257,8 @@ impl Exchange for Contract {
         bought
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn swap_exact_output(output: u64, deadline: u64) -> u64 {
         let reserves = storage.pair;
         let (mut input_asset, mut output_asset) = determine_assets(msg_asset_id(), reserves);

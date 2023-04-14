@@ -38,7 +38,7 @@ async fn adds_liquidity_with_equal_deposit_amounts() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()
@@ -76,7 +76,7 @@ async fn adds_liquidity_to_make_a_more_valuable() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()
@@ -114,7 +114,7 @@ async fn adds_liquidity_to_make_b_more_valuable() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()
@@ -160,7 +160,7 @@ async fn adds_further_liquidity_without_extra_deposit_when_a_is_more_valuable() 
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()
@@ -206,7 +206,7 @@ async fn adds_further_liquidity_with_extra_a_deposit_when_a_is_more_valuable() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()
@@ -252,7 +252,7 @@ async fn adds_further_liquidity_with_extra_b_deposit_when_a_is_more_valuable() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()
@@ -298,7 +298,7 @@ async fn adds_further_liquidity_without_extra_deposit_when_b_is_more_valuable() 
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()
@@ -344,7 +344,7 @@ async fn adds_further_liquidity_with_extra_a_deposit_when_b_is_more_valuable() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()
@@ -390,7 +390,7 @@ async fn adds_further_liquidity_with_extra_b_deposit_when_b_is_more_valuable() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()

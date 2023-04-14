@@ -11,6 +11,10 @@ enum SwapError {
     PairExchangeNotRegistered: (ContractId, ContractId),
 }
 
+configurable {
+    AMM_ID: b256 = 0x48b3ac8138e5628d29e376e793d23ef5c68de44bee18f128b37641979df754e1,
+}
+
 fn main(
     assets: Vec<ContractId>,
     input_amount: u64,

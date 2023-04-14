@@ -63,7 +63,7 @@ async fn when_desired_liquidity_too_high() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap();
@@ -96,7 +96,7 @@ async fn when_one_deposit_is_zero() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap();
@@ -129,7 +129,7 @@ async fn when_both_deposits_are_zero() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap();
