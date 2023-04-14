@@ -1,7 +1,7 @@
 use dotenv::dotenv;
+use fuels::accounts::fuel_crypto::SecretKey;
 use fuels::client::FuelClient;
 use fuels::prelude::{Bech32ContractId, ContractId, Provider, WalletUnlocked};
-use fuels::accounts::fuel_crypto::SecretKey;
 use oracle_node::{spawn_oracle_updater_job, NetworkPriceProvider};
 use reqwest::Url;
 use std::env;

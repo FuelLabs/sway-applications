@@ -15,7 +15,9 @@ mod success {
         let response = set_price(&user.oracle, set_price_amount).await;
         let price = price(&user.oracle).await;
 
-        let log = response.decode_logs_with_type::<PriceUpdateEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<PriceUpdateEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(

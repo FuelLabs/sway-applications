@@ -1,6 +1,4 @@
-use fuels::{
-    prelude::*, programs::call_response::FuelCallResponse, types::Identity,
-};
+use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identity};
 
 abigen!(Contract(
     name = "Oracle",
