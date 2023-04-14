@@ -1,9 +1,9 @@
 use crate::utils::setup::SimpleAsset;
-use fuels::{programs::call_response::FuelCallResponse, types::Identity};
+use fuels::{prelude::WalletUnlocked, programs::call_response::FuelCallResponse, types::Identity};
 
 pub(crate) async fn constructor(
     asset_supply: u64,
-    contract: &SimpleAsset,
+    contract: &SimpleAsset<WalletUnlocked>,
     minter: Identity,
 ) -> FuelCallResponse<()> {
     contract
@@ -16,7 +16,7 @@ pub(crate) async fn constructor(
 
 pub(crate) async fn mint_to(
     amount: u64,
-    contract: &SimpleAsset,
+    contract: &SimpleAsset<WalletUnlocked>,
     to: Identity,
 ) -> FuelCallResponse<()> {
     contract

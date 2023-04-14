@@ -1,10 +1,10 @@
 contract;
 
-dep errors;
-dep interface;
+mod errors;
+mod interface;
 
-use errors::{AccessError, InitError, InputError};
-use interface::SimpleAsset;
+use ::errors::{AccessError, InitError, InputError};
+use ::interface::SimpleAsset;
 use std::{auth::msg_sender, token::mint_to};
 
 storage {
