@@ -1,9 +1,7 @@
-library nft_asset;
-
-dep traits;
+library;
 
 use ::errors::AssetError;
-use traits::Asset;
+use ::data_structures::traits::Asset;
 
 pub struct NFTAsset {
     /// The `ContractId` of the NFT that the struct is representing.

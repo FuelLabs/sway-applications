@@ -1,14 +1,9 @@
-library utils;
+library;
 
-dep data_structures/auction_asset;
-dep data_structures/nft_asset;
-dep errors;
-
-use auction_asset::AuctionAsset;
-use errors::AccessError;
-use nft_asset::NFTAsset;
+use ::data_structures::{auction_asset::AuctionAsset, nft_asset::NFTAsset};
+use ::errors::AccessError;
 use std::token::transfer;
-use nft::NFT;
+use ::nft::NFT;
 
 /// Transfers assets out of the auction contract to the specified user.
 ///

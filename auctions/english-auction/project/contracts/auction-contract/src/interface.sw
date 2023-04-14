@@ -1,10 +1,6 @@
-library interface;
+library;
 
-dep data_structures/auction_asset;
-dep data_structures/auction;
-
-use auction_asset::AuctionAsset;
-use auction::Auction;
+use ::data_structures::{auction::Auction, auction_asset::AuctionAsset};
 
 abi EnglishAuction {
     /// Places a bid on the specified auction.
@@ -27,7 +23,8 @@ abi EnglishAuction {
     /// * When the bid amount is less than the initial price.
     /// * When the bidder's total deposits are not greater than the current bid.
     /// * When the bidder's total deposits are greater than the reserve price.
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn bid(auction_id: u64, bid_asset: AuctionAsset);
 
     /// Cancels the specified auction.
@@ -69,7 +66,8 @@ abi EnglishAuction {
     /// * When the native asset type sent and the `sell_asset` enum do not match.
     /// * When the `initial_price` for NFTs is not one.
     /// * When transfering of the NFT asset to the contract failed.
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn create(bid_asset: AuctionAsset, duration: u64, inital_price: u64, reserve_price: Option<u64>, seller: Identity, sell_asset: AuctionAsset) -> u64;
 
     /// Allows users to withdraw their owed assets if the auction's bid period has ended, the
