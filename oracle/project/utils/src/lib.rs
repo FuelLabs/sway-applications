@@ -1,5 +1,5 @@
 use fuels::{
-    prelude::*, programs::call_response::FuelCallResponse, signers::wallet::Wallet, types::Identity,
+    prelude::*, programs::call_response::FuelCallResponse, types::Identity,
 };
 
 abigen!(Contract(
@@ -8,7 +8,7 @@ abigen!(Contract(
 ));
 
 pub struct Metadata {
-    pub oracle: Oracle,
+    pub oracle: Oracle<WalletUnlocked>,
     pub wallet: Wallet,
 }
 
@@ -20,15 +20,18 @@ pub mod paths {
 pub mod abi_calls {
     use super::*;
 
-    pub async fn owner(contract: &Oracle) -> Identity {
+    pub async fn owner(contract: &Oracle<WalletUnlocked>) -> Identity {
         contract.methods().owner().call().await.unwrap().value
     }
 
-    pub async fn price(contract: &Oracle) -> Option<u64> {
+    pub async fn price(contract: &Oracle<WalletUnlocked>) -> Option<u64> {
         contract.methods().price().call().await.unwrap().value
     }
 
-    pub async fn set_price(contract: &Oracle, new_price: u64) -> FuelCallResponse<()> {
+    pub async fn set_price(
+        contract: &Oracle<WalletUnlocked>,
+        new_price: u64,
+    ) -> FuelCallResponse<()> {
         contract
             .methods()
             .set_price(new_price)
@@ -46,14 +49,13 @@ pub mod test_helpers {
     pub async fn setup() -> (Metadata, Vec<WalletUnlocked>) {
         let wallets =
             launch_custom_provider_and_get_wallets(WalletsConfig::default(), None, None).await;
-        let oracle_id = Contract::deploy(
-            ORACLE_CONTRACT_BINARY_PATH,
-            &wallets[0],
-            TxParameters::default(),
-            StorageConfiguration::default(),
-        )
-        .await
-        .unwrap();
+
+        let oracle_id =
+            Contract::load_from(ORACLE_CONTRACT_BINARY_PATH, LoadConfiguration::default())
+                .unwrap()
+                .deploy(&wallets[0], TxParameters::default())
+                .await
+                .unwrap();
 
         let user = Metadata {
             oracle: Oracle::new(oracle_id, wallets[0].clone()),
