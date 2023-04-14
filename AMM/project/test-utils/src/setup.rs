@@ -147,9 +147,8 @@ pub mod common {
     }
 
     pub async fn exchange_bytecode_root() -> ContractId {
-        Contract::load_from(EXCHANGE_CONTRACT_BINARY_PATH, LoadConfiguration::default())
-            .unwrap()
-            .contract_id()
+        let exchange_contract = Contract::load_from(EXCHANGE_CONTRACT_BINARY_PATH, LoadConfiguration::default()).unwrap();
+        (*exchange_contract.code_root()).into()
     }
 
     pub async fn setup_wallet_and_provider(
@@ -178,8 +177,8 @@ pub mod scripts {
     use common::{deploy_and_construct_exchange, deposit_and_add_liquidity};
     use fuels::{
         prelude::ResourceFilter,
-        tx::{Input, Output, TxPointer},
-        types::resource::Resource,
+        tx::Output,
+        types::{input::Input, resource::Resource},
     };
 
     pub const MAXIMUM_INPUT_AMOUNT: u64 = 1_000_000;
@@ -267,18 +266,9 @@ pub mod scripts {
         let input_coins: Vec<Input> = coins
             .iter()
             .map(|coin| {
-                let (coin_utxo_id, coin_amount) = match coin {
-                    Resource::Coin(coin) => (coin.utxo_id, coin.amount),
+                match coin {
+                    Resource::Coin(_) => Input::resource_signed(coin.clone(), 0),
                     _ => panic!("Resource type does not match"),
-                };
-                Input::CoinSigned {
-                    utxo_id: coin_utxo_id,
-                    owner: Address::from(from),
-                    amount: coin_amount,
-                    asset_id,
-                    tx_pointer: TxPointer::default(),
-                    witness_index: 0,
-                    maturity: 0,
                 }
             })
             .collect();
