@@ -1,7 +1,8 @@
 use fuels::{
+    accounts::ViewOnlyAccount,
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Address, AssetId, Config, Configurables,
-        Contract, ContractId, Salt, StorageConfiguration, TxParameters, WalletUnlocked,
+        abigen, launch_custom_provider_and_get_wallets, Address, AssetId, Config, Contract,
+        ContractId, LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked,
         WalletsConfig,
     },
     types::Identity,
@@ -25,14 +26,14 @@ const ESCROW_CONTRACT_BINARY_PATH: &str = "./out/debug/escrow-contract.bin";
 const ESCROW_CONTRACT_STORAGE_PATH: &str = "./out/debug/escrow-contract-storage_slots.json";
 
 pub(crate) struct Defaults {
-    pub(crate) asset: MyAsset,
+    pub(crate) asset: MyAsset<WalletUnlocked>,
     pub(crate) asset_amount: u64,
     pub(crate) asset_id: ContractId,
     pub(crate) deadline: u64,
 }
 
 pub(crate) struct User {
-    pub(crate) contract: Escrow,
+    pub(crate) contract: Escrow<WalletUnlocked>,
     pub(crate) wallet: WalletUnlocked,
 }
 
@@ -59,17 +60,17 @@ pub(crate) async fn create_asset(amount: u64, id: ContractId) -> Asset {
 pub(crate) async fn create_asset_with_salt(
     salt: [u8; 32],
     wallet: WalletUnlocked,
-) -> (ContractId, MyAsset) {
-    let asset_id = Contract::deploy_with_parameters(
-        ASSET_CONTRACT_BINARY_PATH,
-        &wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
-        Configurables::default(),
-        Salt::from(salt),
-    )
-    .await
-    .unwrap();
+) -> (ContractId, MyAsset<WalletUnlocked>) {
+    let storage_configuration = StorageConfiguration::load_from(ASSET_CONTRACT_STORAGE_PATH);
+    let configuration = LoadConfiguration::default()
+        .set_storage_configuration(storage_configuration.unwrap())
+        .set_salt(salt);
+
+    let asset_id = Contract::load_from(ASSET_CONTRACT_BINARY_PATH, configuration)
+        .unwrap()
+        .deploy(&wallet, TxParameters::default())
+        .await
+        .unwrap();
 
     (asset_id.clone().into(), MyAsset::new(asset_id, wallet))
 }
@@ -107,7 +108,7 @@ pub(crate) async fn escrow_info(
     }
 }
 
-pub(crate) async fn mint(user: &User, amount: u64, contract: &MyAsset) {
+pub(crate) async fn mint(user: &User, amount: u64, contract: &MyAsset<WalletUnlocked>) {
     contract
         .methods()
         .mint_and_send_to_address(amount, user.wallet.address().into())
@@ -140,23 +141,26 @@ pub(crate) async fn setup() -> (User, User, User, Defaults) {
     let buyer_wallet = wallets.pop().unwrap();
     let seller_wallet = wallets.pop().unwrap();
 
-    let escrow_id = Contract::deploy(
-        ESCROW_CONTRACT_BINARY_PATH,
-        &deployer_wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(ESCROW_CONTRACT_STORAGE_PATH.to_string())),
-    )
-    .await
-    .unwrap();
+    let escrow_storage_configuration =
+        StorageConfiguration::load_from(ESCROW_CONTRACT_STORAGE_PATH);
+    let escrow_configuration = LoadConfiguration::default()
+        .set_storage_configuration(escrow_storage_configuration.unwrap());
 
-    let asset_id = Contract::deploy(
-        ASSET_CONTRACT_BINARY_PATH,
-        &deployer_wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
-    )
-    .await
-    .unwrap();
+    let asset_storage_configuration = StorageConfiguration::load_from(ASSET_CONTRACT_STORAGE_PATH);
+    let asset_configuration = LoadConfiguration::default()
+        .set_storage_configuration(asset_storage_configuration.unwrap());
+
+    let escrow_id = Contract::load_from(ESCROW_CONTRACT_BINARY_PATH, escrow_configuration)
+        .unwrap()
+        .deploy(&deployer_wallet, TxParameters::default())
+        .await
+        .unwrap();
+
+    let asset_id = Contract::load_from(ASSET_CONTRACT_BINARY_PATH, asset_configuration)
+        .unwrap()
+        .deploy(&deployer_wallet, TxParameters::default())
+        .await
+        .unwrap();
 
     let asset = MyAsset::new(asset_id.clone(), deployer_wallet);
 
