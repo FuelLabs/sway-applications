@@ -1,6 +1,6 @@
 pub mod passing {
-    use fuels::types::{Identity, ContractId};
     use crate::utils::{create_auction, get_contract_instance, price};
+    use fuels::types::{ContractId, Identity};
 
     #[tokio::test]
     async fn price_is_correct() {
@@ -10,11 +10,12 @@ pub mod passing {
             &instance,
             400,
             100,
-            2,  // Block height will be 1 at start, then 2 during sending of this tx
+            2, // Block height will be 1 at start, then 2 during sending of this tx
             5,
             Identity::Address(wallet.address().into()),
-            ContractId::zeroed(),            
-        ).await;
+            ContractId::zeroed(),
+        )
+        .await;
 
         assert_eq!(price(&instance, 1).await, 300); // Sending a query tx also increases block height
 
@@ -27,8 +28,8 @@ pub mod passing {
 }
 
 pub mod failing {
-    use fuels::types::{Identity, ContractId};
     use crate::utils::{create_auction, get_contract_instance, price};
+    use fuels::types::{ContractId, Identity};
 
     #[tokio::test]
     #[should_panic = "InvalidAuctionID"]
@@ -39,11 +40,12 @@ pub mod failing {
             &instance,
             400,
             100,
-            2,  // Block height will be 1 at start, then 2 during sending of this tx
+            2, // Block height will be 1 at start, then 2 during sending of this tx
             5,
             Identity::Address(wallet.address().into()),
-            ContractId::zeroed(),            
-        ).await;
+            ContractId::zeroed(),
+        )
+        .await;
 
         assert_eq!(price(&instance, 0).await, 300); // Auction ids start at 1, 0 is invalid
     }
@@ -57,11 +59,12 @@ pub mod failing {
             &instance,
             400,
             100,
-            2,  // Block height will be 1 at start, then 2 during sending of this tx
+            2, // Block height will be 1 at start, then 2 during sending of this tx
             5,
             Identity::Address(wallet.address().into()),
-            ContractId::zeroed(),            
-        ).await;
+            ContractId::zeroed(),
+        )
+        .await;
 
         assert_eq!(price(&instance, 2).await, 300); // Auction ids start at 1, so 2 is invalid
     }
