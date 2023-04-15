@@ -1,5 +1,5 @@
 pub mod passing {
-    use fuels::{types::{Identity, ContractId, AssetId}, signers::WalletUnlocked};
+    use fuels::types::{Identity, ContractId};
     use crate::utils::{create_auction, get_contract_instance, bid, auctions_won, auctions_of_author, active_auctions_of_author, auction_count, auction};
 
     #[tokio::test]
@@ -71,5 +71,74 @@ pub mod passing {
         assert_eq!(auction.reserve_price, 100);
         assert_eq!(auction.start_time, 2);
         assert_eq!(auction.winner, None);
+    }
+}
+
+mod failing {
+    use fuels::types::{Identity, ContractId};
+    use crate::utils::{create_auction, get_contract_instance};
+
+    #[tokio::test]
+    #[should_panic(expected = "EndPriceCannotBeLargerThanStartPrice")]
+    async fn end_price_cannot_be_larger_than_start_price() {
+        let (instance, wallet) = get_contract_instance().await;
+
+        create_auction(
+            &instance,
+            100,
+            400,
+            2,  // Block height will be 1 at start, then 2 during sending of this tx
+            5,
+            Identity::Address(wallet.address().into()),
+            ContractId::zeroed(),            
+        ).await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "AuctionCannotEndInThePast")]
+    async fn auction_cannot_end_in_the_past() {
+        let (instance, wallet) = get_contract_instance().await;
+
+        create_auction(
+            &instance,
+            400,
+            100,
+            2,  // Block height will be 1 at start, then 2 during sending of this tx
+            1,
+            Identity::Address(wallet.address().into()),
+            ContractId::zeroed(),            
+        ).await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "AuctionCannotStartInThePast")]
+    async fn auction_cannot_start_in_the_past() {
+        let (instance, wallet) = get_contract_instance().await;
+
+        create_auction(
+            &instance,
+            400,
+            100,
+            1,  // Block height will be 1 at start, then 2 during sending of this tx
+            5,
+            Identity::Address(wallet.address().into()),
+            ContractId::zeroed(),            
+        ).await;
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "AuctionCannotEndBeforeItStarts")]
+    async fn auction_cannot_end_before_it_starts() {
+        let (instance, wallet) = get_contract_instance().await;
+
+        create_auction(
+            &instance,
+            400,
+            100,
+            10,  // Block height will be 1 at start, then 2 during sending of this tx
+            5,
+            Identity::Address(wallet.address().into()),
+            ContractId::zeroed(),            
+        ).await;
     }
 }
