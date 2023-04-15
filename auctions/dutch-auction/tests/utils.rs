@@ -14,7 +14,7 @@ pub async fn get_contract_instance() -> (DutchAuction, WalletUnlocked) {
     };
     let mut wallets = launch_custom_provider_and_get_wallets(
         WalletsConfig::new_multiple_assets(
-            1,
+            2,
             vec![
                 AssetConfig {
                     id: AssetId::new([0; 32]),

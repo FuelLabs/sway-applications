@@ -71,7 +71,7 @@ impl DutchAuction for Contract {
 
         on_win(auction, price);
 
-        let _ = storage.active_auctions_of_author.pop(auction.author); // I dont think this is correct, as the author can have multiple active auctions
+        let _ = storage.active_auctions_of_author.pop(auction.author); // TODO: I dont think this is correct, as the author can have multiple active auctions
 
         storage.auctions_won.push(msg_sender().unwrap(), auction_id);
 
@@ -134,7 +134,7 @@ impl DutchAuction for Contract {
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
 
-        let _ = storage.active_auctions_of_author.pop(msg_sender().unwrap());
+        let _ = storage.active_auctions_of_author.pop(msg_sender().unwrap()); // TODO: I dont think this is correct, as the author can have multiple active auctions
 
         log(CancelledAuctionEvent {
             id: auction_id,
