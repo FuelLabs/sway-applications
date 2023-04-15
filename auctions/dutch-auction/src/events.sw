@@ -1,8 +1,6 @@
-library events;
+library;
 
-dep data_structures;
-
-use data_structures::Auction;
+use ::data_structures::Auction;
 
 pub struct CancelledAuctionEvent {
     id: u64,

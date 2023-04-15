@@ -1,7 +1,4 @@
-library utils;
-
-dep data_structures;
-dep errors;
+library;
 
 use std::{
     block::height,
@@ -16,8 +13,8 @@ use std::{
     },
 };
 
-use data_structures::Auction;
-use errors::UserError;
+use ::data_structures::Auction;
+use ::errors::UserError;
 
 /// Calculates the current price of a given auction
 pub fn calculate_price(auction: Auction) -> u64 {

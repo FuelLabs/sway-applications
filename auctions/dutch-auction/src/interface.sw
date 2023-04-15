@@ -1,8 +1,6 @@
-library interface;
+library;
 
-dep data_structures;
-
-use data_structures::Auction;
+use ::data_structures::Auction;
 
 abi DutchAuction {
     /// Returns the auction ids of the active auctions of any author
@@ -131,4 +129,8 @@ abi DutchAuction {
     /// * When auction_id is 0 or higher than storage.auction_count
     #[storage(read)]
     fn price(auction_id: u64) -> u64;
+
+    /// Returns the number of auctions that have been created
+    #[storage(read)]
+    fn auction_count() -> u64;
 }

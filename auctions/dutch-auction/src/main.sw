@@ -1,19 +1,19 @@
 contract;
 
-dep interface;
-dep data_structures;
-dep errors;
-dep events;
-dep utils;
+mod data_structures;
+mod interface;
+mod errors;
+mod events;
+mod utils;
 
-use std::{auth::msg_sender, block::height, call_frames::msg_asset_id, context::msg_amount, logging::log, token::transfer};
+use std::{auth::msg_sender, block::height, call_frames::msg_asset_id, context::msg_amount, token::transfer};
 
-use interface::DutchAuction;
-use data_structures::Auction;
-use errors::{SetupError, TimeError, UserError};
-use events::{CancelledAuctionEvent, ChangedAsset, CreatedAuctionEvent, WinningBidEvent};
-use utils::{calculate_price, validate_id};
-use storagemapvec::StorageMapVec;
+use ::interface::DutchAuction;
+use ::data_structures::Auction;
+use ::errors::{SetupError, TimeError, UserError};
+use ::events::{CancelledAuctionEvent, ChangedAsset, CreatedAuctionEvent, WinningBidEvent};
+use ::utils::{calculate_price, validate_id};
+use ::storagemapvec::StorageMapVec;
 
 storage {
     /// Mapping an auction_id to its respective auction, allowing for multiple auctions to happen simultaneously
@@ -196,10 +196,15 @@ impl DutchAuction for Contract {
     fn auctions_won(bidder: Identity) -> Vec<u64> {
         storage.auctions_won.to_vec(bidder)
     }
+
+    #[storage(read)]
+    fn auction_count() -> u64 {
+        storage.auction_count
+    }
 }
 
 /// This function is called whenever a winning bid is recieved.
 fn on_win(auction: Auction, winning_amount: u64) {
     // Add custom logic for winning the auction here
-    // transfer(winning_amount, auction.asset_id, auction.beneficiary);
+    transfer(winning_amount, auction.asset_id, auction.beneficiary);
 }

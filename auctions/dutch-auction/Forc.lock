@@ -1,6 +1,6 @@
 [[package]]
 name = 'core'
-source = 'path+from-root-2C66FC65A00ECA96'
+source = 'path+from-root-91563E0DA237BDEC'
 
 [[package]]
 name = 'dutch-auction'
@@ -12,10 +12,10 @@ dependencies = [
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.35.5#49eae2dd93a1957e2a2c2fb3f51b11eb3791fc24'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.37.1#83e5479462ed2883591669a42552606ac25f0a04'
 dependencies = ['core']
 
 [[package]]
 name = 'storagemapvec'
-source = 'git+https://github.com/FuelLabs/sway-libs?default-branch#2e25453eb2b8050996b9d3143d02821a3ed1632e'
+source = 'git+https://github.com/FuelLabs/sway-libs?default-branch#3c2a68bfd884e310b8f12bd73d2d1b042708ad70'
 dependencies = ['std']

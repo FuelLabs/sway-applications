@@ -1,4 +1,4 @@
-library data_structures;
+library;
 
 pub struct Auction {
     /// The asset the auction accepts for placing bids

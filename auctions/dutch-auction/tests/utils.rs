@@ -73,7 +73,7 @@ pub async fn bid(instance: &DutchAuction, auction_id: u64, amount: u64) {
         .bid(auction_id)
         .call_params(CallParameters::default().set_amount(amount).set_asset_id(AssetId::BASE))
         .unwrap()
-        .append_message_outputs(2)
+        .append_variable_outputs(2)
         .call()
         .await
         .unwrap();
@@ -129,6 +129,16 @@ pub async fn price(instance: &DutchAuction, auction_id: u64) -> u64 {
     instance
         .methods()
         .price(auction_id)
+        .call()
+        .await
+        .unwrap()
+        .value
+}
+
+pub async fn auction_count(instance: &DutchAuction) -> u64 {
+    instance
+        .methods()
+        .auction_count()
         .call()
         .await
         .unwrap()

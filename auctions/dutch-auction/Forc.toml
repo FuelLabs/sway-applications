@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "dutch-auction"
 
 [dependencies]
-storagemapvec = { git = "https://github.com/FuelLabs/sway-libs" }
+storagemapvec = { git = "https://github.com/FuelLabs/sway-libs"}
