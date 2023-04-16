@@ -6,7 +6,13 @@ mod errors;
 mod events;
 mod utils;
 
-use std::{auth::msg_sender, block::height, call_frames::msg_asset_id, context::msg_amount, token::transfer};
+use std::{
+    auth::msg_sender,
+    block::height,
+    call_frames::msg_asset_id,
+    context::msg_amount,
+    token::transfer,
+};
 
 use ::interface::DutchAuction;
 use ::data_structures::Auction;
@@ -72,7 +78,6 @@ impl DutchAuction for Contract {
         on_win(auction, price);
 
         remove_id(auction_id, auction.author); // TODO: Replace this with a remove when where clauses are supported
-
         storage.auctions_won.push(msg_sender().unwrap(), auction_id);
 
         log(WinningBidEvent {
@@ -135,7 +140,6 @@ impl DutchAuction for Contract {
         storage.auctions.insert(auction_id, auction);
 
         remove_id(auction_id, auction.author); // TODO: Replace this with a remove when where clauses are supported
-
         log(CancelledAuctionEvent {
             id: auction_id,
         });
@@ -181,7 +185,7 @@ impl DutchAuction for Contract {
 
         storage.auctions.insert(auction_id, auction);
     }
-    
+
     #[storage(read)]
     fn active_auctions_of_author(author: Identity) -> Vec<u64> {
         storage.active_auctions_of_author.to_vec(author)

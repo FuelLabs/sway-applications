@@ -1,28 +1,6 @@
-// #[storage(read, write)]
-// fn cancel_auction(auction_id: u64) {
-//     validate_id(auction_id, storage.auction_count);
-
-//     let mut auction = storage.auctions.get(auction_id).unwrap();
-
-//     // Only the author can end the auction (prematurely)
-//     require(msg_sender().unwrap() == auction.author, UserError::SenderNotAuthor);
-//     // Cannot cancel an auction that has already ended
-//     require(!auction.ended, TimeError::AuctionAlreadyEnded);
-
-//     auction.ended = true;
-//     storage.auctions.insert(auction_id, auction);
-
-//     let _ = storage.active_auctions_of_author.pop(msg_sender().unwrap());
-
-//     log(CancelledAuctionEvent {
-//         id: auction_id,
-//     });
-// }
-
 mod passing {
     use crate::utils::{
-        active_auctions_of_author, auction, auction_count, auctions_of_author, auctions_won, bid,
-        create_auction, get_contract_instance, cancel_auction,
+        active_auctions_of_author, cancel_auction, create_auction, get_contract_instance,
     };
     use fuels::types::{ContractId, Identity};
 
@@ -68,24 +46,25 @@ mod passing {
             8,
             Identity::Address(wallet.address().into()),
             ContractId::zeroed(),
-        ).await;
+        )
+        .await;
 
         cancel_auction(&instance, 1).await;
 
         assert_eq!(
-            active_auctions_of_author(&instance, Identity::Address(wallet.address().into()))
-                .await,
-            vec![2] 
+            active_auctions_of_author(&instance, Identity::Address(wallet.address().into())).await,
+            vec![2]
         );
     }
 }
 
 mod failing {
-    use crate::utils::{
-        bid,
-        create_auction, get_contract_instance, cancel_auction,
+    use crate::utils::{bid, cancel_auction, create_auction, get_contract_instance};
+    use fuels::{
+        prelude::TxParameters,
+        signers::WalletUnlocked,
+        types::{AssetId, ContractId, Identity},
     };
-    use fuels::{types::{ContractId, Identity, AssetId}, signers::WalletUnlocked, prelude::TxParameters};
 
     #[tokio::test]
     #[should_panic(expected = "SenderNotAuthor")]
@@ -103,12 +82,27 @@ mod failing {
         )
         .await;
 
-        let random_wallet = WalletUnlocked::new_random(Some(wallet.get_provider().unwrap().clone()));
+        let random_wallet =
+            WalletUnlocked::new_random(Some(wallet.get_provider().unwrap().clone()));
 
-        wallet.transfer(random_wallet.address(), 1000, AssetId::BASE, TxParameters::default()).await.unwrap();
+        wallet
+            .transfer(
+                random_wallet.address(),
+                1000,
+                AssetId::BASE,
+                TxParameters::default(),
+            )
+            .await
+            .unwrap();
 
-        instance.with_wallet(random_wallet).unwrap()
-            .methods().cancel_auction(1).call().await.unwrap();
+        instance
+            .with_wallet(random_wallet)
+            .unwrap()
+            .methods()
+            .cancel_auction(1)
+            .call()
+            .await
+            .unwrap();
     }
 
     #[tokio::test]

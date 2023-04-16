@@ -99,7 +99,7 @@ abi DutchAuction {
     /// * When the auction has already ended
     #[storage(read, write)]
     fn change_beneficiary(new_beneficiary: Identity, auction_id: u64);
-    
+
     /// Creates a new auction
     ///
     /// # Arguments
