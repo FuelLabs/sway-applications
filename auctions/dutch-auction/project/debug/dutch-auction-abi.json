@@ -1,0 +1,899 @@
+{
+  "types": [
+    {
+      "typeId": 0,
+      "type": "()",
+      "components": [],
+      "typeParameters": null
+    },
+    {
+      "typeId": 1,
+      "type": "b256",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 2,
+      "type": "bool",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 3,
+      "type": "enum Identity",
+      "components": [
+        {
+          "name": "Address",
+          "type": 10,
+          "typeArguments": null
+        },
+        {
+          "name": "ContractId",
+          "type": 14,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 4,
+      "type": "enum Option",
+      "components": [
+        {
+          "name": "None",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "Some",
+          "type": 8,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        8
+      ]
+    },
+    {
+      "typeId": 5,
+      "type": "enum SetupError",
+      "components": [
+        {
+          "name": "AuctionCannotEndBeforeItStarts",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "AuctionCannotEndInThePast",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "AuctionCannotStartInThePast",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "EndPriceCannotBeLargerThanStartPrice",
+          "type": 0,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 6,
+      "type": "enum TimeError",
+      "components": [
+        {
+          "name": "AuctionAlreadyEnded",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "AuctionNotYetStarted",
+          "type": 0,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 7,
+      "type": "enum UserError",
+      "components": [
+        {
+          "name": "InvalidAuctionID",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "BidTooLow",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "WrongAssetSent",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "SenderNotAuthor",
+          "type": 0,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 8,
+      "type": "generic T",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 9,
+      "type": "raw untyped ptr",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 10,
+      "type": "struct Address",
+      "components": [
+        {
+          "name": "value",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 11,
+      "type": "struct Auction",
+      "components": [
+        {
+          "name": "asset_id",
+          "type": 14,
+          "typeArguments": null
+        },
+        {
+          "name": "author",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "beneficiary",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "ended",
+          "type": 2,
+          "typeArguments": null
+        },
+        {
+          "name": "end_time",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "opening_price",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "reserve_price",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "start_time",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "winner",
+          "type": 4,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 3,
+              "typeArguments": null
+            }
+          ]
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 12,
+      "type": "struct CancelledAuctionEvent",
+      "components": [
+        {
+          "name": "id",
+          "type": 19,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 13,
+      "type": "struct ChangedAsset",
+      "components": [
+        {
+          "name": "id",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "new_asset",
+          "type": 14,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 14,
+      "type": "struct ContractId",
+      "components": [
+        {
+          "name": "value",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 15,
+      "type": "struct CreatedAuctionEvent",
+      "components": [
+        {
+          "name": "auction",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "id",
+          "type": 19,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 16,
+      "type": "struct RawVec",
+      "components": [
+        {
+          "name": "ptr",
+          "type": 9,
+          "typeArguments": null
+        },
+        {
+          "name": "cap",
+          "type": 19,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        8
+      ]
+    },
+    {
+      "typeId": 17,
+      "type": "struct Vec",
+      "components": [
+        {
+          "name": "buf",
+          "type": 16,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 8,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "type": 19,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        8
+      ]
+    },
+    {
+      "typeId": 18,
+      "type": "struct WinningBidEvent",
+      "components": [
+        {
+          "name": "id",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "winner",
+          "type": 3,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 19,
+      "type": "u64",
+      "components": null,
+      "typeParameters": null
+    }
+  ],
+  "functions": [
+    {
+      "inputs": [
+        {
+          "name": "author",
+          "type": 3,
+          "typeArguments": null
+        }
+      ],
+      "name": "active_auctions_of_author",
+      "output": {
+        "name": "",
+        "type": 17,
+        "typeArguments": [
+          {
+            "name": "",
+            "type": 19,
+            "typeArguments": null
+          }
+        ]
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "auction_id",
+          "type": 19,
+          "typeArguments": null
+        }
+      ],
+      "name": "auction",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [],
+      "name": "auction_count",
+      "output": {
+        "name": "",
+        "type": 19,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "author",
+          "type": 3,
+          "typeArguments": null
+        }
+      ],
+      "name": "auctions_of_author",
+      "output": {
+        "name": "",
+        "type": 17,
+        "typeArguments": [
+          {
+            "name": "",
+            "type": 19,
+            "typeArguments": null
+          }
+        ]
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "bidder",
+          "type": 3,
+          "typeArguments": null
+        }
+      ],
+      "name": "auctions_won",
+      "output": {
+        "name": "",
+        "type": 17,
+        "typeArguments": [
+          {
+            "name": "",
+            "type": 19,
+            "typeArguments": null
+          }
+        ]
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "auction_id",
+          "type": 19,
+          "typeArguments": null
+        }
+      ],
+      "name": "bid",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "payable",
+          "arguments": []
+        },
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "auction_id",
+          "type": 19,
+          "typeArguments": null
+        }
+      ],
+      "name": "cancel_auction",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "new_asset",
+          "type": 14,
+          "typeArguments": null
+        },
+        {
+          "name": "auction_id",
+          "type": 19,
+          "typeArguments": null
+        }
+      ],
+      "name": "change_asset",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "new_beneficiary",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "auction_id",
+          "type": 19,
+          "typeArguments": null
+        }
+      ],
+      "name": "change_beneficiary",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "opening_price",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "reserve_price",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "start_time",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "end_time",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "beneficiary",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "asset",
+          "type": 14,
+          "typeArguments": null
+        }
+      ],
+      "name": "create_auction",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "auction_id",
+          "type": 19,
+          "typeArguments": null
+        }
+      ],
+      "name": "price",
+      "output": {
+        "name": "",
+        "type": 19,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    }
+  ],
+  "loggedTypes": [
+    {
+      "logId": 0,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 1,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 2,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 3,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 4,
+      "loggedType": {
+        "name": "",
+        "type": 6,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 5,
+      "loggedType": {
+        "name": "",
+        "type": 6,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 6,
+      "loggedType": {
+        "name": "",
+        "type": 6,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 7,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 8,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 9,
+      "loggedType": {
+        "name": "",
+        "type": 18,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 10,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 11,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 12,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 13,
+      "loggedType": {
+        "name": "",
+        "type": 6,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 14,
+      "loggedType": {
+        "name": "",
+        "type": 12,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 15,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 16,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 17,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 18,
+      "loggedType": {
+        "name": "",
+        "type": 6,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 19,
+      "loggedType": {
+        "name": "",
+        "type": 13,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 20,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 21,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 22,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 23,
+      "loggedType": {
+        "name": "",
+        "type": 6,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 24,
+      "loggedType": {
+        "name": "",
+        "type": 5,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 25,
+      "loggedType": {
+        "name": "",
+        "type": 5,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 26,
+      "loggedType": {
+        "name": "",
+        "type": 5,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 27,
+      "loggedType": {
+        "name": "",
+        "type": 5,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 28,
+      "loggedType": {
+        "name": "",
+        "type": 15,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 29,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 30,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    }
+  ],
+  "messagesTypes": [],
+  "configurables": []
+}
