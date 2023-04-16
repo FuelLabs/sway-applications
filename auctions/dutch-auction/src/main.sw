@@ -71,7 +71,7 @@ impl DutchAuction for Contract {
 
         on_win(auction, price);
 
-        let _ = storage.active_auctions_of_author.pop(auction.author); // TODO: I dont think this is correct, as the author can have multiple active auctions
+        remove_id(auction_id, auction.author); // TODO: Replace this with a remove when where clauses are supported
 
         storage.auctions_won.push(msg_sender().unwrap(), auction_id);
 
@@ -134,7 +134,7 @@ impl DutchAuction for Contract {
         auction.ended = true;
         storage.auctions.insert(auction_id, auction);
 
-        let _ = storage.active_auctions_of_author.pop(msg_sender().unwrap()); // TODO: I dont think this is correct, as the author can have multiple active auctions
+        remove_id(auction_id, auction.author); // TODO: Replace this with a remove when where clauses are supported
 
         log(CancelledAuctionEvent {
             id: auction_id,
@@ -207,4 +207,22 @@ impl DutchAuction for Contract {
 fn on_win(auction: Auction, winning_amount: u64) {
     // Add custom logic for winning the auction here
     transfer(winning_amount, auction.asset_id, auction.beneficiary);
+}
+
+/// As where caluses are not yet supported, this function is used to remove IDs from active auctions of author.
+#[storage(read, write)]
+fn remove_id(id: u64, author: Identity) {
+    let ids = storage.active_auctions_of_author.to_vec(author);
+    let mut index = 0;
+
+    let mut i = 0;
+    while i < ids.len() {
+        if ids.get(i).unwrap() == id {
+            index = i;
+            break;
+        }
+        i += 1;
+    }
+
+    storage.active_auctions_of_author.remove(author, index);
 }

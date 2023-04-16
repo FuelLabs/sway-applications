@@ -75,7 +75,7 @@ mod passing {
         assert_eq!(
             active_auctions_of_author(&instance, Identity::Address(wallet.address().into()))
                 .await,
-            vec![2]
+            vec![2] 
         );
     }
 }
