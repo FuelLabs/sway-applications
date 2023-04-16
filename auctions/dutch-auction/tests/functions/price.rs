@@ -33,7 +33,7 @@ pub mod failing {
 
     #[tokio::test]
     #[should_panic = "InvalidAuctionID"]
-    async fn cannot_get_0_auction_id() {
+    async fn cannot_get_zero_auction_id() {
         let (instance, wallet) = get_contract_instance().await;
 
         create_auction(

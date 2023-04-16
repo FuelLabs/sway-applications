@@ -1,3 +1,4 @@
+pub mod auction;
 pub mod bid;
 pub mod cancel_auction;
 pub mod create_auction;
