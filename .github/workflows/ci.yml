@@ -41,7 +41,7 @@ jobs:
             "airdrop",
             "AMM",
             "auctions/english-auction",
-            "auction/dutch-auction",
+            "auctions/dutch-auction",
             "DAO",
             "escrow",
             "fractional-NFT",
