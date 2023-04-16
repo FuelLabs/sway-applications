@@ -1,11 +1,12 @@
 use crate::utils::setup::{NameRegistry, RegistrationValidityError};
 use fuels::{
+    prelude::WalletUnlocked,
     programs::call_response::FuelCallResponse,
     types::{Identity, SizedAsciiString},
 };
 
 pub(crate) async fn expiry(
-    instance: &NameRegistry,
+    instance: &NameRegistry<WalletUnlocked>,
     name: &String,
 ) -> FuelCallResponse<Result<u64, RegistrationValidityError>> {
     instance
@@ -17,7 +18,7 @@ pub(crate) async fn expiry(
 }
 
 pub(crate) async fn identity(
-    instance: &NameRegistry,
+    instance: &NameRegistry<WalletUnlocked>,
     name: &String,
 ) -> FuelCallResponse<Result<Identity, RegistrationValidityError>> {
     instance
@@ -29,7 +30,7 @@ pub(crate) async fn identity(
 }
 
 pub(crate) async fn owner(
-    instance: &NameRegistry,
+    instance: &NameRegistry<WalletUnlocked>,
     name: &String,
 ) -> FuelCallResponse<Result<Identity, RegistrationValidityError>> {
     instance

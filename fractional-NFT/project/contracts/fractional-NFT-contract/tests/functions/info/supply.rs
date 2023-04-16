@@ -9,7 +9,7 @@ mod success {
         },
         setup::{defaults, setup},
     };
-    use fuels::{signers::Signer, types::Identity};
+    use fuels::types::Identity;
 
     #[tokio::test]
     async fn gets_supply() {

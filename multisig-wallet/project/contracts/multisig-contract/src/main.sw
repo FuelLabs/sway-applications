@@ -3,20 +3,22 @@ contract;
 // TODO:
 //      - change the "data" in the Tx hashing from b256 to Bytes type when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723.
 //    
-dep data_structures/signatures;
-dep data_structures/user;
-dep errors;
-dep events;
-dep interface;
-dep utils;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
+mod utils;
 
-use errors::{AccessControlError, ExecutionError, InitError};
-use events::{CancelEvent, ExecutedEvent, SetThresholdEvent, SetWeightEvent, TransferEvent};
-use interface::{Info, MultiSignatureWallet};
-use signatures::SignatureInfo;
-use std::{auth::msg_sender, context::this_balance, logging::log, token::transfer};
-use user::User;
-use utils::{hash_threshold, hash_transaction, hash_weight, recover_signer};
+use ::errors::{AccessControlError, ExecutionError, InitError};
+use ::events::{CancelEvent, ExecutedEvent, SetThresholdEvent, SetWeightEvent, TransferEvent};
+use ::interface::{Info, MultiSignatureWallet};
+use ::data_structures::{signatures::SignatureInfo, user::User};
+use std::{auth::msg_sender, context::this_balance, token::transfer};
+use ::utils::{hash_threshold, hash_transaction, hash_weight, recover_signer};
+
+configurable {
+    THRESHOLD: u64 = 5,
+}
 
 storage {
     /// Used to add entropy into hashing of transaction to decrease the probability of collisions / double
@@ -37,7 +39,7 @@ impl MultiSignatureWallet for Contract {
             Identity::Address(address) => address.value,
             Identity::ContractId(asset_id) => asset_id.value,
         };
-        require(storage.weighting.get(sender) > 0, AccessControlError::CanOnlyBeAccessedByAnOwner);
+        require(storage.weighting.get(sender).unwrap_or(0) > 0, AccessControlError::CanOnlyBeAccessedByAnOwner);
 
         storage.nonce += 1;
 
@@ -132,7 +134,7 @@ impl MultiSignatureWallet for Contract {
 
         require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
-        let current_weight = storage.weighting.get(user.address);
+        let current_weight = storage.weighting.get(user.address).unwrap_or(0);
 
         if current_weight < user.weight {
             storage.total_weight += user.weight - current_weight;
@@ -180,7 +182,7 @@ impl MultiSignatureWallet for Contract {
 impl Info for Contract {
     #[storage(read)]
     fn approval_weight(user: b256) -> u64 {
-        storage.weighting.get(user)
+        storage.weighting.get(user).unwrap_or(0)
     }
 
     fn balance(asset_id: ContractId) -> u64 {
@@ -227,7 +229,7 @@ fn count_approvals(signatures: Vec<SignatureInfo>, transaction_hash: b256) -> u6
         require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
 
         previous_signer = signer;
-        approval_count += storage.weighting.get(signer);
+        approval_count += storage.weighting.get(signer).unwrap_or(0);
 
         if storage.threshold <= approval_count {
             break;

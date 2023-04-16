@@ -1,21 +1,15 @@
 contract;
 
-dep data_structures/state;
-dep errors;
-dep events;
-dep interface;
-dep utils;
+mod errors;
+mod data_structures;
+mod events;
+mod interface;
+mod utils;
 
-// TODO: Move these into alphabetical order once https://github.com/FuelLabs/sway/issues/409 is resolved
-dep data_structures/auction_asset;
-dep data_structures/auction;
-
-use auction_asset::AuctionAsset;
-use auction::Auction;
-use errors::{AccessError, InitError, InputError, UserError};
-use events::{BidEvent, CancelAuctionEvent, CreateAuctionEvent, WithdrawEvent};
-use interface::{EnglishAuction, Info};
-use state::State;
+use ::data_structures::{auction::Auction, auction_asset::AuctionAsset, state::State};
+use ::errors::{AccessError, InitError, InputError, UserError};
+use ::events::{BidEvent, CancelAuctionEvent, CreateAuctionEvent, WithdrawEvent};
+use ::interface::{EnglishAuction, Info};
 use std::{
     auth::msg_sender,
     block::height,
@@ -24,27 +18,25 @@ use std::{
         msg_asset_id,
     },
     context::msg_amount,
-    logging::log,
-    storage::StorageMap,
 };
-use utils::{transfer_asset, transfer_nft};
+use ::utils::{transfer_asset, transfer_nft};
 
 storage {
     /// Stores the auction information based on auction ID.
     /// Map(auction id => auction)
-    auctions: StorageMap<u64, Option<Auction>> = StorageMap {}, 
-    
+    auctions: StorageMap<u64, Auction> = StorageMap {},
     // TODO: Move deposits into the Auction struct when StorageMaps are supported inside structs
     // This issue can be tracked here: https://github.com/FuelLabs/sway/issues/2465
     /// Stores the deposits made based on the user and auction ID.
     /// Map((user, auction id) => deposit)
-    deposits: StorageMap<(Identity, u64), Option<AuctionAsset>> = StorageMap {},
+    deposits: StorageMap<(Identity, u64), AuctionAsset> = StorageMap {},
     /// The total number of auctions that have ever been created.
     total_auctions: u64 = 0,
 }
 
 impl EnglishAuction for Contract {
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn bid(auction_id: u64, bid_asset: AuctionAsset) {
         let auction = storage.auctions.get(auction_id);
         require(auction.is_some(), InputError::AuctionDoesNotExist);
@@ -98,8 +90,8 @@ impl EnglishAuction for Contract {
         // Update the auction's information and store the new state
         auction.highest_bidder = Option::Some(sender);
         auction.bid_asset = total_bid;
-        storage.deposits.insert((sender, auction_id), Option::Some(auction.bid_asset));
-        storage.auctions.insert(auction_id, Option::Some(auction));
+        storage.deposits.insert((sender, auction_id), auction.bid_asset);
+        storage.auctions.insert(auction_id, auction);
 
         log(BidEvent {
             amount: auction.bid_asset.amount(),
@@ -119,14 +111,15 @@ impl EnglishAuction for Contract {
         require(msg_sender().unwrap() == auction.seller, AccessError::SenderIsNotSeller);
 
         // Update and store the auction's information
-        auction.highest_bidder = Option::None();
+        auction.highest_bidder = Option::None;
         auction.state = State::Closed;
-        storage.auctions.insert(auction_id, Option::Some(auction));
+        storage.auctions.insert(auction_id, auction);
 
         log(CancelAuctionEvent { auction_id });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn create(
         bid_asset: AuctionAsset,
         duration: u64,
@@ -175,8 +168,8 @@ impl EnglishAuction for Contract {
 
         // Store the auction information
         let total_auctions = storage.total_auctions;
-        storage.deposits.insert((seller, total_auctions), Option::Some(sell_asset));
-        storage.auctions.insert(total_auctions, Option::Some(auction));
+        storage.deposits.insert((seller, total_auctions), sell_asset);
+        storage.auctions.insert(total_auctions, auction);
 
         log(CreateAuctionEvent {
             auction_id: total_auctions,
@@ -201,7 +194,7 @@ impl EnglishAuction for Contract {
             && auction.state == State::Open)
         {
             auction.state = State::Closed;
-            storage.auctions.insert(auction_id, Option::Some(auction));
+            storage.auctions.insert(auction_id, auction);
         }
 
         let sender = msg_sender().unwrap();
@@ -210,7 +203,7 @@ impl EnglishAuction for Contract {
 
         // Make sure the sender still has something to withdraw
         require(sender_deposit.is_some(), UserError::UserHasAlreadyWithdrawn);
-        storage.deposits.insert((sender, auction_id), Option::None::<AuctionAsset>());
+        storage.deposits.remove((sender, auction_id));
         let mut withdrawn_asset = sender_deposit.unwrap();
 
         // Withdraw owed assets

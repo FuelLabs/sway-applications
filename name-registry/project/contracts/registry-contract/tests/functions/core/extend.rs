@@ -30,7 +30,7 @@ mod success {
         let (extend_response, latest_block_time) =
             extend_with_time(&instance, &acc.name, EXTEND_DURATION).await;
         let log = extend_response
-            .get_logs_with_type::<RegistrationExtendedEvent>()
+            .decode_logs_with_type::<RegistrationExtendedEvent>()
             .unwrap();
 
         let new_expiry = expiry(&instance, &acc.name).await;

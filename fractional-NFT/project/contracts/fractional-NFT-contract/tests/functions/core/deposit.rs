@@ -14,7 +14,7 @@ mod success {
         fractional_nft::{nft_info, supply},
         nft::owner_of,
     };
-    use fuels::tx::AssetId;
+    use fuels::{accounts::ViewOnlyAccount, tx::AssetId};
 
     #[tokio::test]
     async fn deposits_nft() {

@@ -22,7 +22,7 @@ mod success {
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
         let bid_asset = token_asset(buy_asset_contract_id, initial_price).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
         mint_and_send_to_address(reserve_price, &buyer1.asset, buyer1.wallet.address().into())
@@ -54,7 +54,7 @@ mod success {
             Some(reserve_price),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -75,7 +75,7 @@ mod success {
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint_and_send_to_address(
             sell_amount * 2,
@@ -120,7 +120,7 @@ mod success {
             Some(reserve_price),
             sell_asset.clone(),
             seller_identity.clone(),
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction1.unwrap(), auction1_copy);
@@ -151,7 +151,7 @@ mod success {
             Some(reserve_price),
             sell_asset,
             seller_identity.clone(),
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction2.unwrap(), auction2_copy);

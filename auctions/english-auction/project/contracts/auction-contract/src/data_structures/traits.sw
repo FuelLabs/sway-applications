@@ -1,4 +1,4 @@
-library traits;
+library;
 
 pub trait Asset {
     fn amount(self) -> u64;

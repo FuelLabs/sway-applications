@@ -1,8 +1,6 @@
-library utils;
+library;
 
-dep interface;
-
-use interface::FractionalNFT;
+use ::interface::FractionalNFT;
 
 pub fn create_fractional_nft(
     admin: Option<Identity>,

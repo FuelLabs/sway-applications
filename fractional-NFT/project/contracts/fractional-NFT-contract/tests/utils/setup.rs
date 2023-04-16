@@ -1,6 +1,6 @@
 use fuels::prelude::{
-    abigen, launch_custom_provider_and_get_wallets, Contract, ContractId, StorageConfiguration,
-    TxParameters, WalletUnlocked, WalletsConfig,
+    abigen, launch_custom_provider_and_get_wallets, Contract, ContractId, LoadConfiguration,
+    StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
 };
 
 abigen!(
@@ -15,8 +15,8 @@ abigen!(
 );
 
 pub(crate) struct Metadata {
-    pub(crate) f_nft: FractionalNFT,
-    pub(crate) nft: Nft,
+    pub(crate) f_nft: FractionalNFT<WalletUnlocked>,
+    pub(crate) nft: Nft<WalletUnlocked>,
     pub(crate) wallet: WalletUnlocked,
 }
 
@@ -46,30 +46,33 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, ContractId, Contra
     )
     .await;
 
-    // Get the wallets from that provider
     let wallet1 = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
     let wallet3 = wallets.pop().unwrap();
 
-    let f_nft_id = Contract::deploy(
+    let fractional_storage_configuration =
+        StorageConfiguration::load_from(FRACTIONAL_NFT_CONTRACT_STORAGE_PATH);
+    let nft_storage_configuration = StorageConfiguration::load_from(NFT_CONTRACT_STORAGE_PATH);
+
+    let fractional_configuration = LoadConfiguration::default()
+        .set_storage_configuration(fractional_storage_configuration.unwrap());
+    let nft_configuration =
+        LoadConfiguration::default().set_storage_configuration(nft_storage_configuration.unwrap());
+
+    let f_nft_id = Contract::load_from(
         FRACTIONAL_NFT_CONTRACT_BINARY_PATH,
-        &wallet1,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(
-            FRACTIONAL_NFT_CONTRACT_STORAGE_PATH.to_string(),
-        )),
+        fractional_configuration,
     )
+    .unwrap()
+    .deploy(&wallet1, TxParameters::default())
     .await
     .unwrap();
 
-    let nft_id = Contract::deploy(
-        NFT_CONTRACT_BINARY_PATH,
-        &wallet1,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(NFT_CONTRACT_STORAGE_PATH.to_string())),
-    )
-    .await
-    .unwrap();
+    let nft_id = Contract::load_from(NFT_CONTRACT_BINARY_PATH, nft_configuration)
+        .unwrap()
+        .deploy(&wallet1, TxParameters::default())
+        .await
+        .unwrap();
 
     let deploy_wallet = Metadata {
         f_nft: FractionalNFT::new(f_nft_id.clone(), wallet1.clone()),

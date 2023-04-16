@@ -1,9 +1,9 @@
 use fuels::{
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Config, Contract, StorageConfiguration,
-        TxParameters, WalletUnlocked, WalletsConfig,
+        abigen, launch_custom_provider_and_get_wallets, Bech32ContractId, Config, Contract,
+        LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
-    tx::{ContractId, Salt},
+    tx::ContractId,
     types::Identity,
 };
 
@@ -29,9 +29,9 @@ const NFT_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT.bin"
 const NFT_CONTRACT_STORAGE_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT-storage_slots.json";
 
 pub(crate) struct Metadata {
-    pub(crate) asset: MyAsset,
-    pub(crate) auction: EnglishAuction,
-    pub(crate) nft: Nft,
+    pub(crate) asset: MyAsset<WalletUnlocked>,
+    pub(crate) auction: EnglishAuction<WalletUnlocked>,
+    pub(crate) nft: Nft<WalletUnlocked>,
     pub(crate) wallet: WalletUnlocked,
 }
 
@@ -110,86 +110,82 @@ pub(crate) async fn setup() -> (
     )
     .await;
 
-    // Get the wallets from that provider
     let wallet1 = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
     let wallet3 = wallets.pop().unwrap();
     let wallet4 = wallets.pop().unwrap();
 
-    let auction_id = Contract::deploy(
-        AUCTION_CONTRACT_BINARY_PATH,
-        &wallet1,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(AUCTION_CONTRACT_STORAGE_PATH.to_string())),
-    )
-    .await
-    .unwrap();
+    let auction_storage_configuration =
+        StorageConfiguration::load_from(AUCTION_CONTRACT_STORAGE_PATH);
+    let nft_storage_configuration = StorageConfiguration::load_from(NFT_CONTRACT_STORAGE_PATH);
+    let buy_nft_storage_configuration = StorageConfiguration::load_from(NFT_CONTRACT_STORAGE_PATH);
 
-    let sell_asset_id = Contract::deploy(
+    let auction_configuration = LoadConfiguration::default()
+        .set_storage_configuration(auction_storage_configuration.unwrap());
+    let nft_configuration =
+        LoadConfiguration::default().set_storage_configuration(nft_storage_configuration.unwrap());
+    let buy_nft_configuration = LoadConfiguration::default()
+        .set_storage_configuration(buy_nft_storage_configuration.unwrap())
+        .set_salt([2u8; 32]);
+
+    let auction_id = Contract::load_from(AUCTION_CONTRACT_BINARY_PATH, auction_configuration)
+        .unwrap()
+        .deploy(&wallet1, TxParameters::default())
+        .await
+        .unwrap();
+    let sell_asset_id = Contract::load_from(NATIVE_ASSET_BINARY_PATH, LoadConfiguration::default())
+        .unwrap()
+        .deploy(&wallet1, TxParameters::default())
+        .await
+        .unwrap();
+
+    let sell_nft_id = Contract::load_from(NFT_CONTRACT_BINARY_PATH, nft_configuration)
+        .unwrap()
+        .deploy(&wallet1, TxParameters::default())
+        .await
+        .unwrap();
+    let buy_asset_id = Contract::load_from(
         NATIVE_ASSET_BINARY_PATH,
-        &wallet1,
-        TxParameters::default(),
-        StorageConfiguration::default(),
+        LoadConfiguration::default().set_salt([1u8; 32]),
     )
+    .unwrap()
+    .deploy(&wallet3, TxParameters::default())
     .await
     .unwrap();
+    let buy_nft_id = Contract::load_from(NFT_CONTRACT_BINARY_PATH, buy_nft_configuration)
+        .unwrap()
+        .deploy(&wallet3, TxParameters::default())
+        .await
+        .unwrap();
 
-    let sell_nft_id = Contract::deploy(
-        NFT_CONTRACT_BINARY_PATH,
-        &wallet1,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(NFT_CONTRACT_STORAGE_PATH.to_string())),
+    let deploy_wallet = user(
+        wallet1,
+        sell_asset_id.clone(),
+        auction_id.clone(),
+        sell_nft_id.clone(),
     )
-    .await
-    .unwrap();
-
-    let deploy_wallet = Metadata {
-        asset: MyAsset::new(sell_asset_id.clone(), wallet1.clone()),
-        auction: EnglishAuction::new(auction_id.clone(), wallet1.clone()),
-        nft: Nft::new(sell_nft_id.clone(), wallet1.clone()),
-        wallet: wallet1,
-    };
-
-    let seller = Metadata {
-        asset: MyAsset::new(sell_asset_id.clone(), wallet2.clone()),
-        auction: EnglishAuction::new(auction_id.clone(), wallet2.clone()),
-        nft: Nft::new(sell_nft_id.clone(), wallet2.clone()),
-        wallet: wallet2,
-    };
-
-    let buy_asset_id = Contract::deploy_with_parameters(
-        NATIVE_ASSET_BINARY_PATH,
-        &wallet3,
-        TxParameters::default(),
-        StorageConfiguration::default(),
-        Salt::from([1u8; 32]),
+    .await;
+    let seller = user(
+        wallet2,
+        sell_asset_id.clone(),
+        auction_id.clone(),
+        sell_nft_id.clone(),
     )
-    .await
-    .unwrap();
-
-    let buy_nft_id = Contract::deploy_with_parameters(
-        NFT_CONTRACT_BINARY_PATH,
-        &wallet3,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(NFT_CONTRACT_STORAGE_PATH.to_string())),
-        Salt::from([2u8; 32]),
+    .await;
+    let buyer1 = user(
+        wallet3,
+        buy_asset_id.clone(),
+        auction_id.clone(),
+        buy_nft_id.clone(),
     )
-    .await
-    .unwrap();
-
-    let buyer1 = Metadata {
-        asset: MyAsset::new(buy_asset_id.clone(), wallet3.clone()),
-        auction: EnglishAuction::new(auction_id.clone(), wallet3.clone()),
-        nft: Nft::new(buy_nft_id.clone(), wallet3.clone()),
-        wallet: wallet3,
-    };
-
-    let buyer2 = Metadata {
-        asset: MyAsset::new(buy_asset_id.clone(), wallet4.clone()),
-        auction: EnglishAuction::new(auction_id.clone(), wallet4.clone()),
-        nft: Nft::new(buy_nft_id.clone(), wallet4.clone()),
-        wallet: wallet4,
-    };
+    .await;
+    let buyer2 = user(
+        wallet4,
+        buy_asset_id.clone(),
+        auction_id.clone(),
+        buy_asset_id.clone(),
+    )
+    .await;
 
     (
         deploy_wallet,
@@ -208,4 +204,18 @@ pub(crate) async fn token_asset(asset_id: ContractId, amount: u64) -> AuctionAss
     let token = TokenAsset { asset_id, amount };
 
     AuctionAsset::TokenAsset(token)
+}
+
+async fn user(
+    user_wallet: WalletUnlocked,
+    asset_id: Bech32ContractId,
+    auction_id: Bech32ContractId,
+    nft_id: Bech32ContractId,
+) -> Metadata {
+    Metadata {
+        asset: MyAsset::new(asset_id.clone(), user_wallet.clone()),
+        auction: EnglishAuction::new(auction_id.clone(), user_wallet.clone()),
+        nft: Nft::new(nft_id.clone(), user_wallet.clone()),
+        wallet: user_wallet,
+    }
 }

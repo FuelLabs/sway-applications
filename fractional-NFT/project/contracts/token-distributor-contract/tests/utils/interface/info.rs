@@ -1,10 +1,13 @@
 use crate::utils::setup::{FractionalNFT, NFTInfo, Nft, TokenDistribution, TokenDistributor};
-use fuels::{prelude::ContractId, types::Identity};
+use fuels::{
+    prelude::{ContractId, WalletUnlocked},
+    types::Identity,
+};
 
 pub(crate) mod fractional_nft {
     use super::*;
 
-    pub(crate) async fn nft_info(contract: &FractionalNFT) -> Option<NFTInfo> {
+    pub(crate) async fn nft_info(contract: &FractionalNFT<WalletUnlocked>) -> Option<NFTInfo> {
         contract.methods().nft_info().call().await.unwrap().value
     }
 }
@@ -12,7 +15,10 @@ pub(crate) mod fractional_nft {
 pub(crate) mod nft {
     use super::*;
 
-    pub(crate) async fn owner_of(contract: &Nft, token_id: u64) -> Option<Identity> {
+    pub(crate) async fn owner_of(
+        contract: &Nft<WalletUnlocked>,
+        token_id: u64,
+    ) -> Option<Identity> {
         contract
             .methods()
             .owner_of(token_id)
@@ -27,7 +33,7 @@ pub(crate) mod token_distributor {
     use super::*;
 
     pub async fn token_distribution(
-        contract: &TokenDistributor,
+        contract: &TokenDistributor<WalletUnlocked>,
         f_nft: ContractId,
     ) -> Option<TokenDistribution> {
         contract

@@ -1,5 +1,6 @@
-library events;
+library;
 
+use ::data_structures::Asset;
 use std::bytes::Bytes;
 
 pub struct CancelEvent {
@@ -7,19 +8,17 @@ pub struct CancelEvent {
 }
 
 pub struct ExecuteEvent {
-    asset_id: Option<ContractId>,
+    asset: Option<Asset>,
     data: Bytes,
     id: b256,
     recipient: Identity,
     timestamp: u64,
-    value: Option<u64>,
 }
 
 pub struct QueueEvent {
-    asset_id: Option<ContractId>,
+    asset: Option<Asset>,
     data: Bytes,
     id: b256,
     recipient: Identity,
     timestamp: u64,
-    value: Option<u64>,
 }

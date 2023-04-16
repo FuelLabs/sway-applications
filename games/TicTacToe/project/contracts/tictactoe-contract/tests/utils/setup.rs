@@ -1,7 +1,7 @@
 use fuels::{
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Bech32Address, Contract,
-        StorageConfiguration, TxParameters, WalletsConfig,
+        abigen, launch_custom_provider_and_get_wallets, Contract, DeployConfiguration,
+        StorageConfiguration, WalletUnlocked, WalletsConfig,
     },
     types::Identity,
 };
@@ -14,18 +14,18 @@ abigen!(Contract(
 const TICTACTOE_CONTRACT_BINARY_PATH: &str = "./out/debug/tictactoe-contract.bin";
 const TICTACTOE_CONTRACT_STORAGE_PATH: &str = "./out/debug/tictactoe-contract-storage_slots.json";
 
-pub struct Player {
-    pub contract: TicTacToe,
-    pub identity: Identity,
+pub(crate) struct Player {
+    pub(crate) contract: TicTacToe<WalletUnlocked>,
+    pub(crate) identity: Identity,
 }
 
-pub async fn setup() -> (Player, Player) {
-    let num_wallets = 2;
+pub(crate) async fn setup() -> (Player, Player) {
+    let number_of_wallets = 2;
     let coins_per_wallet = 1;
     let amount_per_coin = 100_000_000;
 
     let config = WalletsConfig::new(
-        Some(num_wallets),
+        Some(number_of_wallets),
         Some(coins_per_wallet),
         Some(amount_per_coin),
     );
@@ -35,11 +35,13 @@ pub async fn setup() -> (Player, Player) {
     let player_one_wallet = wallets.pop().unwrap();
     let player_two_wallet = wallets.pop().unwrap();
 
+    let storage_configuration = StorageConfiguration::default()
+        .set_storage_path(TICTACTOE_CONTRACT_STORAGE_PATH.to_string());
+
     let id = Contract::deploy(
         TICTACTOE_CONTRACT_BINARY_PATH,
         &player_one_wallet,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(TICTACTOE_CONTRACT_STORAGE_PATH.to_string())),
+        DeployConfiguration::default().set_storage_configuration(storage_configuration),
     )
     .await
     .unwrap();

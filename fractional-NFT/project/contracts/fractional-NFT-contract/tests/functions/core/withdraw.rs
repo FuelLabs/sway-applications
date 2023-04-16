@@ -6,6 +6,7 @@ use crate::utils::{
     setup::{defaults, setup},
 };
 use fuels::{
+    accounts::Account,
     prelude::{Bech32ContractId, TxParameters},
     tx::AssetId,
     types::Identity,
@@ -15,6 +16,7 @@ mod success {
 
     use super::*;
     use crate::utils::interface::info::{fractional_nft::nft_info, nft::owner_of};
+    use fuels::accounts::ViewOnlyAccount;
 
     #[tokio::test]
     async fn withdraws_nft() {

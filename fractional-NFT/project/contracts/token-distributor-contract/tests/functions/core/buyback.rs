@@ -32,7 +32,7 @@ mod success {
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
         let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
@@ -83,7 +83,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Distributed()
+            DistributionState::Distributed
         ));
 
         buyback(
@@ -109,7 +109,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Buyback()
+            DistributionState::Buyback
         ));
     }
 
@@ -129,7 +129,7 @@ mod success {
 
         let owner_identity = Identity::Address(owner1.wallet.address().into());
         let fractional_nft_identity = Identity::ContractId(fractional_nft_contract);
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint(1, &owner1.nft, owner_identity.clone()).await;
         approve(Some(fractional_nft_identity.clone()), &owner1.nft, 0).await;
@@ -180,7 +180,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Distributed()
+            DistributionState::Distributed
         ));
 
         buyback(
@@ -206,7 +206,7 @@ mod success {
         );
         assert!(matches!(
             token_distribution_struct.clone().unwrap().state,
-            DistributionState::Buyback()
+            DistributionState::Buyback
         ));
     }
 }

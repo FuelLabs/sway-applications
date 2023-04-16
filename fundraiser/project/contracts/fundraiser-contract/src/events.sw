@@ -1,8 +1,6 @@
-library events;
+library;
 
-dep data_structures/campaign_info;
-
-use campaign_info::CampaignInfo;
+use ::data_structures::campaign_info::CampaignInfo;
 
 pub struct CancelledCampaignEvent {
     /// The unique identifier for the campaign

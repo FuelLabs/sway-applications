@@ -1,4 +1,4 @@
-library events;
+library;
 
 /// The event for when a name has its resolving identity changed
 pub struct IdentityChangedEvent {

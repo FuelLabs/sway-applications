@@ -1,4 +1,4 @@
-library events;
+library;
 
 pub struct AdminEvent {
     /// The new identity which may unlock the contract and change the admin.

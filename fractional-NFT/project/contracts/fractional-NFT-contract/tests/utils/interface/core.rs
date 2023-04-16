@@ -1,6 +1,6 @@
 use crate::utils::setup::{FractionalNFT, Nft};
 use fuels::{
-    prelude::{Bech32ContractId, ContractId},
+    prelude::{Bech32ContractId, ContractId, WalletUnlocked},
     programs::call_response::FuelCallResponse,
     types::Identity,
 };
@@ -11,7 +11,7 @@ pub(crate) mod fractional_nft {
 
     pub(crate) async fn deposit(
         admin: Option<Identity>,
-        contract: &FractionalNFT,
+        contract: &FractionalNFT<WalletUnlocked>,
         nft: ContractId,
         supply: u64,
         token_id: u64,
@@ -27,7 +27,7 @@ pub(crate) mod fractional_nft {
     }
 
     pub(crate) async fn set_admin(
-        contract: &FractionalNFT,
+        contract: &FractionalNFT<WalletUnlocked>,
         new_admin: Option<Identity>,
     ) -> FuelCallResponse<()> {
         contract
@@ -39,7 +39,7 @@ pub(crate) mod fractional_nft {
     }
 
     pub(crate) async fn withdraw(
-        contract: &FractionalNFT,
+        contract: &FractionalNFT<WalletUnlocked>,
         nft: ContractId,
         to: Identity,
     ) -> FuelCallResponse<()> {
@@ -59,7 +59,7 @@ pub(crate) mod nft {
 
     pub(crate) async fn approve(
         approved: Option<Identity>,
-        contract: &Nft,
+        contract: &Nft<WalletUnlocked>,
         token_id: u64,
     ) -> FuelCallResponse<()> {
         contract
@@ -70,7 +70,11 @@ pub(crate) mod nft {
             .unwrap()
     }
 
-    pub(crate) async fn mint(amount: u64, contract: &Nft, owner: Identity) -> FuelCallResponse<()> {
+    pub(crate) async fn mint(
+        amount: u64,
+        contract: &Nft<WalletUnlocked>,
+        owner: Identity,
+    ) -> FuelCallResponse<()> {
         contract.methods().mint(amount, owner).call().await.unwrap()
     }
 }

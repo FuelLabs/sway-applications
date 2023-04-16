@@ -1,12 +1,6 @@
-library auction_asset;
+library;
 
-dep nft_asset;
-dep token_asset;
-dep traits;
-
-use nft_asset::NFTAsset;
-use token_asset::TokenAsset;
-use traits::Asset;
+use ::data_structures::{nft_asset::NFTAsset, token_asset::TokenAsset, traits::Asset};
 
 pub enum AuctionAsset {
     NFTAsset: NFTAsset,
@@ -42,14 +36,12 @@ impl core::ops::Add for AuctionAsset {
     fn add(self, other: Self) -> Self {
         match (self, other) {
             (
-
                 AuctionAsset::NFTAsset(nft_asset1),
                 AuctionAsset::NFTAsset(nft_asset2),
             ) => {
                 AuctionAsset::NFTAsset(nft_asset1 + nft_asset2)
             }
             (
-
                 AuctionAsset::TokenAsset(token_asset1),
                 AuctionAsset::TokenAsset(token_asset2),
             ) => {
@@ -67,14 +59,12 @@ impl core::ops::Eq for AuctionAsset {
     fn eq(self, other: Self) -> bool {
         match (self, other) {
             (
-
                 AuctionAsset::NFTAsset(nft_asset1),
                 AuctionAsset::NFTAsset(nft_asset2),
             ) => {
                 nft_asset1 == nft_asset2
             },
             (
-
                 AuctionAsset::TokenAsset(token_asset1),
                 AuctionAsset::TokenAsset(token_asset2),
             ) => {
@@ -92,14 +82,12 @@ impl core::ops::Ord for AuctionAsset {
     fn gt(self, other: Self) -> bool {
         match (self, other) {
             (
-
                 AuctionAsset::NFTAsset(nft_asset1),
                 AuctionAsset::NFTAsset(nft_asset2),
             ) => {
                 nft_asset1 > nft_asset2
             },
             (
-
                 AuctionAsset::TokenAsset(token_asset1),
                 AuctionAsset::TokenAsset(token_asset2),
             ) => {
@@ -114,14 +102,12 @@ impl core::ops::Ord for AuctionAsset {
     fn lt(self, other: Self) -> bool {
         match (self, other) {
             (
-
                 AuctionAsset::NFTAsset(nft_asset1),
                 AuctionAsset::NFTAsset(nft_asset2),
             ) => {
                 nft_asset1 < nft_asset2
             },
             (
-
                 AuctionAsset::TokenAsset(token_asset1),
                 AuctionAsset::TokenAsset(token_asset2),
             ) => {
