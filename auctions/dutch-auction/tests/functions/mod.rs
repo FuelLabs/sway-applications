@@ -1,4 +1,8 @@
+pub mod active_auctions_of_author;
 pub mod auction;
+pub mod auction_count;
+pub mod auctions_of_author;
+pub mod auctions_won;
 pub mod bid;
 pub mod cancel_auction;
 pub mod change_asset;

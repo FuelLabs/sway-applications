@@ -228,5 +228,5 @@ fn remove_id(id: u64, author: Identity) {
         i += 1;
     }
 
-    storage.active_auctions_of_author.remove(author, index);
+    let _ = storage.active_auctions_of_author.remove(author, index);
 }
