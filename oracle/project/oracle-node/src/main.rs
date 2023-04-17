@@ -1,7 +1,7 @@
 use dotenv::dotenv;
+use fuels::accounts::fuel_crypto::SecretKey;
 use fuels::client::FuelClient;
 use fuels::prelude::{Bech32ContractId, ContractId, Provider, WalletUnlocked};
-use fuels::signers::fuel_crypto::SecretKey;
 use oracle_node::{spawn_oracle_updater_job, NetworkPriceProvider};
 use reqwest::Url;
 use std::env;
@@ -21,7 +21,7 @@ async fn main() {
 }
 
 /// Iniitialize and return objects for use in main
-fn setup() -> (Oracle, reqwest::Client, Url) {
+fn setup() -> (Oracle<WalletUnlocked>, reqwest::Client, Url) {
     let root_env_path = env::current_dir().unwrap();
     let env_path = root_env_path.join("project").join("oracle-node");
     env::set_current_dir(env_path).unwrap();
