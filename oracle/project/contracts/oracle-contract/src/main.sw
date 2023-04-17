@@ -1,26 +1,28 @@
 contract;
 
-dep data_structures;
-dep errors;
-dep events;
-dep interface;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
 
+use ::data_structures::State;
+use ::errors::AccessError;
+use ::events::PriceUpdateEvent;
+use ::interface::Oracle;
 use std::auth::msg_sender;
 
-use data_structures::State;
-use errors::AccessError;
-use events::PriceUpdateEvent;
-use interface::Oracle;
+configurable {
+    OWNER: Identity = Identity::Address(Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db)),
+}
 
 storage {
     // Current price of tracked asset
     price: Option<u64> = Option::None,
 }
 
-// TODO treat owner as an identity once https://github.com/FuelLabs/sway/issues/2647 is fixed
 impl Oracle for Contract {
     fn owner() -> Identity {
-        Identity::Address(Address::from(OWNER))
+        OWNER
     }
 
     #[storage(read)]
@@ -30,7 +32,7 @@ impl Oracle for Contract {
 
     #[storage(write)]
     fn set_price(price: u64) {
-        require(msg_sender().unwrap() == Identity::Address(Address::from(OWNER)), AccessError::NotOwner);
+        require(msg_sender().unwrap() == OWNER, AccessError::NotOwner);
 
         storage.price = Option::Some(price);
 
