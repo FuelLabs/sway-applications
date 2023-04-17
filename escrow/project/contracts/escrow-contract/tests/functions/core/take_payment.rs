@@ -23,7 +23,7 @@ mod success {
         mint(&seller, defaults.asset_amount, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
 
-        let provider = buyer.wallet.get_provider().unwrap();
+        let provider = buyer.wallet.provider().unwrap();
         let origin_block = provider.latest_block_height().await.unwrap();
 
         create_escrow(
@@ -64,7 +64,9 @@ mod success {
             State::Completed
         ));
 
-        let log = response.get_logs_with_type::<PaymentTakenEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<PaymentTakenEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(*event, PaymentTakenEvent { identifier: 0 });
@@ -79,7 +81,7 @@ mod success {
         mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
 
-        let provider = buyer.wallet.get_provider().unwrap();
+        let provider = buyer.wallet.provider().unwrap();
         let origin_block = provider.latest_block_height().await.unwrap();
 
         create_escrow(
@@ -125,7 +127,9 @@ mod success {
         ));
         assert!(matches!(arbiter_proposal(&seller, 0).await, None));
 
-        let log = response.get_logs_with_type::<PaymentTakenEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<PaymentTakenEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(*event, PaymentTakenEvent { identifier: 0 });
@@ -140,7 +144,7 @@ mod success {
         mint(&seller, 2 * defaults.asset_amount, &defaults.asset).await;
         mint(&buyer, 2 * defaults.asset_amount, &defaults.asset).await;
 
-        let provider = buyer.wallet.get_provider().unwrap();
+        let provider = buyer.wallet.provider().unwrap();
         let origin_block = provider.latest_block_height().await.unwrap();
 
         create_escrow(
@@ -215,7 +219,9 @@ mod success {
             State::Completed
         ));
 
-        let log0 = response0.get_logs_with_type::<PaymentTakenEvent>().unwrap();
+        let log0 = response0
+            .decode_logs_with_type::<PaymentTakenEvent>()
+            .unwrap();
         let event0 = log0.get(0).unwrap();
         assert_eq!(
             *event0,
@@ -224,7 +230,9 @@ mod success {
             }
         );
 
-        let log1 = response1.get_logs_with_type::<PaymentTakenEvent>().unwrap();
+        let log1 = response1
+            .decode_logs_with_type::<PaymentTakenEvent>()
+            .unwrap();
         let event1 = log1.get(0).unwrap();
         assert_eq!(
             *event1,
@@ -297,7 +305,7 @@ mod revert {
         mint(&seller, defaults.asset_amount, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
 
-        let provider = buyer.wallet.get_provider().unwrap();
+        let provider = buyer.wallet.provider().unwrap();
         let origin_block = provider.latest_block_height().await.unwrap();
 
         create_escrow(
@@ -331,7 +339,7 @@ mod revert {
         mint(&seller, defaults.asset_amount, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
 
-        let provider = buyer.wallet.get_provider().unwrap();
+        let provider = buyer.wallet.provider().unwrap();
         let origin_block = provider.latest_block_height().await.unwrap();
 
         create_escrow(
@@ -364,7 +372,7 @@ mod revert {
         mint(&seller, defaults.asset_amount, &defaults.asset).await;
         mint(&buyer, defaults.asset_amount, &defaults.asset).await;
 
-        let provider = buyer.wallet.get_provider().unwrap();
+        let provider = buyer.wallet.provider().unwrap();
         let origin_block = provider.latest_block_height().await.unwrap();
 
         create_escrow(

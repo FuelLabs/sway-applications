@@ -1,4 +1,4 @@
-library interface;
+library;
 
 abi SimpleAsset {
     /// An example constructor which implements an airdrop distributor contract.

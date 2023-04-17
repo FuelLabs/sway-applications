@@ -14,7 +14,7 @@ mod success {
         let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
         let (_, _, _, minter, _, num_leaves, asset_supply, _, claim_time, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
-        let provider = deploy_wallet.wallet.get_provider().unwrap();
+        let provider = deploy_wallet.wallet.provider().unwrap();
         let root = Bits256([2u8; 32]);
 
         asset_constructor(asset_supply, &asset.asset, minter.clone()).await;

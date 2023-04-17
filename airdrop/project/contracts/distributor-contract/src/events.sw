@@ -1,4 +1,4 @@
-library events;
+library;
 
 pub struct ClaimEvent {
     /// The quantity of an asset which is to be transferred to the user.

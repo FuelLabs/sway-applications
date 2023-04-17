@@ -1,8 +1,6 @@
-library events;
+library;
 
-dep data_structures;
-
-use data_structures::{Arbiter, EscrowInfo};
+use ::data_structures::{Arbiter, EscrowInfo};
 
 pub struct AcceptedArbiterEvent {
     /// Unique escrow identifier
