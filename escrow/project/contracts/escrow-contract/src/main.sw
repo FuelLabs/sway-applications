@@ -1,12 +1,11 @@
 contract;
 
-// Our library dependencies
-dep data_structures;
-dep errors;
-dep events;
-dep interface;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
 
-use data_structures::{Arbiter, Asset, Buyer, EscrowInfo, Seller, State};
+use ::data_structures::{Arbiter, Asset, Buyer, EscrowInfo, Seller, State};
 use errors::{
     ArbiterInputError,
     AssetInputError,
@@ -16,7 +15,6 @@ use errors::{
     UserError,
     UserInputError,
 };
-
 use events::{
     AcceptedArbiterEvent,
     CreatedEscrowEvent,
@@ -29,7 +27,6 @@ use events::{
     TransferredToSellerEvent,
     WithdrawnCollateralEvent,
 };
-
 use interface::{Escrow, Info};
 use std::{
     auth::msg_sender,
@@ -82,7 +79,8 @@ impl Escrow for Contract {
         log(AcceptedArbiterEvent { identifier });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn create_escrow(
         arbiter: Arbiter,
         assets: Vec<Asset>,
@@ -119,7 +117,8 @@ impl Escrow for Contract {
         });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn deposit(identifier: u64) {
         // The assertions ensure that only the buyer can deposit (only once) prior to the deadline
         // and escrow completion
@@ -174,7 +173,8 @@ impl Escrow for Contract {
         log(DisputeEvent { identifier });
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn propose_arbiter(arbiter: Arbiter, identifier: u64) {
         // The assertions ensure that only the seller can propose a new arbiter and the arbiter
         // cannot be the buyer / seller, the arbiter will be able to take a none-zero payment
@@ -301,7 +301,6 @@ impl Escrow for Contract {
 
         log(PaymentTakenEvent { identifier });
     }
-
     #[storage(read, write)]
     fn transfer_to_seller(identifier: u64) {
         // The assertions ensure that only the buyer can transfer their deposit once
