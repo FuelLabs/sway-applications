@@ -7,7 +7,7 @@ license = "Apache-2.0"
 
 [dependencies]
 fuel-merkle = { version = "0.4.1" }
-fuels = { version = "0.36.1", features = ["fuel-core-lib"] }
+fuels = { version = "0.41.0", features = ["fuel-core-lib"] }
 sha2 = { version = "0.10" }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 

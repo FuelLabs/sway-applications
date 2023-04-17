@@ -3,9 +3,10 @@ use fuel_merkle::{
     common::{empty_sum_sha256, Bytes32, LEAF, NODE},
 };
 use fuels::{
+    accounts::ViewOnlyAccount,
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Config, Contract, ContractId,
-        StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+        LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
     tx::AssetId,
     types::{Bits256, Identity},
@@ -24,12 +25,12 @@ abigen!(
 );
 
 pub(crate) struct Asset {
-    pub(crate) asset: SimpleAsset,
+    pub(crate) asset: SimpleAsset<WalletUnlocked>,
     pub(crate) asset_id: ContractId,
 }
 
 pub(crate) struct Metadata {
-    pub(crate) airdrop_distributor: AirdropDistributor,
+    pub(crate) airdrop_distributor: AirdropDistributor<WalletUnlocked>,
     pub(crate) wallet: WalletUnlocked,
 }
 
@@ -267,7 +268,7 @@ pub(crate) async fn leaves_with_depth(
 }
 
 pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
-    let num_wallets = 4;
+    let number_of_wallets = 4;
     let coins_per_wallet = 1;
     let coin_amount = 1000000;
     let config = Config {
@@ -275,7 +276,11 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
         ..Config::local_node()
     };
     let mut wallets = launch_custom_provider_and_get_wallets(
-        WalletsConfig::new(Some(num_wallets), Some(coins_per_wallet), Some(coin_amount)),
+        WalletsConfig::new(
+            Some(number_of_wallets),
+            Some(coins_per_wallet),
+            Some(coin_amount),
+        ),
         Some(config),
         None,
     )
@@ -286,25 +291,31 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
     let wallet3 = wallets.pop().unwrap();
     let wallet4 = wallets.pop().unwrap();
 
-    let airdrop_distributor_id = Contract::deploy(
+    let airdrop_distributor_storage_configuration =
+        StorageConfiguration::load_from(DISTRIBUTOR_CONTRACT_STORAGE_PATH);
+    let airdrop_distributor_configuration = LoadConfiguration::default()
+        .set_storage_configuration(airdrop_distributor_storage_configuration.unwrap());
+
+    let simple_asset_storage_configuration =
+        StorageConfiguration::load_from(ASSET_CONTRACT_STORAGE_PATH);
+    let simple_asset_configuration = LoadConfiguration::default()
+        .set_storage_configuration(simple_asset_storage_configuration.unwrap());
+
+    let airdrop_distributor_id = Contract::load_from(
         DISTRIBUTOR_CONTRACT_BINARY_PATH,
-        &wallet1,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(
-            DISTRIBUTOR_CONTRACT_STORAGE_PATH.to_string(),
-        )),
+        airdrop_distributor_configuration,
     )
+    .unwrap()
+    .deploy(&wallet1, TxParameters::default())
     .await
     .unwrap();
 
-    let simple_asset_id = Contract::deploy(
-        ASSET_CONTRACT_BINARY_PATH,
-        &wallet1,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(ASSET_CONTRACT_STORAGE_PATH.to_string())),
-    )
-    .await
-    .unwrap();
+    let simple_asset_id =
+        Contract::load_from(ASSET_CONTRACT_BINARY_PATH, simple_asset_configuration)
+            .unwrap()
+            .deploy(&wallet1, TxParameters::default())
+            .await
+            .unwrap();
 
     let deployer = Metadata {
         airdrop_distributor: AirdropDistributor::new(

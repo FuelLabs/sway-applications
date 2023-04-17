@@ -62,7 +62,7 @@ mod success {
         )
         .await;
 
-        let log = response.get_logs_with_type::<ClaimEvent>().unwrap();
+        let log = response.decode_logs_with_type::<ClaimEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -141,7 +141,7 @@ mod success {
         )
         .await;
 
-        let log = response.get_logs_with_type::<ClaimEvent>().unwrap();
+        let log = response.decode_logs_with_type::<ClaimEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -214,7 +214,7 @@ mod success {
         )
         .await;
 
-        let log = response.get_logs_with_type::<ClaimEvent>().unwrap();
+        let log = response.decode_logs_with_type::<ClaimEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -288,7 +288,7 @@ mod success {
             airdrop_leaves[key as usize].0.clone(),
         )
         .await;
-        let log = response.get_logs_with_type::<ClaimEvent>().unwrap();
+        let log = response.decode_logs_with_type::<ClaimEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -362,7 +362,7 @@ mod success {
             airdrop_leaves[key as usize].0.clone(),
         )
         .await;
-        let log = response.get_logs_with_type::<ClaimEvent>().unwrap();
+        let log = response.decode_logs_with_type::<ClaimEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -400,7 +400,7 @@ mod revert {
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.clone()).await;
-        let provider = deploy_wallet.wallet.get_provider().unwrap();
+        let provider = deploy_wallet.wallet.provider().unwrap();
 
         asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
         mint_to(asset_supply, &asset.asset, minter.clone()).await;

@@ -14,7 +14,7 @@ mod success {
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_tree, root, _leaf, _) = build_tree(key, airdrop_leaves.clone()).await;
-        let provider = deploy_wallet.wallet.get_provider().unwrap();
+        let provider = deploy_wallet.wallet.provider().unwrap();
 
         asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
         mint_to(asset_supply, &asset.asset, minter.clone()).await;

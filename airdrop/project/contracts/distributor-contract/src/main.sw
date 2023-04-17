@@ -1,14 +1,14 @@
 contract;
 
-dep data_structures;
-dep errors;
-dep events;
-dep interface;
+mod data_structures;
+mod errors;
+mod events;
+mod interface;
 
-use data_structures::ClaimState;
-use errors::{AccessError, InitError, StateError, VerificationError};
-use events::{ClaimEvent, ClawbackEvent, CreateAirdropEvent};
-use interface::{AirdropDistributor, Info};
+use ::data_structures::ClaimState;
+use ::errors::{AccessError, InitError, StateError, VerificationError};
+use ::events::{ClaimEvent, ClawbackEvent, CreateAirdropEvent};
+use ::interface::{AirdropDistributor, Info};
 use merkle_proof::binary_merkle_proof::{leaf_digest, verify_proof};
 use std::{
     auth::msg_sender,
@@ -86,7 +86,8 @@ impl AirdropDistributor for Contract {
         })
     }
 
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn constructor(
         admin: Identity,
         claim_time: u64,
