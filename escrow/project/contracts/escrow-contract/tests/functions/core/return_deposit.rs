@@ -52,7 +52,7 @@ mod success {
         ));
 
         let log = response
-            .get_logs_with_type::<ReturnedDepositEvent>()
+            .decode_logs_with_type::<ReturnedDepositEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
@@ -108,7 +108,7 @@ mod success {
         assert!(matches!(arbiter_proposal(&seller, 0).await, None));
 
         let log = response
-            .get_logs_with_type::<ReturnedDepositEvent>()
+            .decode_logs_with_type::<ReturnedDepositEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
@@ -179,10 +179,10 @@ mod success {
         ));
 
         let log1 = response1
-            .get_logs_with_type::<ReturnedDepositEvent>()
+            .decode_logs_with_type::<ReturnedDepositEvent>()
             .unwrap();
         let log2 = response2
-            .get_logs_with_type::<ReturnedDepositEvent>()
+            .decode_logs_with_type::<ReturnedDepositEvent>()
             .unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();

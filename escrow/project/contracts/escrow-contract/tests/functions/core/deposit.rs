@@ -48,7 +48,7 @@ mod success {
         assert_eq!(escrow.asset, Some(defaults.asset_id));
         assert_eq!(defaults.asset_amount, escrow.deposited_amount);
 
-        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
+        let log = response.decode_logs_with_type::<DepositEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -119,8 +119,8 @@ mod success {
         assert_eq!(defaults.asset_amount, escrow3.deposited_amount);
         assert_eq!(defaults.asset_amount, escrow4.deposited_amount);
 
-        let log1 = response1.get_logs_with_type::<DepositEvent>().unwrap();
-        let log2 = response2.get_logs_with_type::<DepositEvent>().unwrap();
+        let log1 = response1.decode_logs_with_type::<DepositEvent>().unwrap();
+        let log2 = response2.decode_logs_with_type::<DepositEvent>().unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();
 

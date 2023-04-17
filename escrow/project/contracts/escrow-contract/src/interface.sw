@@ -1,8 +1,6 @@
-library interface;
+library;
 
-dep data_structures;
-
-use data_structures::{Arbiter, Asset, EscrowInfo};
+use ::data_structures::{Arbiter, Asset, EscrowInfo};
 
 abi Escrow {
     /// Buyer accepts proposal to change arbiter details
@@ -39,7 +37,8 @@ abi Escrow {
     /// * When the caller does not deposit the specified asset for the arbiter fee
     /// * When the caller is setting the buyer or themselves as the arbiter
     /// * When the amount of any asset required for deposit is set to 0
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn create_escrow(arbiter: Arbiter, assets: Vec<Asset>, buyer: Identity, deadline: u64);
 
     /// Accepts a deposit from the buyer for any of the assets specified in the escrow
@@ -58,7 +57,8 @@ abi Escrow {
     /// * When the caller deposits more than once
     /// * When the caller sends an incorrect amount of an asset for the specified asset in the escrow
     /// * When the caller deposits an asset that has not been specified in the escrow
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn deposit(identifier: u64);
 
     /// Changes a flag in the escrow marking it as disputed which results in the escrow being locked
@@ -98,7 +98,8 @@ abi Escrow {
     /// * When the arbiter fee is set to 0
     /// * When the caller does not deposit the amount specified for the arbiter fee
     /// * When the caller does not deposit the specified asset for the arbiter fee
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn propose_arbiter(arbiter: Arbiter, identifier: u64);
 
     /// The arbiter decides who the deposit is sent to and how much of the designated payment they

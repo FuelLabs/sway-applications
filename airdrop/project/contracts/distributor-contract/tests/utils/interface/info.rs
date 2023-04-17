@@ -1,11 +1,17 @@
 use crate::utils::setup::{AirdropDistributor, ClaimState};
-use fuels::types::{Bits256, Identity};
+use fuels::{
+    prelude::WalletUnlocked,
+    types::{Bits256, Identity},
+};
 
-pub(crate) async fn admin(contract: &AirdropDistributor) -> Option<Identity> {
+pub(crate) async fn admin(contract: &AirdropDistributor<WalletUnlocked>) -> Option<Identity> {
     contract.methods().admin().call().await.unwrap().value
 }
 
-pub(crate) async fn claim_data(contract: &AirdropDistributor, identity: Identity) -> ClaimState {
+pub(crate) async fn claim_data(
+    contract: &AirdropDistributor<WalletUnlocked>,
+    identity: Identity,
+) -> ClaimState {
     contract
         .methods()
         .claim_data(identity)
@@ -15,19 +21,19 @@ pub(crate) async fn claim_data(contract: &AirdropDistributor, identity: Identity
         .value
 }
 
-pub(crate) async fn end_block(contract: &AirdropDistributor) -> u64 {
+pub(crate) async fn end_block(contract: &AirdropDistributor<WalletUnlocked>) -> u64 {
     contract.methods().end_block().call().await.unwrap().value
 }
 
-pub(crate) async fn is_active(contract: &AirdropDistributor) -> bool {
+pub(crate) async fn is_active(contract: &AirdropDistributor<WalletUnlocked>) -> bool {
     contract.methods().is_active().call().await.unwrap().value
 }
 
-pub(crate) async fn merkle_root(contract: &AirdropDistributor) -> Option<Bits256> {
+pub(crate) async fn merkle_root(contract: &AirdropDistributor<WalletUnlocked>) -> Option<Bits256> {
     contract.methods().merkle_root().call().await.unwrap().value
 }
 
-pub(crate) async fn number_of_leaves(contract: &AirdropDistributor) -> u64 {
+pub(crate) async fn number_of_leaves(contract: &AirdropDistributor<WalletUnlocked>) -> u64 {
     contract
         .methods()
         .number_of_leaves()
