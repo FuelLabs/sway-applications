@@ -7,17 +7,6 @@ use fuels::{
 
 use crate::utils::setup::{MultiSig, SignatureInfo, User};
 
-pub(crate) async fn cancel_transaction(
-    contract: &MultiSig<WalletUnlocked>,
-) -> FuelCallResponse<()> {
-    contract
-        .methods()
-        .cancel_transaction()
-        .call()
-        .await
-        .unwrap()
-}
-
 pub(crate) async fn constructor(
     contract: &MultiSig<WalletUnlocked>,
     users: Vec<User>,

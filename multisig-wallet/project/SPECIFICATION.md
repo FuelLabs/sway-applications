@@ -2,7 +2,6 @@ Table of Contents
 - [Overview](#overview)
 - [Use Cases](#use-cases)
   - [Core Functionality](#core-functionality)
-    - [`cancel_transaction()`](#cancel_transaction)
     - [`constructor()`](#constructor)
     - [`execute_transaction()`](#execute_transaction)
     - [`set_threshold()`](#set_threshold)
@@ -32,11 +31,6 @@ This section contains general information about the functionality of the applica
 If you are interested in a functional overview then this is the section for you.
 
 ## Core Functionality
-
-### `cancel_transaction()`
-
-1. Cancels the next transaction by spending the current nonce. This is both a safety mechanism enabling a user to explicitly render a previously shared signature useless, as well as a way of conveniently skipping a transaction.
-   1. If the caller is an owner, which requires the contract to have been initialised.
 
 ### `constructor()`
 

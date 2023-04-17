@@ -9,8 +9,8 @@ mod events;
 mod interface;
 mod utils;
 
-use ::errors::{AccessControlError, ExecutionError, InitError};
-use ::events::{CancelEvent, ExecutedEvent, SetThresholdEvent, SetWeightEvent, TransferEvent};
+use ::errors::{ExecutionError, InitError};
+use ::events::{ExecutedEvent, SetThresholdEvent, SetWeightEvent, TransferEvent};
 use ::interface::{Info, MultiSignatureWallet};
 use ::data_structures::{signatures::SignatureInfo, user::User};
 use std::{auth::msg_sender, context::this_balance, token::transfer};
@@ -33,22 +33,6 @@ storage {
 }
 
 impl MultiSignatureWallet for Contract {
-    #[storage(read, write)]
-    fn cancel_transaction() {
-        let sender = match msg_sender().unwrap() {
-            Identity::Address(address) => address.value,
-            Identity::ContractId(asset_id) => asset_id.value,
-        };
-        require(storage.weighting.get(sender).unwrap_or(0) > 0, AccessControlError::CanOnlyBeAccessedByAnOwner);
-
-        storage.nonce += 1;
-
-        log(CancelEvent {
-            cancelled_nonce: storage.nonce - 1,
-            user: sender,
-        });
-    }
-
     #[storage(read, write)]
     fn constructor(users: Vec<User>) {
         require(storage.nonce == 0, InitError::CannotReinitialize);
