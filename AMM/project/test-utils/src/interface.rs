@@ -134,7 +134,7 @@ pub mod exchange {
         contract
             .methods()
             .deposit()
-            .call_params(CallParameters::new(amount, asset, 0))
+            .call_params(CallParameters::new(amount, asset, 1_000_000))
             .unwrap()
             .call()
             .await
@@ -153,7 +153,11 @@ pub mod exchange {
         let mut call_handler = contract
             .methods()
             .remove_liquidity(min_asset_a, min_asset_b, deadline)
-            .call_params(CallParameters::new(amount, AssetId::new(*exchange_id), 0))
+            .call_params(CallParameters::new(
+                amount,
+                AssetId::new(*exchange_id),
+                1_000_000,
+            ))
             .unwrap()
             .append_variable_outputs(2);
 
@@ -181,7 +185,7 @@ pub mod exchange {
         let mut call_handler = contract
             .methods()
             .swap_exact_input(min_output, deadline)
-            .call_params(CallParameters::new(input_amount, input_asset, 0))
+            .call_params(CallParameters::new(input_amount, input_asset, 1_000_000))
             .unwrap()
             .append_variable_outputs(1);
 
@@ -209,7 +213,7 @@ pub mod exchange {
         let mut call_handler = contract
             .methods()
             .swap_exact_output(output, deadline)
-            .call_params(CallParameters::new(input_amount, input_asset, 0))
+            .call_params(CallParameters::new(input_amount, input_asset, 1_000_000))
             .unwrap()
             .append_variable_outputs(2);
 

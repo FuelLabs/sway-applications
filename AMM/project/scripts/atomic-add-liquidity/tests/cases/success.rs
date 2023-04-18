@@ -1,5 +1,5 @@
 use crate::utils::{expected_liquidity, setup};
-use fuels::prelude::{CallParameters, ContractId, TxParameters};
+use fuels::prelude::{ContractId, TxParameters};
 use test_utils::{
     data_structures::LiquidityParameters as TestLiquidityParameters,
     interface::{
@@ -114,8 +114,7 @@ async fn adds_liquidity_to_make_b_more_valuable() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        // .call_params(CallParameters::default().set_gas_forwarded(1_000_000))
-        .tx_params(TxParameters::new(0, 10*SCRIPT_GAS_LIMIT, 0))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()

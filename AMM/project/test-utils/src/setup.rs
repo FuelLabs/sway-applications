@@ -147,7 +147,9 @@ pub mod common {
     }
 
     pub async fn exchange_bytecode_root() -> ContractId {
-        let exchange_contract = Contract::load_from(EXCHANGE_CONTRACT_BINARY_PATH, LoadConfiguration::default()).unwrap();
+        let exchange_contract =
+            Contract::load_from(EXCHANGE_CONTRACT_BINARY_PATH, LoadConfiguration::default())
+                .unwrap();
         (*exchange_contract.code_root()).into()
     }
 
@@ -265,11 +267,9 @@ pub mod scripts {
 
         let input_coins: Vec<Input> = coins
             .iter()
-            .map(|coin| {
-                match coin {
-                    Resource::Coin(_) => Input::resource_signed(coin.clone(), 0),
-                    _ => panic!("Resource type does not match"),
-                }
+            .map(|coin| match coin {
+                Resource::Coin(_) => Input::resource_signed(coin.clone(), 0),
+                _ => panic!("Resource type does not match"),
             })
             .collect();
 
