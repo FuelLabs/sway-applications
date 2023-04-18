@@ -21,7 +21,9 @@ mod success {
 
         // adding pair to the AMM contract in the same order as the constructed exchange contract
         let response = add_pool(&amm_instance, pair, exchange.id).await;
-        let log = response.get_logs_with_type::<RegisterPoolEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<RegisterPoolEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
@@ -50,7 +52,9 @@ mod success {
 
         // adding pair to the AMM contract in the reverse order as the constructed exchange contract
         let response = add_pool(&amm_instance, pair, exchange.id).await;
-        let log = response.get_logs_with_type::<RegisterPoolEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<RegisterPoolEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         let exchange_contract_id_in_storage = pool(&amm_instance, pair).await;
@@ -84,11 +88,15 @@ mod success {
         .await;
 
         let response = add_pool(&amm_instance, pair_1, exchange_1.id).await;
-        let log = response.get_logs_with_type::<RegisterPoolEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<RegisterPoolEvent>()
+            .unwrap();
         let event_1 = log.get(0).unwrap();
 
         let response = add_pool(&amm_instance, pair_2, exchange_2.id).await;
-        let log = response.get_logs_with_type::<RegisterPoolEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<RegisterPoolEvent>()
+            .unwrap();
         let event_2 = log.get(0).unwrap();
 
         let exchange_contract_id_in_storage_of_pair_1 = pool(&amm_instance, pair_1).await;

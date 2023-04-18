@@ -1,4 +1,4 @@
-use fuels::prelude::{AssetId, ContractId, TxParameters};
+use fuels::prelude::{AssetId, ContractId, TxParameters, WalletUnlocked};
 use test_utils::{
     data_structures::{
         AMMContract, SwapParameters, SwapResult, TransactionParameters, WalletAssetConfiguration,
@@ -60,7 +60,7 @@ pub async fn expected_and_actual_output(swap_parameters: SwapParameters) -> Swap
         .set_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap()
@@ -70,7 +70,7 @@ pub async fn expected_and_actual_output(swap_parameters: SwapParameters) -> Swap
 }
 
 pub async fn setup() -> (
-    SwapExactInputScript,
+    SwapExactInputScript<WalletUnlocked>,
     AMMContract,
     Vec<AssetId>,
     TransactionParameters,
@@ -84,7 +84,7 @@ pub async fn setup() -> (
     setup_exchange_contracts(&wallet, &provider, &mut amm, &asset_ids).await;
 
     let mut contracts = vec![amm.id];
-    contracts.extend(amm.pools.values().into_iter().map(|exchange| exchange.id));
+    contracts.extend(amm.pools.values().map(|exchange| exchange.id));
 
     let transaction_parameters =
         transaction_inputs_outputs(&wallet, &provider, &asset_ids, None).await;

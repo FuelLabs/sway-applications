@@ -1,10 +1,10 @@
 contract;
 
-dep errors;
-dep events;
+mod errors;
+mod events;
 
-use errors::InitError;
-use events::{RegisterPoolEvent, SetExchangeBytecodeRootEvent};
+use ::errors::InitError;
+use ::events::{RegisterPoolEvent, SetExchangeBytecodeRootEvent};
 use libraries::{AMM, Exchange};
 use std::{constants::BASE_ASSET_ID, external::bytecode_root};
 

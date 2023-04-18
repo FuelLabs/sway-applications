@@ -80,7 +80,7 @@ async fn when_deadline_passed() {
         .set_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap();
@@ -108,7 +108,7 @@ async fn when_maximum_input_not_satisfied() {
         .set_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(None, Some(SCRIPT_GAS_LIMIT), None))
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
         .call()
         .await
         .unwrap();

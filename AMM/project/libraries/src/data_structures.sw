@@ -1,4 +1,4 @@
-library data_structures;
+library;
 
 pub struct Asset {
     /// Identifier of asset
