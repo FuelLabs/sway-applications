@@ -1,10 +1,6 @@
-library auction;
+library;
 
-dep auction_asset;
-dep state;
-
-use auction_asset::AuctionAsset;
-use state::State;
+use ::data_structures::{auction_asset::AuctionAsset, state::State};
 
 pub struct Auction {
     /// The asset which will be accepted in return for the selling asset.
@@ -37,7 +33,7 @@ impl Auction {
         Auction {
             bid_asset,
             end_block,
-            highest_bidder: Option::None(),
+            highest_bidder: Option::None,
             initial_price,
             reserve_price,
             sell_asset,

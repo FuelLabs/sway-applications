@@ -1,7 +1,10 @@
 use crate::utils::setup::{Auction, AuctionAsset, EnglishAuction};
-use fuels::types::Identity;
+use fuels::{prelude::WalletUnlocked, types::Identity};
 
-pub(crate) async fn auction_info(auction_id: u64, contract: &EnglishAuction) -> Option<Auction> {
+pub(crate) async fn auction_info(
+    auction_id: u64,
+    contract: &EnglishAuction<WalletUnlocked>,
+) -> Option<Auction> {
     contract
         .methods()
         .auction_info(auction_id)
@@ -13,7 +16,7 @@ pub(crate) async fn auction_info(auction_id: u64, contract: &EnglishAuction) -> 
 
 pub(crate) async fn deposit_balance(
     auction_id: u64,
-    contract: &EnglishAuction,
+    contract: &EnglishAuction<WalletUnlocked>,
     identity: Identity,
 ) -> Option<AuctionAsset> {
     contract
@@ -25,7 +28,7 @@ pub(crate) async fn deposit_balance(
         .value
 }
 
-pub(crate) async fn total_auctions(contract: &EnglishAuction) -> u64 {
+pub(crate) async fn total_auctions(contract: &EnglishAuction<WalletUnlocked>) -> u64 {
     contract
         .methods()
         .total_auctions()

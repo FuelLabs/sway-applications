@@ -56,7 +56,7 @@ mod success {
         assert!(matches!(arbiter_proposal(&seller, 0).await, None));
 
         let log = response
-            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .decode_logs_with_type::<AcceptedArbiterEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
@@ -134,10 +134,10 @@ mod success {
         assert_eq!(arbiter_obj2, escrows(&seller, 1).await.unwrap().arbiter,);
 
         let log1 = response1
-            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .decode_logs_with_type::<AcceptedArbiterEvent>()
             .unwrap();
         let log2 = response2
-            .get_logs_with_type::<AcceptedArbiterEvent>()
+            .decode_logs_with_type::<AcceptedArbiterEvent>()
             .unwrap();
 
         let event1 = log1.get(0).unwrap();

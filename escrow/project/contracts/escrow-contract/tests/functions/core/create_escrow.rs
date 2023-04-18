@@ -59,7 +59,9 @@ mod success {
             .await
         );
 
-        let log = response.get_logs_with_type::<CreatedEscrowEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<CreatedEscrowEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -132,7 +134,9 @@ mod success {
             .await
         );
 
-        let log = response.get_logs_with_type::<CreatedEscrowEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<CreatedEscrowEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -238,10 +242,10 @@ mod success {
         );
 
         let log1 = response1
-            .get_logs_with_type::<CreatedEscrowEvent>()
+            .decode_logs_with_type::<CreatedEscrowEvent>()
             .unwrap();
         let log2 = response2
-            .get_logs_with_type::<CreatedEscrowEvent>()
+            .decode_logs_with_type::<CreatedEscrowEvent>()
             .unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();

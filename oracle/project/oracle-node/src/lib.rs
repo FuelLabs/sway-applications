@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use fuels::tx::Receipt;
+use fuels::{prelude::WalletUnlocked, tx::Receipt};
 use futures::executor::block_on;
 use reqwest::{Client, Url};
 use serde::Deserialize;
@@ -93,7 +93,7 @@ pub trait PriceUpdater {
     fn set_price(&self, price: u64) -> anyhow::Result<Vec<Receipt>>;
 }
 
-impl PriceUpdater for utils::Oracle {
+impl PriceUpdater for utils::Oracle<WalletUnlocked> {
     /// Set the price for the oracle contract and return the log receipts
     fn set_price(&self, price: u64) -> anyhow::Result<Vec<Receipt>> {
         let methods = self.methods();

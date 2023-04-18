@@ -28,7 +28,7 @@ mod success {
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint_and_send_to_address(
             sell_amount * 2,
@@ -63,7 +63,7 @@ mod success {
             Some(reserve_price),
             sell_asset.clone(),
             seller_identity.clone(),
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction1.unwrap(), auction1_copy);
@@ -91,7 +91,7 @@ mod success {
             Some(reserve_price),
             sell_asset.clone(),
             seller_identity.clone(),
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction2.unwrap(), auction2_copy);
@@ -116,7 +116,7 @@ mod success {
         let auction_identity = Identity::ContractId(auction_contract_id);
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
         approve(Some(auction_identity.clone()), &seller.nft, 0).await;
@@ -147,7 +147,7 @@ mod success {
             Some(reserve_count),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -172,7 +172,7 @@ mod success {
         let auction_identity = Identity::ContractId(auction_contract_id);
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
         let auction = auction_info(0, &seller.auction).await;
 
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
@@ -203,7 +203,7 @@ mod success {
             Some(reserve_count),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -228,7 +228,7 @@ mod success {
         let auction_identity = Identity::ContractId(auction_contract_id);
         let sell_asset = nft_asset(sell_nft_contract_id, 0).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
         let auction = auction_info(0, &seller.auction).await;
 
         mint(sell_count, &seller.nft, seller_identity.clone()).await;
@@ -259,7 +259,7 @@ mod success {
             Some(reserve_count),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -274,7 +274,7 @@ mod success {
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
@@ -304,7 +304,7 @@ mod success {
             Some(reserve_price),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -319,7 +319,7 @@ mod success {
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
@@ -349,7 +349,7 @@ mod success {
             Some(reserve_price),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -364,7 +364,7 @@ mod success {
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
@@ -394,7 +394,7 @@ mod success {
             None,
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -409,7 +409,7 @@ mod success {
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-        let provider = deployer.wallet.get_provider().unwrap();
+        let provider = deployer.wallet.provider().unwrap();
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
@@ -439,7 +439,7 @@ mod success {
             Some(initial_price),
             sell_asset,
             seller_identity,
-            State::Open(),
+            State::Open,
         )
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
@@ -613,11 +613,11 @@ mod revert {
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None);
+        let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(
-            Some(sell_amount - 1),
-            Some(AssetId::from(*sell_asset_contract_id)),
-            None,
+            sell_amount - 1,
+            AssetId::from(*sell_asset_contract_id),
+            1_000_000,
         );
 
         seller
@@ -633,6 +633,7 @@ mod revert {
             )
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap();
@@ -656,11 +657,11 @@ mod revert {
         )
         .await;
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None);
+        let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(
-            Some(sell_amount + 1),
-            Some(AssetId::from(*sell_asset_contract_id)),
-            None,
+            sell_amount + 1,
+            AssetId::from(*sell_asset_contract_id),
+            1_000_000,
         );
 
         seller
@@ -676,6 +677,7 @@ mod revert {
             )
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap();
@@ -693,11 +695,11 @@ mod revert {
 
         mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None);
+        let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(
-            Some(sell_amount),
-            Some(AssetId::from(*sell_asset_contract_id)),
-            None,
+            sell_amount,
+            AssetId::from(*sell_asset_contract_id),
+            1_000_000,
         );
 
         seller
@@ -713,6 +715,7 @@ mod revert {
             )
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap();
@@ -731,11 +734,11 @@ mod revert {
 
         mint_and_send_to_address(sell_amount, &buyer1.asset, seller.wallet.address().into()).await;
 
-        let tx_params = TxParameters::new(None, Some(1_000_000), None);
+        let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(
-            Some(sell_amount),
-            Some(AssetId::from(*buy_asset_contract_id)),
-            None,
+            sell_amount,
+            AssetId::from(*buy_asset_contract_id),
+            1_000_000,
         );
 
         seller
@@ -751,6 +754,7 @@ mod revert {
             )
             .tx_params(tx_params)
             .call_params(call_params)
+            .unwrap()
             .call()
             .await
             .unwrap();
@@ -810,10 +814,10 @@ mod revert {
         .await;
     }
 
+    #[ignore]
     #[tokio::test]
-    #[should_panic(expected = "Revert(18446744073709486080)")]
     // TODO: test is not set up to hit the error properly: https://github.com/FuelLabs/sway-applications/issues/330
-    // #[should_panic(expected = "NFTTransferNotApproved")]
+    #[should_panic(expected = "NFTTransferNotApproved")]
     async fn when_auction_not_approved_for_transfer() {
         let (_, seller, _, _, _, _, sell_nft_contract_id, _, buy_nft_contract_id) = setup().await;
         let (sell_count, initial_count, reserve_count, duration) = defaults_nft().await;

@@ -1,9 +1,5 @@
 library;
 
-pub enum AccessControlError {
-    CanOnlyBeAccessedByAnOwner: (),
-}
-
 pub enum ExecutionError {
     IncorrectSignerOrdering: (),
     InsufficientAssetAmount: (),

@@ -1,6 +1,6 @@
 use crate::utils::setup::{AuctionAsset, EnglishAuction, MyAsset, Nft};
 use fuels::{
-    prelude::{Address, AssetId, CallParameters, TxParameters},
+    prelude::{Address, AssetId, CallParameters, TxParameters, WalletUnlocked},
     programs::call_response::FuelCallResponse,
     types::Identity,
 };
@@ -10,7 +10,7 @@ pub(crate) mod asset {
 
     pub(crate) async fn mint_and_send_to_address(
         amount: u64,
-        contract: &MyAsset,
+        contract: &MyAsset<WalletUnlocked>,
         recipient: Address,
     ) -> FuelCallResponse<()> {
         contract
@@ -29,7 +29,7 @@ pub(crate) mod auction {
     pub(crate) async fn bid(
         auction_id: u64,
         bid_asset: AuctionAsset,
-        contract: &EnglishAuction,
+        contract: &EnglishAuction<WalletUnlocked>,
     ) -> FuelCallResponse<()> {
         match bid_asset {
             AuctionAsset::NFTAsset(bid_asset) => contract
@@ -40,11 +40,11 @@ pub(crate) mod auction {
                 .await
                 .unwrap(),
             AuctionAsset::TokenAsset(bid_asset) => {
-                let tx_params = TxParameters::new(None, Some(1_000_000), None);
+                let tx_params = TxParameters::new(0, 2_000_000, 0);
                 let call_params = CallParameters::new(
-                    Some(bid_asset.amount),
-                    Some(AssetId::from(*bid_asset.asset_id)),
-                    None,
+                    bid_asset.amount,
+                    AssetId::from(*bid_asset.asset_id),
+                    1_000_000,
                 );
 
                 contract
@@ -52,6 +52,7 @@ pub(crate) mod auction {
                     .bid(auction_id, AuctionAsset::TokenAsset(bid_asset.clone()))
                     .tx_params(tx_params)
                     .call_params(call_params)
+                    .unwrap()
                     .call()
                     .await
                     .unwrap()
@@ -59,13 +60,16 @@ pub(crate) mod auction {
         }
     }
 
-    pub(crate) async fn cancel(auction_id: u64, contract: &EnglishAuction) -> FuelCallResponse<()> {
+    pub(crate) async fn cancel(
+        auction_id: u64,
+        contract: &EnglishAuction<WalletUnlocked>,
+    ) -> FuelCallResponse<()> {
         contract.methods().cancel(auction_id).call().await.unwrap()
     }
 
     pub(crate) async fn create(
         bid_asset: AuctionAsset,
-        contract: &EnglishAuction,
+        contract: &EnglishAuction<WalletUnlocked>,
         duration: u64,
         initial_price: u64,
         reserve_price: Option<u64>,
@@ -91,11 +95,11 @@ pub(crate) mod auction {
                     .value
             }
             AuctionAsset::TokenAsset(sell_asset) => {
-                let tx_params = TxParameters::new(None, Some(1_000_000), None);
+                let tx_params = TxParameters::new(0, 2_000_000, 0);
                 let call_params = CallParameters::new(
-                    Some(sell_asset.amount),
-                    Some(AssetId::from(*sell_asset.asset_id)),
-                    None,
+                    sell_asset.amount,
+                    AssetId::from(*sell_asset.asset_id),
+                    1_000_000,
                 );
 
                 contract
@@ -110,6 +114,7 @@ pub(crate) mod auction {
                     )
                     .tx_params(tx_params)
                     .call_params(call_params)
+                    .unwrap()
                     .call()
                     .await
                     .unwrap()
@@ -120,7 +125,7 @@ pub(crate) mod auction {
 
     pub(crate) async fn withdraw(
         auction_id: u64,
-        contract: &EnglishAuction,
+        contract: &EnglishAuction<WalletUnlocked>,
         withdrawing_asset: AuctionAsset,
     ) -> FuelCallResponse<()> {
         match withdrawing_asset {
@@ -147,7 +152,7 @@ pub(crate) mod nft {
 
     pub(crate) async fn approve(
         approved: Option<Identity>,
-        contract: &Nft,
+        contract: &Nft<WalletUnlocked>,
         token_id: u64,
     ) -> FuelCallResponse<()> {
         contract
@@ -158,11 +163,18 @@ pub(crate) mod nft {
             .unwrap()
     }
 
-    pub(crate) async fn mint(amount: u64, contract: &Nft, owner: Identity) -> FuelCallResponse<()> {
+    pub(crate) async fn mint(
+        amount: u64,
+        contract: &Nft<WalletUnlocked>,
+        owner: Identity,
+    ) -> FuelCallResponse<()> {
         contract.methods().mint(amount, owner).call().await.unwrap()
     }
 
-    pub(crate) async fn owner_of(contract: &Nft, token_id: u64) -> Option<Identity> {
+    pub(crate) async fn owner_of(
+        contract: &Nft<WalletUnlocked>,
+        token_id: u64,
+    ) -> Option<Identity> {
         contract
             .methods()
             .owner_of(token_id)
@@ -174,7 +186,7 @@ pub(crate) mod nft {
 
     pub(crate) async fn set_approval_for_all(
         approve: bool,
-        contract: &Nft,
+        contract: &Nft<WalletUnlocked>,
         operator: Identity,
     ) -> FuelCallResponse<()> {
         contract

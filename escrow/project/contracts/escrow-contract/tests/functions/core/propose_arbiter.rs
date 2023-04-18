@@ -45,7 +45,7 @@ mod success {
         assert_eq!(arbiter_proposal(&seller, 0).await.unwrap(), arbiter_obj);
 
         let log = response
-            .get_logs_with_type::<ProposedArbiterEvent>()
+            .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
@@ -106,10 +106,10 @@ mod success {
         assert_eq!(arbiter_proposal(&seller, 0).await.unwrap(), arbiter_obj2);
 
         let log1 = response1
-            .get_logs_with_type::<ProposedArbiterEvent>()
+            .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
         let log2 = response2
-            .get_logs_with_type::<ProposedArbiterEvent>()
+            .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();
@@ -185,10 +185,10 @@ mod success {
         );
 
         let log1 = response1
-            .get_logs_with_type::<ProposedArbiterEvent>()
+            .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
         let log2 = response2
-            .get_logs_with_type::<ProposedArbiterEvent>()
+            .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();
@@ -291,16 +291,16 @@ mod success {
         );
 
         let log1 = response1
-            .get_logs_with_type::<ProposedArbiterEvent>()
+            .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
         let log2 = response2
-            .get_logs_with_type::<ProposedArbiterEvent>()
+            .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
         let log3 = response3
-            .get_logs_with_type::<ProposedArbiterEvent>()
+            .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
         let log4 = response4
-            .get_logs_with_type::<ProposedArbiterEvent>()
+            .decode_logs_with_type::<ProposedArbiterEvent>()
             .unwrap();
         let event1 = log1.get(0).unwrap();
         let event2 = log2.get(0).unwrap();
@@ -470,11 +470,11 @@ mod revert {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-        let tx_params = TxParameters::new(None, Some(10_000_000), None);
+        let tx_params = TxParameters::new(0, 10_000_000, 0);
         let call_params = CallParameters::new(
-            Some(arbiter_obj.fee_amount - 1),
-            Some(AssetId::from(*arbiter_obj.asset)),
-            Some(10_000_000),
+            arbiter_obj.fee_amount - 1,
+            AssetId::from(*arbiter_obj.asset),
+            10_000_000,
         );
 
         mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
@@ -514,11 +514,11 @@ mod revert {
 
         let arbiter_obj_unequal =
             create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
-        let tx_params = TxParameters::new(None, Some(1_000_000), None);
+        let tx_params = TxParameters::new(0, 1_000_000, 0);
         let call_params = CallParameters::new(
-            Some(arbiter_obj_unequal.fee_amount),
-            Some(AssetId::from(*id)),
-            Some(1_000_000),
+            arbiter_obj_unequal.fee_amount,
+            AssetId::from(*id),
+            1_000_000,
         );
 
         mint(&seller, defaults.asset_amount, &defaults.asset).await;

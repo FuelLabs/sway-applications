@@ -1,10 +1,6 @@
-library events;
+library;
 
-dep data_structures/auction_asset;
-dep data_structures/auction;
-
-use auction_asset::AuctionAsset;
-use auction::Auction;
+use ::data_structures::{auction::Auction, auction_asset::AuctionAsset};
 
 pub struct CancelAuctionEvent {
     auction_id: u64,

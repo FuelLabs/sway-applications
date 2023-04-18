@@ -1,8 +1,6 @@
-library interface;
+library;
 
-dep data_structures;
-
-use data_structures::ClaimState;
+use ::data_structures::ClaimState;
 
 abi AirdropDistributor {
     /// This function will let users claim their airdrop.
@@ -50,7 +48,8 @@ abi AirdropDistributor {
     ///
     /// * When the constructor has already been called.
     /// * When no tokens are sent to the airdrop contract.
-    #[payable, storage(read, write)]
+    #[payable]
+    #[storage(read, write)]
     fn constructor(admin: Identity, claim_time: u64, merkle_root: b256, num_leaves: u64);
 }
 

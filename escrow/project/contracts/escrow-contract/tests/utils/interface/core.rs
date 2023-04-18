@@ -25,9 +25,8 @@ pub(crate) async fn create_escrow(
     caller: &User,
     deadline: u64,
 ) -> FuelCallResponse<()> {
-    let tx_params = TxParameters::new(None, Some(1_000_000), None);
-    let call_params =
-        CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(1_000_000));
+    let tx_params = TxParameters::new(0, 2_000_000, 0);
+    let call_params = CallParameters::new(amount, AssetId::from(**asset), 1_000_000);
 
     caller
         .contract
@@ -52,9 +51,8 @@ pub(crate) async fn deposit(
     caller: &User,
     identifier: u64,
 ) -> FuelCallResponse<()> {
-    let tx_params = TxParameters::new(None, Some(1_000_000), None);
-    let call_params =
-        CallParameters::new(Some(amount), Some(AssetId::from(**asset)), Some(1_000_000));
+    let tx_params = TxParameters::new(0, 2_000_000, 0);
+    let call_params = CallParameters::new(amount, AssetId::from(**asset), 1_000_000);
 
     caller
         .contract
@@ -83,12 +81,9 @@ pub(crate) async fn propose_arbiter(
     caller: &User,
     identifier: u64,
 ) -> FuelCallResponse<()> {
-    let tx_params = TxParameters::new(None, Some(1_000_000), None);
-    let call_params = CallParameters::new(
-        Some(arbiter.fee_amount),
-        Some(AssetId::from(*arbiter.asset)),
-        Some(1_000_000),
-    );
+    let tx_params = TxParameters::new(0, 2_000_000, 0);
+    let call_params =
+        CallParameters::new(arbiter.fee_amount, AssetId::from(*arbiter.asset), 1_000_000);
 
     caller
         .contract
