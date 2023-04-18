@@ -18,6 +18,6 @@ mod revert {
     // #[should_panic(expected = "SomeErrorMessage")]
     async fn fail() {
         let (_instance, _wallet) = setup().await;
-        assert!(false);
+        panic!();
     }
 }
