@@ -139,7 +139,7 @@ pub(crate) async fn build_tree_manual(
         let hash_leaf_data: Bytes32 = hasher.finalize().try_into().unwrap();
 
         let mut hasher2 = Sha256::new();
-        hasher2.update(&[LEAF]);
+        hasher2.update([LEAF]);
         hasher2.update(hash_leaf_data);
         let hash2_leaf: Bytes32 = hasher2.finalize().try_into().unwrap();
 
@@ -158,7 +158,7 @@ pub(crate) async fn build_tree_manual(
         // Create new depth
         while iterator < current_num_leaves {
             let mut hasher = Sha256::new();
-            hasher.update(&[NODE]);
+            hasher.update([NODE]);
             hasher.update(nodes[iterator].hash);
             hasher.update(nodes[iterator + 1].hash);
             let hash: Bytes32 = hasher.finalize().try_into().unwrap();
