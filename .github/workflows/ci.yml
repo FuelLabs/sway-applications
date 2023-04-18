@@ -19,15 +19,17 @@ jobs:
   lint-toml-files:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_VERSION }}
+
       - name: Install Cargo.toml linter
-        uses: baptiste0928/cargo-install@v1
+        uses: baptiste0928/cargo-install@v2
         with:
           crate: cargo-toml-lint
-          version: "0.1"
+          version: "0.1.1"
+
       - name: Run Cargo.toml linter
         run: git ls-files | grep Cargo.toml$ | xargs --verbose -n 1 cargo-toml-lint
 
@@ -57,26 +59,22 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{ env.RUST_VERSION }}
-          override: true
+          components: rustfmt
 
       - name: Init cache
-        uses: Swatinem/rust-cache@v1
-
-      - name: Install rustfmt
-        run: rustup component add rustfmt
+        uses: Swatinem/rust-cache@v2
 
       - name: Install Fuel toolchain
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
           toolchain: latest
-          date: 2023-04-10
+          date: 2023-04-12
 
       - name: Check Sway formatting
         run: |
@@ -107,33 +105,24 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{ env.RUST_VERSION }}
-          override: true
 
       - name: Init cache
-        uses: Swatinem/rust-cache@v1
-
-      - name: Install rustfmt
-        run: rustup component add rustfmt
+        uses: Swatinem/rust-cache@v2
 
       - name: Install Fuel toolchain
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
           toolchain: latest
-          date: 2023-04-10
+          date: 2023-04-12
 
       - name: Check Sway formatting
-        run: |
-          cd ${{ matrix.project }}
-          forc fmt --check
+        run: forc fmt --check --path ${{ matrix.project }}
 
       - name: Build Sway
-        run: |
-          cd ${{ matrix.project }}
-          forc build --locked
+        run: forc build --locked --path ${{ matrix.project }}
