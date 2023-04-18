@@ -35,6 +35,7 @@ pub(crate) struct Metadata {
     pub(crate) wallet: WalletUnlocked,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn create_auction_copy(
     bid_asset: AuctionAsset,
     highest_bidder: Option<Identity>,
@@ -213,9 +214,9 @@ async fn user(
     nft_id: Bech32ContractId,
 ) -> Metadata {
     Metadata {
-        asset: MyAsset::new(asset_id.clone(), user_wallet.clone()),
-        auction: EnglishAuction::new(auction_id.clone(), user_wallet.clone()),
-        nft: Nft::new(nft_id.clone(), user_wallet.clone()),
+        asset: MyAsset::new(asset_id, user_wallet.clone()),
+        auction: EnglishAuction::new(auction_id, user_wallet.clone()),
+        nft: Nft::new(nft_id, user_wallet.clone()),
         wallet: user_wallet,
     }
 }
