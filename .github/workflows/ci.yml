@@ -90,7 +90,7 @@ jobs:
           cargo fmt --verbose --check
 
       - name: Check Clippy Linter
-        run: /
+        run: |
           cd ${{ matrix.project }}/project
           cargo clippy --all-features --all-targets -- -D warnings
 
