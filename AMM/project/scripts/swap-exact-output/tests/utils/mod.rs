@@ -84,7 +84,7 @@ pub async fn setup() -> (
     setup_exchange_contracts(&wallet, &provider, &mut amm, &asset_ids).await;
 
     let mut contracts = vec![amm.id];
-    contracts.extend(amm.pools.values().into_iter().map(|exchange| exchange.id));
+    contracts.extend(amm.pools.values().map(|exchange| exchange.id));
 
     let transaction_parameters =
         transaction_inputs_outputs(&wallet, &provider, &asset_ids, None).await;
