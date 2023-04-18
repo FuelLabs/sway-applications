@@ -16,7 +16,7 @@ mod success {
 
         let response = initialize(&amm_instance, calculated_bytecode_root).await;
         let log = response
-            .get_logs_with_type::<SetExchangeBytecodeRootEvent>()
+            .decode_logs_with_type::<SetExchangeBytecodeRootEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 

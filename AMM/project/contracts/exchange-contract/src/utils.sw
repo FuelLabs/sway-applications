@@ -1,10 +1,8 @@
-library utils;
-
-dep errors;
+library;
 
 use core::primitives::*;
 use libraries::data_structures::{Asset, AssetPair};
-use errors::{InitError, InputError};
+use ::errors::{InitError, InputError};
 use std::u128::U128;
 
 fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {

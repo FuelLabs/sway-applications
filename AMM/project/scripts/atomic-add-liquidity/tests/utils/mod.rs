@@ -1,3 +1,4 @@
+use fuels::prelude::WalletUnlocked;
 use test_utils::{
     data_structures::{
         ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
@@ -72,7 +73,7 @@ pub async fn setup(
     deposit_amounts: (u64, u64),
     liquidity: u64,
 ) -> (
-    AtomicAddLiquidityScript,
+    AtomicAddLiquidityScript<WalletUnlocked>,
     ExchangeContract,
     LiquidityParameters,
     TransactionParameters,

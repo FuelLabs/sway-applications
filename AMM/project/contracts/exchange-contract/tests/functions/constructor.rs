@@ -12,7 +12,7 @@ mod success {
 
         let response = constructor(&exchange_instance, (assets.asset_1, assets.asset_2)).await;
         let log = response
-            .get_logs_with_type::<DefineAssetPairEvent>()
+            .decode_logs_with_type::<DefineAssetPairEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 

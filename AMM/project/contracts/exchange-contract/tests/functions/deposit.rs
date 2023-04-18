@@ -3,7 +3,7 @@ use test_utils::interface::exchange::deposit;
 
 mod success {
     use super::*;
-    use fuels::prelude::ContractId;
+    use fuels::{accounts::ViewOnlyAccount, prelude::ContractId};
     use test_utils::interface::{exchange::balance, Asset, DepositEvent};
 
     #[tokio::test]
@@ -16,7 +16,7 @@ mod success {
         let initial_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
 
         let response = deposit(&exchange.instance, deposit_amount, exchange.pair.0).await;
-        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
+        let log = response.decode_logs_with_type::<DepositEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;
@@ -55,7 +55,7 @@ mod success {
         let contract_balance_after_deposit = balance(&exchange.instance, exchange.pair.0).await;
 
         let response = deposit(&exchange.instance, second_deposit_amount, exchange.pair.0).await;
-        let log = response.get_logs_with_type::<DepositEvent>().unwrap();
+        let log = response.decode_logs_with_type::<DepositEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         let final_contract_balance = balance(&exchange.instance, exchange.pair.0).await;

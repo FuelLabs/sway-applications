@@ -33,7 +33,7 @@ mod success {
         )
         .await;
         let log = response
-            .get_logs_with_type::<RemoveLiquidityEvent>()
+            .decode_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
@@ -125,7 +125,7 @@ mod success {
         )
         .await;
         let log = response
-            .get_logs_with_type::<RemoveLiquidityEvent>()
+            .decode_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
@@ -217,7 +217,7 @@ mod success {
         )
         .await;
         let log = response
-            .get_logs_with_type::<RemoveLiquidityEvent>()
+            .decode_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 
@@ -309,7 +309,7 @@ mod success {
         )
         .await;
         let log = response
-            .get_logs_with_type::<RemoveLiquidityEvent>()
+            .decode_logs_with_type::<RemoveLiquidityEvent>()
             .unwrap();
         let event = log.get(0).unwrap();
 

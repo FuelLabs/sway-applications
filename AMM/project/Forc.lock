@@ -16,7 +16,7 @@ dependencies = [
 
 [[package]]
 name = 'core'
-source = 'path+from-root-520DF464213917E2'
+source = 'path+from-root-FDF4A5DCC6ECD181'
 
 [[package]]
 name = 'exchange-contract'
@@ -41,7 +41,7 @@ dependencies = [
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.35.1#1f9debfaf9b85d41f3b704c45633eb4daddcb594'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.37.0#607ac50176db8bef936f91bacf435d0ea37d041e'
 dependencies = ['core']
 
 [[package]]

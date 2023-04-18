@@ -1,8 +1,8 @@
-library interface;
+library;
 
-dep data_structures;
+mod data_structures;
 
-use data_structures::{
+use ::data_structures::{
     Asset,
     PoolInfo,
     PreviewAddLiquidityInfo,

@@ -1,4 +1,4 @@
-library events;
+library;
 
 use libraries::data_structures::{Asset, AssetPair};
 

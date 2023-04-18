@@ -1,4 +1,7 @@
-use fuels::prelude::{AssetId, WalletUnlocked};
+use fuels::{
+    accounts::ViewOnlyAccount,
+    prelude::{AssetId, WalletUnlocked},
+};
 use test_utils::{
     data_structures::{
         ExchangeContract, ExchangeContractConfiguration, LiquidityParameters,
@@ -78,7 +81,7 @@ pub async fn wallet_balances(
     }
 }
 
-pub async fn setup() -> (Exchange, WalletUnlocked, Assets, u64) {
+pub async fn setup() -> (Exchange<WalletUnlocked>, WalletUnlocked, Assets, u64) {
     let (wallet, asset_ids, provider) =
         setup_wallet_and_provider(&WalletAssetConfiguration::default()).await;
 

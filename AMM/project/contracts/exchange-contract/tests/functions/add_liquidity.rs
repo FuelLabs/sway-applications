@@ -48,7 +48,9 @@ mod success {
             false,
         )
         .await;
-        let log = response.get_logs_with_type::<AddLiquidityEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<AddLiquidityEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         let added_liquidity = response.value;
@@ -140,7 +142,9 @@ mod success {
         let response =
             deposit_and_add_liquidity_with_response(&second_liquidity_parameters, &exchange, true)
                 .await;
-        let log = response.get_logs_with_type::<AddLiquidityEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<AddLiquidityEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         let added_liquidity = response.value;
@@ -238,7 +242,9 @@ mod success {
         let response =
             deposit_and_add_liquidity_with_response(&second_liquidity_parameters, &exchange, true)
                 .await;
-        let log = response.get_logs_with_type::<AddLiquidityEvent>().unwrap();
+        let log = response
+            .decode_logs_with_type::<AddLiquidityEvent>()
+            .unwrap();
         let event = log.get(0).unwrap();
 
         let added_liquidity = response.value;

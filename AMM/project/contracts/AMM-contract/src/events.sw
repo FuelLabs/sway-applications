@@ -1,4 +1,4 @@
-library events;
+library;
 
 pub struct RegisterPoolEvent {
     /// The pair of asset identifiers that make up the pool

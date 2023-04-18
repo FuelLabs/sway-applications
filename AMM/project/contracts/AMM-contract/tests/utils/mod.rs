@@ -5,7 +5,9 @@ use test_utils::{
     setup::common::{deploy_amm, deploy_and_initialize_amm, setup_wallet_and_provider},
 };
 
-pub async fn setup(initialize: bool) -> (WalletUnlocked, AMM, Vec<(AssetId, AssetId)>) {
+pub async fn setup(
+    initialize: bool,
+) -> (WalletUnlocked, AMM<WalletUnlocked>, Vec<(AssetId, AssetId)>) {
     let (wallet, asset_ids, _provider) =
         setup_wallet_and_provider(&WalletAssetConfiguration::default()).await;
 
