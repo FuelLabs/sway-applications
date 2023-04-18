@@ -77,6 +77,7 @@ pub(crate) mod token_distributor {
             .unwrap()
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub(crate) async fn create(
         contract: &TokenDistributor<WalletUnlocked>,
         external_asset: ContractId,
