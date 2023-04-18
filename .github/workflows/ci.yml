@@ -64,6 +64,7 @@ jobs:
         with:
           profile: minimal
           toolchain: ${{ env.RUST_VERSION }}
+          components: clippy
           override: true
 
       - name: Init cache
@@ -87,6 +88,9 @@ jobs:
         run: |
           cd ${{ matrix.project }}/project
           cargo fmt --verbose --check
+
+      - name: Check Clippy Linter
+        run: cargo clippy --all-features --all-targets -- -D warnings
 
       - name: Build Sway
         run: |
