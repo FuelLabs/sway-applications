@@ -86,6 +86,11 @@ jobs:
           cd ${{ matrix.project }}/project
           cargo fmt --verbose --check
 
+      - name: Build Rust files
+        run: |
+          cd ${{ matrix.project }}/project
+          cargo build --locked
+
       - name: Check Clippy Linter
         run: |
           cd ${{ matrix.project }}/project
