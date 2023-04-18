@@ -65,7 +65,7 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_VERSION }}
-          components: rustfmt
+          components: clippy, rustfmt
 
       - name: Init cache
         uses: Swatinem/rust-cache@v2
@@ -90,6 +90,16 @@ jobs:
         run: |
           cd ${{ matrix.project }}/project
           forc build --locked
+
+      - name: Build Rust files
+        run: |
+          cd ${{ matrix.project }}/project
+          cargo build --locked
+
+      - name: Check Clippy Linter
+        run: |
+          cd ${{ matrix.project }}/project
+          cargo clippy --all-features --all-targets -- -D warnings
 
       - name: Run Rust tests
         run: |

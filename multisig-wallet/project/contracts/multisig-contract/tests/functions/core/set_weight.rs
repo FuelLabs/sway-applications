@@ -31,14 +31,14 @@ mod success {
         let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        let initial_weight = approval_weight(&deployer.contract, user.address.into())
+        let initial_weight = approval_weight(&deployer.contract, user.address)
             .await
             .value;
 
         let response = set_weight(&deployer.contract, None, signatures, user.clone()).await;
 
         let final_nonce = nonce(&deployer.contract).await.value;
-        let final_weight = approval_weight(&deployer.contract, user.address.into())
+        let final_weight = approval_weight(&deployer.contract, user.address)
             .await
             .value;
 

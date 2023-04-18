@@ -14,7 +14,7 @@ pub(crate) async fn constructor(
     contract.methods().constructor(users).call().await.unwrap()
 }
 
-pub(crate) async fn execute_transaction(
+pub(crate) async fn _execute_transaction(
     contract: &MultiSig<WalletUnlocked>,
     to: Identity,
     value: u64,
