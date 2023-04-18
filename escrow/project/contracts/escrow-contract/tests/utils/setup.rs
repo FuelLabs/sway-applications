@@ -75,6 +75,7 @@ pub(crate) async fn create_asset_with_salt(
     (asset_id.clone().into(), MyAsset::new(asset_id, wallet))
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn escrow_info(
     arbiter: Arbiter,
     asset_count: u64,
