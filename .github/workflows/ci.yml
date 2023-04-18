@@ -90,7 +90,9 @@ jobs:
           cargo fmt --verbose --check
 
       - name: Check Clippy Linter
-        run: cargo clippy --all-features --all-targets -- -D warnings
+        run: /
+          cd ${{ matrix.project }}/project
+          cargo clippy --all-features --all-targets -- -D warnings
 
       - name: Build Sway
         run: |
