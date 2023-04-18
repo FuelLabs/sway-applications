@@ -45,7 +45,7 @@ mod success {
             tx.threshold.into_token(),
         ]);
 
-        let encoded_tx_struct = ABIEncoder::encode(&vec![tx_token]).unwrap().resolve(0);
+        let encoded_tx_struct = ABIEncoder::encode(&[tx_token]).unwrap().resolve(0);
         let expected_hash = Hasher::hash(encoded_tx_struct);
 
         let response = threshold_hash(&deployer.contract, Some(data), nonce, threshold)
