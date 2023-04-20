@@ -8,7 +8,8 @@ license = "Apache-2.0"
 [dependencies]
 fuel-gql-client = { version = "0.14.1", default-features = false }
 fuels = { git = "https://github.com/FuelLabs/fuels-rs.git", branch = "mujkica/add-predicate-code-getter" }
-# fuels = { version = "0.41.0", features = ["fuel-core-lib"] }
+# fuels = { version = "0.41.1", features = ["fuel-core-lib"] }
+fuel-tx = { version = "0.26.0" }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]
