@@ -9,7 +9,7 @@ pub struct CancelEvent {
 
 pub struct ExecuteEvent {
     asset: Option<Asset>,
-    data: Bytes,
+    data: Option<Bytes>,
     id: b256,
     recipient: Identity,
     timestamp: u64,
@@ -17,7 +17,7 @@ pub struct ExecuteEvent {
 
 pub struct QueueEvent {
     asset: Option<Asset>,
-    data: Bytes,
+    data: Option<Bytes>,
     id: b256,
     recipient: Identity,
     timestamp: u64,
