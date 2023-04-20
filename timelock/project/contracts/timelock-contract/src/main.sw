@@ -45,7 +45,7 @@ impl Timelock for Contract {
     fn execute(
         recipient: Identity,
         asset: Option<Asset>,
-        data: Bytes,
+        data: Option<Bytes>,
         timestamp: u64,
     ) {
         require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
@@ -80,7 +80,7 @@ impl Timelock for Contract {
     fn queue(
         recipient: Identity,
         asset: Option<Asset>,
-        data: Bytes,
+        data: Option<Bytes>,
         timestamp: u64,
     ) {
         require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
@@ -124,7 +124,7 @@ impl Info for Contract {
     fn transaction_hash(
         recipient: Identity,
         asset: Option<Asset>,
-        data: Bytes,
+        data: Option<Bytes>,
         timestamp: u64,
     ) -> b256 {
         create_hash(recipient, asset, data, timestamp)
