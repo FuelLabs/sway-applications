@@ -1,0 +1,24 @@
+[project]
+name = "metamask-signature"
+version = "0.1.0" 
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+assert_matches = "1.5.0"
+fuel-core = { version = "0.17", default-features = false }
+fuel-core-client = { version = "0.17", default-features = false }
+fuel-types = "0.26"
+fuel-vm = "0.26"
+fuels = { version = "0.41", features = ["fuel-core-lib"] }
+hex = "0.4.3"
+rand = "0.8"
+sha2 = "0.10"
+sha3 = "0.10.1"
+tai64 = { version = "4.0", features = ["serde"] }
+tokio = { version = "1.12", features = ["rt", "macros"] }
+
+[[test]]
+harness = true
+name = "integration_tests"
+path = "tests/harness.rs"
