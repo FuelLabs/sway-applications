@@ -44,7 +44,7 @@ abi AMM {
     ///
     /// - `asset_pair` - pair of assets that make up the pool
     #[storage(read)]
-    fn pool(asset_pair: (ContractId, ContractId)) -> ContractId;
+    fn pool(asset_pair: (ContractId, ContractId)) -> Option<ContractId>;
 }
 
 abi Exchange {
