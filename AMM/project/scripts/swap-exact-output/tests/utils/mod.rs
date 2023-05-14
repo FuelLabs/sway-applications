@@ -1,9 +1,15 @@
-use fuels::prelude::{AssetId, ContractId, TxParameters, WalletUnlocked};
+use fuels::{
+    prelude::{AssetId, ContractId, TxParameters, WalletUnlocked},
+    types::Bits256,
+};
 use test_utils::{
     data_structures::{
         AMMContract, SwapParameters, SwapResult, TransactionParameters, WalletAssetConfiguration,
     },
-    interface::{exchange::preview_swap_exact_output, SwapExactOutputScript, SCRIPT_GAS_LIMIT},
+    interface::{
+        exchange::preview_swap_exact_output, SwapExactOutputScript,
+        SwapExactOutputScriptConfigurables, SCRIPT_GAS_LIMIT,
+    },
     paths::SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH,
     setup::{
         common::{deploy_and_initialize_amm, setup_wallet_and_provider},
@@ -32,7 +38,8 @@ pub async fn expected_swap_input(
 }
 
 pub async fn expected_and_actual_input(swap_parameters: SwapParameters) -> SwapResult {
-    let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
+    let (script_instance, script_configurables, amm, asset_ids, transaction_parameters, deadline) =
+        setup().await;
 
     let mut route = Vec::with_capacity(swap_parameters.route_length as usize);
     let mut asset_index = 0;
@@ -48,6 +55,7 @@ pub async fn expected_and_actual_input(swap_parameters: SwapParameters) -> SwapR
     };
 
     let actual = script_instance
+        .with_configurables(script_configurables)
         .main(
             route
                 .into_iter()
@@ -71,6 +79,7 @@ pub async fn expected_and_actual_input(swap_parameters: SwapParameters) -> SwapR
 
 pub async fn setup() -> (
     SwapExactOutputScript<WalletUnlocked>,
+    SwapExactOutputScriptConfigurables,
     AMMContract,
     Vec<AssetId>,
     TransactionParameters,
@@ -93,8 +102,12 @@ pub async fn setup() -> (
 
     let script_instance = SwapExactOutputScript::new(wallet, SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH);
 
+    let script_configurables = SwapExactOutputScriptConfigurables::new()
+        .set_AMM_ID(Bits256::from_hex_str(&amm.id.to_string()).unwrap());
+
     (
         script_instance,
+        script_configurables,
         amm,
         asset_ids,
         transaction_parameters,
