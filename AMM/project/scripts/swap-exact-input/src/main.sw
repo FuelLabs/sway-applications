@@ -12,7 +12,7 @@ enum SwapError {
 }
 
 configurable {
-    AMM_ID: b256 = 0x48b3ac8138e5628d29e376e793d23ef5c68de44bee18f128b37641979df754e1,
+    AMM_ID: b256 = 0x8aea4274cd6fcc79094c55fb3c065046b6c759c2169786bc350536660eaba670,
 }
 
 fn main(
