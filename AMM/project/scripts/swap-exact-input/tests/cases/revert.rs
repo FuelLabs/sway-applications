@@ -29,7 +29,8 @@ async fn when_route_length_is_one() {
 #[tokio::test]
 #[should_panic(expected = "PairExchangeNotRegistered")]
 async fn when_pair_exchange_not_registered() {
-    let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
+    let (script_instance, script_configurables, amm, asset_ids, transaction_parameters, deadline) =
+        setup().await;
 
     let mut route = asset_ids;
     let input_amount = 60;
@@ -40,6 +41,7 @@ async fn when_pair_exchange_not_registered() {
     route.insert(0, not_registered_asset_id);
 
     script_instance
+        .with_configurables(script_configurables)
         .main(
             route
                 .into_iter()
@@ -60,7 +62,8 @@ async fn when_pair_exchange_not_registered() {
 #[tokio::test]
 #[should_panic(expected = "DeadlinePassed")]
 async fn when_deadline_passed() {
-    let (script_instance, amm, asset_ids, transaction_parameters, _deadline) = setup().await;
+    let (script_instance, script_configurables, amm, asset_ids, transaction_parameters, _deadline) =
+        setup().await;
 
     let route = asset_ids;
     let input_amount = 60;
@@ -68,6 +71,7 @@ async fn when_deadline_passed() {
     let expected_result = expected_swap_output(&amm, input_amount, &route).await;
 
     script_instance
+        .with_configurables(script_configurables)
         .main(
             route
                 .into_iter()
@@ -89,7 +93,8 @@ async fn when_deadline_passed() {
 #[tokio::test]
 #[should_panic(expected = "ExcessiveSlippage")]
 async fn when_minimum_output_not_satisfied() {
-    let (script_instance, amm, asset_ids, transaction_parameters, deadline) = setup().await;
+    let (script_instance, script_configurables, amm, asset_ids, transaction_parameters, deadline) =
+        setup().await;
 
     let route = asset_ids;
     let input_amount = 60;
@@ -97,6 +102,7 @@ async fn when_minimum_output_not_satisfied() {
     let expected_result = expected_swap_output(&amm, input_amount, &route).await;
 
     script_instance
+        .with_configurables(script_configurables)
         .main(
             route
                 .into_iter()
