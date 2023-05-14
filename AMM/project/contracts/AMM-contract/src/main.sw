@@ -44,7 +44,7 @@ impl AMM for Contract {
         };
 
         storage.pools.insert(ordered_asset_pair, pool);
-        
+
         log(RegisterPoolEvent {
             asset_pair: ordered_asset_pair,
             pool,
@@ -52,12 +52,12 @@ impl AMM for Contract {
     }
 
     #[storage(read)]
-    fn pool(asset_pair: (ContractId, ContractId)) -> ContractId {
+    fn pool(asset_pair: (ContractId, ContractId)) -> Option<ContractId> {
         let ordered_asset_pair = if asset_pair.0.into() < asset_pair.1.into() {
             asset_pair
         } else {
             (asset_pair.1, asset_pair.0)
         };
-        storage.pools.get(ordered_asset_pair).read()
+        storage.pools.get(ordered_asset_pair).try_read()
     }
 }
