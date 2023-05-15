@@ -61,6 +61,31 @@ storage {
 }
 
 impl Exchange for Contract {
+    /// Mint liquidity pool asset at current ratio and transfer to the sender.
+    ///
+    /// ### Additional Information
+    ///
+    /// When liquidity is added for the first time, all deposited amounts are used to determine the ratio.
+    /// When adding further liquidity, extra amounts of deposits are refunded.
+    ///
+    /// ### Arguments
+    ///
+    /// * `desired_liquidity`: `u64` - The minimum amount of liquidity to add.
+    /// * `deadline`: `u64` - The limit on block height for operation.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    /// * When the current block height is not less than `deadline`.
+    /// * When the `msg_amount` with function call is not 0.
+    /// * When the `desired_liquidity` is less than `MINIMUM_LIQUIDITY`.
+    /// * When asset A or B deposits are 0.
+    /// * When calculated liquidity to add is less than `desired liquidity`.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `5`
+    /// * Writes: `6`
     #[storage(read, write)]
     fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64 {
         require(storage.pair.read().is_some(), InitError::AssetPairNotSet);
@@ -149,6 +174,35 @@ impl Exchange for Contract {
         added_liquidity
     }
 
+    /// Initialize contract by specifying the asset pair that makes up the pool.
+    ///
+    /// # Arguments
+    ///
+    /// - `asset_a` - unique identifier of one asset
+    /// - `asset_b` - unique identifier of the other asset
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
+    /// * When the passed pair describes identical assets
+
+
+    /// Initialize contract by specifying the asset pair that makes up the pool.
+    ///
+    /// ### Arguments
+    ///
+    /// * `asset_a`: `ContractId` - The unique identifier of one asset.
+    /// * `asset_b`: `ContractId` - The unique identifier of the other asset.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    /// * When the passed pair describes identical assets.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `1`
+    /// * Writes: `1`
     #[storage(read, write)]
     fn constructor(asset_a: ContractId, asset_b: ContractId) {
         require(storage.pair.read().is_none(), InitError::AssetPairAlreadySet);
@@ -162,6 +216,17 @@ impl Exchange for Contract {
         });
     }
 
+    /// Deposit asset to later add to the liquidity pool or withdraw.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    /// * When the `msg_asset_id` does not identify asset A or asset B.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `4`
+    /// * Writes: `1`
     #[payable]
     #[storage(read, write)]
     fn deposit() {
@@ -182,6 +247,28 @@ impl Exchange for Contract {
         });
     }
 
+    /// Burn liquidity pool asset at current ratio and transfer asset A and asset B to the sender.
+    ///
+    /// ### Arguments
+    ///
+    /// * `min_asset_a`: `u64` - The minimum amount of asset A to receive after burn.
+    /// * `min_asset_b`: `u64` - minimum amount of asset B to receive after burn.
+    /// * `deadline`: `u64` - The limit on block height for operation.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    /// * When there are no liquidity pool assets to burn.
+    /// * When the `msg_asset_id` does not identify the liquidity pool asset.
+    /// * When `min_asset_a` or `min_asset_b` is 0.
+    /// * When the current block height is not less than `deadline`.
+    /// * When the `msg_amount` with function call is 0.
+    /// * When the minimum amounts for asset A and asset B to receive after burn cannot be satisfied.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `3`
+    /// * Writes: `2`
     #[payable]
     #[storage(read, write)]
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo {
@@ -227,6 +314,25 @@ impl Exchange for Contract {
         }
     }
 
+    /// Swap forwarded amount of forwarded asset for other asset and transfer to sender.
+    ///
+    /// ### Arguments
+    ///
+    /// * `min_output`: `Option<u64>` - The minimum output required (to protect against excessive slippage).
+    /// * `deadline`: `u64` - The limit on block height for operation.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    /// * When the `msg_asset_id` does not identify asset A or asset B.
+    /// * When the current block height is not less than `deadline`.
+    /// * When the `msg_amount` with function call is 0.
+    /// * When `min_output` is provided and is lower than the output amount.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `1`
+    /// * Writes: `1`
     #[payable]
     #[storage(read, write)]
     fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64 {
@@ -258,6 +364,26 @@ impl Exchange for Contract {
         bought
     }
 
+    /// Swap forwarded asset for `exact_output_amount` of other asset and transfer to sender.
+    ///
+    /// ### Arguments
+    ///
+    /// * `output`: `u64` - The exact output amount to receive.
+    /// * `deadline`: `u64` - The limit on block height for operation.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    /// * When the `msg_asset_id` does not identify asset A or asset B.
+    /// * When `output` is 0.
+    /// * When the current block height is not less than ` deadline `.
+    /// * When the `msg_amount` with function call is 0.
+    /// * When the `msg_amount` is insufficient for swap.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `1`
+    /// * Writes: `1`
     #[payable]
     #[storage(read, write)]
     fn swap_exact_output(output: u64, deadline: u64) -> u64 {
@@ -297,6 +423,22 @@ impl Exchange for Contract {
         sold
     }
 
+    ///  Withdraw coins that have not been added to a liquidity pool yet.
+    ///
+    /// ### Arguments
+    ///
+    /// * `asset`: `Asset` - The id and amount of asset to withdraw.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    /// * When the `msg_asset_id` does not identify asset A or asset B.
+    /// * When the deposited amount by the sender stored in the contract is insufficient.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `4`
+    /// * Writes: `1`
     #[storage(read, write)]
     fn withdraw(asset: Asset) {
         require(storage.pair.read().is_some(), InitError::AssetPairNotSet);
@@ -318,6 +460,19 @@ impl Exchange for Contract {
         });
     }
 
+    /// Get current balance of the sender for a given asset on the contract.
+    ///
+    /// ### Arguments
+    ///
+    /// * `asset_id`: `ContractId` - The id of the asset to get balance of.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `4`
     #[storage(read)]
     fn balance(asset_id: ContractId) -> u64 {
         require(storage.pair.read().is_some(), InitError::AssetPairNotSet);
@@ -326,6 +481,24 @@ impl Exchange for Contract {
         storage.deposits.get((msg_sender().unwrap(), asset_id)).try_read().unwrap_or(0)
     }
 
+    /// Get the pool info of the exchange contract.
+    ///
+    /// ### Additional Information
+    ///
+    /// The pool info consists of:
+    /// - Identifier of asset A,
+    /// - Identifier of asset B,
+    /// - Asset A amount in reserves,
+    /// - Asset B amount in reserves,
+    /// - Liquidity pool asset supply amount.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `3`
     #[storage(read)]
     fn pool_info() -> PoolInfo {
         require(storage.pair.read().is_some(), InitError::AssetPairNotSet);
@@ -336,6 +509,25 @@ impl Exchange for Contract {
         }
     }
 
+    ///  Get the preview info of adding liquidity.
+    ///
+    /// ### Additional Information
+    ///
+    /// The preview info consists of:
+    /// - Other asset amount to input for desired liquidity,
+    /// - Liquidity pool asset amount to be received.
+    ///
+    /// ### Arguments
+    ///
+    /// * `asset`: `Asset` - The id and amount of asset to add.
+    ///
+     /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `5`
     #[storage(read)]
     fn preview_add_liquidity(asset: Asset) -> PreviewAddLiquidityInfo {
         require(storage.pair.read().is_some(), InitError::AssetPairNotSet);
@@ -386,6 +578,26 @@ impl Exchange for Contract {
         }
     }
 
+    ///  Get information about the output asset for a `swap_exact_input` without doing the swap operation.
+    ///
+    /// ### Additional Information
+    ///
+    /// The preview info while swapping `exact_input` of input asset consists of:
+    /// - The minimum amount of output asset to receive,
+    /// - Whether the output asset reserves are sufficient for the swap or not.
+    ///
+    /// ### Arguments
+    ///
+    /// * `exact_input_asset`: `Asset` - The asset to sell.
+    ///
+     /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    /// * When the `msg_asset_id` does not identify asset A or asset B.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `1`
     #[storage(read)]
     fn preview_swap_exact_input(exact_input_asset: Asset) -> PreviewSwapInfo {
         let (input_asset, mut output_asset) = determine_assets(exact_input_asset.id, storage.pair.read());
@@ -399,6 +611,27 @@ impl Exchange for Contract {
         }
     }
 
+    ///  GGet information about the input asset for a `swap_exact_output` without doing the swap operation.
+    ///
+    /// ### Additional Information
+    ///
+    /// The preview info while swapping to get `exact_output` amount of output asset consists of:
+    /// - The maximum amount of input asset to forward,
+    /// - Whether the input asset reserves are sufficient for the swap or not.
+    ///
+    /// ### Arguments
+    ///
+    /// * `exact_output_asset`: `Asset` - The asset to buy.
+    ///
+    /// # Reverts
+    ///
+    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
+    /// * When the `msg_asset_id` does not identify asset A or asset B.
+    /// * When the `exact_output` is less than the reserve amount of the output asset.
+    ///
+    /// ### Number of Storage Accesses
+    ///
+    /// * Reads: `1`
     #[storage(read)]
     fn preview_swap_exact_output(exact_output_asset: Asset) -> PreviewSwapInfo {
         let (output_asset, mut input_asset) = determine_assets(exact_output_asset.id, storage.pair.read());
