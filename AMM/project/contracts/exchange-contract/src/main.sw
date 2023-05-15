@@ -52,7 +52,7 @@ configurable {
 }
 
 storage {
-    /// Deposit amounts per (depositer, asset) that can be used to add liquidity or be withdrawn.
+    /// Deposit amounts per (depositor, asset) that can be used to add liquidity or be withdrawn.
     deposits: StorageMap<(Identity, ContractId), u64> = StorageMap {},
     /// Total amount of the liquidity pool asset that has a unique identifier different from the identifiers of assets on either side of the pool.
     liquidity_pool_supply: u64 = 0,
@@ -76,7 +76,7 @@ impl Exchange for Contract {
         );
         let deposits = AssetPair::new(Asset::new(reserves.a.id, deposit_a), Asset::new(reserves.b.id, deposit_b));
 
-        // checking this because this will either result in a math error or adding no liquidity at all
+        // checking this because this will either result in a math error or adding no liquidity at all.
         require(deposits.a.amount != 0, TransactionError::ExpectedNonZeroDeposit(deposits.a.id));
         require(deposits.b.amount != 0, TransactionError::ExpectedNonZeroDeposit(deposits.b.id));
 
@@ -86,31 +86,31 @@ impl Exchange for Contract {
         let mut added_liquidity = 0;
 
         // adding liquidity for the first time
-        // use up all the deposited amounts of assets to determine the ratio
+        // use up all the deposited amounts of assets to determine the ratio.
         if reserves.a.amount == 0 && reserves.b.amount == 0 {
             added_liquidity = (deposits.a.amount * deposits.b.amount).sqrt();
             require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
             added_assets.a.amount = deposits.a.amount;
             added_assets.b.amount = deposits.b.amount;
 
-            // add amounts to reserves
+            // add amounts to reserves.
             storage.pair.write(Option::Some(added_assets));
 
-            // mint liquidity pool asset and transfer to sender
+            // mint liquidity pool asset and transfer to sender.
             mint(added_liquidity);
             storage.liquidity_pool_supply.write(added_liquidity);
             transfer(added_liquidity, contract_id(), sender);
-        } else { // adding further liquidity based on current ratio
-            // attempt to add liquidity by using up the deposited asset A amount
+        } else { // adding further liquidity based on current ratio.
+            // attempt to add liquidity by using up the deposited asset A amount.
             let b_to_attempt = proportional_value(deposits.a.amount, reserves.b.amount, reserves.a.amount);
 
-            // continue adding based on asset A if deposited asset B amount is sufficient
+            // continue adding based on asset A if deposited asset B amount is sufficient.
             if b_to_attempt <= deposits.b.amount {
                 added_liquidity = proportional_value(b_to_attempt, total_liquidity, reserves.b.amount);
                 require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
                 added_assets.a.amount = deposits.a.amount;
                 added_assets.b.amount = b_to_attempt;
-            } else { // attempt to add liquidity by using up the deposited asset B amount
+            } else { // attempt to add liquidity by using up the deposited asset B amount.
                 let a_to_attempt = proportional_value(deposits.b.amount, reserves.a.amount, reserves.b.amount);
                 added_liquidity = proportional_value(a_to_attempt, total_liquidity, reserves.a.amount);
                 require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
@@ -118,15 +118,15 @@ impl Exchange for Contract {
                 added_assets.b.amount = deposits.b.amount;
             }
 
-            // add new asset amounts to reserves
+            // add new asset amounts to reserves.
             storage.pair.write(Option::Some(reserves + added_assets));
 
-            // mint liquidity pool asset and transfer to sender
+            // mint liquidity pool asset and transfer to sender.
             mint(added_liquidity);
             storage.liquidity_pool_supply.write(total_liquidity + added_liquidity);
             transfer(added_liquidity, contract_id(), sender);
 
-            // transfer remaining deposit amounts back to the sender
+            // transfer remaining deposit amounts back to the sender.
             let refund = deposits - added_assets;
 
             if refund.a.amount > 0 {
