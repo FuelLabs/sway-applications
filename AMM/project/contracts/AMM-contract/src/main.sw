@@ -9,9 +9,9 @@ use libraries::{AMM, Exchange};
 use std::{constants::BASE_ASSET_ID, external::bytecode_root};
 
 storage {
-    /// The valid exchange contract bytecode root
+    /// The valid exchange contract bytecode root.
     exchange_bytecode_root: Option<b256> = Option::None,
-    /// Map that stores pools, i.e., asset identifier pairs as keys and corresponding exchange contract identifiers as values
+    /// Map that stores pools, i.e., asset identifier pairs as keys and corresponding exchange contract identifiers as values.
     pools: StorageMap<(ContractId, ContractId), ContractId> = StorageMap {},
 }
 
