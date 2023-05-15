@@ -11,38 +11,12 @@ use ::data_structures::{
 };
 
 abi AMM {
-    /// Initialize the AMM by specifying the exchange contract bytecode root, for security.
-    ///
-    /// # Arguments
-    ///
-    /// - `exchange_bytecode_root` - bytecode root of the intended implementation of the exchange ABI
-    ///
-    /// # Reverts
-    ///
-    /// * When the AMM has already been initialized
     #[storage(read, write)]
     fn initialize(exchange_bytecode_root: ContractId);
 
-    /// Add an (asset pair, exchange contract ID) mapping to the storage.
-    ///
-    /// # Arguments
-    ///
-    /// - `asset_pair` - pair of assets that make up the pool
-    /// - `pool` - exchange contract that defines the pool for a given `asset_pair`
-    ///
-    /// # Reverts
-    ///
-    /// * When the AMM contract has not been initialized
-    /// * When the bytecode root of `pool` does not match the bytecode root of the intended exchange contract
-    /// * When the pool info of the exchange contract with the given address does not consist of the given asset pair
     #[storage(read, write)]
     fn add_pool(asset_pair: (ContractId, ContractId), pool: ContractId);
 
-    /// For the given asset pair, get the exchange contract, i.e., the pool that consists of the asset pair.
-    ///
-    /// # Arguments
-    ///
-    /// - `asset_pair` - pair of assets that make up the pool
     #[storage(read)]
     fn pool(asset_pair: (ContractId, ContractId)) -> Option<ContractId>;
 }
