@@ -317,7 +317,7 @@ impl Exchange for Contract {
             remaining_balance: new_amount,
         });
     }
-    
+
     #[storage(read)]
     fn balance(asset_id: ContractId) -> u64 {
         require(storage.pair.read().is_some(), InitError::AssetPairNotSet);
