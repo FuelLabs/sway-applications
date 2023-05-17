@@ -33,7 +33,8 @@ pub fn maximum_input_for_exact_output(
     let result_wrapped = (numerator / denominator).as_u64();
 
     if denominator > numerator {
-        0 // 0 < result < 1, round the result down since there are no floating points.
+        // 0 < result < 1, round the result down since there are no floating points.
+        0
     } else {
         result_wrapped.unwrap() + 1
     }
@@ -72,7 +73,7 @@ pub fn minimum_output_given_exact_input(
 /// * `a`: `u64` - The value of a in the equation a / b = c / d.
 /// * `b`: `u64` - The value of b in the equation a / b = c / d.
 /// * `c`: `u64` - The value of c in the equation a / b = c / d.
-pub fn proportional_value(a: u64, b: u64, c: u64) -> u64 {
+pub fn proportional_value(b: u64, c: u64, a: u64) -> u64 {
     let calculation = (U128::from((0, b)) * U128::from((0, c)));
     let result_wrapped = (calculation / U128::from((0, a))).as_u64();
     result_wrapped.unwrap()
