@@ -42,7 +42,7 @@ async fn when_desired_liquidity_too_high() {
 
     let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters, false).await;
 
-    script_instance
+    let script_instance_call = script_instance
         .main(
             exchange.id,
             LiquidityParameters {

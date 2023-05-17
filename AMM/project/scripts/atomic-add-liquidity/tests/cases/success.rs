@@ -17,7 +17,7 @@ async fn adds_liquidity_with_equal_deposit_amounts() {
     let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters, false).await;
 
     // add initial liquidity with amounts 1000:1000
-    let liquidity = script_instance
+    let script_instance_call = script_instance
         .main(
             exchange.id,
             LiquidityParameters {
@@ -38,11 +38,23 @@ async fn adds_liquidity_with_equal_deposit_amounts() {
         .set_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
-        .call()
-        .await
-        .unwrap()
-        .value;
+        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0));
+
+        let gas_used = script_instance_call
+        .provider
+        .estimate_transaction_cost(&script_instance_call, Some(0.0))
+        .await;
+
+        // .call()
+        // .await
+        // .unwrap()
+        // .value;
+
+    // let contract_instance_call = &exchange
+    //     .methods()
+    //     .estimate_transaction_cost(None)
+    //     .await
+    //     .gas_used;
 
     assert_eq!(expected_liquidity, liquidity);
 }
