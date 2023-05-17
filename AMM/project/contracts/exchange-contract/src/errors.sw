@@ -1,7 +1,7 @@
 library;
 
 /// Determines the type of error during initialisation.
-/// 
+///
 /// ### Variants
 ///
 /// * `AssetPairAlreadySet`: () - The asset pair has already been set.
@@ -14,7 +14,7 @@ pub enum InitError {
 }
 
 /// Determines the type of error regarding inputs.
-/// 
+///
 /// ### Variants
 ///
 /// * `CannotAddLessThanMinimumLiquidity`: u64 - The amount liquidity added is less than the minimum amount.
@@ -31,7 +31,7 @@ pub enum InputError {
 }
 
 /// Determines the type of error regarding transactions.
-/// 
+///
 /// ### Variants
 ///
 /// * `DesiredAmountTooHigh`: u64 - The desired amount is too high.
