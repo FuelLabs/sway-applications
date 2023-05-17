@@ -80,19 +80,6 @@ abi Exchange {
 
     /// Initialize contract by specifying the asset pair that makes up the pool.
     ///
-    /// # Arguments
-    ///
-    /// - `asset_a` - unique identifier of one asset
-    /// - `asset_b` - unique identifier of the other asset
-    ///
-    /// # Reverts
-    ///
-    /// * When the contract has not been initialized, i.e., asset pair in storage is `None`
-    /// * When the passed pair describes identical assets
-
-
-    /// Initialize contract by specifying the asset pair that makes up the pool.
-    ///
     /// ### Arguments
     ///
     /// * `asset_a`: `ContractId` - The unique identifier of one asset.
@@ -262,7 +249,7 @@ abi Exchange {
     ///
     /// * `asset`: `Asset` - The id and amount of asset to add.
     ///
-     /// # Reverts
+    /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
     ///
@@ -284,7 +271,7 @@ abi Exchange {
     ///
     /// * `exact_input_asset`: `Asset` - The asset to sell.
     ///
-     /// # Reverts
+    /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
     /// * When the `msg_asset_id` does not identify asset A or asset B.
