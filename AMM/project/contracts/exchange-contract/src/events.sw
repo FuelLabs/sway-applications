@@ -3,7 +3,7 @@ library;
 use libraries::data_structures::{Asset, AssetPair};
 
 /// The information logged when liquidity is added.
-/// 
+///
 /// ### Fields
 ///
 /// * `added_assets`: `AssetPair` - Identifiers and amounts of assets added to reserves.
@@ -14,7 +14,7 @@ pub struct AddLiquidityEvent {
 }
 
 /// The information about the asset pair logged during initialisation.
-/// 
+///
 /// ### Fields
 ///
 /// * `asset_a_id`: `ContractId` - Identifier of one of the assets that make up the pool.
@@ -25,7 +25,7 @@ pub struct DefineAssetPairEvent {
 }
 
 /// The information logged when a deposit is made.
-/// 
+///
 /// ### Fields
 ///
 /// * `deposited_asset`: `Asset` - Deposited asset that may be withdrawn or used to add liquidity.
@@ -36,7 +36,7 @@ pub struct DepositEvent {
 }
 
 /// The information logged when liquidity is removed.
-/// 
+///
 /// ### Fields
 ///
 /// * `removed_reserve`: `AssetPair` -  Identifiers and amounts of assets removed from reserves and transferred to sender.
@@ -47,7 +47,7 @@ pub struct RemoveLiquidityEvent {
 }
 
 /// The information logged when a token swap is made.
-/// 
+///
 /// ### Fields
 ///
 /// * `input`: `Asset` - Identifier and amount of sold asset.
@@ -58,7 +58,7 @@ pub struct SwapEvent {
 }
 
 /// The information logged when a withdraw made.
-/// 
+///
 /// ### Fields
 ///
 /// * `withdrawn_asset`: `Asset` - Identifier and amount of withdrawn asset.
