@@ -1,7 +1,7 @@
 library;
 
 /// Determines the type of error during initialisation.
-/// 
+///
 /// ### Variants
 ///
 /// * `BytecodeRootAlreadySet`: () - The exchange bytecode root has already been set.
