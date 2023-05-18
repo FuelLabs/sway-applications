@@ -1,4 +1,4 @@
-[project]
+[package]
 name = "DAO-contract"
 version = "0.0.0"
 authors = ["Fuel Labs <contact@fuel.sh>"]
