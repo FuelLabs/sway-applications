@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::core::{constructor, deposit},
-    setup::{mint, setup},
+    setup::{mint, setup, GOVERNANCE_TOKEN_BINARY_PATH, GOVERNANCE_TOKEN_STORAGE_PATH},
 };
 use fuels::{prelude::CallParameters, tx::AssetId};
 
@@ -87,21 +87,16 @@ mod revert {
     async fn with_incorrect_asset() {
         let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
 
-        let storage_configuration = StorageConfiguration::load_from(
-            "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json",
-        );
+        let storage_configuration = StorageConfiguration::load_from(GOVERNANCE_TOKEN_STORAGE_PATH);
         let configuration = LoadConfiguration::default()
             .set_storage_configuration(storage_configuration.unwrap())
             .set_salt([1u8; 32]);
 
-        let another_asset_id = Contract::load_from(
-            "./tests/artifacts/gov_token/out/debug/gov_token.bin",
-            configuration,
-        )
-        .unwrap()
-        .deploy(&deployer.wallet, TxParameters::default())
-        .await
-        .unwrap();
+        let another_asset_id = Contract::load_from(GOVERNANCE_TOKEN_BINARY_PATH, configuration)
+            .unwrap()
+            .deploy(&deployer.wallet, TxParameters::default())
+            .await
+            .unwrap();
 
         let another_asset = GovToken::new(another_asset_id.clone(), deployer.wallet.clone());
         let id: ContractId = another_asset_id.into();

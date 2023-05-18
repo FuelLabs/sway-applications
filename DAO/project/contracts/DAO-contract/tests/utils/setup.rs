@@ -10,7 +10,7 @@ abigen!(
     ),
     Contract(
         name = "GovToken",
-        abi = "./contracts/DAO-contract/tests/artifacts/gov_token/out/debug/gov_token-abi.json"
+        abi = "./contracts/test-artifacts/gov_token/out/debug/gov_token-abi.json"
     ),
 );
 
@@ -22,9 +22,10 @@ pub(crate) struct Metadata {
 
 const DAO_CONTRACT_BINARY_PATH: &str = "./out/debug/DAO-contract.bin";
 const DAO_CONTRACT_STORAGE_PATH: &str = "./out/debug/DAO-contract-storage_slots.json";
-const GOVERNANCE_TOKEN_BINARY_PATH: &str = "./tests/artifacts/gov_token/out/debug/gov_token.bin";
-const GOVERNANCE_TOKEN_STORAGE_PATH: &str =
-    "./tests/artifacts/gov_token/out/debug/gov_token-storage_slots.json";
+pub const GOVERNANCE_TOKEN_BINARY_PATH: &str =
+    "../test-artifacts/gov_token/out/debug/gov_token.bin";
+pub const GOVERNANCE_TOKEN_STORAGE_PATH: &str =
+    "../test-artifacts/gov_token/out/debug/gov_token-storage_slots.json";
 
 pub(crate) async fn mint(
     contract: &GovToken<WalletUnlocked>,
