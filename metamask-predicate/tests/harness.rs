@@ -150,6 +150,11 @@ async fn get_balance(wallet: &Wallet, address: Address, asset_id: AssetId) -> u6
 
 #[tokio::test]
 async fn valid_predicate_data_simple() {
+    abigen!(Predicate(
+        name = "MyPredicate",
+        abi = "./out/debug/metamask-predicate-abi.json"
+    ));
+
     let msg_hash: Bits256 = Bits256::from_hex_str("0xee45573606c96c98ba970ff7cf9511f1b8b25e6bcd52ced30b89df1e4a9c4323").unwrap();
 
     let expected = Bits256::from_hex_str("0x7aae2d980be4c3275c72ce5b527fa23ffb97b766966559dd062e2b78fd9d3766").unwrap();
@@ -161,11 +166,6 @@ async fn valid_predicate_data_simple() {
         "0x44ac566bd156b4fc71a4a4cb2655d3dd360c695edb17dc3b64d611e122fea23d",
     ).unwrap();
     let signature = B512::from((hi_bits, lo_bits));
-
-    abigen!(Predicate(
-        name = "MyPredicate",
-        abi = "./out/debug/metamask-predicate-abi.json"
-    ));
 
     let predicate_data = MyPredicate::encode_data(msg_hash, signature, expected);
 
