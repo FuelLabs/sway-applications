@@ -1,6 +1,6 @@
 predicate;
 
-use std::{b512::B512, constants::ZERO_B256, ecr::ec_recover_address, inputs::input_predicate_data};
+use std::{b512::B512, constants::ZERO_B256, ecr::ec_recover_address};
 
 configurable {
     /// Public key of signer
