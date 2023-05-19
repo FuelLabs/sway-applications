@@ -1,7 +1,6 @@
 use fuel_vm::fuel_asm::{op, RegId};
 use fuels::{
-    prelude::*,
-    test_helpers::Config,
+    test_helpers::{Config, launch_custom_provider_and_get_wallets, WalletsConfig},
     tx::{Address, AssetId, Contract, Output},
     types::{
         input::Input,
@@ -11,7 +10,7 @@ use fuels::{
         Token,
         Bits256,
         B512,
-    },
+    }, prelude::{TxParameters, Wallet, WalletUnlocked, abigen, Signer, Account, ViewOnlyAccount, ResourceFilter},
 };
 use std::str::FromStr;
 
@@ -167,7 +166,7 @@ async fn valid_predicate_data_simple() {
     ).unwrap();
     let signature = B512::from((hi_bits, lo_bits));
 
-    let predicate_data = MyPredicate::encode_data(msg_hash, signature, expected);
+    let predicate_data = MyPredicate::encode_data(msg_hash, signature);
 
     let receiver_address =
         Address::from_str("0xde97d8624a438121b86a1956544bd72ed68cd69f2c99555b08b1e8c51ffd511c")
