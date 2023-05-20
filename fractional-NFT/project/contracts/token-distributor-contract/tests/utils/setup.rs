@@ -19,22 +19,23 @@ abigen!(
     ),
     Contract(
         name = "Nft",
-        abi = "./contracts/token-distributor-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"
+        abi = "./contracts/test-artifacts/token-distributor/NFT/out/debug/NFT-abi.json"
     ),
     Contract(
         name = "Asset",
-        abi =
-            "./contracts/token-distributor-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+        abi = "./contracts/test-artifacts/token-distributor/asset/out/debug/asset-abi.json"
     ),
 );
 
-const ASSET_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
+const ASSET_CONTRACT_BINARY_PATH: &str =
+    "../test-artifacts/token-distributor/asset/out/debug/asset.bin";
 const FRACTIONAL_NFT_CONTRACT_BINARY_PATH: &str =
     "../fractional-NFT-contract/out/debug/fractional-NFT-contract.bin";
 const FRACTIONAL_NFT_CONTRACT_STORAGE_PATH: &str =
     "../fractional-NFT-contract/out/debug/fractional-NFT-contract-storage_slots.json";
-const NFT_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT.bin";
-const NFT_CONTRACT_STORAGE_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT-storage_slots.json";
+const NFT_CONTRACT_BINARY_PATH: &str = "../test-artifacts/token-distributor/NFT/out/debug/NFT.bin";
+const NFT_CONTRACT_STORAGE_PATH: &str =
+    "../test-artifacts/token-distributor/NFT/out/debug/NFT-storage_slots.json";
 const TOKEN_DISTRIBUTOR_CONTRACT_BINARY_PATH: &str = "./out/debug/token-distributor-contract.bin";
 const TOKEN_DISTRIBUTOR_CONTRACT_STORAGE_PATH: &str =
     "./out/debug/token-distributor-contract-storage_slots.json";
