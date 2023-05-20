@@ -14,19 +14,19 @@ abigen!(
     ),
     Contract(
         name = "Nft",
-        abi = "./contracts/auction-contract/tests/artifacts/NFT/out/debug/NFT-abi.json"
+        abi = "./contracts/test-artifacts/NFT/out/debug/NFT-abi.json"
     ),
     Contract(
         name = "MyAsset",
-        abi = "./contracts/auction-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+        abi = "./contracts/test-artifacts/asset/out/debug/asset-abi.json"
     ),
 );
 
 const AUCTION_CONTRACT_BINARY_PATH: &str = "./out/debug/auction-contract.bin";
 const AUCTION_CONTRACT_STORAGE_PATH: &str = "./out/debug/auction-contract-storage_slots.json";
-const NATIVE_ASSET_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
-const NFT_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT.bin";
-const NFT_CONTRACT_STORAGE_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT-storage_slots.json";
+const NATIVE_ASSET_BINARY_PATH: &str = "../test-artifacts/asset/out/debug/asset.bin";
+const NFT_CONTRACT_BINARY_PATH: &str = "../test-artifacts/NFT/out/debug/NFT.bin";
+const NFT_CONTRACT_STORAGE_PATH: &str = "../test-artifacts/NFT/out/debug/NFT-storage_slots.json";
 
 pub(crate) struct Metadata {
     pub(crate) asset: MyAsset<WalletUnlocked>,
