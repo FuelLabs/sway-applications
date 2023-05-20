@@ -38,7 +38,7 @@ impl EnglishAuction for Contract {
     #[payable]
     #[storage(read, write)]
     fn bid(auction_id: u64, bid_asset: AuctionAsset) {
-        let auction = storage.auctions.get(auction_id);
+        let auction = storage.auctions.get(auction_id).try_read();
         require(auction.is_some(), InputError::AuctionDoesNotExist);
 
         let mut auction = auction.unwrap();
@@ -49,7 +49,7 @@ impl EnglishAuction for Contract {
 
         // Combine the user's previous deposits and the current bid for the
         // total deposits to the auction the user has made
-        let sender_deposit = storage.deposits.get((sender, auction_id));
+        let sender_deposit = storage.deposits.get((sender, auction_id)).try_read();
         let total_bid = match sender_deposit {
             Option::Some(AuctionAsset) => {
                 bid_asset + sender_deposit.unwrap()
@@ -103,7 +103,7 @@ impl EnglishAuction for Contract {
     #[storage(read, write)]
     fn cancel(auction_id: u64) {
         // Make sure this auction exists
-        let auction = storage.auctions.get(auction_id);
+        let auction = storage.auctions.get(auction_id).try_read();
         require(auction.is_some(), InputError::AuctionDoesNotExist);
 
         let mut auction = auction.unwrap();
@@ -167,7 +167,7 @@ impl EnglishAuction for Contract {
         let auction = Auction::new(bid_asset, height() + duration, initial_price, reserve_price, sell_asset, seller);
 
         // Store the auction information
-        let total_auctions = storage.total_auctions;
+        let total_auctions = storage.total_auctions.read();
         storage.deposits.insert((seller, total_auctions), sell_asset);
         storage.auctions.insert(total_auctions, auction);
 
@@ -177,14 +177,14 @@ impl EnglishAuction for Contract {
             sell_asset,
         });
 
-        storage.total_auctions += 1;
+        storage.total_auctions.write(storage.total_auctions.read() + 1);
         total_auctions
     }
 
     #[storage(read, write)]
     fn withdraw(auction_id: u64) {
         // Make sure this auction exists
-        let auction = storage.auctions.get(auction_id);
+        let auction = storage.auctions.get(auction_id).try_read();
         require(auction.is_some(), InputError::AuctionDoesNotExist);
 
         // Cannot withdraw if the auction is still on going
@@ -199,11 +199,11 @@ impl EnglishAuction for Contract {
 
         let sender = msg_sender().unwrap();
         let bidder = auction.highest_bidder;
-        let sender_deposit = storage.deposits.get((sender, auction_id));
+        let sender_deposit = storage.deposits.get((sender, auction_id)).try_read();
 
         // Make sure the sender still has something to withdraw
         require(sender_deposit.is_some(), UserError::UserHasAlreadyWithdrawn);
-        storage.deposits.remove((sender, auction_id));
+        assert(storage.deposits.remove((sender, auction_id)));
         let mut withdrawn_asset = sender_deposit.unwrap();
 
         // Withdraw owed assets
@@ -232,16 +232,16 @@ impl EnglishAuction for Contract {
 impl Info for Contract {
     #[storage(read)]
     fn auction_info(auction_id: u64) -> Option<Auction> {
-        storage.auctions.get(auction_id)
+        storage.auctions.get(auction_id).try_read()
     }
 
     #[storage(read)]
     fn deposit_balance(auction_id: u64, identity: Identity) -> Option<AuctionAsset> {
-        storage.deposits.get((identity, auction_id))
+        storage.deposits.get((identity, auction_id)).try_read()
     }
 
     #[storage(read)]
     fn total_auctions() -> u64 {
-        storage.total_auctions
+        storage.total_auctions.read()
     }
 }
