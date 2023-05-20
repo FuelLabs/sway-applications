@@ -1,8 +1,8 @@
 [workspace]
 members = [
   "./contracts/fractional-NFT-contract",
-  "./contracts/fractional-NFT-contract/tests/artifacts/NFT",
+  "./contracts/test-artifacts/fractional-NFT/NFT",
   "./contracts/token-distributor-contract",
-  "./contracts/token-distributor-contract/tests/artifacts/NFT",
-  "./contracts/token-distributor-contract/tests/artifacts/asset",
+  "./contracts/test-artifacts/token-distributor/NFT",
+  "./contracts/test-artifacts/token-distributor/asset",
 ]
