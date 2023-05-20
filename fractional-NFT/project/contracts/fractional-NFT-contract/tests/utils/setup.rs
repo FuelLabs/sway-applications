@@ -10,7 +10,7 @@ abigen!(
     ),
     Contract(
         name = "Nft",
-        abi = "./contracts/fractional-NFT-contract/tests/artifacts/NFT/out/debug/NFT-1-abi.json"
+        abi = "./contracts/test-artifacts/fractional-NFT/NFT/out/debug/NFT-1-abi.json"
     )
 );
 
@@ -23,8 +23,9 @@ pub(crate) struct Metadata {
 const FRACTIONAL_NFT_CONTRACT_BINARY_PATH: &str = "./out/debug/fractional-NFT-contract.bin";
 const FRACTIONAL_NFT_CONTRACT_STORAGE_PATH: &str =
     "./out/debug/fractional-NFT-contract-storage_slots.json";
-const NFT_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT-1.bin";
-const NFT_CONTRACT_STORAGE_PATH: &str = "./tests/artifacts/NFT/out/debug/NFT-1-storage_slots.json";
+const NFT_CONTRACT_BINARY_PATH: &str = "../test-artifacts/fractional-NFT/NFT/out/debug/NFT-1.bin";
+const NFT_CONTRACT_STORAGE_PATH: &str =
+    "../test-artifacts/fractional-NFT/NFT/out/debug/NFT-1-storage_slots.json";
 
 pub(crate) async fn defaults() -> u64 {
     10 // supply
