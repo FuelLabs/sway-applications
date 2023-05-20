@@ -1,43 +1,45 @@
 contract;
 
-dep data_structures;
-dep errors;
-dep interface;
+mod data_structures;
+mod errors;
+mod interface;
 
-use data_structures::{State, TokenMetadata};
-use errors::{InitError, ValidityError};
-use interface::Auxiliary;
-use std::auth::msg_sender;
+use ::data_structures::{State, TokenMetadata};
+use ::errors::{InitError, ValidityError};
+use ::interface::Auxiliary;
 use nft::{
-    administrator::{
-        admin,
-        Administrator,
-        set_admin,
-    },
     approve,
     approved,
     balance_of,
-    burnable::{
-        burn,
-        Burn,
+    extensions::{
+        administrator::{
+            admin,
+            Administrator,
+            set_admin,
+        },
+        burnable::{
+            burn,
+            Burn,
+        },
+        supply::{
+            max_supply,
+            set_max_supply,
+            Supply,
+        },
+        token_metadata::{
+            set_token_metadata,
+            token_metadata,
+        },
     },
     is_approved_for_all,
     mint,
     NFT,
     owner_of,
     set_approval_for_all,
-    supply::{
-        max_supply,
-        set_max_supply,
-        Supply,
-    },
-    token_metadata::{
-        set_token_metadata,
-        token_metadata,
-    },
     tokens_minted,
     transfer,
 };
+use std::auth::msg_sender;
 
 storage {
     state: State = State::Uninitialized,
@@ -59,7 +61,7 @@ impl Administrator for Contract {
 impl Burn for Contract {
     #[storage(read, write)]
     fn burn(token_id: u64) {
-        set_token_metadata(Option::None::<TokenMetadata>(), token_id);
+        set_token_metadata(Option::None::<TokenMetadata>, token_id);
         burn(token_id);
     }
 }
@@ -67,8 +69,8 @@ impl Burn for Contract {
 impl Auxiliary for Contract {
     #[storage(read, write)]
     fn constructor(new_admin: Option<Identity>, new_max_supply: Option<u64>) {
-        require(storage.state == State::Uninitialized, InitError::CannotReinitialize);
-        storage.state = State::Initialized;
+        require(storage.state.read() == State::Uninitialized, InitError::CannotReinitialize);
+        storage.state.write(State::Initialized);
 
         set_admin(new_admin);
         set_max_supply(new_max_supply);
@@ -103,7 +105,7 @@ impl NFT for Contract {
 
     #[storage(read, write)]
     fn mint(amount: u64, to: Identity) {
-        require(storage.state == State::Initialized, InitError::NotInitialized);
+        require(storage.state.read() == State::Initialized, InitError::NotInitialized);
         require(admin().is_none() || (msg_sender().unwrap() == admin().unwrap()), ValidityError::SenderNotAdmin);
         require(max_supply().is_none() || (tokens_minted() + amount <= max_supply().unwrap()), ValidityError::MaxTokensMinted);
 
@@ -145,7 +147,7 @@ impl Supply for Contract {
 
     #[storage(read, write)]
     fn set_max_supply(supply: Option<u64>) {
-        require(storage.state == State::Uninitialized, InitError::CannotReinitialize);
+        require(storage.state.read() == State::Uninitialized, InitError::CannotReinitialize);
         set_max_supply(supply)
     }
 }
