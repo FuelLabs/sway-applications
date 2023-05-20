@@ -15,13 +15,13 @@ abigen!(
     ),
     Contract(
         name = "MyAsset",
-        abi = "./contracts/escrow-contract/tests/artifacts/asset/out/debug/asset-abi.json"
+        abi = "./contracts/test-artifacts/asset/out/debug/asset-abi.json"
     )
 );
 
-const ASSET_CONTRACT_BINARY_PATH: &str = "./tests/artifacts/asset/out/debug/asset.bin";
+const ASSET_CONTRACT_BINARY_PATH: &str = "../test-artifacts/asset/out/debug/asset.bin";
 const ASSET_CONTRACT_STORAGE_PATH: &str =
-    "./tests/artifacts/asset/out/debug/asset-storage_slots.json";
+    "../test-artifacts/asset/out/debug/asset-storage_slots.json";
 const ESCROW_CONTRACT_BINARY_PATH: &str = "./out/debug/escrow-contract.bin";
 const ESCROW_CONTRACT_STORAGE_PATH: &str = "./out/debug/escrow-contract-storage_slots.json";
 
