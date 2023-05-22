@@ -1,3 +1,4 @@
+
 <p align="center">
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset=".docs/name-registry-logo-dark-theme.png">
