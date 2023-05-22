@@ -1,5 +1,5 @@
 [workspace]
 members = [
   "./contracts/fundraiser-contract",
-  "./contracts/fundraiser-contract/tests/artifacts/asset",
+  "./contracts/test-artifacts/asset",
 ]
