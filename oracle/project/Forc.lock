@@ -1,6 +1,6 @@
 [[package]]
 name = 'core'
-source = 'path+from-root-FDF4A5DCC6ECD181'
+source = 'path+from-root-1AA1C8235B783A81'
 
 [[package]]
 name = 'oracle-contract'
@@ -9,5 +9,5 @@ dependencies = ['std']
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.37.0#607ac50176db8bef936f91bacf435d0ea37d041e'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.38.0#2d16d70ab9d5ab0de0255941048f811b6d07c6b1'
 dependencies = ['core']
