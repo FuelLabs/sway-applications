@@ -6,8 +6,8 @@
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.38.0" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.33.1-orange" />
+    <a href="https://crates.io/crates/forc/0.39.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.39.1-orange" />
     </a>
     <a href="https://crates.io/crates/fuel-core/0.17.11" alt="fuel-core">
         <img src="https://img.shields.io/badge/fuel--core-v0.17.11-yellow" />
