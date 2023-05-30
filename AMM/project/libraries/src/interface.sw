@@ -62,6 +62,18 @@ abi AMM {
 }
 
 abi Exchange {
+    /// Mint liquidity pool asset at current ratio and transfer to the sender.
+    ///
+    /// ### Additional Information
+    ///
+    /// When liquidity is added for the first time, all deposited amounts are used to determine the ratio.
+    /// When adding further liquidity, extra amounts of deposits are refunded.
+    ///
+    /// # Arguments
+    ///
+    /// * `desired_liquidity`: `u64` - The minimum amount of liquidity to add.
+    /// * `deadline`: `u64` - The limit on block height for operation.
+    ///
     /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
