@@ -5,7 +5,7 @@ dependencies = ['std']
 
 [[package]]
 name = 'core'
-source = 'path+from-root-1AA1C8235B783A81'
+source = 'path+from-root-B313E39BF6A5D375'
 
 [[package]]
 name = 'gov_token'
@@ -14,5 +14,5 @@ dependencies = ['std']
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.38.0#2d16d70ab9d5ab0de0255941048f811b6d07c6b1'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.39.1#e3065657c907225a8fdfe2d2210a7a3bd2b55c73'
 dependencies = ['core']
