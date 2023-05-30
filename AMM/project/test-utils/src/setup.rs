@@ -179,7 +179,8 @@ pub mod scripts {
     use common::{deploy_and_construct_exchange, deposit_and_add_liquidity};
     use fuels::{
         prelude::ResourceFilter,
-        types::{coin_type::CoinType, input::Input, output::Output},
+        tx::Output,
+        types::{input::Input, resource::Resource},
     };
 
     pub const MAXIMUM_INPUT_AMOUNT: u64 = 1_000_000;
@@ -234,7 +235,7 @@ pub mod scripts {
                     // 1:1, 1:2, 1:3 and so on
                     Some((100_000, 100_000 * (exchange_index as u64 + 1))),
                     // a reasonable deadline for adding liquidity
-                    Some((provider.latest_block_height().await.unwrap() + 10).into()),
+                    Some(provider.latest_block_height().await.unwrap() + 10),
                     // liquidity that will be added is greater than or equal to the lowest deposit
                     Some(100_000),
                 ),
@@ -267,7 +268,7 @@ pub mod scripts {
         let input_coins: Vec<Input> = coins
             .iter()
             .map(|coin| match coin {
-                CoinType::Coin(_) => Input::resource_signed(coin.clone(), 0),
+                Resource::Coin(_) => Input::resource_signed(coin.clone(), 0),
                 _ => panic!("Resource type does not match"),
             })
             .collect();
