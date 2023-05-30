@@ -123,7 +123,7 @@ pub async fn setup_and_construct(
 
     let liquidity_parameters = LiquidityParameters::new(
         Some((10000, 40000)),
-        Some((provider.latest_block_height().await.unwrap() + 20)),
+        Some(provider.latest_block_height().await.unwrap() + 20),
         Some(20000),
     );
 
