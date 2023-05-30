@@ -1,7 +1,8 @@
 use super::interface::{Exchange, AMM};
 use fuels::{
     prelude::{AssetId, ContractId, WalletUnlocked},
-    types::{input::Input, output::Output},
+    tx::Output,
+    types::input::Input,
 };
 use std::collections::HashMap;
 

@@ -100,7 +100,7 @@ pub async fn setup() -> (Exchange<WalletUnlocked>, WalletUnlocked, Assets, u64) 
 
     let deadline = provider.latest_block_height().await.unwrap() + 5;
 
-    (exchange_instance, wallet, assets, deadline.into())
+    (exchange_instance, wallet, assets, deadline)
 }
 
 pub async fn setup_and_construct(
