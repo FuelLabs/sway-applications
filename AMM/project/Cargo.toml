@@ -6,4 +6,5 @@ members = [
     "./scripts/atomic-add-liquidity",
     "./scripts/swap-exact-input",
     "./scripts/swap-exact-output",
+    "./test-utils",
 ]
