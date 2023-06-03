@@ -26,17 +26,6 @@ dependencies = [
 
 [[package]]
 name = "ahash"
-version = "0.7.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcb51a0695d8f838b1ee009b3fbf66bda078cd64590202a864a8f3e8c4315c47"
-dependencies = [
- "getrandom 0.2.9",
- "once_cell",
- "version_check",
-]
-
-[[package]]
-name = "ahash"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2c99f64d1e06488f620f932677e24bc6e2897582980441ae90a671415bd7ec2f"
@@ -1087,7 +1076,7 @@ dependencies = [
 name = "distributor-contract"
 version = "0.0.0"
 dependencies = [
- "fuel-merkle 0.4.1",
+ "fuel-merkle 0.33.0",
  "fuels",
  "sha2 0.10.6",
  "tokio 1.27.0",
@@ -1594,20 +1583,6 @@ dependencies = [
 
 [[package]]
 name = "fuel-merkle"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12e56cc8be0a2ea7cfb30ae4696bf5f658a9447df1b32af699b6273a11fdcfa3"
-dependencies = [
- "digest 0.10.6",
- "fuel-storage 0.3.0",
- "hashbrown 0.12.3",
- "hex",
- "sha2 0.10.6",
- "thiserror",
-]
-
-[[package]]
-name = "fuel-merkle"
 version = "0.26.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "44387bb9dfb76c68b0d61a8d038b68fd92ee3cb64092b5c67d4e8981be4b5551"
@@ -1621,16 +1596,30 @@ dependencies = [
 ]
 
 [[package]]
-name = "fuel-storage"
-version = "0.3.0"
+name = "fuel-merkle"
+version = "0.33.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0f895423d18472d60eb078cf949608ff3fe6e42e91d41b85993b11528d2c4c3"
+checksum = "69243d1f4b60b3077cadca5474f5c019b1aa6d34e66e07b497b04ca2a3f15cf8"
+dependencies = [
+ "digest 0.10.6",
+ "fuel-storage 0.33.0",
+ "hashbrown 0.13.2",
+ "hex",
+ "sha2 0.10.6",
+ "thiserror",
+]
 
 [[package]]
 name = "fuel-storage"
 version = "0.26.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "99472cf7ace40449d93491c1298ec4b34432ceff73d3e8037769e9d1fd1b4387"
+
+[[package]]
+name = "fuel-storage"
+version = "0.33.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9f0480dc192e3735de1a8bb0ddaff0bacf20af785529bc585b26e7ac1434e0ba"
 
 [[package]]
 name = "fuel-tx"
@@ -2076,9 +2065,6 @@ name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a9ee70c43aaf417c914396645a0fa852624801b24ebb7ae78fe8272889ac888"
-dependencies = [
- "ahash 0.7.6",
-]
 
 [[package]]
 name = "hashbrown"
@@ -2086,7 +2072,7 @@ version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "43a3c133739dddd0d2990f9a4bdf8eb4b21ef50e4851ca85ab661199821d510e"
 dependencies = [
- "ahash 0.8.3",
+ "ahash",
 ]
 
 [[package]]
