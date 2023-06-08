@@ -1,8 +1,8 @@
 use fuel_merkle::{
     binary::in_memory::MerkleTree,
-    common::{empty_sum_sha256, Bytes32, LEAF, NODE},
+    common::Bytes32,
 };
-use fuels::{prelude::*, accounts::{predicate::Predicate, Account}, tx::{ContractId, AssetId}, types::{Bits256, Identity},};
+use fuels::{prelude::*, accounts::{predicate::Predicate, Account}, tx::{AssetId}, types::{Bits256, Identity},};
 use sha2::{Digest, Sha256};
 
 
@@ -28,49 +28,48 @@ async fn test_merkle_predicate() {
     let key = 1;
     let leaves = leaves_with_depth(depth, vec_of_identities).await;
 
-    // The amount of tokens the user will get
-    assert!(leaves[key].0 == identity2.clone());
-
     // Create merkle tree
-    let (_tree, root, _leaf, proof) = build_tree(0, leaves.to_vec()).await;
+    let (_tree, root, _leaf, proof) = build_tree(key.clone(), leaves.to_vec()).await;
 
     // Create predicate instance and load data
     let code_path = "./out/debug/test_predicate.bin";
-    let predicate_data = MyPredicate::encode_data(key as u64, leaves[key].1, identity2.clone(), proof, root, leaves.len() as u64);
+
+    let allotted_amount = leaves[key as usize].1;
+    let claiming_identity = leaves[key as usize].0.clone();
+    let predicate_data = MyPredicate::encode_data(key, allotted_amount, claiming_identity.clone(), proof, root, leaves.len() as u64);
     let predicate: Predicate = Predicate::load_from(code_path).unwrap()
         .with_data(predicate_data)
         .with_provider(wallet1.try_provider().unwrap().clone());
 
-    // First wallet transfers amount to predicate.
+    // First wallet transfers 500 tokens to predicate.
+    let predicate_tokens = 500;
     wallet1
-        .transfer(predicate.address(), 500, asset_id, TxParameters::default())
+        .transfer(predicate.address(), predicate_tokens, asset_id, TxParameters::default())
         .await
         .unwrap();
 
-    // Check predicate balance.
+    // Check predicate balance that it has the 500 tokens.
     let balance = predicate.get_asset_balance(&AssetId::default()).await.unwrap();
-    assert_eq!(balance, 500);
+    assert_eq!(balance, predicate_tokens);
 
     // Unlock and transfer with predicate
-    let amount_to_unlock = leaves[key].1;
     predicate
         .transfer(
             wallet2.address(),
-            amount_to_unlock,
+            allotted_amount,
             asset_id,
             TxParameters::default(),
         )
         .await
         .unwrap();
 
-    // Predicate balance is zero.
+    // Predicate balance is whatever the other wallet was allotted.
     let balance = predicate.get_asset_balance(&AssetId::default()).await.unwrap();
-
-    assert_eq!(balance, 500 - leaves[key].1);
+    assert_eq!(balance, predicate_tokens - allotted_amount);
 
     // Second wallet balance is updated.
     let balance = wallet2.get_asset_balance(&AssetId::default()).await.unwrap();
-    assert_eq!(balance, 1000 + leaves[key].1);
+    assert_eq!(balance, 1000 + allotted_amount);
 }
 
 async fn get_wallets() -> (WalletUnlocked, WalletUnlocked, AssetId) {
