@@ -107,7 +107,6 @@ fn main(
     let to = Identity::Address(Address::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_TO)));
     let asset_id = ContractId::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_ASSET_ID));
     let amount_sent = output_amount(output_index);
-    
     (merkle_root == digest) && (amount == amount_sent) && (to == identity) && (asset_id == CLAIM_TOKEN)
 }
 
