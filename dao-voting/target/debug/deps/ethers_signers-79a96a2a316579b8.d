@@ -1,0 +1,9 @@
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/ethers_signers-79a96a2a316579b8.rmeta: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/mod.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/hash.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/mnemonic.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/private_key.rs
+
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/ethers_signers-79a96a2a316579b8.d: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/mod.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/hash.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/mnemonic.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/private_key.rs
+
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/lib.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/mod.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/hash.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/mnemonic.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ethers-signers-0.17.0/src/wallet/private_key.rs:

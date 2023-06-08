@@ -1,0 +1,1 @@
+cargo:rustc-cfg=polling_no_io_safety

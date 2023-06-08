@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/typenum-041068385d971678/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/typenum-041068385d971678/out/op.rs

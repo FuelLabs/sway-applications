@@ -71,10 +71,13 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: Install Fuel toolchain
-        uses: FuelLabs/action-fuel-toolchain@v0.6.0
+        uses: cachix/install-nix-action@v20
         with:
-          toolchain: latest
-          date: 2023-04-12
+	  nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            substituters = https://fuellabs.cachix.org
+            trusted-public-keys = fuellabs.cachix.org-1:3gOmll82VDbT7EggylzOVJ6dr0jgPVU/KMN6+Kf8qx8=
+      - run: nix shell github:fuellabs/fuel.nix#forc-0-39-0
 
       - name: Check Sway formatting
         run: |

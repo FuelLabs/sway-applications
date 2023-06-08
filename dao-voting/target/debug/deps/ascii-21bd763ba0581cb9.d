@@ -1,0 +1,11 @@
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/ascii-21bd763ba0581cb9.rmeta: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_char.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_str.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_string.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/free_functions.rs
+
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/libascii-21bd763ba0581cb9.rlib: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_char.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_str.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_string.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/free_functions.rs
+
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/ascii-21bd763ba0581cb9.d: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_char.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_str.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_string.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/free_functions.rs
+
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/lib.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_char.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_str.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/ascii_string.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ascii-0.9.3/src/free_functions.rs:

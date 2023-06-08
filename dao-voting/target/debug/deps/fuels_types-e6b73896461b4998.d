@@ -1,0 +1,10 @@
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/fuels_types-e6b73896461b4998.rmeta: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/bech32.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/constants.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/errors.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/param_types.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/utils.rs
+
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/fuels_types-e6b73896461b4998.d: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/bech32.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/constants.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/errors.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/param_types.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/utils.rs
+
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/lib.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/bech32.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/constants.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/errors.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/param_types.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/fuels-types-0.25.1/src/utils.rs:

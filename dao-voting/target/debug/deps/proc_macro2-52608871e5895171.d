@@ -1,0 +1,11 @@
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/proc_macro2-52608871e5895171.rmeta: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/marker.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/parse.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/rcvec.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/detection.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/fallback.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/wrapper.rs
+
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/proc_macro2-52608871e5895171.d: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/marker.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/parse.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/rcvec.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/detection.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/fallback.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/wrapper.rs
+
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/lib.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/marker.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/parse.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/rcvec.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/detection.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/fallback.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-1.0.47/src/wrapper.rs:

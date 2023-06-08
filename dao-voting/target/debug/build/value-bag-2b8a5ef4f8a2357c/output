@@ -1,0 +1,4 @@
+cargo:rustc-cfg=value_bag_capture_ctor
+cargo:rerun-if-env-changed=VALUE_BAG_CAPTURE_CONST_TYPE_ID
+cargo:rerun-if-env-changed=VALUE_BAG_CAPTURE_CTOR
+cargo:rerun-if-env-changed=VALUE_BAG_CAPTURE_FALLBACK

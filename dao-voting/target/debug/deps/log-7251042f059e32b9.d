@@ -1,0 +1,12 @@
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/log-7251042f059e32b9.rmeta: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/macros.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/serde.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/mod.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/error.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/key.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/source.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/value.rs
+
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/log-7251042f059e32b9.d: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/macros.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/serde.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/mod.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/error.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/key.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/source.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/value.rs
+
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/lib.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/macros.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/serde.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/mod.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/error.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/key.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/source.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/log-0.4.17/src/kv/value.rs:

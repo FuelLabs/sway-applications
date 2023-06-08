@@ -1,0 +1,8 @@
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/ucd_trie-080ce846322b5d43.rmeta: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ucd-trie-0.1.5/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ucd-trie-0.1.5/src/owned.rs
+
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/libucd_trie-080ce846322b5d43.rlib: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ucd-trie-0.1.5/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ucd-trie-0.1.5/src/owned.rs
+
+/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/deps/ucd_trie-080ce846322b5d43.d: /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ucd-trie-0.1.5/src/lib.rs /Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ucd-trie-0.1.5/src/owned.rs
+
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ucd-trie-0.1.5/src/lib.rs:
+/Users/sophiedankel/.cargo/registry/src/github.com-1ecc6299db9ec823/ucd-trie-0.1.5/src/owned.rs:

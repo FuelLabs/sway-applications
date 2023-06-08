@@ -1,0 +1,64 @@
+TARGET = Some("x86_64-apple-darwin")
+OPT_LEVEL = Some("0")
+HOST = Some("x86_64-apple-darwin")
+cargo:rerun-if-env-changed=CC_x86_64-apple-darwin
+CC_x86_64-apple-darwin = None
+cargo:rerun-if-env-changed=CC_x86_64_apple_darwin
+CC_x86_64_apple_darwin = None
+cargo:rerun-if-env-changed=HOST_CC
+HOST_CC = None
+cargo:rerun-if-env-changed=CC
+CC = None
+cargo:rerun-if-env-changed=CFLAGS_x86_64-apple-darwin
+CFLAGS_x86_64-apple-darwin = None
+cargo:rerun-if-env-changed=CFLAGS_x86_64_apple_darwin
+CFLAGS_x86_64_apple_darwin = None
+cargo:rerun-if-env-changed=HOST_CFLAGS
+HOST_CFLAGS = None
+cargo:rerun-if-env-changed=CFLAGS
+CFLAGS = None
+cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+CRATE_CC_NO_DEFAULTS = None
+DEBUG = Some("true")
+CARGO_CFG_TARGET_FEATURE = Some("fxsr,sse,sse2,sse3,ssse3")
+cargo:rerun-if-env-changed=CC_x86_64-apple-darwin
+CC_x86_64-apple-darwin = None
+cargo:rerun-if-env-changed=CC_x86_64_apple_darwin
+CC_x86_64_apple_darwin = None
+cargo:rerun-if-env-changed=HOST_CC
+HOST_CC = None
+cargo:rerun-if-env-changed=CC
+CC = None
+cargo:rerun-if-env-changed=CFLAGS_x86_64-apple-darwin
+CFLAGS_x86_64-apple-darwin = None
+cargo:rerun-if-env-changed=CFLAGS_x86_64_apple_darwin
+CFLAGS_x86_64_apple_darwin = None
+cargo:rerun-if-env-changed=HOST_CFLAGS
+HOST_CFLAGS = None
+cargo:rerun-if-env-changed=CFLAGS
+CFLAGS = None
+cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+CRATE_CC_NO_DEFAULTS = None
+CARGO_CFG_TARGET_FEATURE = Some("fxsr,sse,sse2,sse3,ssse3")
+running: "cc" "-O0" "-ffunction-sections" "-fdata-sections" "-fPIC" "-g" "-fno-omit-frame-pointer" "-m64" "-arch" "x86_64" "-I" "depend/secp256k1/" "-I" "depend/secp256k1/include" "-I" "depend/secp256k1/src" "-Wall" "-Wextra" "-Wno-unused-function" "-DSECP256K1_API=" "-DENABLE_MODULE_ECDH=1" "-DENABLE_MODULE_SCHNORRSIG=1" "-DENABLE_MODULE_EXTRAKEYS=1" "-DUSE_NUM_NONE=1" "-DUSE_FIELD_INV_BUILTIN=1" "-DUSE_SCALAR_INV_BUILTIN=1" "-DECMULT_GEN_PREC_BITS=4" "-DECMULT_WINDOW_SIZE=15" "-DUSE_EXTERNAL_DEFAULT_CALLBACKS=1" "-DENABLE_MODULE_RECOVERY=1" "-o" "/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/secp256k1-sys-482cc305c409316e/out/depend/secp256k1/contrib/lax_der_parsing.o" "-c" "depend/secp256k1/contrib/lax_der_parsing.c"
+exit status: 0
+running: "cc" "-O0" "-ffunction-sections" "-fdata-sections" "-fPIC" "-g" "-fno-omit-frame-pointer" "-m64" "-arch" "x86_64" "-I" "depend/secp256k1/" "-I" "depend/secp256k1/include" "-I" "depend/secp256k1/src" "-Wall" "-Wextra" "-Wno-unused-function" "-DSECP256K1_API=" "-DENABLE_MODULE_ECDH=1" "-DENABLE_MODULE_SCHNORRSIG=1" "-DENABLE_MODULE_EXTRAKEYS=1" "-DUSE_NUM_NONE=1" "-DUSE_FIELD_INV_BUILTIN=1" "-DUSE_SCALAR_INV_BUILTIN=1" "-DECMULT_GEN_PREC_BITS=4" "-DECMULT_WINDOW_SIZE=15" "-DUSE_EXTERNAL_DEFAULT_CALLBACKS=1" "-DENABLE_MODULE_RECOVERY=1" "-o" "/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/secp256k1-sys-482cc305c409316e/out/depend/secp256k1/src/precomputed_ecmult_gen.o" "-c" "depend/secp256k1/src/precomputed_ecmult_gen.c"
+exit status: 0
+running: "cc" "-O0" "-ffunction-sections" "-fdata-sections" "-fPIC" "-g" "-fno-omit-frame-pointer" "-m64" "-arch" "x86_64" "-I" "depend/secp256k1/" "-I" "depend/secp256k1/include" "-I" "depend/secp256k1/src" "-Wall" "-Wextra" "-Wno-unused-function" "-DSECP256K1_API=" "-DENABLE_MODULE_ECDH=1" "-DENABLE_MODULE_SCHNORRSIG=1" "-DENABLE_MODULE_EXTRAKEYS=1" "-DUSE_NUM_NONE=1" "-DUSE_FIELD_INV_BUILTIN=1" "-DUSE_SCALAR_INV_BUILTIN=1" "-DECMULT_GEN_PREC_BITS=4" "-DECMULT_WINDOW_SIZE=15" "-DUSE_EXTERNAL_DEFAULT_CALLBACKS=1" "-DENABLE_MODULE_RECOVERY=1" "-o" "/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/secp256k1-sys-482cc305c409316e/out/depend/secp256k1/src/precomputed_ecmult.o" "-c" "depend/secp256k1/src/precomputed_ecmult.c"
+exit status: 0
+running: "cc" "-O0" "-ffunction-sections" "-fdata-sections" "-fPIC" "-g" "-fno-omit-frame-pointer" "-m64" "-arch" "x86_64" "-I" "depend/secp256k1/" "-I" "depend/secp256k1/include" "-I" "depend/secp256k1/src" "-Wall" "-Wextra" "-Wno-unused-function" "-DSECP256K1_API=" "-DENABLE_MODULE_ECDH=1" "-DENABLE_MODULE_SCHNORRSIG=1" "-DENABLE_MODULE_EXTRAKEYS=1" "-DUSE_NUM_NONE=1" "-DUSE_FIELD_INV_BUILTIN=1" "-DUSE_SCALAR_INV_BUILTIN=1" "-DECMULT_GEN_PREC_BITS=4" "-DECMULT_WINDOW_SIZE=15" "-DUSE_EXTERNAL_DEFAULT_CALLBACKS=1" "-DENABLE_MODULE_RECOVERY=1" "-o" "/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/secp256k1-sys-482cc305c409316e/out/depend/secp256k1/src/secp256k1.o" "-c" "depend/secp256k1/src/secp256k1.c"
+exit status: 0
+cargo:rerun-if-env-changed=AR_x86_64-apple-darwin
+AR_x86_64-apple-darwin = None
+cargo:rerun-if-env-changed=AR_x86_64_apple_darwin
+AR_x86_64_apple_darwin = None
+cargo:rerun-if-env-changed=HOST_AR
+HOST_AR = None
+cargo:rerun-if-env-changed=AR
+AR = None
+running: "ar" "cq" "/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/secp256k1-sys-482cc305c409316e/out/libsecp256k1.a" "/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/secp256k1-sys-482cc305c409316e/out/depend/secp256k1/contrib/lax_der_parsing.o" "/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/secp256k1-sys-482cc305c409316e/out/depend/secp256k1/src/precomputed_ecmult_gen.o" "/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/secp256k1-sys-482cc305c409316e/out/depend/secp256k1/src/precomputed_ecmult.o" "/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/secp256k1-sys-482cc305c409316e/out/depend/secp256k1/src/secp256k1.o"
+exit status: 0
+running: "ar" "s" "/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/secp256k1-sys-482cc305c409316e/out/libsecp256k1.a"
+exit status: 0
+cargo:rustc-link-lib=static=secp256k1
+cargo:rustc-link-search=native=/Users/sophiedankel/Development/sway-applications/dao-voting/target/debug/build/secp256k1-sys-482cc305c409316e/out
