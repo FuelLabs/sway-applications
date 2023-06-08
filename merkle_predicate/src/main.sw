@@ -33,40 +33,19 @@ fn main(
     assert((num_leaves > 1 && proof_length == path_length_from_key(key, num_leaves)) || (num_leaves <= 1 && proof_length == 0));
     assert(key < num_leaves);
 
-    // Create leaf
-    let data_hash = match identity {
-        Identity::Address(address) => {
-            let mut bytes = Bytes::with_capacity(48);
+    // Create leaf data
+    let mut leaf_data = Bytes::with_capacity(48);
+    __addr_of(identity).copy_bytes_to(leaf_data.buf.ptr(), 40);
+    let amount_address = leaf_data.buf.ptr().add_uint_offset(40);
+    amount_address.write(amount);
+    leaf_data.len = 48;
+    let leaf = leaf_data.sha256();
 
-            let b256_address = bytes.buf.ptr().add_uint_offset(8);
-            __addr_of(address.into()).copy_bytes_to(b256_address, 32);
-            
-            let amount_address = bytes.buf.ptr().add_uint_offset(40);
-            amount_address.write(amount);
-
-            bytes.sha256()
-        },
-        Identity::ContractId(contractID) => {
-            let mut bytes = Bytes::with_capacity(48);
-
-            let type_bit = bytes.buf.ptr().add_uint_offset(7);
-            type_bit.write_byte(1u8);
-
-            let b256_contractID = bytes.buf.ptr().add_uint_offset(8);
-            __addr_of(contractID.into()).copy_bytes_to(b256_contractID, 32);
-
-            let amount_address = bytes.buf.ptr().add_uint_offset(40);
-            amount_address.write(amount);
-
-            bytes.sha256()
-        },
-    };
-
+    // Create leaf hash
     let mut bytes = Bytes::with_capacity(33);
     let new_ptr = bytes.buf.ptr().add_uint_offset(1);
-
     bytes.buf.ptr().write_byte(LEAF);
-    __addr_of(data_hash).copy_bytes_to(new_ptr, 32);
+    __addr_of(leaf).copy_bytes_to(new_ptr, 32);
     bytes.len = 33;
 
     let mut digest = bytes.sha256();
@@ -117,21 +96,19 @@ fn main(
     }
 
     // Next check that only the appropriate tokens and amounts are transfered
-
     // Revert if output is not an Output::Coin
-    // let output_index = 0;
-    // match output_type(output_index) {
-    //     Output::Coin => (),
-    //     _ => revert(0),
-    // };
+    let output_index = 0;
+    match output_type(output_index) {
+        Output::Coin => (),
+        _ => revert(0),
+    };
 
     // // Transaction details
-    // let to = Identity::Address(Address::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_TO)));
-    // let asset_id = ContractId::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_ASSET_ID));
-    // let amount_sent = output_amount(output_index);
+    let to = Identity::Address(Address::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_TO)));
+    let asset_id = ContractId::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_ASSET_ID));
+    let amount_sent = output_amount(output_index);
     
-    // (merkle_root == digest) && (to == identity) && (amount == amount_sent) && (asset_id == CLAIM_TOKEN)
-    (merkle_root == digest) // && (amount == amount_sent) 
+    (merkle_root == digest) && (amount == amount_sent) && (to == identity) && (asset_id == CLAIM_TOKEN)
 }
 
 fn path_length_from_key(key: u64, num_leaves: u64) -> u64 {

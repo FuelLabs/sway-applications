@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "test_predicate"
 
 [dependencies]
-merkle_proof = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.10.0" }
+merkle_proof = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.11.0" }
