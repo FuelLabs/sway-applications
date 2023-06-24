@@ -1,6 +1,6 @@
 [toolchain]
-channel = "latest-2023-05-26"
+channel = "latest-2023-06-21"
 
 [components]
-forc = "0.39.1"
-fuel-core = "0.17.11"
+forc = "0.40.1"
+fuel-core = "0.18.1"
