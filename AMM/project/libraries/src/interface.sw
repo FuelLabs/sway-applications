@@ -1,6 +1,6 @@
 library;
 
-mod data_structures;
+pub mod data_structures;
 
 use ::data_structures::{
     Asset,
