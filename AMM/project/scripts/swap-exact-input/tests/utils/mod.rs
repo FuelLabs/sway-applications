@@ -111,6 +111,6 @@ pub async fn setup() -> (
         amm,
         asset_ids,
         transaction_parameters,
-        deadline,
+        deadline.into(),
     )
 }
