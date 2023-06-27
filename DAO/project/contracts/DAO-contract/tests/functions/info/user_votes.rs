@@ -6,7 +6,7 @@ mod sucess {
         interface::core::{constructor, create_proposal, deposit, vote},
         setup::{mint, proposal_transaction, Votes},
     };
-    use fuels::{prelude::CallParameters, tx::AssetId};
+    use fuels::{prelude::CallParameters, types::AssetId};
 
     #[tokio::test]
     pub async fn user_can_check_user_votes() {

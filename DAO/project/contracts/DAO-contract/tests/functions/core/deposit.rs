@@ -2,7 +2,7 @@ use crate::utils::{
     interface::core::{constructor, deposit},
     setup::{mint, setup, GOVERNANCE_TOKEN_BINARY_PATH, GOVERNANCE_TOKEN_STORAGE_PATH},
 };
-use fuels::{prelude::CallParameters, tx::AssetId};
+use fuels::{prelude::CallParameters, types::AssetId};
 
 mod success {
     use super::*;
@@ -61,9 +61,8 @@ mod success {
 mod revert {
     use super::*;
     use crate::utils::setup::GovToken;
-    use fuels::{
-        prelude::{Contract, LoadConfiguration, StorageConfiguration, TxParameters},
-        tx::ContractId,
+    use fuels::prelude::{
+        Contract, ContractId, LoadConfiguration, StorageConfiguration, TxParameters,
     };
 
     #[tokio::test]
