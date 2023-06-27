@@ -1,4 +1,3 @@
-use fuel_tx::Output;
 use fuels::{
     accounts::{predicate::Predicate, Account},
     prelude::{
@@ -7,7 +6,7 @@ use fuels::{
     },
     programs::script_calls::ScriptCallHandler,
     test_helpers::WalletsConfig,
-    types::{input::Input, resource::Resource, unresolved_bytes::UnresolvedBytes},
+    types::{coin_type::CoinType, input::Input, output::Output, unresolved_bytes::UnresolvedBytes},
 };
 
 abigen!(Predicate(
@@ -118,7 +117,7 @@ pub async fn test_predicate_spend_with_parameters(
 
     // Offered asset coin belonging to the predicate root
     let input_predicate = match predicate_coin {
-        Resource::Coin(_) => Input::resource_predicate(
+        CoinType::Coin(_) => Input::resource_predicate(
             predicate_coin.clone(),
             predicate.code().clone(),
             UnresolvedBytes::default(),
@@ -128,7 +127,7 @@ pub async fn test_predicate_spend_with_parameters(
 
     // Asked asset coin belonging to the wallet taking the order
     let input_from_taker = match swap_coin {
-        Resource::Coin(_) => Input::resource_signed(swap_coin.clone(), 0),
+        CoinType::Coin(_) => Input::resource_signed(swap_coin.clone(), 0),
         _ => panic!("Swap coin resource type does not match"),
     };
 
@@ -241,7 +240,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         .await
         .unwrap()[0];
     let input_predicate = match predicate_coin {
-        Resource::Coin(_) => Input::resource_predicate(
+        CoinType::Coin(_) => Input::resource_predicate(
             predicate_coin.clone(),
             predicate.code().clone(),
             UnresolvedBytes::default(),
