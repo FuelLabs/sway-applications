@@ -2,7 +2,7 @@ use crate::utils::{
     interface::core::{constructor, create_proposal, deposit, vote},
     setup::{mint, proposal_transaction, setup},
 };
-use fuels::{prelude::CallParameters, tx::AssetId};
+use fuels::{prelude::CallParameters, types::AssetId};
 
 mod success {
     use super::*;
