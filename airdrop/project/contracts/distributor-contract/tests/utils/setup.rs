@@ -5,10 +5,9 @@ use fuel_merkle::{
 use fuels::{
     accounts::ViewOnlyAccount,
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Config, Contract, ContractId,
+        abigen, launch_custom_provider_and_get_wallets, AssetId, Config, Contract, ContractId,
         LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
-    tx::AssetId,
     types::{Bits256, Identity},
 };
 use sha2::{Digest, Sha256};
