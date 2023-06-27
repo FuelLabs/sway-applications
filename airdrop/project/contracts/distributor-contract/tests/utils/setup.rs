@@ -1,17 +1,19 @@
 use fuel_merkle::{
     binary::in_memory::MerkleTree,
-    common::{empty_sum_sha256, Bytes32, LEAF, NODE},
+    common::{empty_sum_sha256, Bytes32},
 };
 use fuels::{
     accounts::ViewOnlyAccount,
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Config, Contract, ContractId,
+        abigen, launch_custom_provider_and_get_wallets, AssetId, Config, Contract, ContractId,
         LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
-    tx::AssetId,
     types::{Bits256, Identity},
 };
 use sha2::{Digest, Sha256};
+
+pub const NODE: u8 = 0x01;
+pub const LEAF: u8 = 0x00;
 
 abigen!(
     Contract(
