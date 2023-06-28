@@ -2,7 +2,7 @@ use crate::utils::{
     interface::core::create_escrow,
     setup::{create_arbiter, create_asset, mint, setup},
 };
-use fuels::tx::ContractId;
+use fuels::prelude::ContractId;
 
 mod success {
 

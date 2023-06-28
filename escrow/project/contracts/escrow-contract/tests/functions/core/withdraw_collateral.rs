@@ -43,7 +43,7 @@ mod success {
         ));
 
         provider
-            .produce_blocks(origin_block + defaults.deadline, None)
+            .produce_blocks((origin_block as u64) + defaults.deadline, None)
             .await
             .unwrap();
 
@@ -161,7 +161,7 @@ mod success {
         assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
 
         provider
-            .produce_blocks(origin_block + defaults.deadline, None)
+            .produce_blocks((origin_block as u64) + defaults.deadline, None)
             .await
             .unwrap();
 
@@ -282,7 +282,7 @@ mod revert {
         .await;
 
         provider
-            .produce_blocks(origin_block + defaults.deadline, None)
+            .produce_blocks((origin_block as u64) + defaults.deadline, None)
             .await
             .unwrap();
 
@@ -314,7 +314,7 @@ mod revert {
         .await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
         provider
-            .produce_blocks(origin_block + defaults.deadline, None)
+            .produce_blocks((origin_block as u64) + defaults.deadline, None)
             .await
             .unwrap();
 
