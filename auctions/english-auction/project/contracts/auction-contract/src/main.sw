@@ -51,10 +51,10 @@ impl EnglishAuction for Contract {
         // total deposits to the auction the user has made
         let sender_deposit = storage.deposits.get((sender, auction_id)).try_read();
         let total_bid = match sender_deposit {
-            Option::Some(AuctionAsset) => {
+            Option::Some(_) => {
                 bid_asset + sender_deposit.unwrap()
             },
-            Option::None(AuctionAsset) => {
+            Option::None => {
                 bid_asset
             }
         };
