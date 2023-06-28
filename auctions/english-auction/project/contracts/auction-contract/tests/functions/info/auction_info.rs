@@ -49,7 +49,7 @@ mod success {
         let auction_copy = create_auction_copy(
             buy_asset.clone(),
             None,
-            total_duration.into(),
+            total_duration,
             initial_price,
             Some(reserve_price),
             sell_asset,
