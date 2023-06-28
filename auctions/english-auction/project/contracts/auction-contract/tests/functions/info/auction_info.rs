@@ -42,14 +42,14 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
         let auction_copy = create_auction_copy(
             buy_asset.clone(),
             None,
-            total_duration,
+            total_duration.into(),
             initial_price,
             Some(reserve_price),
             sell_asset,
@@ -106,7 +106,7 @@ mod success {
         )
         .await;
 
-        let total_duration1 = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration1 = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction1 = auction_info(auction1_id, &seller.auction).await;
         let auction2 = auction_info(1, &seller.auction).await;
         assert!(auction1.is_some());
@@ -136,7 +136,7 @@ mod success {
         )
         .await;
 
-        let total_duration2 = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration2 = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction1 = auction_info(auction1_id, &seller.auction).await;
         let auction2 = auction_info(auction2_id, &seller.auction).await;
         assert!(auction1.is_some());
