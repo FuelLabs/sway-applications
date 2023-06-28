@@ -51,7 +51,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction1 = auction_info(auction_id1, &seller.auction).await;
         assert!(auction1.is_some());
 
@@ -79,7 +79,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction2 = auction_info(auction_id2, &seller.auction).await;
         assert!(auction2.is_some());
 
@@ -135,7 +135,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -191,7 +191,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -247,7 +247,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -292,7 +292,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -337,7 +337,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -382,7 +382,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -427,7 +427,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
