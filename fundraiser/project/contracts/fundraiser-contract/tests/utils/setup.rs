@@ -1,9 +1,9 @@
 use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Bech32Address, Config, Contract,
-        LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+        ContractId, LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked,
+        WalletsConfig,
     },
-    tx::ContractId,
     types::Identity,
 };
 

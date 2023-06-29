@@ -10,7 +10,7 @@ mod success {
         interface::info::{asset_info_by_count, campaign_info, pledge_count, pledged},
         setup::{identity, AssetInfo, PledgedEvent},
     };
-    use fuels::{accounts::ViewOnlyAccount, tx::AssetId};
+    use fuels::{accounts::ViewOnlyAccount, prelude::AssetId};
 
     #[tokio::test]
     async fn pledges() {
@@ -479,7 +479,7 @@ mod revert {
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
@@ -554,7 +554,7 @@ mod revert {
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;

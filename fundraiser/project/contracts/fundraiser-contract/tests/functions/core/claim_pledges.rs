@@ -10,7 +10,7 @@ mod success {
         interface::info::campaign_info,
         setup::{identity, CampaignState, ClaimedEvent},
     };
-    use fuels::{accounts::ViewOnlyAccount, tx::AssetId};
+    use fuels::{accounts::ViewOnlyAccount, prelude::AssetId};
 
     #[tokio::test]
     async fn claims() {
@@ -29,7 +29,7 @@ mod success {
             &author.contract,
             &defaults.asset_id,
             &beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
@@ -143,7 +143,7 @@ mod revert {
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
@@ -164,7 +164,7 @@ mod revert {
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
@@ -190,7 +190,7 @@ mod revert {
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
@@ -218,7 +218,7 @@ mod revert {
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
