@@ -1,7 +1,7 @@
 library;
 
-mod asset_info;
-mod campaign_state;
-mod campaign_info;
-mod campaign;
-mod pledge;
+pub mod asset_info;
+pub mod campaign_state;
+pub mod campaign_info;
+pub mod campaign;
+pub mod pledge;
