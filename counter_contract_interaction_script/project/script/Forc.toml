@@ -2,7 +2,7 @@
 authors = ["Sway"]
 entry = "main.sw"
 license = "Apache-2.0"
-name = "counter_contract_interaction_script"
+name = "interaction_script"
 
 [dependencies]
-counter_contract = "../contract"
+contract_abi = { path = "../contract_abi" }

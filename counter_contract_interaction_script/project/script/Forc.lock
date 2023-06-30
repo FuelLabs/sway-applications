@@ -1,6 +1,6 @@
 [[package]]
 name = 'contract_abi'
-source = 'path+from-root-4F344E6D2A50F28B'
+source = 'path+from-root-97451A284841A1AE'
 dependencies = ['std']
 
 [[package]]
@@ -8,7 +8,7 @@ name = 'core'
 source = 'path+from-root-D62A8C57DD8D2801'
 
 [[package]]
-name = 'counter_contract'
+name = 'interaction_script'
 source = 'member'
 dependencies = [
     'contract_abi',

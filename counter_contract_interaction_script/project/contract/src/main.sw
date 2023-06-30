@@ -1,16 +1,9 @@
 contract;
 
+use contract_abi::CounterContract;
+
 storage {
     count: u64 = 0,
-}
-
-abi CounterContract {
-    #[storage(read, write)]
-    fn increment() -> u64;
-    #[storage(read)]
-    fn count() -> u64;
-    #[storage(write)]
-    fn clear();
 }
 
 impl CounterContract for Contract {
