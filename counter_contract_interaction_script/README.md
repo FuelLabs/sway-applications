@@ -51,12 +51,6 @@ name-registry
 
 ## Running the project
 
-### User interface
-
-TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
-
-### Project
-
 In order to run the subsequent commands change into the following directory `/path/to/counter_contract_interaction_script/project/<here>`.
 
 #### Program compilation
