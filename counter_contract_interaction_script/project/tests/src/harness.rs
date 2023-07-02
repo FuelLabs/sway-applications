@@ -42,20 +42,25 @@ pub async fn setup() -> (CounterContract<WalletUnlocked>, WalletUnlocked) {
 }
 
 #[tokio::test]
-async fn test_increment() {
-    let (instance, _wallet) = setup().await;
-
-    let result = instance.methods().increment().call().await.unwrap().value;
-
-    assert!(result == 1);
-}
-
-#[tokio::test]
-async fn test_script() {
+async fn test_script_clearing_at_end() {
     let (instance, wallet) = setup().await;
 
     let bin_path = "../script/out/debug/interaction_script.bin";
     let script_instance = InteractionScript::new(wallet, bin_path);
 
-    let _result = script_instance.main(instance.id()).set_contracts(&[&instance]).call().await.unwrap();
+    let result = script_instance.main(instance.id(), true).set_contracts(&[&instance]).call().await.unwrap().value;
+
+    assert_eq!(result, 0);
+}
+
+#[tokio::test]
+async fn test_script_not_clearing_at_end() {
+    let (instance, wallet) = setup().await;
+
+    let bin_path = "../script/out/debug/interaction_script.bin";
+    let script_instance = InteractionScript::new(wallet, bin_path);
+
+    let result = script_instance.main(instance.id(), false).set_contracts(&[&instance]).call().await.unwrap().value;
+
+    assert_eq!(result, 2);
 }
