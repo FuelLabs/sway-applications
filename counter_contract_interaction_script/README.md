@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset=".docs/name-registry-logo-dark-theme.png">
-        <img alt="SwayApps Fundraiser Logo" width="400px" src=".docs/name-registry-logo-light-theme.png">
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/cc-interaction-script-logo-dark-theme.png">
+        <img alt="SwayApps CC Interaction Script Logo" width="400px" src=".docs/cc-interaction-script-logo-light-theme.png">
     </picture>
 </p>
 
