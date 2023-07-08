@@ -1,6 +1,6 @@
 use crate::utils::setup::{get_timestamp_and_call, NameRegistry};
 use fuels::{
-    prelude::{CallParameters, TxParameters, WalletUnlocked},
+    prelude::{CallParameters, ContractId, TxParameters, WalletUnlocked},
     programs::call_response::FuelCallResponse,
     types::{AssetId, Identity, SizedAsciiString},
 };
@@ -85,6 +85,14 @@ pub(crate) async fn register_with_time(
             .unwrap(),
     )
     .await
+}
+
+pub(crate) async fn set_asset(
+    instance: &NameRegistry<WalletUnlocked>,
+    id: ContractId,
+    rate: Option<u64>,
+) -> FuelCallResponse<()> {
+    instance.methods().set_asset(id, rate).call().await.unwrap()
 }
 
 pub(crate) async fn set_identity(

@@ -8,21 +8,31 @@ mod interface;
 use ::data_structures::Record;
 use ::errors::{AssetError, AuthorisationError, RegistrationValidityError};
 use ::events::{
+    AssetRateEvent,
     IdentityChangedEvent,
     NameRegisteredEvent,
     OwnerChangedEvent,
     RegistrationExtendedEvent,
 };
 use ::interface::{Info, NameRegistry};
-use std::{auth::msg_sender, block::timestamp, call_frames::msg_asset_id, context::msg_amount};
+use std::{
+    auth::msg_sender,
+    block::timestamp,
+    call_frames::msg_asset_id,
+    constants::ZERO_B256,
+    context::msg_amount,
+};
 
 // Amount of units of the asset to charge per 100 seconds of registration duration for every name/entry
 configurable {
     ASSET_ID: ContractId = ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
     PRICE_PER_HUNDRED: u64 = 1,
+    OWNER: Identity = Identity::Address(Address::from(ZERO_B256)),
 }
 
 storage {
+    /// Cost rate per asset
+    assets: StorageMap<ContractId, Option<u64>> = StorageMap {},
     /// A mapping of names to an option of records, with a none representing an unregistered name
     names: StorageMap<str[8], Record> = StorageMap {},
 }
@@ -74,6 +84,13 @@ impl NameRegistry for Contract {
             owner,
             identity,
         });
+    }
+
+    #[storage(write)]
+    fn set_asset(id: ContractId, rate: Option<u64>) {
+        require(msg_sender().unwrap() == OWNER, AuthorisationError::SenderNotOwner);
+        storage.assets.insert(id, rate);
+        log(AssetRateEvent { id, rate });
     }
 
     #[storage(read, write)]
@@ -151,5 +168,11 @@ impl Info for Contract {
             },
             Option::None => Result::Err(RegistrationValidityError::NameNotRegistered),
         }
+    }
+
+    #[storage(read)]
+    fn rate(id: ContractId) -> Option<u64> {
+        // SAFETY TODO: will bump in newer release PR
+        storage.assets.get(id).unwrap()
     }
 }

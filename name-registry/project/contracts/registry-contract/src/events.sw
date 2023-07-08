@@ -1,5 +1,13 @@
 library;
 
+/// Event for when an asset is set for payment
+pub struct AssetRateEvent {
+    /// Asset used for payment
+    id: ContractId,
+    /// Rate of cost for asset
+    rate: Option<u64>,
+}
+
 /// The event for when a name has its resolving identity changed
 pub struct IdentityChangedEvent {
     /// The name which has its identity being changed

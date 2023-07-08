@@ -37,6 +37,19 @@ abi NameRegistry {
     #[payable, storage(read, write)]
     fn register(name: str[8], duration: u64, owner: Identity, identity: Identity);
 
+    /// Adds a new asset as a method of payment
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Asset for payment
+    /// * `rate` - Rate of cost for asset
+    ///
+    /// # Reverts
+    ///
+    /// * When called by non-owner
+    #[storage(write)]
+    fn set_asset(id: ContractId, rate: Option<u64>);
+
     /// Sets the identity to which the name will resolve to
     ///
     /// # Arguments
@@ -107,4 +120,12 @@ abi Info {
     /// * If the registration has expired
     #[storage(read)]
     fn owner(name: str[8]) -> Result<Identity, RegistrationValidityError>;
+
+    /// Returns the cost per interval for the asset
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Asset for payment
+    #[storage(read)]
+    fn rate(id: ContractId) -> Option<u64>;
 }
