@@ -7,7 +7,7 @@ mod success {
     use super::*;
     use crate::utils::{
         interface::{core::extend_with_time, info::expiry},
-        setup::{string_to_ascii, RegistrationExtendedEvent},
+        setup::RegistrationExtendedEvent,
     };
 
     #[tokio::test]
@@ -43,7 +43,7 @@ mod success {
             log,
             vec![RegistrationExtendedEvent {
                 duration: EXTEND_DURATION,
-                name: string_to_ascii(&acc.name),
+                name: acc.name,
                 new_expiry: latest_block_time + REGISTER_DURATION + EXTEND_DURATION
             }]
         );

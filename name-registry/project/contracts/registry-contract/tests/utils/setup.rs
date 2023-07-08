@@ -1,12 +1,13 @@
 use core::fmt::Debug;
 use fuels::{
-    accounts::Account as FuelAccount,
+    accounts::{wallet::WalletUnlocked, Account as FuelAccount},
+    core::traits::Tokenizable,
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Address, Contract, LoadConfiguration,
-        StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+        StorageConfiguration, TxParameters, WalletsConfig,
     },
     programs::{call_response::FuelCallResponse, contract::ContractCallHandler},
-    types::{traits::Tokenizable, Identity, SizedAsciiString},
+    types::Identity,
 };
 
 abigen!(Contract(
@@ -67,10 +68,6 @@ pub(crate) async fn setup() -> (NameRegistry<WalletUnlocked>, Account, WalletUnl
     let instance = NameRegistry::new(id, wallet.clone());
 
     (instance, Account::new(wallet), wallet2)
-}
-
-pub(crate) fn string_to_ascii(name: &String) -> SizedAsciiString<8> {
-    SizedAsciiString::<8>::new(name.to_owned()).unwrap()
 }
 
 pub(crate) async fn get_timestamp_and_call<T, D>(

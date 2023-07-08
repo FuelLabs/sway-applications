@@ -14,7 +14,7 @@ use ::events::{
     RegistrationExtendedEvent,
 };
 use ::interface::{Info, NameRegistry};
-use std::{auth::msg_sender, block::timestamp, call_frames::msg_asset_id, context::msg_amount};
+use std::{block::timestamp, call_frames::msg_asset_id, context::msg_amount, string::String};
 
 // Amount of units of the asset to charge per 100 seconds of registration duration for every name/entry
 configurable {
@@ -24,22 +24,22 @@ configurable {
 
 storage {
     /// A mapping of names to an option of records, with a none representing an unregistered name
-    names: StorageMap<str[8], Record> = StorageMap {},
+    names: StorageMap<b256, Record> = StorageMap {},
 }
 
-// TODO: Change the static 8 length str with a dynamic string when possible
 impl NameRegistry for Contract {
     #[payable]
     #[storage(read, write)]
-    fn extend(name: str[8], duration: u64) {
-        require(storage.names.get(name).is_some(), RegistrationValidityError::NameNotRegistered);
+    fn extend(name: String, duration: u64) {
+        let entry = name.bytes.sha256();
+        require(storage.names.get(entry).try_read().is_some(), RegistrationValidityError::NameNotRegistered);
         require(msg_asset_id() == ASSET_ID, AssetError::IncorrectAssetSent);
         require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetError::InsufficientPayment);
 
-        let mut record = storage.names.get(name).unwrap();
+        let mut record = storage.names.get(entry).try_read().unwrap();
         record.expiry = record.expiry + duration;
 
-        storage.names.insert(name, record);
+        storage.names.insert(entry, record);
 
         log(RegistrationExtendedEvent {
             duration,
@@ -51,13 +51,14 @@ impl NameRegistry for Contract {
     #[payable]
     #[storage(read, write)]
     fn register(
-        name: str[8],
+        name: String,
         duration: u64,
         owner: Identity,
         identity: Identity,
     ) {
-        if storage.names.get(name).is_some() {
-            let record = storage.names.get(name).unwrap();
+        let entry = name.bytes.sha256();
+        if storage.names.get(entry).try_read().is_some() {
+            let record = storage.names.get(entry).try_read().unwrap();
             require(timestamp() > record.expiry, RegistrationValidityError::NameNotExpired);
         }
 
@@ -66,7 +67,7 @@ impl NameRegistry for Contract {
 
         let record = Record::new(timestamp() + duration, identity, owner);
 
-        storage.names.insert(name, record);
+        storage.names.insert(entry, record);
 
         log(NameRegisteredEvent {
             expiry: record.expiry,
@@ -77,15 +78,16 @@ impl NameRegistry for Contract {
     }
 
     #[storage(read, write)]
-    fn set_identity(name: str[8], identity: Identity) {
-        require(storage.names.get(name).is_some(), RegistrationValidityError::NameNotRegistered);
-        let previous_record = storage.names.get(name).unwrap();
+    fn set_identity(name: String, identity: Identity) {
+        let entry = name.bytes.sha256();
+        require(storage.names.get(entry).try_read().is_some(), RegistrationValidityError::NameNotRegistered);
+        let previous_record = storage.names.get(entry).try_read().unwrap();
         require(timestamp() < previous_record.expiry, RegistrationValidityError::NameExpired);
         require(previous_record.owner == msg_sender().unwrap(), AuthorisationError::SenderNotOwner);
 
         let new_record = Record::new(previous_record.expiry, identity, previous_record.owner);
 
-        storage.names.insert(name, new_record);
+        storage.names.insert(entry, new_record);
 
         log(IdentityChangedEvent {
             name,
@@ -95,15 +97,16 @@ impl NameRegistry for Contract {
     }
 
     #[storage(read, write)]
-    fn set_owner(name: str[8], owner: Identity) {
-        require(storage.names.get(name).is_some(), RegistrationValidityError::NameNotRegistered);
-        let previous_record = storage.names.get(name).unwrap();
+    fn set_owner(name: String, owner: Identity) {
+        let entry = name.bytes.sha256();
+        require(storage.names.get(entry).try_read().is_some(), RegistrationValidityError::NameNotRegistered);
+        let previous_record = storage.names.get(entry).try_read().unwrap();
         require(timestamp() < previous_record.expiry, RegistrationValidityError::NameExpired);
         require(previous_record.owner == msg_sender().unwrap(), AuthorisationError::SenderNotOwner);
 
         let new_record = Record::new(previous_record.expiry, previous_record.identity, owner);
 
-        storage.names.insert(name, new_record);
+        storage.names.insert(entry, new_record);
 
         log(OwnerChangedEvent {
             name,
@@ -115,8 +118,8 @@ impl NameRegistry for Contract {
 
 impl Info for Contract {
     #[storage(read)]
-    fn expiry(name: str[8]) -> Result<u64, RegistrationValidityError> {
-        match storage.names.get(name) {
+    fn expiry(name: String) -> Result<u64, RegistrationValidityError> {
+        match storage.names.get(name.bytes.sha256()).try_read() {
             Option::Some(record) => {
                 match timestamp() < record.expiry {
                     true => Result::Ok(record.expiry),
@@ -128,8 +131,8 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn identity(name: str[8]) -> Result<Identity, RegistrationValidityError> {
-        match storage.names.get(name) {
+    fn identity(name: String) -> Result<Identity, RegistrationValidityError> {
+        match storage.names.get(name.bytes.sha256()).try_read() {
             Option::Some(record) => {
                 match timestamp() < record.expiry {
                     true => Result::Ok(record.identity),
@@ -141,8 +144,8 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn owner(name: str[8]) -> Result<Identity, RegistrationValidityError> {
-        match storage.names.get(name) {
+    fn owner(name: String) -> Result<Identity, RegistrationValidityError> {
+        match storage.names.get(name.bytes.sha256()).try_read() {
             Option::Some(record) => {
                 match timestamp() < record.expiry {
                     true => Result::Ok(record.owner),

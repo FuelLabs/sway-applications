@@ -6,10 +6,7 @@ use fuels::{prelude::Address, types::Identity};
 
 mod success {
     use super::*;
-    use crate::utils::{
-        interface::info::owner,
-        setup::{string_to_ascii, OwnerChangedEvent},
-    };
+    use crate::utils::{interface::info::owner, setup::OwnerChangedEvent};
 
     #[tokio::test]
     async fn can_set_owner() {
@@ -40,7 +37,7 @@ mod success {
         assert_eq!(
             log,
             vec![OwnerChangedEvent {
-                name: string_to_ascii(&acc1.name),
+                name: acc1.name,
                 new_owner: wallet_identity2,
                 previous_owner: acc1.identity()
             }]

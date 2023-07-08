@@ -1,8 +1,6 @@
-use crate::utils::setup::{NameRegistry, RegistrationValidityError};
+use crate::utils::setup::{NameRegistry, RegistrationValidityError, String};
 use fuels::{
-    prelude::WalletUnlocked,
-    programs::call_response::FuelCallResponse,
-    types::{Identity, SizedAsciiString},
+    accounts::wallet::WalletUnlocked, programs::call_response::FuelCallResponse, types::Identity,
 };
 
 pub(crate) async fn expiry(
@@ -11,7 +9,7 @@ pub(crate) async fn expiry(
 ) -> FuelCallResponse<Result<u64, RegistrationValidityError>> {
     instance
         .methods()
-        .expiry(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
+        .expiry(name.to_owned())
         .call()
         .await
         .unwrap()
@@ -23,7 +21,7 @@ pub(crate) async fn identity(
 ) -> FuelCallResponse<Result<Identity, RegistrationValidityError>> {
     instance
         .methods()
-        .identity(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
+        .identity(name.to_owned())
         .call()
         .await
         .unwrap()
@@ -35,7 +33,7 @@ pub(crate) async fn owner(
 ) -> FuelCallResponse<Result<Identity, RegistrationValidityError>> {
     instance
         .methods()
-        .owner(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
+        .owner(name.to_owned())
         .call()
         .await
         .unwrap()

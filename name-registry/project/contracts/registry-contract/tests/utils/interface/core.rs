@@ -1,8 +1,9 @@
-use crate::utils::setup::{get_timestamp_and_call, NameRegistry};
+use crate::utils::setup::{get_timestamp_and_call, NameRegistry, String};
 use fuels::{
-    prelude::{CallParameters, TxParameters, WalletUnlocked},
+    accounts::wallet::WalletUnlocked,
+    prelude::{CallParameters, TxParameters},
     programs::call_response::FuelCallResponse,
-    types::{AssetId, Identity, SizedAsciiString},
+    types::{AssetId, Identity},
 };
 
 pub(crate) async fn extend(
@@ -12,10 +13,7 @@ pub(crate) async fn extend(
 ) -> FuelCallResponse<()> {
     instance
         .methods()
-        .extend(
-            SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
-            duration,
-        )
+        .extend(name.to_owned(), duration)
         .tx_params(TxParameters::new(0, 2_000_000, 0))
         .call_params(CallParameters::new(100, AssetId::new([0u8; 32]), 1_000_000))
         .unwrap()
@@ -32,10 +30,7 @@ pub(crate) async fn extend_with_time(
     get_timestamp_and_call(
         instance
             .methods()
-            .extend(
-                SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
-                duration,
-            )
+            .extend(name.to_owned(), duration)
             .call_params(CallParameters::new(100, AssetId::new([0u8; 32]), 0))
             .unwrap(),
     )
@@ -52,7 +47,7 @@ pub(crate) async fn register(
     instance
         .methods()
         .register(
-            SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
+            name.to_owned(),
             duration,
             owner.to_owned(),
             identity.to_owned(),
@@ -76,7 +71,7 @@ pub(crate) async fn register_with_time(
         instance
             .methods()
             .register(
-                SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
+                name.to_owned(),
                 duration,
                 owner.to_owned(),
                 identity.to_owned(),
@@ -94,10 +89,7 @@ pub(crate) async fn set_identity(
 ) -> FuelCallResponse<()> {
     instance
         .methods()
-        .set_identity(
-            SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
-            identity,
-        )
+        .set_identity(name.to_owned(), identity)
         .call()
         .await
         .unwrap()
@@ -110,10 +102,7 @@ pub(crate) async fn set_owner(
 ) -> FuelCallResponse<()> {
     instance
         .methods()
-        .set_owner(
-            SizedAsciiString::<8>::new(name.to_owned()).unwrap(),
-            new_owner,
-        )
+        .set_owner(name.to_owned(), new_owner)
         .call()
         .await
         .unwrap()

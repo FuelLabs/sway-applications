@@ -1,6 +1,7 @@
 library;
 
 use ::errors::RegistrationValidityError;
+use std::string::String;
 
 abi NameRegistry {
     /// Extends the duration of ownership for the name
@@ -16,7 +17,7 @@ abi NameRegistry {
     /// * If the payment is insufficient to cover the cost for the duration
     /// * If the incorrect asset is sent
     #[payable, storage(read, write)]
-    fn extend(name: str[8], duration: u64);
+    fn extend(name: String, duration: u64);
 
     /// Adds an entry into the registry for the given name.
     ///
@@ -35,7 +36,7 @@ abi NameRegistry {
     /// * If the payment is insufficient to cover the cost for the duration
     /// * If the incorrect asset is sent
     #[payable, storage(read, write)]
-    fn register(name: str[8], duration: u64, owner: Identity, identity: Identity);
+    fn register(name: String, duration: u64, owner: Identity, identity: Identity);
 
     /// Sets the identity to which the name will resolve to
     ///
@@ -50,7 +51,7 @@ abi NameRegistry {
     /// * If the registration has expired
     /// * If the sender is not the owner of the name
     #[storage(read, write)]
-    fn set_identity(name: str[8], identity: Identity);
+    fn set_identity(name: String, identity: Identity);
 
     /// Changes the owner of the name
     ///
@@ -65,7 +66,7 @@ abi NameRegistry {
     /// * If the registration has expired
     /// * If the sender is not the owner of the name
     #[storage(read, write)]
-    fn set_owner(name: str[8], new_owner: Identity);
+    fn set_owner(name: String, new_owner: Identity);
 }
 
 abi Info {
@@ -80,7 +81,7 @@ abi Info {
     /// * If the name is not registered
     /// * If the registration has expired
     #[storage(read)]
-    fn expiry(name: str[8]) -> Result<u64, RegistrationValidityError>;
+    fn expiry(name: String) -> Result<u64, RegistrationValidityError>;
 
     /// Returns the identity which the name resolves to
     ///
@@ -93,7 +94,7 @@ abi Info {
     /// * If the name is not registered
     /// * If the registration has expired
     #[storage(read)]
-    fn identity(name: str[8]) -> Result<Identity, RegistrationValidityError>;
+    fn identity(name: String) -> Result<Identity, RegistrationValidityError>;
 
     /// Returns the owner of the name
     ///
@@ -106,5 +107,5 @@ abi Info {
     /// * If the name is not registered
     /// * If the registration has expired
     #[storage(read)]
-    fn owner(name: str[8]) -> Result<Identity, RegistrationValidityError>;
+    fn owner(name: String) -> Result<Identity, RegistrationValidityError>;
 }

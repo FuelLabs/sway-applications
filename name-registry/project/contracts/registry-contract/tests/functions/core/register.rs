@@ -2,10 +2,7 @@ use crate::utils::setup::{setup, REGISTER_DURATION};
 
 mod success {
     use super::*;
-    use crate::utils::{
-        interface::core::register_with_time,
-        setup::{string_to_ascii, NameRegisteredEvent},
-    };
+    use crate::utils::{interface::core::register_with_time, setup::NameRegisteredEvent};
 
     #[tokio::test]
     #[ignore]
@@ -30,7 +27,7 @@ mod success {
             log,
             vec![NameRegisteredEvent {
                 expiry: latest_block_time + REGISTER_DURATION,
-                name: string_to_ascii(&acc.name),
+                name: acc.name,
                 owner: acc.identity(),
                 identity: acc.identity()
             }]

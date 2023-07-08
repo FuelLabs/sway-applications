@@ -6,10 +6,7 @@ use fuels::{prelude::Address, types::Identity};
 
 mod success {
     use super::*;
-    use crate::utils::{
-        interface::info::identity,
-        setup::{string_to_ascii, IdentityChangedEvent},
-    };
+    use crate::utils::{interface::info::identity, setup::IdentityChangedEvent};
 
     #[tokio::test]
     async fn can_set_identity() {
@@ -41,7 +38,7 @@ mod success {
         assert_eq!(
             log,
             vec![IdentityChangedEvent {
-                name: string_to_ascii(&acc1.name),
+                name: acc1.name,
                 new_identity: wallet_identity2,
                 previous_identity: acc1.identity(),
             }]
