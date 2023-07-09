@@ -23,10 +23,7 @@ use std::{
     context::msg_amount,
 };
 
-// Amount of units of the asset to charge per 100 seconds of registration duration for every name/entry
 configurable {
-    ASSET_ID: ContractId = ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
-    PRICE_PER_HUNDRED: u64 = 1,
     OWNER: Identity = Identity::Address(Address::from(ZERO_B256)),
 }
 
@@ -41,10 +38,13 @@ storage {
 impl NameRegistry for Contract {
     #[payable]
     #[storage(read, write)]
-    fn extend(name: str[8], duration: u64) {
+    fn extend(name: str[8], duration: u64, payment_asset: ContractId) {
         require(storage.names.get(name).is_some(), RegistrationValidityError::NameNotRegistered);
-        require(msg_asset_id() == ASSET_ID, AssetError::IncorrectAssetSent);
-        require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetError::InsufficientPayment);
+
+        let rate = storage.assets.get(payment_asset);
+
+        require(msg_asset_id() == payment_asset && rate.unwrap().is_some(), AssetError::IncorrectAssetSent);
+        require((duration / 100) * rate.unwrap().unwrap() <= msg_amount(), AssetError::InsufficientPayment);
 
         let mut record = storage.names.get(name).unwrap();
         record.expiry = record.expiry + duration;
@@ -65,14 +65,17 @@ impl NameRegistry for Contract {
         duration: u64,
         owner: Identity,
         identity: Identity,
+        payment_asset: ContractId,
     ) {
-        if storage.names.get(name).is_some() {
-            let record = storage.names.get(name).unwrap();
-            require(timestamp() > record.expiry, RegistrationValidityError::NameNotExpired);
+        let record = storage.names.get(name);
+        if record.is_some() {
+            require(timestamp() > record.unwrap().expiry, RegistrationValidityError::NameNotExpired);
         }
 
-        require(msg_asset_id() == ASSET_ID, AssetError::IncorrectAssetSent);
-        require((duration / 100) * PRICE_PER_HUNDRED <= msg_amount(), AssetError::InsufficientPayment);
+        let rate = storage.assets.get(payment_asset);
+
+        require(msg_asset_id() == payment_asset && rate.unwrap().is_some(), AssetError::IncorrectAssetSent);
+        require((duration / 100) * rate.unwrap().unwrap() <= msg_amount(), AssetError::InsufficientPayment);
 
         let record = Record::new(timestamp() + duration, identity, owner);
 

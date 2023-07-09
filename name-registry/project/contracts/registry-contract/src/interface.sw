@@ -9,6 +9,7 @@ abi NameRegistry {
     ///
     /// * `name` - The name to extend the duration of
     /// * `duration` - The duration to extend by
+    /// * `payment_asset` - The asset used to pay for the registration
     ///
     /// # Reverts
     ///
@@ -16,7 +17,7 @@ abi NameRegistry {
     /// * If the payment is insufficient to cover the cost for the duration
     /// * If the incorrect asset is sent
     #[payable, storage(read, write)]
-    fn extend(name: str[8], duration: u64);
+    fn extend(name: str[8], duration: u64, payment_asset: ContractId);
 
     /// Adds an entry into the registry for the given name.
     ///
@@ -28,6 +29,7 @@ abi NameRegistry {
     /// * `duration` - The duration to register for
     /// * `owner` - The owner of the name, which will be able to control the ownership and the resolving identity of the name
     /// * `identity` - The identity to which the name would resolve to when queried
+    /// * `payment_asset` - The asset used to pay for the registration
     ///
     /// # Reverts
     ///
@@ -35,7 +37,7 @@ abi NameRegistry {
     /// * If the payment is insufficient to cover the cost for the duration
     /// * If the incorrect asset is sent
     #[payable, storage(read, write)]
-    fn register(name: str[8], duration: u64, owner: Identity, identity: Identity);
+    fn register(name: str[8], duration: u64, owner: Identity, identity: Identity, payment_asset: ContractId);
 
     /// Adds a new asset as a method of payment
     ///
