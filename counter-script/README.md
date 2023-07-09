@@ -9,8 +9,8 @@
     <a href="https://crates.io/crates/forc/0.40.1" alt="forc">
         <img src="https://img.shields.io/badge/forc-v0.40.1-orange" />
     </a>
-    <a href="https://crates.io/crates/fuel-core/0.17.9" alt="fuel-core">
-        <img src="https://img.shields.io/badge/fuel--core-v0.17.9-yellow" />
+    <a href="https://crates.io/crates/fuel-core/0.18.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.18.3-yellow" />
     </a>
     <a href="https://crates.io/crates/fuels/0.43.0" alt="forc">
         <img src="https://img.shields.io/badge/fuels-v0.43.0-blue" />
@@ -19,9 +19,9 @@
 
 ## Overview
 
-The counter contract interaction script is a simple script example that demonstrates how one can make a script to call contracts in an arbitrary order, also demonstrating how to utilize scripts using the rust sdk, via the test.
+The script is an example which demonstrates how to call contracts in an arbitrary order and test them using the Rust SDK.
 
-A counter contract is deployed, with methods to manipulate the internal counter variable, these methods are called in the script
+The script manipulates contract state through ABI calls.
 
 More information can be found in the [specification](./project/SPECIFICATION.md).
 
@@ -32,7 +32,7 @@ The project consists of a smart contract.
 <!--Only show most important files e.g. script to run, build etc.-->
 
 ```sh
-name-registry
+counter_script
 ├── project
 │   ├── contract
 │   │   └── src/main.sw
