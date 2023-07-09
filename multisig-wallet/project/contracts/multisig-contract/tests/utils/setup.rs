@@ -1,10 +1,13 @@
 use fuels::{
-    accounts::fuel_crypto::{Message, SecretKey, Signature},
-    prelude::{
-        abigen, setup_single_asset_coins, setup_test_provider, Contract, Error, LoadConfiguration,
-        StorageConfiguration, TxParameters, WalletUnlocked, BASE_ASSET_ID,
+    accounts::{
+        fuel_crypto::{Message, SecretKey, Signature},
+        wallet::WalletUnlocked,
     },
-    tx::{Bytes32, Bytes64, ContractId},
+    prelude::{
+        abigen, setup_single_asset_coins, setup_test_provider, Contract, ContractId, Error,
+        LoadConfiguration, StorageConfiguration, TxParameters, BASE_ASSET_ID,
+    },
+    tx::Bytes32,
     types::{Bits256, Identity, B512},
 };
 
@@ -61,7 +64,7 @@ fn eip_191_personal_sign_format(message_hash: Message) -> Message {
     eip_191_data.append(&mut message_hash.to_vec());
 
     let eip_191_formatted_message = keccak_hash(&eip_191_data);
-    unsafe { Message::from_bytes_unchecked(*eip_191_formatted_message) } // TODO: Remove use of unsafe when feature is available: https://github.com/FuelLabs/fuels-rs/issues/698
+    Message::from_bytes(*eip_191_formatted_message)
 }
 
 fn ethereum_prefix(formatted_message: Message) -> Message {
@@ -72,7 +75,7 @@ fn ethereum_prefix(formatted_message: Message) -> Message {
     eth_prefix_data.append(&mut formatted_message.to_vec());
 
     let eth_prefixed_message = keccak_hash(eth_prefix_data);
-    unsafe { Message::from_bytes_unchecked(*eth_prefixed_message) } // TODO: Remove use of unsafe when feature is available: https://github.com/FuelLabs/fuels-rs/issues/698
+    Message::from_bytes(*eth_prefixed_message)
 }
 
 pub(crate) async fn format_and_sign(
@@ -94,7 +97,7 @@ pub(crate) async fn format_and_sign(
 
     let signature = Signature::sign(&private_key, &prefixed_message);
 
-    let signature_bytes: Bytes64 = Bytes64::try_from(signature).unwrap();
+    let signature_bytes: [u8; 64] = signature.into();
 
     let signature = B512::from((
         Bits256(signature_bytes[..32].try_into().unwrap()),
