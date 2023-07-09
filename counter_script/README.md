@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset=".docs/cc-interaction-script-logo-dark-theme.png">
-        <img alt="SwayApps CC Interaction Script Logo" width="400px" src=".docs/cc-interaction-script-logo-light-theme.png">
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/counter-script-logo-dark-theme.png">
+        <img alt="SwayApps Counter Script Logo" width="400px" src=".docs/counter-script-logo-light-theme.png">
     </picture>
 </p>
 
@@ -51,17 +51,12 @@ name-registry
 
 ## Running the project
 
-In order to run the subsequent commands change into the following directory `/path/to/counter_contract_interaction_script/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/counter_script/project/<here>`.
 
 #### Program compilation
 
 ```bash
-cd contract
 forc build --locked
-cd ..
-cd script
-forc build --locked
-cd ..
 ```
 
 #### Running the tests
