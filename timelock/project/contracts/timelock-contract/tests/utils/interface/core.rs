@@ -1,13 +1,17 @@
-use fuels::{contract::call_response::FuelCallResponse, prelude::*};
+use crate::utils::setup::{Asset, Timelock};
+use fuels::{
+    accounts::wallet::WalletUnlocked,
+    prelude::Bytes,
+    programs::call_response::FuelCallResponse,
+    types::{Bits256, Identity},
+};
 
-use crate::utils::setup::{Asset, Bytes, Identity, Timelock};
-
-pub async fn cancel(contract: &Timelock, id: u64) -> FuelCallResponse<()> {
+pub async fn cancel(contract: &Timelock<WalletUnlocked>, id: Bits256) -> FuelCallResponse<()> {
     contract.methods().cancel(id).call().await.unwrap()
 }
 
 pub async fn execute(
-    contract: &Timelock,
+    contract: &Timelock<WalletUnlocked>,
     recipient: &Identity,
     asset: Option<Asset>,
     data: Bytes,
@@ -15,7 +19,7 @@ pub async fn execute(
 ) -> FuelCallResponse<()> {
     contract
         .methods()
-        .execute(recipient.clone(), asset, data, timestamp)
+        .execute(recipient.clone(), asset, Some(data), timestamp)
         .append_variable_outputs(1)
         .call()
         .await
@@ -23,11 +27,16 @@ pub async fn execute(
 }
 
 pub async fn queue(
-    contract: &Timelock,
+    contract: &Timelock<WalletUnlocked>,
     recipient: &Identity,
     asset: Option<Asset>,
     data: Bytes,
     timestamp: u64,
 ) -> FuelCallResponse<()> {
-    contract.methods().queue(recipient.clone(), asset, data, timestamp).call().await.unwrap()
+    contract
+        .methods()
+        .queue(recipient.clone(), asset, Some(data), timestamp)
+        .call()
+        .await
+        .unwrap()
 }
