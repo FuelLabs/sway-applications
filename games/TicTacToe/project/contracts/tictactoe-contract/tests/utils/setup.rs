@@ -1,7 +1,8 @@
 use fuels::{
+    accounts::wallet::WalletUnlocked,
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Contract, LoadConfiguration,
-        StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+        StorageConfiguration, TxParameters, WalletsConfig,
     },
     types::Identity,
 };
