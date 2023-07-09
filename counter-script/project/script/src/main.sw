@@ -1,6 +1,6 @@
 script;
 
-use contract_abi::CounterContract;
+use interface::CounterContract;
 
 fn main(counter_contract_id: ContractId, clear_count: bool) -> u64 {
     let abi_cast = abi(CounterContract, counter_contract_id.value); // An abi cast is a way to call a contract at a given contract_id with the given abi

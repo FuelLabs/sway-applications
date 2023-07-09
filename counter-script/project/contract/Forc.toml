@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "counter_contract"
 
 [dependencies]
-contract_abi = { path = "../contract_abi" }
+interface = { path = "../interface" }

@@ -1,6 +1,6 @@
 contract;
 
-use contract_abi::CounterContract;
+use interface::CounterContract;
 
 storage {
     count: u64 = 0,

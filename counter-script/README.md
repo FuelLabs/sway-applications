@@ -36,7 +36,7 @@ counter_script
 ├── project
 │   ├── contract
 │   │   └── src/main.sw
-│   ├── contract_abi
+│   ├── interface
 │   │   └── src/lib.sw
 │   ├── script
 │   │   └── src/main.sw

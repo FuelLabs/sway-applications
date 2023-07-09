@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "interaction_script"
 
 [dependencies]
-contract_abi = { path = "../contract_abi" }
+interface = { path = "../interface" }
