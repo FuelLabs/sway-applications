@@ -5,11 +5,8 @@ use fuels::{
     types::{Identity, SizedAsciiString},
 };
 
-pub(crate) async fn rate(
-    instance: &NameRegistry<WalletUnlocked>,
-    id: ContractId,
-) -> FuelCallResponse<Option<u64>> {
-    instance.methods().rate(id).call().await.unwrap()
+pub(crate) async fn rate(instance: &NameRegistry<WalletUnlocked>, id: ContractId) -> Option<u64> {
+    instance.methods().rate(id).call().await.unwrap().value
 }
 
 pub(crate) async fn expiry(
