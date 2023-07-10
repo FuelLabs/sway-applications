@@ -2,9 +2,10 @@ use fuels::{
     accounts::wallet::WalletUnlocked,
     prelude::{abigen, Contract, LoadConfiguration, StorageConfiguration, TxParameters},
     programs::contract::SettableContract,
-    test_helpers::{launch_custom_provider_and_get_wallets, WalletsConfig},
+    test_helpers::{launch_provider_and_get_wallet, WalletsConfig},
 };
 
+// The following macro will automatically generate some structs for you, to easily interact with contracts and scripts.
 abigen!(
     Contract(
         name = "CounterContract",
@@ -22,48 +23,42 @@ const STORAGE_CONFIGURATION_PATH: &str =
 const CONTRACT_BIN_PATH: &str = "../contract/out/debug/counter_contract.bin";
 const SCRIPT_BIN_PATH: &str = "../script/out/debug/interaction_script.bin";
 
+// This function will setup the test environment for you. It will return a tuple containing the contract instance and the script instance.
 pub async fn setup() -> (
     CounterContract<WalletUnlocked>,
     InteractionScript<WalletUnlocked>,
 ) {
-    let number_of_wallets = 1;
-    let coins_per_wallet = 1;
-    let amount_per_coin = 1_000_000_000;
+    // The `launch_provider_and_get_wallet` function will launch a local provider and create a wallet for you.
+    let wallet = launch_provider_and_get_wallet().await;
 
-    let config = WalletsConfig::new(
-        Some(number_of_wallets),
-        Some(coins_per_wallet),
-        Some(amount_per_coin),
-    );
-
-    let mut wallets = launch_custom_provider_and_get_wallets(config, None, None).await;
-
-    let wallet = wallets.pop().unwrap();
-
-    let storage_configuration = StorageConfiguration::load_from(STORAGE_CONFIGURATION_PATH);
+    // The following code will load the storage configuration (default storage values) from the contract and create a configuration object.
+    let storage_configuration = StorageConfiguration::load_from(STORAGE_CONFIGURATION_PATH).unwrap();
     let configuration =
-        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
+        LoadConfiguration::default().set_storage_configuration(storage_configuration);
 
+    // The following code will deploy the contract and store the returned ContractId in the `id` variable.
     let id = Contract::load_from(CONTRACT_BIN_PATH, configuration)
         .unwrap()
         .deploy(&wallet, TxParameters::default())
         .await
         .unwrap();
 
-    let instance = CounterContract::new(id, wallet.clone());
-
+    // Creates a contract instance and a script instance. Which allow for easy interaction with the contract and script.
+    let contract_instance = CounterContract::new(id, wallet.clone());
     let script_instance = InteractionScript::new(wallet, SCRIPT_BIN_PATH);
 
-    (instance, script_instance)
+    (contract_instance, script_instance)
 }
 
 #[tokio::test]
 async fn test_script_clearing_at_end() {
-    let (instance, script_instance) = setup().await;
+    // Call the setup function to deploy the contract and create the contract and script instances.
+    let (contract_instance, script_instance) = setup().await;
 
+    // Execute the script with the `clear` parameter set to true.
     let result = script_instance
-        .main(instance.id(), true)
-        .set_contracts(&[&instance])
+        .main(contract_instance.id(), true) // Passing the main function parameters defined in the sway script code.
+        .set_contracts(&[&contract_instance]) // Defining the contracts that the script will interact with.
         .call()
         .await
         .unwrap()
@@ -74,15 +69,17 @@ async fn test_script_clearing_at_end() {
 
 #[tokio::test]
 async fn test_script_not_clearing_at_end() {
-    let (instance, script_instance) = setup().await;
+    // Call the setup function to deploy the contract and create the contract and script instances.
+    let (contract_instance, script_instance) = setup().await;
 
+    // Execute the script with the `clear` parameter set to false.
     let result = script_instance
-        .main(instance.id(), false)
-        .set_contracts(&[&instance])
+        .main(contract_instance.id(), true) // Passing the main function parameters defined in the sway script code.
+        .set_contracts(&[&contract_instance]) // Defining the contracts that the script will interact with.
         .call()
         .await
         .unwrap()
         .value;
-
+    
     assert_eq!(result, 2);
 }
