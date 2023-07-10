@@ -1,9 +1,9 @@
 script;
 
-use interface::CounterContract;
+use interface::Counter;
 
 fn main(counter_contract_id: ContractId, clear_count: bool) -> u64 {
-    let abi_cast = abi(CounterContract, counter_contract_id.value); // An abi cast is a way to call a contract at a given contract_id with the given abi
+    let abi_cast = abi(Counter, counter_contract_id.value); // An abi cast is a way to call a contract at a given contract_id with the given abi
 
     let a = abi_cast.count(); // Here we call the count method, which returns the current count
 

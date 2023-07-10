@@ -1,6 +1,6 @@
 library;
 
-abi CounterContract {
+abi Counter {
     #[storage(read, write)]
     fn increment() -> u64;
     #[storage(read)]

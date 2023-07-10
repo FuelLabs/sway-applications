@@ -1,12 +1,12 @@
 contract;
 
-use interface::CounterContract;
+use interface::Counter;
 
 storage {
     count: u64 = 0,
 }
 
-impl CounterContract for Contract {
+impl Counter for Contract {
     #[storage(read, write)]
     fn increment() -> u64 {
         storage.count.write(storage.count.read() + 1);

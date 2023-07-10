@@ -46,7 +46,7 @@ The script contains two input parameters
 
 ### `counter_contract_id: ContractId`
 
-This is the ContractId of the CounterContract that we want to interact with
+This is the ContractId of the counter contract that we want to interact with
 
 ### `clear_count: bool`
 
@@ -71,5 +71,5 @@ Following is the order of execution:
 
 # Overview of the Rust integration test
 
-The rust integration test deploys the CounterContract, and then executes the script. One of the tests is with the `clear_count` set to true, another test is with the `clear_count` set to false.
+The rust integration test deploys the counter contract, and then executes the script. One of the tests is with the `clear_count` set to true, another test is with the `clear_count` set to false.
 
