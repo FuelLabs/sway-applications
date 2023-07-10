@@ -9,8 +9,9 @@ storage {
 impl Counter for Contract {
     #[storage(read, write)]
     fn increment() -> u64 {
-        storage.count.write(storage.count.read() + 1);
-        storage.count.read()
+        let count = storage.count.read() + 1;
+        storage.count.write(count);
+        count
     }
 
     #[storage(read)]
