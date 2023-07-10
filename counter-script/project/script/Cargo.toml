@@ -12,4 +12,4 @@ tokio = { version = "1.12", features = ["rt", "macros"] }
 [[test]]
 harness = true
 name = "integration_tests"
-path = "src/harness.rs"
+path = "tests/harness.rs"
