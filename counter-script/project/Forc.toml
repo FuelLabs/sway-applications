@@ -1,5 +1,2 @@
 [workspace]
-members = [
-    "./contract",
-    "./script"
-]
+members = ["./contract", "./script"]
