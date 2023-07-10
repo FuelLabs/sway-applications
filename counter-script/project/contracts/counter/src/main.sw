@@ -1,6 +1,6 @@
 contract;
 
-use interface::Counter;
+use libraries::Counter;
 
 storage {
     count: u64 = 0,

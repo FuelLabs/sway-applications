@@ -1,6 +1,6 @@
 script;
 
-use interface::Counter;
+use libraries::Counter;
 
 fn main(contract_id: ContractId, clear: bool) -> u64 {
     // An abi cast is a way to call a contract at a given contract_id with the given abi

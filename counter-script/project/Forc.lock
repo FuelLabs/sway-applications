@@ -6,7 +6,7 @@ source = 'path+from-root-9BFE6D5D0CBDF740'
 name = 'counter_contract'
 source = 'member'
 dependencies = [
-    'interface',
+    'libraries',
     'std',
 ]
 
@@ -14,12 +14,12 @@ dependencies = [
 name = 'interaction_script'
 source = 'member'
 dependencies = [
-    'interface',
+    'libraries',
     'std',
 ]
 
 [[package]]
-name = 'interface'
+name = 'libraries'
 source = 'path+from-root-4F344E6D2A50F28B'
 dependencies = ['std']
 
