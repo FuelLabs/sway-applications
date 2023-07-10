@@ -2,7 +2,7 @@ use fuels::{
     accounts::wallet::WalletUnlocked,
     prelude::{abigen, Contract, LoadConfiguration, StorageConfiguration, TxParameters},
     programs::contract::SettableContract,
-    test_helpers::{launch_provider_and_get_wallet, WalletsConfig},
+    test_helpers::launch_provider_and_get_wallet,
 };
 
 // The following macro will automatically generate some structs for you, to easily interact with contracts and scripts.
@@ -32,7 +32,8 @@ pub async fn setup() -> (
     let wallet = launch_provider_and_get_wallet().await;
 
     // The following code will load the storage configuration (default storage values) from the contract and create a configuration object.
-    let storage_configuration = StorageConfiguration::load_from(STORAGE_CONFIGURATION_PATH).unwrap();
+    let storage_configuration =
+        StorageConfiguration::load_from(STORAGE_CONFIGURATION_PATH).unwrap();
     let configuration =
         LoadConfiguration::default().set_storage_configuration(storage_configuration);
 
@@ -80,6 +81,6 @@ async fn test_script_not_clearing_at_end() {
         .await
         .unwrap()
         .value;
-    
+
     assert_eq!(result, 2);
 }
