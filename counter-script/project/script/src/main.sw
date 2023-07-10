@@ -13,10 +13,7 @@ fn main(contract_id: ContractId, clear: bool) -> u64 {
     let count = counter.increment();
     // After calling the increment method, the counter should increment by 1
     require(count == 1, "Counter should be 1");
-    // Again, we call the increment method
-    let count = counter.increment();
-    // After calling the increment method, the counter again increments by 1, so it should be 2
-    require(count == 2, "Counter should be 2");
+
     if clear {
         // Here we clear the counter if the `clear` argument passed to the script is true
         counter.clear();

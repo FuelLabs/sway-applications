@@ -75,12 +75,12 @@ async fn test_script_not_clearing_at_end() {
 
     // Execute the script with the `clear` parameter set to false.
     let result = script_instance
-        .main(contract_instance.id(), true) // Passing the main function parameters defined in the sway script code.
+        .main(contract_instance.id(), false) // Passing the main function parameters defined in the sway script code.
         .set_contracts(&[&contract_instance]) // Defining the contracts that the script will interact with.
         .call()
         .await
         .unwrap()
         .value;
 
-    assert_eq!(result, 2);
+    assert_eq!(result, 1);
 }
