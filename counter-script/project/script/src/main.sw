@@ -2,9 +2,9 @@ script;
 
 use interface::Counter;
 
-fn main(counter_contract_id: ContractId, clear_count: bool) -> u64 {
+fn main(contract_id: ContractId, clear: bool) -> u64 {
     // An abi cast is a way to call a contract at a given contract_id with the given abi
-    let abi_cast = abi(Counter, counter_contract_id.value);
+    let abi_cast = abi(Counter, contract_id.value);
     // Here we call the count method, which returns the current count
     let a = abi_cast.count(); 
     // As we just deployed the contract, the counter should be 0
@@ -17,8 +17,8 @@ fn main(counter_contract_id: ContractId, clear_count: bool) -> u64 {
     let a = abi_cast.increment(); 
     // After calling the increment method, the counter again increments by 1, so it should be 2
     require(a == 2, "Counter should be 2"); 
-    if clear_count {
-        // Here we clear the counter if the `clear_count` argument passed to the script is true
+    if clear {
+        // Here we clear the counter if the `clear` argument passed to the script is true
         abi_cast.clear(); 
     }
     // Getting the current count
