@@ -6,7 +6,7 @@ mod events;
 mod interface;
 
 use ::data_structures::Record;
-use ::errors::{AssetError, AuthorisationError, RegistrationValidityError};
+use ::errors::{AssetError, AuthorizationError, RegistrationValidityError};
 use ::events::{
     AssetRateEvent,
     IdentityChangedEvent,
@@ -24,13 +24,14 @@ use std::{
 };
 
 configurable {
+    /// The priviledged user with the ability to set assets for payment for the registry
     OWNER: Identity = Identity::Address(Address::from(ZERO_B256)),
 }
 
 storage {
     /// Cost rate per asset
     assets: StorageMap<ContractId, Option<u64>> = StorageMap {},
-    /// A mapping of names to an option of records, with a none representing an unregistered name
+    /// A mapping of names to records
     names: StorageMap<str[8], Record> = StorageMap {},
 }
 
@@ -39,14 +40,15 @@ impl NameRegistry for Contract {
     #[payable]
     #[storage(read, write)]
     fn extend(name: str[8], duration: u64, payment_asset: ContractId) {
-        require(storage.names.get(name).is_some(), RegistrationValidityError::NameNotRegistered);
+        let record = storage.names.get(name);
+        require(record.is_some(), RegistrationValidityError::NameNotRegistered);
 
         let rate = storage.assets.get(payment_asset);
 
         require(msg_asset_id() == payment_asset && rate.unwrap().is_some(), AssetError::IncorrectAssetSent);
         require((duration / 100) * rate.unwrap().unwrap() <= msg_amount(), AssetError::InsufficientPayment);
 
-        let mut record = storage.names.get(name).unwrap();
+        let mut record = record.unwrap();
         record.expiry = record.expiry + duration;
 
         storage.names.insert(name, record);
@@ -91,17 +93,18 @@ impl NameRegistry for Contract {
 
     #[storage(write)]
     fn set_asset(id: ContractId, rate: Option<u64>) {
-        require(msg_sender().unwrap() == OWNER, AuthorisationError::SenderNotOwner);
+        require(msg_sender().unwrap() == OWNER, AuthorizationError::SenderNotOwner);
         storage.assets.insert(id, rate);
         log(AssetRateEvent { id, rate });
     }
 
     #[storage(read, write)]
     fn set_identity(name: str[8], identity: Identity) {
-        require(storage.names.get(name).is_some(), RegistrationValidityError::NameNotRegistered);
-        let previous_record = storage.names.get(name).unwrap();
+        let record = storage.names.get(name);
+        require(record.is_some(), RegistrationValidityError::NameNotRegistered);
+        let previous_record = record.unwrap();
         require(timestamp() < previous_record.expiry, RegistrationValidityError::NameExpired);
-        require(previous_record.owner == msg_sender().unwrap(), AuthorisationError::SenderNotOwner);
+        require(previous_record.owner == msg_sender().unwrap(), AuthorizationError::SenderNotOwner);
 
         let new_record = Record::new(previous_record.expiry, identity, previous_record.owner);
 
@@ -116,10 +119,11 @@ impl NameRegistry for Contract {
 
     #[storage(read, write)]
     fn set_owner(name: str[8], owner: Identity) {
-        require(storage.names.get(name).is_some(), RegistrationValidityError::NameNotRegistered);
-        let previous_record = storage.names.get(name).unwrap();
+        let record = storage.names.get(name);
+        require(record.is_some(), RegistrationValidityError::NameNotRegistered);
+        let previous_record = record.unwrap();
         require(timestamp() < previous_record.expiry, RegistrationValidityError::NameExpired);
-        require(previous_record.owner == msg_sender().unwrap(), AuthorisationError::SenderNotOwner);
+        require(previous_record.owner == msg_sender().unwrap(), AuthorizationError::SenderNotOwner);
 
         let new_record = Record::new(previous_record.expiry, previous_record.identity, owner);
 
@@ -175,7 +179,9 @@ impl Info for Contract {
 
     #[storage(read)]
     fn rate(id: ContractId) -> Option<u64> {
-        // SAFETY TODO: will bump in newer release PR
-        storage.assets.get(id).unwrap()
+        match storage.assets.get(id) {
+            Option::Some(rate) => rate,
+            Option::None => Option::None,
+        }
     }
 }
