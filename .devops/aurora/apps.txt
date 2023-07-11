@@ -4,6 +4,7 @@ NFT
 OTC-swap-predicate
 airdrop
 auctions/english-auction
+counter-script
 escrow
 fractional-NFT
 fundraiser
