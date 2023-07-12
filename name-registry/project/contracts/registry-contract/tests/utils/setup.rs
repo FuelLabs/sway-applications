@@ -55,8 +55,12 @@ pub(crate) async fn setup() -> (NameRegistry<WalletUnlocked>, Account, WalletUnl
     let wallet2 = wallets.pop().unwrap();
 
     let storage_configuration = StorageConfiguration::load_from(CONTRACT_STORAGE_PATH);
-    let configuration =
-        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
+    let configurables = NameRegistryConfigurables::new()
+        .set_OWNER(Identity::Address(Address::from(wallet.address())));
+
+    let configuration = LoadConfiguration::default()
+        .set_storage_configuration(storage_configuration.unwrap())
+        .set_configurables(configurables);
 
     let id = Contract::load_from(CONTRACT_BINARY_PATH, configuration)
         .unwrap()
