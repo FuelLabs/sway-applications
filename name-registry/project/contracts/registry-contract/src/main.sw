@@ -24,7 +24,7 @@ use std::{
 };
 
 configurable {
-    /// The priviledged user with the ability to set assets for payment for the registry
+    /// The privileged user with the ability to set assets for payment for the registry
     OWNER: Identity = Identity::Address(Address::from(ZERO_B256)),
 }
 
