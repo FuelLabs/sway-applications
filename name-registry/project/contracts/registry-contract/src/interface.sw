@@ -91,7 +91,7 @@ abi NameRegistry {
     /// # Arguments
     ///
     /// * `name`: [str[8]] - The name to transfer the ownership of
-    /// * `new_owner`: [] - The new owner of the name
+    /// * `new_owner`: [Identity] - The new owner of the name
     ///
     /// # Reverts
     ///
