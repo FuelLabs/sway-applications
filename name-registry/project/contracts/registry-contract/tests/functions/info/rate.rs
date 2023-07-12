@@ -5,12 +5,10 @@ mod success {
     };
 
     #[tokio::test]
-    #[ignore]
     async fn asset_not_set_returns_none() {
-        // TODO: bug in older compiler, remove ignore when bumping versions, use matches! > assert_eq
         let (instance, _account, _wallet2) = setup().await;
         let value = rate(&instance, instance.contract_id().into()).await;
-        assert_eq!(None, value);
+        assert_eq!(value, None);
     }
 
     #[tokio::test]
