@@ -73,9 +73,7 @@ pub(crate) async fn setup() -> (ContractId, ContractId, Metadata, Metadata, u64)
 }
 
 pub(crate) async fn setup_wallets() -> (Vec<WalletUnlocked>, Vec<AssetId>) {
-    let deployer_wallet = WalletUnlocked::new_random(None);
-    let user_wallet = WalletUnlocked::new_random(None);
-    let mut wallets = vec![deployer_wallet, user_wallet];
+    let mut wallets = vec![WalletUnlocked::new_random(None), WalletUnlocked::new_random(None)];
 
     let num_assets = 3;
     let coins_per_asset = 1;
