@@ -1,2 +1,2 @@
 [workspace]
-members = ["./contracts/DAO-contract", "./contracts/test-artifacts/gov_token"]
+members = ["./contracts/DAO-contract"]
