@@ -148,10 +148,8 @@ pub struct PoolInfo {
 ///
 /// ### Fields
 ///
-/// * `other_asset_to_add`: `Asset` - The asset to be added to keep the ratio of the assets that make up the pool.
-/// If the ratio is not yet known, i.e., there is no liquidity, then the amount is 0 for preview purposes.
-/// * `liquidity_asset_to_receive`: `Asset` - The liquidity pool asset to be minted and transferred to the sender/
-/// If the ratio is not yet known, i.e., there is no liquidity, then the ratio is assumed to be 1 for preview purposes
+/// * `other_asset_to_add`: `Asset` - The asset to be added to keep the ratio of the assets that make up the pool. If the ratio is not yet known, i.e. there is no liquidity, then the amount is 0 for preview purposes.
+/// * `liquidity_asset_to_receive`: `Asset` - The liquidity pool asset to be minted and transferred to the sender. If the ratio is not yet known, i.e. there is no liquidity, then the ratio is assumed to be 1 for preview purposes.
 pub struct PreviewAddLiquidityInfo {
     other_asset_to_add: Asset,
     liquidity_asset_to_receive: Asset,

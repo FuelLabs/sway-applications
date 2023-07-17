@@ -17,7 +17,7 @@ pub enum InitError {
 ///
 /// ### Variants
 ///
-/// * `CannotAddLessThanMinimumLiquidity`: u64 - The amount liquidity added is less than the minimum amount.
+/// * `CannotAddLessThanMinimumLiquidity`: u64 - The amount of liquidity added is less than the minimum amount.
 /// * `DeadlinePassed`: `u64` - The deadline has passed.
 /// * `ExpectedNonZeroAmount`: ContractId - The input amount was not greater than zero.
 /// * `ExpectedNonZeroParameter`: ContractId - The parameter was not greater than zero.
