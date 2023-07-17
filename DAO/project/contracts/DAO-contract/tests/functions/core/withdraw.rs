@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::core::{constructor, deposit, withdraw},
-    setup::{mint, setup},
+    setup::setup,
 };
 use fuels::{prelude::CallParameters, types::AssetId};
 
@@ -14,14 +14,7 @@ mod success {
 
     #[tokio::test]
     async fn user_can_withdraw() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-
-        mint(
-            deployer.gov_token.as_ref().unwrap(),
-            asset_amount,
-            user.wallet.address(),
-        )
-        .await;
+        let (gov_token_id, _other_token_id, deployer, user, asset_amount) = setup().await;
 
         constructor(&deployer.dao_voting, gov_token_id).await;
 
@@ -63,14 +56,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "AmountCannotBeZero")]
     async fn on_withdraw_zero() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-
-        mint(
-            deployer.gov_token.as_ref().unwrap(),
-            asset_amount,
-            user.wallet.address(),
-        )
-        .await;
+        let (gov_token_id, _other_token_id, deployer, user, asset_amount) = setup().await;
 
         constructor(&deployer.dao_voting, gov_token_id).await;
 
@@ -82,14 +68,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "InsufficientBalance")]
     async fn on_not_enough_assets() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
-
-        mint(
-            deployer.gov_token.as_ref().unwrap(),
-            asset_amount,
-            user.wallet.address(),
-        )
-        .await;
+        let (gov_token_id, _other_token_id, deployer, user, asset_amount) = setup().await;
 
         constructor(&deployer.dao_voting, gov_token_id).await;
 

@@ -6,7 +6,7 @@ mod success {
 
     #[tokio::test]
     pub async fn user_can_get_governance_token_id() {
-        let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, _user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
         assert_eq!(
             governance_token_id(&deployer.dao_voting).await,
