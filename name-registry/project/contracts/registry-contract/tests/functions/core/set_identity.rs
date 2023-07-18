@@ -1,8 +1,11 @@
 use crate::utils::{
-    interface::core::{register, set_identity},
+    interface::core::{register, set_asset, set_identity},
     setup::{setup, REGISTER_DURATION},
 };
-use fuels::{prelude::Address, types::Identity};
+use fuels::{
+    prelude::{Address, ContractId},
+    types::Identity,
+};
 
 mod success {
     use super::*;
@@ -15,6 +18,7 @@ mod success {
     async fn can_set_identity() {
         let (instance, acc1, wallet2) = setup().await;
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
+        set_asset(&instance, ContractId::zeroed(), Some(1)).await;
 
         register(
             &instance,
@@ -22,6 +26,7 @@ mod success {
             REGISTER_DURATION,
             &acc1.identity(),
             &acc1.identity(),
+            ContractId::zeroed(),
         )
         .await;
 
@@ -60,6 +65,7 @@ mod revert {
     async fn cant_set_identity() {
         let (instance, acc1, wallet2) = setup().await;
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
+        set_asset(&instance, ContractId::zeroed(), Some(1)).await;
 
         register(
             &instance,
@@ -67,6 +73,7 @@ mod revert {
             REGISTER_DURATION,
             &acc1.identity(),
             &acc1.identity(),
+            ContractId::zeroed(),
         )
         .await;
 

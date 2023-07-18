@@ -3,15 +3,19 @@ use crate::utils::{interface::info::identity, setup::setup};
 mod success {
     use super::*;
     use crate::utils::{
-        interface::core::{register, set_identity},
+        interface::core::{register, set_asset, set_identity},
         setup::REGISTER_DURATION,
     };
-    use fuels::{prelude::Address, types::Identity};
+    use fuels::{
+        prelude::{Address, ContractId},
+        types::Identity,
+    };
 
     #[tokio::test]
     async fn can_get_identity() {
         let (instance, acc1, wallet2) = setup().await;
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
+        set_asset(&instance, ContractId::zeroed(), Some(1)).await;
 
         register(
             &instance,
@@ -19,6 +23,7 @@ mod success {
             REGISTER_DURATION,
             &acc1.identity(),
             &acc1.identity(),
+            ContractId::zeroed(),
         )
         .await;
 
