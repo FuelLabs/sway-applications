@@ -6,8 +6,8 @@
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.40.1" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.40.1-orange" />
+    <a href="https://crates.io/crates/forc/0.42.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.42.1-orange" />
     </a>
     <a href="https://crates.io/crates/fuel-core/0.18.3" alt="fuel-core">
         <img src="https://img.shields.io/badge/fuel--core-v0.18.3-yellow" />
@@ -32,14 +32,16 @@ The project consists of a smart contract.
 <!--Only show most important files e.g. script to run, build etc.-->
 
 ```sh
-counter_script
+counter-script
 ├── project
-│   ├── contract
-│   │   └── src/main.sw
-│   ├── interface
-│   │   └── src/lib.sw
-│   ├── script
-│   │   └── src/main.sw
+│   ├── contracts
+│   │   └── counter
+│   │       └── src/main.sw
+│   ├── libraries
+│   │   └── src/interface.sw
+│   ├── scripts
+│   │   └── interaction_script
+│   │       └── src/main.sw
 │   ├── tests/src/harness.rs
 │   ├── README.md
 │   └── SPECIFICATION.md
@@ -51,7 +53,7 @@ counter_script
 
 ## Running the project
 
-In order to run the subsequent commands change into the following directory `/path/to/counter_script/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/counter-script/project/<here>`.
 
 #### Program compilation
 
