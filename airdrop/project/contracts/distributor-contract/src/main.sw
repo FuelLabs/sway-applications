@@ -27,7 +27,7 @@ storage {
     admin: Option<Identity> = Option::None,
     /// The contract of the tokens which is to be distributed.
     asset: Option<ContractId> = Option::None,
-    /// Stores the ClaimState of users that have interacted with the Airdrop Distrubutor contract.
+    /// Stores the ClaimState of users that have interacted with the Airdrop Distributor contract.
     /// Maps (user => claim)
     claims: StorageMap<Identity, ClaimState> = StorageMap {},
     /// The block at which the claiming period will end.
@@ -94,13 +94,13 @@ impl AirdropDistributor for Contract {
         merkle_root: b256,
         number_of_leaves: u64,
     ) {
-        // If `end_block` is set to a value other than 0, we know that the contructor has already
+        // If `end_block` is set to a value other than 0, we know that the constructor has already
         // been called.
         require(storage.end_block.read() == 0, InitError::AlreadyInitialized);
         require(msg_amount() > 0, InitError::CannotAirdropZeroTokens);
 
         let asset = msg_asset_id();
-        storage.end_block.write(height() + claim_time);
+        storage.end_block.write(claim_time + height());
         storage.merkle_root.write(Option::Some(merkle_root));
         storage.asset.write(Option::Some(asset));
         storage.number_of_leaves.write(number_of_leaves);
