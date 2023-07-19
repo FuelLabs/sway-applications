@@ -64,15 +64,15 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic]
+    #[should_panic(expected = "IncorrectAssetSent")]
     async fn with_incorrect_asset() {
-        let (gov_token_id, other_token_id, deployer, user, asset_amount) = setup().await;
+        let (gov_token_id, other_token_id, deployer, _user, asset_amount) = setup().await;
 
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let call_params =
             CallParameters::new(asset_amount, AssetId::from(*other_token_id), 100_000);
-        deposit(&user.dao_voting, call_params).await;
+        deposit(&deployer.dao_voting, call_params).await;
     }
 
     #[tokio::test]
