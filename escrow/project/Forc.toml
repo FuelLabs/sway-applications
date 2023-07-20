@@ -1,2 +1,2 @@
 [workspace]
-members = ["./contracts/escrow-contract", "./contracts/test-artifacts/asset"]
+members = ["./contracts/escrow-contract"]
