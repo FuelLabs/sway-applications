@@ -37,7 +37,6 @@ pub async fn setup() -> (Timelock<WalletUnlocked>, WalletUnlocked, WalletUnlocke
         .deploy(&wallet, TxParameters::default())
         .await
         .unwrap();
-    //
 
     let instance = Timelock::new(id.clone(), wallet.clone());
 
