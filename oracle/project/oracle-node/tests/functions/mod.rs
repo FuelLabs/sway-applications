@@ -2,9 +2,7 @@ use async_trait::async_trait;
 use fuels::tx::Receipt;
 use futures::executor::block_on;
 use oracle_node::{PriceProvider, PriceUpdater};
-use std::borrow::BorrowMut;
-use std::sync::Arc;
-use std::time::Instant;
+use std::{borrow::BorrowMut, sync::Arc, time::Instant};
 use tokio::sync::Mutex;
 
 mod run;
