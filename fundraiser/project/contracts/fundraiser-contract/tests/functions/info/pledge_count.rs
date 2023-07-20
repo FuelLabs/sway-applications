@@ -5,7 +5,7 @@ mod success {
             core::{create_campaign, pledge},
             info::pledge_count,
         },
-        setup::{identity, mint, setup},
+        setup::{identity, setup},
     };
 
     #[tokio::test]
@@ -22,12 +22,6 @@ mod success {
     async fn returns_one() {
         let (author, user, asset, _, defaults) = setup().await;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
