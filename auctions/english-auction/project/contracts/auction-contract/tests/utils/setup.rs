@@ -1,11 +1,12 @@
 use fuels::{
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Bech32ContractId, Config, Contract,
-        ContractId, LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked,
-        WalletsConfig,
+        abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Bech32ContractId,
+        Config, Contract, ContractId, LoadConfiguration, StorageConfiguration, TxParameters,
+        WalletUnlocked, WalletsConfig, BASE_ASSET_ID,
     },
     types::Identity,
 };
+use rand::Fill;
 
 abigen!(
     Contract(
@@ -16,20 +17,14 @@ abigen!(
         name = "Nft",
         abi = "./contracts/test-artifacts/NFT/out/debug/NFT-abi.json"
     ),
-    Contract(
-        name = "MyAsset",
-        abi = "./contracts/test-artifacts/asset/out/debug/asset-abi.json"
-    ),
 );
 
 const AUCTION_CONTRACT_BINARY_PATH: &str = "./out/debug/auction-contract.bin";
 const AUCTION_CONTRACT_STORAGE_PATH: &str = "./out/debug/auction-contract-storage_slots.json";
-const NATIVE_ASSET_BINARY_PATH: &str = "../test-artifacts/asset/out/debug/asset.bin";
 const NFT_CONTRACT_BINARY_PATH: &str = "../test-artifacts/NFT/out/debug/NFT.bin";
 const NFT_CONTRACT_STORAGE_PATH: &str = "../test-artifacts/NFT/out/debug/NFT-storage_slots.json";
 
 pub(crate) struct Metadata {
-    pub(crate) asset: MyAsset<WalletUnlocked>,
     pub(crate) auction: EnglishAuction<WalletUnlocked>,
     pub(crate) nft: Nft<WalletUnlocked>,
     pub(crate) wallet: WalletUnlocked,
@@ -60,20 +55,27 @@ pub(crate) async fn create_auction_copy(
 
 pub(crate) async fn defaults_nft() -> (u64, u64, u64, u64) {
     let sell_count = 1;
-    let inital_count = 1;
+    let initial_count = 1;
     let reserve_count = 1;
     let duration = 10;
 
-    (sell_count, inital_count, reserve_count, duration)
+    (sell_count, initial_count, reserve_count, duration)
 }
 
-pub(crate) async fn defaults_token() -> (u64, u64, u64, u64) {
+pub(crate) async fn defaults_token() -> (u64, u64, u64, u64, u64) {
     let sell_amount = 10;
     let initial_price = 1;
     let reserve_price = 10;
     let duration = 10;
+    let initial_wallet_amount = 1_000_000;
 
-    (sell_amount, initial_price, reserve_price, duration)
+    (
+        sell_amount,
+        initial_price,
+        reserve_price,
+        duration,
+        initial_wallet_amount,
+    )
 }
 
 pub(crate) async fn nft_asset(asset_id: ContractId, token_id: u64) -> AuctionAsset {
@@ -93,23 +95,40 @@ pub(crate) async fn setup() -> (
     ContractId,
     ContractId,
 ) {
-    let number_of_wallets = 4;
-    let coins_per_wallet = 1;
-    let coin_amount = 1000000;
-    let config = Config {
+    let mut rng = rand::thread_rng();
+    let num_coins = 1;
+    let coin_amount = 1_000_000;
+
+    let base_asset = AssetConfig {
+        id: BASE_ASSET_ID,
+        num_coins,
+        coin_amount,
+    };
+    let mut buy_asset_id = AssetId::zeroed();
+    buy_asset_id.try_fill(&mut rng).unwrap();
+    let buy_asset = AssetConfig {
+        id: buy_asset_id,
+        num_coins,
+        coin_amount,
+    };
+    let mut sell_asset_id = AssetId::zeroed();
+    sell_asset_id.try_fill(&mut rng).unwrap();
+    let sell_asset = AssetConfig {
+        id: sell_asset_id,
+        num_coins,
+        coin_amount,
+    };
+    let assets = vec![base_asset, buy_asset, sell_asset];
+
+    let num_wallets = 4;
+    let wallet_config = WalletsConfig::new_multiple_assets(num_wallets, assets);
+
+    let provider_config = Config {
         manual_blocks_enabled: true, // Necessary so the `produce_blocks` API can be used locally
         ..Config::local_node()
     };
-    let mut wallets = launch_custom_provider_and_get_wallets(
-        WalletsConfig::new(
-            Some(number_of_wallets),
-            Some(coins_per_wallet),
-            Some(coin_amount),
-        ),
-        Some(config),
-        None,
-    )
-    .await;
+    let mut wallets =
+        launch_custom_provider_and_get_wallets(wallet_config, Some(provider_config), None).await;
 
     let wallet1 = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
@@ -134,57 +153,25 @@ pub(crate) async fn setup() -> (
         .deploy(&wallet1, TxParameters::default())
         .await
         .unwrap();
-    let sell_asset_id = Contract::load_from(NATIVE_ASSET_BINARY_PATH, LoadConfiguration::default())
-        .unwrap()
-        .deploy(&wallet1, TxParameters::default())
-        .await
-        .unwrap();
 
     let sell_nft_id = Contract::load_from(NFT_CONTRACT_BINARY_PATH, nft_configuration)
         .unwrap()
         .deploy(&wallet1, TxParameters::default())
         .await
         .unwrap();
-    let buy_asset_id = Contract::load_from(
-        NATIVE_ASSET_BINARY_PATH,
-        LoadConfiguration::default().set_salt([1u8; 32]),
-    )
-    .unwrap()
-    .deploy(&wallet3, TxParameters::default())
-    .await
-    .unwrap();
     let buy_nft_id = Contract::load_from(NFT_CONTRACT_BINARY_PATH, buy_nft_configuration)
         .unwrap()
         .deploy(&wallet3, TxParameters::default())
         .await
         .unwrap();
 
-    let deploy_wallet = user(
-        wallet1,
-        sell_asset_id.clone(),
-        auction_id.clone(),
-        sell_nft_id.clone(),
-    )
-    .await;
-    let seller = user(
-        wallet2,
-        sell_asset_id.clone(),
-        auction_id.clone(),
-        sell_nft_id.clone(),
-    )
-    .await;
-    let buyer1 = user(
-        wallet3,
-        buy_asset_id.clone(),
-        auction_id.clone(),
-        buy_nft_id.clone(),
-    )
-    .await;
+    let deploy_wallet = user(wallet1, auction_id.clone(), sell_nft_id.clone()).await;
+    let seller = user(wallet2, auction_id.clone(), sell_nft_id.clone()).await;
+    let buyer1 = user(wallet3, auction_id.clone(), buy_nft_id.clone()).await;
     let buyer2 = user(
         wallet4,
-        buy_asset_id.clone(),
         auction_id.clone(),
-        buy_asset_id.clone(),
+        ContractId::from(*buy_asset_id).into(),
     )
     .await;
 
@@ -194,9 +181,9 @@ pub(crate) async fn setup() -> (
         buyer1,
         buyer2,
         auction_id.into(),
-        sell_asset_id.into(),
+        ContractId::from(*sell_asset_id),
         sell_nft_id.into(),
-        buy_asset_id.into(),
+        ContractId::from(*buy_asset_id),
         buy_nft_id.into(),
     )
 }
@@ -209,12 +196,10 @@ pub(crate) async fn token_asset(asset_id: ContractId, amount: u64) -> AuctionAss
 
 async fn user(
     user_wallet: WalletUnlocked,
-    asset_id: Bech32ContractId,
     auction_id: Bech32ContractId,
     nft_id: Bech32ContractId,
 ) -> Metadata {
     Metadata {
-        asset: MyAsset::new(asset_id, user_wallet.clone()),
         auction: EnglishAuction::new(auction_id, user_wallet.clone()),
         nft: Nft::new(nft_id, user_wallet.clone()),
         wallet: user_wallet,
