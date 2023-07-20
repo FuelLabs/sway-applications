@@ -1,5 +1,3 @@
 [workspace]
 resolver = "2"
-members = [
-    "./contracts/auction-contract",
-]
+members = ["./contracts/auction-contract"]
