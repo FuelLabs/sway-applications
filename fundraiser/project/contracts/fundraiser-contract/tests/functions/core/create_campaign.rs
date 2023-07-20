@@ -227,7 +227,6 @@ mod revert {
         let (author, _, _, _, defaults) = setup().await;
         let deadline = 0;
 
-        // Reverts
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -244,7 +243,6 @@ mod revert {
         let (author, _, _, _, defaults) = setup().await;
         let target_amount = 0;
 
-        // Reverts
         create_campaign(
             &author.contract,
             &defaults.asset_id,
