@@ -78,7 +78,7 @@ impl Fundraiser for Contract {
         require(campaign_info.author == msg_sender().unwrap(), UserError::UnauthorizedUser);
 
         // The campaign can only be cancelled before it has reached its deadline (ended)
-        require(height() < campaign_info.deadline, CampaignError::CampaignEnded);
+        require(campaign_info.deadline > height(), CampaignError::CampaignEnded);
 
         // User cannot cancel a campaign that has already been cancelled
         // Given the logic below this is unnecessary aside from ignoring event spam
@@ -139,7 +139,7 @@ impl Fundraiser for Contract {
         target_amount: u64,
     ) {
         // Users cannot interact with a campaign that has already ended (is in the past)
-        require(height() < deadline, CreationError::DeadlineMustBeInTheFuture);
+        require(deadline > height(), CreationError::DeadlineMustBeInTheFuture);
 
         // A campaign must have a target to reach and therefore 0 is an invalid amount
         require(0 < target_amount, CreationError::TargetAmountCannotBeZero);
@@ -194,7 +194,7 @@ impl Fundraiser for Contract {
 
         // The users should only have the ability to pledge to campaigns that have not reached their
         // deadline (ended naturally - not been cancelled)
-        require(height() < campaign_info.deadline, CampaignError::CampaignEnded);
+        require(campaign_info.deadline > height(), CampaignError::CampaignEnded);
 
         // The campaign specifies an asset that it accepts therefore the user must pledge the correct
         // asset in order to update the state of the campaign
