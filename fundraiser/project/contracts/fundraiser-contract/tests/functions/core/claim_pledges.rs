@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::core::{cancel_campaign, claim_pledges, create_campaign, pledge},
-    setup::{mint, setup},
+    setup::setup,
 };
 
 mod success {
@@ -17,14 +17,8 @@ mod success {
         let (author, user, asset, _, defaults) = setup().await;
         let beneficiary = identity(author.wallet.address()).await;
         let provider = author.wallet.provider().unwrap();
-        let deadline = provider.latest_block_height().await.unwrap() + 4;
+        let deadline = provider.latest_block_height().await.unwrap() + 3;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -36,7 +30,7 @@ mod success {
 
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         assert_eq!(
-            0,
+            defaults.initial_wallet_amount,
             author
                 .wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
@@ -50,7 +44,7 @@ mod success {
 
         assert_eq!(*event, ClaimedEvent { campaign_id: 1 });
         assert_eq!(
-            defaults.target_amount,
+            defaults.initial_wallet_amount + defaults.target_amount,
             author
                 .wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
@@ -86,7 +80,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         claim_pledges(&author.contract, 0).await;
     }
 
@@ -104,7 +97,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         claim_pledges(&author.contract, 100).await;
     }
 
@@ -122,7 +114,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         claim_pledges(&user.contract, 1).await;
     }
 
@@ -133,12 +124,6 @@ mod revert {
         let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 7;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -149,7 +134,6 @@ mod revert {
         .await;
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
-        // Reverts
         claim_pledges(&author.contract, 1).await;
     }
 
@@ -169,7 +153,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         claim_pledges(&author.contract, 1).await;
     }
 
@@ -178,14 +161,8 @@ mod revert {
     async fn when_claiming_more_than_once() {
         let (author, user, asset, _, defaults) = setup().await;
         let provider = author.wallet.provider().unwrap();
-        let deadline = provider.latest_block_height().await.unwrap() + 4;
+        let deadline = provider.latest_block_height().await.unwrap() + 3;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -197,7 +174,6 @@ mod revert {
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         claim_pledges(&author.contract, 1).await;
 
-        // Reverts
         claim_pledges(&author.contract, 1).await;
     }
 
@@ -206,14 +182,8 @@ mod revert {
     async fn when_cancelled() {
         let (author, user, asset, _, defaults) = setup().await;
         let provider = author.wallet.provider().unwrap();
-        let deadline = provider.latest_block_height().await.unwrap() + 5;
+        let deadline = provider.latest_block_height().await.unwrap() + 4;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -225,7 +195,6 @@ mod revert {
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         cancel_campaign(&author.contract, 1).await;
 
-        // Reverts
         claim_pledges(&author.contract, 1).await;
     }
 }
