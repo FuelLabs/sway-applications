@@ -44,7 +44,7 @@ impl EnglishAuction for Contract {
         let mut auction = auction.unwrap();
         let sender = msg_sender().unwrap();
         require(sender != auction.seller, UserError::BidderIsSeller);
-        require(auction.state == State::Open && height() <= auction.end_block, AccessError::AuctionIsNotOpen);
+        require(auction.state == State::Open && auction.end_block >= height(), AccessError::AuctionIsNotOpen);
         require(bid_asset == auction.bid_asset, InputError::IncorrectAssetProvided);
 
         // Combine the user's previous deposits and the current bid for the
@@ -69,7 +69,7 @@ impl EnglishAuction for Contract {
                 require(bid_asset.amount() == msg_amount(), InputError::IncorrectAmountProvided);
                 require(bid_asset.asset_id() == msg_asset_id(), InputError::IncorrectAssetProvided);
                 // Ensure this bid is greater than initial bid and the total deposits are greater 
-                // than the current winnning bid
+                // than the current winning bid
                 // TODO: Move this outside the match statement once StorageVec is supported in structs
                 // This issue can be tracked here: https://github.com/FuelLabs/sway/issues/2465
                 require(token_asset.amount() >= auction.initial_price, InputError::InitialPriceNotMet);
@@ -107,7 +107,7 @@ impl EnglishAuction for Contract {
         require(auction.is_some(), InputError::AuctionDoesNotExist);
 
         let mut auction = auction.unwrap();
-        require(auction.state == State::Open && height() <= auction.end_block, AccessError::AuctionIsNotOpen);
+        require(auction.state == State::Open && auction.end_block >= height(), AccessError::AuctionIsNotOpen);
         require(msg_sender().unwrap() == auction.seller, AccessError::SenderIsNotSeller);
 
         // Update and store the auction's information
@@ -164,7 +164,7 @@ impl EnglishAuction for Contract {
         }
 
         // Setup auction
-        let auction = Auction::new(bid_asset, height() + duration, initial_price, reserve_price, sell_asset, seller);
+        let auction = Auction::new(bid_asset, duration + height(), initial_price, reserve_price, sell_asset, seller);
 
         // Store the auction information
         let total_auctions = storage.total_auctions.read();
@@ -189,8 +189,8 @@ impl EnglishAuction for Contract {
 
         // Cannot withdraw if the auction is still on going
         let mut auction = auction.unwrap();
-        require(auction.state == State::Closed || height() >= auction.end_block, AccessError::AuctionIsNotClosed);
-        if (height() >= auction.end_block
+        require(auction.state == State::Closed || auction.end_block <= height(), AccessError::AuctionIsNotClosed);
+        if (auction.end_block <= height()
             && auction.state == State::Open)
         {
             auction.state = State::Closed;
