@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::core::{create_escrow, deposit, return_deposit},
-    setup::{create_arbiter, create_asset, mint, setup},
+    setup::{create_arbiter, create_asset, setup},
 };
 
 mod success {
@@ -20,8 +20,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -34,7 +32,10 @@ mod success {
         .await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
         assert!(matches!(
             escrows(&seller, 0).await.unwrap().state,
             State::Pending
@@ -43,7 +44,7 @@ mod success {
         let response = return_deposit(&seller, 0).await;
 
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
         assert!(matches!(
@@ -65,8 +66,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -80,8 +79,14 @@ mod success {
         propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - (2 * defaults.asset_amount),
+            asset_amount(&defaults.asset_id, &seller).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
         assert!(matches!(
             escrows(&seller, 0).await.unwrap().state,
             State::Pending
@@ -94,11 +99,11 @@ mod success {
         let response = return_deposit(&seller, 0).await;
 
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
         assert_eq!(
-            defaults.asset_amount * 2,
+            defaults.initial_wallet_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert!(matches!(
@@ -121,8 +126,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount * 2, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -146,7 +149,10 @@ mod success {
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 1).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - (2 * defaults.asset_amount),
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
         assert!(matches!(
             escrows(&seller, 0).await.unwrap().state,
             State::Pending
@@ -159,7 +165,7 @@ mod success {
         let response1 = return_deposit(&seller, 0).await;
 
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount - defaults.asset_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
         assert!(matches!(
@@ -170,7 +176,7 @@ mod success {
         let response2 = return_deposit(&seller, 1).await;
 
         assert_eq!(
-            defaults.asset_amount * 2,
+            defaults.initial_wallet_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
         assert!(matches!(
@@ -203,8 +209,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -227,8 +231,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -244,14 +246,12 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "CannotTransferBeforeDesposit")]
+    #[should_panic(expected = "CannotTransferBeforeDeposit")]
     async fn when_buyer_has_not_deposited() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
