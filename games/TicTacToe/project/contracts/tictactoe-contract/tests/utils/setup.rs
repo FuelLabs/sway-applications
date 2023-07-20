@@ -35,21 +35,6 @@ pub(crate) async fn setup() -> (Player, Player) {
 
     let player_one_wallet = wallets.pop().unwrap();
     let player_two_wallet = wallets.pop().unwrap();
-
-    /*
-        let storage_configuration = StorageConfiguration::default()
-            .set_storage_path(TICTACTOE_CONTRACT_STORAGE_PATH.to_string());
-
-        let id = Contract::deploy(
-            TICTACTOE_CONTRACT_BINARY_PATH,
-            &player_one_wallet,
-            LoadConfiguration::default().set_storage_configuration(storage_configuration),
-        )
-        .await
-        .unwrap();
-    */
-
-    //
     let contract_storage_configuration =
         StorageConfiguration::load_from(TICTACTOE_CONTRACT_STORAGE_PATH);
 
@@ -61,7 +46,6 @@ pub(crate) async fn setup() -> (Player, Player) {
         .deploy(&player_one_wallet, TxParameters::default())
         .await
         .unwrap();
-    //
 
     let player_one = Player {
         contract: TicTacToe::new(contract_id.clone(), player_one_wallet.clone()),
