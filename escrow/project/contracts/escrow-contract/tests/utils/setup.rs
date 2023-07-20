@@ -144,7 +144,7 @@ pub(crate) async fn setup() -> (User, User, User, Defaults) {
         wallet: buyer_wallet,
     };
     let seller = User {
-        contract: Escrow::new(escrow_id.clone(), seller_wallet.clone()),
+        contract: Escrow::new(escrow_id, seller_wallet.clone()),
         wallet: seller_wallet,
     };
 
