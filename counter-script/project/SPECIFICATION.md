@@ -5,12 +5,10 @@ Table of Contents
     - [`clear()`](#clear)
   - [State Checks](#state-checks)
     - [`count()`](#count)
-- [Overview of the Script](#Overview-of-Script)
+- [Overview of the Script](#Overview-of-the-Script)
   - [Parameters](#Parameters)
     - [`counter_contract_id`](#counter_contract_id:-ContractId)
     - [`clear_count`](#clear_count:-bool)
-  - [Execution flow](#Execution-flow)
-- [Overview of the Rust integration test](#Overview-of-the-Rust-integration-test)
 
 # Overview of the Contract
 
