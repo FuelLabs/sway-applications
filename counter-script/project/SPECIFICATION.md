@@ -49,5 +49,3 @@ This is the ContractId of the counter contract that we want to interact with
 ### `clear_count: bool`
 
 This is a boolean value which determines if the script should call the `clear` method at the end of the script execution
-
-
