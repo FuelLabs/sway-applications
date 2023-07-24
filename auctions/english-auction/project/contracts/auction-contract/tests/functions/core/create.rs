@@ -1,6 +1,5 @@
 use crate::utils::{
     interface::core::{
-        asset::mint_and_send_to_address,
         auction::create,
         nft::{approve, mint},
     },
@@ -23,19 +22,13 @@ mod success {
     async fn creates_multiple_auctions() {
         let (deployer, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
         let provider = deployer.wallet.provider().unwrap();
-
-        mint_and_send_to_address(
-            sell_amount * 2,
-            &seller.asset,
-            seller.wallet.address().into(),
-        )
-        .await;
 
         let auction = auction_info(0, &seller.auction).await;
         assert!(auction.is_none());
@@ -51,7 +44,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction1 = auction_info(auction_id1, &seller.auction).await;
         assert!(auction1.is_some());
 
@@ -79,7 +72,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction2 = auction_info(auction_id2, &seller.auction).await;
         assert!(auction2.is_some());
 
@@ -135,7 +128,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -191,7 +184,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -247,7 +240,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -269,14 +262,13 @@ mod success {
     async fn creates_new_token_auction() {
         let (deployer, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
         let provider = deployer.wallet.provider().unwrap();
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         let auction = auction_info(0, &seller.auction).await;
         assert!(auction.is_none());
@@ -292,7 +284,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -314,14 +306,13 @@ mod success {
     async fn creates_new_token_auction_with_nft_bid_asset() {
         let (deployer, seller, _, _, _, sell_asset_contract_id, _, _, buy_nft_contract_id) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 0).await;
         let provider = deployer.wallet.provider().unwrap();
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         let auction = auction_info(0, &seller.auction).await;
         assert!(auction.is_none());
@@ -337,7 +328,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -359,14 +350,12 @@ mod success {
     async fn creates_new_token_auction_without_reserve() {
         let (deployer, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, _, duration) = defaults_token().await;
+        let (sell_amount, initial_price, _, duration, _) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
         let provider = deployer.wallet.provider().unwrap();
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         let auction = auction_info(0, &seller.auction).await;
         assert!(auction.is_none());
@@ -382,7 +371,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -404,14 +393,12 @@ mod success {
     async fn creates_new_token_auction_with_reserve_equal_to_initial_price() {
         let (deployer, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, _, duration) = defaults_token().await;
+        let (sell_amount, initial_price, _, duration, _) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
         let provider = deployer.wallet.provider().unwrap();
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         let auction = auction_info(0, &seller.auction).await;
         assert!(auction.is_none());
@@ -427,7 +414,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -456,13 +443,11 @@ mod revert {
     async fn when_reserve_is_less_than_initial_price() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, _, duration) = defaults_token().await;
+        let (sell_amount, initial_price, _, duration, _) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         create(
             buy_asset.clone(),
@@ -481,13 +466,11 @@ mod revert {
     async fn when_reserve_is_zero() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, _, duration) = defaults_token().await;
+        let (sell_amount, initial_price, _, duration, _) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         create(
             buy_asset.clone(),
@@ -506,13 +489,11 @@ mod revert {
     async fn when_duration_is_zero() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, _) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, _, _) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         create(
             buy_asset.clone(),
@@ -531,13 +512,12 @@ mod revert {
     async fn when_bid_token_amount_not_zero() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 1).await;
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         create(
             buy_asset.clone(),
@@ -555,13 +535,12 @@ mod revert {
     #[should_panic(expected = "BidAssetAmountNotZero")]
     async fn when_bid_nft_id_not_zero() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, _, buy_nft_contract_id) = setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = nft_asset(buy_nft_contract_id, 1).await;
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         create(
             buy_asset.clone(),
@@ -580,13 +559,11 @@ mod revert {
     async fn when_initial_token_price_is_zero() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, _, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, _, reserve_price, duration, _) = defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         create(
             buy_asset.clone(),
@@ -605,13 +582,12 @@ mod revert {
     async fn when_token_asset_sent_less_than_sell_struct() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(
@@ -644,18 +620,12 @@ mod revert {
     async fn when_token_asset_sent_greater_than_sell_struct() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-
-        mint_and_send_to_address(
-            sell_amount + 1,
-            &seller.asset,
-            seller.wallet.address().into(),
-        )
-        .await;
 
         let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(
@@ -688,12 +658,11 @@ mod revert {
     async fn when_token_struct_not_correct_type() {
         let (_, seller, _, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
 
         let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(
@@ -724,15 +693,14 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "IncorrectAssetProvided")]
     async fn when_token_sent_not_correct_type() {
-        let (_, seller, buyer1, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
+        let (_, seller, _buyer1, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
-
-        mint_and_send_to_address(sell_amount, &buyer1.asset, seller.wallet.address().into()).await;
 
         let tx_params = TxParameters::new(0, 2_000_000, 0);
         let call_params = CallParameters::new(

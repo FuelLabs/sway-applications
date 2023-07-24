@@ -6,14 +6,14 @@
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.37.0" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.37.0-orange" />
+    <a href="https://crates.io/crates/forc/0.42.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.42.1-orange" />
     </a>
-    <a href="https://crates.io/crates/fuel-core/0.17.9" alt="fuel-core">
-        <img src="https://img.shields.io/badge/fuel--core-v0.17.9-yellow" />
+    <a href="https://crates.io/crates/fuel-core/0.18.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.18.3-yellow" />
     </a>
-    <a href="https://crates.io/crates/fuels/0.41.0" alt="forc">
-        <img src="https://img.shields.io/badge/fuels-v0.41.0-blue" />
+    <a href="https://crates.io/crates/fuels/0.42.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.42.0-blue" />
     </a>
 </p>
 

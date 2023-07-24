@@ -1,7 +1,8 @@
 use fuels::{
+    accounts::wallet::WalletUnlocked,
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Contract, DeployConfiguration,
-        StorageConfiguration, WalletUnlocked, WalletsConfig,
+        abigen, launch_custom_provider_and_get_wallets, Contract, LoadConfiguration,
+        StorageConfiguration, TxParameters, WalletsConfig,
     },
     types::Identity,
 };
@@ -34,25 +35,25 @@ pub(crate) async fn setup() -> (Player, Player) {
 
     let player_one_wallet = wallets.pop().unwrap();
     let player_two_wallet = wallets.pop().unwrap();
+    let contract_storage_configuration =
+        StorageConfiguration::load_from(TICTACTOE_CONTRACT_STORAGE_PATH);
 
-    let storage_configuration = StorageConfiguration::default()
-        .set_storage_path(TICTACTOE_CONTRACT_STORAGE_PATH.to_string());
+    let contract_configuration = LoadConfiguration::default()
+        .set_storage_configuration(contract_storage_configuration.unwrap());
 
-    let id = Contract::deploy(
-        TICTACTOE_CONTRACT_BINARY_PATH,
-        &player_one_wallet,
-        DeployConfiguration::default().set_storage_configuration(storage_configuration),
-    )
-    .await
-    .unwrap();
+    let contract_id = Contract::load_from(TICTACTOE_CONTRACT_BINARY_PATH, contract_configuration)
+        .unwrap()
+        .deploy(&player_one_wallet, TxParameters::default())
+        .await
+        .unwrap();
 
     let player_one = Player {
-        contract: TicTacToe::new(id.clone(), player_one_wallet.clone()),
+        contract: TicTacToe::new(contract_id.clone(), player_one_wallet.clone()),
         identity: Identity::Address(player_one_wallet.address().into()),
     };
 
     let player_two = Player {
-        contract: TicTacToe::new(id, player_two_wallet.clone()),
+        contract: TicTacToe::new(contract_id, player_two_wallet.clone()),
         identity: Identity::Address(player_two_wallet.address().into()),
     };
 

@@ -7,7 +7,7 @@ use fuels::types::Identity;
 mod success {
 
     use super::*;
-    use fuels::{accounts::ViewOnlyAccount, tx::AssetId};
+    use fuels::{accounts::ViewOnlyAccount, prelude::AssetId};
 
     #[tokio::test]
     async fn mints_to_one_wallet() {

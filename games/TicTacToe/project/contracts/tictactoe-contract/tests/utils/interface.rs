@@ -1,8 +1,7 @@
 use crate::utils::setup::TicTacToe;
 use fuels::{
-    prelude::{TxParameters, WalletUnlocked},
-    programs::call_response::FuelCallResponse,
-    types::Identity,
+    accounts::wallet::WalletUnlocked, prelude::TxParameters,
+    programs::call_response::FuelCallResponse, types::Identity,
 };
 
 pub(crate) async fn new_game(

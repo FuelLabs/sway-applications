@@ -6,14 +6,14 @@
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.37.0" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.37.0-orange" />
+    <a href="https://crates.io/crates/forc/0.42.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.42.1-orange" />
     </a>
-    <a href="https://crates.io/crates/fuel-core/0.17.9" alt="fuel-core">
-        <img src="https://img.shields.io/badge/fuel--core-v0.17.9-yellow" />
+    <a href="https://crates.io/crates/fuel-core/0.18.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.18.3-yellow" />
     </a>
-    <a href="https://crates.io/crates/fuels/0.40.0" alt="forc">
-        <img src="https://img.shields.io/badge/fuels-v0.40.0-blue" />
+    <a href="https://crates.io/crates/fuels/0.42.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.42.0-blue" />
     </a>
 </p>
 
@@ -21,7 +21,7 @@
 
 An English Auction is where a seller auctions off an asset with an initial price and a reserve price. Users will then begin bidding on the asset until the bidding period has ended or the reserve has been met. Upon completion, users will withdraw either their original deposits or their newly purchased assets depending on the outcome.
 
-The English Auction application implements this idea in a decentralized manner without the need for a 3rd party and with strong settlement assurances. The application has been designed to utilize native assets and NFTs enabling users to auction off native assets / NFTs and place bids using native assets / NFTs. 
+The English Auction application implements this idea in a decentralized manner without the need for a 3rd party and with strong settlement assurances. The application has been designed to utilize native assets and NFTs enabling users to auction off native assets / NFTs and place bids using native assets / NFTs.
 
 More information can be found in the [specification](./project/SPECIFICATION.md).
 
