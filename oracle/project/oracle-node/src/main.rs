@@ -1,12 +1,13 @@
 use dotenv::dotenv;
-use fuels::accounts::fuel_crypto::SecretKey;
-use fuels::client::FuelClient;
-use fuels::prelude::{Bech32ContractId, ContractId, Provider, WalletUnlocked};
+use fuels::{
+    accounts::{fuel_crypto::SecretKey, wallet::WalletUnlocked},
+    client::FuelClient,
+    prelude::{Bech32ContractId, ContractId, Provider},
+    tx::ConsensusParameters,
+};
 use oracle_node::{spawn_oracle_updater_job, NetworkPriceProvider};
 use reqwest::Url;
-use std::env;
-use std::str::FromStr;
-use std::time::Duration;
+use std::{env, str::FromStr, time::Duration};
 use utils::Oracle;
 
 #[tokio::main]
@@ -44,6 +45,7 @@ fn setup() -> (Oracle<WalletUnlocked>, reqwest::Client, Url) {
     let provider = Provider::new(
         FuelClient::new(env::var("FUEL_PROVIDER_URL").expect("FUEL_PROVIDER_URL must be set."))
             .unwrap(),
+        ConsensusParameters::DEFAULT,
     );
 
     let key = SecretKey::from_str(&env::var("WALLET_SECRET").expect("WALLET_SECRET must be set."))
