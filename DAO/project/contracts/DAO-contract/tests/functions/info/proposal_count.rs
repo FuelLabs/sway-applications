@@ -9,7 +9,7 @@ mod success {
 
     #[tokio::test]
     async fn use_can_get_proposal_count() {
-        let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
