@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::core::{cancel_campaign, create_campaign, pledge},
-    setup::{mint, setup},
+    setup::setup,
 };
 
 mod success {
@@ -10,7 +10,7 @@ mod success {
         interface::info::{asset_info_by_count, campaign_info, pledge_count, pledged},
         setup::{identity, AssetInfo, PledgedEvent},
     };
-    use fuels::{accounts::ViewOnlyAccount, tx::AssetId};
+    use fuels::{accounts::ViewOnlyAccount, prelude::AssetId};
 
     #[tokio::test]
     async fn pledges() {
@@ -19,12 +19,6 @@ mod success {
         let asset_info = asset_info_by_count(&author.contract, 1).await;
         assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -47,7 +41,7 @@ mod success {
             pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
         assert_eq!(
-            defaults.target_amount,
+            defaults.initial_wallet_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -56,7 +50,7 @@ mod success {
 
         let response = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         assert_eq!(
-            0,
+            defaults.initial_wallet_amount - defaults.target_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -107,12 +101,6 @@ mod success {
         let asset_info = asset_info_by_count(&author.contract, 1).await;
         assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
 
-        mint(
-            &asset.contract,
-            defaults.target_amount * 2,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -135,7 +123,7 @@ mod success {
             pledge_count(&user.contract, identity(user.wallet.address()).await).await
         );
         assert_eq!(
-            defaults.target_amount * 2,
+            defaults.initial_wallet_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -144,7 +132,7 @@ mod success {
 
         let response1 = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         assert_eq!(
-            defaults.target_amount,
+            defaults.initial_wallet_amount - defaults.target_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -189,7 +177,7 @@ mod success {
 
         let response2 = pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         assert_eq!(
-            0,
+            defaults.initial_wallet_amount - (2 * defaults.target_amount),
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -244,19 +232,6 @@ mod success {
         assert!(matches!(asset_info1.value, Option::<AssetInfo>::None));
         assert!(matches!(asset_info2.value, Option::<AssetInfo>::None));
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
-        mint(
-            &asset2.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
-
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -296,14 +271,14 @@ mod success {
         );
 
         assert_eq!(
-            defaults.target_amount,
+            defaults.initial_wallet_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
                 .unwrap()
         );
         assert_eq!(
-            defaults.target_amount,
+            defaults.initial_wallet_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset2.id))
                 .await
@@ -336,14 +311,14 @@ mod success {
         );
 
         assert_eq!(
-            0,
+            defaults.initial_wallet_amount - defaults.target_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
                 .unwrap()
         );
         assert_eq!(
-            0,
+            defaults.initial_wallet_amount - defaults.target_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset2.id))
                 .await
@@ -419,12 +394,6 @@ mod revert {
     async fn when_id_is_zero() {
         let (author, user, asset, _, defaults) = setup().await;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -434,7 +403,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         pledge(&user.contract, 0, &asset, defaults.target_amount).await;
     }
 
@@ -443,12 +411,6 @@ mod revert {
     async fn when_id_is_greater_than_number_of_campaigns() {
         let (author, user, asset, _, defaults) = setup().await;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -458,7 +420,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         pledge(&user.contract, 2, &asset, defaults.target_amount).await;
     }
 
@@ -469,23 +430,16 @@ mod revert {
         let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 3;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
 
-        // Reverts
         pledge(&user.contract, 1, &asset, 0).await;
     }
 
@@ -494,12 +448,6 @@ mod revert {
     async fn when_pledging_incorrect_asset() {
         let (author, user, _, asset2, defaults) = setup().await;
 
-        mint(
-            &asset2.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -509,7 +457,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         pledge(&user.contract, 1, &asset2, defaults.target_amount).await;
     }
 
@@ -518,12 +465,6 @@ mod revert {
     async fn when_pledging_zero_amount() {
         let (author, user, asset, _, defaults) = setup().await;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -533,7 +474,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         pledge(&user.contract, 1, &asset, 0).await;
     }
 
@@ -544,23 +484,16 @@ mod revert {
         let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 5;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
         cancel_campaign(&author.contract, 1).await;
 
-        // Reverts
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
     }
 }

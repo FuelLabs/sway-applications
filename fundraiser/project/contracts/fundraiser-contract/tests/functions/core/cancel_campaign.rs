@@ -140,7 +140,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         cancel_campaign(&author.contract, 0).await;
     }
 
@@ -149,7 +148,6 @@ mod revert {
     async fn when_id_is_greater_than_number_of_campaigns() {
         let (author, _, _, _, _) = setup().await;
 
-        // Reverts
         cancel_campaign(&author.contract, 1).await;
     }
 
@@ -164,12 +162,11 @@ mod revert {
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
 
-        // Reverts
         cancel_campaign(&user.contract, 1).await;
     }
 
@@ -184,12 +181,11 @@ mod revert {
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
 
-        // Reverts
         cancel_campaign(&author.contract, 1).await;
     }
 
@@ -208,7 +204,6 @@ mod revert {
         .await;
         cancel_campaign(&author.contract, 1).await;
 
-        // Reverts
         cancel_campaign(&author.contract, 1).await;
     }
 }

@@ -5,7 +5,7 @@ mod success {
             core::{create_campaign, pledge},
             info::pledged,
         },
-        setup::{identity, mint, setup, Pledge},
+        setup::{identity, setup, Pledge},
     };
 
     #[tokio::test]
@@ -24,17 +24,11 @@ mod success {
         let provider = author.wallet.provider().unwrap();
         let deadline = provider.latest_block_height().await.unwrap() + 4;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
