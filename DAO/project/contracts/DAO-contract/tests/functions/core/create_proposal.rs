@@ -13,7 +13,7 @@ mod success {
 
     #[tokio::test]
     async fn user_can_create_proposal() {
-        let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
@@ -31,7 +31,7 @@ mod success {
             no_votes: 0,
             acceptance_percentage: 10,
             proposal_transaction: proposal_transaction.clone(),
-            deadline: 14,
+            deadline: 13,
             executed: false,
         };
 
@@ -47,7 +47,7 @@ mod success {
 
     #[tokio::test]
     async fn user_can_create_multiple_proposals() {
-        let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
@@ -68,7 +68,7 @@ mod success {
                     no_votes: 0,
                     acceptance_percentage: 10,
                     proposal_transaction: proposal_transaction.clone(),
-                    deadline: 14,
+                    deadline: 13,
                     executed: false,
                 },
                 id: 0
@@ -82,7 +82,7 @@ mod success {
                 no_votes: 0,
                 acceptance_percentage: 10,
                 proposal_transaction: proposal_transaction.clone(),
-                deadline: 14,
+                deadline: 13,
                 executed: false,
             }
         );
@@ -104,7 +104,7 @@ mod success {
                     no_votes: 0,
                     acceptance_percentage: 20,
                     proposal_transaction: proposal_transaction.clone(),
-                    deadline: 26,
+                    deadline: 25,
                     executed: false,
                 },
                 id: 1
@@ -118,7 +118,7 @@ mod success {
                 no_votes: 0,
                 acceptance_percentage: 20,
                 proposal_transaction: proposal_transaction.clone(),
-                deadline: 26,
+                deadline: 25,
                 executed: false,
             }
         );
@@ -131,7 +131,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "DurationCannotBeZero")]
     async fn when_duration_is_zero() {
-        let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, _user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
@@ -141,7 +141,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "InvalidAcceptancePercentage")]
     async fn with_zero_acceptance_percentage() {
-        let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, _user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
@@ -151,7 +151,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "InvalidAcceptancePercentage")]
     async fn with_over_hundred_acceptance_percentage() {
-        let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, _user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);

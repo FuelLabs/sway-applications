@@ -1,8 +1,8 @@
 use crate::utils::{
     interface::core::{constructor, create_proposal, deposit, execute, vote},
-    setup::{mint, proposal_transaction, setup},
+    setup::{proposal_transaction, setup},
 };
-use fuels::{prelude::CallParameters, tx::AssetId};
+use fuels::{prelude::CallParameters, types::AssetId};
 
 mod success {
     use super::*;
@@ -12,15 +12,8 @@ mod success {
     #[tokio::test]
     #[ignore]
     async fn user_proposal_can_execute() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
-
-        mint(
-            deployer.gov_token.as_ref().unwrap(),
-            asset_amount,
-            user.wallet.address(),
-        )
-        .await;
 
         let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
@@ -61,15 +54,8 @@ mod revert {
     #[should_panic(expected = "ProposalExecuted")]
     #[ignore]
     async fn on_already_executed_proposal() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
-
-        mint(
-            deployer.gov_token.as_ref().unwrap(),
-            asset_amount,
-            user.wallet.address(),
-        )
-        .await;
 
         let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
@@ -85,15 +71,8 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "ProposalStillActive")]
     pub async fn on_active_proposal() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
-
-        mint(
-            deployer.gov_token.as_ref().unwrap(),
-            asset_amount,
-            user.wallet.address(),
-        )
-        .await;
 
         let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
@@ -108,15 +87,8 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "InsufficientApprovals")]
     pub async fn on_not_enough_yes_votes() {
-        let (_gov_token, gov_token_id, deployer, user, asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, user, asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
-
-        mint(
-            deployer.gov_token.as_ref().unwrap(),
-            asset_amount,
-            user.wallet.address(),
-        )
-        .await;
 
         let call_params = CallParameters::new(asset_amount, AssetId::from(*gov_token_id), 100_000);
         deposit(&user.dao_voting, call_params).await;
