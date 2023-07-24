@@ -54,7 +54,7 @@ impl ProposalInfo {
         ProposalInfo {
             acceptance_percentage,
             author,
-            deadline: height() + duration,
+            deadline: duration + height(),
             executed: false,
             no_votes: 0,
             proposal_transaction,
