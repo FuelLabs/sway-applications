@@ -6,20 +6,20 @@
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.37.0" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.37.0-orange" />
+    <a href="https://crates.io/crates/forc/0.42.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.42.1-orange" />
     </a>
-    <a href="https://crates.io/crates/fuel-core/0.17.9" alt="fuel-core">
-        <img src="https://img.shields.io/badge/fuel--core-v0.17.9-yellow" />
+    <a href="https://crates.io/crates/fuel-core/0.18.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.18.3-yellow" />
     </a>
-    <a href="https://crates.io/crates/fuels/0.41.0" alt="forc">
-        <img src="https://img.shields.io/badge/fuels-v0.41.0-blue" />
+    <a href="https://crates.io/crates/fuels/0.42.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.42.0-blue" />
     </a>
 </p>
 
 ## Overview
 
-An airdrop is an application where a set number of users are able to claim a specific amount of an asset. In today's ecosystem, this is often used to distribute tokens to an application's user base that has previously interacted with their project. 
+An airdrop is an application where a set number of users are able to claim a specific amount of an asset. In today's ecosystem, this is often used to distribute tokens to an application's user base that has previously interacted with their project.
 
 In order to verifiably prove that a user has a claim to an airdrop and avoiding the expensive transaction of storing every address on chain, a Merkle Proof is used. By storing the Merkle root, a single `b256` hash, the airdrop application can cryptographically prove a user's validity to their claim.
 

@@ -6,13 +6,13 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-anyhow = "1.0.66"
-async-trait = "0.1.58"
+anyhow = "1.0.71"
+async-trait = "0.1.71"
 dotenv = "0.15.0"
-fuels = { version = "0.41.0", features = ["fuel-core-lib"] }
+fuels = { version = "0.43.0", features = ["fuel-core-lib"] }
 futures = "0.3"
-itertools = "0.10.5"
-reqwest = { version = "0.11.12", features = ["json"] }
+itertools = "0.11"
+reqwest = { version = "0.11.18", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1.12", features = ["full"] }
 utils = { path = "../utils" }
