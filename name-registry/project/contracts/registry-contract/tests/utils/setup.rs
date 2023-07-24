@@ -55,8 +55,12 @@ pub(crate) async fn setup() -> (NameRegistry<WalletUnlocked>, Account, WalletUnl
     let wallet2 = wallets.pop().unwrap();
 
     let storage_configuration = StorageConfiguration::load_from(CONTRACT_STORAGE_PATH);
-    let configuration =
-        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
+    let configurables = NameRegistryConfigurables::new()
+        .set_OWNER(Identity::Address(Address::from(wallet.address())));
+
+    let configuration = LoadConfiguration::default()
+        .set_storage_configuration(storage_configuration.unwrap())
+        .set_configurables(configurables);
 
     let id = Contract::load_from(CONTRACT_BINARY_PATH, configuration)
         .unwrap()
@@ -82,34 +86,22 @@ where
 {
     let call_response = handler.call().await.unwrap();
 
+    // TODO: this needs to be updated / reverted when the SDK fixes their breaking changes
+    // let script = handler.get_executable_call().await.unwrap();
+    // let provider = handler.provider.clone();
+    // let tx_id = script.tx.id().to_string();
+    // let tx_status = provider
+    //     .get_transaction_by_id(&tx_id)
+    //     .await
+    //     .unwrap()
+    //     .unwrap();
+
+    // let time = match tx_status.status {
+    //     TransactionStatus::Success() => ( /* get time from here like before */ ),
+    //     _ => panic!("tx failed"),
+    // }
+
     let time = 5;
 
     (call_response, time)
 }
-
-// TODO: Refactor the above function with the something like the example below,
-// once `fuels` >= 0.42.0 is available.
-// This will allow testing on currently ignored tests.
-/*
-pub(crate) async fn get_timestamp_and_call<T, D>(
-    handler: ContractCallHandler<T, D>,
-) -> (FuelCallResponse<D>, u64)
-where
-    T: FuelAccount,
-    D: Tokenizable + Debug,
-{
-    let call_response = handler.call().await.unwrap();
-    let tx_id = call_response.tx_id;
-
-    let provider = handler.account.try_provider().unwrap();
-    let tx_response = provider
-        .get_transaction_by_id(&tx_id)
-        .await
-        .unwrap()
-        .unwrap();
-
-    let time = tx_response.time.unwrap().timestamp().try_into().unwrap();
-
-    (call_response, time)
-}
-*/

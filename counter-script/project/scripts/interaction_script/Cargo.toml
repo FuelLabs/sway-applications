@@ -1,0 +1,14 @@
+[package]
+name = "tests"
+version = "0.0.0"
+edition = "2021"
+
+
+[dependencies]
+fuels = "0.43.0"
+tokio = { version = "1.12", features = ["rt", "macros"] }
+
+[[test]]
+harness = true
+name = "integration_tests"
+path = "tests/harness.rs"

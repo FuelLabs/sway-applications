@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  RUST_VERSION: 1.68.2
+  RUST_VERSION: 1.70.0
 
 jobs:
   lint-toml-files:
@@ -43,6 +43,7 @@ jobs:
             "airdrop",
             "AMM",
             "auctions/english-auction",
+            "counter-script",
             "DAO",
             "escrow",
             "fractional-NFT",
@@ -74,7 +75,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
           toolchain: latest
-          date: 2023-04-12
+          date: 2023-07-07
 
       - name: Check Sway formatting
         run: |
@@ -129,7 +130,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
           toolchain: latest
-          date: 2023-04-12
+          date: 2023-07-07
 
       - name: Check Sway formatting
         run: forc fmt --check --path ${{ matrix.project }}

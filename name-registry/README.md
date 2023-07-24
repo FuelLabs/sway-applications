@@ -1,16 +1,16 @@
 <p align="center">
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset=".docs/name-registry-logo-dark-theme.png">
-        <img alt="SwayApps Fundraiser Logo" width="400px" src=".docs/name-registry-logo-light-theme.png">
+        <img alt="SwayApps NameRegistry Logo" width="400px" src=".docs/name-registry-logo-light-theme.png">
     </picture>
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.40.1" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.40.1-orange" />
+    <a href="https://crates.io/crates/forc/0.42.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.42.1-orange" />
     </a>
-    <a href="https://crates.io/crates/fuel-core/0.18.1" alt="fuel-core">
-        <img src="https://img.shields.io/badge/fuel--core-v0.18.1-yellow" />
+    <a href="https://crates.io/crates/fuel-core/0.18.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.18.3-yellow" />
     </a>
     <a href="https://crates.io/crates/fuels/0.42.0" alt="forc">
         <img src="https://img.shields.io/badge/fuels-v0.42.0-blue" />

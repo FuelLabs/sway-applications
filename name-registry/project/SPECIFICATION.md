@@ -4,12 +4,14 @@ Table of Contents
   - [Core Functionality](#core-functionality)
     - [`register()`](#register)
     - [`extend()`](#extend)
+    - [`set_asset()`](#set_asset)
     - [`set_identity()`](#set_identity)
     - [`set_owner()`](#set_owner)
   - [State Checks](#state-checks)
     - [`expiry()`](#expiry)
     - [`identity()`](#identity)
     - [`owner()`](#owner)
+    - [`rate()`](#rate)
 
 # Overview
 
@@ -43,6 +45,10 @@ Any user can extend the registration duration of a given name
 2. If the payment is in the correct asset
 3. If the payment is sufficient for the duration
 
+### `set_asset()`
+
+Allows an owner to add, remove and alter the cost of an asset that the registry accepts
+
 ### `set_identity()`
 
 Allows the owner to change the resolving identity
@@ -72,3 +78,7 @@ Returns the identity to which the given name resolves to
 Returns the owner of the given name
 
 1. If the name has been registered
+
+### `rate()`
+
+Returns the rate of cost for an asset
