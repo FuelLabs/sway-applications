@@ -2,7 +2,7 @@ use crate::utils::{
     interface::core::{airdrop_constructor, asset_constructor, claim, clawback, mint_to},
     setup::{build_tree, defaults, get_wallet_balance, setup},
 };
-use fuels::tx::AssetId;
+use fuels::prelude::AssetId;
 
 mod success {
 

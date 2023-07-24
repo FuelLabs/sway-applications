@@ -5,7 +5,7 @@ dependencies = ['std']
 
 [[package]]
 name = 'core'
-source = 'path+from-root-FDF4A5DCC6ECD181'
+source = 'path+from-root-9BFE6D5D0CBDF740'
 
 [[package]]
 name = 'distributor-contract'
@@ -17,10 +17,10 @@ dependencies = [
 
 [[package]]
 name = 'merkle_proof'
-source = 'git+https://github.com/FuelLabs/sway-libs?tag=v0.8.0#f6bb5c234e020d556e1bc688e0f1f368dc9b0f9a'
+source = 'git+https://github.com/FuelLabs/sway-libs?tag=v0.12.0#063f118a3104adb6a04207ca877993b5ad03a492'
 dependencies = ['std']
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.37.0#607ac50176db8bef936f91bacf435d0ea37d041e'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.42.1#3b66f8e424bd21e3ba467783b10b36e808cfa6ee'
 dependencies = ['core']

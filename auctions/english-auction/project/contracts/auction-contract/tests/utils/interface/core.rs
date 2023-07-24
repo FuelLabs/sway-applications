@@ -1,27 +1,9 @@
-use crate::utils::setup::{AuctionAsset, EnglishAuction, MyAsset, Nft};
+use crate::utils::setup::{AuctionAsset, EnglishAuction, Nft};
 use fuels::{
-    prelude::{Address, AssetId, CallParameters, TxParameters, WalletUnlocked},
+    prelude::{AssetId, CallParameters, TxParameters, WalletUnlocked},
     programs::call_response::FuelCallResponse,
     types::Identity,
 };
-
-pub(crate) mod asset {
-    use super::*;
-
-    pub(crate) async fn mint_and_send_to_address(
-        amount: u64,
-        contract: &MyAsset<WalletUnlocked>,
-        recipient: Address,
-    ) -> FuelCallResponse<()> {
-        contract
-            .methods()
-            .mint_and_send_to_address(amount, recipient)
-            .append_variable_outputs(1)
-            .call()
-            .await
-            .unwrap()
-    }
-}
 
 pub(crate) mod auction {
     use super::*;
