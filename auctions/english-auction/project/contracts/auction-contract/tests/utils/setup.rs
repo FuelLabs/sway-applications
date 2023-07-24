@@ -6,7 +6,6 @@ use fuels::{
     },
     types::Identity,
 };
-use rand::Fill;
 
 abigen!(
     Contract(
@@ -95,33 +94,30 @@ pub(crate) async fn setup() -> (
     ContractId,
     ContractId,
 ) {
-    let mut rng = rand::thread_rng();
-    let num_coins = 1;
+    let number_of_coins = 1;
     let coin_amount = 1_000_000;
+    let number_of_wallets = 4;
 
     let base_asset = AssetConfig {
         id: BASE_ASSET_ID,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
-    let mut buy_asset_id = AssetId::zeroed();
-    buy_asset_id.try_fill(&mut rng).unwrap();
+    let buy_asset_id = AssetId::new([1; 32]);
     let buy_asset = AssetConfig {
         id: buy_asset_id,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
-    let mut sell_asset_id = AssetId::zeroed();
-    sell_asset_id.try_fill(&mut rng).unwrap();
+    let sell_asset_id = AssetId::new([2; 32]);
     let sell_asset = AssetConfig {
         id: sell_asset_id,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
     let assets = vec![base_asset, buy_asset, sell_asset];
 
-    let num_wallets = 4;
-    let wallet_config = WalletsConfig::new_multiple_assets(num_wallets, assets);
+    let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
 
     let provider_config = Config {
         manual_blocks_enabled: true, // Necessary so the `produce_blocks` API can be used locally
