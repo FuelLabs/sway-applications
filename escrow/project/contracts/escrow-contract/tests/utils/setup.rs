@@ -7,7 +7,6 @@ use fuels::{
     },
     types::Identity,
 };
-use rand::Fill;
 
 abigen!(Contract(
     name = "Escrow",
@@ -85,33 +84,30 @@ pub(crate) async fn escrow_info(
 }
 
 pub(crate) async fn setup() -> (User, User, User, Defaults) {
-    let mut rng = rand::thread_rng();
-    let num_coins = 1;
+    let number_of_coins = 1;
     let coin_amount = 1_000_000;
+    let number_of_wallets = 4;
 
     let base_asset = AssetConfig {
         id: BASE_ASSET_ID,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
-    let mut asset_id = AssetId::zeroed();
-    asset_id.try_fill(&mut rng).unwrap();
+    let asset_id = AssetId::new([1; 32]);
     let asset = AssetConfig {
         id: asset_id,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
-    let mut other_asset_id = AssetId::zeroed();
-    other_asset_id.try_fill(&mut rng).unwrap();
+    let other_asset_id = AssetId::new([2; 32]);
     let other_asset = AssetConfig {
         id: other_asset_id,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
     let assets = vec![base_asset, asset, other_asset];
 
-    let num_wallets = 4;
-    let wallet_config = WalletsConfig::new_multiple_assets(num_wallets, assets);
+    let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
 
     let provider_config = Config {
         manual_blocks_enabled: true,
