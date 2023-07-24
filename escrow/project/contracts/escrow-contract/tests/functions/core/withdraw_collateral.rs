@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::core::{create_escrow, deposit, withdraw_collateral},
-    setup::{create_arbiter, create_asset, mint, setup},
+    setup::{create_arbiter, create_asset, setup},
 };
 
 mod success {
@@ -20,8 +20,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-
         let provider = buyer.wallet.provider().unwrap();
         let origin_block = provider.latest_block_height().await.unwrap();
 
@@ -36,21 +34,24 @@ mod success {
         )
         .await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
         assert!(matches!(
             escrows(&seller, 0).await.unwrap().state,
             State::Pending
         ));
 
         provider
-            .produce_blocks(origin_block + defaults.deadline, None)
+            .produce_blocks((origin_block as u64) + defaults.deadline, None)
             .await
             .unwrap();
 
         let response = withdraw_collateral(&seller, 0).await;
 
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert!(matches!(
@@ -72,7 +73,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -85,7 +85,10 @@ mod success {
         .await;
         propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - (2 * defaults.asset_amount),
+            asset_amount(&defaults.asset_id, &seller).await
+        );
         assert!(matches!(
             escrows(&seller, 0).await.unwrap().state,
             State::Pending
@@ -98,7 +101,7 @@ mod success {
         let response = withdraw_collateral(&seller, 0).await;
 
         assert_eq!(
-            defaults.asset_amount * 2,
+            defaults.initial_wallet_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert!(matches!(
@@ -120,8 +123,6 @@ mod success {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-
-        mint(&seller, 2 * defaults.asset_amount, &defaults.asset).await;
 
         let provider = buyer.wallet.provider().unwrap();
         let origin_block = provider.latest_block_height().await.unwrap();
@@ -158,10 +159,13 @@ mod success {
             State::Pending
         ));
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - (2 * defaults.asset_amount),
+            asset_amount(&defaults.asset_id, &seller).await
+        );
 
         provider
-            .produce_blocks(origin_block + defaults.deadline, None)
+            .produce_blocks((origin_block as u64) + defaults.deadline, None)
             .await
             .unwrap();
 
@@ -169,7 +173,7 @@ mod success {
         let response1 = withdraw_collateral(&seller, escrow_id_1).await;
 
         assert_eq!(
-            2 * defaults.asset_amount,
+            defaults.initial_wallet_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert!(matches!(
@@ -217,8 +221,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -241,8 +243,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -264,9 +264,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
-
         let provider = buyer.wallet.provider().unwrap();
         let origin_block = provider.latest_block_height().await.unwrap();
 
@@ -282,7 +279,7 @@ mod revert {
         .await;
 
         provider
-            .produce_blocks(origin_block + defaults.deadline, None)
+            .produce_blocks((origin_block as u64) + defaults.deadline, None)
             .await
             .unwrap();
 
@@ -290,14 +287,11 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "CannotWithdrawAfterDesposit")]
+    #[should_panic(expected = "CannotWithdrawAfterDeposit")]
     async fn when_buyer_has_deposited() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
 
         let provider = buyer.wallet.provider().unwrap();
         let origin_block = provider.latest_block_height().await.unwrap();
@@ -314,7 +308,7 @@ mod revert {
         .await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
         provider
-            .produce_blocks(origin_block + defaults.deadline, None)
+            .produce_blocks((origin_block as u64) + defaults.deadline, None)
             .await
             .unwrap();
 

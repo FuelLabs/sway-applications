@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::core::{create_escrow, deposit, dispute, resolve_dispute},
-    setup::{create_arbiter, create_asset, mint, setup},
+    setup::{create_arbiter, create_asset, setup},
 };
 
 mod success {
@@ -21,8 +21,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -35,9 +33,18 @@ mod success {
         .await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &arbiter).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount,
+            asset_amount(&defaults.asset_id, &arbiter).await
+        );
 
         dispute(&buyer, 0).await;
 
@@ -48,13 +55,16 @@ mod success {
 
         let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount + defaults.asset_amount,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
         assert!(matches!(
@@ -79,12 +89,9 @@ mod success {
     #[tokio::test]
     async fn resolves_in_buyers_favour_partial_payment_taken() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let payment_diff = 1;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -97,8 +104,14 @@ mod success {
         .await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
 
         dispute(&buyer, 0).await;
 
@@ -107,19 +120,19 @@ mod success {
             State::Pending
         ));
 
-        let response =
-            resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount - payment_diff, &buyer).await;
+        let fee_amount = arbiter_obj.fee_amount - 1;
+        let response = resolve_dispute(&arbiter, 0, fee_amount, &buyer).await;
 
         assert_eq!(
-            payment_diff,
+            defaults.initial_wallet_amount - fee_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
         assert_eq!(
-            defaults.asset_amount - payment_diff,
+            defaults.initial_wallet_amount + fee_amount,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
         assert!(matches!(
@@ -147,8 +160,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -161,8 +172,14 @@ mod success {
         .await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
 
         dispute(&buyer, 0).await;
 
@@ -174,12 +191,15 @@ mod success {
         let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &seller).await;
 
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount + defaults.asset_amount,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
         assert!(matches!(
@@ -207,8 +227,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -221,8 +239,14 @@ mod success {
         .await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &seller).await
+        );
 
         dispute(&buyer, 0).await;
 
@@ -231,15 +255,19 @@ mod success {
             State::Pending
         ));
 
-        let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount - 1, &seller).await;
+        let fee_amount = arbiter_obj.fee_amount - 1;
+        let response = resolve_dispute(&arbiter, 0, fee_amount, &seller).await;
 
         assert_eq!(
-            defaults.asset_amount + 1,
+            defaults.initial_wallet_amount + 1,
             asset_amount(&defaults.asset_id, &seller).await
         );
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
         assert_eq!(
-            defaults.asset_amount - 1,
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount + fee_amount,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
         assert!(matches!(
@@ -267,8 +295,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -282,8 +308,14 @@ mod success {
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
         propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount - (2 * defaults.asset_amount),
+            asset_amount(&defaults.asset_id, &seller).await
+        );
 
         dispute(&buyer, 0).await;
 
@@ -299,15 +331,15 @@ mod success {
         let response = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
 
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount - defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount + defaults.asset_amount,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
         assert!(matches!(arbiter_proposal(&seller, 0).await, None));
@@ -336,8 +368,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount * 2, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -361,9 +391,18 @@ mod success {
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 1).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &buyer).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
-        assert_eq!(0, asset_amount(&defaults.asset_id, &arbiter).await);
+        assert_eq!(
+            defaults.initial_wallet_amount - (2 * defaults.asset_amount),
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount - (2 * defaults.asset_amount),
+            asset_amount(&defaults.asset_id, &seller).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount,
+            asset_amount(&defaults.asset_id, &arbiter).await
+        );
 
         dispute(&buyer, 0).await;
 
@@ -378,13 +417,16 @@ mod success {
 
         let response1 = resolve_dispute(&arbiter, 0, arbiter_obj.fee_amount, &buyer).await;
 
-        assert_eq!(0, asset_amount(&defaults.asset_id, &seller).await);
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount - (2 * defaults.asset_amount),
+            asset_amount(&defaults.asset_id, &seller).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount + defaults.asset_amount,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
         assert!(matches!(
@@ -397,15 +439,15 @@ mod success {
         let response2 = resolve_dispute(&arbiter, 1, arbiter_obj.fee_amount, &seller).await;
 
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount - defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(
-            defaults.asset_amount,
+            defaults.initial_wallet_amount - defaults.asset_amount,
             asset_amount(&defaults.asset_id, &buyer).await
         );
         assert_eq!(
-            defaults.asset_amount * 2,
+            defaults.initial_wallet_amount + (2 * defaults.asset_amount),
             asset_amount(&defaults.asset_id, &arbiter).await
         );
         assert!(matches!(
@@ -450,8 +492,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -475,8 +515,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -498,8 +536,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -522,8 +558,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -541,7 +575,7 @@ mod revert {
 
     #[tokio::test]
     #[ignore]
-    #[should_panic(expected = "CannotResolveBeforeDesposit")]
+    #[should_panic(expected = "CannotResolveBeforeDeposit")]
     async fn when_buyer_has_not_deposited() {
         // Note: Buyer can only dispute after they deposit and we cannot get past the require
         //       checks in resolve_dispute unless there is a dispute therefore this cannot
@@ -555,8 +589,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,

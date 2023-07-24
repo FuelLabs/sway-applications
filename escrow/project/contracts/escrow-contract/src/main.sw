@@ -33,7 +33,7 @@ use std::{
     block::height,
     call_frames::msg_asset_id,
     context::msg_amount,
-    storage::StorageVec,
+    storage::storage_vec::*,
     token::transfer,
 };
 
@@ -58,12 +58,12 @@ impl Escrow for Contract {
     fn accept_arbiter(identifier: u64) {
         // The assertions ensure that only the buyer can accept a proposal if the escrow has not
         // been completed and the seller has proposed a new arbiter
-        let mut escrow = storage.escrows.get(identifier).unwrap();
+        let mut escrow = storage.escrows.get(identifier).try_read().unwrap();
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
         require(msg_sender().unwrap() == escrow.buyer.address, UserError::Unauthorized);
 
-        let arbiter = storage.arbiter_proposal.get(identifier);
+        let arbiter = storage.arbiter_proposal.get(identifier).try_read();
 
         require(arbiter.is_some(), StateError::ArbiterHasNotBeenProposed);
 
@@ -73,7 +73,7 @@ impl Escrow for Contract {
         escrow.arbiter = arbiter.unwrap();
 
         // We must reset the proposal or the escrow contract will be drained
-        storage.arbiter_proposal.remove(identifier);
+        assert(storage.arbiter_proposal.remove(identifier));
         storage.escrows.insert(identifier, escrow);
 
         log(AcceptedArbiterEvent { identifier });
@@ -91,7 +91,7 @@ impl Escrow for Contract {
         // not the buyer / seller, the arbiter has a fee that they can take upon resolving a dispute
         // and the escrow deadline is set in the future
         require(0 < assets.len(), AssetInputError::UnspecifiedAssets);
-        require(height() < deadline, DeadlineInputError::MustBeInTheFuture);
+        require(deadline > height(), DeadlineInputError::MustBeInTheFuture);
         require(0 < arbiter.fee_amount, ArbiterInputError::FeeCannotBeZero);
         require(arbiter.fee_amount == msg_amount(), ArbiterInputError::FeeDoesNotMatchAmountSent);
         require(arbiter.asset == msg_asset_id(), ArbiterInputError::AssetDoesNotMatch);
@@ -107,13 +107,13 @@ impl Escrow for Contract {
 
         let escrow = EscrowInfo::new(arbiter, assets.len(), buyer, deadline, storage.assets.len() - assets.len(), msg_sender().unwrap());
 
-        storage.escrows.insert(storage.escrow_count, escrow);
+        storage.escrows.insert(storage.escrow_count.read(), escrow);
 
-        storage.escrow_count += 1;
+        storage.escrow_count.write(storage.escrow_count.read() + 1);
 
         log(CreatedEscrowEvent {
             escrow,
-            identifier: storage.escrow_count - 1,
+            identifier: storage.escrow_count.read() - 1,
         });
     }
 
@@ -122,9 +122,9 @@ impl Escrow for Contract {
     fn deposit(identifier: u64) {
         // The assertions ensure that only the buyer can deposit (only once) prior to the deadline
         // and escrow completion
-        let mut escrow = storage.escrows.get(identifier).unwrap();
+        let mut escrow = storage.escrows.get(identifier).try_read().unwrap();
 
-        require(height() < escrow.deadline, StateError::EscrowExpired);
+        require(escrow.deadline > height(), StateError::EscrowExpired);
         require(escrow.state == State::Pending, StateError::StateNotPending);
         require(msg_sender().unwrap() == escrow.buyer.address, UserError::Unauthorized);
         require(escrow.buyer.asset.is_none(), StateError::AlreadyDeposited);
@@ -133,7 +133,7 @@ impl Escrow for Contract {
         //       `.contains() -> bool / .position() -> u64` would clean up the loop
         let mut index = 0;
         while index < escrow.asset_count {
-            let asset = storage.assets.get(escrow.first_asset_index + index).unwrap();
+            let asset = storage.assets.get(escrow.first_asset_index + index).unwrap().read();
             if asset.id == msg_asset_id() {
                 require(asset.amount == msg_amount(), DepositError::IncorrectAssetAmount);
                 escrow.buyer.asset = Option::Some(msg_asset_id());
@@ -159,12 +159,12 @@ impl Escrow for Contract {
     fn dispute(identifier: u64) {
         // The assertions ensure that a dispute can only be raised once by the buyer as long as the
         // escrow is not completed and the buyer has deposited
-        let mut escrow = storage.escrows.get(identifier).unwrap();
+        let mut escrow = storage.escrows.get(identifier).try_read().unwrap();
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
         require(!escrow.disputed, StateError::AlreadyDisputed);
         require(msg_sender().unwrap() == escrow.buyer.address, UserError::Unauthorized);
-        require(escrow.buyer.asset.is_some(), StateError::CannotDisputeBeforeDesposit);
+        require(escrow.buyer.asset.is_some(), StateError::CannotDisputeBeforeDeposit);
 
         // Lock the escrow
         escrow.disputed = true;
@@ -178,7 +178,7 @@ impl Escrow for Contract {
     fn propose_arbiter(arbiter: Arbiter, identifier: u64) {
         // The assertions ensure that only the seller can propose a new arbiter and the arbiter
         // cannot be the buyer / seller, the arbiter will be able to take a none-zero payment
-        let escrow = storage.escrows.get(identifier).unwrap();
+        let escrow = storage.escrows.get(identifier).try_read().unwrap();
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
 
@@ -192,7 +192,7 @@ impl Escrow for Contract {
         require(arbiter.asset == msg_asset_id(), ArbiterInputError::AssetDoesNotMatch);
 
         // If there is a previous proposal then we must transfer those funds back to the seller
-        let proposal = storage.arbiter_proposal.get(identifier);
+        let proposal = storage.arbiter_proposal.get(identifier).try_read();
         if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
         }
@@ -210,13 +210,13 @@ impl Escrow for Contract {
         // The assertions ensure that a resolution can only occur during a dispute and only once
         // by the specified arbiter. The deposit will be sent to either the buyer or seller and the
         // arbiter can choose their payment amount up to the deposit from the seller
-        let mut escrow = storage.escrows.get(identifier).unwrap();
+        let mut escrow = storage.escrows.get(identifier).try_read().unwrap();
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
         require(escrow.disputed, StateError::NotDisputed);
         require(msg_sender().unwrap() == escrow.arbiter.address, UserError::Unauthorized);
         require(user == escrow.buyer.address || user == escrow.seller.address, UserInputError::InvalidRecipient);
-        require(escrow.buyer.asset.is_some() && 0 < escrow.buyer.deposited_amount, StateError::CannotResolveBeforeDesposit);
+        require(escrow.buyer.asset.is_some() && 0 < escrow.buyer.deposited_amount, StateError::CannotResolveBeforeDeposit);
         require(payment_amount <= escrow.arbiter.fee_amount, ArbiterInputError::PaymentTooLarge);
 
         escrow.state = State::Completed;
@@ -230,12 +230,12 @@ impl Escrow for Contract {
         }
 
         // If there is a previous proposal then we must transfer those funds back to the seller
-        let proposal = storage.arbiter_proposal.get(identifier);
+        let proposal = storage.arbiter_proposal.get(identifier).try_read();
         if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
-            storage.arbiter_proposal.remove(identifier);
+            assert(storage.arbiter_proposal.remove(identifier));
         }
 
         log(ResolvedDisputeEvent {
@@ -248,11 +248,11 @@ impl Escrow for Contract {
     fn return_deposit(identifier: u64) {
         // The assertions ensure that only the seller can return the deposit as long as the escrow
         // contains a deposit and the escrow has not been completed
-        let mut escrow = storage.escrows.get(identifier).unwrap();
+        let mut escrow = storage.escrows.get(identifier).try_read().unwrap();
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
         require(msg_sender().unwrap() == escrow.seller.address, UserError::Unauthorized);
-        require(escrow.buyer.asset.is_some(), StateError::CannotTransferBeforeDesposit);
+        require(escrow.buyer.asset.is_some(), StateError::CannotTransferBeforeDeposit);
 
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
@@ -261,12 +261,12 @@ impl Escrow for Contract {
         transfer(escrow.arbiter.fee_amount, escrow.arbiter.asset, escrow.seller.address);
 
         // If there is a previous proposal then we must transfer those funds back to the seller
-        let proposal = storage.arbiter_proposal.get(identifier);
+        let proposal = storage.arbiter_proposal.get(identifier).try_read();
         if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
-            storage.arbiter_proposal.remove(identifier);
+            assert(storage.arbiter_proposal.remove(identifier));
         }
 
         log(ReturnedDepositEvent { identifier });
@@ -275,14 +275,14 @@ impl Escrow for Contract {
     #[storage(read, write)]
     fn take_payment(identifier: u64) {
         // The assertions ensure that only the seller can take payment before the escrow has been
-        // completed and after the deadline as long as there is no disupte and it contains a deposit
-        let mut escrow = storage.escrows.get(identifier).unwrap();
+        // completed and after the deadline as long as there is no dispute and it contains a deposit
+        let mut escrow = storage.escrows.get(identifier).try_read().unwrap();
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
         require(escrow.deadline < height(), StateError::CannotTakePaymentBeforeDeadline);
         require(!escrow.disputed, StateError::CannotTakePaymentDuringDispute);
         require(msg_sender().unwrap() == escrow.seller.address, UserError::Unauthorized);
-        require(escrow.buyer.asset.is_some(), StateError::CannotTransferBeforeDesposit);
+        require(escrow.buyer.asset.is_some(), StateError::CannotTransferBeforeDeposit);
 
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
@@ -291,12 +291,12 @@ impl Escrow for Contract {
         transfer(escrow.arbiter.fee_amount, escrow.arbiter.asset, escrow.seller.address);
 
         // If there is a previous proposal then we must transfer those funds back to the seller
-        let proposal = storage.arbiter_proposal.get(identifier);
+        let proposal = storage.arbiter_proposal.get(identifier).try_read();
         if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
-            storage.arbiter_proposal.remove(identifier);
+            assert(storage.arbiter_proposal.remove(identifier));
         }
 
         log(PaymentTakenEvent { identifier });
@@ -304,10 +304,10 @@ impl Escrow for Contract {
     #[storage(read, write)]
     fn transfer_to_seller(identifier: u64) {
         // The assertions ensure that only the buyer can transfer their deposit once
-        let mut escrow = storage.escrows.get(identifier).unwrap();
+        let mut escrow = storage.escrows.get(identifier).try_read().unwrap();
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
-        require(escrow.buyer.asset.is_some() && 0 < escrow.buyer.deposited_amount, StateError::CannotTransferBeforeDesposit);
+        require(escrow.buyer.asset.is_some() && 0 < escrow.buyer.deposited_amount, StateError::CannotTransferBeforeDeposit);
         require(msg_sender().unwrap() == escrow.buyer.address, UserError::Unauthorized);
 
         escrow.state = State::Completed;
@@ -317,12 +317,12 @@ impl Escrow for Contract {
         transfer(escrow.arbiter.fee_amount, escrow.arbiter.asset, escrow.seller.address);
 
         // If there is a previous proposal then we must transfer those funds back to the seller
-        let proposal = storage.arbiter_proposal.get(identifier);
+        let proposal = storage.arbiter_proposal.get(identifier).try_read();
         if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
-            storage.arbiter_proposal.remove(identifier);
+            assert(storage.arbiter_proposal.remove(identifier));
         }
 
         log(TransferredToSellerEvent { identifier });
@@ -332,12 +332,12 @@ impl Escrow for Contract {
     fn withdraw_collateral(identifier: u64) {
         // The assertions ensure that only the seller can withdraw their initial deposit when
         // creating the escrow and additional collateral for a proposed arbiter change
-        let mut escrow = storage.escrows.get(identifier).unwrap();
+        let mut escrow = storage.escrows.get(identifier).try_read().unwrap();
 
         require(escrow.state == State::Pending, StateError::StateNotPending);
         require(escrow.deadline < height(), StateError::CannotWithdrawBeforeDeadline);
         require(msg_sender().unwrap() == escrow.seller.address, UserError::Unauthorized);
-        require(escrow.buyer.asset.is_none(), StateError::CannotWithdrawAfterDesposit);
+        require(escrow.buyer.asset.is_none(), StateError::CannotWithdrawAfterDeposit);
 
         escrow.state = State::Completed;
         storage.escrows.insert(identifier, escrow);
@@ -345,12 +345,12 @@ impl Escrow for Contract {
         transfer(escrow.arbiter.fee_amount, escrow.arbiter.asset, escrow.seller.address);
 
         // If there is a previous proposal then we must transfer those funds back to the seller
-        let proposal = storage.arbiter_proposal.get(identifier);
+        let proposal = storage.arbiter_proposal.get(identifier).try_read();
         if proposal.is_some() {
             transfer(proposal.unwrap().fee_amount, proposal.unwrap().asset, escrow.seller.address);
             // Not needed as long as the entire contract handles state correctly but leaving it in
             // for conceptual closure at the slight expense of users
-            storage.arbiter_proposal.remove(identifier);
+            assert(storage.arbiter_proposal.remove(identifier));
         }
 
         log(WithdrawnCollateralEvent { identifier });
@@ -360,21 +360,24 @@ impl Escrow for Contract {
 impl Info for Contract {
     #[storage(read)]
     fn arbiter_proposal(identifier: u64) -> Option<Arbiter> {
-        storage.arbiter_proposal.get(identifier)
+        storage.arbiter_proposal.get(identifier).try_read()
     }
 
     #[storage(read)]
     fn assets(identifier: u64) -> Option<Asset> {
-        storage.assets.get(identifier)
+        match storage.assets.get(identifier) {
+            Option::Some(storage_key) => storage_key.try_read(),
+            Option::None => Option::None,
+        }
     }
 
     #[storage(read)]
     fn escrows(identifier: u64) -> Option<EscrowInfo> {
-        storage.escrows.get(identifier)
+        storage.escrows.get(identifier).try_read()
     }
 
     #[storage(read)]
     fn escrow_count() -> u64 {
-        storage.escrow_count
+        storage.escrow_count.read()
     }
 }
