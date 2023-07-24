@@ -27,14 +27,17 @@ impl Oracle for Contract {
 
     #[storage(read)]
     fn price() -> Option<u64> {
-        storage.price
+        match storage.price.try_read() {
+            Option::Some(price) => price,
+            Option::None => Option::None,
+        }
     }
 
     #[storage(write)]
     fn set_price(price: u64) {
         require(msg_sender().unwrap() == OWNER, AccessError::NotOwner);
 
-        storage.price = Option::Some(price);
+        storage.price.write(Option::Some(price));
 
         log(PriceUpdateEvent { price });
     }
