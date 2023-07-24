@@ -68,6 +68,7 @@ sway-applications/
 
 #### Other
 
+- [Counter-Script](./counter-script/) is a script that calls a contract to increment a counter.
 - [Name-Registry](./name-registry/) allows users to perform transactions with human readable names instead of addresses.
 - [Oracle](./oracle) is a smart contract that provides off-chain data to on-chain applications.
 

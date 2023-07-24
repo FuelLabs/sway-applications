@@ -43,6 +43,7 @@ jobs:
             "airdrop",
             "AMM",
             "auctions/english-auction",
+            "counter-script",
             "DAO",
             "escrow",
             "fractional-NFT",

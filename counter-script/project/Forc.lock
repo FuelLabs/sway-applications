@@ -1,0 +1,29 @@
+[[package]]
+name = 'core'
+source = 'path+from-root-9BFE6D5D0CBDF740'
+
+[[package]]
+name = 'counter_contract'
+source = 'member'
+dependencies = [
+    'libraries',
+    'std',
+]
+
+[[package]]
+name = 'interaction_script'
+source = 'member'
+dependencies = [
+    'libraries',
+    'std',
+]
+
+[[package]]
+name = 'libraries'
+source = 'path+from-root-4F344E6D2A50F28B'
+dependencies = ['std']
+
+[[package]]
+name = 'std'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.42.1#3b66f8e424bd21e3ba467783b10b36e808cfa6ee'
+dependencies = ['core']
