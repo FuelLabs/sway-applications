@@ -3,7 +3,6 @@ use fuels::prelude::{
     LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     BASE_ASSET_ID,
 };
-use rand::Fill;
 
 abigen!(Contract(
     name = "DaoVoting",
@@ -34,33 +33,30 @@ pub(crate) fn proposal_transaction(asset_id: ContractId) -> Proposal {
 }
 
 pub(crate) async fn setup() -> (ContractId, ContractId, Metadata, Metadata, u64) {
-    let mut rng = rand::thread_rng();
-    let num_coins = 1;
+    let number_of_coins = 1;
     let coin_amount = 1_000_000;
+    let number_of_wallets = 2;
 
     let base_asset = AssetConfig {
         id: BASE_ASSET_ID,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
-    let mut gov_token_id = AssetId::zeroed();
-    gov_token_id.try_fill(&mut rng).unwrap();
+    let gov_token_id = AssetId::new([1; 32]);
     let gov_token = AssetConfig {
         id: gov_token_id,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
-    let mut other_token_id = AssetId::zeroed();
-    other_token_id.try_fill(&mut rng).unwrap();
+    let other_token_id = AssetId::new([2; 32]);
     let other_token = AssetConfig {
         id: other_token_id,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
     let assets = vec![base_asset, gov_token, other_token];
 
-    let num_wallets = 2;
-    let wallet_config = WalletsConfig::new_multiple_assets(num_wallets, assets);
+    let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
     let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None).await;
 
     let deployer_wallet = wallets.pop().unwrap();
