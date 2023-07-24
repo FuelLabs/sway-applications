@@ -106,6 +106,10 @@ mod success {
 
         assert_eq!(
             defaults.initial_wallet_amount - defaults.asset_amount,
+            asset_amount(&defaults.asset_id, &buyer).await
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount - defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
 
