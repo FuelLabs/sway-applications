@@ -6,24 +6,24 @@
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.35.2" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.35.2-orange" />
+    <a href="https://crates.io/crates/forc/0.42.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.42.1-orange" />
     </a>
-    <a href="https://crates.io/crates/fuel-core/0.17.2" alt="fuel-core">
-        <img src="https://img.shields.io/badge/fuel--core-v0.17.2-yellow" />
+    <a href="https://crates.io/crates/fuel-core/0.18.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.18.3-yellow" />
     </a>
-    <a href="https://crates.io/crates/fuels/0.36.1" alt="forc">
-        <img src="https://img.shields.io/badge/fuels-v0.36.1-blue" />
+    <a href="https://crates.io/crates/fuels/0.42.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.42.0-blue" />
     </a>
 </p>
 
 ## Overview
 
 ## Predicates in Fuel
+
 Predicates are pure functions evaluating to either `True` or `False`. They are stateless, and can neither read nor write to any contract state. They can not emit logs.
 
 In Fuel, coins can be sent to an address uniquely representing a particular predicate's bytecode (the bytecode root, calculated [here](https://github.com/FuelLabs/fuel-specs/blob/master/src/protocol/id/contract.md)).
-
 
 These coin UTXOs then become spendable not on the provision of a valid signature, but rather if the supplied predicate both has a root that matches their owner, and [evaluates](https://github.com/FuelLabs/fuel-specs/blob/master/src/vm/index.md#predicate-verification) to `True`. If a predicate reverts, or tries to access impure VM opcodes, the evaluation is automatically `False`.
 
@@ -38,6 +38,7 @@ The order "taker" can then execute the order by spending the predicate. They are
 The order maker can "cancel" the order by spending the predicate's coins in a transaction containing a single coin input signed by the `receiver`. There are therefore two inputs: the signed coin and the predicate coin.
 
 Limitations:
+
 - An order can not be partially filled - the taker must pay the entire ask amount.
 - There is no on-chain matching engine, so an order placed "offside" would not be matched with an existing order with a better price (on the contrary, it would be vulnerable to arbitrage).
 
