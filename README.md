@@ -51,7 +51,7 @@ sway-applications/
 - [Airdrop](./airdrop/) is a token distribution program where users are able to claim tokens given a valid merkle proof.
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
 - [Fractional-NFT](./fractional-NFT/) allows multiple parties to claim ownership of an NFT directly proportional to the number of tokens they hold.
-- [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unqiue collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
+- [Non-Fungible Token (NFT)](./NFT) is a token contract which provides unique collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [Timelock](./timelock) is a contract which restricts the execution of a transaction to a specified time range.
 
 #### Decentralized Finance
@@ -80,7 +80,7 @@ sway-applications/
 
 If you wish to run any of the projects then clone this repository and go through the general [installation](https://fuellabs.github.io/sway/) steps required to use our tools.
 
-Any instructions related to running a specific project will be found within the README.md in the root of that project. 
+Any instructions related to running a specific project will be found within the README.md in the root of that project.
 
 The projects are pinned to specific versions which can be seen at the top of the README.md inside the `/<app>/project` directory and inside the `fuel-toolchain.toml`.
 
