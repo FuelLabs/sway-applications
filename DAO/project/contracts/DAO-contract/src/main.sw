@@ -40,7 +40,7 @@ storage {
     /// Used to check the validity of a proposal id
     /// Used as a unique identifier when creating proposals
     proposal_count: u64 = 0,
-    /// The initilization state of the contract.
+    /// The initialization state of the contract.
     state: State = State::NotInitialized,
     /// Contract Id of the governance token
     token: ContractId = ContractId {
@@ -123,7 +123,7 @@ impl DaoVoting for Contract {
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
 
         let mut proposal = storage.proposals.get(proposal_id).try_read().unwrap();
-        require(height() <= proposal.deadline, ProposalError::ProposalExpired);
+        require(proposal.deadline >= height(), ProposalError::ProposalExpired);
 
         let user = msg_sender().unwrap();
         let user_balance = storage.balances.get(user).try_read().unwrap_or(0);
