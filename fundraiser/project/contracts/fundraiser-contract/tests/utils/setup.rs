@@ -6,7 +6,6 @@ use fuels::{
     },
     types::Identity,
 };
-use rand::Fill;
 
 abigen!(Contract(
     name = "Fundraiser",
@@ -38,33 +37,30 @@ pub(crate) async fn identity(address: &Bech32Address) -> Identity {
 }
 
 pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
-    let mut rng = rand::thread_rng();
-    let num_coins = 1;
+    let number_of_coins = 1;
     let coin_amount = 1_000_000;
+    let number_of_wallets = 3;
 
     let base_asset = AssetConfig {
         id: BASE_ASSET_ID,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
-    let mut asset_id = AssetId::zeroed();
-    asset_id.try_fill(&mut rng).unwrap();
+    let asset_id = AssetId::new([1; 32]);
     let asset = AssetConfig {
         id: asset_id,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
-    let mut asset2_id = AssetId::zeroed();
-    asset2_id.try_fill(&mut rng).unwrap();
+    let asset2_id = AssetId::new([2; 32]);
     let asset2 = AssetConfig {
         id: asset2_id,
-        num_coins,
+        num_coins: number_of_coins,
         coin_amount,
     };
     let assets = vec![base_asset, asset, asset2];
 
-    let num_wallets = 3;
-    let wallet_config = WalletsConfig::new_multiple_assets(num_wallets, assets);
+    let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
 
     let provider_config = Config {
         manual_blocks_enabled: true,
