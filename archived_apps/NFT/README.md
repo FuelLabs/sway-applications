@@ -17,6 +17,10 @@
     </a>
 </p>
 
+> **Warning**
+> This application have been temporarily archived waiting the finalised release of of the [Sway multi-token standard](https://github.com/FuelLabs/rfcs/pull/17) before being updated. In it's current form, it does not comply with this standard and as such should be considered outdated.
+> It is not advised to use this applciation for production purposes, use at your own risk
+
 ## Overview
 
 A non-fungible token (NFT) is a unique token that has an identifier which distinguishes itself from other tokens within the same token contract. At its core, there is nothing inherently special or unique with this implementation of an NFT besides the token ID. While it is commonly associated with artwork / collectibles, there are many greater utilities beyond that which have yet to be written for the Fuel Network.
