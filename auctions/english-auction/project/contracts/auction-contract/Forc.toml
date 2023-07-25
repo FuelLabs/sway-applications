@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "auction-contract"
 
 [dependencies]
-nft = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.8.0" }
+nft = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.12.0" }

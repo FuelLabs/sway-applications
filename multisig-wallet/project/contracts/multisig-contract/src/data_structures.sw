@@ -1,5 +1,5 @@
 library;
 
-mod user;
-mod hashing;
-mod signatures;
+pub mod user;
+pub mod hashing;
+pub mod signatures;

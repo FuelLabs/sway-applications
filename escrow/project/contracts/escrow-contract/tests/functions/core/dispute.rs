@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::core::{create_escrow, deposit, dispute},
-    setup::{create_arbiter, create_asset, mint, setup},
+    setup::{create_arbiter, create_asset, setup},
 };
 
 mod success {
@@ -14,8 +14,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -46,8 +44,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount * 2, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -102,8 +98,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -126,8 +120,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -150,8 +142,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -167,14 +157,12 @@ mod revert {
     }
 
     #[tokio::test]
-    #[should_panic(expected = "CannotDisputeBeforeDesposit")]
+    #[should_panic(expected = "CannotDisputeBeforeDeposit")]
     async fn when_buyer_has_not_deposited() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,

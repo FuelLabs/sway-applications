@@ -1,6 +1,7 @@
 use crate::utils::setup::{AssetInfo, Campaign, CampaignInfo, Fundraiser, Pledge};
 use fuels::{
-    prelude::WalletUnlocked, programs::call_response::FuelCallResponse, tx::ContractId,
+    prelude::{ContractId, WalletUnlocked},
+    programs::call_response::FuelCallResponse,
     types::Identity,
 };
 

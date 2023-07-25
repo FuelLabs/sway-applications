@@ -34,7 +34,7 @@ mod success {
         .await;
 
         assert_eq!(
-            provider.latest_block_height().await.unwrap() + claim_time,
+            (provider.latest_block_height().await.unwrap() as u64) + claim_time,
             end_block(&deploy_wallet.airdrop_distributor).await,
         );
     }

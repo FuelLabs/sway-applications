@@ -1,9 +1,15 @@
-use fuels::prelude::{AssetId, ContractId, TxParameters, WalletUnlocked};
+use fuels::{
+    prelude::{AssetId, ContractId, TxParameters, WalletUnlocked},
+    types::Bits256,
+};
 use test_utils::{
     data_structures::{
         AMMContract, SwapParameters, SwapResult, TransactionParameters, WalletAssetConfiguration,
     },
-    interface::{exchange::preview_swap_exact_input, SwapExactInputScript, SCRIPT_GAS_LIMIT},
+    interface::{
+        exchange::preview_swap_exact_input, SwapExactInputScript,
+        SwapExactInputScriptConfigurables, SCRIPT_GAS_LIMIT,
+    },
     paths::SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH,
     setup::{
         common::{deploy_and_initialize_amm, setup_wallet_and_provider},
@@ -91,13 +97,17 @@ pub async fn setup() -> (
 
     let deadline = provider.latest_block_height().await.unwrap() + 10;
 
-    let script_instance = SwapExactInputScript::new(wallet, SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH);
+    let script_configurables = SwapExactInputScriptConfigurables::new()
+        .set_AMM_ID(Bits256::from_hex_str(&amm.id.to_string()).unwrap());
+
+    let script_instance = SwapExactInputScript::new(wallet, SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH)
+        .with_configurables(script_configurables);
 
     (
         script_instance,
         amm,
         asset_ids,
         transaction_parameters,
-        deadline,
+        deadline.into(),
     )
 }

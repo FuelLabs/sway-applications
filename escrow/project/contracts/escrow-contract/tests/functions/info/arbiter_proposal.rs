@@ -5,7 +5,7 @@ mod success {
             core::{create_escrow, propose_arbiter},
             info::arbiter_proposal,
         },
-        setup::{create_arbiter, create_asset, mint, setup},
+        setup::{create_arbiter, create_asset, setup},
     };
 
     #[tokio::test]
@@ -20,7 +20,6 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,

@@ -44,11 +44,11 @@ storage {
 impl Game for Contract {
     #[storage(read, write)]
     fn new_game(player_one: Identity, player_two: Identity) {
-        require(storage.state == State::Ended, GameStateError::GameHasNotEnded);
+        require(storage.state.read() == State::Ended, GameStateError::GameHasNotEnded);
 
-        storage.player_one = Option::Some(player_one);
-        storage.player_two = Option::Some(player_two);
-        storage.player_turn = Option::Some(player_one);
+        storage.player_one.write(Option::Some(player_one));
+        storage.player_two.write(Option::Some(player_two));
+        storage.player_turn.write(Option::Some(player_one));
 
         // Once a game has been played we need to reset all values.
         let mut position = 0;
@@ -56,8 +56,8 @@ impl Game for Contract {
             let _ = storage.board.remove(position);
             position += 1;
         }
-        storage.move_counter = 0;
-        storage.state = State::Playing;
+        storage.move_counter.write(0);
+        storage.state.write(State::Playing);
 
         log(NewGameEvent {
             player_one,
@@ -67,45 +67,45 @@ impl Game for Contract {
 
     #[storage(read, write)]
     fn make_move(position: u64) {
-        require(storage.state == State::Playing, GameStateError::GameHasEnded);
-        require(storage.player_turn.unwrap() == msg_sender().unwrap(), PlayerError::IncorrectPlayerTurn);
+        require(storage.state.read() == State::Playing, GameStateError::GameHasEnded);
+        require(storage.player_turn.read().unwrap() == msg_sender().unwrap(), PlayerError::IncorrectPlayerTurn);
         require(position < 9, PositionError::InvalidPosition);
-        require(storage.board.get(position) == Option::None, PositionError::CellIsNotEmpty);
+        require(storage.board.get(position).try_read() == Option::None, PositionError::CellIsNotEmpty);
 
         storage.board.insert(position, msg_sender().unwrap());
-        storage.move_counter += 1;
+        storage.move_counter.write(storage.move_counter.read() + 1);
 
-        let current_player = storage.player_turn.unwrap();
-        if (storage.player_turn.unwrap() == storage.player_one.unwrap())
+        let current_player = storage.player_turn.read().unwrap();
+        if (storage.player_turn.read().unwrap() == storage.player_one.read().unwrap())
         {
-            storage.player_turn = storage.player_two;
+            storage.player_turn.write(storage.player_two.read());
         } else {
-            storage.player_turn = storage.player_one;
+            storage.player_turn.write(storage.player_one.read());
         }
 
-        if (storage.move_counter > 4) {
+        if (storage.move_counter.read() > 4) {
             let mut board = Vec::with_capacity(8);
             let mut i = 0;
             // We make a hard copy of the board to access the storage in an external function
             // because we cannot pass in storage references.
             // https://github.com/FuelLabs/sway/issues/3043
             while (i < 9) {
-                board.push(storage.board.get(i));
+                board.push(storage.board.get(i).try_read());
                 i += 1;
             }
             if (win_check(board, current_player)) {
-                storage.player_turn = Option::None;
-                storage.state = State::Ended;
+                storage.player_turn.write(Option::None);
+                storage.state.write(State::Ended);
                 log(GameWonEvent {
                     player: msg_sender().unwrap(),
                 });
-            } else if draw(board, storage.player_one.unwrap(), storage.player_two.unwrap(), storage.move_counter)
+            } else if draw(board, storage.player_one.read().unwrap(), storage.player_two.read().unwrap(), storage.move_counter.read())
             {
-                storage.player_turn = Option::None;
-                storage.state = State::Ended;
+                storage.player_turn.write(Option::None);
+                storage.state.write(State::Ended);
                 log(GameDrawnEvent {
-                    player_one: storage.player_one.unwrap(),
-                    player_two: storage.player_two.unwrap(),
+                    player_one: storage.player_one.read().unwrap(),
+                    player_two: storage.player_two.read().unwrap(),
                 });
             }
         }

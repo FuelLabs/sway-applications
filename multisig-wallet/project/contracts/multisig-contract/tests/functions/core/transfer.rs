@@ -62,7 +62,7 @@ mod success {
         .await
         .value
         .0;
-        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+        let tx_hash = Message::from_bytes(tx_hash);
 
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
@@ -134,7 +134,7 @@ mod revert {
         .await
         .value
         .0;
-        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+        let tx_hash = Message::from_bytes(tx_hash);
 
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
@@ -170,7 +170,7 @@ mod revert {
         .await
         .value
         .0;
-        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+        let tx_hash = Message::from_bytes(tx_hash);
 
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
@@ -217,7 +217,7 @@ mod revert {
         .await
         .value
         .0;
-        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+        let tx_hash = Message::from_bytes(tx_hash);
 
         let signatures = transfer_signatures(private_key, tx_hash).await;
         let incorrectly_ordered_signatures = vec![signatures[1].clone(), signatures[0].clone()];
@@ -265,7 +265,7 @@ mod revert {
         .await
         .value
         .0;
-        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+        let tx_hash = Message::from_bytes(tx_hash);
 
         let mut signatures = transfer_signatures(private_key, tx_hash).await;
         signatures.remove(0);

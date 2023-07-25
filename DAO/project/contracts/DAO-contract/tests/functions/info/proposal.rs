@@ -10,7 +10,7 @@ mod success {
 
     #[tokio::test]
     pub async fn user_can_get_proposal() {
-        let (_gov_token, gov_token_id, deployer, user, _asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
 
         let proposal_transaction = proposal_transaction(gov_token_id);
@@ -24,7 +24,7 @@ mod success {
                 no_votes: 0,
                 acceptance_percentage: 10,
                 proposal_transaction,
-                deadline: 14,
+                deadline: 13,
                 executed: false,
             }
         );

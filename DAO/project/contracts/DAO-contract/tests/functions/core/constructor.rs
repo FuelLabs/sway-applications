@@ -7,7 +7,7 @@ mod success {
 
     #[tokio::test]
     async fn constructs() {
-        let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, _user, _asset_amount) = setup().await;
         let response = constructor(&deployer.dao_voting, gov_token_id).await;
 
         let log = response.decode_logs_with_type::<InitializeEvent>().unwrap();
@@ -33,7 +33,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "CannotReinitialize")]
     async fn when_reinitialized() {
-        let (_gov_token, gov_token_id, deployer, _user, _asset_amount) = setup().await;
+        let (gov_token_id, _other_token_id, deployer, _user, _asset_amount) = setup().await;
         constructor(&deployer.dao_voting, gov_token_id).await;
         constructor(&deployer.dao_voting, gov_token_id).await;
     }

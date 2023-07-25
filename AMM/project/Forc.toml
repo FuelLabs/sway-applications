@@ -2,7 +2,7 @@
 members = [
   "./contracts/AMM-contract",
   "./contracts/exchange-contract",
-  "./contracts/exchange-contract/tests/artifacts/malicious-implementation",
+  "./contracts/test-artifacts/malicious-implementation",
   "./scripts/atomic-add-liquidity",
   "./scripts/swap-exact-input",
   "./scripts/swap-exact-output",

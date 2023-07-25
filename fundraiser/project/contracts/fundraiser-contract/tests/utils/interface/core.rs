@@ -1,7 +1,6 @@
 use fuels::{
-    prelude::{CallParameters, TxParameters, WalletUnlocked},
+    prelude::{AssetId, CallParameters, ContractId, TxParameters, WalletUnlocked},
     programs::call_response::FuelCallResponse,
-    tx::{AssetId, ContractId},
     types::Identity,
 };
 

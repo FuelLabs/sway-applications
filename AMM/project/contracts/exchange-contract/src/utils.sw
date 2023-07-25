@@ -10,7 +10,14 @@ fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
     amount - fee
 }
 
-/// Returns the maximum required amount of the input asset to get exactly `output_amount` of the output asset
+/// Returns the maximum required amount of the input asset to get exactly `output_amount` of the output asset.
+///
+/// ### Arguments
+///
+/// * `output_amount`: `u64` - The desired amount of the output asset.
+/// * `input_reserve`: `u64` - The reserved amount of the input asset.
+/// * `output_reserve`: `u64` - The reserved amount of the output asset.
+/// * `liquidity_miner_fee`: `u64` - The fee paid to the liquidity miner.
 pub fn maximum_input_for_exact_output(
     output_amount: u64,
     input_reserve: u64,
@@ -26,13 +33,25 @@ pub fn maximum_input_for_exact_output(
     let result_wrapped = (numerator / denominator).as_u64();
 
     if denominator > numerator {
-        0 // 0 < result < 1, round the result down since there are no floating points
+        // 0 < result < 1, round the result down since there are no floating points.
+        0
     } else {
         result_wrapped.unwrap() + 1
     }
 }
 
-/// Given exactly `input_amount` of the input asset, returns the minimum resulting amount of the output asset
+/// Given exactly `input_amount` of the input asset, returns the minimum resulting amount of the output asset.
+///
+/// ### Arguments
+///
+/// * `input_amount`: `u64` - The desired amount of the input asset.
+/// * `input_reserve`: `u64` - The reserved amount of the input asset.
+/// * `output_reserve`: `u64` - The reserved amount of the output asset.
+/// * `liquidity_miner_fee`: `u64` - The fee paid to the liquidity miner.
+///
+/// # Reverts
+///
+/// * When `input_reserve` isn't greater than 0 or `output_reserve` isn't greater than 0.
 pub fn minimum_output_given_exact_input(
     input_amount: u64,
     input_reserve: u64,
@@ -47,13 +66,30 @@ pub fn minimum_output_given_exact_input(
     result_wrapped.unwrap()
 }
 
-// Calculates d in the proportion a / b = c / d
+/// Calculates d in the equation: a / b = c / d.
+///
+/// ### Arguments
+///
+/// * `a`: `u64` - The value of a in the equation a / b = c / d.
+/// * `b`: `u64` - The value of b in the equation a / b = c / d.
+/// * `c`: `u64` - The value of c in the equation a / b = c / d.
 pub fn proportional_value(b: u64, c: u64, a: u64) -> u64 {
     let calculation = (U128::from((0, b)) * U128::from((0, c)));
     let result_wrapped = (calculation / U128::from((0, a))).as_u64();
     result_wrapped.unwrap()
 }
 
+/// Determines the individual assets in an asset pair.
+///
+/// ### Arguments
+///
+/// * `input_asset_id`: `ContractId` - The contract ID of the input asset.
+/// * `pair`: `Option<AssetPair>` - The asset pair from which the individual assets are determined.
+///
+/// # Reverts
+///
+/// * When `pair` is Option::None.
+/// * When `input_asset_id` does not match the asset id of either asset in `pair`.
 pub fn determine_assets(input_asset_id: ContractId, pair: Option<AssetPair>) -> (Asset, Asset) {
     require(pair.is_some(), InitError::AssetPairNotSet);
     let pair = pair.unwrap();

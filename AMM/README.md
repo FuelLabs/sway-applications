@@ -6,22 +6,23 @@
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.37.0" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.37.0-orange" />
+    <a href="https://crates.io/crates/forc/0.42.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.42.1-orange" />
     </a>
-    <a href="https://crates.io/crates/fuel-core/0.17.9" alt="fuel-core">
-        <img src="https://img.shields.io/badge/fuel--core-v0.17.9-yellow" />
+    <a href="https://crates.io/crates/fuel-core/0.18.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.18.3-yellow" />
     </a>
-    <a href="https://crates.io/crates/fuels/0.41.0" alt="forc">
-        <img src="https://img.shields.io/badge/fuels-v0.41.0-blue" />
+    <a href="https://crates.io/crates/fuels/0.42.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.42.0-blue" />
     </a>
 </p>
 
 ## Overview
 
-An *automated market maker (AMM)* is a type of decentralized exchange protocol that determines asset prices algorithmically through a conservation function. Trades on an AMM take place between the user and the contract, rather than between two users. The liquidity pool of assets in an AMM is supplied by the users. Providing liquidity is incentivized via liquidity miner rewards. 
+An _automated market maker (AMM)_ is a type of decentralized exchange protocol that determines asset prices algorithmically through a conservation function. Trades on an AMM take place between the user and the contract, rather than between two users. The liquidity pool of assets in an AMM is supplied by the users. Providing liquidity is incentivized via liquidity miner rewards.
 
 This application supports
+
 - Depositing assets
 - Withdrawing assets
 - Adding liquidity using deposited assets
@@ -29,12 +30,13 @@ This application supports
 - Swapping assets
 
 The contracts are designed to
+
 - Support liquidity pools that consist of two assets
 - Use a conservation function which keeps the total liquidity at a constant ratio
-    - $price_{asset\ A} * price_{asset\ B} = total\ liquidity$
+  - $price_{asset\ A} * price_{asset\ B} = total\ liquidity$
 - Provide a liquidity miner fee of $\frac1{333} \approx 0.3\%$
 
-	> **NOTE** The miner fee can be modified per asset pair
+  > **NOTE** The miner fee can be modified per asset pair
 
 ## Project structure
 

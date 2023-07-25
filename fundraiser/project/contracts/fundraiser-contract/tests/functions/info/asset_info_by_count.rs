@@ -5,7 +5,7 @@ mod success {
             core::{create_campaign, pledge},
             info::asset_info_by_count,
         },
-        setup::{mint, setup, AssetInfo},
+        setup::{setup, AssetInfo},
     };
 
     #[tokio::test]
@@ -23,12 +23,6 @@ mod success {
         let asset_info = asset_info_by_count(&author.contract, 1).await;
         assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,

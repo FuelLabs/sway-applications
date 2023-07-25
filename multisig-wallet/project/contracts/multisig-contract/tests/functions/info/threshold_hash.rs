@@ -6,10 +6,10 @@ mod success {
     };
     use fuels::{
         accounts::fuel_crypto::Hasher,
-        core::abi_encoder::ABIEncoder,
+        core::{codec::ABIEncoder, traits::Tokenizable},
         prelude::ContractId,
         tx::Bytes32,
-        types::{traits::Tokenizable, Bits256, Token},
+        types::{Bits256, Token},
     };
     use rand::{rngs::StdRng, Rng, SeedableRng};
 

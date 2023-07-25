@@ -2,7 +2,6 @@ mod success {
     use crate::utils::{
         interface::{
             core::{
-                asset::mint_and_send_to_address,
                 auction::{bid, create},
                 nft::{approve, mint},
             },
@@ -16,7 +15,8 @@ mod success {
     async fn returns_mutliple_deposits() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
@@ -24,19 +24,6 @@ mod success {
         let buy_asset = token_asset(buy_token_contract_id, 0).await;
         let bid1_asset = token_asset(buy_token_contract_id, initial_price).await;
         let bid2_asset = token_asset(buy_token_contract_id, initial_price + 1).await;
-
-        mint_and_send_to_address(
-            sell_amount * 2,
-            &seller.asset,
-            seller.wallet.address().into(),
-        )
-        .await;
-        mint_and_send_to_address(
-            (reserve_price * 2) + 1,
-            &buyer1.asset,
-            buyer1.wallet.address().into(),
-        )
-        .await;
 
         let auction_id1 = create(
             buy_asset.clone(),
@@ -146,17 +133,14 @@ mod success {
     async fn returns_token_deposit_balance() {
         let (_, seller, buyer1, _, _, sell_token_contract_id, _, buy_token_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let sell_asset = token_asset(sell_token_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_token_contract_id, 0).await;
         let bid_asset = token_asset(buy_token_contract_id, initial_price).await;
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
-        mint_and_send_to_address(reserve_price, &buyer1.asset, buyer1.wallet.address().into())
-            .await;
 
         let auction_id = create(
             buy_asset.clone(),

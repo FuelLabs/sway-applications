@@ -3,7 +3,7 @@ use crate::utils::{
         core::{accept_arbiter, create_escrow, deposit},
         info::arbiter_proposal,
     },
-    setup::{create_arbiter, create_asset, mint, setup},
+    setup::{create_arbiter, create_asset, setup},
 };
 
 mod success {
@@ -16,17 +16,12 @@ mod success {
     #[tokio::test]
     async fn accepts_proposal() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let payment_diff = 1;
+
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
-        let arbiter_obj2 = create_arbiter(
-            &arbiter,
-            defaults.asset_id,
-            defaults.asset_amount - payment_diff,
-        )
-        .await;
+        let arbiter_obj2 =
+            create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount - 1).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -45,11 +40,14 @@ mod success {
 
         let response = accept_arbiter(&buyer, 0).await;
 
-        assert_eq!(payment_diff, initial_amount);
+        assert_eq!(
+            defaults.initial_wallet_amount - (defaults.asset_amount + arbiter_obj2.fee_amount),
+            initial_amount
+        );
         assert_eq!(arbiter_obj, initial_escrow.arbiter);
         assert_eq!(arbiter_obj2.clone(), initial_proposal);
         assert_eq!(
-            defaults.asset_amount + payment_diff,
+            defaults.initial_wallet_amount - arbiter_obj2.fee_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(arbiter_obj2, escrows(&seller, 0).await.unwrap().arbiter);
@@ -66,17 +64,12 @@ mod success {
     #[tokio::test]
     async fn accepts_proposal_in_two_escrows() {
         let (arbiter, buyer, seller, defaults) = setup().await;
-        let payment_diff = 1;
+
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
-        let arbiter_obj2 = create_arbiter(
-            &arbiter,
-            defaults.asset_id,
-            defaults.asset_amount - payment_diff,
-        )
-        .await;
+        let arbiter_obj2 =
+            create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount - 1).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 4, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -102,7 +95,8 @@ mod success {
         propose_arbiter(arbiter_obj2.clone(), &seller, 1).await;
 
         assert_eq!(
-            payment_diff * 2,
+            defaults.initial_wallet_amount
+                - (2 * (defaults.asset_amount + arbiter_obj2.fee_amount)),
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(arbiter_obj2, arbiter_proposal(&seller, 0).await.unwrap());
@@ -120,9 +114,13 @@ mod success {
         let asset_amount1 = asset_amount(&defaults.asset_id, &seller).await;
         let response2 = accept_arbiter(&buyer, 1).await;
 
-        assert_eq!(defaults.asset_amount + payment_diff * 2, asset_amount1);
         assert_eq!(
-            defaults.asset_amount * 2 + payment_diff * 2,
+            defaults.initial_wallet_amount
+                - ((2 * arbiter_obj2.fee_amount) + defaults.asset_amount),
+            asset_amount1
+        );
+        assert_eq!(
+            defaults.initial_wallet_amount - (2 * arbiter_obj2.fee_amount),
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(arbiter_proposal(&seller, 0).await, None);
@@ -160,8 +158,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -184,8 +180,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,
@@ -207,8 +201,6 @@ mod revert {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        mint(&seller, defaults.asset_amount * 2, &defaults.asset).await;
-        mint(&buyer, defaults.asset_amount, &defaults.asset).await;
         create_escrow(
             defaults.asset_amount,
             &arbiter_obj,

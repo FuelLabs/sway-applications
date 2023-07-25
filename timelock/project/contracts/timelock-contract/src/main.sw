@@ -34,9 +34,9 @@ impl Timelock for Contract {
     #[storage(read, write)]
     fn cancel(id: b256) {
         require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
-        require(storage.queue.get(id).is_some(), TransactionError::InvalidTransaction(id));
+        require(storage.queue.get(id).try_read().is_some(), TransactionError::InvalidTransaction(id));
 
-        let _ = storage.queue.remove(id);
+        assert(storage.queue.remove(id));
 
         log(CancelEvent { id })
     }
@@ -51,11 +51,11 @@ impl Timelock for Contract {
         require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
 
         let id = create_hash(recipient, asset, data, timestamp);
-        let transaction = storage.queue.get(id);
+        let transaction = storage.queue.get(id).try_read();
 
         require(transaction.is_some(), TransactionError::InvalidTransaction(id));
 
-        // Timestamp is guarenteed to be in the range because of `fn queue()`
+        // Timestamp is guaranteed to be in the range because of `fn queue()`
         // Therefore, the lower bound can be the timestamp itself; but, we must place an upper bound
         // to prevent going over the MAXIMUM_DELAY
         require(timestamp <= now() && now() <= transaction.unwrap().end, TransactionError::TimestampNotInRange((timestamp, transaction.unwrap().end, now())));
@@ -64,7 +64,7 @@ impl Timelock for Contract {
             require(asset.unwrap().amount <= this_balance(asset.unwrap().id), FundingError::InsufficientContractBalance((this_balance(asset.unwrap().id))));
         }
 
-        let _ = storage.queue.remove(id);
+        assert(storage.queue.remove(id));
 
         // TODO: execute arbitrary call...
         log(ExecuteEvent {
@@ -86,7 +86,7 @@ impl Timelock for Contract {
         require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
 
         let id = create_hash(recipient, asset, data, timestamp);
-        let transaction = storage.queue.get(id);
+        let transaction = storage.queue.get(id).try_read();
 
         require(transaction.is_none(), TransactionError::DuplicateTransaction(id));
 
@@ -118,7 +118,7 @@ impl Info for Contract {
 
     #[storage(read)]
     fn queued(id: b256) -> Option<ExecutionRange> {
-        storage.queue.get(id)
+        storage.queue.get(id).try_read()
     }
 
     fn transaction_hash(

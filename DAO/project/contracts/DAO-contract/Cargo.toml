@@ -1,4 +1,4 @@
-[project]
+[package]
 name = "DAO-contract"
 version = "0.0.0"
 authors = ["Fuel Labs <contact@fuel.sh>"]
@@ -6,7 +6,7 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-fuels = { version = "0.40.0", features = ["fuel-core-lib"] }
+fuels = { version = "0.42.0", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]

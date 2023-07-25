@@ -1,7 +1,7 @@
 use fuels::{
-    prelude::WalletUnlocked,
+    accounts::wallet::WalletUnlocked,
+    prelude::ContractId,
     programs::call_response::FuelCallResponse,
-    tx::ContractId,
     types::{Bits256, Identity},
 };
 

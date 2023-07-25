@@ -30,7 +30,7 @@ mod success {
         .await
         .value
         .0;
-        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+        let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
         let response =
@@ -74,7 +74,7 @@ mod revert {
             .value
             .0;
 
-        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+        let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
         set_threshold(&deployer.contract, None, signatures, DEFAULT_THRESHOLD).await;
@@ -95,7 +95,7 @@ mod revert {
             .value
             .0;
 
-        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+        let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
         set_threshold(&deployer.contract, None, signatures, new_threshold).await;
@@ -116,7 +116,7 @@ mod revert {
             .value
             .0;
 
-        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+        let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
         set_threshold(&deployer.contract, None, signatures, DEFAULT_THRESHOLD + 1).await;
@@ -143,7 +143,7 @@ mod revert {
         .value
         .0;
 
-        let tx_hash = unsafe { Message::from_bytes_unchecked(tx_hash) };
+        let tx_hash = Message::from_bytes(tx_hash);
         let mut signatures = transfer_signatures(private_key, tx_hash).await;
         signatures.pop();
 

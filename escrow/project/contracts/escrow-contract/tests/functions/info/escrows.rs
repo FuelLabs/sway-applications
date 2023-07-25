@@ -2,7 +2,7 @@ mod success {
 
     use crate::utils::{
         interface::{core::create_escrow, info::escrows},
-        setup::{create_arbiter, create_asset, escrow_info, mint, setup},
+        setup::{create_arbiter, create_asset, escrow_info, setup},
     };
 
     #[tokio::test]
@@ -16,8 +16,6 @@ mod success {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-
-        mint(&seller, defaults.asset_amount, &defaults.asset).await;
 
         assert!(matches!(escrows(&seller, 0).await, None));
 

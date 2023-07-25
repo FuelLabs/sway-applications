@@ -13,7 +13,6 @@ mod success {
 
     #[tokio::test]
     async fn executes() {}
-
 }
 
 mod revert {
@@ -43,5 +42,4 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "IncorrectAmountSent")]
     async fn when_amount_sent_does_not_match_value() {}
-
 }

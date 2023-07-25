@@ -27,7 +27,7 @@ storage {
     admin: Option<Identity> = Option::None,
     /// The contract of the tokens which is to be distributed.
     asset: Option<ContractId> = Option::None,
-    /// Stores the ClaimState of users that have interacted with the Airdrop Distrubutor contract.
+    /// Stores the ClaimState of users that have interacted with the Airdrop Distributor contract.
     /// Maps (user => claim)
     claims: StorageMap<Identity, ClaimState> = StorageMap {},
     /// The block at which the claiming period will end.
@@ -42,18 +42,18 @@ impl AirdropDistributor for Contract {
     #[storage(read, write)]
     fn claim(amount: u64, key: u64, proof: Vec<b256>, to: Identity) {
         // The claiming period must be open
-        require(storage.end_block > height(), StateError::ClaimPeriodNotActive);
+        require(storage.end_block.read() > height(), StateError::ClaimPeriodNotActive);
 
         // Users cannot claim twice
         let sender = msg_sender().unwrap();
-        require(storage.claims.get(sender).unwrap_or(ClaimState::Unclaimed) == ClaimState::Unclaimed, AccessError::UserAlreadyClaimed);
+        require(storage.claims.get(sender).try_read().unwrap_or(ClaimState::Unclaimed) == ClaimState::Unclaimed, AccessError::UserAlreadyClaimed);
 
         // There must be enough tokens left in the contract
-        let asset = storage.asset.unwrap();
+        let asset = storage.asset.read().unwrap();
         require(this_balance(asset) >= amount, AccessError::NotEnoughTokens);
 
         // Verify the merkle proof against the user and amount
-        require(verify_proof(key, leaf_digest(sha256((sender, amount))), storage.merkle_root.unwrap(), storage.number_of_leaves, proof), VerificationError::MerkleProofFailed);
+        require(verify_proof(key, leaf_digest(sha256((sender, amount))), storage.merkle_root.read().unwrap(), storage.number_of_leaves.read(), proof), VerificationError::MerkleProofFailed);
 
         storage.claims.insert(sender, ClaimState::Claimed(amount));
 
@@ -69,11 +69,11 @@ impl AirdropDistributor for Contract {
 
     #[storage(read)]
     fn clawback() {
-        let admin = storage.admin;
+        let admin = storage.admin.read();
         require(admin.is_some() && admin.unwrap() == msg_sender().unwrap(), AccessError::CallerNotAdmin);
-        require(storage.end_block <= height(), StateError::ClaimPeriodActive);
+        require(storage.end_block.read() <= height(), StateError::ClaimPeriodActive);
 
-        let asset = storage.asset.unwrap();
+        let asset = storage.asset.read().unwrap();
         let balance = this_balance(asset);
         require(balance > 0, AccessError::NotEnoughTokens);
 
@@ -94,17 +94,17 @@ impl AirdropDistributor for Contract {
         merkle_root: b256,
         number_of_leaves: u64,
     ) {
-        // If `end_block` is set to a value other than 0, we know that the contructor has already
+        // If `end_block` is set to a value other than 0, we know that the constructor has already
         // been called.
-        require(storage.end_block == 0, InitError::AlreadyInitialized);
+        require(storage.end_block.read() == 0, InitError::AlreadyInitialized);
         require(msg_amount() > 0, InitError::CannotAirdropZeroTokens);
 
         let asset = msg_asset_id();
-        storage.end_block = height() + claim_time;
-        storage.merkle_root = Option::Some(merkle_root);
-        storage.asset = Option::Some(asset);
-        storage.number_of_leaves = number_of_leaves;
-        storage.admin = Option::Some(admin);
+        storage.end_block.write(claim_time + height());
+        storage.merkle_root.write(Option::Some(merkle_root));
+        storage.asset.write(Option::Some(asset));
+        storage.number_of_leaves.write(number_of_leaves);
+        storage.admin.write(Option::Some(admin));
 
         log(CreateAirdropEvent {
             admin,
@@ -119,31 +119,31 @@ impl AirdropDistributor for Contract {
 impl Info for Contract {
     #[storage(read)]
     fn admin() -> Option<Identity> {
-        storage.admin
+        storage.admin.read()
     }
 
     #[storage(read)]
     fn claim_data(identity: Identity) -> ClaimState {
-        storage.claims.get(identity).unwrap_or(ClaimState::Unclaimed)
+        storage.claims.get(identity).try_read().unwrap_or(ClaimState::Unclaimed)
     }
 
     #[storage(read)]
     fn end_block() -> u64 {
-        storage.end_block
+        storage.end_block.read()
     }
 
     #[storage(read)]
     fn is_active() -> bool {
-        storage.end_block > height()
+        storage.end_block.read() > height()
     }
 
     #[storage(read)]
     fn merkle_root() -> Option<b256> {
-        storage.merkle_root
+        storage.merkle_root.read()
     }
 
     #[storage(read)]
     fn number_of_leaves() -> u64 {
-        storage.number_of_leaves
+        storage.number_of_leaves.read()
     }
 }

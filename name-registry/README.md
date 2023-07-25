@@ -6,20 +6,20 @@
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.37.0" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.37.0-orange" />
+    <a href="https://crates.io/crates/forc/0.42.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.42.1-orange" />
     </a>
-    <a href="https://crates.io/crates/fuel-core/0.17.9" alt="fuel-core">
-        <img src="https://img.shields.io/badge/fuel--core-v0.17.9-yellow" />
+    <a href="https://crates.io/crates/fuel-core/0.18.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.18.3-yellow" />
     </a>
-    <a href="https://crates.io/crates/fuels/0.40.0" alt="forc">
-        <img src="https://img.shields.io/badge/fuels-v0.40.0-blue" />
+    <a href="https://crates.io/crates/fuels/0.42.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.42.0-blue" />
     </a>
 </p>
 
 ## Overview
 
-The name registry application allows users to use human readable names instead of addresses to send and receive payments, making it easier to transfer cryptocurrency. 
+The name registry application allows users to use human readable names instead of addresses to send and receive payments, making it easier to transfer cryptocurrency.
 
 A name can be registered for the price of 1 unit of any asset per 100 seconds and it resolves to any Identity the owner sets.
 In this implementation the price is paid in the base asset on the Fuel network.

@@ -100,7 +100,7 @@ pub async fn setup() -> (Exchange<WalletUnlocked>, WalletUnlocked, Assets, u64) 
 
     let deadline = provider.latest_block_height().await.unwrap() + 5;
 
-    (exchange_instance, wallet, assets, deadline)
+    (exchange_instance, wallet, assets, deadline.into())
 }
 
 pub async fn setup_and_construct(
@@ -123,7 +123,7 @@ pub async fn setup_and_construct(
 
     let liquidity_parameters = LiquidityParameters::new(
         Some((10000, 40000)),
-        Some(provider.latest_block_height().await.unwrap() + 20),
+        Some((provider.latest_block_height().await.unwrap() + 20).into()),
         Some(20000),
     );
 

@@ -1,7 +1,4 @@
-use crate::utils::{
-    interface::core::queue,
-    setup::setup,
-};
+use crate::utils::{interface::core::queue, setup::setup};
 
 mod success {
 
@@ -13,7 +10,6 @@ mod success {
 
     #[tokio::test]
     async fn queues() {}
-
 }
 
 mod revert {
@@ -35,5 +31,4 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "TimestampNotInRange")]
     async fn when_timestamp_after_delay() {}
-
 }

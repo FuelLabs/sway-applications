@@ -1,4 +1,4 @@
-use fuels::{tx::Address, types::Identity};
+use fuels::{prelude::Address, types::Identity};
 use utils::{abi_calls::owner, test_helpers::setup};
 
 mod success {

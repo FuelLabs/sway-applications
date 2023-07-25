@@ -1,10 +1,7 @@
 mod success {
     use crate::utils::{
         interface::{
-            core::{
-                asset::mint_and_send_to_address,
-                auction::{bid, create},
-            },
+            core::auction::{bid, create},
             info::auction_info,
         },
         setup::{create_auction_copy, defaults_token, setup, token_asset, State},
@@ -15,7 +12,8 @@ mod success {
     async fn returns_auction_info() {
         let (deployer, seller, buyer1, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
@@ -23,10 +21,6 @@ mod success {
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
         let bid_asset = token_asset(buy_asset_contract_id, initial_price).await;
         let provider = deployer.wallet.provider().unwrap();
-
-        mint_and_send_to_address(sell_amount, &seller.asset, seller.wallet.address().into()).await;
-        mint_and_send_to_address(reserve_price, &buyer1.asset, buyer1.wallet.address().into())
-            .await;
 
         let auction = auction_info(0, &seller.auction).await;
         assert!(auction.is_none());
@@ -42,7 +36,7 @@ mod success {
         )
         .await;
 
-        let total_duration = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
@@ -68,27 +62,15 @@ mod success {
 
     #[tokio::test]
     async fn returns_multiple_auction_info() {
-        let (deployer, seller, buyer1, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
+        let (deployer, seller, _buyer1, _, _, sell_asset_contract_id, _, buy_asset_contract_id, _) =
             setup().await;
-        let (sell_amount, initial_price, reserve_price, duration) = defaults_token().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults_token().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let sell_asset = token_asset(sell_asset_contract_id, sell_amount).await;
         let buy_asset = token_asset(buy_asset_contract_id, 0).await;
         let provider = deployer.wallet.provider().unwrap();
-
-        mint_and_send_to_address(
-            sell_amount * 2,
-            &seller.asset,
-            seller.wallet.address().into(),
-        )
-        .await;
-        mint_and_send_to_address(
-            reserve_price * 2,
-            &buyer1.asset,
-            buyer1.wallet.address().into(),
-        )
-        .await;
 
         let auction1 = auction_info(0, &seller.auction).await;
         let auction2 = auction_info(1, &seller.auction).await;
@@ -106,7 +88,7 @@ mod success {
         )
         .await;
 
-        let total_duration1 = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration1 = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction1 = auction_info(auction1_id, &seller.auction).await;
         let auction2 = auction_info(1, &seller.auction).await;
         assert!(auction1.is_some());
@@ -136,7 +118,7 @@ mod success {
         )
         .await;
 
-        let total_duration2 = provider.latest_block_height().await.unwrap() + duration;
+        let total_duration2 = (provider.latest_block_height().await.unwrap() as u64) + duration;
         let auction1 = auction_info(auction1_id, &seller.auction).await;
         let auction2 = auction_info(auction2_id, &seller.auction).await;
         assert!(auction1.is_some());

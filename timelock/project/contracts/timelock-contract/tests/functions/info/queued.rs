@@ -1,7 +1,10 @@
 mod success {
 
-    crate::utils::{
-        interface::{core::queue, info::{queued, transaction_hash}},
+    use crate::utils::{
+        interface::{
+            core::queue,
+            info::{queued, transaction_hash},
+        },
         setup::setup,
     };
 
@@ -10,5 +13,4 @@ mod success {
 
     #[tokio::test]
     async fn returns_info() {}
-
 }

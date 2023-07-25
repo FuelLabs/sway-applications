@@ -1,4 +1,12 @@
-use fuels::{prelude::*, programs::call_response::FuelCallResponse, types::Identity};
+use fuels::{
+    accounts::wallet::{Wallet, WalletUnlocked},
+    prelude::{
+        abigen, launch_custom_provider_and_get_wallets, Contract, LoadConfiguration, TxParameters,
+        WalletsConfig,
+    },
+    programs::call_response::FuelCallResponse,
+    types::Identity,
+};
 
 abigen!(Contract(
     name = "Oracle",

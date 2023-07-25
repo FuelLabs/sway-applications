@@ -1,19 +1,18 @@
-use crate::utils::{
-    interface::core::cancel,
-    setup::setup,
-};
+use crate::utils::{interface::core::cancel, setup::setup};
 
 mod success {
 
     use super::*;
     use crate::utils::{
-        interface::{core::queue, info::{queued, transaction_hash}},
+        interface::{
+            core::queue,
+            info::{queued, transaction_hash},
+        },
         setup::CancelEvent,
     };
 
     #[tokio::test]
     async fn cancels() {}
-
 }
 
 mod revert {
@@ -27,5 +26,4 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "InvalidTransaction")]
     async fn when_transaction_not_queued() {}
-
 }

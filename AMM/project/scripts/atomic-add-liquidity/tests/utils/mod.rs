@@ -89,7 +89,7 @@ pub async fn setup(
 
     let liquidity_parameters = LiquidityParameters::new(
         Some(deposit_amounts),
-        Some(provider.latest_block_height().await.unwrap() + 10),
+        Some((provider.latest_block_height().await.unwrap() + 10).into()),
         Some(liquidity),
     );
 

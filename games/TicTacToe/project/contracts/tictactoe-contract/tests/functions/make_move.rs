@@ -23,7 +23,7 @@ mod success {
         make_move(&player_two.contract, 2).await;
         let response = make_move(&player_one.contract, 6).await;
 
-        let log = response.get_logs_with_type::<GameWonEvent>().unwrap();
+        let log = response.decode_logs_with_type::<GameWonEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -50,7 +50,7 @@ mod success {
         make_move(&player_one.contract, 6).await;
         let response = make_move(&player_two.contract, 7).await;
 
-        let log = response.get_logs_with_type::<GameWonEvent>().unwrap();
+        let log = response.decode_logs_with_type::<GameWonEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(
@@ -80,7 +80,7 @@ mod success {
         make_move(&player_two.contract, 5).await;
         let response = make_move(&player_one.contract, 8).await;
 
-        let log = response.get_logs_with_type::<GameDrawnEvent>().unwrap();
+        let log = response.decode_logs_with_type::<GameDrawnEvent>().unwrap();
         let event = log.get(0).unwrap();
 
         assert_eq!(

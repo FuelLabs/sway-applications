@@ -6,9 +6,9 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-fuels = { version = "0.40.0", features = ["fuel-core-lib"] }
+fuels = { version = "0.43.0", features = ["fuel-core-lib"] }
 rand = "0.8"
-sha3 = "0.10.6"
+sha3 = "0.10.8"
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]

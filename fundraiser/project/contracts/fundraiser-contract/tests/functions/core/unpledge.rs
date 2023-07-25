@@ -1,6 +1,6 @@
 use crate::utils::{
     interface::core::{claim_pledges, create_campaign, pledge, unpledge},
-    setup::{mint, setup},
+    setup::setup,
 };
 
 mod success {
@@ -10,7 +10,7 @@ mod success {
         interface::info::{asset_info_by_count, campaign_info, pledge_count, pledged},
         setup::{identity, AssetInfo, UnpledgedEvent},
     };
-    use fuels::{accounts::ViewOnlyAccount, tx::AssetId};
+    use fuels::{accounts::ViewOnlyAccount, prelude::AssetId};
 
     #[tokio::test]
     async fn unpledges_full_amount() {
@@ -19,12 +19,6 @@ mod success {
         let asset_info = asset_info_by_count(&author.contract, 1).await;
         assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -57,7 +51,7 @@ mod success {
                 .total_pledge
         );
         assert_eq!(
-            0,
+            defaults.initial_wallet_amount - defaults.target_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -90,7 +84,7 @@ mod success {
                 .total_pledge
         );
         assert_eq!(
-            defaults.target_amount,
+            defaults.initial_wallet_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -105,12 +99,6 @@ mod success {
         let asset_info = asset_info_by_count(&author.contract, 1).await;
         assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -159,7 +147,7 @@ mod success {
         assert_eq!(defaults.target_amount, info.amount);
 
         assert_eq!(
-            0,
+            defaults.initial_wallet_amount - defaults.target_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -168,7 +156,7 @@ mod success {
 
         let response = unpledge(&user.contract, 1, defaults.target_amount - 1).await;
         assert_eq!(
-            defaults.target_amount - 1,
+            defaults.initial_wallet_amount - 1,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -217,18 +205,6 @@ mod success {
         let asset_info = asset_info_by_count(&author.contract, 1).await;
         assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
-        mint(
-            &asset2.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -310,14 +286,14 @@ mod success {
         assert_eq!(defaults.target_amount, info1.amount);
         assert_eq!(defaults.target_amount, info2.amount);
         assert_eq!(
-            0,
+            defaults.initial_wallet_amount - defaults.target_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
                 .unwrap()
         );
         assert_eq!(
-            0,
+            defaults.initial_wallet_amount - defaults.target_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset2.id))
                 .await
@@ -350,14 +326,14 @@ mod success {
         );
 
         assert_eq!(
-            defaults.target_amount,
+            defaults.initial_wallet_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
                 .unwrap()
         );
         assert_eq!(
-            defaults.target_amount,
+            defaults.initial_wallet_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset2.id))
                 .await
@@ -412,12 +388,6 @@ mod success {
         let asset_info = asset_info_by_count(&author.contract, 1).await;
         assert!(matches!(asset_info.value, Option::<AssetInfo>::None));
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
@@ -450,14 +420,7 @@ mod success {
                 .total_pledge
         );
         assert_eq!(
-            0,
-            user.wallet
-                .get_asset_balance(&AssetId::from(*asset.id))
-                .await
-                .unwrap()
-        );
-        assert_eq!(
-            0,
+            defaults.initial_wallet_amount - defaults.target_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -466,7 +429,7 @@ mod success {
 
         let response = unpledge(&user.contract, 1, defaults.target_amount * 10).await;
         assert_eq!(
-            defaults.target_amount,
+            defaults.initial_wallet_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -497,7 +460,7 @@ mod success {
                 .total_pledge
         );
         assert_eq!(
-            defaults.target_amount,
+            defaults.initial_wallet_amount,
             user.wallet
                 .get_asset_balance(&AssetId::from(*asset.id))
                 .await
@@ -524,7 +487,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         unpledge(&user.contract, 0, defaults.target_amount).await;
     }
 
@@ -542,7 +504,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         unpledge(&user.contract, 2, defaults.target_amount).await;
     }
 
@@ -561,7 +522,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         unpledge(&user.contract, 1, target_amount).await;
     }
 
@@ -570,26 +530,19 @@ mod revert {
     async fn after_claimed() {
         let (author, user, asset, _, defaults) = setup().await;
         let provider = author.wallet.provider().unwrap();
-        let deadline = provider.latest_block_height().await.unwrap() + 4;
+        let deadline = provider.latest_block_height().await.unwrap() + 3;
 
-        mint(
-            &asset.contract,
-            defaults.target_amount,
-            user.wallet.address(),
-        )
-        .await;
         create_campaign(
             &author.contract,
             &defaults.asset_id,
             &defaults.beneficiary,
-            deadline,
+            deadline.into(),
             defaults.target_amount,
         )
         .await;
         pledge(&user.contract, 1, &asset, defaults.target_amount).await;
         claim_pledges(&author.contract, 1).await;
 
-        // Reverts
         unpledge(&user.contract, 1, defaults.target_amount).await;
     }
 
@@ -607,7 +560,6 @@ mod revert {
         )
         .await;
 
-        // Reverts
         unpledge(&user.contract, 1, defaults.target_amount).await;
     }
 }

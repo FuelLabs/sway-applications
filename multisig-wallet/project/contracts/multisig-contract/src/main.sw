@@ -35,7 +35,7 @@ storage {
 impl MultiSignatureWallet for Contract {
     #[storage(read, write)]
     fn constructor(users: Vec<User>) {
-        require(storage.nonce == 0, InitError::CannotReinitialize);
+        require(storage.nonce.read() == 0, InitError::CannotReinitialize);
         require(THRESHOLD != 0, InitError::ThresholdCannotBeZero);
 
         let mut user_index = 0;
@@ -49,9 +49,9 @@ impl MultiSignatureWallet for Contract {
 
         require(THRESHOLD <= total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
 
-        storage.nonce = 1;
-        storage.threshold = THRESHOLD;
-        storage.total_weight = total_weight;
+        storage.nonce.write(1);
+        storage.threshold.write(THRESHOLD);
+        storage.total_weight.write(total_weight);
     }
 
     #[storage(read, write)]
@@ -61,19 +61,19 @@ impl MultiSignatureWallet for Contract {
         to: Identity,
         value: u64,
     ) {
-        require(storage.nonce != 0, InitError::NotInitialized);
+        require(storage.nonce.read() != 0, InitError::NotInitialized);
 
-        let transaction_hash = hash_transaction(data, storage.nonce, to, value);
+        let transaction_hash = hash_transaction(data, storage.nonce.read(), to, value);
         let approval_count = count_approvals(signatures, transaction_hash);
 
-        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
+        require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
 
-        storage.nonce += 1;
+        storage.nonce.write(storage.nonce.read() + 1);
 
         // TODO: Execute https://github.com/FuelLabs/sway-applications/issues/22
         log(ExecutedEvent {
             data,
-            nonce: storage.nonce - 1,
+            nonce: storage.nonce.read() - 1,
             to,
             value,
         });
@@ -85,19 +85,19 @@ impl MultiSignatureWallet for Contract {
         signatures: Vec<SignatureInfo>,
         threshold: u64,
     ) {
-        require(storage.nonce != 0, InitError::NotInitialized);
+        require(storage.nonce.read() != 0, InitError::NotInitialized);
         require(threshold != 0, InitError::ThresholdCannotBeZero);
-        require(threshold <= storage.total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
+        require(threshold <= storage.total_weight.read(), InitError::TotalWeightCannotBeLessThanThreshold);
 
-        let transaction_hash = hash_threshold(data, storage.nonce, threshold);
+        let transaction_hash = hash_threshold(data, storage.nonce.read(), threshold);
         let approval_count = count_approvals(signatures, transaction_hash);
 
-        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
+        require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
 
-        let previous_threshold = storage.threshold;
+        let previous_threshold = storage.threshold.read();
 
-        storage.nonce += 1;
-        storage.threshold = threshold;
+        storage.nonce.write(storage.nonce.read() + 1);
+        storage.threshold.write(threshold);
 
         log(SetThresholdEvent {
             previous_threshold,
@@ -111,26 +111,26 @@ impl MultiSignatureWallet for Contract {
         signatures: Vec<SignatureInfo>,
         user: User,
     ) {
-        require(storage.nonce != 0, InitError::NotInitialized);
+        require(storage.nonce.read() != 0, InitError::NotInitialized);
 
-        let transaction_hash = hash_weight(data, storage.nonce, user);
+        let transaction_hash = hash_weight(data, storage.nonce.read(), user);
         let approval_count = count_approvals(signatures, transaction_hash);
 
-        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
+        require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
 
-        let current_weight = storage.weighting.get(user.address).unwrap_or(0);
+        let current_weight = storage.weighting.get(user.address).try_read().unwrap_or(0);
 
         if current_weight < user.weight {
-            storage.total_weight += user.weight - current_weight;
+            storage.total_weight.write(storage.total_weight.read() + (user.weight - current_weight));
         } else if user.weight < current_weight {
-            storage.total_weight -= current_weight - user.weight;
+            storage.total_weight.write(storage.total_weight.read() - (current_weight - user.weight));
         }
 
-        require(storage.threshold <= storage.total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
+        require(storage.threshold.read() <= storage.total_weight.read(), InitError::TotalWeightCannotBeLessThanThreshold);
 
         // DRY, if they set the same weight then they pay the extra `write` operation
         storage.weighting.insert(user.address, user.weight);
-        storage.nonce += 1;
+        storage.nonce.write(storage.nonce.read() + 1);
 
         log(SetWeightEvent { user })
     }
@@ -143,20 +143,20 @@ impl MultiSignatureWallet for Contract {
         to: Identity,
         value: u64,
     ) {
-        require(storage.nonce != 0, InitError::NotInitialized);
+        require(storage.nonce.read() != 0, InitError::NotInitialized);
         require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
 
-        let transaction_hash = hash_transaction(data, storage.nonce, to, value);
+        let transaction_hash = hash_transaction(data, storage.nonce.read(), to, value);
         let approval_count = count_approvals(signatures, transaction_hash);
-        require(storage.threshold <= approval_count, ExecutionError::InsufficientApprovals);
+        require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
 
-        storage.nonce += 1;
+        storage.nonce.write(storage.nonce.read() + 1);
 
         transfer(value, asset_id, to);
 
         log(TransferEvent {
             asset: asset_id,
-            nonce: storage.nonce - 1,
+            nonce: storage.nonce.read() - 1,
             to,
             value,
         });
@@ -166,7 +166,7 @@ impl MultiSignatureWallet for Contract {
 impl Info for Contract {
     #[storage(read)]
     fn approval_weight(user: b256) -> u64 {
-        storage.weighting.get(user).unwrap_or(0)
+        storage.weighting.get(user).try_read().unwrap_or(0)
     }
 
     fn balance(asset_id: ContractId) -> u64 {
@@ -175,12 +175,12 @@ impl Info for Contract {
 
     #[storage(read)]
     fn nonce() -> u64 {
-        storage.nonce
+        storage.nonce.read()
     }
 
     #[storage(read)]
     fn threshold() -> u64 {
-        storage.threshold
+        storage.threshold.read()
     }
 
     fn transaction_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
@@ -200,6 +200,7 @@ impl Info for Contract {
 /// Recovers a b256 address from each signature;
 /// it then increments the number of approvals by that address' approval weighting.
 /// Returns the final approval count.
+#[inline(never)]
 #[storage(read)]
 fn count_approvals(signatures: Vec<SignatureInfo>, transaction_hash: b256) -> u64 {
     // The signers must have increasing values in order to check for duplicates or a zero-value.
@@ -213,9 +214,9 @@ fn count_approvals(signatures: Vec<SignatureInfo>, transaction_hash: b256) -> u6
         require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
 
         previous_signer = signer;
-        approval_count += storage.weighting.get(signer).unwrap_or(0);
+        approval_count += storage.weighting.get(signer).try_read().unwrap_or(0);
 
-        if storage.threshold <= approval_count {
+        if storage.threshold.read() <= approval_count {
             break;
         }
 
