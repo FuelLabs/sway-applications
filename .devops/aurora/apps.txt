@@ -1,12 +1,12 @@
 AMM
 DAO
-NFT
+archive/NFT
 OTC-swap-predicate
 airdrop
 auctions/english-auction
 counter-script
 escrow
-fractional-NFT
+archive/fractional-NFT
 fundraiser
 games/TicTacToe
 multisig-wallet

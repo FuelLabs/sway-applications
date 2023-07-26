@@ -17,6 +17,10 @@
     </a>
 </p>
 
+> **Warning**
+> This application have been temporarily archived until the release of the [Sway multi-token standard](https://github.com/FuelLabs/rfcs/pull/17). In its current form, it does not comply with this standard and as such should be considered outdated.
+> It is inadvisable to use this application for production purposes.
+
 ## Overview
 
 The Fractional NFT Application will lock an NFT into a fractional-NFT(f-NFT) contract and allow users to purchase the newly minted fractionalized tokens. These tokens can then be bought and sold on an AMM or if a buyback is initiated, return them to the distribution contract. If all tokens are returned, the admin may unlock the NFT from the f-NFT contract and regain full ownership.
