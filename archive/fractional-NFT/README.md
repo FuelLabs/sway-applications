@@ -18,7 +18,7 @@
 </p>
 
 > **Warning**
-> This application have been temporarily archived until the release of the [Sway multi-token standard](https://github.com/FuelLabs/rfcs/pull/17). In its current form, it does not comply with this standard and as such should be considered outdated.
+> This application have been temporarily archived until the release of the [Sway multi-token standard](https://github.com/FuelLabs/sway-standards/issues/1). In its current form, it does not comply with this standard and as such should be considered outdated.
 > It is inadvisable to use this application for production purposes.
 
 ## Overview
