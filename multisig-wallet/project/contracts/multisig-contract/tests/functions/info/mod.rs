@@ -1,7 +1,5 @@
 mod approval_weight;
 mod balance;
+mod compute_hash;
 mod nonce;
 mod threshold;
-mod threshold_hash;
-mod transaction_hash;
-mod weight_hash;
