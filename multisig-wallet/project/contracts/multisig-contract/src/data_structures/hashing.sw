@@ -65,6 +65,43 @@ pub struct Threshold {
     threshold: u64,
 }
 
+pub struct TransferParams {
+    asset_id: ContractId,
+    value: Option<u64>,
+}
+
+pub struct Transaction {
+    contract_call_params: Option<ContractCallParams>,
+    contract_identifier: ContractId,
+    nonce: u64,
+    target: Identity,
+    transfer_params: TransferParams,
+}
+
+impl IntoBytes for Transaction {
+    // Needed as `Transaction` contains `Bytes` which can only be correctly hashed by the Bytes.sha256() method, 
+    // as such the whole struct must be converted to `Bytes`.
+    fn into_bytes(self) -> Bytes {
+        let mut bytes = Bytes::new();
+        match self.contract_call_params {
+            Option::None => {
+                // __size_of_val(self.contract_call_params) == 32 bytes
+                bytes.append(Bytes::from_reference_type(ZERO_B256))
+            },
+            Option::Some(contract_call_params) => {
+                let mut serialised_option = Bytes::from_copy_type(1u64);
+                serialised_option.append(contract_call_params.into_bytes());
+                bytes.append(serialised_option)
+            }
+        }
+        bytes.append(Bytes::from_reference_type(self.contract_identifier));
+        bytes.append(Bytes::from_copy_type(self.nonce));
+        bytes.append(Bytes::from_reference_type(self.target));
+        bytes.append(Bytes::from_reference_type(self.transfer_params));
+        bytes
+    }
+}
+
 pub struct Weight {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
