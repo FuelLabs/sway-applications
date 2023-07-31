@@ -10,11 +10,33 @@ mod interface;
 mod utils;
 
 use ::errors::{ExecutionError, InitError};
-use ::events::{ExecutedEvent, SetThresholdEvent, SetWeightEvent, TransferEvent};
+use ::events::{ExecuteTransactionEvent, SetThresholdEvent, SetWeightEvent};
 use ::interface::{Info, MultiSignatureWallet};
-use ::data_structures::{signatures::SignatureInfo, user::User};
-use std::{auth::msg_sender, context::this_balance, token::transfer};
-use ::utils::{hash_threshold, hash_transaction, hash_weight, recover_signer};
+use ::data_structures::{
+    hashing::{
+        ContractCallParams,
+        Threshold,
+        Transaction,
+        TransferParams,
+        TypeToHash,
+        Weight,
+    },
+    signatures::SignatureInfo,
+    user::User,
+};
+use std::{
+    auth::msg_sender,
+    call_frames::contract_id,
+    context::this_balance,
+    error_signals::FAILED_REQUIRE_SIGNAL,
+    hash::sha256,
+    low_level_call::{
+        call_with_function_selector,
+        CallParams,
+    },
+    token::transfer,
+};
+use ::utils::recover_signer;
 
 configurable {
     THRESHOLD: u64 = 5,
@@ -55,51 +77,27 @@ impl MultiSignatureWallet for Contract {
     }
 
     #[storage(read, write)]
-    fn execute_transaction(
-        data: b256,
-        signatures: Vec<SignatureInfo>,
-        to: Identity,
-        value: u64,
-    ) {
-        require(storage.nonce.read() != 0, InitError::NotInitialized);
-
-        let transaction_hash = hash_transaction(data, storage.nonce.read(), to, value);
-        let approval_count = count_approvals(signatures, transaction_hash);
-
-        require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
-
-        storage.nonce.write(storage.nonce.read() + 1);
-
-        // TODO: Execute https://github.com/FuelLabs/sway-applications/issues/22
-        log(ExecutedEvent {
-            data,
-            nonce: storage.nonce.read() - 1,
-            to,
-            value,
-        });
-    }
-
-    #[storage(read, write)]
-    fn set_threshold(
-        data: Option<b256>,
-        signatures: Vec<SignatureInfo>,
-        threshold: u64,
-    ) {
-        require(storage.nonce.read() != 0, InitError::NotInitialized);
+    fn set_threshold(signatures: Vec<SignatureInfo>, threshold: u64) {
+        let nonce = storage.nonce.read();
+        require(nonce != 0, InitError::NotInitialized);
         require(threshold != 0, InitError::ThresholdCannotBeZero);
         require(threshold <= storage.total_weight.read(), InitError::TotalWeightCannotBeLessThanThreshold);
 
-        let transaction_hash = hash_threshold(data, storage.nonce.read(), threshold);
+        let transaction_hash = compute_hash(TypeToHash::Threshold(Threshold {
+            contract_identifier: contract_id(),
+            nonce,
+            threshold,
+        }));
         let approval_count = count_approvals(signatures, transaction_hash);
 
-        require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
-
         let previous_threshold = storage.threshold.read();
+        require(previous_threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
-        storage.nonce.write(storage.nonce.read() + 1);
+        storage.nonce.write(nonce + 1);
         storage.threshold.write(threshold);
 
         log(SetThresholdEvent {
+            nonce,
             previous_threshold,
             threshold,
         });
