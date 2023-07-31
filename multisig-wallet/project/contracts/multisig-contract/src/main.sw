@@ -104,33 +104,35 @@ impl MultiSignatureWallet for Contract {
     }
 
     #[storage(read, write)]
-    fn set_weight(
-        data: Option<b256>,
-        signatures: Vec<SignatureInfo>,
-        user: User,
-    ) {
-        require(storage.nonce.read() != 0, InitError::NotInitialized);
+    fn set_weight(signatures: Vec<SignatureInfo>, user: User) {
+        let nonce = storage.nonce.read();
+        require(nonce != 0, InitError::NotInitialized);
 
-        let transaction_hash = hash_weight(data, storage.nonce.read(), user);
+        let transaction_hash = compute_hash(TypeToHash::Weight(Weight {
+            contract_identifier: contract_id(),
+            nonce,
+            user,
+        }));
         let approval_count = count_approvals(signatures, transaction_hash);
 
-        require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
+        let threshold = storage.threshold.read();
+        require(threshold <= approval_count, ExecutionError::InsufficientApprovals);
 
         let current_weight = storage.weighting.get(user.address).try_read().unwrap_or(0);
 
+        let total_weight = storage.total_weight.read();
         if current_weight < user.weight {
-            storage.total_weight.write(storage.total_weight.read() + (user.weight - current_weight));
+            storage.total_weight.write(total_weight + (user.weight - current_weight));
         } else if user.weight < current_weight {
-            storage.total_weight.write(storage.total_weight.read() - (current_weight - user.weight));
+            storage.total_weight.write(total_weight - (current_weight - user.weight));
         }
 
-        require(storage.threshold.read() <= storage.total_weight.read(), InitError::TotalWeightCannotBeLessThanThreshold);
+        require(threshold <= total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
 
-        // DRY, if they set the same weight then they pay the extra `write` operation
         storage.weighting.insert(user.address, user.weight);
-        storage.nonce.write(storage.nonce.read() + 1);
+        storage.nonce.write(nonce + 1);
 
-        log(SetWeightEvent { user })
+        log(SetWeightEvent { nonce, user })
     }
 
     #[storage(read, write)]
