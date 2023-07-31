@@ -173,6 +173,10 @@ impl Info for Contract {
         this_balance(asset_id)
     }
 
+    fn compute_hash(type_to_hash: TypeToHash) -> b256 {
+        compute_hash(type_to_hash)
+    }
+
     #[storage(read)]
     fn nonce() -> u64 {
         storage.nonce.read()
@@ -187,12 +191,11 @@ impl Info for Contract {
         hash_transaction(data, nonce, to, value)
     }
 
-    fn threshold_hash(data: Option<b256>, nonce: u64, threshold: u64) -> b256 {
-        hash_threshold(data, nonce, threshold)
-    }
-
-    fn weight_hash(data: Option<b256>, nonce: u64, user: User) -> b256 {
-        hash_weight(data, nonce, user)
+fn compute_hash(type_to_hash: TypeToHash) -> b256 {
+    match type_to_hash {
+        TypeToHash::Threshold(threshold) => sha256(threshold),
+        TypeToHash::Transaction(transaction) => transaction.into_bytes().sha256(),
+        TypeToHash::Weight(weight) => sha256(weight),
     }
 }
 
