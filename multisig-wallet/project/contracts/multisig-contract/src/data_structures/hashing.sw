@@ -1,19 +1,56 @@
 library;
 
 use ::data_structures::user::User;
+use std::{bytes::Bytes, constants::ZERO_B256};
 
-pub struct Transaction {
-    /// Unique identifier for the contract which prevents this transaction from being submitted to another
-    /// instance of the multisig.
-    contract_identifier: ContractId,
-    /// Payload sent to destination  // TODO: change to Bytes when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723
-    data: b256,
-    /// The recipient (output / contract) regarding the transaction details.
-    destination: Identity,
-    /// Value used to prevent double spending.
-    nonce: u64,
-    /// Amount of asset.
-    value: u64,
+impl Bytes {
+    pub fn from_copy_type<T>(value: T) -> Self {
+        // Artificially create bytes with capacity and len
+        let mut bytes = Bytes::with_capacity(8);
+        bytes.len = 8;
+
+        asm(buffer, ptr: value, dst: bytes.buf.ptr, len: 8) {
+            move buffer sp; // Make `buffer` point to the current top of the stack
+            cfei i8; // Grow stack by 1 word
+            sw   buffer ptr i0; // Save value in register at `ptr` to memory at `buffer`
+            mcp  dst buffer len; // Copy `len` bytes in memory starting from `buffer`, to `dst`
+            cfsi i8; // Shrink stack by 1 word
+        }
+
+        bytes
+    }
+
+    pub fn from_reference_type<T>(t: T) -> Self { // NOTE: Does not work correctly for Option<Bytes>, use `from_option_bytes` instead
+        // Artificially create bytes with capacity and len
+        let size = __size_of::<T>();
+        let mut bytes = Bytes::with_capacity(size);
+        bytes.len = size;
+        // Copy bytes into the buffer of the target bytes
+        __addr_of(t).copy_bytes_to(bytes.buf.ptr, size);
+        bytes
+    }
+}
+
+pub trait IntoBytes {
+    fn into_bytes(self) -> Bytes;
+}
+
+pub struct ContractCallParams {
+    calldata: Bytes,
+    forwarded_gas: u64,
+    function_selector: Bytes,
+    single_value_type_arg: bool,
+}
+
+impl IntoBytes for ContractCallParams {
+    fn into_bytes(self) -> Bytes {
+        let mut bytes = Bytes::new();
+        bytes.append(self.calldata);
+        bytes.append(Bytes::from_copy_type(self.forwarded_gas));
+        bytes.append(self.function_selector);
+        bytes.append(Bytes::from_copy_type(self.single_value_type_arg));
+        bytes
+    }
 }
 
 pub struct Threshold {
