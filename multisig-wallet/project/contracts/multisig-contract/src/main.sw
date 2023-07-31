@@ -186,9 +186,6 @@ impl Info for Contract {
     fn threshold() -> u64 {
         storage.threshold.read()
     }
-
-    fn transaction_hash(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
-        hash_transaction(data, nonce, to, value)
     }
 
 fn compute_hash(type_to_hash: TypeToHash) -> b256 {
