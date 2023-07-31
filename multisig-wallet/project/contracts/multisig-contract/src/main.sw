@@ -1,8 +1,5 @@
 contract;
 
-// TODO:
-//      - change the "data" in the Tx hashing from b256 to Bytes type when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723.
-//    
 mod data_structures;
 mod errors;
 mod events;
@@ -136,30 +133,83 @@ impl MultiSignatureWallet for Contract {
     }
 
     #[storage(read, write)]
-    fn transfer(
-        asset_id: ContractId,
-        data: b256,
+    fn execute_transaction(
+        contract_call_params: Option<ContractCallParams>,
         signatures: Vec<SignatureInfo>,
-        to: Identity,
-        value: u64,
+        target: Identity,
+        transfer_params: TransferParams,
     ) {
-        require(storage.nonce.read() != 0, InitError::NotInitialized);
-        require(value <= this_balance(asset_id), ExecutionError::InsufficientAssetAmount);
+        let nonce = storage.nonce.read();
+        require(nonce != 0, InitError::NotInitialized);
 
-        let transaction_hash = hash_transaction(data, storage.nonce.read(), to, value);
-        let approval_count = count_approvals(signatures, transaction_hash);
-        require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
+        // Transfer
+        if contract_call_params.is_none() {
+            require(transfer_params.value.is_some(), ExecutionError::TransferRequiresAValue);
+            let value = transfer_params.value.unwrap();
+            require(value <= this_balance(transfer_params.asset_id), ExecutionError::InsufficientAssetAmount);
 
-        storage.nonce.write(storage.nonce.read() + 1);
+            let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction {
+                contract_call_params,
+                contract_identifier: contract_id(),
+                nonce,
+                target,
+                transfer_params,
+            }));
+            let approval_count = count_approvals(signatures, transaction_hash);
+            require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
 
-        transfer(value, asset_id, to);
+            storage.nonce.write(nonce + 1);
 
-        log(TransferEvent {
-            asset: asset_id,
-            nonce: storage.nonce.read() - 1,
-            to,
-            value,
-        });
+            transfer(value, transfer_params.asset_id, target);
+
+            log(ExecuteTransactionEvent {
+                contract_call_params: contract_call_params,
+                nonce,
+                target,
+                transfer_params,
+            });
+
+            // Call
+        } else if contract_call_params.is_some() {
+            let target_contract_id = match target {
+                Identity::ContractId(contract_identifier) => contract_identifier,
+                _ => {
+                    log(ExecutionError::CanOnlyCallContracts);
+                    revert(FAILED_REQUIRE_SIGNAL)
+                },
+            };
+
+            if transfer_params.value.is_some() {
+                require(transfer_params.value.unwrap() <= this_balance(transfer_params.asset_id), ExecutionError::InsufficientAssetAmount);
+            }
+
+            let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction {
+                contract_call_params,
+                contract_identifier: contract_id(),
+                nonce,
+                target,
+                transfer_params,
+            }));
+            let approval_count = count_approvals(signatures, transaction_hash);
+            require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
+
+            storage.nonce.write(nonce + 1);
+
+            let contract_call_params = contract_call_params.unwrap();
+            let call_params = CallParams {
+                coins: transfer_params.value.unwrap_or(0),
+                asset_id: transfer_params.asset_id,
+                gas: contract_call_params.forwarded_gas,
+            };
+            call_with_function_selector(target_contract_id, contract_call_params.function_selector, contract_call_params.calldata, contract_call_params.single_value_type_arg, call_params);
+
+            log(ExecuteTransactionEvent {
+                contract_call_params: Some(contract_call_params),
+                nonce,
+                target,
+                transfer_params,
+            });
+        }
     }
 }
 
@@ -186,7 +236,7 @@ impl Info for Contract {
     fn threshold() -> u64 {
         storage.threshold.read()
     }
-    }
+}
 
 fn compute_hash(type_to_hash: TypeToHash) -> b256 {
     match type_to_hash {
