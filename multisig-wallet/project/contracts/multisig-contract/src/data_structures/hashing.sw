@@ -83,8 +83,7 @@ impl IntoBytes for Transaction {
         let mut bytes = Bytes::new();
         match self.contract_call_params {
             Option::None => {
-                // __size_of_val(self.contract_call_params) == 32 bytes
-                bytes.append(Bytes::from_reference_type(ZERO_B256))
+                bytes.append(Bytes::from_reference_type(self.contract_call_params));
             },
             Option::Some(contract_call_params) => {
                 let mut serialised_option = Bytes::from_copy_type(1u64);
