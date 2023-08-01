@@ -10,11 +10,9 @@ mod success {
     use fuels::{
         accounts::fuel_crypto::Hasher,
         core::{codec::ABIEncoder, traits::Tokenizable},
-        prelude::{Bytes, ContractId, BASE_ASSET_ID},
-        tx::Bytes32,
+        prelude::Bytes,
         types::{Bits256, Identity, Token},
     };
-    use rand::{rngs::StdRng, Rng, SeedableRng};
 
     #[tokio::test]
     async fn gets_threshold_hash() {
@@ -97,7 +95,7 @@ mod success {
         assert_eq!(Bits256(expected_hash.into()), response);
     }
 
-    #[ignore]
+    #[ignore = "Encoding of nested stucts with Bytes fields in the RustSDK doesn't match the encoding in Sway. This is not an issue for the use of compute_hash when making a contract call; as the user would not be creating the hash in the SDK"]
     #[tokio::test]
     async fn gets_call_hash() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
