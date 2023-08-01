@@ -1,9 +1,12 @@
 use crate::utils::{
     interface::{
         core::{constructor, set_threshold},
-        info::{nonce, threshold, threshold_hash},
+        info::{compute_hash, nonce, threshold},
     },
-    setup::{default_users, setup_env, transfer_signatures, DEFAULT_THRESHOLD, VALID_SIGNER_PK},
+    setup::{
+        default_users, setup_env, transfer_signatures, Threshold, TypeToHash, DEFAULT_THRESHOLD,
+        VALID_SIGNER_PK,
+    },
 };
 use fuels::{accounts::fuel_crypto::Message, types::Bits256};
 
@@ -21,11 +24,13 @@ mod success {
         let initial_nonce = nonce(&deployer.contract).await.value;
         let previous_threshold = threshold(&deployer.contract).await.value;
 
-        let tx_hash = threshold_hash(
+        let tx_hash = compute_hash(
             &deployer.contract,
-            None,
-            initial_nonce,
-            previous_threshold - 1,
+            TypeToHash::Threshold(Threshold {
+                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                nonce: initial_nonce,
+                threshold: previous_threshold - 1,
+            }),
         )
         .await
         .value
@@ -33,8 +38,7 @@ mod success {
         let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        let response =
-            set_threshold(&deployer.contract, None, signatures, DEFAULT_THRESHOLD - 1).await;
+        let response = set_threshold(&deployer.contract, signatures, DEFAULT_THRESHOLD - 1).await;
 
         let final_nonce = nonce(&deployer.contract).await.value;
         let threshold = threshold(&deployer.contract).await.value;
@@ -47,6 +51,7 @@ mod success {
         assert_eq!(
             *event,
             SetThresholdEvent {
+                nonce: initial_nonce,
                 previous_threshold,
                 threshold,
             }
@@ -69,15 +74,21 @@ mod revert {
         let initial_nonce = nonce(&deployer.contract).await.value;
         let previous_threshold = threshold(&deployer.contract).await.value;
 
-        let tx_hash = threshold_hash(&deployer.contract, None, initial_nonce, previous_threshold)
-            .await
-            .value
-            .0;
-
+        let tx_hash = compute_hash(
+            &deployer.contract,
+            TypeToHash::Threshold(Threshold {
+                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                nonce: initial_nonce,
+                threshold: previous_threshold,
+            }),
+        )
+        .await
+        .value
+        .0;
         let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        set_threshold(&deployer.contract, None, signatures, DEFAULT_THRESHOLD).await;
+        set_threshold(&deployer.contract, signatures, DEFAULT_THRESHOLD).await;
     }
 
     #[tokio::test]
@@ -90,15 +101,21 @@ mod revert {
         let initial_nonce = nonce(&deployer.contract).await.value;
         let new_threshold = 0;
 
-        let tx_hash = threshold_hash(&deployer.contract, None, initial_nonce, new_threshold)
-            .await
-            .value
-            .0;
-
+        let tx_hash = compute_hash(
+            &deployer.contract,
+            TypeToHash::Threshold(Threshold {
+                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                nonce: initial_nonce,
+                threshold: new_threshold,
+            }),
+        )
+        .await
+        .value
+        .0;
         let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        set_threshold(&deployer.contract, None, signatures, new_threshold).await;
+        set_threshold(&deployer.contract, signatures, new_threshold).await;
     }
 
     #[tokio::test]
@@ -111,15 +128,21 @@ mod revert {
         let initial_nonce = nonce(&deployer.contract).await.value;
         let previous_threshold = threshold(&deployer.contract).await.value;
 
-        let tx_hash = threshold_hash(&deployer.contract, None, initial_nonce, previous_threshold)
-            .await
-            .value
-            .0;
-
+        let tx_hash = compute_hash(
+            &deployer.contract,
+            TypeToHash::Threshold(Threshold {
+                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                nonce: initial_nonce,
+                threshold: previous_threshold,
+            }),
+        )
+        .await
+        .value
+        .0;
         let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        set_threshold(&deployer.contract, None, signatures, DEFAULT_THRESHOLD + 1).await;
+        set_threshold(&deployer.contract, signatures, DEFAULT_THRESHOLD + 1).await;
     }
 
     #[tokio::test]
@@ -129,30 +152,25 @@ mod revert {
 
         constructor(&deployer.contract, default_users()).await;
 
-        let data = Bits256([2u8; 32]);
+        let _data = Bits256([2u8; 32]);
         let initial_nonce = nonce(&deployer.contract).await.value;
         let previous_threshold = threshold(&deployer.contract).await.value;
 
-        let tx_hash = threshold_hash(
+        let tx_hash = compute_hash(
             &deployer.contract,
-            Some(data),
-            initial_nonce,
-            previous_threshold - 1,
+            TypeToHash::Threshold(Threshold {
+                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                nonce: initial_nonce,
+                threshold: previous_threshold - 1,
+            }),
         )
         .await
         .value
         .0;
-
         let tx_hash = Message::from_bytes(tx_hash);
         let mut signatures = transfer_signatures(private_key, tx_hash).await;
         signatures.pop();
 
-        set_threshold(
-            &deployer.contract,
-            Some(data),
-            signatures,
-            DEFAULT_THRESHOLD - 1,
-        )
-        .await;
+        set_threshold(&deployer.contract, signatures, DEFAULT_THRESHOLD - 1).await;
     }
 }
