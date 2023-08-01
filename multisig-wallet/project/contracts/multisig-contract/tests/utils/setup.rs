@@ -3,12 +3,13 @@ use fuels::{
         fuel_crypto::{Message, SecretKey, Signature},
         wallet::WalletUnlocked,
     },
+    core::codec::{calldata, fn_selector},
     prelude::{
-        abigen, setup_single_asset_coins, setup_test_provider, Contract, ContractId, Error,
-        LoadConfiguration, StorageConfiguration, TxParameters, BASE_ASSET_ID,
+        abigen, setup_single_asset_coins, setup_test_provider, Address, Contract, ContractId,
+        Error, LoadConfiguration, StorageConfiguration, TxParameters, BASE_ASSET_ID,
     },
     tx::Bytes32,
-    types::{Bits256, Identity, B512},
+    types::{Bits256, Bytes, Identity, B512},
 };
 
 use sha3::{Digest, Keccak256};
@@ -30,13 +31,15 @@ pub(crate) const VALID_SIGNER_PK: &str =
 
 const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
 const MULTISIG_CONTRACT_STORAGE_PATH: &str = "./out/debug/multisig-contract-storage_slots.json";
-pub const CALLABLE_CONTRACT_BINARY_PATH: &str =
+const CALLABLE_CONTRACT_BINARY_PATH: &str =
     "../test-artifacts/callable-contract/out/debug/callable-contract.bin";
-pub const CALLABLE_CONTRACT_STORAGE_PATH: &str =
+const CALLABLE_CONTRACT_STORAGE_PATH: &str =
     "../test-artifacts/callable-contract/out/debug/callable-contract-storage_slots.json";
 
-pub(crate) const DEFAULT_THRESHOLD: u64 = 5;
+pub(crate) const DEFAULT_CALLDATA_VALUE_PARAM: u64 = 1;
+pub(crate) const DEFAULT_FORWARDED_GAS: u64 = 10_000_000;
 pub(crate) const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
+pub(crate) const DEFAULT_THRESHOLD: u64 = 5;
 
 pub(crate) struct Caller {
     pub(crate) contract: MultiSig<WalletUnlocked>,
@@ -216,6 +219,52 @@ pub(crate) fn transfer_parameters(
     };
 
     (receiver_wallet, receiver, transaction)
+}
+
+pub(crate) fn call_parameters(
+    deployer: &Caller,
+    nonce: u64,
+    callable_contract: &CallableContract<WalletUnlocked>,
+    with_value: bool,
+) -> Transaction {
+    match with_value {
+        false => Transaction {
+            contract_call_params: Some(ContractCallParams {
+                calldata: Bytes(calldata!(
+                    Address::from(deployer.wallet.address()),
+                    DEFAULT_CALLDATA_VALUE_PARAM
+                )),
+                forwarded_gas: DEFAULT_FORWARDED_GAS,
+                function_selector: Bytes(fn_selector!(change_mapping_without_value(Address, u64))),
+                single_value_type_arg: false,
+            }),
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+            nonce,
+            target: Identity::ContractId(callable_contract.contract_id().into()),
+            transfer_params: TransferParams {
+                asset_id: base_asset_contract_id(),
+                value: None,
+            },
+        },
+        true => Transaction {
+            contract_call_params: Some(ContractCallParams {
+                calldata: Bytes(calldata!(
+                    Address::from(deployer.wallet.address()),
+                    DEFAULT_CALLDATA_VALUE_PARAM
+                )),
+                forwarded_gas: DEFAULT_FORWARDED_GAS,
+                function_selector: Bytes(fn_selector!(change_mapping_with_value(Address, u64))),
+                single_value_type_arg: false,
+            }),
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+            nonce,
+            target: Identity::ContractId(callable_contract.contract_id().into()),
+            transfer_params: TransferParams {
+                asset_id: base_asset_contract_id(),
+                value: Some(DEFAULT_TRANSFER_AMOUNT),
+            },
+        },
+    }
 }
 
 pub(crate) async fn transfer_signatures(
