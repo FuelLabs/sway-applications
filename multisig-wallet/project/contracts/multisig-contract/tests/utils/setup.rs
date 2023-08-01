@@ -14,10 +14,16 @@ use fuels::{
 use rand::{rngs::StdRng, Rng, SeedableRng};
 use sha3::{Digest, Keccak256};
 
-abigen!(Contract(
-    name = "MultiSig",
-    abi = "./contracts/multisig-contract/out/debug/multisig-contract-abi.json"
-));
+abigen!(
+    Contract(
+        name = "MultiSig",
+        abi = "./contracts/multisig-contract/out/debug/multisig-contract-abi.json"
+    ),
+    Contract(
+        name = "CallableContract",
+        abi = "./contracts/test-artifacts/callable-contract/out/debug/callable-contract-abi.json"
+    )
+);
 
 // Test-only private key
 pub(crate) const VALID_SIGNER_PK: &str =
@@ -25,6 +31,10 @@ pub(crate) const VALID_SIGNER_PK: &str =
 
 const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
 const MULTISIG_CONTRACT_STORAGE_PATH: &str = "./out/debug/multisig-contract-storage_slots.json";
+pub const CALLABLE_CONTRACT_BINARY_PATH: &str =
+    "../test-artifacts/callable-contract/out/debug/callable-contract.bin";
+pub const CALLABLE_CONTRACT_STORAGE_PATH: &str =
+    "../test-artifacts/callable-contract/out/debug/callable-contract-storage_slots.json";
 
 pub(crate) const DEFAULT_THRESHOLD: u64 = 5;
 pub(crate) const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
@@ -54,6 +64,24 @@ pub(crate) fn default_users() -> Vec<User> {
         weight: 2,
     };
     vec![fuel_user_1, evm_user_1]
+}
+
+pub async fn deploy_callable_contract(
+    deployer_wallet: WalletUnlocked,
+) -> Result<CallableContract<WalletUnlocked>, Error> {
+    let callable_contract_storage_configuration =
+        StorageConfiguration::load_from(CALLABLE_CONTRACT_STORAGE_PATH);
+    let callable_contract_configuration = LoadConfiguration::default()
+        .set_storage_configuration(callable_contract_storage_configuration.unwrap());
+    let callable_contract_id = Contract::load_from(
+        CALLABLE_CONTRACT_BINARY_PATH,
+        callable_contract_configuration,
+    )
+    .unwrap()
+    .deploy(&deployer_wallet, TxParameters::default())
+    .await?;
+
+    Ok(CallableContract::new(callable_contract_id, deployer_wallet))
 }
 
 fn eip_191_personal_sign_format(message_hash: Message) -> Message {
@@ -147,14 +175,15 @@ pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, C
     deployer_wallet.set_provider(provider.clone());
     non_owner_wallet.set_provider(provider);
 
-    let storage_configuration = StorageConfiguration::load_from(MULTISIG_CONTRACT_STORAGE_PATH);
-    let configuration =
-        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
-
-    let multisig_contract_id = Contract::load_from(MULTISIG_CONTRACT_BINARY_PATH, configuration)
-        .unwrap()
-        .deploy(&deployer_wallet, TxParameters::default())
-        .await?;
+    let multisig_storage_configuration =
+        StorageConfiguration::load_from(MULTISIG_CONTRACT_STORAGE_PATH);
+    let multisig_configuration = LoadConfiguration::default()
+        .set_storage_configuration(multisig_storage_configuration.unwrap());
+    let multisig_contract_id =
+        Contract::load_from(MULTISIG_CONTRACT_BINARY_PATH, multisig_configuration)
+            .unwrap()
+            .deploy(&deployer_wallet, TxParameters::default())
+            .await?;
 
     let deployer = Caller {
         contract: MultiSig::new(multisig_contract_id.clone(), deployer_wallet.clone()),
