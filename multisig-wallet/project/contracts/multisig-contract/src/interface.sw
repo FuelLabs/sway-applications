@@ -98,6 +98,8 @@ abi Info {
     /// * `asset_id` - The contract ID of the asset to check that balance of.
     fn balance(asset_id: ContractId) -> u64;
 
+    fn compute_hash(type_to_hash: TypeToHash) -> b256;
+
     /// Returns the current nonce.
     #[storage(read)]
     fn nonce() -> u64;
@@ -105,6 +107,4 @@ abi Info {
     /// Returns the current threshold.
     #[storage(read)]
     fn threshold() -> u64;
-
-    fn compute_hash(type_to_hash: TypeToHash) -> b256;
 }

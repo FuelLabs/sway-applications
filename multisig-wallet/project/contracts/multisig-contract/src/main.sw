@@ -117,14 +117,13 @@ impl MultiSignatureWallet for Contract {
 
         let current_weight = storage.weighting.get(user.address).try_read().unwrap_or(0);
 
-        let total_weight = storage.total_weight.read();
         if current_weight < user.weight {
-            storage.total_weight.write(total_weight + (user.weight - current_weight));
+            storage.total_weight.write(storage.total_weight.read() + (user.weight - current_weight));
         } else if user.weight < current_weight {
-            storage.total_weight.write(total_weight - (current_weight - user.weight));
+            storage.total_weight.write(storage.total_weight.read() - (current_weight - user.weight));
         }
 
-        require(threshold <= total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
+        require(threshold <= storage.total_weight.read(), InitError::TotalWeightCannotBeLessThanThreshold);
 
         storage.weighting.insert(user.address, user.weight);
         storage.nonce.write(nonce + 1);
@@ -163,7 +162,7 @@ impl MultiSignatureWallet for Contract {
             transfer(value, transfer_params.asset_id, target);
 
             log(ExecuteTransactionEvent {
-                contract_call_params: contract_call_params,
+                // contract_call_params: contract_call_params, // SDK does not support logs with nested Bytes
                 nonce,
                 target,
                 transfer_params,
@@ -204,7 +203,7 @@ impl MultiSignatureWallet for Contract {
             call_with_function_selector(target_contract_id, contract_call_params.function_selector, contract_call_params.calldata, contract_call_params.single_value_type_arg, call_params);
 
             log(ExecuteTransactionEvent {
-                contract_call_params: Some(contract_call_params),
+                // contract_call_params: Some(contract_call_params),  // SDK does not support logs with nested Bytes
                 nonce,
                 target,
                 transfer_params,

@@ -4,7 +4,7 @@ use ::data_structures::{hashing::{ContractCallParams, TransferParams}, user::Use
 use std::{bytes::Bytes, low_level_call::CallParams};
 
 pub struct ExecuteTransactionEvent {
-    contract_call_params: Option<ContractCallParams>,
+    // contract_call_params: Option<ContractCallParams>, // SDK does not support logs with nested Bytes
     nonce: u64,
     target: Identity,
     transfer_params: TransferParams,
