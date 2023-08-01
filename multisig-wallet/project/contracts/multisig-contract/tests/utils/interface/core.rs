@@ -1,8 +1,6 @@
 use crate::utils::setup::{ContractCallParams, MultiSig, SignatureInfo, TransferParams, User};
 use fuels::{
-    accounts::{wallet::WalletUnlocked},
-    programs::call_response::FuelCallResponse,
-    types::Identity,
+    accounts::wallet::WalletUnlocked, programs::call_response::FuelCallResponse, types::Identity,
 };
 
 pub(crate) async fn constructor(
