@@ -1,11 +1,13 @@
 use crate::utils::{
     interface::{
+        callable_contract::check_counter_map,
         core::{constructor, execute_transaction},
         info::{compute_hash, nonce},
     },
     setup::{
-        base_asset_contract_id, default_users, setup_env, transfer_parameters, transfer_signatures,
-        TypeToHash, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
+        base_asset_contract_id, call_parameters, default_users, deploy_callable_contract,
+        setup_env, transfer_parameters, transfer_signatures, TypeToHash,
+        DEFAULT_CALLDATA_VALUE_PARAM, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
     },
 };
 use fuels::{
@@ -15,11 +17,11 @@ use fuels::{
 
 mod success {
     use super::*;
+    use crate::utils::{interface::info::balance, setup::ExecuteTransactionEvent};
 
     mod transfer {
 
         use super::*;
-        use crate::utils::{interface::info::balance, setup::ExecuteTransactionEvent};
 
         #[tokio::test]
         async fn executes_transfer() {
@@ -72,7 +74,8 @@ mod success {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await;
+            .await
+            .unwrap();
 
             let log = response
                 .decode_logs_with_type::<ExecuteTransactionEvent>()
@@ -109,7 +112,74 @@ mod success {
             assert!(final_receiver_balance > initial_receiver_balance);
         }
     }
-    mod call {}
+    mod call {
+
+        use super::*;
+
+        #[tokio::test]
+        async fn executes_call_without_value() {
+            let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+            constructor(&deployer.contract, default_users()).await;
+
+            let initial_nonce = nonce(&deployer.contract).await.value;
+
+            let callable_contract = deploy_callable_contract(deployer.wallet.clone())
+                .await
+                .unwrap();
+
+            let transaction = call_parameters(&deployer, initial_nonce, &callable_contract, false);
+
+            // Check counter_map pre-call
+            let initial_counter =
+                check_counter_map(&callable_contract, deployer.wallet.address().into())
+                    .await
+                    .value;
+
+            let tx_hash = compute_hash(
+                &deployer.contract,
+                TypeToHash::Transaction(transaction.clone()),
+            )
+            .await
+            .value
+            .0;
+            let tx_hash = Message::from_bytes(tx_hash);
+            let signatures = transfer_signatures(private_key, tx_hash).await;
+
+            let response = execute_transaction(
+                &deployer.contract,
+                transaction.contract_call_params.clone(),
+                signatures,
+                transaction.target.clone(),
+                transaction.transfer_params.clone(),
+            )
+            .await
+            .unwrap();
+
+            let log = response
+                .decode_logs_with_type::<ExecuteTransactionEvent>()
+                .unwrap();
+            let event = log.get(0).unwrap();
+            assert_eq!(
+                *event,
+                ExecuteTransactionEvent {
+                    nonce: transaction.nonce,
+                    target: transaction.target,
+                    transfer_params: transaction.transfer_params,
+                }
+            );
+
+            // Check counter_map post-call
+            let final_counter =
+                check_counter_map(&callable_contract, deployer.wallet.address().into())
+                    .await
+                    .value;
+
+            assert_eq!(initial_counter, 0);
+            assert_eq!(final_counter, DEFAULT_CALLDATA_VALUE_PARAM);
+            assert!(final_counter > initial_counter);
+        }
+    }
 }
 
 mod revert {
@@ -268,7 +338,8 @@ mod revert {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await;
+            .await
+            .unwrap();
         }
     }
     mod call {}
