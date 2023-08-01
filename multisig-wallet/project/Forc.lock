@@ -1,4 +1,9 @@
 [[package]]
+name = 'callable-contract'
+source = 'member'
+dependencies = ['std']
+
+[[package]]
 name = 'core'
 source = 'path+from-root-9BFE6D5D0CBDF740'
 
