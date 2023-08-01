@@ -11,7 +11,6 @@ use fuels::{
     types::{Bits256, Identity, B512},
 };
 
-use rand::{rngs::StdRng, Rng, SeedableRng};
 use sha3::{Digest, Keccak256};
 
 abigen!(
@@ -198,16 +197,25 @@ pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, C
     Ok((private_key, deployer, non_owner))
 }
 
-pub(crate) fn transfer_parameters() -> (WalletUnlocked, Identity, Bits256) {
+pub(crate) fn transfer_parameters(
+    deployer: &Caller,
+    nonce: u64,
+) -> (WalletUnlocked, Identity, Transaction) {
     let receiver_wallet = WalletUnlocked::new_random(None);
-
     let receiver = Identity::Address(receiver_wallet.address().try_into().unwrap());
 
-    let mut rng = StdRng::seed_from_u64(1000);
-    let data: Bytes32 = rng.gen();
-    let data = Bits256(*data);
+    let transaction = Transaction {
+        contract_call_params: None,
+        contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+        nonce,
+        target: receiver.clone(),
+        transfer_params: TransferParams {
+            asset_id: base_asset_contract_id(),
+            value: Some(DEFAULT_TRANSFER_AMOUNT),
+        },
+    };
 
-    (receiver_wallet, receiver, data)
+    (receiver_wallet, receiver, transaction)
 }
 
 pub(crate) async fn transfer_signatures(
