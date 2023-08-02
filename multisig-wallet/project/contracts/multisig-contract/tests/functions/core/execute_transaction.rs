@@ -221,7 +221,7 @@ mod success {
             let initial_multisig_balance = balance(&deployer.contract, base_asset_contract_id())
                 .await
                 .value;
-            let initial_test_contract_balance = deployer
+            let initial_callable_contract_balance = deployer
                 .wallet
                 .provider()
                 .unwrap()
@@ -278,7 +278,7 @@ mod success {
             let final_multisig_balance = balance(&deployer.contract, base_asset_contract_id())
                 .await
                 .value;
-            let final_test_contract_balance = deployer
+            let final_callable_contract_balance = deployer
                 .wallet
                 .provider()
                 .unwrap()
@@ -295,13 +295,13 @@ mod success {
             assert!(final_deposit > initial_deposit);
 
             assert_eq!(initial_multisig_balance, DEFAULT_TRANSFER_AMOUNT);
-            assert_eq!(initial_test_contract_balance, 0);
+            assert_eq!(initial_callable_contract_balance, 0);
 
             assert_eq!(final_multisig_balance, 0);
-            assert_eq!(final_test_contract_balance, DEFAULT_TRANSFER_AMOUNT);
+            assert_eq!(final_callable_contract_balance, DEFAULT_TRANSFER_AMOUNT);
 
             assert!(final_multisig_balance < initial_multisig_balance);
-            assert!(final_test_contract_balance > initial_test_contract_balance);
+            assert!(final_callable_contract_balance > initial_callable_contract_balance);
         }
     }
 }
@@ -309,19 +309,53 @@ mod success {
 mod revert {
     use super::*;
 
+    #[tokio::test]
+    #[should_panic(expected = "NotInitialized")]
+    async fn not_initialized() {
+        let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+        let initial_nonce = nonce(&deployer.contract).await.value;
+
+        let (_receiver_wallet, _receiver, transaction) =
+            transfer_parameters(&deployer, initial_nonce);
+
+        let tx_hash = compute_hash(
+            &deployer.contract,
+            TypeToHash::Transaction(transaction.clone()),
+        )
+        .await
+        .value
+        .0;
+        let tx_hash = Message::from_bytes(tx_hash);
+        let signatures = transfer_signatures(private_key, tx_hash).await;
+
+        let _response = execute_transaction(
+            &deployer.contract,
+            transaction.contract_call_params.clone(),
+            signatures,
+            transaction.target.clone(),
+            transaction.transfer_params.clone(),
+        )
+        .await;
+    }
+
     mod transfer {
 
         use super::*;
 
         #[tokio::test]
-        #[should_panic(expected = "NotInitialized")]
-        async fn not_initialized() {
+        #[should_panic(expected = "TransferRequiresAValue")]
+        async fn transfer_requires_a_value() {
             let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+            constructor(&deployer.contract, default_users()).await;
 
             let initial_nonce = nonce(&deployer.contract).await.value;
 
-            let (_receiver_wallet, _receiver, transaction) =
+            let (_receiver_wallet, _receiver, mut transaction) =
                 transfer_parameters(&deployer, initial_nonce);
+
+            transaction.transfer_params.value = None;
 
             let tx_hash = compute_hash(
                 &deployer.contract,
