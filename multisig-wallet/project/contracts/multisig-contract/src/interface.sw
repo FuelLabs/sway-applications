@@ -25,6 +25,26 @@ abi MultiSignatureWallet {
     #[storage(read, write)]
     fn constructor(users: Vec<User>);
 
+    /// Execute a transaction formed from the `to`, `value` and `data` parameters if the signatures meet the
+    /// threshold requirement.
+    ///
+    /// # Arguments
+    ///
+    /// * `data` - The data field of the transaction.
+    /// * `signatures` - The information for each user's signature for a specific transaction.
+    /// * `to` - The recipient of the transaction.
+    /// * `value` - The value sent in the transaction.
+    ///
+    /// # Reverts
+    ///
+    /// * When the constructor has not been called to initialize the contract.
+    /// * When the amount of the asset being sent is greater than the balance in the contract.
+    /// * When the public key cannot be recovered from a signature.
+    /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
+    /// * When the total approval count is less than the required threshold for execution.
+    #[storage(read, write)]
+    fn execute_transaction(contract_call_params: Option<ContractCallParams>, signatures: Vec<SignatureInfo>, target: Identity, transfer_params: TransferParams);
+
     /// Updates the threshold required for execution.
     ///
     /// # Arguments
@@ -60,26 +80,6 @@ abi MultiSignatureWallet {
     /// * When the total approval count is less than the required threshold for execution.
     #[storage(read, write)]
     fn set_weight(signatures: Vec<SignatureInfo>, user: User);
-
-    /// Execute a transaction formed from the `to`, `value` and `data` parameters if the signatures meet the
-    /// threshold requirement.
-    ///
-    /// # Arguments
-    ///
-    /// * `data` - The data field of the transaction.
-    /// * `signatures` - The information for each user's signature for a specific transaction.
-    /// * `to` - The recipient of the transaction.
-    /// * `value` - The value sent in the transaction.
-    ///
-    /// # Reverts
-    ///
-    /// * When the constructor has not been called to initialize the contract.
-    /// * When the amount of the asset being sent is greater than the balance in the contract.
-    /// * When the public key cannot be recovered from a signature.
-    /// * When the recovered addresses are not in ascending order (0x1 < 0x2 < 0x3...).
-    /// * When the total approval count is less than the required threshold for execution.
-    #[storage(read, write)]
-    fn execute_transaction(contract_call_params: Option<ContractCallParams>, signatures: Vec<SignatureInfo>, target: Identity, transfer_params: TransferParams);
 }
 
 abi Info {
