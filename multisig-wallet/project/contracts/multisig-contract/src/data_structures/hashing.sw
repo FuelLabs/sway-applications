@@ -4,6 +4,7 @@ use ::data_structures::user::User;
 use std::{bytes::Bytes, constants::ZERO_B256};
 
 impl Bytes {
+    /// Converts a generic copy type into [Bytes].
     pub fn from_copy_type<T>(value: T) -> Self {
         // Artificially create bytes with capacity and len
         let mut bytes = Bytes::with_capacity(8);
@@ -20,25 +21,32 @@ impl Bytes {
         bytes
     }
 
-    pub fn from_reference_type<T>(t: T) -> Self { // NOTE: Does not work correctly for Option<Bytes>, use `from_option_bytes` instead
+    /// Converts a generic reference type into [Bytes].
+    pub fn from_reference_type<T>(t: T) -> Self {
         // Artificially create bytes with capacity and len
         let size = __size_of::<T>();
         let mut bytes = Bytes::with_capacity(size);
         bytes.len = size;
-        // Copy bytes into the buffer of the target bytes
+        // Copy bytes of `t` into the buffer of the target bytes
         __addr_of(t).copy_bytes_to(bytes.buf.ptr, size);
         bytes
     }
 }
 
 pub trait IntoBytes {
+    /// Converts self into [Bytes].
     fn into_bytes(self) -> Bytes;
 }
 
+/// Parameters for calling a contract.
 pub struct ContractCallParams {
+    /// The calldata for the call.
     calldata: Bytes,
+    /// The amount of gas to forward.
     forwarded_gas: u64,
+    /// The function selector for the call.
     function_selector: Bytes,
+    /// Whether the function being called takes a single value-type argument.
     single_value_type_arg: bool,
 }
 
@@ -53,32 +61,43 @@ impl IntoBytes for ContractCallParams {
     }
 }
 
+/// The data to be hashed and signed over when calling `set_threshold`.
 pub struct Threshold {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
     contract_identifier: ContractId,
-    /// Value used to prevent double spending.
+    /// The nonce of the multisig wallet, used to prevent double spending.
     nonce: u64,
     /// The number of approvals required to enable a transaction to be sent.
     threshold: u64,
 }
 
+/// Parameters for a transfer.
 pub struct TransferParams {
+    /// The asset to transfer.
     asset_id: ContractId,
+    /// The amount to transfer.
     value: Option<u64>,
 }
 
+/// The data to be hashed and signed over when calling `execute_transaction`.
 pub struct Transaction {
+    /// Parameters for calling a contract.
     contract_call_params: Option<ContractCallParams>,
+    /// Unique identifier for the contract which prevents this transaction from being submitted to another
+    /// instance of the multisig.
     contract_identifier: ContractId,
+    /// The nonce of the multisig wallet, used to prevent double spending.
     nonce: u64,
+    /// The target of the transaction.
     target: Identity,
+    /// Parameters for a transfer.
     transfer_params: TransferParams,
 }
 
 impl IntoBytes for Transaction {
-    // Needed as `Transaction` contains `Bytes` which can only be correctly hashed by the Bytes.sha256() method, 
-    // as such the whole struct must be converted to `Bytes`.
+    // Needed as [Transaction] contains [Option<ContractCallParams>], which itself contains [Bytes] which can only be correctly hashed by the Bytes.sha256() method, 
+    // as such the whole struct must be converted to [Bytes].
     fn into_bytes(self) -> Bytes {
         let mut bytes = Bytes::new();
         match self.contract_call_params {
@@ -99,16 +118,18 @@ impl IntoBytes for Transaction {
     }
 }
 
+/// The data to be hashed and signed over when calling `set_weight`.
 pub struct Weight {
     /// Unique identifier for the contract which prevents this transaction from being submitted to another
     /// instance of the multisig.
     contract_identifier: ContractId,
-    /// Value used to prevent double spending.
+    /// The nonce of the multisig wallet, used to prevent double spending.
     nonce: u64,
     /// The user of the multisig, who can sign transactions to add their approval.
     user: User,
 }
 
+/// Determines the type to be hashed.
 pub enum TypeToHash {
     Threshold: Threshold,
     Transaction: Transaction,

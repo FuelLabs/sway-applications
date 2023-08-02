@@ -2,21 +2,25 @@ library;
 
 use std::b512::B512;
 
+/// Determines the type of message formatting.
 pub enum MessageFormat {
     None: (),
     EIP191PersonalSign: (),
 }
 
+/// Determines the type of message prefixing.
 pub enum MessagePrefix {
     None: (),
     Ethereum: (),
 }
 
+/// Determines the type wallet.
 pub enum WalletType {
     Fuel: (),
     EVM: (),
 }
 
+/// Information about a specific signature.
 pub struct SignatureInfo {
     /// The type of formatting of the message that was signed.
     message_format: MessageFormat,
