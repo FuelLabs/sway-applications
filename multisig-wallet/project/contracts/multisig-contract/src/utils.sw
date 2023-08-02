@@ -1,7 +1,6 @@
 library;
 
 use std::{
-    bytes::Bytes,
     call_frames::contract_id,
     ecr::ec_recover_address,
     hash::{
