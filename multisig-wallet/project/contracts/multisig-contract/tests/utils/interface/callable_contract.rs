@@ -4,7 +4,7 @@ use fuels::{
 
 use crate::utils::setup::CallableContract;
 
-pub async fn check_counter_map(
+pub(crate) async fn check_counter_map(
     contract: &CallableContract<WalletUnlocked>,
     address: Address,
 ) -> FuelCallResponse<u64> {
@@ -16,7 +16,7 @@ pub async fn check_counter_map(
         .unwrap()
 }
 
-pub async fn check_deposit_map(
+pub(crate) async fn check_deposit_map(
     contract: &CallableContract<WalletUnlocked>,
     address: Address,
 ) -> FuelCallResponse<u64> {

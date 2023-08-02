@@ -68,7 +68,7 @@ pub(crate) fn default_users() -> Vec<User> {
     vec![fuel_user_1, evm_user_1]
 }
 
-pub async fn deploy_callable_contract(
+pub(crate) async fn deploy_callable_contract(
     deployer_wallet: WalletUnlocked,
 ) -> Result<CallableContract<WalletUnlocked>, Error> {
     let callable_contract_storage_configuration =
