@@ -36,18 +36,26 @@ use std::{
 use ::utils::recover_signer;
 
 configurable {
+    /// The threshold required for activation.
     THRESHOLD: u64 = 5,
 }
 
 storage {
-    /// Used to add entropy into hashing of transaction to decrease the probability of collisions / double
-    /// spending.
+    /// The nonce of the multisig wallet, used to prevent double spending.
     nonce: u64 = 0,
-    /// The total weight of all the user approvals
+    /// The total weight of all the user approvals.
     total_weight: u64 = 0,
     /// The number of approvals required in order to execute a transaction.
+    ///
+    /// # Additional Information
+    ///
+    /// Set to the value of the configurable `THRESHOLD`.
     threshold: u64 = 0,
     /// Number of approvals per user.
+    //
+    /// # Additional Information
+    ///
+    /// Maps (user => weight).
     weighting: StorageMap<b256, u64> = StorageMap {},
 }
 
@@ -104,7 +112,7 @@ impl MultiSignatureWallet for Contract {
             transfer(value, transfer_params.asset_id, target);
 
             log(ExecuteTransactionEvent {
-                // contract_call_params: contract_call_params, // SDK does not support logs with nested Bytes
+                // contract_call_params: contract_call_params, // TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
                 nonce,
                 target,
                 transfer_params,
@@ -145,7 +153,7 @@ impl MultiSignatureWallet for Contract {
             call_with_function_selector(target_contract_id, contract_call_params.function_selector, contract_call_params.calldata, contract_call_params.single_value_type_arg, call_params);
 
             log(ExecuteTransactionEvent {
-                // contract_call_params: Some(contract_call_params),  // SDK does not support logs with nested Bytes
+                // contract_call_params: contract_call_params, // TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
                 nonce,
                 target,
                 transfer_params,
@@ -237,6 +245,19 @@ impl Info for Contract {
     }
 }
 
+/// Takes a struct comprised of transaction data and hashes it.
+///
+/// # Additional Information
+///
+/// The struct will be a variant of [TypeToHash].
+///
+/// # Arguments
+///
+/// * `type_to_hash` : [TypeToHash] - The struct to hash.
+///
+/// # Returns
+///
+/// * [b256] - The hash.
 fn compute_hash(type_to_hash: TypeToHash) -> b256 {
     match type_to_hash {
         TypeToHash::Threshold(threshold) => sha256(threshold),
@@ -245,10 +266,33 @@ fn compute_hash(type_to_hash: TypeToHash) -> b256 {
     }
 }
 
+/// This function counts the number of approvals for a set of users recovered from a set of signatures.
+///
+/// # Additional Information
+///
 /// Takes in a transaction hash and signatures with associated data.
 /// Recovers a b256 address from each signature;
 /// it then increments the number of approvals by that address' approval weighting.
 /// Returns the final approval count.
+///
+/// # Arguments
+///
+/// * `argument_1`: [Identity] - This argument is a user to be hashed.
+/// * `signatures`: [Vec<SignatureInfo>] - The information for each user's signature for a specific transaction.
+/// * `transaction_hash`: [b256] - The hash used to recover a signer.
+///
+/// # Returns
+///
+/// * [u64] - The final approval count.
+///
+/// # Panics
+///
+/// * When the public key cannot be recovered from a signature.
+/// * When the recovered addresses in `count_approvals `are not in ascending order (0x1 < 0x2 < 0x3...) [b256].
+///
+/// # Number of Storage Accesses
+///
+/// * Reads: `2`
 #[inline(never)]
 #[storage(read)]
 fn count_approvals(signatures: Vec<SignatureInfo>, transaction_hash: b256) -> u64 {
