@@ -1,13 +1,11 @@
 use crate::utils::{
     interface::{
-        callable_contract::{check_counter_map, check_deposit_map},
         core::{constructor, execute_transaction},
         info::{compute_hash, nonce},
     },
     setup::{
-        base_asset_contract_id, call_parameters, default_users, deploy_callable_contract,
-        setup_env, transfer_parameters, transfer_signatures, TypeToHash,
-        DEFAULT_CALLDATA_VALUE_PARAM, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
+        call_parameters, default_users, deploy_callable_contract, setup_env, transfer_parameters,
+        transfer_signatures, TypeToHash, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
     },
 };
 use fuels::{
@@ -17,7 +15,10 @@ use fuels::{
 
 mod success {
     use super::*;
-    use crate::utils::{interface::info::balance, setup::ExecuteTransactionEvent};
+    use crate::utils::{
+        interface::info::balance,
+        setup::{base_asset_contract_id, ExecuteTransactionEvent},
+    };
 
     mod transfer {
 
@@ -115,6 +116,10 @@ mod success {
     mod call {
 
         use super::*;
+        use crate::utils::{
+            interface::callable_contract::{check_counter_map, check_deposit_map},
+            setup::DEFAULT_CALLDATA_VALUE_PARAM,
+        };
 
         #[tokio::test]
         async fn executes_call_without_value() {
