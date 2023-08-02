@@ -500,5 +500,167 @@ mod revert {
             .unwrap();
         }
     }
-    mod call {}
+    mod call {
+
+        use super::*;
+        use fuels::types::{Address, Identity};
+
+        #[tokio::test]
+        #[should_panic(expected = "CanOnlyCallContracts")]
+        async fn can_only_call_contracts() {
+            let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+            constructor(&deployer.contract, default_users()).await;
+
+            let initial_nonce = nonce(&deployer.contract).await.value;
+
+            let callable_contract = deploy_callable_contract(deployer.wallet.clone())
+                .await
+                .unwrap();
+
+            let mut transaction =
+                call_parameters(&deployer, initial_nonce, &callable_contract, false);
+
+            let target_as_contract_id = callable_contract.contract_id();
+            transaction.target =
+                Identity::Address(Address::from(*callable_contract.contract_id().hash));
+
+            let tx_hash = compute_hash(
+                &deployer.contract,
+                TypeToHash::Transaction(transaction.clone()),
+            )
+            .await
+            .value
+            .0;
+            let tx_hash = Message::from_bytes(tx_hash);
+            let signatures = transfer_signatures(private_key, tx_hash).await;
+
+            deployer
+                .contract
+                .methods()
+                .execute_transaction(
+                    transaction.contract_call_params,
+                    signatures,
+                    transaction.target,
+                    transaction.transfer_params,
+                )
+                .append_variable_outputs(1)
+                .set_contract_ids(&[target_as_contract_id.clone()])
+                .call()
+                .await
+                .unwrap();
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "InsufficientAssetAmount")]
+        async fn insufficient_asset_amount() {
+            let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+            constructor(&deployer.contract, default_users()).await;
+
+            let initial_nonce = nonce(&deployer.contract).await.value;
+
+            let callable_contract = deploy_callable_contract(deployer.wallet.clone())
+                .await
+                .unwrap();
+
+            let transaction = call_parameters(&deployer, initial_nonce, &callable_contract, true);
+
+            let tx_hash = compute_hash(
+                &deployer.contract,
+                TypeToHash::Transaction(transaction.clone()),
+            )
+            .await
+            .value
+            .0;
+            let tx_hash = Message::from_bytes(tx_hash);
+            let signatures = transfer_signatures(private_key, tx_hash).await;
+
+            execute_transaction(
+                &deployer.contract,
+                transaction.contract_call_params.clone(),
+                signatures,
+                transaction.target.clone(),
+                transaction.transfer_params.clone(),
+            )
+            .await
+            .unwrap();
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "IncorrectSignerOrdering")]
+        async fn incorrect_signer_ordering() {
+            let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+            constructor(&deployer.contract, default_users()).await;
+
+            let initial_nonce = nonce(&deployer.contract).await.value;
+
+            let callable_contract = deploy_callable_contract(deployer.wallet.clone())
+                .await
+                .unwrap();
+
+            let transaction = call_parameters(&deployer, initial_nonce, &callable_contract, false);
+
+            let tx_hash = compute_hash(
+                &deployer.contract,
+                TypeToHash::Transaction(transaction.clone()),
+            )
+            .await
+            .value
+            .0;
+            let tx_hash = Message::from_bytes(tx_hash);
+            let signatures = transfer_signatures(private_key, tx_hash).await;
+
+            let incorrectly_ordered_signatures = vec![signatures[1].clone(), signatures[0].clone()];
+
+            execute_transaction(
+                &deployer.contract,
+                transaction.contract_call_params.clone(),
+                incorrectly_ordered_signatures,
+                transaction.target.clone(),
+                transaction.transfer_params.clone(),
+            )
+            .await
+            .unwrap();
+        }
+
+        #[tokio::test]
+        #[should_panic(expected = "InsufficientApprovals")]
+        async fn insufficient_approvals() {
+            let (private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
+
+            constructor(&deployer.contract, default_users()).await;
+
+            let initial_nonce = nonce(&deployer.contract).await.value;
+
+            let callable_contract = deploy_callable_contract(deployer.wallet.clone())
+                .await
+                .unwrap();
+
+            let transaction = call_parameters(&deployer, initial_nonce, &callable_contract, false);
+
+            let tx_hash = compute_hash(
+                &deployer.contract,
+                TypeToHash::Transaction(transaction.clone()),
+            )
+            .await
+            .value
+            .0;
+            let tx_hash = Message::from_bytes(tx_hash);
+            let mut signatures = transfer_signatures(private_key, tx_hash).await;
+
+            signatures.remove(0);
+
+            execute_transaction(
+                &deployer.contract,
+                transaction.contract_call_params.clone(),
+                signatures,
+                transaction.target.clone(),
+                transaction.transfer_params.clone(),
+            )
+            .await
+            .unwrap();
+        }
+    }
 }
