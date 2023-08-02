@@ -48,7 +48,7 @@ abi MultiSignatureWallet {
     /// * When the public key cannot be recovered from a signature.
     /// * When the recovered addresses in `count_approvals `are not in ascending order (0x1 < 0x2 < 0x3...) [b256].
     /// * When the total approval count is less than the required threshold for execution.
-    /// * When attempting to call when `target` is not an [Identity::ContractId].
+    /// * When attempting to call when `target` is not a [Identity::ContractId].
     ///
     /// # Number of Storage Accesses
     ///

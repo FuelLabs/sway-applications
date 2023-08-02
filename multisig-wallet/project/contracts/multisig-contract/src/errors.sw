@@ -2,7 +2,7 @@ library;
 
 /// Error log for when transaction execution panics.
 pub enum ExecutionError {
-    /// Emitted when attempting to call when `target` is not an [Identity::ContractId].
+    /// Emitted when attempting to call when `target` is not a [Identity::ContractId].
     CanOnlyCallContracts: (),
     /// Emitted when the recovered addresses in `count_approvals `are not in ascending order (0x1 < 0x2 < 0x3...) [b256].
     IncorrectSignerOrdering: (),
