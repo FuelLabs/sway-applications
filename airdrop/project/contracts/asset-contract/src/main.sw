@@ -1,10 +1,10 @@
 contract;
 
-dep errors;
-dep interface;
+mod errors;
+mod interface;
 
-use errors::{AccessError, InitError, InputError};
-use interface::SimpleAsset;
+use ::errors::{AccessError, InitError, InputError};
+use ::interface::SimpleAsset;
 use std::{auth::msg_sender, token::mint_to};
 
 storage {
@@ -21,19 +21,20 @@ impl SimpleAsset for Contract {
     fn constructor(asset_supply: u64, minter: Identity) {
         // If the asset supply is anything other than 0, we know that the constructor has already
         // been called.
-        require(storage.asset_supply == 0, InitError::AlreadyInitialized);
+        require(storage.asset_supply.read() == 0, InitError::AlreadyInitialized);
         require(asset_supply != 0, InitError::AssetSupplyCannotBeZero);
 
-        storage.minter = Option::Some(minter);
-        storage.asset_supply = asset_supply;
+        storage.minter.write(Option::Some(minter));
+        storage.asset_supply.write(asset_supply);
     }
 
-    #[storage(read)]
+    #[storage(read, write)]
     fn mint_to(amount: u64, to: Identity) {
         // Ensure that the sender is the minter.
-        require(storage.minter.is_some() && msg_sender().unwrap() == storage.minter.unwrap(), AccessError::SenderNotPermittedToMint);
-        require(amount + storage.asset_minted <= storage.asset_supply, InputError::GreaterThanMaximumSupply);
+        require(storage.minter.read().is_some() && msg_sender().unwrap() == storage.minter.read().unwrap(), AccessError::SenderNotPermittedToMint);
+        require(amount + storage.asset_minted.read() <= storage.asset_supply.read(), InputError::GreaterThanMaximumSupply);
 
+        storage.asset_minted.write(storage.asset_minted.read() + amount);
         mint_to(amount, to);
     }
 }

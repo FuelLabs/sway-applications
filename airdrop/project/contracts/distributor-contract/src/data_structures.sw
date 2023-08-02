@@ -1,17 +1,18 @@
-library data_structures;
+library;
 
-pub struct ClaimData {
-    /// The amount of an asset the user has claimed
-    amount: u64,
-    /// Whether the user has claimed
-    claimed: bool,
+pub enum ClaimState {
+    Unclaimed: (),
+    Claimed: u64,
 }
 
-impl ClaimData {
-    pub fn new(amount: u64, claimed: bool) -> Self {
-        Self {
-            amount,
-            claimed,
+impl core::ops::Eq for ClaimState {
+    fn eq(self, other: Self) -> bool {
+        match (self, other) {
+            (ClaimState::Claimed(balance1), ClaimState::Claimed(balance2)) => {
+                balance1 == balance2
+            },
+            (ClaimState::Unclaimed, ClaimState::Unclaimed) => true,
+            _ => false,
         }
     }
 }

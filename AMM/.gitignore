@@ -1,4 +1,7 @@
 target
 project/contracts/AMM-contract/out
 project/contracts/exchange-contract/out
-project/contracts/exchange-contract/tests/artifacts/malicious-implementation/out
+project/contracts/test-artifacts/malicious-implementation/out
+project/scripts/atomic-add-liquidity/out
+project/scripts/swap-exact-input/out
+project/scripts/swap-exact-output/out

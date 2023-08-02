@@ -1,4 +1,4 @@
-library bad_documentation;
+library;
 
 // ANCHOR: data_structures
 // This is bad. It's repeating the names of the fields which can be easily read

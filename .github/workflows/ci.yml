@@ -13,25 +13,23 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  REGISTRY: ghcr.io
-  RUST_VERSION: 1.66.0
-  FORC_VERSION: 0.32.2
-  CORE_VERSION: 0.15.1
-  PATH_TO_SCRIPTS: .github/scripts
+  RUST_VERSION: 1.70.0
 
 jobs:
   lint-toml-files:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_VERSION }}
+
       - name: Install Cargo.toml linter
-        uses: baptiste0928/cargo-install@v1
+        uses: baptiste0928/cargo-install@v2
         with:
           crate: cargo-toml-lint
-          version: '0.1'
+          version: "0.1.1"
+
       - name: Run Cargo.toml linter
         run: git ls-files | grep Cargo.toml$ | xargs --verbose -n 1 cargo-toml-lint
 
@@ -40,46 +38,74 @@ jobs:
 
     strategy:
       matrix:
-        project: ["airdrop", "AMM", "auctions", "DAO", "escrow", "fractional-NFT", "fundraiser", "multisig-wallet", "name-registry", "NFT", "oracle", "OTC-swap-predicate", ".template", "Timelock"]
+        project:
+          [
+            "airdrop",
+            "AMM",
+            "auctions/english-auction",
+            "counter-script",
+            "DAO",
+            "escrow",
+            "archive/fractional-NFT",
+            "fundraiser",
+            "games/TicTacToe",
+            "multisig-wallet",
+            "name-registry",
+            "archive/NFT",
+            "oracle",
+            "OTC-swap-predicate",
+            ".devops/.template",
+            "timelock",
+          ]
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{ env.RUST_VERSION }}
-          override: true
+          components: clippy, rustfmt
 
       - name: Init cache
-        uses: Swatinem/rust-cache@v1
-
-      - name: Install rustfmt
-        run: rustup component add rustfmt
+        uses: Swatinem/rust-cache@v2
 
       - name: Install Fuel toolchain
-        uses: FuelLabs/action-fuel-toolchain@v0.2.0
+        uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
-          name: my-toolchain
-          components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
+          toolchain: latest
+          date: 2023-07-07
 
       - name: Check Sway formatting
-        run: forc fmt --path ${{ matrix.project }} --check
+        run: |
+          cd ${{ matrix.project }}/project
+          forc fmt --check
 
       - name: Check Rust formatting
         run: |
-          cd ${{ matrix.project }}
+          cd ${{ matrix.project }}/project
           cargo fmt --verbose --check
 
       - name: Build Sway
-        run: forc build --path ${{ matrix.project }}
+        run: |
+          cd ${{ matrix.project }}/project
+          forc build --locked
+
+      - name: Build Rust files
+        run: |
+          cd ${{ matrix.project }}/project
+          cargo build --locked
+
+      - name: Check Clippy Linter
+        run: |
+          cd ${{ matrix.project }}/project
+          cargo clippy --all-features --all-targets -- -D warnings
 
       - name: Run Rust tests
         run: |
-          cd ${{ matrix.project }}
-          cargo test
+          cd ${{ matrix.project }}/project
+          cargo test --locked
 
   contributing-book:
     runs-on: ubuntu-latest
@@ -90,29 +116,24 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{ env.RUST_VERSION }}
-          override: true
 
       - name: Init cache
-        uses: Swatinem/rust-cache@v1
-
-      - name: Install rustfmt
-        run: rustup component add rustfmt
+        uses: Swatinem/rust-cache@v2
 
       - name: Install Fuel toolchain
-        uses: FuelLabs/action-fuel-toolchain@v0.2.0
+        uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
-          name: my-toolchain
-          components: forc@${{ env.FORC_VERSION }}, fuel-core@${{ env.CORE_VERSION }}
+          toolchain: latest
+          date: 2023-07-07
 
       - name: Check Sway formatting
-        run: forc fmt --path ${{ matrix.project }} --check
+        run: forc fmt --check --path ${{ matrix.project }}
 
       - name: Build Sway
-        run: forc build --path ${{ matrix.project }}
+        run: forc build --locked --path ${{ matrix.project }}

@@ -5,13 +5,25 @@
     </picture>
 </p>
 
-# Overview
+<p align="center">
+    <a href="https://crates.io/crates/forc/0.42.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.42.1-orange" />
+    </a>
+    <a href="https://crates.io/crates/fuel-core/0.18.3" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.18.3-yellow" />
+    </a>
+    <a href="https://crates.io/crates/fuels/0.42.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.42.0-blue" />
+    </a>
+</p>
+
+## Overview
 
 ## Predicates in Fuel
+
 Predicates are pure functions evaluating to either `True` or `False`. They are stateless, and can neither read nor write to any contract state. They can not emit logs.
 
 In Fuel, coins can be sent to an address uniquely representing a particular predicate's bytecode (the bytecode root, calculated [here](https://github.com/FuelLabs/fuel-specs/blob/master/src/protocol/id/contract.md)).
-
 
 These coin UTXOs then become spendable not on the provision of a valid signature, but rather if the supplied predicate both has a root that matches their owner, and [evaluates](https://github.com/FuelLabs/fuel-specs/blob/master/src/vm/index.md#predicate-verification) to `True`. If a predicate reverts, or tries to access impure VM opcodes, the evaluation is automatically `False`.
 
@@ -26,25 +38,51 @@ The order "taker" can then execute the order by spending the predicate. They are
 The order maker can "cancel" the order by spending the predicate's coins in a transaction containing a single coin input signed by the `receiver`. There are therefore two inputs: the signed coin and the predicate coin.
 
 Limitations:
+
 - An order can not be partially filled - the taker must pay the entire ask amount.
 - There is no on-chain matching engine, so an order placed "offside" would not be matched with an existing order with a better price (on the contrary, it would be vulnerable to arbitrage).
 
 As such, this mechanism is most useful for OTC trades and atomic swaps.
 
-# Project Structure
-The project consists of a predicate written in Sway (`./project/swap-predicate/src/main.sw`) and tests using fuels-rs (`./project/swap-predicate/tests/`)
+## Project structure
 
-# Running the project
-In order to run the project make sure that you are in the root of this project i.e. `/path/to/OTC-swap-predicate/<you are here>`
+The project consists of a predicate.
 
-Build the predicate:
-
-```bash
-forc build
+```sh
+OTC-swap-predicate
+├── project
+│   ├── predicates
+│   │   └── swap-predicate
+│   │       ├── src/main.sw
+│   │       └── tests/harness.rs
+│   ├── README.md
+│   └── SPECIFICATION.md
+├── ui
+│   ├── README.md
+│   └── SPECIFICATION.md
+└── README.md
 ```
 
-Run the tests:
+## Running the project
+
+### User interface
+
+TODO: The user interface does not currently exist therefore its [README.md](ui/README.md) and [SPECIFICATION.md](ui/SPECIFICATION.md) are empty.
+
+### Project
+
+In order to run the subsequent commands change into the following directory `/path/to/OTC-swap-predicate/project/<here>`.
+
+#### Program compilation
 
 ```bash
-cargo test
+forc build --locked
+```
+
+#### Running the tests
+
+Before running the tests the programs must be compiled with the command above.
+
+```bash
+cargo test --locked
 ```

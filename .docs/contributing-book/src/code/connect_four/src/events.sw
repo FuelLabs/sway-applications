@@ -1,4 +1,4 @@
-library events;
+library;
 
 // ANCHOR: event
 pub struct WinnerEvent {

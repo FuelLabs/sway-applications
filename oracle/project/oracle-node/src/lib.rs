@@ -1,13 +1,10 @@
 use async_trait::async_trait;
-use fuels::tx::Receipt;
+use fuels::{accounts::wallet::WalletUnlocked, tx::Receipt};
 use futures::executor::block_on;
-use reqwest;
 use reqwest::{Client, Url};
 use serde::Deserialize;
 use std::time::Duration;
-use tokio::sync::mpsc::Receiver;
-use tokio::task::JoinHandle;
-use tokio::time::sleep;
+use tokio::{sync::mpsc::Receiver, task::JoinHandle, time::sleep};
 
 // Decimal precision of the asset we are pushing prices to
 const DECIMAL_PRECISION: f64 = 1e9;
@@ -94,7 +91,7 @@ pub trait PriceUpdater {
     fn set_price(&self, price: u64) -> anyhow::Result<Vec<Receipt>>;
 }
 
-impl PriceUpdater for utils::Oracle {
+impl PriceUpdater for utils::Oracle<WalletUnlocked> {
     /// Set the price for the oracle contract and return the log receipts
     fn set_price(&self, price: u64) -> anyhow::Result<Vec<Receipt>> {
         let methods = self.methods();

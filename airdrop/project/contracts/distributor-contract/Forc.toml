@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "distributor-contract"
 
 [dependencies]
-sway_libs = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.4.1" }
+merkle_proof = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.12.0" }

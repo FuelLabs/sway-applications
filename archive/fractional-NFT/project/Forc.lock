@@ -1,0 +1,47 @@
+[[package]]
+name = 'NFT'
+source = 'member'
+dependencies = [
+    'nft',
+    'std',
+]
+
+[[package]]
+name = 'NFT-1'
+source = 'member'
+dependencies = [
+    'nft',
+    'std',
+]
+
+[[package]]
+name = 'asset'
+source = 'member'
+dependencies = ['std']
+
+[[package]]
+name = 'core'
+source = 'path+from-root-FDF4A5DCC6ECD181'
+
+[[package]]
+name = 'fractional-NFT-contract'
+source = 'member'
+dependencies = [
+    'nft',
+    'std',
+]
+
+[[package]]
+name = 'nft'
+source = 'git+https://github.com/FuelLabs/sway-libs?tag=v0.8.0#f6bb5c234e020d556e1bc688e0f1f368dc9b0f9a'
+dependencies = ['std']
+
+[[package]]
+name = 'std'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.37.0#607ac50176db8bef936f91bacf435d0ea37d041e'
+dependencies = ['core']
+
+[[package]]
+name = 'token-distributor-contract'
+source = 'member'
+dependencies = ['std']

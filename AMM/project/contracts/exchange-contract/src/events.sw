@@ -1,53 +1,69 @@
-library events;
+library;
 
+use libraries::data_structures::{Asset, AssetPair};
+
+/// The information logged when liquidity is added.
+///
+/// ### Fields
+///
+/// * `added_assets`: `AssetPair` - Identifiers and amounts of assets added to reserves.
+/// * `liquidity`: `Asset` - Identifier and amount of liquidity pool assets minted and transferred to sender.
 pub struct AddLiquidityEvent {
-    /// Amount of asset A added to reserves
-    asset_a: u64,
-    /// Amount of asset B added to reserves
-    asset_b: u64,
-    /// Amount of liquidity pool assets minted and transferred to sender
-    liquidity: u64,
+    added_assets: AssetPair,
+    liquidity: Asset,
 }
 
+/// The information about the asset pair logged during initialisation.
+///
+/// ### Fields
+///
+/// * `asset_a_id`: `ContractId` - Identifier of one of the assets that make up the pool.
+/// * `asset_b_id`: `ContractId` - Identifier of the other asset.
 pub struct DefineAssetPairEvent {
-    /// The pair that makes up the pool
-    pair: (ContractId, ContractId),
+    asset_a_id: ContractId,
+    asset_b_id: ContractId,
 }
 
+/// The information logged when a deposit is made.
+///
+/// ### Fields
+///
+/// * `deposited_asset`: `Asset` - Deposited asset that may be withdrawn or used to add liquidity.
+/// * `new_balance`: `u64` - New deposit balance of asset in contract.
 pub struct DepositEvent {
-    /// Deposited amount of the asset that may be withdrawn of used to add liquidity
-    amount: u64,
-    /// Deposited asset that is either asset A or asset B
-    asset: ContractId,
-    /// New deposit balance of asset in contract
-    balance: u64,
+    deposited_asset: Asset,
+    new_balance: u64,
 }
 
+/// The information logged when liquidity is removed.
+///
+/// ### Fields
+///
+/// * `removed_reserve`: `AssetPair` -  Identifiers and amounts of assets removed from reserves and transferred to sender.
+/// * `burned_liquidity`: `Asset` -  Identifier and amount of burned liquidity pool assets.
 pub struct RemoveLiquidityEvent {
-    /// Amount of asset A removed from reserves and transferred to sender
-    amount_a: u64,
-    /// Amount of asset B removed from reserves and transferred to sender
-    amount_b: u64,
-    /// Amount of liquidity pool assets burned
-    liquidity: u64,
+    removed_reserve: AssetPair,
+    burned_liquidity: Asset,
 }
 
+/// The information logged when a token swap is made.
+///
+/// ### Fields
+///
+/// * `input`: `Asset` - Identifier and amount of sold asset.
+/// * `output`: `Asset` - Identifier and amount of bought asset.
 pub struct SwapEvent {
-    /// Amount of the output asset that was bought
-    bought: u64,
-    /// Identifier of input asset
-    input: ContractId,
-    /// Identifier of output asset
-    output: ContractId,
-    /// Amount of the input asset that was sold
-    sold: u64,
+    input: Asset,
+    output: Asset,
 }
 
+/// The information logged when a withdraw made.
+///
+/// ### Fields
+///
+/// * `withdrawn_asset`: `Asset` - Identifier and amount of withdrawn asset.
+/// * `remaining_balance`: `u64` - Remaining deposit balance of asset in contract.
 pub struct WithdrawEvent {
-    /// Amount of withdrawal
-    amount: u64,
-    /// Identifier of withdrawn asset
-    asset: ContractId,
-    /// Remaining deposit balance of asset in contract
-    balance: u64,
+    withdrawn_asset: Asset,
+    remaining_balance: u64,
 }

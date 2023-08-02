@@ -1,4 +1,4 @@
-library errors;
+library;
 
 // ANCHOR: error
 pub enum MoveError {

@@ -1,7 +1,0 @@
-[workspace]
-resolver = "2"
-members = [
-    "./project/oracle-contract",
-    "./project/oracle-node",
-    "./project/utils",
-]

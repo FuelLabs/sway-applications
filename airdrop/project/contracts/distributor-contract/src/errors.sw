@@ -1,17 +1,19 @@
-library errors;
+library;
 
 pub enum AccessError {
+    CallerNotAdmin: (),
+    NotEnoughTokens: (),
     UserAlreadyClaimed: (),
 }
 
 pub enum InitError {
     AlreadyInitialized: (),
-    ClaimTimeCannotBeZero: (),
-    NotInitalized: (),
+    CannotAirdropZeroTokens: (),
 }
 
 pub enum StateError {
-    ClaimPeriodHasEnded: (),
+    ClaimPeriodNotActive: (),
+    ClaimPeriodActive: (),
 }
 
 pub enum VerificationError {

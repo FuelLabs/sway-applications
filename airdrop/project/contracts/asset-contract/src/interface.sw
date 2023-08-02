@@ -1,4 +1,4 @@
-library interface;
+library;
 
 abi SimpleAsset {
     /// An example constructor which implements an airdrop distributor contract.
@@ -28,6 +28,6 @@ abi SimpleAsset {
     ///
     /// * When the sender is not the airdrop contract.
     /// * When the amount of the asset to be minted is greater than the total supply.
-    #[storage(read)]
+    #[storage(read, write)]
     fn mint_to(amount: u64, to: Identity);
 }

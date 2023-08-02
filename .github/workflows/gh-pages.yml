@@ -29,4 +29,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./.docs/contributing-book/book
           destination_dir: book
+          cname: swayapps.fuel.network
         if: github.ref == 'refs/heads/master'
