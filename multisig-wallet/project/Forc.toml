@@ -1,5 +1,5 @@
 [workspace]
 members = [
   "./contracts/multisig-contract",
-  "./contracts/test-artifacts/callable-contract",
+  "./contracts/test-artifacts/target-contract",
 ]
