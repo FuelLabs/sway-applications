@@ -22,7 +22,6 @@ use ::data_structures::{
     user::User,
 };
 use std::{
-    auth::msg_sender,
     call_frames::contract_id,
     context::this_balance,
     error_signals::FAILED_REQUIRE_SIGNAL,
@@ -277,7 +276,6 @@ fn compute_hash(type_to_hash: TypeToHash) -> b256 {
 ///
 /// # Arguments
 ///
-/// * `argument_1`: [Identity] - This argument is a user to be hashed.
 /// * `signatures`: [Vec<SignatureInfo>] - The information for each user's signature for a specific transaction.
 /// * `transaction_hash`: [b256] - The hash used to recover a signer.
 ///

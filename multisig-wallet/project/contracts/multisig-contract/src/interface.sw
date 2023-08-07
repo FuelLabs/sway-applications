@@ -34,7 +34,6 @@ abi MultiSignatureWallet {
     ///
     /// # Arguments
     ///
-    /// * `argument_1`: [Identity] - This argument is a user to be hashed.
     /// * `contract_call_params`: [Option<ContractCallParams>] - The parameters for a contract call.
     /// * `signatures`: [Vec<SignatureInfo>] - The information for each user's signature for a specific transaction.
     /// * `target`: [Identity] - The target of the transaction.
