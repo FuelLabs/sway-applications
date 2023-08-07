@@ -8,7 +8,7 @@ use crate::utils::{
         VALID_SIGNER_PK,
     },
 };
-use fuels::{accounts::fuel_crypto::Message, types::Bits256};
+use fuels::accounts::fuel_crypto::Message;
 
 mod success {
 
@@ -152,7 +152,6 @@ mod revert {
 
         constructor(&deployer.contract, default_users()).await;
 
-        let _data = Bits256([2u8; 32]);
         let initial_nonce = nonce(&deployer.contract).await.value;
         let previous_threshold = threshold(&deployer.contract).await.value;
 
