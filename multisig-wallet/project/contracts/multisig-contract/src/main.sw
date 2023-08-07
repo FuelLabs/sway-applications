@@ -32,7 +32,7 @@ use std::{
     },
     token::transfer,
 };
-use ::utils::recover_signer;
+use ::utils::{compute_hash, recover_signer};
 
 configurable {
     /// The threshold required for activation.
@@ -96,13 +96,7 @@ impl MultiSignatureWallet for Contract {
             let value = transfer_params.value.unwrap();
             require(value <= this_balance(transfer_params.asset_id), ExecutionError::InsufficientAssetAmount);
 
-            let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction {
-                contract_call_params,
-                contract_identifier: contract_id(),
-                nonce,
-                target,
-                transfer_params,
-            }));
+            let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_call_params, contract_id(), nonce, target, transfer_params)));
             let approval_count = count_approvals(signatures, transaction_hash);
             require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
 
@@ -131,13 +125,7 @@ impl MultiSignatureWallet for Contract {
                 require(transfer_params.value.unwrap() <= this_balance(transfer_params.asset_id), ExecutionError::InsufficientAssetAmount);
             }
 
-            let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction {
-                contract_call_params,
-                contract_identifier: contract_id(),
-                nonce,
-                target,
-                transfer_params,
-            }));
+            let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_call_params, contract_id(), nonce, target, transfer_params)));
             let approval_count = count_approvals(signatures, transaction_hash);
             require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
 
@@ -167,11 +155,7 @@ impl MultiSignatureWallet for Contract {
         require(threshold != 0, InitError::ThresholdCannotBeZero);
         require(threshold <= storage.total_weight.read(), InitError::TotalWeightCannotBeLessThanThreshold);
 
-        let transaction_hash = compute_hash(TypeToHash::Threshold(Threshold {
-            contract_identifier: contract_id(),
-            nonce,
-            threshold,
-        }));
+        let transaction_hash = compute_hash(TypeToHash::Threshold(Threshold::new(contract_id(), nonce, threshold)));
         let approval_count = count_approvals(signatures, transaction_hash);
 
         let previous_threshold = storage.threshold.read();
@@ -192,11 +176,7 @@ impl MultiSignatureWallet for Contract {
         let nonce = storage.nonce.read();
         require(nonce != 0, InitError::NotInitialized);
 
-        let transaction_hash = compute_hash(TypeToHash::Weight(Weight {
-            contract_identifier: contract_id(),
-            nonce,
-            user,
-        }));
+        let transaction_hash = compute_hash(TypeToHash::Weight(Weight::new(contract_id(), nonce, user)));
         let approval_count = count_approvals(signatures, transaction_hash);
 
         let threshold = storage.threshold.read();
@@ -241,27 +221,6 @@ impl Info for Contract {
     #[storage(read)]
     fn threshold() -> u64 {
         storage.threshold.read()
-    }
-}
-
-/// Takes a struct comprised of transaction data and hashes it.
-///
-/// # Additional Information
-///
-/// The struct will be a variant of [TypeToHash].
-///
-/// # Arguments
-///
-/// * `type_to_hash` : [TypeToHash] - The struct to hash.
-///
-/// # Returns
-///
-/// * [b256] - The hash.
-fn compute_hash(type_to_hash: TypeToHash) -> b256 {
-    match type_to_hash {
-        TypeToHash::Threshold(threshold) => sha256(threshold),
-        TypeToHash::Transaction(transaction) => transaction.into_bytes().sha256(),
-        TypeToHash::Weight(weight) => sha256(weight),
     }
 }
 

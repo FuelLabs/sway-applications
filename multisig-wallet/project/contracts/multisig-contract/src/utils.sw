@@ -10,13 +10,46 @@ use std::{
     vm::evm::ecr::ec_recover_evm_address,
 };
 
-use ::data_structures::hashing::{Threshold, Transaction, Weight};
-use ::data_structures::signatures::{MessageFormat, MessagePrefix, SignatureInfo, WalletType};
-use ::data_structures::user::User;
+use ::data_structures::{
+    hashing::{
+        Threshold,
+        Transaction,
+        TypeToHash,
+        Weight,
+    },
+    signatures::{
+        MessageFormat,
+        MessagePrefix,
+        SignatureInfo,
+        WalletType,
+    },
+    user::User,
+};
 
 const EIP191_INITIAL_BYTE = 0x19u8;
 const EIP191_VERSION_BYTE = 0x45u8;
 const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
+
+/// Takes a struct comprised of transaction data and hashes it.
+///
+/// # Additional Information
+///
+/// The struct will be a variant of [TypeToHash].
+///
+/// # Arguments
+///
+/// * `type_to_hash` : [TypeToHash] - The struct to hash.
+///
+/// # Returns
+///
+/// * [b256] - The hash.
+pub fn compute_hash(type_to_hash: TypeToHash) -> b256 {
+    match type_to_hash {
+        TypeToHash::Threshold(threshold) => sha256(threshold),
+        TypeToHash::Transaction(transaction) => transaction.into_bytes().sha256(),
+        TypeToHash::Weight(weight) => sha256(weight),
+    }
+}
 
 /// Applies the format and prefix specified by `signature_info` to the `message_hash`.
 /// Returns the [b256] value of the recovered address.

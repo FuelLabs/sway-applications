@@ -72,6 +72,16 @@ pub struct Threshold {
     threshold: u64,
 }
 
+impl Threshold {
+    pub fn new(contract_identifier: ContractId, nonce: u64, threshold: u64) -> Self {
+        Self {
+            contract_identifier,
+            nonce,
+            threshold,
+        }
+    }
+}
+
 /// Parameters for a transfer.
 pub struct TransferParams {
     /// The asset to transfer.
@@ -93,6 +103,24 @@ pub struct Transaction {
     target: Identity,
     /// Parameters for a transfer.
     transfer_params: TransferParams,
+}
+
+impl Transaction {
+    pub fn new(
+        contract_call_params: Option<ContractCallParams>,
+        contract_identifier: ContractId,
+        nonce: u64,
+        target: Identity,
+        transfer_params: TransferParams,
+    ) -> Self {
+        Self {
+            contract_call_params,
+            contract_identifier,
+            nonce,
+            target,
+            transfer_params,
+        }
+    }
 }
 
 impl IntoBytes for Transaction {
@@ -127,6 +155,16 @@ pub struct Weight {
     nonce: u64,
     /// The user of the multisig, who can sign transactions to add their approval.
     user: User,
+}
+
+impl Weight {
+    pub fn new(contract_identifier: ContractId, nonce: u64, user: User) -> Self {
+        Self {
+            contract_identifier,
+            nonce,
+            user,
+        }
+    }
 }
 
 /// Determines the type to be hashed.
