@@ -20,8 +20,8 @@ abigen!(
         abi = "./contracts/multisig-contract/out/debug/multisig-contract-abi.json"
     ),
     Contract(
-        name = "CallableContract",
-        abi = "./contracts/test-artifacts/callable-contract/out/debug/callable-contract-abi.json"
+        name = "TargetContract",
+        abi = "./contracts/test-artifacts/target-contract/out/debug/target-contract-abi.json"
     )
 );
 
@@ -31,12 +31,12 @@ pub(crate) const VALID_SIGNER_PK: &str =
 
 const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
 const MULTISIG_CONTRACT_STORAGE_PATH: &str = "./out/debug/multisig-contract-storage_slots.json";
-const CALLABLE_CONTRACT_BINARY_PATH: &str =
-    "../test-artifacts/callable-contract/out/debug/callable-contract.bin";
-const CALLABLE_CONTRACT_STORAGE_PATH: &str =
-    "../test-artifacts/callable-contract/out/debug/callable-contract-storage_slots.json";
+const TARGET_CONTRACT_BINARY_PATH: &str =
+    "../test-artifacts/target-contract/out/debug/target-contract.bin";
+const TARGET_CONTRACT_STORAGE_PATH: &str =
+    "../test-artifacts/target-contract/out/debug/target-contract-storage_slots.json";
 
-pub(crate) const DEFAULT_CALLDATA_VALUE_PARAM: u64 = 1;
+pub(crate) const DEFAULT_CALLDATA_VALUE: u64 = 1;
 pub(crate) const DEFAULT_FORWARDED_GAS: u64 = 10_000_000;
 pub(crate) const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
 pub(crate) const DEFAULT_THRESHOLD: u64 = 5;
@@ -68,22 +68,20 @@ pub(crate) fn default_users() -> Vec<User> {
     vec![fuel_user_1, evm_user_1]
 }
 
-pub(crate) async fn deploy_callable_contract(
+pub(crate) async fn deploy_target_contract(
     deployer_wallet: WalletUnlocked,
-) -> Result<CallableContract<WalletUnlocked>, Error> {
-    let callable_contract_storage_configuration =
-        StorageConfiguration::load_from(CALLABLE_CONTRACT_STORAGE_PATH);
-    let callable_contract_configuration = LoadConfiguration::default()
-        .set_storage_configuration(callable_contract_storage_configuration.unwrap());
-    let callable_contract_id = Contract::load_from(
-        CALLABLE_CONTRACT_BINARY_PATH,
-        callable_contract_configuration,
-    )
-    .unwrap()
-    .deploy(&deployer_wallet, TxParameters::default())
-    .await?;
+) -> Result<TargetContract<WalletUnlocked>, Error> {
+    let target_contract_storage_configuration =
+        StorageConfiguration::load_from(TARGET_CONTRACT_STORAGE_PATH);
+    let target_contract_configuration = LoadConfiguration::default()
+        .set_storage_configuration(target_contract_storage_configuration.unwrap());
+    let target_contract_id =
+        Contract::load_from(TARGET_CONTRACT_BINARY_PATH, target_contract_configuration)
+            .unwrap()
+            .deploy(&deployer_wallet, TxParameters::default())
+            .await?;
 
-    Ok(CallableContract::new(callable_contract_id, deployer_wallet))
+    Ok(TargetContract::new(target_contract_id, deployer_wallet))
 }
 
 fn eip_191_personal_sign_format(message_hash: Message) -> Message {
@@ -224,7 +222,7 @@ pub(crate) fn transfer_parameters(
 pub(crate) fn call_parameters(
     deployer: &Caller,
     nonce: u64,
-    callable_contract: &CallableContract<WalletUnlocked>,
+    target_contract: &TargetContract<WalletUnlocked>,
     with_value: bool,
 ) -> Transaction {
     match with_value {
@@ -232,7 +230,7 @@ pub(crate) fn call_parameters(
             contract_call_params: Some(ContractCallParams {
                 calldata: Bytes(calldata!(
                     Address::from(deployer.wallet.address()),
-                    DEFAULT_CALLDATA_VALUE_PARAM
+                    DEFAULT_CALLDATA_VALUE
                 )),
                 forwarded_gas: DEFAULT_FORWARDED_GAS,
                 function_selector: Bytes(fn_selector!(change_mapping_without_value(Address, u64))),
@@ -240,7 +238,7 @@ pub(crate) fn call_parameters(
             }),
             contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             nonce,
-            target: Identity::ContractId(callable_contract.contract_id().into()),
+            target: Identity::ContractId(target_contract.contract_id().into()),
             transfer_params: TransferParams {
                 asset_id: base_asset_contract_id(),
                 value: None,
@@ -250,7 +248,7 @@ pub(crate) fn call_parameters(
             contract_call_params: Some(ContractCallParams {
                 calldata: Bytes(calldata!(
                     Address::from(deployer.wallet.address()),
-                    DEFAULT_CALLDATA_VALUE_PARAM
+                    DEFAULT_CALLDATA_VALUE
                 )),
                 forwarded_gas: DEFAULT_FORWARDED_GAS,
                 function_selector: Bytes(fn_selector!(change_mapping_with_value(Address, u64))),
@@ -258,7 +256,7 @@ pub(crate) fn call_parameters(
             }),
             contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             nonce,
-            target: Identity::ContractId(callable_contract.contract_id().into()),
+            target: Identity::ContractId(target_contract.contract_id().into()),
             transfer_params: TransferParams {
                 asset_id: base_asset_contract_id(),
                 value: Some(DEFAULT_TRANSFER_AMOUNT),

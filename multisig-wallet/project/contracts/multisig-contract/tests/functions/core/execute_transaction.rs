@@ -4,7 +4,7 @@ use crate::utils::{
         info::{compute_hash, nonce},
     },
     setup::{
-        call_parameters, default_users, deploy_callable_contract, setup_env, transfer_parameters,
+        call_parameters, default_users, deploy_target_contract, setup_env, transfer_parameters,
         transfer_signatures, TypeToHash, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
     },
 };
@@ -117,8 +117,8 @@ mod success {
 
         use super::*;
         use crate::utils::{
-            interface::callable_contract::{check_counter_map, check_deposit_map},
-            setup::DEFAULT_CALLDATA_VALUE_PARAM,
+            interface::target_contract::{check_counter, check_deposit},
+            setup::DEFAULT_CALLDATA_VALUE,
         };
 
         #[tokio::test]
@@ -129,17 +129,16 @@ mod success {
 
             let initial_nonce = nonce(&deployer.contract).await.value;
 
-            let callable_contract = deploy_callable_contract(deployer.wallet.clone())
+            let target_contract = deploy_target_contract(deployer.wallet.clone())
                 .await
                 .unwrap();
 
-            let transaction = call_parameters(&deployer, initial_nonce, &callable_contract, false);
+            let transaction = call_parameters(&deployer, initial_nonce, &target_contract, false);
 
             // Check counter_map pre-call
-            let initial_counter =
-                check_counter_map(&callable_contract, deployer.wallet.address().into())
-                    .await
-                    .value;
+            let initial_counter = check_counter(&target_contract, deployer.wallet.address().into())
+                .await
+                .value;
 
             let tx_hash = compute_hash(
                 &deployer.contract,
@@ -175,13 +174,12 @@ mod success {
             );
 
             // Check counter_map post-call
-            let final_counter =
-                check_counter_map(&callable_contract, deployer.wallet.address().into())
-                    .await
-                    .value;
+            let final_counter = check_counter(&target_contract, deployer.wallet.address().into())
+                .await
+                .value;
 
             assert_eq!(initial_counter, 0);
-            assert_eq!(final_counter, DEFAULT_CALLDATA_VALUE_PARAM);
+            assert_eq!(final_counter, DEFAULT_CALLDATA_VALUE);
             assert!(final_counter > initial_counter);
         }
 
@@ -204,33 +202,31 @@ mod success {
                 .await
                 .unwrap();
 
-            let callable_contract = deploy_callable_contract(deployer.wallet.clone())
+            let target_contract = deploy_target_contract(deployer.wallet.clone())
                 .await
                 .unwrap();
 
-            let transaction = call_parameters(&deployer, initial_nonce, &callable_contract, true);
+            let transaction = call_parameters(&deployer, initial_nonce, &target_contract, true);
 
             // Check counter_map pre-call
-            let initial_counter =
-                check_counter_map(&callable_contract, deployer.wallet.address().into())
-                    .await
-                    .value;
+            let initial_counter = check_counter(&target_contract, deployer.wallet.address().into())
+                .await
+                .value;
 
             // Check deposit_map pre-call
-            let initial_deposit =
-                check_deposit_map(&callable_contract, deployer.wallet.address().into())
-                    .await
-                    .value;
+            let initial_deposit = check_deposit(&target_contract, deployer.wallet.address().into())
+                .await
+                .value;
 
             // Check balances pre-call
             let initial_multisig_balance = balance(&deployer.contract, base_asset_contract_id())
                 .await
                 .value;
-            let initial_callable_contract_balance = deployer
+            let initial_target_contract_balance = deployer
                 .wallet
                 .provider()
                 .unwrap()
-                .get_contract_asset_balance(callable_contract.contract_id(), BASE_ASSET_ID)
+                .get_contract_asset_balance(target_contract.contract_id(), BASE_ASSET_ID)
                 .await
                 .unwrap();
 
@@ -268,31 +264,29 @@ mod success {
             );
 
             // Check counter_map post-call
-            let final_counter =
-                check_counter_map(&callable_contract, deployer.wallet.address().into())
-                    .await
-                    .value;
+            let final_counter = check_counter(&target_contract, deployer.wallet.address().into())
+                .await
+                .value;
 
             // Check deposit_map post-call
-            let final_deposit =
-                check_deposit_map(&callable_contract, deployer.wallet.address().into())
-                    .await
-                    .value;
+            let final_deposit = check_deposit(&target_contract, deployer.wallet.address().into())
+                .await
+                .value;
 
             // Check balances post-call
             let final_multisig_balance = balance(&deployer.contract, base_asset_contract_id())
                 .await
                 .value;
-            let final_callable_contract_balance = deployer
+            let final_target_contract_balance = deployer
                 .wallet
                 .provider()
                 .unwrap()
-                .get_contract_asset_balance(callable_contract.contract_id(), BASE_ASSET_ID)
+                .get_contract_asset_balance(target_contract.contract_id(), BASE_ASSET_ID)
                 .await
                 .unwrap();
 
             assert_eq!(initial_counter, 0);
-            assert_eq!(final_counter, DEFAULT_CALLDATA_VALUE_PARAM);
+            assert_eq!(final_counter, DEFAULT_CALLDATA_VALUE);
             assert!(final_counter > initial_counter);
 
             assert_eq!(initial_deposit, 0);
@@ -300,13 +294,13 @@ mod success {
             assert!(final_deposit > initial_deposit);
 
             assert_eq!(initial_multisig_balance, DEFAULT_TRANSFER_AMOUNT);
-            assert_eq!(initial_callable_contract_balance, 0);
+            assert_eq!(initial_target_contract_balance, 0);
 
             assert_eq!(final_multisig_balance, 0);
-            assert_eq!(final_callable_contract_balance, DEFAULT_TRANSFER_AMOUNT);
+            assert_eq!(final_target_contract_balance, DEFAULT_TRANSFER_AMOUNT);
 
             assert!(final_multisig_balance < initial_multisig_balance);
-            assert!(final_callable_contract_balance > initial_callable_contract_balance);
+            assert!(final_target_contract_balance > initial_target_contract_balance);
         }
     }
 }
@@ -334,14 +328,15 @@ mod revert {
         let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        let _response = execute_transaction(
+        execute_transaction(
             &deployer.contract,
             transaction.contract_call_params.clone(),
             signatures,
             transaction.target.clone(),
             transaction.transfer_params.clone(),
         )
-        .await;
+        .await
+        .unwrap();
     }
 
     mod transfer {
@@ -372,14 +367,15 @@ mod revert {
             let tx_hash = Message::from_bytes(tx_hash);
             let signatures = transfer_signatures(private_key, tx_hash).await;
 
-            let _response = execute_transaction(
+            execute_transaction(
                 &deployer.contract,
                 transaction.contract_call_params.clone(),
                 signatures,
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await;
+            .await
+            .unwrap();
         }
 
         #[tokio::test]
@@ -404,14 +400,15 @@ mod revert {
             let tx_hash = Message::from_bytes(tx_hash);
             let signatures = transfer_signatures(private_key, tx_hash).await;
 
-            let _response = execute_transaction(
+            execute_transaction(
                 &deployer.contract,
                 transaction.contract_call_params.clone(),
                 signatures,
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await;
+            .await
+            .unwrap();
         }
 
         #[tokio::test]
@@ -449,14 +446,15 @@ mod revert {
 
             let incorrectly_ordered_signatures = vec![signatures[1].clone(), signatures[0].clone()];
 
-            let _response = execute_transaction(
+            execute_transaction(
                 &deployer.contract,
                 transaction.contract_call_params.clone(),
                 incorrectly_ordered_signatures,
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await;
+            .await
+            .unwrap();
         }
 
         #[tokio::test]
@@ -519,16 +517,16 @@ mod revert {
 
             let initial_nonce = nonce(&deployer.contract).await.value;
 
-            let callable_contract = deploy_callable_contract(deployer.wallet.clone())
+            let target_contract = deploy_target_contract(deployer.wallet.clone())
                 .await
                 .unwrap();
 
             let mut transaction =
-                call_parameters(&deployer, initial_nonce, &callable_contract, false);
+                call_parameters(&deployer, initial_nonce, &target_contract, false);
 
-            let target_as_contract_id = callable_contract.contract_id();
+            let target_as_contract_id = target_contract.contract_id();
             transaction.target =
-                Identity::Address(Address::from(*callable_contract.contract_id().hash));
+                Identity::Address(Address::from(*target_contract.contract_id().hash));
 
             let tx_hash = compute_hash(
                 &deployer.contract,
@@ -565,11 +563,11 @@ mod revert {
 
             let initial_nonce = nonce(&deployer.contract).await.value;
 
-            let callable_contract = deploy_callable_contract(deployer.wallet.clone())
+            let target_contract = deploy_target_contract(deployer.wallet.clone())
                 .await
                 .unwrap();
 
-            let transaction = call_parameters(&deployer, initial_nonce, &callable_contract, true);
+            let transaction = call_parameters(&deployer, initial_nonce, &target_contract, true);
 
             let tx_hash = compute_hash(
                 &deployer.contract,
@@ -601,11 +599,11 @@ mod revert {
 
             let initial_nonce = nonce(&deployer.contract).await.value;
 
-            let callable_contract = deploy_callable_contract(deployer.wallet.clone())
+            let target_contract = deploy_target_contract(deployer.wallet.clone())
                 .await
                 .unwrap();
 
-            let transaction = call_parameters(&deployer, initial_nonce, &callable_contract, false);
+            let transaction = call_parameters(&deployer, initial_nonce, &target_contract, false);
 
             let tx_hash = compute_hash(
                 &deployer.contract,
@@ -639,11 +637,11 @@ mod revert {
 
             let initial_nonce = nonce(&deployer.contract).await.value;
 
-            let callable_contract = deploy_callable_contract(deployer.wallet.clone())
+            let target_contract = deploy_target_contract(deployer.wallet.clone())
                 .await
                 .unwrap();
 
-            let transaction = call_parameters(&deployer, initial_nonce, &callable_contract, false);
+            let transaction = call_parameters(&deployer, initial_nonce, &target_contract, false);
 
             let tx_hash = compute_hash(
                 &deployer.contract,
