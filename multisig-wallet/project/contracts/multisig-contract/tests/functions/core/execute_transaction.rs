@@ -75,8 +75,7 @@ mod success {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await
-            .unwrap();
+            .await;
 
             let log = response
                 .decode_logs_with_type::<ExecuteTransactionEvent>()
@@ -157,8 +156,7 @@ mod success {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await
-            .unwrap();
+            .await;
 
             let log = response
                 .decode_logs_with_type::<ExecuteTransactionEvent>()
@@ -247,8 +245,7 @@ mod success {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await
-            .unwrap();
+            .await;
 
             let log = response
                 .decode_logs_with_type::<ExecuteTransactionEvent>()
@@ -335,8 +332,7 @@ mod revert {
             transaction.target.clone(),
             transaction.transfer_params.clone(),
         )
-        .await
-        .unwrap();
+        .await;
     }
 
     mod transfer {
@@ -374,8 +370,7 @@ mod revert {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await
-            .unwrap();
+            .await;
         }
 
         #[tokio::test]
@@ -407,8 +402,7 @@ mod revert {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await
-            .unwrap();
+            .await;
         }
 
         #[tokio::test]
@@ -453,8 +447,7 @@ mod revert {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await
-            .unwrap();
+            .await;
         }
 
         #[tokio::test]
@@ -499,8 +492,7 @@ mod revert {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await
-            .unwrap();
+            .await;
         }
     }
     mod call {
@@ -586,8 +578,7 @@ mod revert {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await
-            .unwrap();
+            .await;
         }
 
         #[tokio::test]
@@ -624,8 +615,7 @@ mod revert {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await
-            .unwrap();
+            .await;
         }
 
         #[tokio::test]
@@ -662,8 +652,7 @@ mod revert {
                 transaction.target.clone(),
                 transaction.transfer_params.clone(),
             )
-            .await
-            .unwrap();
+            .await;
         }
     }
 }

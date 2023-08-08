@@ -1,6 +1,9 @@
 use crate::utils::setup::{ContractCallParams, MultiSig, SignatureInfo, TransferParams, User};
 use fuels::{
-    accounts::wallet::WalletUnlocked, programs::call_response::FuelCallResponse, types::Identity,
+    accounts::wallet::WalletUnlocked,
+    prelude::{Bech32Address, Bech32ContractId},
+    programs::call_response::FuelCallResponse,
+    types::Identity,
 };
 
 pub(crate) async fn constructor(
@@ -16,7 +19,7 @@ pub(crate) async fn execute_transaction(
     signatures: Vec<SignatureInfo>,
     target: Identity,
     transfer_params: TransferParams,
-) -> Result<FuelCallResponse<()>, &'static str> {
+) -> FuelCallResponse<()> {
     let contract_method_call = contract
         .methods()
         .execute_transaction(
@@ -28,18 +31,19 @@ pub(crate) async fn execute_transaction(
         .append_variable_outputs(1);
 
     if contract_call_params.is_none() {
-        Ok(contract_method_call.call().await.unwrap())
+        contract_method_call.call().await.unwrap()
     } else {
-        Ok(contract_method_call
+        contract_method_call
             .set_contract_ids(&[match target {
                 Identity::ContractId(contract_identifier) => contract_identifier.into(),
-                _ => {
-                    return Err("Target must be of type Identity::ContractId");
+                Identity::Address(address) => {
+                    let address = Bech32Address::from(address);
+                    Bech32ContractId::new(&address.hrp, address.hash)
                 }
             }])
             .call()
             .await
-            .unwrap())
+            .unwrap()
     }
 }
 
