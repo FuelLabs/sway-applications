@@ -1,6 +1,6 @@
 library;
 
-/// Error log for when transaction execution panics.
+/// Error log for when transaction execution reverts.
 pub enum ExecutionError {
     /// Emitted when the called `target` is not a [Identity::ContractId].
     CanOnlyCallContracts: (),
@@ -14,7 +14,7 @@ pub enum ExecutionError {
     TransferRequiresAValue: (),
 }
 
-/// Error log for when transaction execution panics.
+/// Error log for when transaction execution reverts.
 pub enum InitError {
     /// Emitted when calling the constructor more than once.
     CannotReinitialize: (),

@@ -17,7 +17,7 @@ abi MultiSignatureWallet {
     ///
     /// * `users`: [Vec<User>] - The users of the multisig, who can sign transactions to add their approval.
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// * When the constructor has already been called.
     /// * When `THRESHOLD` is zero [u64].
@@ -39,7 +39,7 @@ abi MultiSignatureWallet {
     /// * `target`: [Identity] - The target of the transaction.
     /// * `transfer_params`: [TransferParams] - The parameters for a transfer of value.
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// * When the constructor has not been called to initialize the contract.
     /// * When attempting to transfer with `transfer_params.value` as [Option::None].
@@ -63,7 +63,7 @@ abi MultiSignatureWallet {
     /// * `signatures``: [Vec<SignatureInfo>] - The information for each user's signature for a specific transaction.
     /// * `threshold`: [u64] - The number of approvals required to enable a transaction to be sent.
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// * When the constructor has not been called to initialize the contract.
     /// * When the threshold is zero.
@@ -86,7 +86,7 @@ abi MultiSignatureWallet {
     /// * `signatures``: [Vec<SignatureInfo>] - The information for each user's signature for a specific transaction.
     /// * `user` : [User] - The user of the multisig, who can sign transactions to add their approval.
     ///
-    /// # Panics
+    /// # Reverts
     ///
     /// * When the constructor has not been called to initialize the contract.
     /// * When the public key cannot be recovered from a signature.

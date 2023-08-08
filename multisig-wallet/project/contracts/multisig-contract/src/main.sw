@@ -241,7 +241,7 @@ impl Info for Contract {
 ///
 /// * [u64] - The final approval count.
 ///
-/// # Panics
+/// # Reverts
 ///
 /// * When the public key cannot be recovered from a signature.
 /// * When the recovered addresses in `count_approvals `are not in ascending order (0x1 < 0x2 < 0x3...) [b256].
