@@ -51,7 +51,6 @@ mod success {
         assert_eq!(
             *event,
             SetThresholdEvent {
-                nonce: initial_nonce,
                 previous_threshold,
                 threshold,
             }

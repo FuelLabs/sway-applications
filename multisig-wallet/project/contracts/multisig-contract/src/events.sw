@@ -16,8 +16,6 @@ pub struct ExecuteTransactionEvent {
 
 /// Log of setting the threshold.
 pub struct SetThresholdEvent {
-    /// The nonce of the transaction.
-    nonce: u64,
     /// The previous threshold.
     previous_threshold: u64,
     /// The new threshold.
@@ -26,8 +24,6 @@ pub struct SetThresholdEvent {
 
 /// Log of setting the threshold.
 pub struct SetWeightEvent {
-    /// The nonce of the transaction.
-    nonce: u64,
     /// The information of user who's weight has been changed.
     user: User,
 }

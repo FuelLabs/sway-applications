@@ -53,13 +53,7 @@ mod success {
         let log = response.decode_logs_with_type::<SetWeightEvent>().unwrap();
         let event = log.get(0).unwrap();
 
-        assert_eq!(
-            *event,
-            SetWeightEvent {
-                nonce: initial_nonce,
-                user: user.clone()
-            }
-        );
+        assert_eq!(*event, SetWeightEvent { user: user.clone() });
         assert_eq!(initial_nonce, 1);
         assert_eq!(final_nonce, initial_nonce + 1);
         assert_ne!(initial_weight, final_weight);

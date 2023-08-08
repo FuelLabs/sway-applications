@@ -165,7 +165,6 @@ impl MultiSignatureWallet for Contract {
         storage.threshold.write(threshold);
 
         log(SetThresholdEvent {
-            nonce,
             previous_threshold,
             threshold,
         });
@@ -195,7 +194,7 @@ impl MultiSignatureWallet for Contract {
         storage.weighting.insert(user.address, user.weight);
         storage.nonce.write(nonce + 1);
 
-        log(SetWeightEvent { nonce, user })
+        log(SetWeightEvent { user })
     }
 }
 
