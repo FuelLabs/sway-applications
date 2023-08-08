@@ -233,7 +233,7 @@ pub(crate) fn call_parameters(
                     DEFAULT_CALLDATA_VALUE
                 )),
                 forwarded_gas: DEFAULT_FORWARDED_GAS,
-                function_selector: Bytes(fn_selector!(change_mapping_without_value(Address, u64))),
+                function_selector: Bytes(fn_selector!(update_counter(Address, u64))),
                 single_value_type_arg: false,
             }),
             contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
@@ -251,7 +251,7 @@ pub(crate) fn call_parameters(
                     DEFAULT_CALLDATA_VALUE
                 )),
                 forwarded_gas: DEFAULT_FORWARDED_GAS,
-                function_selector: Bytes(fn_selector!(change_mapping_with_value(Address, u64))),
+                function_selector: Bytes(fn_selector!(update_deposit(Address, u64))),
                 single_value_type_arg: false,
             }),
             contract_identifier: deployer.contract.contract_id().try_into().unwrap(),

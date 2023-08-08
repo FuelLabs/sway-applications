@@ -117,7 +117,7 @@ mod success {
 
         use super::*;
         use crate::utils::{
-            interface::target_contract::{check_counter, check_deposit},
+            interface::target_contract::{count, deposit},
             setup::DEFAULT_CALLDATA_VALUE,
         };
 
@@ -136,7 +136,7 @@ mod success {
             let transaction = call_parameters(&deployer, initial_nonce, &target_contract, false);
 
             // Check counter_map pre-call
-            let initial_counter = check_counter(&target_contract, deployer.wallet.address().into())
+            let initial_counter = count(&target_contract, deployer.wallet.address().into())
                 .await
                 .value;
 
@@ -174,7 +174,7 @@ mod success {
             );
 
             // Check counter_map post-call
-            let final_counter = check_counter(&target_contract, deployer.wallet.address().into())
+            let final_counter = count(&target_contract, deployer.wallet.address().into())
                 .await
                 .value;
 
@@ -209,12 +209,12 @@ mod success {
             let transaction = call_parameters(&deployer, initial_nonce, &target_contract, true);
 
             // Check counter_map pre-call
-            let initial_counter = check_counter(&target_contract, deployer.wallet.address().into())
+            let initial_counter = count(&target_contract, deployer.wallet.address().into())
                 .await
                 .value;
 
             // Check deposit_map pre-call
-            let initial_deposit = check_deposit(&target_contract, deployer.wallet.address().into())
+            let initial_deposit = deposit(&target_contract, deployer.wallet.address().into())
                 .await
                 .value;
 
@@ -264,12 +264,12 @@ mod success {
             );
 
             // Check counter_map post-call
-            let final_counter = check_counter(&target_contract, deployer.wallet.address().into())
+            let final_counter = count(&target_contract, deployer.wallet.address().into())
                 .await
                 .value;
 
             // Check deposit_map post-call
-            let final_deposit = check_deposit(&target_contract, deployer.wallet.address().into())
+            let final_deposit = deposit(&target_contract, deployer.wallet.address().into())
                 .await
                 .value;
 

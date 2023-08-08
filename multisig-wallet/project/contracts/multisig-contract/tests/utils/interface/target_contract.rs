@@ -4,26 +4,16 @@ use fuels::{
 
 use crate::utils::setup::TargetContract;
 
-pub(crate) async fn check_counter(
+pub(crate) async fn count(
     contract: &TargetContract<WalletUnlocked>,
     address: Address,
 ) -> FuelCallResponse<u64> {
-    contract
-        .methods()
-        .check_counter(address)
-        .call()
-        .await
-        .unwrap()
+    contract.methods().count(address).call().await.unwrap()
 }
 
-pub(crate) async fn check_deposit(
+pub(crate) async fn deposit(
     contract: &TargetContract<WalletUnlocked>,
     address: Address,
 ) -> FuelCallResponse<u64> {
-    contract
-        .methods()
-        .check_deposit(address)
-        .call()
-        .await
-        .unwrap()
+    contract.methods().deposit(address).call().await.unwrap()
 }
