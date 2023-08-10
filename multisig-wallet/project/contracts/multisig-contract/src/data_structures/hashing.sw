@@ -48,6 +48,8 @@ pub struct ContractCallParams {
     function_selector: Bytes,
     /// Whether the function being called takes a single value-type argument.
     single_value_type_arg: bool,
+    /// Parameters for a transfer.
+    transfer_params: TransferParams,
 }
 
 impl IntoBytes for ContractCallParams {
@@ -57,6 +59,7 @@ impl IntoBytes for ContractCallParams {
         bytes.append(Bytes::from_copy_type(self.forwarded_gas));
         bytes.append(self.function_selector);
         bytes.append(Bytes::from_copy_type(self.single_value_type_arg));
+        bytes.append(Bytes::from_reference_type(self.transfer_params));
         bytes
     }
 }
@@ -82,6 +85,70 @@ impl Threshold {
     }
 }
 
+/// Determines the type of transaction parameters.
+pub enum TransactionParameters {
+    Call: ContractCallParams,
+    Transfer: TransferParams,
+}
+
+impl IntoBytes for TransactionParameters {
+    fn into_bytes(self) -> Bytes {
+        match self {
+            TransactionParameters::Call(contract_call_params) => {
+                // As [ContractCallParams] contains fields of type [Bytes], manual serialisation is necessary.
+                let mut bytes = Bytes::from_copy_type(0u64);
+                bytes.append(contract_call_params.into_bytes());
+                bytes
+            },
+            TransactionParameters::Transfer => {
+                Bytes::from_reference_type(self)
+            },
+        }
+    }
+}
+
+/// The data to be hashed and signed over when calling `execute_transaction`.
+pub struct Transaction {
+    /// Unique identifier for the contract which prevents this transaction from being submitted to another
+    /// instance of the multisig.
+    contract_identifier: ContractId,
+    /// The nonce of the multisig wallet, used to prevent double spending.
+    nonce: u64,
+    /// The target of the transaction.
+    target: Identity,
+    /// Parameters of the transaction.
+    transaction_parameters: TransactionParameters,
+}
+
+impl Transaction {
+    pub fn new(
+        contract_identifier: ContractId,
+        nonce: u64,
+        target: Identity,
+        transaction_parameters: TransactionParameters,
+    ) -> Self {
+        Self {
+            contract_identifier,
+            nonce,
+            target,
+            transaction_parameters,
+        }
+    }
+}
+
+impl IntoBytes for Transaction {
+    // Needed as [Transaction] contains [TransactionParameters], which itself may contain [Bytes] which can only be correctly hashed by the Bytes.sha256() method, 
+    // as such the whole struct must be serialised to [Bytes].
+    fn into_bytes(self) -> Bytes {
+        let mut bytes = Bytes::new();
+        bytes.append(Bytes::from_reference_type(self.contract_identifier));
+        bytes.append(Bytes::from_copy_type(self.nonce));
+        bytes.append(Bytes::from_reference_type(self.target));
+        bytes.append(self.transaction_parameters.into_bytes());
+        bytes
+    }
+}
+
 /// Parameters for a transfer.
 pub struct TransferParams {
     /// The asset to transfer.
@@ -90,60 +157,11 @@ pub struct TransferParams {
     value: Option<u64>,
 }
 
-/// The data to be hashed and signed over when calling `execute_transaction`.
-pub struct Transaction {
-    /// Parameters for calling a contract.
-    contract_call_params: Option<ContractCallParams>,
-    /// Unique identifier for the contract which prevents this transaction from being submitted to another
-    /// instance of the multisig.
-    contract_identifier: ContractId,
-    /// The nonce of the multisig wallet, used to prevent double spending.
-    nonce: u64,
-    /// The target of the transaction.
-    target: Identity,
-    /// Parameters for a transfer.
-    transfer_params: TransferParams,
-}
-
-impl Transaction {
-    pub fn new(
-        contract_call_params: Option<ContractCallParams>,
-        contract_identifier: ContractId,
-        nonce: u64,
-        target: Identity,
-        transfer_params: TransferParams,
-    ) -> Self {
-        Self {
-            contract_call_params,
-            contract_identifier,
-            nonce,
-            target,
-            transfer_params,
-        }
-    }
-}
-
-impl IntoBytes for Transaction {
-    // Needed as [Transaction] contains [Option<ContractCallParams>], which itself contains [Bytes] which can only be correctly hashed by the Bytes.sha256() method, 
-    // as such the whole struct must be converted to [Bytes].
-    fn into_bytes(self) -> Bytes {
-        let mut bytes = Bytes::new();
-        match self.contract_call_params {
-            Option::None => {
-                bytes.append(Bytes::from_reference_type(self.contract_call_params));
-            },
-            Option::Some(contract_call_params) => {
-                let mut serialised_option = Bytes::from_copy_type(1u64);
-                serialised_option.append(contract_call_params.into_bytes());
-                bytes.append(serialised_option)
-            }
-        }
-        bytes.append(Bytes::from_reference_type(self.contract_identifier));
-        bytes.append(Bytes::from_copy_type(self.nonce));
-        bytes.append(Bytes::from_reference_type(self.target));
-        bytes.append(Bytes::from_reference_type(self.transfer_params));
-        bytes
-    }
+/// Determines the type to be hashed.
+pub enum TypeToHash {
+    Threshold: Threshold,
+    Transaction: Transaction,
+    Weight: Weight,
 }
 
 /// The data to be hashed and signed over when calling `set_weight`.
@@ -165,11 +183,4 @@ impl Weight {
             user,
         }
     }
-}
-
-/// Determines the type to be hashed.
-pub enum TypeToHash {
-    Threshold: Threshold,
-    Transaction: Transaction,
-    Weight: Weight,
 }
