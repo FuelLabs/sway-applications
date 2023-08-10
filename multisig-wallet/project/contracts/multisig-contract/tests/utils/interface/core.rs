@@ -1,4 +1,4 @@
-use crate::utils::setup::{ContractCallParams, MultiSig, SignatureInfo, TransferParams, User};
+use crate::utils::setup::{MultiSig, SignatureInfo, TransactionParameters, User};
 use fuels::{
     accounts::wallet::WalletUnlocked, programs::call_response::FuelCallResponse, types::Identity,
 };
@@ -12,25 +12,17 @@ pub(crate) async fn constructor(
 
 pub(crate) async fn execute_transaction(
     contract: &MultiSig<WalletUnlocked>,
-    contract_call_params: Option<ContractCallParams>,
     signatures: Vec<SignatureInfo>,
     target: Identity,
-    transfer_params: TransferParams,
+    transaction_parameters: TransactionParameters,
 ) -> FuelCallResponse<()> {
     let contract_method_call = contract
         .methods()
-        .execute_transaction(
-            contract_call_params.clone(),
-            signatures,
-            target.clone(),
-            transfer_params,
-        )
+        .execute_transaction(signatures, target.clone(), transaction_parameters.clone())
         .append_variable_outputs(1);
 
-    if contract_call_params.is_none() {
-        contract_method_call.call().await.unwrap()
-    } else {
-        contract_method_call
+    match transaction_parameters {
+        TransactionParameters::Call(_) => contract_method_call
             .set_contract_ids(&[match target {
                 Identity::ContractId(contract_identifier) => contract_identifier.into(),
                 _ => {
@@ -39,7 +31,8 @@ pub(crate) async fn execute_transaction(
             }])
             .call()
             .await
-            .unwrap()
+            .unwrap(),
+        TransactionParameters::Transfer(_) => contract_method_call.call().await.unwrap(),
     }
 }
 

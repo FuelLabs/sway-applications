@@ -206,14 +206,13 @@ pub(crate) fn transfer_parameters(
     let receiver = Identity::Address(receiver_wallet.address().try_into().unwrap());
 
     let transaction = Transaction {
-        contract_call_params: None,
         contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
         nonce,
         target: receiver.clone(),
-        transfer_params: TransferParams {
+        transaction_parameters: TransactionParameters::Transfer(TransferParams {
             asset_id: base_asset_contract_id(),
             value: Some(DEFAULT_TRANSFER_AMOUNT),
-        },
+        }),
     };
 
     (receiver_wallet, receiver, transaction)
@@ -227,7 +226,10 @@ pub(crate) fn call_parameters(
 ) -> Transaction {
     match with_value {
         false => Transaction {
-            contract_call_params: Some(ContractCallParams {
+            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+            nonce,
+            target: Identity::ContractId(target_contract.contract_id().into()),
+            transaction_parameters: TransactionParameters::Call(ContractCallParams {
                 calldata: Bytes(calldata!(
                     Address::from(deployer.wallet.address()),
                     DEFAULT_CALLDATA_VALUE
@@ -235,17 +237,17 @@ pub(crate) fn call_parameters(
                 forwarded_gas: DEFAULT_FORWARDED_GAS,
                 function_selector: Bytes(fn_selector!(update_counter(Address, u64))),
                 single_value_type_arg: false,
+                transfer_params: TransferParams {
+                    asset_id: base_asset_contract_id(),
+                    value: None,
+                },
             }),
+        },
+        true => Transaction {
             contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             nonce,
             target: Identity::ContractId(target_contract.contract_id().into()),
-            transfer_params: TransferParams {
-                asset_id: base_asset_contract_id(),
-                value: None,
-            },
-        },
-        true => Transaction {
-            contract_call_params: Some(ContractCallParams {
+            transaction_parameters: TransactionParameters::Call(ContractCallParams {
                 calldata: Bytes(calldata!(
                     Address::from(deployer.wallet.address()),
                     DEFAULT_CALLDATA_VALUE
@@ -253,14 +255,11 @@ pub(crate) fn call_parameters(
                 forwarded_gas: DEFAULT_FORWARDED_GAS,
                 function_selector: Bytes(fn_selector!(update_deposit(Address, u64))),
                 single_value_type_arg: false,
+                transfer_params: TransferParams {
+                    asset_id: base_asset_contract_id(),
+                    value: Some(DEFAULT_TRANSFER_AMOUNT),
+                },
             }),
-            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
-            nonce,
-            target: Identity::ContractId(target_contract.contract_id().into()),
-            transfer_params: TransferParams {
-                asset_id: base_asset_contract_id(),
-                value: Some(DEFAULT_TRANSFER_AMOUNT),
-            },
         },
     }
 }
