@@ -1,17 +1,16 @@
 library;
 
-use ::data_structures::{hashing::{ContractCallParams, TransferParams}, user::User};
+use ::data_structures::{hashing::TransactionParameters, user::User};
 use std::{bytes::Bytes, low_level_call::CallParams};
 
 /// Log of an executed transaction.
 pub struct ExecuteTransactionEvent {
-    // contract_call_params: contract_call_params, // TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
     /// The nonce of the transaction.
     nonce: u64,
+    /// The parameters of the transaction.
+    // transaction_parameters: TransactionParameters, // TODO: Uncomment and reorder fields when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
     /// The target of the transaction.
     target: Identity,
-    /// The parameters for the transfer of value in the transaction.
-    transfer_params: TransferParams,
 }
 
 /// Log of setting the threshold.

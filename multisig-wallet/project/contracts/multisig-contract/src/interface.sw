@@ -2,8 +2,7 @@ library;
 
 use ::data_structures::{
     hashing::{
-        ContractCallParams,
-        TransferParams,
+        TransactionParameters,
         TypeToHash,
     },
     signatures::SignatureInfo,
@@ -34,10 +33,9 @@ abi MultiSignatureWallet {
     ///
     /// # Arguments
     ///
-    /// * `contract_call_params`: [Option<ContractCallParams>] - The parameters for a contract call.
     /// * `signatures`: [Vec<SignatureInfo>] - The information for each user's signature for a specific transaction.
     /// * `target`: [Identity] - The target of the transaction.
-    /// * `transfer_params`: [TransferParams] - The parameters for a transfer of value.
+    /// * `transaction_parameters`: [TransactionParameters] - The parameters of the transaction.
     ///
     /// # Reverts
     ///
@@ -54,7 +52,7 @@ abi MultiSignatureWallet {
     /// * Reads: `3`
     /// * Writes: `2`
     #[storage(read, write)]
-    fn execute_transaction(contract_call_params: Option<ContractCallParams>, signatures: Vec<SignatureInfo>, target: Identity, transfer_params: TransferParams);
+    fn execute_transaction(signatures: Vec<SignatureInfo>, target: Identity, transaction_parameters: TransactionParameters);
 
     /// Updates the threshold required for execution.
     ///

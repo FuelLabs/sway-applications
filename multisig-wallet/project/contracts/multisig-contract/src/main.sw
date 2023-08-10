@@ -11,10 +11,9 @@ use ::events::{ExecuteTransactionEvent, SetThresholdEvent, SetWeightEvent};
 use ::interface::{Info, MultiSignatureWallet};
 use ::data_structures::{
     hashing::{
-        ContractCallParams,
         Threshold,
         Transaction,
-        TransferParams,
+        TransactionParameters,
         TypeToHash,
         Weight,
     },
@@ -82,69 +81,61 @@ impl MultiSignatureWallet for Contract {
 
     #[storage(read, write)]
     fn execute_transaction(
-        contract_call_params: Option<ContractCallParams>,
         signatures: Vec<SignatureInfo>,
         target: Identity,
-        transfer_params: TransferParams,
+        transaction_parameters: TransactionParameters,
     ) {
         let nonce = storage.nonce.read();
         require(nonce != 0, InitError::NotInitialized);
 
-        // Transfer
-        if contract_call_params.is_none() {
-            require(transfer_params.value.is_some(), ExecutionError::TransferRequiresAValue);
-            let value = transfer_params.value.unwrap();
-            require(value <= this_balance(transfer_params.asset_id), ExecutionError::InsufficientAssetAmount);
+        match transaction_parameters {
+            TransactionParameters::Call(contract_call_params) => {
+                let target_contract_id = match target {
+                    Identity::ContractId(contract_identifier) => contract_identifier,
+                    _ => {
+                        log(ExecutionError::CanOnlyCallContracts);
+                        revert(FAILED_REQUIRE_SIGNAL)
+                    },
+                };
 
-            let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_call_params, contract_id(), nonce, target, transfer_params)));
-            let approval_count = count_approvals(signatures, transaction_hash);
-            require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
+                if contract_call_params.transfer_params.value.is_some() {
+                    require(contract_call_params.transfer_params.value.unwrap() <= this_balance(contract_call_params.transfer_params.asset_id), ExecutionError::InsufficientAssetAmount);
+                }
 
-            storage.nonce.write(nonce + 1);
+                let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_id(), nonce, target, transaction_parameters)));
+                let approval_count = count_approvals(signatures, transaction_hash);
+                require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
 
-            transfer(value, transfer_params.asset_id, target);
+                storage.nonce.write(nonce + 1);
 
-            log(ExecuteTransactionEvent {
-                // contract_call_params: contract_call_params, // TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
-                nonce,
-                target,
-                transfer_params,
-            });
+                let call_params = CallParams {
+                    coins: contract_call_params.transfer_params.value.unwrap_or(0),
+                    asset_id: contract_call_params.transfer_params.asset_id,
+                    gas: contract_call_params.forwarded_gas,
+                };
+                call_with_function_selector(target_contract_id, contract_call_params.function_selector, contract_call_params.calldata, contract_call_params.single_value_type_arg, call_params);
 
-            // Call
-        } else if contract_call_params.is_some() {
-            let target_contract_id = match target {
-                Identity::ContractId(contract_identifier) => contract_identifier,
-                _ => {
-                    log(ExecutionError::CanOnlyCallContracts);
-                    revert(FAILED_REQUIRE_SIGNAL)
-                },
-            };
+                log(ExecuteTransactionEvent { nonce, target
+                // transaction_parameters,// TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
+ });
+            },
+            TransactionParameters::Transfer(transfer_params) => {
+                require(transfer_params.value.is_some(), ExecutionError::TransferRequiresAValue);
+                let value = transfer_params.value.unwrap();
+                require(value <= this_balance(transfer_params.asset_id), ExecutionError::InsufficientAssetAmount);
 
-            if transfer_params.value.is_some() {
-                require(transfer_params.value.unwrap() <= this_balance(transfer_params.asset_id), ExecutionError::InsufficientAssetAmount);
+                let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_id(), nonce, target, transaction_parameters)));
+                let approval_count = count_approvals(signatures, transaction_hash);
+                require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
+
+                storage.nonce.write(nonce + 1);
+
+                transfer(value, transfer_params.asset_id, target);
+
+                log(ExecuteTransactionEvent { nonce, target
+                // transaction_parameters,// TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
+ });
             }
-
-            let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_call_params, contract_id(), nonce, target, transfer_params)));
-            let approval_count = count_approvals(signatures, transaction_hash);
-            require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
-
-            storage.nonce.write(nonce + 1);
-
-            let contract_call_params = contract_call_params.unwrap();
-            let call_params = CallParams {
-                coins: transfer_params.value.unwrap_or(0),
-                asset_id: transfer_params.asset_id,
-                gas: contract_call_params.forwarded_gas,
-            };
-            call_with_function_selector(target_contract_id, contract_call_params.function_selector, contract_call_params.calldata, contract_call_params.single_value_type_arg, call_params);
-
-            log(ExecuteTransactionEvent {
-                // contract_call_params: contract_call_params, // TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
-                nonce,
-                target,
-                transfer_params,
-            });
         }
     }
 
