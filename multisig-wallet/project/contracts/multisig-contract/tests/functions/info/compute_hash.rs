@@ -3,8 +3,8 @@ mod success {
         interface::info::{compute_hash, nonce, threshold},
         setup::{
             base_asset_contract_id, default_users, setup_env, ContractCallParams, Threshold,
-            Transaction, TransferParams, TypeToHash, Weight, DEFAULT_TRANSFER_AMOUNT,
-            VALID_SIGNER_PK,
+            Transaction, TransactionParameters, TransferParams, TypeToHash, Weight,
+            DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
         },
     };
     use fuels::{
@@ -54,28 +54,26 @@ mod success {
 
         let nonce = nonce(&deployer.contract).await.value;
         let target = Identity::Address(deployer.wallet.address().try_into().unwrap());
-        let transfer_params = TransferParams {
+        let transaction_parameters = TransactionParameters::Transfer(TransferParams {
             asset_id: base_asset_contract_id(),
             value: Some(DEFAULT_TRANSFER_AMOUNT),
-        };
+        });
 
         let transaction_instance = Transaction {
-            contract_call_params: None,
             contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             nonce,
             target,
-            transfer_params,
+            transaction_parameters,
         };
 
         let transaction_instance_token = Token::Struct(vec![
-            transaction_instance
-                .contract_call_params
-                .clone()
-                .into_token(),
             transaction_instance.contract_identifier.into_token(),
             transaction_instance.nonce.into_token(),
             transaction_instance.target.clone().into_token(),
-            transaction_instance.transfer_params.clone().into_token(),
+            transaction_instance
+                .transaction_parameters
+                .clone()
+                .into_token(),
         ]);
 
         let encoded_tx_struct = ABIEncoder::encode(&[transaction_instance_token])
@@ -100,36 +98,34 @@ mod success {
     async fn gets_call_hash() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        let contract_call_params = ContractCallParams {
+        let nonce = nonce(&deployer.contract).await.value;
+        let target = Identity::Address(deployer.wallet.address().try_into().unwrap());
+        let transaction_parameters = TransactionParameters::Call(ContractCallParams {
             calldata: Bytes([1u8; 32].to_vec()),
             forwarded_gas: 100,
             function_selector: Bytes([1u8; 32].to_vec()),
             single_value_type_arg: false,
-        };
-        let nonce = nonce(&deployer.contract).await.value;
-        let target = Identity::Address(deployer.wallet.address().try_into().unwrap());
-        let transfer_params = TransferParams {
-            asset_id: base_asset_contract_id(),
-            value: Some(DEFAULT_TRANSFER_AMOUNT),
-        };
+            transfer_params: TransferParams {
+                asset_id: base_asset_contract_id(),
+                value: Some(DEFAULT_TRANSFER_AMOUNT),
+            },
+        });
 
         let transaction_instance = Transaction {
-            contract_call_params: Some(contract_call_params),
             contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
             nonce,
             target,
-            transfer_params,
+            transaction_parameters,
         };
 
         let transaction_instance_token = Token::Struct(vec![
-            transaction_instance
-                .contract_call_params
-                .clone()
-                .into_token(), //This causes test to fail: tokenizing Some(ContractCallParams), does not encode the same as Sway
             transaction_instance.contract_identifier.into_token(),
             transaction_instance.nonce.into_token(),
             transaction_instance.target.clone().into_token(),
-            transaction_instance.transfer_params.clone().into_token(),
+            transaction_instance
+                .transaction_parameters
+                .clone()
+                .into_token(), //This causes test to fail: tokenizing TransactionParameters::Call, does not encode the same as Sway
         ]);
 
         let encoded_tx_struct = ABIEncoder::encode(&[transaction_instance_token])

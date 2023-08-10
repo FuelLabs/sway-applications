@@ -70,10 +70,9 @@ mod success {
 
             let response = execute_transaction(
                 &deployer.contract,
-                transaction.contract_call_params.clone(),
                 signatures,
                 transaction.target.clone(),
-                transaction.transfer_params.clone(),
+                transaction.transaction_parameters.clone(),
             )
             .await;
 
@@ -86,7 +85,6 @@ mod success {
                 ExecuteTransactionEvent {
                     nonce: transaction.nonce,
                     target: transaction.target,
-                    transfer_params: transaction.transfer_params,
                 }
             );
 
@@ -151,10 +149,9 @@ mod success {
 
             let response = execute_transaction(
                 &deployer.contract,
-                transaction.contract_call_params.clone(),
                 signatures,
                 transaction.target.clone(),
-                transaction.transfer_params.clone(),
+                transaction.transaction_parameters.clone(),
             )
             .await;
 
@@ -167,7 +164,6 @@ mod success {
                 ExecuteTransactionEvent {
                     nonce: transaction.nonce,
                     target: transaction.target,
-                    transfer_params: transaction.transfer_params,
                 }
             );
 
@@ -240,10 +236,9 @@ mod success {
 
             let response = execute_transaction(
                 &deployer.contract,
-                transaction.contract_call_params.clone(),
                 signatures,
                 transaction.target.clone(),
-                transaction.transfer_params.clone(),
+                transaction.transaction_parameters.clone(),
             )
             .await;
 
@@ -256,7 +251,6 @@ mod success {
                 ExecuteTransactionEvent {
                     nonce: transaction.nonce,
                     target: transaction.target,
-                    transfer_params: transaction.transfer_params,
                 }
             );
 
@@ -304,6 +298,7 @@ mod success {
 
 mod revert {
     use super::*;
+    use crate::utils::setup::{base_asset_contract_id, TransactionParameters, TransferParams};
 
     #[tokio::test]
     #[should_panic(expected = "NotInitialized")]
@@ -327,10 +322,9 @@ mod revert {
 
         execute_transaction(
             &deployer.contract,
-            transaction.contract_call_params.clone(),
             signatures,
             transaction.target.clone(),
-            transaction.transfer_params.clone(),
+            transaction.transaction_parameters.clone(),
         )
         .await;
     }
@@ -351,7 +345,10 @@ mod revert {
             let (_receiver_wallet, _receiver, mut transaction) =
                 transfer_parameters(&deployer, initial_nonce);
 
-            transaction.transfer_params.value = None;
+            transaction.transaction_parameters = TransactionParameters::Transfer(TransferParams {
+                asset_id: base_asset_contract_id(),
+                value: None,
+            });
 
             let tx_hash = compute_hash(
                 &deployer.contract,
@@ -365,10 +362,9 @@ mod revert {
 
             execute_transaction(
                 &deployer.contract,
-                transaction.contract_call_params.clone(),
                 signatures,
                 transaction.target.clone(),
-                transaction.transfer_params.clone(),
+                transaction.transaction_parameters.clone(),
             )
             .await;
         }
@@ -397,10 +393,9 @@ mod revert {
 
             execute_transaction(
                 &deployer.contract,
-                transaction.contract_call_params.clone(),
                 signatures,
                 transaction.target.clone(),
-                transaction.transfer_params.clone(),
+                transaction.transaction_parameters.clone(),
             )
             .await;
         }
@@ -442,10 +437,9 @@ mod revert {
 
             execute_transaction(
                 &deployer.contract,
-                transaction.contract_call_params.clone(),
                 incorrectly_ordered_signatures,
                 transaction.target.clone(),
-                transaction.transfer_params.clone(),
+                transaction.transaction_parameters.clone(),
             )
             .await;
         }
@@ -487,10 +481,9 @@ mod revert {
 
             execute_transaction(
                 &deployer.contract,
-                transaction.contract_call_params.clone(),
                 signatures,
                 transaction.target.clone(),
-                transaction.transfer_params.clone(),
+                transaction.transaction_parameters.clone(),
             )
             .await;
         }
@@ -534,10 +527,9 @@ mod revert {
                 .contract
                 .methods()
                 .execute_transaction(
-                    transaction.contract_call_params,
                     signatures,
                     transaction.target,
-                    transaction.transfer_params,
+                    transaction.transaction_parameters,
                 )
                 .append_variable_outputs(1)
                 .set_contract_ids(&[target_as_contract_id.clone()])
@@ -573,10 +565,9 @@ mod revert {
 
             execute_transaction(
                 &deployer.contract,
-                transaction.contract_call_params.clone(),
                 signatures,
                 transaction.target.clone(),
-                transaction.transfer_params.clone(),
+                transaction.transaction_parameters.clone(),
             )
             .await;
         }
@@ -610,10 +601,9 @@ mod revert {
 
             execute_transaction(
                 &deployer.contract,
-                transaction.contract_call_params.clone(),
                 incorrectly_ordered_signatures,
                 transaction.target.clone(),
-                transaction.transfer_params.clone(),
+                transaction.transaction_parameters.clone(),
             )
             .await;
         }
@@ -647,10 +637,9 @@ mod revert {
 
             execute_transaction(
                 &deployer.contract,
-                transaction.contract_call_params.clone(),
                 signatures,
                 transaction.target.clone(),
-                transaction.transfer_params.clone(),
+                transaction.transaction_parameters.clone(),
             )
             .await;
         }
