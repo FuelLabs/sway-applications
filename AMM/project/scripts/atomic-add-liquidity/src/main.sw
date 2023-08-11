@@ -3,20 +3,21 @@ script;
 use libraries::{data_structures::LiquidityParameters, Exchange};
 
 /// Determines the type of input error.
-///
-/// ### Variants
-///
-/// * `DesiredLiquidityZero`: () - The desired liquidity is zero.
 enum InputError {
+    /// The desired liquidity is zero.
     DesiredLiquidityZero: (),
 }
 
 /// Deposits pool assets and adds liquidity to an AMM exchange contract.
 ///
-/// ### Arguments
+/// # Arguments
 ///
-/// * `exchange_contract_id`: `ContractId` - The contract id of the exchange.
-/// * `liquidity_parameters`: `LiquidityParameters` - Exchange liquidity for a specific asset pair.
+/// * `exchange_contract_id`: [ContractId] - The contract id of the exchange.
+/// * `liquidity_parameters`: [LiquidityParameters] - Exchange liquidity for a specific asset pair.
+///
+/// # Returns
+/// 
+/// * The amount of liquidity tokens minted.
 ///
 /// # Reverts
 ///
