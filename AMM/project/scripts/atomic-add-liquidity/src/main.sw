@@ -16,7 +16,7 @@ enum InputError {
 /// * `liquidity_parameters`: [LiquidityParameters] - Exchange liquidity for a specific asset pair.
 ///
 /// # Returns
-/// 
+///
 /// * The amount of liquidity tokens minted.
 ///
 /// # Reverts

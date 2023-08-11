@@ -3,37 +3,37 @@ library;
 /// Determines the type of error during initialisation.
 pub enum InitError {
     /// The asset pair has already been set.
-    AssetPairAlreadySet,
+    AssetPairAlreadySet: (),
     /// The asset pair has not been set.
-    AssetPairNotSet,
+    AssetPairNotSet: (),
     /// The input and output assets are the same.
-    IdenticalAssets,
+    IdenticalAssets: (),
 }
 
 /// Determines the type of error regarding inputs.
 pub enum InputError {
     /// The amount of liquidity added is less than the minimum amount.
-    CannotAddLessThanMinimumLiquidity(u64),
+    CannotAddLessThanMinimumLiquidity: u64,
     /// The deadline has passed.
-    DeadlinePassed(u64),
+    DeadlinePassed: u64,
     /// The input amount was not greater than zero.
-    ExpectedNonZeroAmount(ContractId),
+    ExpectedNonZeroAmount: ContractId,
     /// The parameter was not greater than zero.
-    ExpectedNonZeroParameter(ContractId),
+    ExpectedNonZeroParameter: ContractId,
     /// The provided asset id is invalid.
-    InvalidAsset,
+    InvalidAsset: (),
 }
 
 /// Determines the type of error regarding transactions.
 pub enum TransactionError {
     /// The desired amount is too high.
-    DesiredAmountTooHigh(u64),
+    DesiredAmountTooHigh: u64,
     /// The desired amount is too low.
-    DesiredAmountTooLow(u64),
+    DesiredAmountTooLow: u64,
     /// The deposit amount was not greater than zero.
-    ExpectedNonZeroDeposit(ContractId),
+    ExpectedNonZeroDeposit: ContractId,
     /// The reserve amount is too low.
-    InsufficientReserve(ContractId),
+    InsufficientReserve: ContractId,
     /// The total liquidity is not greater than zero.
-    NoLiquidityToRemove,
+    NoLiquidityToRemove: (),
 }
