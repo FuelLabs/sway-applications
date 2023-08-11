@@ -291,7 +291,7 @@ abi Exchange {
     /// * `asset`: [Asset] - The id and amount of asset to add.
     ///
     /// # Returns
-    /// 
+    ///
     /// * [PreviewAddLiquidityInfo] - The preview info of adding liquidity.
     ///
     /// # Reverts
