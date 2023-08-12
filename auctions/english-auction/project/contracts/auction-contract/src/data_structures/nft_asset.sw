@@ -23,7 +23,7 @@ impl NFTAsset {
     ///
     /// * [NFTAsset] - The newly created `NFTAsset` struct.
     fn new(asset_id: ContractId, token_id: u64) -> Self {
-        NFTAsset {
+        Self {
             asset_id,
             token_id,
         }

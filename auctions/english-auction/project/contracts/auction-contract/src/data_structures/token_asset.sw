@@ -23,7 +23,7 @@ impl TokenAsset {
     ///
     /// * [TokenAsset] - The newly created `TokenAsset` struct.
     fn new(amount: u64, asset_id: ContractId) -> Self {
-        TokenAsset {
+        Self {
             amount,
             asset_id,
         }
