@@ -9,8 +9,8 @@ use ::nft::NFT;
 ///
 /// # Arguments
 ///
-/// * `asset` - The asset that is to be transfered.
-/// * `to` - The user which will recieve the asset.
+/// * `asset`: [AuctionAsset] - The asset that is to be transfered.
+/// * `to`: [Identity] - The user which will recieve the asset.
 pub fn transfer_asset(asset: AuctionAsset, to: Identity) {
     match asset {
         AuctionAsset::NFTAsset(asset) => {
@@ -26,8 +26,8 @@ pub fn transfer_asset(asset: AuctionAsset, to: Identity) {
 ///
 /// # Arguments
 ///
-/// * `asset` - The struct which contains the NFT data.
-/// * `to` - The user which the NFTs should be transfered to.
+/// * `asset`: [NFTAsset] - The struct which contains the NFT data.
+/// * `to`: [Identity] - The user which the NFTs should be transfered to.
 ///
 /// # Reverts
 ///

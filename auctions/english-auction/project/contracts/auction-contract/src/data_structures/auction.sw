@@ -22,6 +22,16 @@ pub struct Auction {
 }
 
 impl Auction {
+    /// Creates a new auction.
+    ///
+    /// # Arguments
+    ///
+    /// * `bid_asset`: [AuctionAsset] - The asset which will be accepted in return for the selling asset.
+    /// * `end_block`: [u64] - The block at which the auction's bidding period should end.
+    /// * `initial_price`: [u64] - The starting price for the auction.
+    /// * `reserve_price`: [Option<u64>] - The price at which the selling asset may be bought outright.
+    /// * `sell_asset`: [AuctionAsset] - The asset that is being auctioned off.
+    /// * `seller`: [Identity] - The seller of the auction.
     pub fn new(
         bid_asset: AuctionAsset,
         end_block: u64,
