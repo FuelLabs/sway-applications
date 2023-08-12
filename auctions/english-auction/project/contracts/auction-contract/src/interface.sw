@@ -50,7 +50,7 @@ abi EnglishAuction {
     /// # Arguments
     ///
     /// `bid_asset`: [AuctionAsset] - The asset the seller is willing to accept in return for the selling asset.
-    /// `duration`: [u64] - The length of time the auction should be open.
+    /// `duration`: [u64] - The duration of time the auction should be open.
     /// `initial_price`: [u64] - The starting price at which the auction should start.
     /// `reserve_price`: [Option<u64>] - The price at which a buyer may purchase the `sell_asset` outright.
     /// `seller`: [Identity] - The seller for this auction.

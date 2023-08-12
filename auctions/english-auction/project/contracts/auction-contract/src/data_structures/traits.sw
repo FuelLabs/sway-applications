@@ -8,6 +8,7 @@ pub trait Asset {
     ///
     /// * [u64] - The amount of the asset.
     fn amount(self) -> u64;
+    
     /// Returns the AssetId of the asset.
     ///
     /// # Returns
