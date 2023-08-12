@@ -3,6 +3,7 @@ library;
 use ::errors::AssetError;
 use ::data_structures::traits::Asset;
 
+/// Represents a token asset.
 pub struct TokenAsset {
     /// The amount of the native asset that the struct is representing.
     amount: u64,
@@ -11,8 +12,18 @@ pub struct TokenAsset {
 }
 
 impl TokenAsset {
+    /// Creates a new `TokenAsset` struct.
+    ///
+    /// # Arguments
+    ///
+    /// * `amount`: [u64] - The amount of tokens that the struct is representing.
+    /// * `asset_id`: [ContractId] - The AssetId of the token that the struct is representing.
+    ///
+    /// # Returns
+    ///
+    /// * [TokenAsset] - The newly created `TokenAsset` struct.
     fn new(amount: u64, asset_id: ContractId) -> Self {
-        TokenAsset {
+        Self {
             amount,
             asset_id,
         }

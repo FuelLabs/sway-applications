@@ -3,37 +3,36 @@ script;
 use libraries::{AMM, data_structures::Asset, Exchange};
 
 /// Determines the type of input error.
-///
-/// ### Variants
-///
-/// * `RouteTooShort`: () - The number of assets in the swap is less than 2.
 enum InputError {
+    /// The number of assets in the swap is less than 2.
     RouteTooShort: (),
 }
 
 /// Determines the type of swap error.
-///
-/// ### Variants
-///
-/// * `ExcessiveSlippage`: `u64` - The amount bought is less than the minimum output amount.
-/// * `PairExchangeNotRegistered`: `(ContractId, ContractId)` - The exchange for this asset pair could not be found.
 enum SwapError {
+    /// The amount bought is less than the minimum output amount.
     ExcessiveSlippage: u64,
+    /// The exchange for this asset pair could not be found.
     PairExchangeNotRegistered: (ContractId, ContractId),
 }
 
 configurable {
+    /// The ContractId of the AMM contract.
     AMM_ID: b256 = 0x8aea4274cd6fcc79094c55fb3c065046b6c759c2169786bc350536660eaba670,
 }
 
 /// Swaps assets along a route by specifying exact output for each swap.
 ///
-/// ### Arguments
+/// # Arguments
 ///
-/// * `assets`: `Vec<ContractId>` - The assets along the swap route.
-/// * `output_amount`: `u64` - The desired amount of the output asset.
-/// * `maximum_input_amount`: `u64` - The maximum amount of the input asset.
-/// * `deadline`: `u64` - The limit on block height for operation.
+/// * `assets`: [Vec<ContractId>] - The assets along the swap route.
+/// * `output_amount`: [u64] - The desired amount of the output asset.
+/// * `maximum_input_amount`: [u64] - The maximum amount of the input asset.
+/// * `deadline`: [u64] - The limit on block height for operation.
+///
+/// # Returns
+///
+/// * `u64`: The amount of the input asset that was sold.
 ///
 /// # Reverts
 ///
