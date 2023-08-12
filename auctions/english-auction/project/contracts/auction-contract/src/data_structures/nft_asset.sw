@@ -3,6 +3,7 @@ library;
 use ::errors::AssetError;
 use ::data_structures::traits::Asset;
 
+/// Represents an NFT asset.
 pub struct NFTAsset {
     /// The `ContractId` of the NFT that the struct is representing.
     asset_id: ContractId,
@@ -11,6 +12,16 @@ pub struct NFTAsset {
 }
 
 impl NFTAsset {
+    /// Creates a new `NFTAsset` struct.
+    ///
+    /// # Arguments
+    ///
+    /// * `asset_id`: [ContractId] - The AssetId of the NFT that the struct is representing.
+    /// * `token_id`: [u64] - The token id of the NFT that the struct is representing.
+    ///
+    /// # Returns
+    ///
+    /// * [NFTAsset] - The newly created `NFTAsset` struct.
     fn new(asset_id: ContractId, token_id: u64) -> Self {
         NFTAsset {
             asset_id,
@@ -18,6 +29,11 @@ impl NFTAsset {
         }
     }
 
+    /// Returns the token_id of the NFT that the struct is representing.
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The token id of the NFT that the struct is representing.
     pub fn token_id(self) -> u64 {
         self.token_id
     }

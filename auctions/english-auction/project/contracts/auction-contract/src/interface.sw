@@ -7,8 +7,8 @@ abi EnglishAuction {
     ///
     /// # Arguments
     ///
-    /// * `auction_id` - The id number of the auction.
-    /// * `bid_asset` - An asset that is either a `TokenAsset` struct or a `NFTAsset` struct.
+    /// * `auction_id`: [u64] - The id number of the auction.
+    /// * `bid_asset`: [AuctionAsset] - An asset that is either a `TokenAsset` struct or a `NFTAsset` struct.
     ///
     /// # Reverts
     ///
@@ -31,7 +31,7 @@ abi EnglishAuction {
     ///
     /// # Arguments
     ///
-    /// * `auction_id` - The `u64` id number of the auction.
+    /// * `auction_id`: [u64] - The `u64` id number of the auction.
     ///
     /// # Reverts
     ///
@@ -49,12 +49,16 @@ abi EnglishAuction {
     ///
     /// # Arguments
     ///
-    /// `bid_asset` - The asset the seller is willing to accept in return for the selling asset.
-    /// `duration` - The length of time the auction should be open.
-    /// `initial_price` - The starting price at which the auction should start.
-    /// `reserve_price` - The price at which a buyer may purchase the `sell_asset` outright.
-    /// `seller` - The seller for this auction.
-    /// `sell_asset` - The enum that contains information about what is being auctioned off.
+    /// `bid_asset`: [AuctionAsset] - The asset the seller is willing to accept in return for the selling asset.
+    /// `duration`: [u64] - The length of time the auction should be open.
+    /// `initial_price`: [u64] - The starting price at which the auction should start.
+    /// `reserve_price`: [Option<u64>] - The price at which a buyer may purchase the `sell_asset` outright.
+    /// `seller`: [Identity] - The seller for this auction.
+    /// `sell_asset`: [AuctionAsset] - The enum that contains information about what is being auctioned off.
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The id number of the newly created auction.
     ///
     /// # Reverts
     ///
@@ -73,6 +77,8 @@ abi EnglishAuction {
     /// Allows users to withdraw their owed assets if the auction's bid period has ended, the
     /// reserve has been met, or the auction has been canceled.
     ///
+    /// # Additional Information
+    ///
     /// 1. If the sender is the winning bidder, they will withdraw the selling asset.
     /// 2. If the sender's bids failed to win the auction, their total deposits will be withdrawn.
     /// 3. If the sender is the seller and no bids have been made or the auction has been canceled,
@@ -82,7 +88,7 @@ abi EnglishAuction {
     ///
     /// # Arguments
     ///
-    /// * `auction_id` - The id number of the auction.
+    /// * `auction_id`: [u64] - The id number of the auction.
     ///
     /// # Reverts
     ///
@@ -99,7 +105,11 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `auction_id` - The id number of the auction.
+    /// * `auction_id`: [u64] - The id number of the auction.
+    ///
+    /// # Returns
+    ///
+    /// * [Option<Auction>] - The auction struct for the corresponding auction id.
     #[storage(read)]
     fn auction_info(auction_id: u64) -> Option<Auction>;
 
@@ -107,12 +117,20 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `identity` - The user which has deposited assets.
-    /// * `auction_id` - The id number of the auction.
+    /// * `auction_id`: [u64] - The id number of the auction.
+    /// * `identity`: [Identity] - The user which has deposited assets.
+    ///
+    /// # Returns
+    ///
+    /// * [Option<AuctionAsset>] - The amount of assets the user has deposited.
     #[storage(read)]
     fn deposit_balance(auction_id: u64, identity: Identity) -> Option<AuctionAsset>;
 
     /// Returns the total auctions which have been started using this auction contract.
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The total number of auctions.
     #[storage(read)]
     fn total_auctions() -> u64;
 }
