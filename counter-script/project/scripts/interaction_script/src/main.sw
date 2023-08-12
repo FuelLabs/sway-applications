@@ -2,6 +2,16 @@ script;
 
 use libraries::Counter;
 
+/// Calls the methods of the counter contract at the given contract_id.
+///
+/// # Arguments
+///
+/// * `contract_id`: [ContractId] - The ContractId at which the counter contract is deployed.
+/// * `clear`: [bool] - If true, the counter will be cleared at the end of the script.
+///
+/// # Returns
+///
+/// * [u64] - The count at the end of the script.
 fn main(contract_id: ContractId, clear: bool) -> u64 {
     // An abi cast is a way to call a contract at a given contract_id with the given abi
     let counter = abi(Counter, contract_id.value);
