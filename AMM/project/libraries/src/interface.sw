@@ -13,15 +13,15 @@ use ::data_structures::{
 abi AMM {
     /// Initialize the AMM by specifying the exchange contract bytecode root, for security.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
-    /// * `exchange_bytecode_root`: `ContractId` - The bytecode root of the intended implementation of the exchange ABI.
+    /// * `exchange_bytecode_root`: [ContractId] - The bytecode root of the intended implementation of the exchange ABI.
     ///
     /// # Reverts
     ///
     /// * When the AMM has already been initialized.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `1`
     /// * Writes: `1`
@@ -30,10 +30,10 @@ abi AMM {
 
     /// Add an (asset pair, exchange contract ID) mapping to the storage.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
-    /// * `asset_pair`: `(ContractId, ContractId)` - The pair of assets that make up the pool.
-    /// * `pool`: `ContractId` - The pair of assets that make up the pool.
+    /// * `asset_pair`: [(ContractId, ContractId)] - The pair of assets that make up the pool.
+    /// * `pool`: [ContractId] - The pair of assets that make up the pool.
     ///
     /// # Reverts
     ///
@@ -41,7 +41,7 @@ abi AMM {
     /// * When the bytecode root of `pool` does not match the bytecode root of the intended exchange contract
     /// * When the pool info of the exchange contract with the given address does not consist of the given asset pair
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `2`
     /// * Writes: `1`
@@ -50,11 +50,15 @@ abi AMM {
 
     /// For the given asset pair, get the exchange contract; the pool that consists of the asset pair.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
-    /// * `asset_pair`: `(ContractId, ContractId)` - The pair of assets that make up the pool.
+    /// * `asset_pair`: [(ContractId, ContractId)] - The pair of assets that make up the pool.
     ///
-    /// ### Number of Storage Accesses
+    /// # Returns
+    ///
+    /// * `pool`: [Option<ContractId>] - The exchange contract that consists of the given asset pair.
+    ///
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `1`
     #[storage(read)]
@@ -64,15 +68,19 @@ abi AMM {
 abi Exchange {
     /// Mint liquidity pool asset at current ratio and transfer to the sender.
     ///
-    /// ### Additional Information
+    /// # Additional Information
     ///
     /// When liquidity is added for the first time, all deposited amounts are used to determine the ratio.
     /// When adding further liquidity, extra amounts of deposits are refunded.
     ///
     /// # Arguments
     ///
-    /// * `desired_liquidity`: `u64` - The minimum amount of liquidity to add.
-    /// * `deadline`: `u64` - The limit on block height for operation.
+    /// * `desired_liquidity`: [u64] - The minimum amount of liquidity to add.
+    /// * `deadline`: [u64] - The limit on block height for operation.
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The amount of liquidity added.
     ///
     /// # Reverts
     ///
@@ -83,7 +91,7 @@ abi Exchange {
     /// * When asset A or B deposits are 0.
     /// * When calculated liquidity to add is less than `desired liquidity`.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `5`
     /// * Writes: `6`
@@ -92,17 +100,17 @@ abi Exchange {
 
     /// Initialize contract by specifying the asset pair that makes up the pool.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
-    /// * `asset_a`: `ContractId` - The unique identifier of one asset.
-    /// * `asset_b`: `ContractId` - The unique identifier of the other asset.
+    /// * `asset_a`: [ContractId] - The unique identifier of one asset.
+    /// * `asset_b`: [ContractId] - The unique identifier of the other asset.
     ///
     /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
     /// * When the passed pair describes identical assets.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `1`
     /// * Writes: `1`
@@ -116,7 +124,7 @@ abi Exchange {
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
     /// * When the `msg_asset_id` does not identify asset A or asset B.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `4`
     /// * Writes: `1`
@@ -125,11 +133,15 @@ abi Exchange {
 
     /// Burn liquidity pool asset at current ratio and transfer asset A and asset B to the sender.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
-    /// * `min_asset_a`: `u64` - The minimum amount of asset A to receive after burn.
-    /// * `min_asset_b`: `u64` - minimum amount of asset B to receive after burn.
-    /// * `deadline`: `u64` - The limit on block height for operation.
+    /// * `min_asset_a`: [u64] - The minimum amount of asset A to receive after burn.
+    /// * `min_asset_b`: [u64] - minimum amount of asset B to receive after burn.
+    /// * `deadline`: [u64] - The limit on block height for operation.
+    ///
+    /// # Returns
+    ///
+    /// * [RemoveLiquidityInfo] - The amount of removed amounts and burned liquidity.
     ///
     /// # Reverts
     ///
@@ -141,7 +153,7 @@ abi Exchange {
     /// * When the `msg_amount` with function call is 0.
     /// * When the minimum amounts for asset A and asset B to receive after burn cannot be satisfied.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `3`
     /// * Writes: `2`
@@ -150,10 +162,14 @@ abi Exchange {
 
     /// Swap forwarded amount of forwarded asset for other asset and transfer to sender.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
-    /// * `min_output`: `Option<u64>` - The minimum output required (to protect against excessive slippage).
-    /// * `deadline`: `u64` - The limit on block height for operation.
+    /// * `min_output`: [Option<u64>] - The minimum output required (to protect against excessive slippage).
+    /// * `deadline`: [u64] - The limit on block height for operation.
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The amount of other asset bought.
     ///
     /// # Reverts
     ///
@@ -163,7 +179,7 @@ abi Exchange {
     /// * When the `msg_amount` with function call is 0.
     /// * When `min_output` is provided and is lower than the output amount.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `1`
     /// * Writes: `1`
@@ -172,10 +188,14 @@ abi Exchange {
 
     /// Swap forwarded asset for `exact_output_amount` of other asset and transfer to sender.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
-    /// * `output`: `u64` - The exact output amount to receive.
-    /// * `deadline`: `u64` - The limit on block height for operation.
+    /// * `output`: [u64] - The exact output amount to receive.
+    /// * `deadline`: [u64] - The limit on block height for operation.
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The amount of input asset sold.
     ///
     /// # Reverts
     ///
@@ -186,7 +206,7 @@ abi Exchange {
     /// * When the `msg_amount` with function call is 0.
     /// * When the `msg_amount` is insufficient for swap.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `1`
     /// * Writes: `1`
@@ -195,9 +215,9 @@ abi Exchange {
 
     ///  Withdraw coins that have not been added to a liquidity pool yet.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
-    /// * `asset`: `Asset` - The id and amount of asset to withdraw.
+    /// * `asset`: [Asset] - The id and amount of asset to withdraw.
     ///
     /// # Reverts
     ///
@@ -205,7 +225,7 @@ abi Exchange {
     /// * When the `msg_asset_id` does not identify asset A or asset B.
     /// * When the deposited amount by the sender stored in the contract is insufficient.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `4`
     /// * Writes: `1`
@@ -214,15 +234,19 @@ abi Exchange {
 
     /// Get current balance of the sender for a given asset on the contract.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
-    /// * `asset_id`: `ContractId` - The id of the asset to get balance of.
+    /// * `asset_id`: [ContractId] - The id of the asset to get balance of.
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The amount of asset the sender has on the contract.
     ///
     /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `4`
     #[storage(read)]
@@ -230,7 +254,7 @@ abi Exchange {
 
     /// Get the pool info of the exchange contract.
     ///
-    /// ### Additional Information
+    /// # Additional Information
     ///
     /// The pool info consists of:
     /// - Identifier of asset A,
@@ -239,11 +263,16 @@ abi Exchange {
     /// - Asset B amount in reserves,
     /// - Liquidity pool asset supply amount.
     ///
+    ///
+    /// # Returns
+    ///
+    /// * [PoolInfo] - The pool info of the exchange contract.
+    ///
     /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `3`
     #[storage(read)]
@@ -251,21 +280,25 @@ abi Exchange {
 
     ///  Get the preview info of adding liquidity.
     ///
-    /// ### Additional Information
+    /// # Additional Information
     ///
     /// The preview info consists of:
     /// - Other asset amount to input for desired liquidity,
     /// - Liquidity pool asset amount to be received.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
-    /// * `asset`: `Asset` - The id and amount of asset to add.
+    /// * `asset`: [Asset] - The id and amount of asset to add.
+    ///
+    /// # Returns
+    ///
+    /// * [PreviewAddLiquidityInfo] - The preview info of adding liquidity.
     ///
     /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `5`
     #[storage(read)]
@@ -273,22 +306,26 @@ abi Exchange {
 
     ///  Get information about the output asset for a `swap_exact_input` without doing the swap operation.
     ///
-    /// ### Additional Information
+    /// # Additional Information
     ///
     /// The preview info while swapping `exact_input` of input asset consists of:
     /// - The minimum amount of output asset to receive,
     /// - Whether the output asset reserves are sufficient for the swap or not.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
-    /// * `exact_input_asset`: `Asset` - The asset to sell.
+    /// * `exact_input_asset`: [Asset] - The asset to sell.
+    ///
+    /// # Returns
+    ///
+    /// * [PreviewSwapInfo] - The preview info of swapping `exact_input` of input asset.
     ///
     /// # Reverts
     ///
     /// * When the contract has not been initialized, i.e., asset pair in storage is `None`.
     /// * When the `msg_asset_id` does not identify asset A or asset B.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `1`
     #[storage(read)]
@@ -296,15 +333,19 @@ abi Exchange {
 
     ///  Get information about the input asset for a `swap_exact_output` without doing the swap operation.
     ///
-    /// ### Additional Information
+    /// # Additional Information
     ///
     /// The preview info while swapping to get `exact_output` amount of output asset consists of:
     /// - The maximum amount of input asset to forward,
     /// - Whether the input asset reserves are sufficient for the swap or not.
     ///
-    /// ### Arguments
+    /// # Arguments
     ///
     /// * `exact_output_asset`: `Asset` - The asset to buy.
+    ///
+    /// # Returns
+    ///
+    /// * [PreviewSwapInfo] - The preview info of swapping to get `exact_output` amount of output asset.
     ///
     /// # Reverts
     ///
@@ -312,7 +353,7 @@ abi Exchange {
     /// * When the `msg_asset_id` does not identify asset A or asset B.
     /// * When the `exact_output` is less than the reserve amount of the output asset.
     ///
-    /// ### Number of Storage Accesses
+    /// # Number of Storage Accesses
     ///
     /// * Reads: `1`
     #[storage(read)]
