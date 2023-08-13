@@ -152,7 +152,7 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `proposal_id` - Identifier used to specify a proposal (0 <= proposal_id < proposal_count).
+    /// * `proposal_id`: [u64] - Identifier used to specify a proposal (0 <= proposal_id < proposal_count).
     ///
     /// # Returns
     ///
