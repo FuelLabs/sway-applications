@@ -139,8 +139,8 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `proposal_id` - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count).
-    /// * `user` - Identity to look up votes spent on a specified proposal.
+    /// * `proposal_id`: [u64] - Identifier used to specifiy a proposal (0 <= proposal_id < proposal_count).
+    /// * `user`: [Identity] - Identity to look up votes spent on a specified proposal.
     ///
     /// # Returns
     ///
