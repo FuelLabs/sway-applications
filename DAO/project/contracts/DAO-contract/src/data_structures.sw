@@ -78,7 +78,7 @@ impl ProposalInfo {
     }
 }
 
-/// Represents whether the contract has been initialized or not.
+/// Represents whether the contract has been initialized.
 pub enum State {
     /// The contract has not been initialized.
     NotInitialized: (),
