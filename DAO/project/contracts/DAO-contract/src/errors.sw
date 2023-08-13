@@ -18,7 +18,7 @@ pub enum InitializationError {
 
 /// Errors related to proposal execution.
 pub enum ProposalError {
-    /// The proposal did not recieve enough approvals.
+    /// The proposal did not receive enough approvals.
     InsufficientApprovals: (),
     /// The proposal has already been executed.
     ProposalExecuted: (),
