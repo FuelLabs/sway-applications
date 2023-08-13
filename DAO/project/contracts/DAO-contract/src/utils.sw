@@ -11,7 +11,7 @@ use ::errors::UserError;
 ///
 /// # Reverts
 ///
-/// * When the id is greater than the count.
+/// * When the id is greater than or equal to the count.
 pub fn validate_id(id: u64, count: u64) {
     require(id < count, UserError::InvalidId);
 }
