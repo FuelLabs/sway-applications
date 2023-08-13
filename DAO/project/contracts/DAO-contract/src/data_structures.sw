@@ -105,7 +105,7 @@ pub struct Votes {
 }
 
 impl Votes {
-    /// Returns a new Votes struct with no votes.
+    /// Returns a new Votes struct with 0 yes/no votes.
     ///
     /// # Returns
     ///
