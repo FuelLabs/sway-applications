@@ -10,47 +10,58 @@ use std::{
     vm::evm::ecr::ec_recover_evm_address,
 };
 
-use ::data_structures::hashing::{Threshold, Transaction, Weight};
-use ::data_structures::signatures::{MessageFormat, MessagePrefix, SignatureInfo, WalletType};
-use ::data_structures::user::User;
+use ::data_structures::{
+    hashing::{
+        Threshold,
+        Transaction,
+        TypeToHash,
+        Weight,
+    },
+    signatures::{
+        MessageFormat,
+        MessagePrefix,
+        SignatureInfo,
+        WalletType,
+    },
+    user::User,
+};
 
 const EIP191_INITIAL_BYTE = 0x19u8;
 const EIP191_VERSION_BYTE = 0x45u8;
 const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
 
-/// Takes in transaction data and hashes it into a unique transaction hash.
-pub fn hash_transaction(data: b256, nonce: u64, to: Identity, value: u64) -> b256 {
-    sha256(Transaction {
-        contract_identifier: contract_id(),
-        data,
-        destination: to,
-        nonce,
-        value,
-    })
+/// Takes a struct comprised of transaction data and hashes it.
+///
+/// # Additional Information
+///
+/// The struct will be a variant of [TypeToHash].
+///
+/// # Arguments
+///
+/// * `type_to_hash` : [TypeToHash] - The struct to hash.
+///
+/// # Returns
+///
+/// * [b256] - The hash.
+pub fn compute_hash(type_to_hash: TypeToHash) -> b256 {
+    match type_to_hash {
+        TypeToHash::Threshold(threshold) => sha256(threshold),
+        TypeToHash::Transaction(transaction) => transaction.into_bytes().sha256(),
+        TypeToHash::Weight(weight) => sha256(weight),
+    }
 }
 
-/// Takes in transaction data and hashes it into a unique transaction hash.
-pub fn hash_threshold(data: Option<b256>, nonce: u64, threshold: u64) -> b256 {
-    sha256(Threshold {
-        contract_identifier: contract_id(),
-        data,
-        nonce,
-        threshold,
-    })
-}
-
-/// Takes in transaction data and hashes it into a unique transaction hash.
-pub fn hash_weight(data: Option<b256>, nonce: u64, user: User) -> b256 {
-    sha256(Weight {
-        contract_identifier: contract_id(),
-        data,
-        nonce,
-        user,
-    })
-}
-
-/// Applies the format and prefix specified by signature_info to the message_hash.
-/// Returns the b256 value of the recovered address.
+/// Applies the format and prefix specified by `signature_info` to the `message_hash`.
+/// Returns the [b256] value of the recovered address.
+///
+/// # Arguments
+///
+/// * `message_hash`: [b256] - The message hash to be formatted and prefixed.
+/// * `signature_info`: [SignatureInfo] - The information about a user's signature for a specific transaction.
+///
+/// # Returns
+///
+/// * [b256] - The recovered address.
 pub fn recover_signer(message_hash: b256, signature_info: SignatureInfo) -> b256 {
     let formatted_message = match signature_info.message_format {
         MessageFormat::None => message_hash,
@@ -76,11 +87,22 @@ pub fn recover_signer(message_hash: b256, signature_info: SignatureInfo) -> b256
     }
 }
 
-/// EIP-191: https://eips.ethereum.org/EIPS/eip-191
 /// Creates an EIP-191 compliant transaction hash, of the version:
 /// 0x45 - personal sign.
 /// It takes a `data_to_sign` to represent the <data to sign> in the EIP-191 format:
 /// 0x19 <1 byte version> <version specific data> <data to sign>
+///
+/// # Additional Information
+///
+/// EIP-191: https://eips.ethereum.org/EIPS/eip-191
+///
+/// # Arguments
+///
+/// * `data_to_sign`: [b256] - The message hash to format.
+///
+/// # Returns
+///
+/// * [b256] - The formatted message hash.
 fn eip_191_personal_sign_format(data_to_sign: b256) -> b256 {
     let signed_data = encode_and_pack_signed_data(EIP191_INITIAL_BYTE, EIP191_VERSION_BYTE, data_to_sign);
     let signed_data = (
@@ -99,8 +121,18 @@ fn eip_191_personal_sign_format(data_to_sign: b256) -> b256 {
     }
 }
 
-/// Encode the `initial_byte`, `version_byte` and `message_hash` into a Vec<u64> of length 40 bytes,
+/// Encode the `initial_byte`, `version_byte` and `message_hash` into a [Vec<u64>] of length 40 bytes,
 /// where the first 34 bytes are the desired `signed_data` tightly packed.
+///
+/// # Arguments
+///
+/// * `initial_byte`: [u64] - EIP-191 initial byte.
+/// * `version_byte`: [u64] - EIP-191 version byte.
+/// * `message_hash`: [b256] - The message hash to encode.
+///
+/// # Returns
+///
+/// * [Vec<u64>] - The encoded data, tightly packed.
 fn encode_and_pack_signed_data(
     initial_byte: u64,
     version_byte: u64,
@@ -120,12 +152,28 @@ fn encode_and_pack_signed_data(
     data
 }
 
-/// Get a tuple of 4 u64 values from a single b256 value.
-fn decompose(val: b256) -> (u64, u64, u64, u64) {
-    asm(r1: __addr_of(val)) { r1: (u64, u64, u64, u64) }
+/// Get a tuple of 4 [u64] values from a single [b256] value.
+///
+/// # Arguments
+///
+/// * `value`: [b256] - The value to decompose.
+///
+/// # Returns
+///
+/// * [(u64, u64, u64, u64)] - The [u64]s that comprised `value`.
+fn decompose(value: b256) -> (u64, u64, u64, u64) {
+    asm(r1: __addr_of(value)) { r1: (u64, u64, u64, u64) }
 }
 
 /// Applies the prefix "\x19Ethereum Signed Message:\n32" to a message hash.
+///
+/// # Arguments
+///
+/// * `msg_hash`: [b256] - The message_hash.
+///
+/// # Returns
+///
+/// * [b256]- The prefixed hash.
 fn ethereum_prefix(msg_hash: b256) -> b256 {
     keccak256((ETHEREUM_PREFIX, msg_hash))
 }

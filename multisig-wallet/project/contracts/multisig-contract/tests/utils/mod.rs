@@ -1,2 +1,2 @@
-pub mod interface;
-pub mod setup;
+pub(crate) mod interface;
+pub(crate) mod setup;

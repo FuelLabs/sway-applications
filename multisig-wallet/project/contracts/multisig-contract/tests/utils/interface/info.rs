@@ -1,11 +1,9 @@
 use fuels::{
-    accounts::wallet::WalletUnlocked,
-    prelude::ContractId,
-    programs::call_response::FuelCallResponse,
-    types::{Bits256, Identity},
+    accounts::wallet::WalletUnlocked, prelude::ContractId,
+    programs::call_response::FuelCallResponse, types::Bits256,
 };
 
-use crate::utils::setup::{MultiSig, User};
+use crate::utils::setup::{MultiSig, TypeToHash};
 
 pub(crate) async fn approval_weight(
     contract: &MultiSig<WalletUnlocked>,
@@ -34,44 +32,13 @@ pub(crate) async fn threshold(contract: &MultiSig<WalletUnlocked>) -> FuelCallRe
     contract.methods().threshold().call().await.unwrap()
 }
 
-pub(crate) async fn transaction_hash(
+pub(crate) async fn compute_hash(
     contract: &MultiSig<WalletUnlocked>,
-    to: Identity,
-    value: u64,
-    data: Bits256,
-    nonce: u64,
+    type_to_hash: TypeToHash,
 ) -> FuelCallResponse<Bits256> {
     contract
         .methods()
-        .transaction_hash(data, nonce, to, value)
-        .call()
-        .await
-        .unwrap()
-}
-
-pub(crate) async fn threshold_hash(
-    contract: &MultiSig<WalletUnlocked>,
-    data: Option<Bits256>,
-    nonce: u64,
-    threshold: u64,
-) -> FuelCallResponse<Bits256> {
-    contract
-        .methods()
-        .threshold_hash(data, nonce, threshold)
-        .call()
-        .await
-        .unwrap()
-}
-
-pub(crate) async fn weight_hash(
-    contract: &MultiSig<WalletUnlocked>,
-    data: Option<Bits256>,
-    nonce: u64,
-    user: User,
-) -> FuelCallResponse<Bits256> {
-    contract
-        .methods()
-        .weight_hash(data, nonce, user)
+        .compute_hash(type_to_hash)
         .call()
         .await
         .unwrap()

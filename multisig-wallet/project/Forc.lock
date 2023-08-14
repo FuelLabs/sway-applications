@@ -11,3 +11,8 @@ dependencies = ['std']
 name = 'std'
 source = 'git+https://github.com/fuellabs/sway?tag=v0.42.1#3b66f8e424bd21e3ba467783b10b36e808cfa6ee'
 dependencies = ['core']
+
+[[package]]
+name = 'target-contract'
+source = 'member'
+dependencies = ['std']

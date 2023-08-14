@@ -3,21 +3,27 @@ use fuels::{
         fuel_crypto::{Message, SecretKey, Signature},
         wallet::WalletUnlocked,
     },
+    core::codec::{calldata, fn_selector},
     prelude::{
-        abigen, setup_single_asset_coins, setup_test_provider, Contract, ContractId, Error,
-        LoadConfiguration, StorageConfiguration, TxParameters, BASE_ASSET_ID,
+        abigen, setup_single_asset_coins, setup_test_provider, Address, Contract, ContractId,
+        Error, LoadConfiguration, StorageConfiguration, TxParameters, BASE_ASSET_ID,
     },
     tx::Bytes32,
-    types::{Bits256, Identity, B512},
+    types::{Bits256, Bytes, Identity, B512},
 };
 
-use rand::{rngs::StdRng, Rng, SeedableRng};
 use sha3::{Digest, Keccak256};
 
-abigen!(Contract(
-    name = "MultiSig",
-    abi = "./contracts/multisig-contract/out/debug/multisig-contract-abi.json"
-));
+abigen!(
+    Contract(
+        name = "MultiSig",
+        abi = "./contracts/multisig-contract/out/debug/multisig-contract-abi.json"
+    ),
+    Contract(
+        name = "TargetContract",
+        abi = "./contracts/test-artifacts/target-contract/out/debug/target-contract-abi.json"
+    )
+);
 
 // Test-only private key
 pub(crate) const VALID_SIGNER_PK: &str =
@@ -25,9 +31,15 @@ pub(crate) const VALID_SIGNER_PK: &str =
 
 const MULTISIG_CONTRACT_BINARY_PATH: &str = "./out/debug/multisig-contract.bin";
 const MULTISIG_CONTRACT_STORAGE_PATH: &str = "./out/debug/multisig-contract-storage_slots.json";
+const TARGET_CONTRACT_BINARY_PATH: &str =
+    "../test-artifacts/target-contract/out/debug/target-contract.bin";
+const TARGET_CONTRACT_STORAGE_PATH: &str =
+    "../test-artifacts/target-contract/out/debug/target-contract-storage_slots.json";
 
-pub(crate) const DEFAULT_THRESHOLD: u64 = 5;
+pub(crate) const DEFAULT_CALLDATA_VALUE: u64 = 1;
+pub(crate) const DEFAULT_FORWARDED_GAS: u64 = 10_000_000;
 pub(crate) const DEFAULT_TRANSFER_AMOUNT: u64 = 200;
+pub(crate) const DEFAULT_THRESHOLD: u64 = 5;
 
 pub(crate) struct Caller {
     pub(crate) contract: MultiSig<WalletUnlocked>,
@@ -54,6 +66,22 @@ pub(crate) fn default_users() -> Vec<User> {
         weight: 2,
     };
     vec![fuel_user_1, evm_user_1]
+}
+
+pub(crate) async fn deploy_target_contract(
+    deployer_wallet: WalletUnlocked,
+) -> Result<TargetContract<WalletUnlocked>, Error> {
+    let target_contract_storage_configuration =
+        StorageConfiguration::load_from(TARGET_CONTRACT_STORAGE_PATH);
+    let target_contract_configuration = LoadConfiguration::default()
+        .set_storage_configuration(target_contract_storage_configuration.unwrap());
+    let target_contract_id =
+        Contract::load_from(TARGET_CONTRACT_BINARY_PATH, target_contract_configuration)
+            .unwrap()
+            .deploy(&deployer_wallet, TxParameters::default())
+            .await?;
+
+    Ok(TargetContract::new(target_contract_id, deployer_wallet))
 }
 
 fn eip_191_personal_sign_format(message_hash: Message) -> Message {
@@ -147,14 +175,15 @@ pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, C
     deployer_wallet.set_provider(provider.clone());
     non_owner_wallet.set_provider(provider);
 
-    let storage_configuration = StorageConfiguration::load_from(MULTISIG_CONTRACT_STORAGE_PATH);
-    let configuration =
-        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
-
-    let multisig_contract_id = Contract::load_from(MULTISIG_CONTRACT_BINARY_PATH, configuration)
-        .unwrap()
-        .deploy(&deployer_wallet, TxParameters::default())
-        .await?;
+    let multisig_storage_configuration =
+        StorageConfiguration::load_from(MULTISIG_CONTRACT_STORAGE_PATH);
+    let multisig_configuration = LoadConfiguration::default()
+        .set_storage_configuration(multisig_storage_configuration.unwrap());
+    let multisig_contract_id =
+        Contract::load_from(MULTISIG_CONTRACT_BINARY_PATH, multisig_configuration)
+            .unwrap()
+            .deploy(&deployer_wallet, TxParameters::default())
+            .await?;
 
     let deployer = Caller {
         contract: MultiSig::new(multisig_contract_id.clone(), deployer_wallet.clone()),
@@ -169,16 +198,65 @@ pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, C
     Ok((private_key, deployer, non_owner))
 }
 
-pub(crate) fn transfer_parameters() -> (WalletUnlocked, Identity, Bits256) {
+pub(crate) fn transfer_parameters(
+    deployer: &Caller,
+    nonce: u64,
+) -> (WalletUnlocked, Identity, Transaction) {
     let receiver_wallet = WalletUnlocked::new_random(None);
-
     let receiver = Identity::Address(receiver_wallet.address().try_into().unwrap());
 
-    let mut rng = StdRng::seed_from_u64(1000);
-    let data: Bytes32 = rng.gen();
-    let data = Bits256(*data);
+    let transaction = Transaction {
+        contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+        nonce,
+        target: receiver.clone(),
+        transaction_parameters: TransactionParameters::Transfer(TransferParams {
+            asset_id: base_asset_contract_id(),
+            value: Some(DEFAULT_TRANSFER_AMOUNT),
+        }),
+    };
 
-    (receiver_wallet, receiver, data)
+    (receiver_wallet, receiver, transaction)
+}
+
+pub(crate) fn call_parameters(
+    deployer: &Caller,
+    nonce: u64,
+    target_contract: &TargetContract<WalletUnlocked>,
+    with_value: bool,
+) -> Transaction {
+    let contract_call_params = ContractCallParams {
+        calldata: Bytes(calldata!(
+            Address::from(deployer.wallet.address()),
+            DEFAULT_CALLDATA_VALUE
+        )),
+        forwarded_gas: DEFAULT_FORWARDED_GAS,
+        function_selector: Bytes(fn_selector!(update_counter(Address, u64))),
+        single_value_type_arg: false,
+        transfer_params: TransferParams {
+            asset_id: base_asset_contract_id(),
+            value: None,
+        },
+    };
+
+    let mut transaction = Transaction {
+        contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+        nonce,
+        target: Identity::ContractId(target_contract.contract_id().into()),
+        transaction_parameters: TransactionParameters::Call(contract_call_params.clone()),
+    };
+
+    if with_value {
+        transaction.transaction_parameters = TransactionParameters::Call(ContractCallParams {
+            function_selector: Bytes(fn_selector!(update_deposit(Address, u64))),
+            transfer_params: TransferParams {
+                asset_id: base_asset_contract_id(),
+                value: Some(DEFAULT_TRANSFER_AMOUNT),
+            },
+            ..contract_call_params
+        });
+    }
+
+    transaction
 }
 
 pub(crate) async fn transfer_signatures(

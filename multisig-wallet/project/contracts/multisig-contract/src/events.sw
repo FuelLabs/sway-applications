@@ -1,26 +1,28 @@
 library;
 
-use ::data_structures::user::User;
+use ::data_structures::{hashing::TransactionParameters, user::User};
+use std::{bytes::Bytes, low_level_call::CallParams};
 
-pub struct ExecutedEvent {
-    data: b256, // TODO: change to Bytes when SDK support is implemented: https://github.com/FuelLabs/fuels-rs/issues/723
+/// Log of an executed transaction.
+pub struct ExecuteTransactionEvent {
+    /// The nonce of the transaction.
     nonce: u64,
-    to: Identity,
-    value: u64,
+    /// The parameters of the transaction.
+    // transaction_parameters: TransactionParameters, // TODO: Uncomment and reorder fields when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
+    /// The target of the transaction.
+    target: Identity,
 }
 
+/// Log of setting the threshold.
 pub struct SetThresholdEvent {
+    /// The previous threshold.
     previous_threshold: u64,
+    /// The new threshold.
     threshold: u64,
 }
 
+/// Log of setting the threshold.
 pub struct SetWeightEvent {
+    /// The information of user who's weight has been changed.
     user: User,
-}
-
-pub struct TransferEvent {
-    asset: ContractId,
-    nonce: u64,
-    to: Identity,
-    value: u64,
 }

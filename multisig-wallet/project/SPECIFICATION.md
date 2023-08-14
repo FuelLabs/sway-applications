@@ -1,4 +1,5 @@
 Table of Contents
+
 - [Overview](#overview)
 - [Use Cases](#use-cases)
   - [Core Functionality](#core-functionality)
@@ -6,16 +7,13 @@ Table of Contents
     - [`execute_transaction()`](#execute_transaction)
     - [`set_threshold()`](#set_threshold)
     - [`set_weight()`](#set_weight)
-    - [`transfer()`](#transfer)
   - [State Checks](#state-checks)
     - [`approval_weight()`](#approval_weight)
     - [`balance()`](#balance)
     - [`nonce()`](#nonce)
     - [`threshold()`](#threshold)
   - [Utilities](#utilities)
-    - [`transaction_hash()`](#transaction_hash)
-    - [`threshold_hash()`](#threshold_hash)
-    - [`weight_hash()`](#weight_hash)
+    - [`compute_hash()`](#compute_hash)
   - [Sequence Diagram](#sequence-diagram)
 
 # Overview
@@ -43,16 +41,15 @@ If you are interested in a functional overview then this is the section for you.
 
 ### `execute_transaction()`
 
-1. Execute a transaction, formed from the parameters.
-   > **NOTE** This functionality is not yet fully implemented.
-   1. If the constructor has been called.
-   2. If signature recovery is successful.
-   3. If the recovered addresses are in ascending order.
-   4. If the number of approvals, from the owners whose addresses were recovered, meets the threshold.
-   5. Requires `data`; the data field of the transaction to be executed.
-   6. Requires `signatures`; The information for each of the signatures submitted to approve a specific transaction.
-   7. Requires `to`; The recipient of the transaction to be executed.
-   8. Requires `value`; The value sent in the transaction to be executed.
+1. Execute either a transfer or a contract call.
+2. Reverts when:
+   1. The constructor has not been called to initialize the contract.
+   2. Attempting to transfer with `transfer_params.value` as [Option::None].
+   3. The amount of the asset being sent is greater than the balance in the contract.
+   4. The public key cannot be recovered from a signature.
+   5. The recovered addresses in `count_approvals `are not in ascending order (0x1 < 0x2 < 0x3...) [b256].
+   6. The total approval count is less than the required threshold for execution.
+   7. Attempting to call when `target` is not a [Identity::ContractId].
 
 ### `set_threshold()`
 
@@ -73,20 +70,6 @@ If you are interested in a functional overview then this is the section for you.
    2. Signature recovery failed.
    3. The number of approvals does not meet the threshold.
    4. The new total weighting is less than the threshold.
-
-### `transfer()`
-
-1. Transfers assets, via a transaction formed from the parameters.
-   1. If the constructor has been called.
-   2. If signature recovery is successful.
-   3. If the recovered addresses are in ascending order.
-   4. If the number of approvals, from the owners whose addresses were recovered, meets the threshold.
-   5. Requires `asset_id`: the contract ID of the asset to be transferred.
-   6. Requires `data`; the data field of the transaction.
-   7. Requires `signatures`; The information for each of the signatures submitted to approve a specific transaction.
-   8. Requires `to`; The recipient of the transaction.
-   9. Requires `value`; The value sent in the transaction.
-      1. If the contract owns enough of the asset to be transferred.
 
 ## State Checks
 
@@ -109,21 +92,9 @@ If you are interested in a functional overview then this is the section for you.
 
 ## Utilities
 
-### `transaction_hash()`
+### `compute_hash()`
 
-1. Returns the hash of a transaction, comprised of the parameters. This is a utility for getting a transaction hash to sign over.
-   1. Requires `data`; The data field of the transaction.
-   2. Requires `nonce`; The nonce field of the transaction.
-   3. Requires `to`; The recipient of the transaction.
-   4. Requires `value`; The value sent in the transaction.
-
-### `threshold_hash()`
-
-1. Returns the hash of a transaction used to change the threshold for execution.
-
-### `weight_hash()`
-
-1. Returns the hash of a transaction used to change the weight of a user.
+1. Takes a struct comprised of transaction data and hashes it.
 
 ## Sequence Diagram
 

@@ -1,9 +1,9 @@
 use crate::utils::{
     interface::{
         core::{constructor, set_weight},
-        info::{approval_weight, nonce, weight_hash},
+        info::{approval_weight, compute_hash, nonce},
     },
-    setup::{default_users, setup_env, transfer_signatures, VALID_SIGNER_PK},
+    setup::{default_users, setup_env, transfer_signatures, TypeToHash, Weight, VALID_SIGNER_PK},
 };
 use fuels::accounts::fuel_crypto::Message;
 
@@ -24,10 +24,18 @@ mod success {
         user.weight += 1;
 
         let initial_nonce = nonce(&deployer.contract).await.value;
-        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, user.clone())
-            .await
-            .value
-            .0;
+
+        let tx_hash = compute_hash(
+            &deployer.contract,
+            TypeToHash::Weight(Weight {
+                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                nonce: initial_nonce,
+                user: user.clone(),
+            }),
+        )
+        .await
+        .value
+        .0;
         let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
@@ -35,7 +43,7 @@ mod success {
             .await
             .value;
 
-        let response = set_weight(&deployer.contract, None, signatures, user.clone()).await;
+        let response = set_weight(&deployer.contract, signatures, user.clone()).await;
 
         let final_nonce = nonce(&deployer.contract).await.value;
         let final_weight = approval_weight(&deployer.contract, user.address)
@@ -66,14 +74,21 @@ mod revert {
         let users = default_users();
         let user = users.get(0).unwrap().clone();
 
-        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, user.clone())
-            .await
-            .value
-            .0;
+        let tx_hash = compute_hash(
+            &deployer.contract,
+            TypeToHash::Weight(Weight {
+                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                nonce: initial_nonce,
+                user: user.clone(),
+            }),
+        )
+        .await
+        .value
+        .0;
         let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        set_weight(&deployer.contract, None, signatures, user.clone()).await;
+        set_weight(&deployer.contract, signatures, user.clone()).await;
     }
 
     #[tokio::test]
@@ -89,15 +104,22 @@ mod revert {
         user.weight += 1;
 
         let initial_nonce = nonce(&deployer.contract).await.value;
-        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, user.clone())
-            .await
-            .value
-            .0;
+        let tx_hash = compute_hash(
+            &deployer.contract,
+            TypeToHash::Weight(Weight {
+                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                nonce: initial_nonce,
+                user: user.clone(),
+            }),
+        )
+        .await
+        .value
+        .0;
         let tx_hash = Message::from_bytes(tx_hash);
         let mut signatures = transfer_signatures(private_key, tx_hash).await;
         signatures.pop();
 
-        set_weight(&deployer.contract, None, signatures, user.clone()).await;
+        set_weight(&deployer.contract, signatures, user.clone()).await;
     }
 
     #[tokio::test]
@@ -113,13 +135,20 @@ mod revert {
         user.weight -= 1;
 
         let initial_nonce = nonce(&deployer.contract).await.value;
-        let tx_hash = weight_hash(&deployer.contract, None, initial_nonce, user.clone())
-            .await
-            .value
-            .0;
+        let tx_hash = compute_hash(
+            &deployer.contract,
+            TypeToHash::Weight(Weight {
+                contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+                nonce: initial_nonce,
+                user: user.clone(),
+            }),
+        )
+        .await
+        .value
+        .0;
         let tx_hash = Message::from_bytes(tx_hash);
         let signatures = transfer_signatures(private_key, tx_hash).await;
 
-        set_weight(&deployer.contract, None, signatures, user.clone()).await;
+        set_weight(&deployer.contract, signatures, user.clone()).await;
     }
 }
