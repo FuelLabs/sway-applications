@@ -3,6 +3,7 @@ contract;
 use libraries::Counter;
 
 storage {
+    /// Internal counter updated via calls from a script.
     count: u64 = 0,
 }
 
