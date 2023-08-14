@@ -2,12 +2,20 @@ library;
 
 use ::data_structures::{nft_asset::NFTAsset, token_asset::TokenAsset, traits::Asset};
 
+/// An enum that represents an asset to be sold at auction.
 pub enum AuctionAsset {
+    /// An NFT asset.
     NFTAsset: NFTAsset,
+    /// A token asset.
     TokenAsset: TokenAsset,
 }
 
 impl Asset for AuctionAsset {
+    /// Returns the amount of assets represented by this AuctionAsset.
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The amount of assets represented by this AuctionAsset.
     fn amount(self) -> u64 {
         match self {
             AuctionAsset::NFTAsset(nft_asset) => {
@@ -19,6 +27,11 @@ impl Asset for AuctionAsset {
         }
     }
 
+    /// Returns the AssetId of the asset represented by this AuctionAsset.
+    ///
+    /// # Returns
+    ///
+    /// * [ContractId] - The AssetId of the asset represented by this AuctionAsset.
     fn asset_id(self) -> ContractId {
         match self {
             AuctionAsset::NFTAsset(nft_asset) => {

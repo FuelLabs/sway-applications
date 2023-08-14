@@ -1,7 +1,10 @@
 library;
 
+/// The state of a claim.
 pub enum ClaimState {
+    /// The claim is unclaimed.
     Unclaimed: (),
+    /// The claim has been claimed for the given amount.
     Claimed: u64,
 }
 

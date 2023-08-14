@@ -5,8 +5,8 @@ abi SimpleAsset {
     ///
     /// # Arguments
     ///
-    /// * `asset_supply` - The total qualntity of the asset that may ever be minted.
-    /// * `minter` - The Address or Contract which will be permissioned to mint the asset.
+    /// * `asset_supply`: [u64] - The total qualntity of the asset that may ever be minted.
+    /// * `minter`: [Identity] - The Address or Contract which will be permissioned to mint the asset.
     ///
     /// # Reverts
     ///
@@ -21,8 +21,8 @@ abi SimpleAsset {
     ///
     /// # Arguments
     ///
-    /// * `amount` - The quantity of the asset that is to be minted.
-    /// * `to` - The user which should recieve the minted asset.
+    /// * `amount`: [u64] - The quantity of the asset that is to be minted.
+    /// * `to`: [Identity] - The user which should recieve the minted asset.
     ///
     /// # Reverts
     ///

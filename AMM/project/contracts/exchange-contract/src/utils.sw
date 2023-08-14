@@ -12,12 +12,21 @@ fn calculate_amount_with_fee(amount: u64, liquidity_miner_fee: u64) -> u64 {
 
 /// Returns the maximum required amount of the input asset to get exactly `output_amount` of the output asset.
 ///
-/// ### Arguments
+/// # Arguments
 ///
-/// * `output_amount`: `u64` - The desired amount of the output asset.
-/// * `input_reserve`: `u64` - The reserved amount of the input asset.
-/// * `output_reserve`: `u64` - The reserved amount of the output asset.
-/// * `liquidity_miner_fee`: `u64` - The fee paid to the liquidity miner.
+/// * `output_amount`: [u64] - The desired amount of the output asset.
+/// * `input_reserve`: [u64] - The reserved amount of the input asset.
+/// * `output_reserve`: [u64] - The reserved amount of the output asset.
+/// * `liquidity_miner_fee`: [u64] - The fee paid to the liquidity miner.
+///
+/// # Returns
+///
+/// * [u64] - The maximum required amount of the input asset.
+///
+/// # Reverts
+///
+/// * When `input_reserve` isn't greater than 0 or `output_reserve` isn't greater than 0.
+/// * When the internal math overflows.
 pub fn maximum_input_for_exact_output(
     output_amount: u64,
     input_reserve: u64,
@@ -42,16 +51,21 @@ pub fn maximum_input_for_exact_output(
 
 /// Given exactly `input_amount` of the input asset, returns the minimum resulting amount of the output asset.
 ///
-/// ### Arguments
+/// # Arguments
 ///
-/// * `input_amount`: `u64` - The desired amount of the input asset.
-/// * `input_reserve`: `u64` - The reserved amount of the input asset.
-/// * `output_reserve`: `u64` - The reserved amount of the output asset.
-/// * `liquidity_miner_fee`: `u64` - The fee paid to the liquidity miner.
+/// * `input_amount`: [u64] - The desired amount of the input asset.
+/// * `input_reserve`: [u64] - The reserved amount of the input asset.
+/// * `output_reserve`: [u64] - The reserved amount of the output asset.
+/// * `liquidity_miner_fee`: [u64] - The fee paid to the liquidity miner.
+///
+/// # Returns
+///
+/// * [u64] - The minimum resulting amount of the output asset.
 ///
 /// # Reverts
 ///
 /// * When `input_reserve` isn't greater than 0 or `output_reserve` isn't greater than 0.
+/// * When the internal math overflows.
 pub fn minimum_output_given_exact_input(
     input_amount: u64,
     input_reserve: u64,
@@ -68,11 +82,19 @@ pub fn minimum_output_given_exact_input(
 
 /// Calculates d in the equation: a / b = c / d.
 ///
-/// ### Arguments
+/// # Arguments
 ///
-/// * `a`: `u64` - The value of a in the equation a / b = c / d.
-/// * `b`: `u64` - The value of b in the equation a / b = c / d.
-/// * `c`: `u64` - The value of c in the equation a / b = c / d.
+/// * `a`: [u64] - The value of a in the equation a / b = c / d.
+/// * `b`: [u64] - The value of b in the equation a / b = c / d.
+/// * `c`: [u64] - The value of c in the equation a / b = c / d.
+///
+/// # Returns
+///
+/// * [u64] - The value of d in the equation a / b = c / d.
+///
+/// # Reverts
+///
+/// * When the internal math overflows.
 pub fn proportional_value(b: u64, c: u64, a: u64) -> u64 {
     let calculation = (U128::from((0, b)) * U128::from((0, c)));
     let result_wrapped = (calculation / U128::from((0, a))).as_u64();
@@ -81,10 +103,10 @@ pub fn proportional_value(b: u64, c: u64, a: u64) -> u64 {
 
 /// Determines the individual assets in an asset pair.
 ///
-/// ### Arguments
+/// # Arguments
 ///
-/// * `input_asset_id`: `ContractId` - The contract ID of the input asset.
-/// * `pair`: `Option<AssetPair>` - The asset pair from which the individual assets are determined.
+/// * `input_asset_id`: [ContractId] - The contract ID of the input asset.
+/// * `pair`: [Option<AssetPair>] - The asset pair from which the individual assets are determined.
 ///
 /// # Reverts
 ///

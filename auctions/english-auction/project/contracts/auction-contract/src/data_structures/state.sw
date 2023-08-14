@@ -1,5 +1,6 @@
 library;
 
+/// The state of an auction.
 pub enum State {
     /// The state at which the auction is no longer accepting bids.
     Closed: (),
