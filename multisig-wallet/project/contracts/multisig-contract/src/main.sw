@@ -114,10 +114,6 @@ impl MultiSignatureWallet for Contract {
                     gas: contract_call_params.forwarded_gas,
                 };
                 call_with_function_selector(target_contract_id, contract_call_params.function_selector, contract_call_params.calldata, contract_call_params.single_value_type_arg, call_params);
-
-                log(ExecuteTransactionEvent { nonce, target
-                // transaction_parameters,// TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
- });
             },
             TransactionParameters::Transfer(transfer_params) => {
                 require(transfer_params.value.is_some(), ExecutionError::TransferRequiresAValue);
@@ -131,12 +127,12 @@ impl MultiSignatureWallet for Contract {
                 storage.nonce.write(nonce + 1);
 
                 transfer(value, transfer_params.asset_id, target);
-
-                log(ExecuteTransactionEvent { nonce, target
-                // transaction_parameters,// TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
- });
-            }
+            },
         }
+
+        log(ExecuteTransactionEvent { nonce, target
+        // transaction_parameters,// TODO: Uncomment when SDK supports logs with nested Bytes https://github.com/FuelLabs/fuels-rs/issues/1046
+ });
     }
 
     #[storage(read, write)]
