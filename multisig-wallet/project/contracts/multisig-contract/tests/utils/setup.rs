@@ -224,44 +224,39 @@ pub(crate) fn call_parameters(
     target_contract: &TargetContract<WalletUnlocked>,
     with_value: bool,
 ) -> Transaction {
-    match with_value {
-        false => Transaction {
-            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
-            nonce,
-            target: Identity::ContractId(target_contract.contract_id().into()),
-            transaction_parameters: TransactionParameters::Call(ContractCallParams {
-                calldata: Bytes(calldata!(
-                    Address::from(deployer.wallet.address()),
-                    DEFAULT_CALLDATA_VALUE
-                )),
-                forwarded_gas: DEFAULT_FORWARDED_GAS,
-                function_selector: Bytes(fn_selector!(update_counter(Address, u64))),
-                single_value_type_arg: false,
-                transfer_params: TransferParams {
-                    asset_id: base_asset_contract_id(),
-                    value: None,
-                },
-            }),
+    let contract_call_params = ContractCallParams {
+        calldata: Bytes(calldata!(
+            Address::from(deployer.wallet.address()),
+            DEFAULT_CALLDATA_VALUE
+        )),
+        forwarded_gas: DEFAULT_FORWARDED_GAS,
+        function_selector: Bytes(fn_selector!(update_counter(Address, u64))),
+        single_value_type_arg: false,
+        transfer_params: TransferParams {
+            asset_id: base_asset_contract_id(),
+            value: None,
         },
-        true => Transaction {
-            contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
-            nonce,
-            target: Identity::ContractId(target_contract.contract_id().into()),
-            transaction_parameters: TransactionParameters::Call(ContractCallParams {
-                calldata: Bytes(calldata!(
-                    Address::from(deployer.wallet.address()),
-                    DEFAULT_CALLDATA_VALUE
-                )),
-                forwarded_gas: DEFAULT_FORWARDED_GAS,
-                function_selector: Bytes(fn_selector!(update_deposit(Address, u64))),
-                single_value_type_arg: false,
-                transfer_params: TransferParams {
-                    asset_id: base_asset_contract_id(),
-                    value: Some(DEFAULT_TRANSFER_AMOUNT),
-                },
-            }),
-        },
+    };
+
+    let mut transaction = Transaction {
+        contract_identifier: deployer.contract.contract_id().try_into().unwrap(),
+        nonce,
+        target: Identity::ContractId(target_contract.contract_id().into()),
+        transaction_parameters: TransactionParameters::Call(contract_call_params.clone()),
+    };
+
+    if with_value {
+        transaction.transaction_parameters = TransactionParameters::Call(ContractCallParams {
+            function_selector: Bytes(fn_selector!(update_deposit(Address, u64))),
+            transfer_params: TransferParams {
+                asset_id: base_asset_contract_id(),
+                value: Some(DEFAULT_TRANSFER_AMOUNT),
+            },
+            ..contract_call_params
+        });
     }
+
+    transaction
 }
 
 pub(crate) async fn transfer_signatures(
