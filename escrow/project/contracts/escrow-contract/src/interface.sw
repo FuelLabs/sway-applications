@@ -194,7 +194,7 @@ abi Info {
     ///
     /// # Returns
     ///
-    /// * [Option<Arbiter>] - The proposed arbiter. 
+    /// * [Option<Arbiter>] - The proposed arbiter.
     #[storage(read)]
     fn arbiter_proposal(identifier: u64) -> Option<Arbiter>;
 

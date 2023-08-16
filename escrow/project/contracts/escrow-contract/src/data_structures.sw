@@ -72,7 +72,7 @@ impl EscrowInfo {
     /// * `seller`: [Seller] - The authorized user who is the recipient of payments made by the buyer.
     ///
     /// # Returns
-    /// 
+    ///
     /// * [EscrowInfo] - The newly created EscrowInfo struct.
     pub fn new(
         arbiter: Arbiter,
