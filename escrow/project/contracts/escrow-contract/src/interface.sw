@@ -103,22 +103,22 @@ abi Escrow {
     fn propose_arbiter(arbiter: Arbiter, identifier: u64);
 
     /// The arbiter decides who the deposit is sent to and how much of the designated payment they
-    /// will take
+    /// will take.
     ///
     /// # Arguments
     ///
-    /// * `identifier`: Identifier used to find a specific escrow
-    /// * `payment_amount`: The amount the arbiter will take as a payment for their work
-    /// * `user`: The user who the deposit from the buyer will be sent to (either buyer or seller)
+    /// * `identifier`: [u64] - Identifier used to find a specific escrow.
+    /// * `payment_amount`: [u64] - The amount the arbiter will take as a payment for their work.
+    /// * `user`: [Identity] - The user who the deposit from the buyer will be sent to (either buyer or seller).
     ///
     /// # Reverts
     ///
-    /// * When the escrow is not in the State::Pending state
-    /// * When the escrow is not in dispute
-    /// * When the caller is not the arbiter
-    /// * When the `user` is not the buyer or seller
-    /// * When the buyer does not currently have a deposit in the escrow
-    /// * When the `payment_amount` is greater than the deposit by the seller
+    /// * When the escrow is not in the State::Pending state.
+    /// * When the escrow is not in dispute.
+    /// * When the caller is not the arbiter.
+    /// * When the `user` is not the buyer or seller.
+    /// * When the buyer does not currently have a deposit in the escrow.
+    /// * When the `payment_amount` is greater than the deposit by the seller.
     #[storage(read, write)]
     fn resolve_dispute(identifier: u64, payment_amount: u64, user: Identity);
 
@@ -126,61 +126,61 @@ abi Escrow {
     ///
     /// # Arguments
     ///
-    /// * `identifier`: Identifier used to find a specific escrow
+    /// * `identifier`: [u64] - Identifier used to find a specific escrow.
     ///
     /// # Reverts
     ///
-    /// * When the escrow is not in the State::Pending state
-    /// * When the caller is not the seller
-    /// * When the buyer does not currently have a deposit in the escrow
+    /// * When the escrow is not in the State::Pending state.
+    /// * When the caller is not the seller.
+    /// * When the buyer does not currently have a deposit in the escrow.
     #[storage(read, write)]
     fn return_deposit(identifier: u64);
 
     /// If a user has deposited but not transferred in time & they have not disputed then the seller
-    /// can take the payment themselves
+    /// can take the payment themselves..
     ///
     /// # Arguments
     ///
-    /// * `identifier`: Identifier used to find a specific escrow
+    /// * `identifier`: [u64] - Identifier used to find a specific escrow.
     ///
     /// # Reverts
     ///
-    /// * When the escrow is not in the State::Pending state
-    /// * When the caller attempts to take payment before / during the deadline
-    /// * When the caller attempts to take payment during a dispute
-    /// * When the caller is not the seller
-    /// * When the buyer does not currently have a deposit in the escrow
+    /// * When the escrow is not in the State::Pending state.
+    /// * When the caller attempts to take payment before / during the deadline.
+    /// * When the caller attempts to take payment during a dispute.
+    /// * When the caller is not the seller.
+    /// * When the buyer does not currently have a deposit in the escrow.
     #[storage(read, write)]
     fn take_payment(identifier: u64);
 
-    /// After a buyer deposits they can transfer the deposit to the seller
+    /// After a buyer deposits they can transfer the deposit to the seller.
     ///
     /// # Arguments
     ///
-    /// * `identifier`: Identifier used to find a specific escrow
+    /// * `identifier`: [u64] - Identifier used to find a specific escrow.
     ///
     /// # Reverts
     ///
-    /// * When the escrow is not in the State::Pending state
-    /// * When the buyer does not currently have a deposit in the escrow
-    /// * When the caller is not the buyer
+    /// * When the escrow is not in the State::Pending state.
+    /// * When the buyer does not currently have a deposit in the escrow.
+    /// * When the caller is not the buyer.
     #[storage(read, write)]
     fn transfer_to_seller(identifier: u64);
 
     /// If a buyer has not deposited and the deadline has been surpassed then the seller can withdraw
-    /// their collateral
+    /// their collateral.
     ///
     /// # Arguments
     ///
-    /// * `identifier`: Identifier used to find a specific escrow
+    /// * `identifier`: [u64] - Identifier used to find a specific escrow.
     ///
     /// # Reverts
     ///
-    /// * When the escrow is not in the State::Pending state
-    /// * When the caller attempts to withdraw before / during the deadline
-    /// * When the caller attempts to withdraw during a dispute
-    /// * When the caller is not the seller
-    /// * When the buyer deposited
+    /// * When the escrow is not in the State::Pending state.
+    /// * When the caller attempts to withdraw before / during the deadline.
+    /// * When the caller attempts to withdraw during a dispute.
+    /// * When the caller is not the seller.
+    /// * When the buyer deposited.
     #[storage(read, write)]
     fn withdraw_collateral(identifier: u64);
 }
@@ -190,27 +190,43 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `identifier`: Identifier used to find a specific escrow
+    /// * `identifier`: [u64] - Identifier used to find a specific escrow.
+    ///
+    /// # Returns
+    ///
+    /// * [Option<Arbiter>] - The proposed arbiter. 
     #[storage(read)]
     fn arbiter_proposal(identifier: u64) -> Option<Arbiter>;
 
-    /// Returns the information about the asset used in an escrow
+    /// Returns the information about the asset used in an escrow.
     ///
     /// # Arguments
     ///
-    /// * `identifier`: Identifier used to find a specific escrow
+    /// * `identifier`: [u64] - Identifier used to find a specific escrow.
+    ///
+    /// # Returns
+    ///
+    /// * [Option<Asset>] - The asset information.
     #[storage(read)]
     fn assets(identifier: u64) -> Option<Asset>;
 
-    /// Returns information about an escrow
+    /// Returns information about an escrow.
     ///
     /// # Arguments
     ///
-    /// * `identifier`: Identifier used to find a specific escrow
+    /// * `identifier`: Identifier used to find a specific escrow.
+    ///
+    /// # Returns
+    ///
+    /// * [Option<EscrowInfo>] - The escrow information.
     #[storage(read)]
     fn escrows(identifier: u64) -> Option<EscrowInfo>;
 
     /// Returns the total number of escrows created in the contract
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The total number of escrows created.
     #[storage(read)]
     fn escrow_count() -> u64;
 }
