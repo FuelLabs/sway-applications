@@ -2,7 +2,7 @@ library;
 
 /// Errors related to the state of the game.
 pub enum GameStateError {
-    /// The game has already ended.
+    /// The game has ended.
     GameHasEnded: (),
     /// The game has not ended yet.
     GameHasNotEnded: (),
