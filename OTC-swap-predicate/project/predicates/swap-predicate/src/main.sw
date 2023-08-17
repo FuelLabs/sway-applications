@@ -16,12 +16,23 @@ use std::{
 };
 
 configurable {
+    /// The amount of the ask.
     ASK_AMOUNT: u64 = 42,
+    /// The token to be paid.
     ASK_TOKEN: ContractId = ContractId::from(0x0101010101010101010101010101010101010101010101010101010101010101),
+    /// The receiver of the ask.
     RECEIVER: Address = Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db),
 }
 
-/// Order / OTC swap Predicate
+/// Order / OTC swap Predicate. Like a limit order.
+///
+/// # Additional Information
+///
+/// The user can cancel their own order by spending the output coin to themselves.
+///
+/// # Returns
+///
+/// * [bool] - `true` if the spender is the receiver or if the terms of the order are met. `false` otherwise.
 fn main() -> bool {
     // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `receiver`
 
