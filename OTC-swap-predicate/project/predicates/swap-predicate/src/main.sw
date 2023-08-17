@@ -18,7 +18,7 @@ use std::{
 configurable {
     /// The amount of asset required to unlock the predicate.
     ASK_AMOUNT: u64 = 42,
-    /// The token to be paid.
+    /// The asset to be paid.
     ASK_TOKEN: ContractId = ContractId::from(0x0101010101010101010101010101010101010101010101010101010101010101),
     /// The receiver of the ask.
     RECEIVER: Address = Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db),
