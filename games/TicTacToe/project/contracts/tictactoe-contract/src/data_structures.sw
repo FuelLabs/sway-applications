@@ -2,8 +2,11 @@ library;
 
 use core::ops::Eq;
 
+/// Represents the state of a game.
 pub enum State {
+    /// The game is currently being played.
     Playing: (),
+    /// The game has ended.
     Ended: (),
 }
 

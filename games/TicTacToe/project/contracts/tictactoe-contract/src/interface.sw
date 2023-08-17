@@ -5,8 +5,8 @@ abi Game {
     ///
     /// # Arguments
     ///
-    /// * `player_one`: the first player to make a move.
-    /// * `player_two`: the second player to make a move.
+    /// * `player_one`: [Identity] - The first player to make a move.
+    /// * `player_two`: [Identity] - The second player to make a move.
     ///
     /// # Reverts
     ///
@@ -16,11 +16,13 @@ abi Game {
 
     /// Allows a player to make a move at a `position`.
     ///
+    /// # Additional Information
+    ///
     /// It also determines if the game has been won or drawn.
     ///
     /// # Arguments
     ///
-    /// * `position`: the position where the player wants to move.
+    /// * `position`: [u64] - The position where the player wants to move.
     ///
     /// # Reverts
     ///
