@@ -8,7 +8,7 @@ pub struct AssetInfo {
 
 impl AssetInfo {
     /// Creates a new `AssetInfo` with no pledges.
-    /// 
+    ///
     /// # Returns
     ///
     /// * [AssetInfo] - The new `AssetInfo`.
