@@ -2,6 +2,7 @@ library;
 
 use core::ops::Eq;
 
+/// Represents the state of the oracle.
 pub enum State {
     NotInitialized: (),
     Initialized: (),
