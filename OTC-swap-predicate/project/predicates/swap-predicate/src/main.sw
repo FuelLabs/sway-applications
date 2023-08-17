@@ -32,7 +32,7 @@ configurable {
 ///
 /// # Returns
 ///
-/// * [bool] - `true` if the spender is the receiver or if the terms of the order are met. `false` otherwise.
+/// * [bool] - `true` if the spender is the receiver or if the terms of the order are met, `false` otherwise.
 fn main() -> bool {
     // The spending transaction must have an output that sends `ask_amount` of `ask_token` to `receiver`
 
