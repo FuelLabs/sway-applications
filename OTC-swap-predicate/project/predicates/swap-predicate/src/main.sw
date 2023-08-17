@@ -28,7 +28,7 @@ configurable {
 ///
 /// # Additional Information
 ///
-/// The user can cancel their own order by spending the output coin to themselves.
+/// The user can cancel their order by including an input coin from themselves.
 ///
 /// # Returns
 ///
