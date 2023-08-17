@@ -14,6 +14,9 @@ abi Oracle {
 
     /// Return price of asset.
     ///
+    /// # Additional Information
+    ///
+    /// The price is `None` until the price is set for the first time.
     /// # Returns
     ///
     /// * [Option<u64>] - The price of the tracked asset.
