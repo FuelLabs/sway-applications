@@ -34,7 +34,7 @@ pub enum DeadlineInputError {
 pub enum DepositError {
     /// Incorrect amount of asset was sent.
     IncorrectAssetAmount: (),
-    /// Incorrect assets were sent.
+    /// Incorrect asset was sent.
     IncorrectAssetSent: (),
 }
 
