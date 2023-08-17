@@ -23,7 +23,7 @@ abi Timelock {
     ///
     /// * `recipient`: [Identity] - The target of the call.
     /// * `asset`: [Option<Asset>] - Asset that is transferred.
-    /// * `data`: [Option<Bytes>] - Payload associated with transaction.
+    /// * `data`: [Option<Bytes>] - Payload associated with the transaction.
     /// * `timestamp`: [u64] - Time after which the transaction may be executed.
     ///
     /// # Reverts
