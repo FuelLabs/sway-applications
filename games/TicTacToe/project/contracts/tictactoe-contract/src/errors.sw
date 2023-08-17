@@ -16,7 +16,7 @@ pub enum PlayerError {
 
 /// Errors related to the position of a cell.
 pub enum PositionError {
-    /// The cell is already occupied.
+    /// The cell is occupied.
     CellIsNotEmpty: (),
     /// The cell is out of bounds.
     InvalidPosition: (),
