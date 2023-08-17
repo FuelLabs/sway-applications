@@ -54,7 +54,7 @@ pub fn win_check(board: Vec<Option<Identity>>, player: Identity) -> bool {
 ///
 /// # Returns
 ///
-/// * [bool] - True if the game ends up in a draw, false otherwise.
+/// * [bool] - True if the game has ended in a draw, false otherwise.
 pub fn draw(
     board: Vec<Option<Identity>>,
     player_one: Identity,
