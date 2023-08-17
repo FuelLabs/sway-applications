@@ -4,7 +4,7 @@ library;
 pub enum GameStateError {
     /// The game has ended.
     GameHasEnded: (),
-    /// The game has not ended yet.
+    /// The game has not ended.
     GameHasNotEnded: (),
 }
 
