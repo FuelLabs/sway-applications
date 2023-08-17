@@ -16,7 +16,7 @@ use std::{
 };
 
 configurable {
-    /// The amount of the ask.
+    /// The amount of asset required to unlock the predicate.
     ASK_AMOUNT: u64 = 42,
     /// The token to be paid.
     ASK_TOKEN: ContractId = ContractId::from(0x0101010101010101010101010101010101010101010101010101010101010101),
