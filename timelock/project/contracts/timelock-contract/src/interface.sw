@@ -40,7 +40,7 @@ abi Timelock {
     /// # Arguments
     ///
     /// * `recipient`: [Identity] - The target of the call.
-    /// * `asset`: [Option<Asset>] - Native asset that will be transferred.
+    /// * `asset`: [Option<Asset>] - Asset that will be transferred.
     /// * `data`: [Option<Bytes>] - Payload associated with the transaction.
     /// * `timestamp`: [u64] - Time after which the transaction may be executed.
     ///
@@ -72,7 +72,7 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `id`: [Option<ExecutionRange>] The hash of a transaction.
+    /// * `id`: [b256] The hash of a transaction.
     ///
     /// # Returns
     ///
@@ -85,8 +85,8 @@ abi Info {
     /// # Arguments
     ///
     /// - `recipient`: [Identity] - The target of the call.
-    /// - `asset`: [Option<Asset>] - Native asset that will be transferred.
-    /// - `data`: [Option<Bytes>] - Payload associated with transaction.
+    /// - `asset`: [Option<Asset>] - Asset that will be transferred.
+    /// - `data`: [Option<Bytes>] - Payload associated with the transaction.
     /// - `timestamp`: [u64] - Time after which the transaction may be executed.
     ///
     /// # Returns
