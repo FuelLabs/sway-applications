@@ -2,7 +2,7 @@ library;
 
 use core::ops::Eq;
 
-/// Represents the middle man of an escrow transaction.
+/// Trusted 3rd party who handles the resolution of a dispute.
 pub struct Arbiter {
     /// Address identifying the arbiter.
     address: Identity,
@@ -18,7 +18,7 @@ impl Eq for Arbiter {
     }
 }
 
-/// Represents a side of an escrow transaction.
+/// Represents the amount and type of assets being escrowed.
 pub struct Asset {
     /// Amount of asset the user must deposit.
     amount: u64,
