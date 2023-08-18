@@ -70,7 +70,7 @@ abi Info {
     /// # Returns
     ///
     /// * [u64] - The minimum delay value.
-    /// * [u64] - The maximum delay value. 
+    /// * [u64] - The maximum delay value.
     fn delays() -> (u64, u64);
 
     /// Returns an optional time range for which a transaction may be executed.
