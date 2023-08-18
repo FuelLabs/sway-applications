@@ -5,7 +5,7 @@ abi Oracle {
     ///
     /// # Additional Information
     ///
-    /// The owner is initialized to the first deterministically generated wallet using the SDK in Forc.toml.
+    /// The owner is initialized to the first deterministically generated wallet using the SDK.
     ///
     /// # Returns
     ///
