@@ -41,14 +41,11 @@ mod success {
 
         tokio::time::sleep(period * 3).await;
 
-        assert!(invocations
-            .lock()
-            .await
-            .iter()
-            .tuple_windows()
-            .all(|(previous_invocation, current_invocation)| {
+        assert!(invocations.lock().await.iter().tuple_windows().all(
+            |(previous_invocation, current_invocation)| {
                 current_invocation.time - previous_invocation.time >= period
-            }));
+            }
+        ));
     }
 
     #[tokio::test]
