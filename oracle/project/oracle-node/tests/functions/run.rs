@@ -2,7 +2,7 @@ use crate::functions::{HardcodedPriceProvider, LoggingPriceUpdater};
 use fuels::tx::Receipt;
 use itertools::Itertools;
 use oracle_node::spawn_oracle_updater_job;
-use std::{borrow::Borrow, time::Duration};
+use std::time::Duration;
 
 mod success {
     use super::*;
