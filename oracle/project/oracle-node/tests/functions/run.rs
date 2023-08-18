@@ -2,7 +2,7 @@ use crate::functions::{HardcodedPriceProvider, LoggingPriceUpdater};
 use fuels::tx::Receipt;
 use itertools::Itertools;
 use oracle_node::spawn_oracle_updater_job;
-use std::{borrow::Borrow, time::Duration};
+use std::time::Duration;
 
 mod success {
     use super::*;
@@ -26,7 +26,6 @@ mod success {
         assert!(invocations
             .lock()
             .await
-            .borrow()
             .iter()
             .all(|invocation| { invocation.price == the_price }));
     }
@@ -42,15 +41,11 @@ mod success {
 
         tokio::time::sleep(period * 3).await;
 
-        assert!(invocations
-            .lock()
-            .await
-            .borrow()
-            .iter()
-            .tuple_windows()
-            .all(|(previous_invocation, current_invocation)| {
+        assert!(invocations.lock().await.iter().tuple_windows().all(
+            |(previous_invocation, current_invocation)| {
                 current_invocation.time - previous_invocation.time >= period
-            }));
+            }
+        ));
     }
 
     #[tokio::test]
