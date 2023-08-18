@@ -13,6 +13,15 @@ const MATCHES = [
 ];
 
 /// Checks if a player has won.
+///
+/// # Arguments
+///
+/// * `board`: [Vec<Option<Identity>>] - A vector of all the markers on the board.
+/// * `player`: [Identity] - The player to check for.
+///
+/// # Returns
+///
+/// * [bool] - True if the player has won, false otherwise.
 pub fn win_check(board: Vec<Option<Identity>>, player: Identity) -> bool {
     let mut i = 0;
     while (i < 8) {
@@ -35,6 +44,17 @@ pub fn win_check(board: Vec<Option<Identity>>, player: Identity) -> bool {
 }
 
 /// Checks if the game ends up in a draw.
+///
+/// # Arguments
+///
+/// * `board`: [Vec<Option<Identity>>] - A vector of all the markers on the board.
+/// * `player_one`: [Identity] - The first player.
+/// * `player_two`: [Identity] - The second player.
+/// * `move_counter`: [u64] - The number of moves made.
+///
+/// # Returns
+///
+/// * [bool] - True if the game has ended in a draw, false otherwise.
 pub fn draw(
     board: Vec<Option<Identity>>,
     player_one: Identity,
