@@ -65,7 +65,12 @@ abi Info {
     /// * [u64] - The amount of `asset_id` in the contract.
     fn balance(asset_id: ContractId) -> u64;
 
-    /// Returns the (MINIMUM_DELAY, MAXIMUM_DELAY) values.
+    /// Returns the delay values.
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The minimum delay value.
+    /// * [u64] - The maximum delay value. 
     fn delays() -> (u64, u64);
 
     /// Returns an optional time range for which a transaction may be executed.
