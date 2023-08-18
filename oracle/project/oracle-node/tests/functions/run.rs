@@ -26,7 +26,6 @@ mod success {
         assert!(invocations
             .lock()
             .await
-            .borrow()
             .iter()
             .all(|invocation| { invocation.price == the_price }));
     }
@@ -45,7 +44,6 @@ mod success {
         assert!(invocations
             .lock()
             .await
-            .borrow()
             .iter()
             .tuple_windows()
             .all(|(previous_invocation, current_invocation)| {
