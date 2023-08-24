@@ -1,5 +1,5 @@
 [toolchain]
-channel = "latest-2023-08-16"
+channel = "latest-2023-08-19"
 
 [components]
 forc = "0.44.1"
