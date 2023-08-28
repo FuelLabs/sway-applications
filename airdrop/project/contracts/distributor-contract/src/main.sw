@@ -26,7 +26,7 @@ storage {
     /// The Identity which has the ability to clawback unclaimed tokens.
     admin: Option<Identity> = Option::None,
     /// The contract of the tokens which is to be distributed.
-    asset: Option<ContractId> = Option::None,
+    asset: Option<AssetId> = Option::None,
     /// Stores the ClaimState of users that have interacted with the Airdrop Distributor contract.
     /// Maps (user => claim)
     claims: StorageMap<Identity, ClaimState> = StorageMap {},
@@ -42,7 +42,7 @@ impl AirdropDistributor for Contract {
     #[storage(read, write)]
     fn claim(amount: u64, key: u64, proof: Vec<b256>, to: Identity) {
         // The claiming period must be open
-        require(storage.end_block.read() > height(), StateError::ClaimPeriodNotActive);
+        require(storage.end_block.read() > height().as_u64(), StateError::ClaimPeriodNotActive);
 
         // Users cannot claim twice
         let sender = msg_sender().unwrap();
@@ -58,7 +58,7 @@ impl AirdropDistributor for Contract {
         storage.claims.insert(sender, ClaimState::Claimed(amount));
 
         // Transfer tokens
-        transfer(amount, asset, to);
+        transfer(to, asset, amount);
 
         log(ClaimEvent {
             amount,
@@ -71,14 +71,14 @@ impl AirdropDistributor for Contract {
     fn clawback() {
         let admin = storage.admin.read();
         require(admin.is_some() && admin.unwrap() == msg_sender().unwrap(), AccessError::CallerNotAdmin);
-        require(storage.end_block.read() <= height(), StateError::ClaimPeriodActive);
+        require(storage.end_block.read() <= height().as_u64(), StateError::ClaimPeriodActive);
 
         let asset = storage.asset.read().unwrap();
         let balance = this_balance(asset);
         require(balance > 0, AccessError::NotEnoughTokens);
 
         // Send the remaining balance of tokens to the admin
-        transfer(balance, asset, admin.unwrap());
+        transfer(admin.unwrap(), asset, balance);
 
         log(ClawbackEvent {
             amount: balance,
@@ -100,7 +100,7 @@ impl AirdropDistributor for Contract {
         require(msg_amount() > 0, InitError::CannotAirdropZeroTokens);
 
         let asset = msg_asset_id();
-        storage.end_block.write(claim_time + height());
+        storage.end_block.write(claim_time + height().as_u64());
         storage.merkle_root.write(Option::Some(merkle_root));
         storage.asset.write(Option::Some(asset));
         storage.number_of_leaves.write(number_of_leaves);
@@ -134,7 +134,7 @@ impl Info for Contract {
 
     #[storage(read)]
     fn is_active() -> bool {
-        storage.end_block.read() > height()
+        storage.end_block.read() > height().as_u64()
     }
 
     #[storage(read)]

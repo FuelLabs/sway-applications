@@ -5,7 +5,7 @@ mod interface;
 
 use ::errors::{AccessError, InitError, InputError};
 use ::interface::SimpleAsset;
-use std::{auth::msg_sender, token::mint_to};
+use std::{auth::msg_sender, constants::ZERO_B256, token::mint_to};
 
 storage {
     /// The current quantity of the asset minted.
@@ -35,6 +35,6 @@ impl SimpleAsset for Contract {
         require(amount + storage.asset_minted.read() <= storage.asset_supply.read(), InputError::GreaterThanMaximumSupply);
 
         storage.asset_minted.write(storage.asset_minted.read() + amount);
-        mint_to(amount, to);
+        mint_to(to, ZERO_B256, amount);
     }
 }
