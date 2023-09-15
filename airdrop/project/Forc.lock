@@ -1,26 +1,26 @@
 [[package]]
-name = 'asset-contract'
-source = 'member'
-dependencies = ['std']
+name = "asset-contract"
+source = "member"
+dependencies = ["std"]
 
 [[package]]
-name = 'core'
-source = 'path+from-root-9BFE6D5D0CBDF740'
+name = "core"
+source = "path+from-root-AD80769CAE44474A"
 
 [[package]]
-name = 'distributor-contract'
-source = 'member'
+name = "distributor-contract"
+source = "member"
 dependencies = [
-    'merkle_proof',
-    'std',
+    "merkle_proof",
+    "std",
 ]
 
 [[package]]
-name = 'merkle_proof'
-source = 'git+https://github.com/FuelLabs/sway-libs?tag=v0.12.0#063f118a3104adb6a04207ca877993b5ad03a492'
-dependencies = ['std']
+name = "merkle_proof"
+source = "git+https://github.com/FuelLabs/sway-libs?tag=v0.14.0#6847dd9994c70834692c101a368ba1f69beca170"
+dependencies = ["std"]
 
 [[package]]
-name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.42.1#3b66f8e424bd21e3ba467783b10b36e808cfa6ee'
-dependencies = ['core']
+name = "std"
+source = "git+https://github.com/fuellabs/sway?tag=v0.46.0#e75f14b03636bc96751a6760304a1a6d3eb5937d"
+dependencies = ["core"]
