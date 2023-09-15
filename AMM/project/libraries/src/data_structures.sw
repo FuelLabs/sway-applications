@@ -3,7 +3,7 @@ library;
 /// Information for a particular asset.
 pub struct Asset {
     /// Identifier of asset.
-    id: ContractId,
+    id: AssetId,
     /// Amount of asset that can represent reserve amount, deposit amount, withdraw amount and more depending on the context.
     amount: u64,
 }
@@ -13,13 +13,13 @@ impl Asset {
     ///
     /// # Arguments
     ///
-    /// * `id`: [ContractId] - The contract id of the asset.
+    /// * `id`: [AssetId] - The AssetId of the asset.
     /// * `amount`: [u64] - The amount of the asset.
     ///
     /// # Returns
     ///
     /// * `Asset` - The new asset.
-    pub fn new(id: ContractId, amount: u64) -> Self {
+    pub fn new(id: AssetId, amount: u64) -> Self {
         Self { id, amount }
     }
 }
@@ -51,8 +51,8 @@ impl AssetPair {
     ///
     /// # Returns
     ///
-    /// * `(ContractId, ContractId)` - The contract ids of both assets in the pair.
-    pub fn ids(self) -> (ContractId, ContractId) {
+    /// * `(AssetId, AssetId)` - The contract ids of both assets in the pair.
+    pub fn ids(self) -> (AssetId, AssetId) {
         (self.a.id, self.b.id)
     }
 
@@ -65,16 +65,16 @@ impl AssetPair {
         (self.a.amount, self.b.amount)
     }
 
-    /// This function returns the Asset with the contract id that matches `this_asset`.
+    /// This function returns the Asset with the AssetId that matches `this_asset`.
     ///
     /// # Arguments
     ///
-    /// * `this_asset`: [ContractId] - contract id to match with.
+    /// * `this_asset`: [AssetId] - AssetId to match with.
     ///
     /// # Returns
     ///
-    /// * `Asset` - The asset with the contract id that matches `this_asset`.
-    pub fn this_asset(self, this_asset: ContractId) -> Asset {
+    /// * `Asset` - The AssetId that matches `this_asset`.
+    pub fn this_asset(self, this_asset: AssetId) -> Asset {
         if this_asset == self.a.id {
             self.a
         } else {
@@ -82,16 +82,16 @@ impl AssetPair {
         }
     }
 
-    /// This function returns the Asset with the contract id that does not match `this_asset`.
+    /// This function returns the Asset with the AssetId that does not match `this_asset`.
     ///
     /// # Arguments
     ///
-    /// * `this_asset`: [ContractId] - contract id to match with.
+    /// * `this_asset`: [AssetId] - AssetId to match with.
     ///
     /// # Returns
     ///
-    /// * `Asset` - The asset with the contract id that does not match `this_asset`.
-    pub fn other_asset(self, this_asset: ContractId) -> Asset {
+    /// * `Asset` - The AssetId that does not match `this_asset`.
+    pub fn other_asset(self, this_asset: AssetId) -> Asset {
         if this_asset == self.a.id {
             self.b
         } else {

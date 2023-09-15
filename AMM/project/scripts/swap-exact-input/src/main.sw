@@ -13,7 +13,7 @@ enum SwapError {
     /// The amount bought is less than the minimum output amount.
     ExcessiveSlippage: u64,
     /// The exchange for this asset pair could not be found.
-    PairExchangeNotRegistered: (ContractId, ContractId),
+    PairExchangeNotRegistered: (AssetId, AssetId),
 }
 
 configurable {
@@ -25,7 +25,7 @@ configurable {
 ///
 /// # Arguments
 ///
-/// * `assets`: [Vec<ContractId>] - The assets along the swap route.
+/// * `assets`: [Vec<AssetId>] - The assets along the swap route.
 /// * `input_amount`: [u64] - The desired amount of the input asset.
 /// * `minimum_output_amount`: [u64] - The maximum amount of the output asset.
 /// * `deadline`: [u64] - The limit on block height for operation.
@@ -40,7 +40,7 @@ configurable {
 /// * When the exchange contract has not been registered in the AMM.
 /// * When the amount of the brought asset is less than `minimum_output_amount`.
 fn main(
-    assets: Vec<ContractId>,
+    assets: Vec<AssetId>,
     input_amount: u64,
     minimum_output_amount: Option<u64>,
     deadline: u64,

@@ -6,13 +6,13 @@ mod events;
 use ::errors::InitError;
 use ::events::{RegisterPoolEvent, SetExchangeBytecodeRootEvent};
 use libraries::{AMM, Exchange};
-use std::{constants::BASE_ASSET_ID, external::bytecode_root};
+use std::{constants::BASE_ASSET_ID, external::bytecode_root, hash::Hash};
 
 storage {
     /// The valid exchange contract bytecode root.
     exchange_bytecode_root: Option<b256> = Option::None,
     /// Map that stores pools, i.e., asset identifier pairs as keys and corresponding exchange contract identifiers as values.
-    pools: StorageMap<(ContractId, ContractId), ContractId> = StorageMap {},
+    pools: StorageMap<(AssetId, AssetId), ContractId> = StorageMap {},
 }
 
 impl AMM for Contract {
@@ -26,7 +26,7 @@ impl AMM for Contract {
     }
 
     #[storage(read, write)]
-    fn add_pool(asset_pair: (ContractId, ContractId), pool: ContractId) {
+    fn add_pool(asset_pair: (AssetId, AssetId), pool: ContractId) {
         require(storage.exchange_bytecode_root.read().is_some(), InitError::BytecodeRootNotSet);
         require(storage.exchange_bytecode_root.read().unwrap() == bytecode_root(pool), InitError::BytecodeRootDoesNotMatch);
 
@@ -52,7 +52,7 @@ impl AMM for Contract {
     }
 
     #[storage(read)]
-    fn pool(asset_pair: (ContractId, ContractId)) -> Option<ContractId> {
+    fn pool(asset_pair: (AssetId, AssetId)) -> Option<ContractId> {
         let ordered_asset_pair = if asset_pair.0.into() < asset_pair.1.into() {
             asset_pair
         } else {
