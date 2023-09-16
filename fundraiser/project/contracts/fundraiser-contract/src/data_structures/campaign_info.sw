@@ -7,7 +7,7 @@ pub struct CampaignInfo {
     /// The user who has created the campaign.
     author: Identity,
     /// The asset that this campaign accepts as a deposit.
-    asset: ContractId,
+    asset: AssetId,
     /// The user to whom the funds will be sent to upon a successful campaign.
     beneficiary: Identity,
     // Whether the campaign is currently: Funding, Claimed, Cancelled.
@@ -25,7 +25,7 @@ impl CampaignInfo {
     ///
     /// # Arguments
     ///
-    /// * `asset`: [ContractId] - The asset that this campaign accepts as a deposit.
+    /// * `asset`: [AssetId] - The asset that this campaign accepts as a deposit.
     /// * `author`: [Identity] - The user who has created the campaign.
     /// * `beneficiary`: [Identity] - The user to whom the funds will be sent to upon a successful campaign.
     /// * `deadline`: [u64] - The end time for the campaign after which it becomes locked.
@@ -35,7 +35,7 @@ impl CampaignInfo {
     ///
     /// * [CampaignInfo] - The newly created campaign.
     pub fn new(
-        asset: ContractId,
+        asset: AssetId,
         author: Identity,
         beneficiary: Identity,
         deadline: u64,

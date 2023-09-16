@@ -49,7 +49,7 @@ abi Fundraiser {
     ///
     /// # Arguments
     ///
-    /// * `asset`: [ContractId] - A coin that the campaign accepts as a pledge.
+    /// * `asset`: [AssetId] - A coin that the campaign accepts as a pledge.
     /// * `beneficiary`: [Identity] - The recipient to whom the pledge will be sent to upon a successful campaign.
     /// * `deadline`: [u64] - Block height used to dictate the end time of a campaign.
     /// * `target_amount`: [u64] - The amount of `asset` required to deem the campaign a success.
@@ -59,7 +59,7 @@ abi Fundraiser {
     /// * When the `deadline` is not ahead of the current block height.
     /// * When the `target_amount` is 0.
     #[storage(read, write)]
-    fn create_campaign(asset: ContractId, beneficiary: Identity, deadline: u64, target_amount: u64);
+    fn create_campaign(asset: AssetId, beneficiary: Identity, deadline: u64, target_amount: u64);
 
     /// Allows a user to pledge any amount of the campaign asset towards the campaign goal.
     ///
@@ -134,13 +134,13 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `asset`: [ContractId] - Uniquie identifier that identifies the asset.
+    /// * `asset`: [AssetId] - Unique identifier that identifies the asset.
     ///
     /// # Returns
     ///
     /// * [Option<AssetInfo>] - Information about the asset.
     #[storage(read)]
-    fn asset_info_by_id(asset: ContractId) -> Option<AssetInfo>;
+    fn asset_info_by_id(asset: AssetId) -> Option<AssetInfo>;
 
     /// Returns information about the specified campaign.
     ///
