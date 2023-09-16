@@ -2,5 +2,5 @@
 channel = "latest-2023-07-18"
 
 [components]
-forc = "0.42.1"
+forc = "0.46.0"
 fuel-core = "0.18.3"

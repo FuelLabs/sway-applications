@@ -11,7 +11,7 @@ use ::data_structures::State;
 use ::errors::{GameStateError, PlayerError, PositionError};
 use ::events::{GameDrawnEvent, GameWonEvent, NewGameEvent};
 use ::interface::Game;
-use std::auth::msg_sender;
+use std::{auth::msg_sender, hash::Hash};
 use ::utils::{draw, win_check};
 
 // This is needed for comparing the position when the cell is not empty.
@@ -20,7 +20,7 @@ impl<T> Eq for Option<T> {
     fn eq(self, other: Self) -> bool {
         match (self, other) {
             (Option::None, Option::None) => true,
-            (Option::Some(T), Option::Some(T)) => true,
+            (Option::Some(_), Option::Some(_)) => true,
             _ => false,
         }
     }
