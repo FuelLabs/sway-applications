@@ -4,6 +4,7 @@ use std::{
     call_frames::contract_id,
     ecr::ec_recover_address,
     hash::{
+        Hash,
         Hasher,
         keccak256,
         sha256,
@@ -29,7 +30,7 @@ use ::data_structures::{
 
 const EIP191_INITIAL_BYTE = 0x19u8;
 const EIP191_VERSION_BYTE = 0x45u8;
-// const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
+// const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32"; // TODO: Replace the use of string literal with this constant when compiler bug is fixed.
 
 /// Takes a struct comprised of transaction data and hashes it.
 ///
@@ -176,8 +177,5 @@ fn decompose(value: b256) -> (u64, u64, u64, u64) {
 ///
 /// * [b256]- The prefixed hash.
 fn ethereum_prefix(msg_hash: b256) -> b256 {
-    let mut hasher = Hasher::new();
-    // hasher.write_str(ETHEREUM_PREFIX);
-    msg_hash.hash(hasher);
-    hasher.keccak256()
+    keccak256(("\x19Ethereum Signed Message:\n32", msg_hash)) //// TODO: Replace the use of string literal with this constant when compiler bug is fixed.
 }
