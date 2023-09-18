@@ -4,6 +4,7 @@ use std::{
     call_frames::contract_id,
     ecr::ec_recover_address,
     hash::{
+        Hasher,
         keccak256,
         sha256,
     },
@@ -28,7 +29,7 @@ use ::data_structures::{
 
 const EIP191_INITIAL_BYTE = 0x19u8;
 const EIP191_VERSION_BYTE = 0x45u8;
-const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
+// const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
 
 /// Takes a struct comprised of transaction data and hashes it.
 ///
@@ -46,7 +47,7 @@ const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
 pub fn compute_hash(type_to_hash: TypeToHash) -> b256 {
     match type_to_hash {
         TypeToHash::Threshold(threshold) => sha256(threshold),
-        TypeToHash::Transaction(transaction) => transaction.into_bytes().sha256(),
+        TypeToHash::Transaction(transaction) => sha256(transaction.into_bytes()),
         TypeToHash::Weight(weight) => sha256(weight),
     }
 }
@@ -104,7 +105,7 @@ pub fn recover_signer(message_hash: b256, signature_info: SignatureInfo) -> b256
 ///
 /// * [b256] - The formatted message hash.
 fn eip_191_personal_sign_format(data_to_sign: b256) -> b256 {
-    let signed_data = encode_and_pack_signed_data(EIP191_INITIAL_BYTE, EIP191_VERSION_BYTE, data_to_sign);
+    let signed_data = encode_and_pack_signed_data(EIP191_INITIAL_BYTE.as_u64(), EIP191_VERSION_BYTE.as_u64(), data_to_sign);
     let signed_data = (
         signed_data.get(0).unwrap(),
         signed_data.get(1).unwrap(),
@@ -175,5 +176,8 @@ fn decompose(value: b256) -> (u64, u64, u64, u64) {
 ///
 /// * [b256]- The prefixed hash.
 fn ethereum_prefix(msg_hash: b256) -> b256 {
-    keccak256((ETHEREUM_PREFIX, msg_hash))
+    let mut hasher = Hasher::new();
+    // hasher.write_str(ETHEREUM_PREFIX);
+    msg_hash.hash(hasher);
+    hasher.keccak256()
 }

@@ -120,12 +120,12 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `asset_id` : [ContractId] - The contract ID of the asset to check that balance of.
+    /// * `asset_id` : [AssetId] - The AssetId of the asset to check that balance of.
     ///
     /// # Returns
     ///
     /// * [u64] - The multisig wallet's balance of `asset_id`.
-    fn balance(asset_id: ContractId) -> u64;
+    fn balance(asset_id: AssetId) -> u64;
 
     /// Takes a struct comprised of transaction data and hashes it.
     ///
