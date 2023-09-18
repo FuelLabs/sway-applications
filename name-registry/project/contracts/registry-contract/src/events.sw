@@ -3,7 +3,7 @@ library;
 /// Event for when an asset is set for payment
 pub struct AssetRateEvent {
     /// Asset used for payment
-    id: ContractId,
+    id: AssetId,
     /// Rate of cost for asset
     rate: Option<u64>,
 }

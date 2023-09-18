@@ -18,9 +18,11 @@ use ::interface::{Info, NameRegistry};
 use std::{
     auth::msg_sender,
     block::timestamp,
+    bytes::Bytes,
     call_frames::msg_asset_id,
     constants::ZERO_B256,
     context::msg_amount,
+    hash::{Hash, Hasher},
 };
 
 configurable {
@@ -28,9 +30,23 @@ configurable {
     OWNER: Identity = Identity::Address(Address::from(ZERO_B256)),
 }
 
+impl Hash for str[8] {
+    fn hash(self, ref mut state: Hasher) {
+        let str_size = __size_of_str_array::<str[8]>();
+        let str_ptr = __addr_of(self);
+        
+        let mut bytes = Bytes::with_capacity(str_size);
+        bytes.len = str_size;
+
+        str_ptr.copy_bytes_to(bytes.buf.ptr(), str_size);
+        
+        state.write(bytes);
+    }
+}
+
 storage {
     /// Cost rate per asset
-    assets: StorageMap<ContractId, Option<u64>> = StorageMap {},
+    assets: StorageMap<AssetId, Option<u64>> = StorageMap {},
     /// A mapping of names to records
     names: StorageMap<str[8], Record> = StorageMap {},
 }
@@ -39,7 +55,7 @@ storage {
 impl NameRegistry for Contract {
     #[payable]
     #[storage(read, write)]
-    fn extend(name: str[8], duration: u64, payment_asset: ContractId) {
+    fn extend(name: str[8], duration: u64, payment_asset: AssetId) {
         let record = storage.names.get(name).try_read();
         require(record.is_some(), RegistrationValidityError::NameNotRegistered);
 
@@ -67,7 +83,7 @@ impl NameRegistry for Contract {
         duration: u64,
         owner: Identity,
         identity: Identity,
-        payment_asset: ContractId,
+        payment_asset: AssetId,
     ) {
         let record = storage.names.get(name).try_read();
         if record.is_some() {
@@ -92,7 +108,7 @@ impl NameRegistry for Contract {
     }
 
     #[storage(write)]
-    fn set_asset(id: ContractId, rate: Option<u64>) {
+    fn set_asset(id: AssetId, rate: Option<u64>) {
         require(msg_sender().unwrap() == OWNER, AuthorizationError::SenderNotOwner);
         storage.assets.insert(id, rate);
         log(AssetRateEvent { id, rate });
@@ -178,7 +194,7 @@ impl Info for Contract {
     }
 
     #[storage(read)]
-    fn rate(id: ContractId) -> Option<u64> {
+    fn rate(id: AssetId) -> Option<u64> {
         match storage.assets.get(id).try_read() {
             Option::Some(rate) => rate,
             Option::None => Option::None,

@@ -9,7 +9,7 @@ abi NameRegistry {
     ///
     /// * `name`: [str[8]] - The name to extend the duration of
     /// * `duration`: [u64] - The duration to extend by
-    /// * `payment_asset`: [ContractId] - The asset used to pay for the registration
+    /// * `payment_asset`: [AssetId] - The asset used to pay for the registration
     ///
     /// # Reverts
     ///
@@ -22,7 +22,7 @@ abi NameRegistry {
     /// * Reads: `2`
     /// * Writes: `1`
     #[payable, storage(read, write)]
-    fn extend(name: str[8], duration: u64, payment_asset: ContractId);
+    fn extend(name: str[8], duration: u64, payment_asset: AssetId);
 
     /// Adds an entry into the registry for the given name.
     ///
@@ -34,7 +34,7 @@ abi NameRegistry {
     /// * `duration`: [u64] - The duration to register for
     /// * `owner`: [Identity] - The owner of the name, which will be able to control the ownership and the resolving identity of the name
     /// * `identity`: [Identity] - The identity to which the name would resolve to when queried
-    /// * `payment_asset`: [ContractId] - The asset used to pay for the registration
+    /// * `payment_asset`: [AssetId] - The asset used to pay for the registration
     ///
     /// # Reverts
     ///
@@ -47,13 +47,13 @@ abi NameRegistry {
     /// * Reads: `2`
     /// * Writes: `1`
     #[payable, storage(read, write)]
-    fn register(name: str[8], duration: u64, owner: Identity, identity: Identity, payment_asset: ContractId);
+    fn register(name: str[8], duration: u64, owner: Identity, identity: Identity, payment_asset: AssetId);
 
     /// Adds a new asset as a method of payment
     ///
     /// # Arguments
     ///
-    /// * `id`: [ContractId] - Asset for payment
+    /// * `id`: [AssetId] - Asset for payment
     /// * `rate`: [Option<u64>] - Rate of cost for asset
     ///
     /// # Reverts
@@ -64,7 +64,7 @@ abi NameRegistry {
     ///
     /// * Writes: `1`
     #[storage(write)]
-    fn set_asset(id: ContractId, rate: Option<u64>);
+    fn set_asset(id: AssetId, rate: Option<u64>);
 
     /// Sets the identity to which the name will resolve to
     ///
@@ -163,11 +163,11 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `id`: [ContractId] - Asset for payment
+    /// * `id`: [AssetId] - Asset for payment
     ///
     /// ### Number of Storage Accesses
     ///
     /// * Reads: `1`
     #[storage(read)]
-    fn rate(id: ContractId) -> Option<u64>;
+    fn rate(id: AssetId) -> Option<u64>;
 }
