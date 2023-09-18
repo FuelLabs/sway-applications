@@ -16,6 +16,7 @@ use std::{
     bytes::Bytes,
     call_frames::msg_asset_id,
     context::this_balance,
+    hash::Hash,
 };
 use ::utils::create_hash;
 
@@ -108,7 +109,7 @@ impl Timelock for Contract {
 }
 
 impl Info for Contract {
-    fn balance(asset_id: ContractId) -> u64 {
+    fn balance(asset_id: AssetId) -> u64 {
         this_balance(asset_id)
     }
 

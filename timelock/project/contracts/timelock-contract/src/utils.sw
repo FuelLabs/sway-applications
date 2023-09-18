@@ -1,7 +1,28 @@
 library;
 
 use ::data_structures::Asset;
-use std::{bytes::Bytes, hash::sha256};
+use std::{bytes::Bytes, hash::{Hash, Hasher, sha256}};
+
+impl Hash for Option<Bytes> {
+    fn hash(self, ref mut state: Hasher) {
+        match self {
+            Some(bytes) => bytes.hash(state),
+            None => 0.hash(state),
+        }
+    }
+}
+
+impl Hash for Option<Asset> {
+    fn hash(self, ref mut state: Hasher) {
+        match self {
+            Some(asset) => {
+                asset.amount.hash(state);
+                asset.id.hash(state);
+            },
+            None => 0.hash(state),
+        }
+    }
+}
 
 /// Creates a transaction id as a hash of the transaction data.
 ///
