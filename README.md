@@ -59,7 +59,7 @@ sway-applications/
 > **Warning**
 > The `Non-Fungible Token (NFT)` has been archived until the release of the [Sway multi-token standard](https://github.com/FuelLabs/sway-standards/issues/1).
 
-- [Non-Fungible Token (NFT)](./archive/NFT) is a token contract which provides unique collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
+- [Non-Fungible Token (NFT)](./native-assets/NFT/) is a token contract which provides unique collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [Timelock](./timelock) is a contract which restricts the execution of a transaction to a specified time range.
 
 #### Decentralized Finance
