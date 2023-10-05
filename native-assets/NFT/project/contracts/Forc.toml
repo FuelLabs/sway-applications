@@ -1,0 +1,11 @@
+[project]
+authors = ["Fuel Labs <contact@fuel.sh>"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "NFT-contract"
+
+[dependencies]
+src_20 = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.1.2" }
+src_7 = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.1.2" }
+src_3 = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.1.2" }
+token = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.15.0" }
