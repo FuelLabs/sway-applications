@@ -27,10 +27,28 @@ use std::{
 };
 
 storage {
+    /// The total number of unique assets minted by this contract.
+    ///
+    /// # Additional Information
+    ///
+    /// This is the number of NFTs that have been minted.
     total_assets: u64 = 0,
+    /// The total number of tokens minted for a particular asset.
+    ///
+    /// # Additional Information
+    ///
+    /// This should always be 1 for any asset as this is an NFT contract.
     total_supply: StorageMap<AssetId, u64> = StorageMap {},
+    /// The name associated with a particular asset.
     name: StorageMap<AssetId, StorageString> = StorageMap {},
+    /// The symbol associated with a particular asset.
     symbol: StorageMap<AssetId, StorageString> = StorageMap {},
+    /// The metadata associated with a particular asset.
+    ///
+    /// # Additional Information
+    ///
+    /// In this NFT contract, there is no metadata provided at compile time. All metadata
+    /// is added by users and stored into storage.
     metadata: StorageMetadata = StorageMetadata {},
 }
 
@@ -50,8 +68,8 @@ impl SRC20 for Contract {
     /// ```sway
     /// use src20::SRC20;
     ///
-    /// fn foo(contract: ContractId) {
-    ///     let contract_abi = abi(SRC20, contract);
+    /// fn foo(contract_id: ContractId) {
+    ///     let contract_abi = abi(SRC20, contract_id);
     ///     let total_assets = contract_abi.total_assets();
     ///     assert(total_assets != 0);
     /// }
@@ -65,7 +83,7 @@ impl SRC20 for Contract {
     ///
     /// # Additional Information
     ///
-    /// This should always be at most 1 for NFTs.
+    /// This must always be at most 1 for NFTs.
     ///
     /// # Arguments
     ///
@@ -84,8 +102,8 @@ impl SRC20 for Contract {
     /// ```sway
     /// use src20::SRC20;
     ///
-    /// fn foo(contract: ContractId, asset: AssetId) {
-    ///     let contract_abi = abi(SRC20, contract);
+    /// fn foo(contract_id: ContractId, asset: AssetId) {
+    ///     let contract_abi = abi(SRC20, contract_id);
     ///     let total_supply = contract_abi.total_supply(asset).unwrap();
     ///     assert(total_supply == 1);
     /// }
@@ -115,8 +133,8 @@ impl SRC20 for Contract {
     /// use src20::SRC20;
     /// use std::string::String;
     ///
-    /// fn foo(contract: ContractId, asset: AssetId) {
-    ///     let contract_abi = abi(SRC20, contract);
+    /// fn foo(contract_ic: ContractId, asset: AssetId) {
+    ///     let contract_abi = abi(SRC20, contract_id);
     ///     let name = contract_abi.name(asset).unwrap();
     ///     assert(name.len() != 0);
     /// }
@@ -146,8 +164,8 @@ impl SRC20 for Contract {
     /// use src20::SRC20;
     /// use std::string::String;
     ///
-    /// fn foo(contract: ContractId, asset: AssetId) {
-    ///     let contract_abi = abi(SRC20, contract);
+    /// fn foo(contract_id: ContractId, asset: AssetId) {
+    ///     let contract_abi = abi(SRC20, contract_id);
     ///     let symbol = contract_abi.symbol(asset).unwrap();
     ///     assert(symbol.len() != 0);
     /// }
@@ -176,8 +194,8 @@ impl SRC20 for Contract {
     /// ```sway
     /// use src20::SRC20;
     ///
-    /// fn foo(contract: ContractId, asset: AssedId) {
-    ///     let contract_abi = abi(SRC20, contract);
+    /// fn foo(contract_id: ContractId, asset: AssedId) {
+    ///     let contract_abi = abi(SRC20, contract_id);
     ///     let decimals = contract_abi.decimals(asset).unwrap();
     ///     assert(decimals == 0u8);
     /// }
@@ -218,8 +236,8 @@ impl SRC3 for Contract {
     /// ```sway
     /// use src3::SRC3;
     ///
-    /// fn foo(contract: ContractId) {
-    ///     let contract_abi = abi(SR3, contract);
+    /// fn foo(contract_id: ContractId) {
+    ///     let contract_abi = abi(SR3, contract_id);
     ///     contract_abi.mint(Identity::ContractId(this_contract()), ZERO_B256, 1);
     /// }
     /// ```
@@ -228,7 +246,7 @@ impl SRC3 for Contract {
         let asset = AssetId::new(contract_id(), sub_id);
         require(amount == 1, MintError::CannotMintMoreThanOneNFTWithSubId);
         require(storage.total_supply.get(asset).try_read().is_none(), MintError::NFTAlreadyMinted);
-        require(storage.total_assets.try_read().unwrap_or(0) + amount < 100_000, MintError::MaxNFTsMinted);
+        require(storage.total_assets.try_read().unwrap_or(0) + amount <= 100_000, MintError::MaxNFTsMinted);
         
         let _ = _mint(storage.total_assets, storage.total_supply, recipient, sub_id, amount);
     }
@@ -255,13 +273,13 @@ impl SRC3 for Contract {
     /// ```sway
     /// use src3::SRC3;
     ///
-    /// fn foo(contract: ContractId, asset_id: AssetId) {
-    ///     let contract_abi = abi(SR3, contract);
-    ///     contract_abi {
+    /// fn foo(contract_id: ContractId, asset_id: AssetId) {
+    ///     let contract_abi = abi(SR3, contract_id);
+    ///     contract_abi.burn {
     ///         gas: 10000,
     ///         coins: 1,
     ///         asset_id: AssetId,
-    ///     }.burn(ZERO_B256, 1);
+    ///     } (ZERO_B256, 1);
     /// }
     /// ```
     #[storage(read, write)]
@@ -329,7 +347,7 @@ impl SetTokenAttributes for Contract {
     /// use src20::SRC20;
     /// use std::string::String;
     ///
-    /// fn foo(asset: AssetId) {
+    /// fn foo(asset: AssetId, contract_id: ContractId) {
     ///     let set_abi = abi(SetTokenAttributes, contract_id);
     ///     let src_20_abi = abi(SRC20, contract_id);
     ///     let name = String::from_ascii_str("Ether");
@@ -366,7 +384,7 @@ impl SetTokenAttributes for Contract {
     /// use src20::SRC20;
     /// use std::string::String;
     ///
-    /// fn foo(asset: AssetId) {
+    /// fn foo(asset: AssetId, contract_id: ContractId) {
     ///     let set_abi = abi(SetTokenAttributes, contract_id);
     ///     let src_20_abi = abi(SRC20, contract_id);
     ///     let symbol = String::from_ascii_str("ETH");
@@ -386,7 +404,7 @@ impl SetTokenAttributes for Contract {
     ///
     /// NFT decimals are always `0u8` and thus must not be set.
     /// This function is an artifact of the SetTokenAttributes ABI definition, 
-    /// but does not have a use in this contract as the decimals value is hardcoded.
+    /// but does not have a use in this contract as the decimal value is hardcoded.
     ///
     /// # Reverts
     ///
@@ -404,7 +422,7 @@ impl SetTokenMetadata for Contract {
     ///
     /// * `asset`: [AssetId] - The asset for the metadata to be stored.
     /// * `key`: [String] - The key for the metadata to be stored.
-    /// * `metadata`: [Metadata] - The metadata which to be stored.
+    /// * `metadata`: [Metadata] - The metadata to be stored.
     ///
     /// # Reverts
     ///
@@ -421,8 +439,8 @@ impl SetTokenMetadata for Contract {
     /// use src_7::{SRC7, Metadata};
     /// use token::metdata::SetTokenMetadata;
     ///
-    /// fn foo(asset: AssetId, key: String, contract: ContractId, metadata: Metadata) {
-    ///     let set_abi = abi(SetTokenMetadata, contract);
+    /// fn foo(asset: AssetId, key: String, contract_id: ContractId, metadata: Metadata) {
+    ///     let set_abi = abi(SetTokenMetadata, contract_id);
     ///     let src_7_abi = abi(SRC7, contract);
     ///     set_abi.set_metadata(storage.metadata, asset, key, metadata);
     ///     assert(src_7_abi.metadata(asset, key) == metadata);
@@ -443,8 +461,6 @@ fn test_mint() {
     use std::constants::ZERO_B256;
 
     let src3_abi = abi(SRC3, CONTRACT_ID);
-    let src20_abi = abi(SRC20, CONTRACT_ID);
-
     let recipient = Identity::ContractId(ContractId::from(CONTRACT_ID));
     let sub_id = ZERO_B256;
     let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
@@ -486,8 +502,6 @@ fn test_burn() {
     use std::constants::ZERO_B256;
 
     let src3_abi = abi(SRC3, CONTRACT_ID);
-    let src20_abi = abi(SRC20, CONTRACT_ID);
-
     let recipient = Identity::ContractId(ContractId::from(CONTRACT_ID));
     let sub_id = ZERO_B256;
     let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
@@ -599,13 +613,23 @@ fn test_decimals() {
     use std::constants::ZERO_B256;
 
     let src20_abi = abi(SRC20, CONTRACT_ID);
-    let attributes_abi = abi(SetTokenAttributes, CONTRACT_ID);
-
     let sub_id = ZERO_B256;
     let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
     let decimals = 0u8;
 
     assert(src20_abi.decimals(asset_id).unwrap() == decimals);
+}
+
+#[test(should_revert)]
+fn test_revert_set_decimals() {
+    use std::constants::ZERO_B256;
+
+    let attributes_abi = abi(SetTokenAttributes, CONTRACT_ID);
+    let sub_id = ZERO_B256;
+    let asset_id = AssetId::new(ContractId::from(CONTRACT_ID), sub_id);
+    let decimals = 0u8;
+
+    attributes_abi.set_decimals(asset_id, decimals);
 }
 
 #[test]

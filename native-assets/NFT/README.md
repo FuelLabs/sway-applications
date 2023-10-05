@@ -16,7 +16,7 @@
 
 ## Overview
 
-A non-fungible token (NFT) is a unique token that has a maximum supply of one. On the Fuel Network, all NFTs are [Native Assets](https://fuellabs.github.io/sway/v0.46.1/book/blockchain-development/native_assets.html). They are commonly associated with artwork / collectibles however there are many greater utilities beyond that which have yet to be written for the Fuel Network.
+A non-fungible token (NFT) is a unique token that has a maximum supply of one. On the Fuel Network, all NFTs are [Native Assets](https://docs.fuel.network/docs/sway/blockchain-development/native_assets). They are commonly associated with artwork / collectibles however there are many greater utilities beyond that which have yet to be written for the Fuel Network.
 
 In this barebones NFT example project, there are a maximum of 100,000 NFTs that may be minted. Each NFT may contain any metadata the user desires to store. 
 
@@ -83,8 +83,7 @@ The project consists of a smart contract.
 NFT
 ├── project
 │   ├── contracts
-│   │   └── NFT-contract
-│   │       └──src/main.sw
+│   │   └──src/main.sw
 │   └── SPECIFICATION.md
 ├── ui
 │   └── SPECIFICATION.md
