@@ -51,6 +51,7 @@ jobs:
             "games/TicTacToe",
             "multisig-wallet",
             "name-registry",
+            "native-assets/NFT"
             "archive/NFT",
             "oracle",
             "OTC-swap-predicate",
@@ -106,6 +107,11 @@ jobs:
         run: |
           cd ${{ matrix.project }}/project
           cargo test --locked
+
+      - name: Run Sway tests
+        run: |
+          cd ${{ matrix.project }}/project
+          forc test
 
   contributing-book:
     runs-on: ubuntu-latest
