@@ -83,7 +83,8 @@ The project consists of a smart contract.
 NFT
 ├── project
 │   ├── contracts
-│   │   └──src/main.sw
+│   │   └── NFT-contract
+│   │       └──src/main.sw
 │   └── SPECIFICATION.md
 ├── ui
 │   └── SPECIFICATION.md

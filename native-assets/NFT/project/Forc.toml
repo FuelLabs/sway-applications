@@ -1,2 +1,2 @@
 [workspace]
-members = ["./contracts"]
+members = ["./contracts/NFT-contract"]
