@@ -74,7 +74,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
           toolchain: latest
-          date: 2023-10-03
+          date: 2023-09-29
 
       - name: Check Sway formatting
         run: |
