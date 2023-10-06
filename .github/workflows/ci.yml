@@ -46,13 +46,11 @@ jobs:
             "counter-script",
             "DAO",
             "escrow",
-            "archive/fractional-NFT",
             "fundraiser",
             "games/TicTacToe",
             "multisig-wallet",
             "name-registry",
             "native-assets/NFT"
-            "archive/NFT",
             "oracle",
             "OTC-swap-predicate",
             ".devops/.template",
