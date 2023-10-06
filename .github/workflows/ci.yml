@@ -50,7 +50,7 @@ jobs:
             "games/TicTacToe",
             "multisig-wallet",
             "name-registry",
-            "native-assets/NFT"
+            "native-assets/NFT",
             "oracle",
             "OTC-swap-predicate",
             ".devops/.template",
