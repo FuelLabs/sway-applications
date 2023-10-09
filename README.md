@@ -50,6 +50,7 @@ sway-applications/
 
 - [Airdrop](./airdrop/) is a token distribution program where users are able to claim tokens given a valid merkle proof.
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
+- [Non-Fungible Token (NFT)](./native-assets/NFT/) is a token contract which provides unique collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [Timelock](./timelock) is a contract which restricts the execution of a transaction to a specified time range.
 
 #### Decentralized Finance

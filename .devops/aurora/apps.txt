@@ -9,5 +9,6 @@ fundraiser
 games/TicTacToe
 multisig-wallet
 name-registry
+native-assets/NFT
 oracle
 timelock
