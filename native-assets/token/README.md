@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset=".docs/token-logo-light-theme.png">
-        <img alt="light theme" src=".docs/token-logo-dark-theme.png">
+        <source media="(prefers-color-scheme: dark)" srcset=".docs/token-logo-dark-theme.png">
+        <img alt="light theme" src=".docs/token-logo-light-theme.png">
     </picture>
 </p>
 
