@@ -214,6 +214,12 @@
       },
       "attributes": [
         {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        },
+        {
           "name": "doc-comment",
           "arguments": [
             " Returns the number of decimals the asset uses."
@@ -385,12 +391,6 @@
           "name": "doc-comment",
           "arguments": [
             " ```"
-          ]
-        },
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
           ]
         }
       ]
@@ -775,12 +775,6 @@
       },
       "attributes": [
         {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        },
-        {
           "name": "doc-comment",
           "arguments": [
             " Returns the total number of individual assets for a contract."
@@ -904,6 +898,12 @@
           "name": "doc-comment",
           "arguments": [
             " ```"
+          ]
+        },
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
           ]
         }
       ]
@@ -1108,6 +1108,13 @@
       },
       "attributes": [
         {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        },
+        {
           "name": "doc-comment",
           "arguments": [
             " Burns tokens sent with the given `sub_id`."
@@ -1291,13 +1298,6 @@
           "name": "doc-comment",
           "arguments": [
             " ```"
-          ]
-        },
-        {
-          "name": "storage",
-          "arguments": [
-            "read",
-            "write"
           ]
         }
       ]
@@ -1727,12 +1727,6 @@
       },
       "attributes": [
         {
-          "name": "storage",
-          "arguments": [
-            "write"
-          ]
-        },
-        {
           "name": "doc-comment",
           "arguments": [
             " Sets the name of an asset."
@@ -1916,6 +1910,12 @@
           "name": "doc-comment",
           "arguments": [
             " ```"
+          ]
+        },
+        {
+          "name": "storage",
+          "arguments": [
+            "write"
           ]
         }
       ]
