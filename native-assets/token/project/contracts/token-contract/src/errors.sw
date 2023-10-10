@@ -7,4 +7,3 @@ pub enum MintError {
 pub enum SetError {
     ValueAlreadySet: (),
 }
-
