@@ -153,7 +153,7 @@ impl SRC20 for Contract {
     ///
     /// # Additional Information
     ///
-    /// e.g. 8, means to divide the token amount by 100000000 to get its user representation.
+    /// e.g. 8, means to divide the token amount by 100000000 to get its user interface representation.
     ///
     /// # Arguments
     ///

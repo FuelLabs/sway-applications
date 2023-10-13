@@ -16,9 +16,9 @@
 
 ## Overview
 
-A fungible token is a [Native Assets](https://fuellabs.github.io/sway/v0.46.1/book/blockchain-development/native_assets.html) on the Fuel Network.
+A fungible token is a [Native Asset](https://docs.fuel.network/docs/sway/blockchain-development/native_assets) on the Fuel Network.
 
-In this barebones asset example project, there are a maximum of 100,000,000 tokens for each asset that may be minted. There is no limit on the total individual assets a user may mint.
+In this project, there are a maximum of 100,000,000 tokens for each asset that may be minted. There is no limit on the total individual assets a user may mint.
 
 ## Standards Implementations
 
