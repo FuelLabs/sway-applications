@@ -52,6 +52,7 @@ sway-applications/
 - [Escrow](./escrow) is a third party that keeps an asset on behalf of multiple parties.
 - [Non-Fungible Token (NFT)](./native-assets/NFT/) is a token contract which provides unique collectibles, identified and differentiated by token IDs, where tokens contain metadata giving them distinctive characteristics.
 - [Timelock](./timelock) is a contract which restricts the execution of a transaction to a specified time range.
+- [Token](./native-assets/token/) is a basic token contract that enables the use of Native Assets on Fuel using existing standards and libraries.
 
 #### Decentralized Finance
 
