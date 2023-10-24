@@ -65,10 +65,10 @@ The project consists of a smart contract.
 <!--Only show most important files e.g. script to run, build etc.-->
 
 ```sh
-NFT
+token
 ├── project
 │   ├── contracts
-│   │   └── NFT-contract
+│   │   └── token-contract
 │   │       └──src/main.sw
 │   └── SPECIFICATION.md
 ├── ui
@@ -84,7 +84,7 @@ TODO: The user interface does not currently exist therefore its [SPECIFICATION.m
 
 ### Project
 
-In order to run the subsequent commands change into the following directory `/path/to/NFT/project/<here>`.
+In order to run the subsequent commands change into the following directory `/path/to/token/project/<here>`.
 
 #### Program compilation
 
