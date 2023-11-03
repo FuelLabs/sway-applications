@@ -9,6 +9,7 @@ use fuels::{
         LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
     types::{Bits256, Identity},
+    tx::{ContractIdExt, self},
 };
 use sha2::{Digest, Sha256};
 
@@ -28,7 +29,7 @@ abigen!(
 
 pub(crate) struct Asset {
     pub(crate) asset: SimpleAsset<WalletUnlocked>,
-    pub(crate) asset_id: ContractId,
+    pub(crate) asset_id: AssetId,
 }
 
 pub(crate) struct Metadata {
@@ -294,14 +295,14 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
     let wallet4 = wallets.pop().unwrap();
 
     let airdrop_distributor_storage_configuration =
-        StorageConfiguration::load_from(DISTRIBUTOR_CONTRACT_STORAGE_PATH);
+        StorageConfiguration::default().add_slot_overrides_from_file(DISTRIBUTOR_CONTRACT_STORAGE_PATH);
     let airdrop_distributor_configuration = LoadConfiguration::default()
-        .set_storage_configuration(airdrop_distributor_storage_configuration.unwrap());
+        .with_storage_configuration(airdrop_distributor_storage_configuration.unwrap());
 
     let simple_asset_storage_configuration =
-        StorageConfiguration::load_from(ASSET_CONTRACT_STORAGE_PATH);
+        StorageConfiguration::default().add_slot_overrides_from_file(ASSET_CONTRACT_STORAGE_PATH);
     let simple_asset_configuration = LoadConfiguration::default()
-        .set_storage_configuration(simple_asset_storage_configuration.unwrap());
+        .with_storage_configuration(simple_asset_storage_configuration.unwrap());
 
     let airdrop_distributor_id = Contract::load_from(
         DISTRIBUTOR_CONTRACT_BINARY_PATH,
@@ -353,7 +354,7 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
 
     let asset = Asset {
         asset: SimpleAsset::new(simple_asset_id.clone(), wallet1),
-        asset_id: ContractId::new(*simple_asset_id.hash()),
+        asset_id: ContractId::new(*simple_asset_id.hash()).asset_id(&tx::Bytes32::zeroed()),
     };
 
     (deployer, user1, user2, user3, asset)

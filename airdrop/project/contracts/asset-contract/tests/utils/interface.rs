@@ -1,5 +1,5 @@
 use crate::utils::setup::SimpleAsset;
-use fuels::{prelude::WalletUnlocked, programs::call_response::FuelCallResponse, types::Identity};
+use fuels::{programs::call_utils::TxDependencyExtension, prelude::WalletUnlocked, programs::call_response::FuelCallResponse, types::Identity};
 
 pub(crate) async fn constructor(
     asset_supply: u64,

@@ -1,7 +1,7 @@
-use fuels::prelude::{
+use fuels::{prelude::{
     abigen, launch_custom_provider_and_get_wallets, Contract, ContractId, LoadConfiguration,
     StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
-};
+}, tx::{ContractIdExt, self}, types::AssetId};
 
 abigen!(Contract(
     name = "SimpleAsset",
@@ -9,7 +9,7 @@ abigen!(Contract(
 ));
 
 pub(crate) struct Metadata {
-    pub(crate) asset_id: ContractId,
+    pub(crate) asset_id: AssetId,
     pub(crate) simple_asset: SimpleAsset<WalletUnlocked>,
     pub(crate) wallet: WalletUnlocked,
 }
@@ -48,13 +48,13 @@ pub(crate) async fn setup() -> (Metadata, Metadata, u64) {
         .unwrap();
 
     let deployer = Metadata {
-        asset_id: ContractId::new(*simple_asset_id.hash()),
+        asset_id: ContractId::new(*simple_asset_id.hash()).asset_id(&tx::Bytes32::zeroed()),
         simple_asset: SimpleAsset::new(simple_asset_id.clone(), wallet1.clone()),
         wallet: wallet1,
     };
 
     let user = Metadata {
-        asset_id: ContractId::new(*simple_asset_id.hash()),
+        asset_id: ContractId::new(*simple_asset_id.hash()).asset_id(&tx::Bytes32::zeroed()),
         simple_asset: SimpleAsset::new(simple_asset_id, wallet2.clone()),
         wallet: wallet2,
     };

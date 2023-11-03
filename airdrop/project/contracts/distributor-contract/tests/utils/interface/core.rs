@@ -1,8 +1,8 @@
 use crate::utils::setup::{AirdropDistributor, SimpleAsset};
 use fuels::{
     prelude::{AssetId, CallParameters, TxParameters, WalletUnlocked},
-    programs::call_response::FuelCallResponse,
-    types::{Bits256, ContractId, Identity},
+    programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension},
+    types::{Bits256, Identity},
 };
 
 pub(crate) async fn asset_constructor(
@@ -63,14 +63,14 @@ pub(crate) async fn clawback(
 pub(crate) async fn airdrop_constructor(
     admin: Identity,
     amount: u64,
-    asset: ContractId,
+    asset: AssetId,
     claim_time: u64,
     contract: &AirdropDistributor<WalletUnlocked>,
     merkle_root: Bits256,
     num_leaves: u64,
 ) -> FuelCallResponse<()> {
-    let tx_parameters = TxParameters::default().set_gas_limit(2_000_000);
-    let call_params = CallParameters::new(amount, AssetId::from(*asset), 1_000_000);
+    let tx_parameters = TxParameters::default().with_gas_limit(2_000_000);
+    let call_params = CallParameters::new(amount, asset, 1_000_000);
 
     contract
         .methods()
