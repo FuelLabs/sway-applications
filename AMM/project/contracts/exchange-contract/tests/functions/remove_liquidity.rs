@@ -4,7 +4,7 @@ use test_utils::interface::exchange::{pool_info, remove_liquidity};
 mod success {
     use super::*;
     use crate::utils::wallet_balances;
-    use fuels::prelude::ContractId;
+    use fuels::tx::{Bytes32, ContractIdExt};
     use test_utils::interface::{Asset, AssetPair, RemoveLiquidityEvent};
 
     #[tokio::test]
@@ -47,16 +47,16 @@ mod success {
             RemoveLiquidityEvent {
                 removed_reserve: AssetPair {
                     a: Asset {
-                        id: ContractId::new(*exchange.pair.0),
+                        id: exchange.pair.0,
                         amount: expected_a_removed,
                     },
                     b: Asset {
-                        id: ContractId::new(*exchange.pair.1),
+                        id: exchange.pair.1,
                         amount: expected_b_removed,
                     }
                 },
                 burned_liquidity: Asset {
-                    id: exchange.id,
+                    id: exchange.id.asset_id(&Bytes32::zeroed()),
                     amount: expected_liquidity_removed,
                 }
             }
@@ -139,16 +139,16 @@ mod success {
             RemoveLiquidityEvent {
                 removed_reserve: AssetPair {
                     a: Asset {
-                        id: ContractId::new(*exchange.pair.0),
+                        id: exchange.pair.0,
                         amount: expected_a_removed,
                     },
                     b: Asset {
-                        id: ContractId::new(*exchange.pair.1),
+                        id: exchange.pair.1,
                         amount: expected_b_removed,
                     }
                 },
                 burned_liquidity: Asset {
-                    id: exchange.id,
+                    id: exchange.id.asset_id(&Bytes32::zeroed()),
                     amount: expected_liquidity_removed,
                 }
             }
@@ -231,16 +231,16 @@ mod success {
             RemoveLiquidityEvent {
                 removed_reserve: AssetPair {
                     a: Asset {
-                        id: ContractId::new(*exchange.pair.0),
+                        id: exchange.pair.0,
                         amount: expected_a_removed,
                     },
                     b: Asset {
-                        id: ContractId::new(*exchange.pair.1),
+                        id: exchange.pair.1,
                         amount: expected_b_removed,
                     }
                 },
                 burned_liquidity: Asset {
-                    id: exchange.id,
+                    id: exchange.id.asset_id(&Bytes32::zeroed()),
                     amount: expected_liquidity_removed,
                 }
             }
@@ -323,16 +323,16 @@ mod success {
             RemoveLiquidityEvent {
                 removed_reserve: AssetPair {
                     a: Asset {
-                        id: ContractId::new(*exchange.pair.0),
+                        id: exchange.pair.0,
                         amount: expected_a_removed,
                     },
                     b: Asset {
-                        id: ContractId::new(*exchange.pair.1),
+                        id: exchange.pair.1,
                         amount: expected_b_removed,
                     }
                 },
                 burned_liquidity: Asset {
-                    id: exchange.id,
+                    id: exchange.id.asset_id(&Bytes32::zeroed()),
                     amount: expected_liquidity_removed,
                 }
             }

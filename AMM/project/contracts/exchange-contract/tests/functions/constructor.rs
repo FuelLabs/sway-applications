@@ -3,7 +3,6 @@ use test_utils::interface::exchange::constructor;
 
 mod success {
     use super::*;
-    use fuels::prelude::ContractId;
     use test_utils::interface::{exchange::pool_info, DefineAssetPairEvent};
 
     #[tokio::test]
@@ -21,12 +20,12 @@ mod success {
         assert_eq!(
             *event,
             DefineAssetPairEvent {
-                asset_a_id: ContractId::new(*assets.asset_1),
-                asset_b_id: ContractId::new(*assets.asset_2),
+                asset_a_id: assets.asset_1,
+                asset_b_id: assets.asset_2,
             }
         );
-        assert_eq!(pool_info.reserves.a.id, ContractId::new(*assets.asset_1));
-        assert_eq!(pool_info.reserves.b.id, ContractId::new(*assets.asset_2));
+        assert_eq!(pool_info.reserves.a.id, assets.asset_1);
+        assert_eq!(pool_info.reserves.b.id, assets.asset_2);
     }
 }
 

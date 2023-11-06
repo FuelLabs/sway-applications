@@ -3,7 +3,6 @@ use test_utils::interface::exchange::pool_info;
 mod success {
     use super::*;
     use crate::utils::setup_and_construct;
-    use fuels::prelude::ContractId;
     use test_utils::setup::common::deposit_and_add_liquidity;
 
     #[tokio::test]
@@ -12,9 +11,9 @@ mod success {
             setup_and_construct(false, false).await;
         let pool_info = pool_info(&exchange.instance).await;
 
-        assert_eq!(pool_info.reserves.a.id, ContractId::new(*exchange.pair.0));
+        assert_eq!(pool_info.reserves.a.id, exchange.pair.0);
         assert_eq!(pool_info.reserves.a.amount, 0);
-        assert_eq!(pool_info.reserves.b.id, ContractId::new(*exchange.pair.1));
+        assert_eq!(pool_info.reserves.b.id, exchange.pair.1);
         assert_eq!(pool_info.reserves.b.amount, 0);
         assert_eq!(pool_info.liquidity, 0);
     }
@@ -32,18 +31,18 @@ mod success {
 
         assert_eq!(
             initial_pool_info.reserves.a.id,
-            ContractId::new(*exchange.pair.0)
+            exchange.pair.0
         );
         assert_eq!(initial_pool_info.reserves.a.amount, 0);
         assert_eq!(
             initial_pool_info.reserves.b.id,
-            ContractId::new(*exchange.pair.1)
+            exchange.pair.1
         );
         assert_eq!(initial_pool_info.reserves.b.amount, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
         assert_eq!(
             final_pool_info.reserves.a.id,
-            ContractId::new(*exchange.pair.0)
+            exchange.pair.0
         );
         assert_eq!(
             final_pool_info.reserves.a.amount,
@@ -51,7 +50,7 @@ mod success {
         );
         assert_eq!(
             final_pool_info.reserves.b.id,
-            ContractId::new(*exchange.pair.1)
+            exchange.pair.1
         );
         assert_eq!(
             final_pool_info.reserves.b.amount,

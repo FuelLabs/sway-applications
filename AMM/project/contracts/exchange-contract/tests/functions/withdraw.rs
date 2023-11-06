@@ -3,7 +3,7 @@ use test_utils::interface::exchange::{deposit, withdraw};
 
 mod success {
     use super::*;
-    use fuels::{accounts::ViewOnlyAccount, prelude::ContractId};
+    use fuels::accounts::ViewOnlyAccount;
     use test_utils::interface::{exchange::balance, Asset, WithdrawEvent};
 
     #[tokio::test]
@@ -29,7 +29,7 @@ mod success {
             *event,
             WithdrawEvent {
                 withdrawn_asset: Asset {
-                    id: ContractId::from(*exchange.pair.0),
+                    id: exchange.pair.0,
                     amount: withdraw_amount,
                 },
                 remaining_balance: final_contract_balance,
@@ -68,7 +68,7 @@ mod success {
             *event,
             WithdrawEvent {
                 withdrawn_asset: Asset {
-                    id: ContractId::from(*exchange.pair.0),
+                    id: exchange.pair.0,
                     amount: withdraw_amount,
                 },
                 remaining_balance: final_contract_balance,

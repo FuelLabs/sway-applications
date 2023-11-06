@@ -1,4 +1,4 @@
-use fuels::prelude::{AssetId, ContractId, WalletUnlocked};
+use fuels::prelude::{AssetId, WalletUnlocked};
 use test_utils::{
     data_structures::WalletAssetConfiguration,
     interface::AMM,
@@ -23,10 +23,10 @@ pub async fn setup(
     (wallet, amm.instance, asset_pairs)
 }
 
-pub fn ordered_pair(pair: (AssetId, AssetId)) -> (ContractId, ContractId) {
+pub fn ordered_pair(pair: (AssetId, AssetId)) -> (AssetId, AssetId) {
     if pair.0 < pair.1 {
-        (ContractId::new(*pair.0), ContractId::new(*pair.1))
+        (pair.0, pair.1)
     } else {
-        (ContractId::new(*pair.1), ContractId::new(*pair.0))
+        (pair.1, pair.0)
     }
 }

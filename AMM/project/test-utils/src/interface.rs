@@ -1,7 +1,8 @@
 use fuels::{
     prelude::{abigen, AssetId, CallParameters, ContractId, TxParameters, WalletUnlocked},
-    programs::call_response::FuelCallResponse,
+    programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension,},
 };
+
 
 abigen!(
     Contract(
@@ -30,6 +31,7 @@ pub const SCRIPT_GAS_LIMIT: u64 = 100_000_000; // TODO: hardcoded until scripts 
 const GAS_TOLERANCE: f64 = 20.0; // TODO: this should be closer to 0.0. gas estimation issue is under investigation
 
 pub mod amm {
+
     use super::*;
 
     pub async fn initialize(
@@ -53,12 +55,12 @@ pub mod amm {
             .methods()
             .add_pool(
                 (
-                    ContractId::new(*asset_pair.0),
-                    ContractId::new(*asset_pair.1),
+                    asset_pair.0,
+                    asset_pair.1,
                 ),
                 pool,
             )
-            .set_contract_ids(&[pool.into()])
+            .with_contract_ids(&[pool.into()])
             .call()
             .await
             .unwrap()
@@ -71,8 +73,8 @@ pub mod amm {
         contract
             .methods()
             .pool((
-                ContractId::new(*asset_pair.0),
-                ContractId::new(*asset_pair.1),
+                asset_pair.0,
+                asset_pair.1,
             ))
             .call()
             .await
@@ -105,7 +107,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(0, estimated_gas, 0));
+            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
         }
 
         call_handler.call().await.unwrap()
@@ -118,8 +120,8 @@ pub mod exchange {
         contract
             .methods()
             .constructor(
-                ContractId::new(*asset_pair.0),
-                ContractId::new(*asset_pair.1),
+                asset_pair.0,
+                asset_pair.1,
             )
             .call()
             .await
@@ -168,7 +170,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(0, estimated_gas, 0));
+            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
         }
 
         call_handler.call().await.unwrap()
@@ -196,7 +198,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(0, estimated_gas, 0));
+            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
         }
 
         call_handler.call().await.unwrap()
@@ -224,7 +226,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(0, estimated_gas, 0));
+            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
         }
 
         call_handler.call().await.unwrap()
@@ -238,7 +240,7 @@ pub mod exchange {
         contract
             .methods()
             .withdraw(Asset {
-                id: ContractId::new(*asset),
+                id: asset,
                 amount,
             })
             .append_variable_outputs(1)
@@ -250,7 +252,7 @@ pub mod exchange {
     pub async fn balance(contract: &Exchange<WalletUnlocked>, asset: AssetId) -> u64 {
         contract
             .methods()
-            .balance(ContractId::new(*asset))
+            .balance(asset)
             .call()
             .await
             .unwrap()
@@ -268,7 +270,7 @@ pub mod exchange {
         override_gas_limit: bool,
     ) -> PreviewAddLiquidityInfo {
         let mut call_handler = contract.methods().preview_add_liquidity(Asset {
-            id: ContractId::new(*asset),
+            id: asset,
             amount,
         });
 
@@ -279,7 +281,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(0, estimated_gas, 0));
+            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
         }
 
         call_handler.call().await.unwrap().value
@@ -292,7 +294,7 @@ pub mod exchange {
         override_gas_limit: bool,
     ) -> PreviewSwapInfo {
         let mut call_handler = contract.methods().preview_swap_exact_input(Asset {
-            id: ContractId::new(*input_asset),
+            id: input_asset,
             amount: exact_input,
         });
 
@@ -303,7 +305,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(0, estimated_gas, 0));
+            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
         }
 
         call_handler.call().await.unwrap().value
@@ -316,7 +318,7 @@ pub mod exchange {
         override_gas_limit: bool,
     ) -> PreviewSwapInfo {
         let mut call_handler = contract.methods().preview_swap_exact_output(Asset {
-            id: ContractId::new(*output_asset),
+            id: output_asset,
             amount: exact_output,
         });
 
@@ -327,7 +329,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(0, estimated_gas, 0));
+            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
         }
 
         call_handler.call().await.unwrap().value

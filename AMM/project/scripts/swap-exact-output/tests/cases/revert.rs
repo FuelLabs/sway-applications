@@ -1,5 +1,5 @@
 use crate::utils::{expected_and_actual_input, expected_swap_input, setup};
-use fuels::prelude::{AssetId, ContractId, TxParameters};
+use fuels::prelude::{AssetId, TxParameters};
 use test_utils::{
     data_structures::{SwapParameters, NUMBER_OF_ASSETS},
     interface::SCRIPT_GAS_LIMIT,
@@ -42,15 +42,12 @@ async fn when_pair_exchange_not_registered() {
 
     script_instance
         .main(
-            route
-                .into_iter()
-                .map(|asset_id| ContractId::new(*asset_id))
-                .collect(),
+            route,
             output_amount,
             maximum_input_amount,
             deadline,
         )
-        .set_contracts(&contract_instances(&amm))
+        .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
         .call()
@@ -69,18 +66,15 @@ async fn when_deadline_passed() {
 
     script_instance
         .main(
-            route
-                .into_iter()
-                .map(|asset_id| ContractId::new(*asset_id))
-                .collect(),
+            route,
             output_amount,
             maximum_input_amount,
             0, // deadline is 0
         )
-        .set_contracts(&contract_instances(&amm))
+        .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
+        .tx_params(TxParameters::new(Some(0), Some(SCRIPT_GAS_LIMIT), 0))
         .call()
         .await
         .unwrap();
@@ -97,18 +91,15 @@ async fn when_maximum_input_not_satisfied() {
 
     script_instance
         .main(
-            route
-                .into_iter()
-                .map(|asset_id| ContractId::new(*asset_id))
-                .collect(),
+            route,
             output_amount,
             maximum_input_amount - 1, // setting the maximum to be lower than what it can be
             deadline,
         )
-        .set_contracts(&contract_instances(&amm))
+        .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(0, SCRIPT_GAS_LIMIT, 0))
+        .tx_params(TxParameters::new(Some(0), Some(SCRIPT_GAS_LIMIT), 0))
         .call()
         .await
         .unwrap();

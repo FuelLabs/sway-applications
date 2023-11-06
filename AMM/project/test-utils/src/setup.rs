@@ -29,9 +29,10 @@ pub mod common {
     use std::collections::HashMap;
 
     pub async fn deploy_amm(wallet: &WalletUnlocked) -> AMMContract {
-        let storage_configuration = StorageConfiguration::load_from(AMM_CONTRACT_STORAGE_PATH);
+        let storage_configuration = StorageConfiguration::default().add_slot_overrides_from_file(AMM_CONTRACT_STORAGE_PATH).unwrap();
+        
         let configuration =
-            LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
+            LoadConfiguration::default().with_storage_configuration(storage_configuration);
 
         let contract_id = Contract::load_from(AMM_CONTRACT_BINARY_PATH, configuration)
             .unwrap()
@@ -90,10 +91,10 @@ pub mod common {
         }
         .to_string();
 
-        let storage_configuration = StorageConfiguration::load_from(&storage_path);
+        let storage_configuration = StorageConfiguration::default().add_slot_overrides_from_file(&storage_path).unwrap();
         let configuration = LoadConfiguration::default()
-            .set_storage_configuration(storage_configuration.unwrap())
-            .set_salt(config.salt);
+            .with_storage_configuration(storage_configuration)
+            .with_salt(config.salt);
 
         let contract_id = Contract::load_from(binary_path, configuration)
             .unwrap()
@@ -165,7 +166,7 @@ pub mod common {
             asset_parameters.amount_per_coin,
         );
 
-        let (provider, _socket_addr) = setup_test_provider(coins.clone(), vec![], None, None).await;
+        let provider = setup_test_provider(coins.clone(), vec![], None, None).await;
 
         wallet.set_provider(provider.clone());
 
@@ -267,7 +268,7 @@ pub mod scripts {
         let input_coins: Vec<Input> = coins
             .iter()
             .map(|coin| match coin {
-                CoinType::Coin(_) => Input::resource_signed(coin.clone(), 0),
+                CoinType::Coin(_) => Input::resource_signed(coin.clone()),
                 _ => panic!("Coin type does not match"),
             })
             .collect();

@@ -7,7 +7,7 @@ use test_utils::{
 mod success {
     use super::*;
     use crate::utils::{contract_balances, wallet_balances};
-    use fuels::prelude::ContractId;
+    use fuels::{prelude::ContractId, tx::{ContractIdExt, Bytes32}};
     use test_utils::{
         interface::{
             exchange::{deposit, pool_info},
@@ -64,16 +64,16 @@ mod success {
             AddLiquidityEvent {
                 added_assets: AssetPair {
                     a: Asset {
-                        id: ContractId::new(*exchange.pair.0),
+                        id: exchange.pair.0,
                         amount: liquidity_parameters.amounts.0,
                     },
                     b: Asset {
-                        id: ContractId::new(*exchange.pair.1),
+                        id: exchange.pair.1,
                         amount: liquidity_parameters.amounts.1,
                     },
                 },
                 liquidity: Asset {
-                    id: ContractId::new(*exchange.id),
+                    id: ContractId::new(*exchange.id).asset_id(&Bytes32::zeroed()),
                     amount: liquidity_parameters.liquidity,
                 },
             }
@@ -158,16 +158,16 @@ mod success {
             AddLiquidityEvent {
                 added_assets: AssetPair {
                     a: Asset {
-                        id: ContractId::new(*exchange.pair.0),
+                        id: exchange.pair.0,
                         amount: second_liquidity_parameters.amounts.0,
                     },
                     b: Asset {
-                        id: ContractId::new(*exchange.pair.1),
+                        id: exchange.pair.1,
                         amount: second_liquidity_parameters.amounts.1 / 2,
                     },
                 },
                 liquidity: Asset {
-                    id: ContractId::new(*exchange.id),
+                    id: ContractId::new(*exchange.id).asset_id(&Bytes32::zeroed()),
                     amount: second_liquidity_parameters.liquidity,
                 },
             }
@@ -258,16 +258,16 @@ mod success {
             AddLiquidityEvent {
                 added_assets: AssetPair {
                     a: Asset {
-                        id: ContractId::new(*exchange.pair.0),
+                        id: exchange.pair.0,
                         amount: second_liquidity_parameters.amounts.0 / 2,
                     },
                     b: Asset {
-                        id: ContractId::new(*exchange.pair.1),
+                        id: exchange.pair.1,
                         amount: second_liquidity_parameters.amounts.1,
                     },
                 },
                 liquidity: Asset {
-                    id: ContractId::new(*exchange.id),
+                    id: ContractId::new(*exchange.id).asset_id(&Bytes32::zeroed()),
                     amount: liquidity_parameters.liquidity,
                 },
             }
