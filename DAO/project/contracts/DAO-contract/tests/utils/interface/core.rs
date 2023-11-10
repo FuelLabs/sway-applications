@@ -1,7 +1,8 @@
 use crate::utils::setup::{DaoVoting, Proposal};
 use fuels::{
     prelude::{CallParameters, TxParameters, WalletUnlocked},
-    programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension}, types::AssetId,
+    programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension},
+    types::AssetId,
 };
 
 pub(crate) async fn constructor(

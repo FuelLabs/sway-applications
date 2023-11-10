@@ -1,8 +1,11 @@
-use fuels::{prelude::{
-    abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Contract,
-    LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
-    BASE_ASSET_ID,
-}, types::ContractId};
+use fuels::{
+    prelude::{
+        abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Contract,
+        LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+        BASE_ASSET_ID,
+    },
+    types::ContractId,
+};
 
 abigen!(Contract(
     name = "DaoVoting",
@@ -62,7 +65,8 @@ pub(crate) async fn setup() -> (AssetId, AssetId, Metadata, Metadata, u64) {
     let deployer_wallet = wallets.pop().unwrap();
     let user_wallet = wallets.pop().unwrap();
 
-    let storage_configuration = StorageConfiguration::default().add_slot_overrides_from_file(DAO_CONTRACT_STORAGE_PATH);
+    let storage_configuration =
+        StorageConfiguration::default().add_slot_overrides_from_file(DAO_CONTRACT_STORAGE_PATH);
     let configuration =
         LoadConfiguration::default().with_storage_configuration(storage_configuration.unwrap());
     let dao_voting_id = Contract::load_from(DAO_CONTRACT_BINARY_PATH, configuration)
@@ -82,11 +86,5 @@ pub(crate) async fn setup() -> (AssetId, AssetId, Metadata, Metadata, u64) {
 
     let asset_amount = 10;
 
-    (
-        gov_token_id,
-        other_token_id,
-        deployer,
-        user,
-        asset_amount,
-    )
+    (gov_token_id, other_token_id, deployer, user, asset_amount)
 }

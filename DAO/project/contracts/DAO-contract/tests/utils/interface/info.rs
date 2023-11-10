@@ -1,7 +1,7 @@
 use crate::utils::setup::{DaoVoting, ProposalInfo, Votes};
 use fuels::{
     prelude::{Bech32Address, WalletUnlocked},
-    types::{Identity, AssetId},
+    types::{AssetId, Identity},
 };
 
 pub(crate) async fn balance(contract: &DaoVoting<WalletUnlocked>) -> u64 {
