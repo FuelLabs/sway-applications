@@ -32,8 +32,9 @@ pub async fn setup() -> (
     let wallet = launch_provider_and_get_wallet().await;
 
     // The following code will load the storage configuration (default storage values) from the contract and create a configuration object.
-    let storage_configuration =
-        StorageConfiguration::default().add_slot_overrides_from_file(STORAGE_CONFIGURATION_PATH).unwrap();
+    let storage_configuration = StorageConfiguration::default()
+        .add_slot_overrides_from_file(STORAGE_CONFIGURATION_PATH)
+        .unwrap();
     let configuration =
         LoadConfiguration::default().with_storage_configuration(storage_configuration);
 
