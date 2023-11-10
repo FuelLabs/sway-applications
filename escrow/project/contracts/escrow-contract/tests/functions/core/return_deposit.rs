@@ -110,7 +110,7 @@ mod success {
             escrows(&seller, 0).await.unwrap().state,
             State::Completed
         ));
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
 
         let log = response
             .decode_logs_with_type::<ReturnedDepositEvent>()

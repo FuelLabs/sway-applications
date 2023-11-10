@@ -20,7 +20,7 @@ pub struct Proposal {
     /// Coin type is specified by the `asset` below
     amount: u64,
     /// Asset Id of the coins to forward
-    asset: ContractId,
+    asset: AssetId,
     /// Stores information about an arbitrary contract function call
     call_data: CallData,
     /// Specifies the amount of gas to forward to the arbitrary function call
@@ -69,7 +69,7 @@ impl ProposalInfo {
         ProposalInfo {
             acceptance_percentage,
             author,
-            deadline: duration + height(),
+            deadline: duration + height().as_u64(),
             executed: false,
             no_votes: 0,
             proposal_transaction,

@@ -34,7 +34,7 @@ mod success {
         );
 
         let escrow = escrows(&seller, 0).await.unwrap();
-        assert!(matches!(escrow.buyer.asset, None));
+        assert!(escrow.buyer.asset.is_none());
         assert_eq!(0, escrow.buyer.deposited_amount);
 
         let response = deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
@@ -95,8 +95,8 @@ mod success {
         let escrow1 = escrows(&seller, 0).await.unwrap();
         let escrow2 = escrows(&seller, 0).await.unwrap();
 
-        assert!(matches!(escrow1.buyer.asset, None));
-        assert!(matches!(escrow2.buyer.asset, None));
+        assert!(escrow1.buyer.asset.is_none());
+        assert!(escrow2.buyer.asset.is_none());
         assert_eq!(0, escrow1.buyer.deposited_amount);
         assert_eq!(0, escrow2.buyer.deposited_amount);
 

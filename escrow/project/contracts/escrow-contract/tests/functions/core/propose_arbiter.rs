@@ -33,7 +33,7 @@ mod success {
             defaults.initial_wallet_amount - defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
 
         let response = propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
 
@@ -80,7 +80,7 @@ mod success {
             defaults.initial_wallet_amount - defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
 
         let response1 = propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
 
@@ -154,8 +154,8 @@ mod success {
             defaults.initial_wallet_amount - (2 * defaults.asset_amount),
             asset_amount(&defaults.asset_id, &seller).await
         );
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
-        assert!(matches!(arbiter_proposal(&seller, 1).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
+        assert!(arbiter_proposal(&seller, 1).await.is_none());
 
         let response1 = propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
 
@@ -239,8 +239,8 @@ mod success {
             defaults.initial_wallet_amount - (2 * defaults.asset_amount),
             asset_amount(&defaults.asset_id, &seller).await
         );
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
-        assert!(matches!(arbiter_proposal(&seller, 1).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
+        assert!(arbiter_proposal(&seller, 1).await.is_none());
 
         let response1 = propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
 
