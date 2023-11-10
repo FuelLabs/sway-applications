@@ -1,7 +1,7 @@
 use crate::utils::setup::{DaoVoting, ProposalInfo, Votes};
 use fuels::{
-    prelude::{Bech32Address, ContractId, WalletUnlocked},
-    types::Identity,
+    prelude::{Bech32Address, WalletUnlocked},
+    types::{Identity, AssetId},
 };
 
 pub(crate) async fn balance(contract: &DaoVoting<WalletUnlocked>) -> u64 {
@@ -39,7 +39,7 @@ pub(crate) async fn proposal(contract: &DaoVoting<WalletUnlocked>, id: u64) -> P
     contract.methods().proposal(id).call().await.unwrap().value
 }
 
-pub(crate) async fn governance_token_id(contract: &DaoVoting<WalletUnlocked>) -> ContractId {
+pub(crate) async fn governance_token_id(contract: &DaoVoting<WalletUnlocked>) -> AssetId {
     contract
         .methods()
         .governance_token_id()

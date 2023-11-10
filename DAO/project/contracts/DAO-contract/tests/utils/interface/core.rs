@@ -1,12 +1,12 @@
 use crate::utils::setup::{DaoVoting, Proposal};
 use fuels::{
-    prelude::{CallParameters, ContractId, TxParameters, WalletUnlocked},
-    programs::call_response::FuelCallResponse,
+    prelude::{CallParameters, TxParameters, WalletUnlocked},
+    programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension}, types::AssetId,
 };
 
 pub(crate) async fn constructor(
     contract: &DaoVoting<WalletUnlocked>,
-    token: ContractId,
+    token: AssetId,
 ) -> FuelCallResponse<()> {
     contract.methods().constructor(token).call().await.unwrap()
 }
@@ -29,7 +29,7 @@ pub(crate) async fn deposit(
     contract: &DaoVoting<WalletUnlocked>,
     call_params: CallParameters,
 ) -> FuelCallResponse<()> {
-    let tx_params = TxParameters::new(0, 1_000_000, 0);
+    let tx_params = TxParameters::new(Some(0), Some(1_000_000), 0);
     contract
         .methods()
         .deposit()
