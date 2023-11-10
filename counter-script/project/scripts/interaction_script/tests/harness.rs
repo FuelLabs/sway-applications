@@ -33,9 +33,9 @@ pub async fn setup() -> (
 
     // The following code will load the storage configuration (default storage values) from the contract and create a configuration object.
     let storage_configuration =
-        StorageConfiguration::load_from(STORAGE_CONFIGURATION_PATH).unwrap();
+        StorageConfiguration::default().add_slot_overrides_from_file(STORAGE_CONFIGURATION_PATH).unwrap();
     let configuration =
-        LoadConfiguration::default().set_storage_configuration(storage_configuration);
+        LoadConfiguration::default().with_storage_configuration(storage_configuration);
 
     // The following code will deploy the contract and store the returned ContractId in the `id` variable.
     let id = Contract::load_from(CONTRACT_BIN_PATH, configuration)
@@ -59,7 +59,7 @@ async fn test_script_clearing_at_end() {
     // Execute the script with the `clear` parameter set to true.
     let result = script_instance
         .main(contract_instance.id(), true) // Passing the main function parameters defined in the sway script code.
-        .set_contracts(&[&contract_instance]) // Defining the contracts that the script will interact with.
+        .with_contracts(&[&contract_instance]) // Defining the contracts that the script will interact with.
         .call()
         .await
         .unwrap()
@@ -76,7 +76,7 @@ async fn test_script_not_clearing_at_end() {
     // Execute the script with the `clear` parameter set to false.
     let result = script_instance
         .main(contract_instance.id(), false) // Passing the main function parameters defined in the sway script code.
-        .set_contracts(&[&contract_instance]) // Defining the contracts that the script will interact with.
+        .with_contracts(&[&contract_instance]) // Defining the contracts that the script will interact with.
         .call()
         .await
         .unwrap()
