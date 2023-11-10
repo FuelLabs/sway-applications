@@ -11,7 +11,7 @@ mod success {
     #[tokio::test]
     async fn returns_none() {
         let (_arbiter, _buyer, seller, _defaults) = setup().await;
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
     }
 
     #[tokio::test]
@@ -31,7 +31,7 @@ mod success {
         )
         .await;
 
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
 
         propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
 
