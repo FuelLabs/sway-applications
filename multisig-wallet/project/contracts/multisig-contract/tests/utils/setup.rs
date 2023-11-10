@@ -96,7 +96,7 @@ fn eip_191_personal_sign_format(message_hash: Message) -> Message {
 }
 
 fn ethereum_prefix(formatted_message: Message) -> Message {
-    let prefix = r#"\x19Ethereum Signed Message:\n32"#;
+    let prefix = r"\x19Ethereum Signed Message:\n32";
 
     let mut eth_prefix_data: Vec<u8> = Vec::new();
     eth_prefix_data.append(&mut prefix.as_bytes().to_vec());
