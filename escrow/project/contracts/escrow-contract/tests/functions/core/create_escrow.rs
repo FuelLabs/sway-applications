@@ -23,8 +23,8 @@ mod success {
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(0, escrow_count(&seller).await);
-        assert!(matches!(assets(&seller, 0).await, None));
-        assert!(matches!(escrows(&seller, 0).await, None));
+        assert!(assets(&seller, 0).await.is_none());
+        assert!(escrows(&seller, 0).await.is_none());
 
         let response = create_escrow(
             defaults.asset_amount,
@@ -97,8 +97,8 @@ mod success {
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(0, escrow_count(&seller).await);
-        assert!(matches!(assets(&seller, 0).await, None));
-        assert!(matches!(escrows(&seller, 0).await, None));
+        assert!(assets(&seller, 0).await.is_none());
+        assert!(escrows(&seller, 0).await.is_none());
 
         let response = create_escrow(
             defaults.asset_amount,
@@ -173,8 +173,8 @@ mod success {
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(0, escrow_count(&seller).await);
-        assert!(matches!(assets(&seller, 0).await, None));
-        assert!(matches!(escrows(&seller, 0).await, None));
+        assert!(assets(&seller, 0).await.is_none());
+        assert!(escrows(&seller, 0).await.is_none());
 
         let response1 = create_escrow(
             defaults.asset_amount,

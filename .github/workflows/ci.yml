@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  RUST_VERSION: 1.71.1
+  RUST_VERSION: 1.72.0
 
 jobs:
   lint-toml-files:
@@ -46,12 +46,12 @@ jobs:
             "counter-script",
             "DAO",
             "escrow",
-            "archive/fractional-NFT",
             "fundraiser",
             "games/TicTacToe",
             "multisig-wallet",
             "name-registry",
-            "archive/NFT",
+            "native-assets/NFT",
+            "native-assets/token",
             "oracle",
             "OTC-swap-predicate",
             ".devops/.template",
@@ -75,7 +75,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
           toolchain: latest
-          date: 2023-08-16
+          date: 2023-09-29
 
       - name: Check Sway formatting
         run: |
@@ -107,6 +107,11 @@ jobs:
           cd ${{ matrix.project }}/project
           cargo test --locked
 
+      - name: Run Sway tests
+        run: |
+          cd ${{ matrix.project }}/project
+          forc test
+
   contributing-book:
     runs-on: ubuntu-latest
 
@@ -130,7 +135,7 @@ jobs:
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
           toolchain: latest
-          date: 2023-08-16
+          date: 2023-09-29
 
       - name: Check Sway formatting
         run: forc fmt --check --path ${{ matrix.project }}
