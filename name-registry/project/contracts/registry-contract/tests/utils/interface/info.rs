@@ -1,11 +1,11 @@
 use crate::utils::setup::{NameRegistry, RegistrationValidityError};
 use fuels::{
-    prelude::{ContractId, WalletUnlocked},
+    prelude::WalletUnlocked,
     programs::call_response::FuelCallResponse,
-    types::{Identity, SizedAsciiString},
+    types::{Identity, SizedAsciiString, AssetId},
 };
 
-pub(crate) async fn rate(instance: &NameRegistry<WalletUnlocked>, id: ContractId) -> Option<u64> {
+pub(crate) async fn rate(instance: &NameRegistry<WalletUnlocked>, id: AssetId) -> Option<u64> {
     instance.methods().rate(id).call().await.unwrap().value
 }
 

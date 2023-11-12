@@ -1,15 +1,15 @@
 use crate::utils::setup::{get_timestamp_and_call, NameRegistry};
 use fuels::{
-    prelude::{CallParameters, ContractId, TxParameters, WalletUnlocked},
+    prelude::{CallParameters, AssetId, TxParameters, WalletUnlocked},
     programs::call_response::FuelCallResponse,
-    types::{AssetId, Identity, SizedAsciiString},
+    types::{Identity, SizedAsciiString},
 };
 
 pub(crate) async fn extend(
     instance: &NameRegistry<WalletUnlocked>,
     name: &String,
     duration: u64,
-    payment_asset: ContractId,
+    payment_asset: AssetId,
 ) -> FuelCallResponse<()> {
     instance
         .methods()
@@ -18,10 +18,10 @@ pub(crate) async fn extend(
             duration,
             payment_asset,
         )
-        .tx_params(TxParameters::new(0, 2_000_000, 0))
+        .tx_params(TxParameters::new(Some(0), Some(2_000_000), 0))
         .call_params(CallParameters::new(
             100,
-            AssetId::from(*payment_asset),
+            payment_asset,
             1_000_000,
         ))
         .unwrap()
@@ -34,7 +34,7 @@ pub(crate) async fn extend_with_time(
     instance: &NameRegistry<WalletUnlocked>,
     name: &String,
     duration: u64,
-    payment_asset: ContractId,
+    payment_asset: AssetId,
 ) -> (FuelCallResponse<()>, u64) {
     get_timestamp_and_call(
         instance
@@ -44,7 +44,7 @@ pub(crate) async fn extend_with_time(
                 duration,
                 payment_asset,
             )
-            .call_params(CallParameters::new(100, AssetId::from(*payment_asset), 0))
+            .call_params(CallParameters::new(100, payment_asset, 0))
             .unwrap(),
     )
     .await
@@ -56,7 +56,7 @@ pub(crate) async fn register(
     duration: u64,
     owner: &Identity,
     identity: &Identity,
-    payment_asset: ContractId,
+    payment_asset: AssetId,
 ) -> FuelCallResponse<()> {
     instance
         .methods()
@@ -67,10 +67,10 @@ pub(crate) async fn register(
             identity.to_owned(),
             payment_asset,
         )
-        .tx_params(TxParameters::new(0, 2_000_000, 0))
+        .tx_params(TxParameters::new(Some(0), Some(2_000_000), 0))
         .call_params(CallParameters::new(
             100,
-            AssetId::from(*payment_asset),
+            payment_asset,
             1_000_000,
         ))
         .unwrap()
@@ -85,7 +85,7 @@ pub(crate) async fn register_with_time(
     duration: u64,
     owner: &Identity,
     identity: &Identity,
-    payment_asset: ContractId,
+    payment_asset: AssetId,
 ) -> (FuelCallResponse<()>, u64) {
     get_timestamp_and_call(
         instance
@@ -97,7 +97,7 @@ pub(crate) async fn register_with_time(
                 identity.to_owned(),
                 payment_asset,
             )
-            .call_params(CallParameters::new(100, AssetId::from(*payment_asset), 0))
+            .call_params(CallParameters::new(100, payment_asset, 0))
             .unwrap(),
     )
     .await
@@ -105,7 +105,7 @@ pub(crate) async fn register_with_time(
 
 pub(crate) async fn set_asset(
     instance: &NameRegistry<WalletUnlocked>,
-    id: ContractId,
+    id: AssetId,
     rate: Option<u64>,
 ) -> FuelCallResponse<()> {
     instance.methods().set_asset(id, rate).call().await.unwrap()

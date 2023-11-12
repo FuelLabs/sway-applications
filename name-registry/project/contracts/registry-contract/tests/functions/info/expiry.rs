@@ -6,12 +6,12 @@ mod success {
         interface::core::{extend, register, set_asset},
         setup::{EXTEND_DURATION, REGISTER_DURATION},
     };
-    use fuels::prelude::ContractId;
+    use fuels::prelude::AssetId;
 
     #[tokio::test]
     async fn can_get_expiry() {
         let (instance, acc, _wallet2) = setup().await;
-        set_asset(&instance, ContractId::zeroed(), Some(1)).await;
+        set_asset(&instance, AssetId::zeroed(), Some(1)).await;
 
         register(
             &instance,
@@ -19,12 +19,12 @@ mod success {
             REGISTER_DURATION,
             &acc.identity(),
             &acc.identity(),
-            ContractId::zeroed(),
+            AssetId::zeroed(),
         )
         .await;
         let previous_expiry_response = expiry(&instance, &acc.name).await;
 
-        extend(&instance, &acc.name, EXTEND_DURATION, ContractId::zeroed()).await;
+        extend(&instance, &acc.name, EXTEND_DURATION, AssetId::zeroed()).await;
 
         let new_expiry_response = expiry(&instance, &acc.name).await;
 

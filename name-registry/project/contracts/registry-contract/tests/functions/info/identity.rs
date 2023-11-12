@@ -7,7 +7,7 @@ mod success {
         setup::REGISTER_DURATION,
     };
     use fuels::{
-        prelude::{Address, ContractId},
+        prelude::{Address, AssetId},
         types::Identity,
     };
 
@@ -15,7 +15,7 @@ mod success {
     async fn can_get_identity() {
         let (instance, acc1, wallet2) = setup().await;
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
-        set_asset(&instance, ContractId::zeroed(), Some(1)).await;
+        set_asset(&instance, AssetId::zeroed(), Some(1)).await;
 
         register(
             &instance,
@@ -23,7 +23,7 @@ mod success {
             REGISTER_DURATION,
             &acc1.identity(),
             &acc1.identity(),
-            ContractId::zeroed(),
+            AssetId::zeroed(),
         )
         .await;
 

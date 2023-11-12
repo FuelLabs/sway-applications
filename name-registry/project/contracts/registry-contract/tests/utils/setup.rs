@@ -6,7 +6,7 @@ use fuels::{
         StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
     programs::{call_response::FuelCallResponse, contract::ContractCallHandler},
-    types::{traits::Tokenizable, Identity, SizedAsciiString},
+    types::{Identity, SizedAsciiString}, core::traits::{Tokenizable, Parameterize},
 };
 
 abigen!(Contract(
@@ -54,13 +54,13 @@ pub(crate) async fn setup() -> (NameRegistry<WalletUnlocked>, Account, WalletUnl
     let wallet = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
 
-    let storage_configuration = StorageConfiguration::load_from(CONTRACT_STORAGE_PATH);
+    let storage_configuration = StorageConfiguration::default().add_slot_overrides_from_file(CONTRACT_STORAGE_PATH);
     let configurables = NameRegistryConfigurables::new()
-        .set_OWNER(Identity::Address(Address::from(wallet.address())));
+        .with_OWNER(Identity::Address(Address::from(wallet.address())));
 
     let configuration = LoadConfiguration::default()
-        .set_storage_configuration(storage_configuration.unwrap())
-        .set_configurables(configurables);
+        .with_storage_configuration(storage_configuration.unwrap())
+        .with_configurables(configurables);
 
     let id = Contract::load_from(CONTRACT_BINARY_PATH, configuration)
         .unwrap()
@@ -82,7 +82,7 @@ pub(crate) async fn get_timestamp_and_call<T, D>(
 ) -> (FuelCallResponse<D>, u64)
 where
     T: FuelAccount,
-    D: Tokenizable + Debug,
+    D: Tokenizable + Parameterize + Debug,
 {
     let call_response = handler.call().await.unwrap();
 

@@ -1,6 +1,8 @@
 use crate::utils::{interface::core::set_asset, setup::setup};
 
 mod success {
+    use fuels::types::Bits256;
+
     use super::*;
     use crate::utils::setup::AssetRateEvent;
 
@@ -8,12 +10,12 @@ mod success {
     async fn sets_asset() {
         let (instance, _account, _wallet2) = setup().await;
         let rate = Some(5);
-        let response = set_asset(&instance, instance.contract_id().into(), rate).await;
+        let response = set_asset(&instance, instance.contract_id().asset_id(&Bits256::zeroed()), rate).await;
         let log = response.decode_logs_with_type::<AssetRateEvent>().unwrap();
         assert_eq!(
             log,
             vec![AssetRateEvent {
-                id: instance.contract_id().into(),
+                id: instance.contract_id().asset_id(&Bits256::zeroed()),
                 rate,
             }]
         )
@@ -21,6 +23,8 @@ mod success {
 }
 
 mod revert {
+    use fuels::types::Bits256;
+
     use super::*;
 
     #[tokio::test]
@@ -30,7 +34,7 @@ mod revert {
         let rate = Some(5);
         set_asset(
             &instance.with_account(wallet2).unwrap(),
-            instance.contract_id().into(),
+            instance.contract_id().asset_id(&Bits256::zeroed()),
             rate,
         )
         .await;

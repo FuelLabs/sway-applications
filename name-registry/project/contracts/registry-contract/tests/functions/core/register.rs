@@ -2,7 +2,7 @@ use crate::utils::{
     interface::core::set_asset,
     setup::{setup, REGISTER_DURATION},
 };
-use fuels::prelude::ContractId;
+use fuels::prelude::AssetId;
 
 mod success {
     use super::*;
@@ -15,7 +15,7 @@ mod success {
     #[ignore]
     async fn can_register() {
         let (instance, acc, _wallet2) = setup().await;
-        set_asset(&instance, ContractId::zeroed(), Some(1)).await;
+        set_asset(&instance, AssetId::zeroed(), Some(1)).await;
 
         // TODO: Breaking changes by SDK prevent retention of time
         let (response, latest_block_time) = register_with_time(
@@ -24,7 +24,7 @@ mod success {
             REGISTER_DURATION,
             &acc.identity(),
             &acc.identity(),
-            ContractId::zeroed(),
+            AssetId::zeroed(),
         )
         .await;
 
@@ -54,7 +54,7 @@ mod revert {
     #[should_panic(expected = "NameNotExpired")]
     async fn cant_repeat_register() {
         let (instance, acc, _wallet2) = setup().await;
-        set_asset(&instance, ContractId::zeroed(), Some(1)).await;
+        set_asset(&instance, AssetId::zeroed(), Some(1)).await;
 
         register(
             &instance,
@@ -62,7 +62,7 @@ mod revert {
             REGISTER_DURATION,
             &acc.identity(),
             &acc.identity(),
-            ContractId::zeroed(),
+            AssetId::zeroed(),
         )
         .await;
         register(
@@ -71,7 +71,7 @@ mod revert {
             REGISTER_DURATION,
             &acc.identity(),
             &acc.identity(),
-            ContractId::zeroed(),
+            AssetId::zeroed(),
         )
         .await;
     }
@@ -80,7 +80,7 @@ mod revert {
     #[should_panic(expected = "InsufficientPayment")]
     async fn cant_register_max_duration() {
         let (instance, acc, _wallet2) = setup().await;
-        set_asset(&instance, ContractId::zeroed(), Some(1)).await;
+        set_asset(&instance, AssetId::zeroed(), Some(1)).await;
 
         register(
             &instance,
@@ -88,7 +88,7 @@ mod revert {
             u64::MAX,
             &acc.identity(),
             &acc.identity(),
-            ContractId::zeroed(),
+            AssetId::zeroed(),
         )
         .await;
     }
