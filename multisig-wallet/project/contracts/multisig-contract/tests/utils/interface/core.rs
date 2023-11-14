@@ -1,7 +1,8 @@
 use crate::utils::setup::{MultiSig, SignatureInfo, TransactionParameters, User};
 use fuels::{
-    accounts::wallet::WalletUnlocked, programs::call_response::FuelCallResponse,
-    programs::call_utils::TxDependencyExtension, types::Identity,
+    accounts::wallet::WalletUnlocked,
+    programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension},
+    types::Identity,
 };
 
 pub(crate) async fn constructor(
