@@ -1,0 +1,13 @@
+[project]
+name = "NFT-contract"
+version = "0.0.0"
+authors = ["Fuel Labs <contact@fuel.sh>"]
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+
+[[test]]
+harness = true
+name = "integration_tests"
+path = "tests/harness.rs"

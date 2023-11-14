@@ -58,12 +58,12 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `asset_id`: [ContractId] - The identifier of an asset.
+    /// * `asset_id`: [AssetId] - The identifier of an asset.
     ///
     /// # Returns
     ///
     /// * [u64] - The amount of `asset_id` in the contract.
-    fn balance(asset_id: ContractId) -> u64;
+    fn balance(asset_id: AssetId) -> u64;
 
     /// Returns the delay values.
     ///

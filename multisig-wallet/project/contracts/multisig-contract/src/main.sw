@@ -24,7 +24,10 @@ use std::{
     call_frames::contract_id,
     context::this_balance,
     error_signals::FAILED_REQUIRE_SIGNAL,
-    hash::sha256,
+    hash::{
+        Hash,
+        sha256,
+    },
     low_level_call::{
         call_with_function_selector,
         CallParams,
@@ -126,7 +129,7 @@ impl MultiSignatureWallet for Contract {
 
                 storage.nonce.write(nonce + 1);
 
-                transfer(value, transfer_params.asset_id, target);
+                transfer(target, transfer_params.asset_id, value);
             },
         }
 
@@ -191,7 +194,7 @@ impl Info for Contract {
         storage.weighting.get(user).try_read().unwrap_or(0)
     }
 
-    fn balance(asset_id: ContractId) -> u64 {
+    fn balance(asset_id: AssetId) -> u64 {
         this_balance(asset_id)
     }
 

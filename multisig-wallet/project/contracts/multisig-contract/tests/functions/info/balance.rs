@@ -2,7 +2,7 @@ mod success {
 
     use crate::utils::{
         interface::info::balance,
-        setup::{base_asset_contract_id, setup_env, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK},
+        setup::{setup_env, DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK},
     };
     use fuels::{
         accounts::Account,
@@ -13,9 +13,7 @@ mod success {
     async fn gets_balance() {
         let (_private_key, deployer, _non_owner) = setup_env(VALID_SIGNER_PK).await.unwrap();
 
-        let initial_balance = balance(&deployer.contract, base_asset_contract_id())
-            .await
-            .value;
+        let initial_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
 
         deployer
             .wallet
@@ -28,9 +26,7 @@ mod success {
             .await
             .unwrap();
 
-        let final_balance = balance(&deployer.contract, base_asset_contract_id())
-            .await
-            .value;
+        let final_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
 
         assert_eq!(initial_balance, 0);
         assert_eq!(final_balance, DEFAULT_TRANSFER_AMOUNT);
