@@ -37,9 +37,9 @@ pub(crate) async fn setup() -> (Metadata, Metadata, u64) {
     let wallet1 = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
 
-    let storage_configuration = StorageConfiguration::load_from(ASSET_CONTRACT_STORAGE_PATH);
+    let storage_configuration = StorageConfiguration::default().add_slot_overrides_from_file(ASSET_CONTRACT_STORAGE_PATH);
     let configuration =
-        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
+        LoadConfiguration::default().with_storage_configuration(storage_configuration.unwrap());
 
     let simple_asset_id = Contract::load_from(ASSET_CONTRACT_BINARY_PATH, configuration)
         .unwrap()
