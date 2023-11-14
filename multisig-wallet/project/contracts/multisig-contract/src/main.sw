@@ -24,7 +24,10 @@ use std::{
     call_frames::contract_id,
     context::this_balance,
     error_signals::FAILED_REQUIRE_SIGNAL,
-    hash::{Hash, sha256},
+    hash::{
+        Hash,
+        sha256,
+    },
     low_level_call::{
         call_with_function_selector,
         CallParams,
