@@ -28,8 +28,8 @@ use ::data_structures::{
     user::User,
 };
 
-const EIP191_INITIAL_BYTE = 0x19u8;
-const EIP191_VERSION_BYTE = 0x45u8;
+const EIP191_INITIAL_BYTE = 0x19;
+const EIP191_VERSION_BYTE = 0x45;
 // const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32"; // TODO: Replace the use of string literal with this constant when compiler bug is fixed.
 
 /// Takes a struct comprised of transaction data and hashes it.
@@ -106,7 +106,7 @@ pub fn recover_signer(message_hash: b256, signature_info: SignatureInfo) -> b256
 ///
 /// * [b256] - The formatted message hash.
 fn eip_191_personal_sign_format(data_to_sign: b256) -> b256 {
-    let signed_data = encode_and_pack_signed_data(EIP191_INITIAL_BYTE.as_u64(), EIP191_VERSION_BYTE.as_u64(), data_to_sign);
+    let signed_data = encode_and_pack_signed_data(EIP191_INITIAL_BYTE, EIP191_VERSION_BYTE, data_to_sign);
     let signed_data = (
         signed_data.get(0).unwrap(),
         signed_data.get(1).unwrap(),
