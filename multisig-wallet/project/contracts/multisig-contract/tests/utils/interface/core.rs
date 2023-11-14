@@ -1,6 +1,8 @@
 use crate::utils::setup::{MultiSig, SignatureInfo, TransactionParameters, User};
 use fuels::{
-    accounts::wallet::WalletUnlocked, programs::call_response::FuelCallResponse, types::Identity,
+    accounts::wallet::WalletUnlocked,
+    programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension},
+    types::Identity,
 };
 
 pub(crate) async fn constructor(
@@ -23,7 +25,7 @@ pub(crate) async fn execute_transaction(
 
     match transaction_parameters {
         TransactionParameters::Call(_) => contract_method_call
-            .set_contract_ids(&[match target {
+            .with_contract_ids(&[match target {
                 Identity::ContractId(contract_identifier) => contract_identifier.into(),
                 _ => {
                     panic!("Target must be of type Identity::ContractId");

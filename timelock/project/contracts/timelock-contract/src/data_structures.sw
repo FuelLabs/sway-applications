@@ -5,7 +5,7 @@ pub struct Asset {
     /// The quantity of an asset.
     amount: u64,
     /// Identifier used to distinguish assets.
-    id: ContractId,
+    id: AssetId,
 }
 
 /// Represents the time range in which a transaction may be executed.

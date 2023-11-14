@@ -127,7 +127,7 @@ pub async fn test_predicate_spend_with_parameters(
 
     // Asked asset coin belonging to the wallet taking the order
     let input_from_taker = match swap_coin {
-        CoinType::Coin(_) => Input::resource_signed(swap_coin.clone(), 0),
+        CoinType::Coin(_) => Input::resource_signed(swap_coin.clone()),
         _ => panic!("Swap coin resource type does not match"),
     };
 
@@ -165,7 +165,7 @@ pub async fn test_predicate_spend_with_parameters(
         output_to_taker,
         output_asked_change,
     ])
-    .tx_params(TxParameters::new(0, 10_000_000, 0));
+    .tx_params(TxParameters::new(Some(0), Some(10_000_000), 0));
 
     let _response = script_call.call().await.unwrap();
 
@@ -264,7 +264,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     )
     .with_inputs(vec![input_predicate])
     .with_outputs(vec![output_offered_change])
-    .tx_params(TxParameters::new(1, 10_000_000, 0));
+    .tx_params(TxParameters::new(Some(1), Some(10_000_000), 0));
 
     let _response = script_call.call().await.unwrap();
 
