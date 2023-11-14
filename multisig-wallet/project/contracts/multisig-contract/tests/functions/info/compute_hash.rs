@@ -2,14 +2,14 @@ mod success {
     use crate::utils::{
         interface::info::{compute_hash, nonce, threshold},
         setup::{
-            base_asset_contract_id, default_users, setup_env, ContractCallParams, Threshold,
-            Transaction, TransactionParameters, TransferParams, TypeToHash, Weight,
-            DEFAULT_TRANSFER_AMOUNT, VALID_SIGNER_PK,
+            default_users, setup_env, ContractCallParams, Threshold, Transaction,
+            TransactionParameters, TransferParams, TypeToHash, Weight, DEFAULT_TRANSFER_AMOUNT,
+            VALID_SIGNER_PK,
         },
     };
     use fuels::{
         accounts::fuel_crypto::Hasher,
-        core::{codec::ABIEncoder, traits::Tokenizable},
+        core::{codec::ABIEncoder, constants::BASE_ASSET_ID, traits::Tokenizable},
         prelude::Bytes,
         types::{Bits256, Identity, Token},
     };
@@ -55,7 +55,7 @@ mod success {
         let nonce = nonce(&deployer.contract).await.value;
         let target = Identity::Address(deployer.wallet.address().try_into().unwrap());
         let transaction_parameters = TransactionParameters::Transfer(TransferParams {
-            asset_id: base_asset_contract_id(),
+            asset_id: BASE_ASSET_ID,
             value: Some(DEFAULT_TRANSFER_AMOUNT),
         });
 
@@ -106,7 +106,7 @@ mod success {
             function_selector: Bytes([1u8; 32].to_vec()),
             single_value_type_arg: false,
             transfer_params: TransferParams {
-                asset_id: base_asset_contract_id(),
+                asset_id: BASE_ASSET_ID,
                 value: Some(DEFAULT_TRANSFER_AMOUNT),
             },
         });
