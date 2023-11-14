@@ -342,7 +342,7 @@ mod success {
             defaults.initial_wallet_amount + defaults.asset_amount,
             asset_amount(&defaults.asset_id, &arbiter).await
         );
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
         assert!(matches!(
             escrows(&seller, 0).await.unwrap().state,
             State::Completed
