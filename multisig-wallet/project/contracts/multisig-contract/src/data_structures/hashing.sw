@@ -1,7 +1,7 @@
 library;
 
 use ::data_structures::user::User;
-use std::{bytes::Bytes, constants::ZERO_B256};
+use std::{bytes::Bytes, constants::ZERO_B256, hash::{Hash, Hasher}};
 
 impl Bytes {
     /// Converts a generic copy type into [Bytes].
@@ -152,7 +152,7 @@ impl IntoBytes for Transaction {
 /// Parameters for a transfer.
 pub struct TransferParams {
     /// The asset to transfer.
-    asset_id: ContractId,
+    asset_id: AssetId,
     /// The amount to transfer.
     value: Option<u64>,
 }
@@ -162,6 +162,38 @@ pub enum TypeToHash {
     Threshold: Threshold,
     Transaction: Transaction,
     Weight: Weight,
+}
+
+impl Hash for User {
+    fn hash(self, ref mut state: Hasher) {
+        self.address.hash(state);
+        self.weight.hash(state);
+    }
+}
+
+impl Hash for Threshold {
+    fn hash(self, ref mut state: Hasher) {
+        self.contract_identifier.hash(state);
+        self.nonce.hash(state);
+        self.threshold.hash(state);
+    }
+}
+
+impl Hash for Transaction {
+    fn hash(self, ref mut state: Hasher) {
+        self.contract_identifier.hash(state);
+        self.nonce.hash(state);
+        self.target.hash(state);
+        self.transaction_parameters.into_bytes().hash(state);
+    }
+}
+
+impl Hash for Weight {
+    fn hash(self, ref mut state: Hasher) {
+        self.contract_identifier.hash(state);
+        self.nonce.hash(state);
+        self.user.hash(state);
+    }
 }
 
 /// The data to be hashed and signed over when calling `set_weight`.
