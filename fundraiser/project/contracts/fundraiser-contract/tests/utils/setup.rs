@@ -1,7 +1,7 @@
 use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Bech32Address,
-        Config, Contract, ContractId, LoadConfiguration, StorageConfiguration, TxParameters,
+        Config, Contract, LoadConfiguration, StorageConfiguration, TxParameters,
         WalletUnlocked, WalletsConfig, BASE_ASSET_ID,
     },
     types::Identity,
@@ -16,11 +16,11 @@ const FUNDRAISER_CONTRACT_BINARY_PATH: &str = "./out/debug/fundraiser-contract.b
 const FUNDRAISER_CONTRACT_STORAGE_PATH: &str = "./out/debug/fundraiser-contract-storage_slots.json";
 
 pub(crate) struct Coin {
-    pub(crate) id: ContractId,
+    pub(crate) id: AssetId,
 }
 
 pub(crate) struct DefaultParameters {
-    pub(crate) asset_id: ContractId,
+    pub(crate) asset_id: AssetId,
     pub(crate) beneficiary: Identity,
     pub(crate) deadline: u64,
     pub(crate) initial_wallet_amount: u64,
@@ -74,9 +74,9 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
     let user_wallet = wallets.pop().unwrap();
 
     let fundraiser_storage_configuration =
-        StorageConfiguration::load_from(FUNDRAISER_CONTRACT_STORAGE_PATH);
+        StorageConfiguration::default().add_slot_overrides_from_file(FUNDRAISER_CONTRACT_STORAGE_PATH);
     let fundraiser_configuration = LoadConfiguration::default()
-        .set_storage_configuration(fundraiser_storage_configuration.unwrap());
+        .with_storage_configuration(fundraiser_storage_configuration.unwrap());
     let fundraiser_id =
         Contract::load_from(FUNDRAISER_CONTRACT_BINARY_PATH, fundraiser_configuration)
             .unwrap()
@@ -95,15 +95,15 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
     };
 
     let asset = Coin {
-        id: ContractId::from(*asset_id),
+        id: asset_id,
     };
 
     let asset2 = Coin {
-        id: ContractId::from(*asset2_id),
+        id: asset2_id,
     };
 
     let defaults = DefaultParameters {
-        asset_id: ContractId::from(*asset_id),
+        asset_id: asset_id,
         beneficiary: Identity::Address(user_wallet.address().into()),
         deadline: 100,
         initial_wallet_amount: coin_amount,
