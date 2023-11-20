@@ -53,8 +53,9 @@ pub mod test_helpers {
     use paths::ORACLE_CONTRACT_BINARY_PATH;
 
     pub async fn setup() -> (Metadata, Vec<WalletUnlocked>) {
-        let wallets =
-            launch_custom_provider_and_get_wallets(WalletsConfig::default(), None, None).await;
+        let wallets = launch_custom_provider_and_get_wallets(WalletsConfig::default(), None, None)
+            .await
+            .unwrap();
 
         let oracle_id =
             Contract::load_from(ORACLE_CONTRACT_BINARY_PATH, LoadConfiguration::default())

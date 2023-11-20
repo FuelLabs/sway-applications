@@ -57,7 +57,8 @@ pub async fn test_predicate_spend_with_parameters(
         }),
         None,
     )
-    .await;
+    .await
+    .unwrap();
 
     let receiver_wallet = &wallets[0];
     let taker_wallet = &wallets[1];
@@ -204,7 +205,8 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         }),
         None,
     )
-    .await;
+    .await
+    .unwrap();
 
     let wallet = match correct_owner {
         true => &wallets[0],
