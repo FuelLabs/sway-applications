@@ -44,7 +44,12 @@ storage {
 impl Game for Contract {
     #[storage(read, write)]
     fn new_game(player_one: Identity, player_two: Identity) {
-        require(storage.state.read() == State::Ended, GameStateError::GameHasNotEnded);
+        require(
+            storage
+                .state
+                .read() == State::Ended,
+            GameStateError::GameHasNotEnded,
+        );
 
         storage.player_one.write(Option::Some(player_one));
         storage.player_two.write(Option::Some(player_two));
@@ -67,10 +72,28 @@ impl Game for Contract {
 
     #[storage(read, write)]
     fn make_move(position: u64) {
-        require(storage.state.read() == State::Playing, GameStateError::GameHasEnded);
-        require(storage.player_turn.read().unwrap() == msg_sender().unwrap(), PlayerError::IncorrectPlayerTurn);
+        require(
+            storage
+                .state
+                .read() == State::Playing,
+            GameStateError::GameHasEnded,
+        );
+        require(
+            storage
+                .player_turn
+                .read()
+                .unwrap() == msg_sender()
+                .unwrap(),
+            PlayerError::IncorrectPlayerTurn,
+        );
         require(position < 9, PositionError::InvalidPosition);
-        require(storage.board.get(position).try_read() == Option::None, PositionError::CellIsNotEmpty);
+        require(
+            storage
+                .board
+                .get(position)
+                .try_read() == Option::None,
+            PositionError::CellIsNotEmpty,
+        );
 
         storage.board.insert(position, msg_sender().unwrap());
         storage.move_counter.write(storage.move_counter.read() + 1);
@@ -99,7 +122,20 @@ impl Game for Contract {
                 log(GameWonEvent {
                     player: msg_sender().unwrap(),
                 });
-            } else if draw(board, storage.player_one.read().unwrap(), storage.player_two.read().unwrap(), storage.move_counter.read())
+            } else if draw(
+                    board,
+                    storage
+                        .player_one
+                        .read()
+                        .unwrap(),
+                    storage
+                        .player_two
+                        .read()
+                        .unwrap(),
+                    storage
+                        .move_counter
+                        .read(),
+                )
             {
                 storage.player_turn.write(Option::None);
                 storage.state.write(State::Ended);
