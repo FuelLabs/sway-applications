@@ -16,13 +16,18 @@ use std::{
     bytes::Bytes,
     call_frames::msg_asset_id,
     context::this_balance,
+    hash::Hash,
 };
 use ::utils::create_hash;
 
 configurable {
     MAXIMUM_DELAY: u64 = 1000,
     MINIMUM_DELAY: u64 = 100,
-    ADMIN: Identity = Identity::Address(Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db)),
+    ADMIN: Identity = Identity::Address(
+        Address::from(
+            0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db,
+        ),
+    ),
 }
 
 storage {
@@ -33,8 +38,19 @@ storage {
 impl Timelock for Contract {
     #[storage(read, write)]
     fn cancel(id: b256) {
-        require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
-        require(storage.queue.get(id).try_read().is_some(), TransactionError::InvalidTransaction(id));
+        require(
+            msg_sender()
+                .unwrap() == ADMIN,
+            AccessControlError::AuthorizationError,
+        );
+        require(
+            storage
+                .queue
+                .get(id)
+                .try_read()
+                .is_some(),
+            TransactionError::InvalidTransaction(id),
+        );
 
         assert(storage.queue.remove(id));
 
@@ -48,20 +64,38 @@ impl Timelock for Contract {
         data: Option<Bytes>,
         timestamp: u64,
     ) {
-        require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
+        require(
+            msg_sender()
+                .unwrap() == ADMIN,
+            AccessControlError::AuthorizationError,
+        );
 
         let id = create_hash(recipient, asset, data, timestamp);
         let transaction = storage.queue.get(id).try_read();
 
-        require(transaction.is_some(), TransactionError::InvalidTransaction(id));
+        require(
+            transaction
+                .is_some(),
+            TransactionError::InvalidTransaction(id),
+        );
 
         // Timestamp is guaranteed to be in the range because of `fn queue()`
         // Therefore, the lower bound can be the timestamp itself; but, we must place an upper bound
         // to prevent going over the MAXIMUM_DELAY
-        require(timestamp <= now() && now() <= transaction.unwrap().end, TransactionError::TimestampNotInRange((timestamp, transaction.unwrap().end, now())));
+        require(
+            timestamp <= now() && now() <= transaction
+                .unwrap()
+                .end,
+            TransactionError::TimestampNotInRange((timestamp, transaction.unwrap().end, now())),
+        );
 
         if asset.is_some() {
-            require(asset.unwrap().amount <= this_balance(asset.unwrap().id), FundingError::InsufficientContractBalance((this_balance(asset.unwrap().id))));
+            require(
+                asset
+                    .unwrap()
+                    .amount <= this_balance(asset.unwrap().id),
+                FundingError::InsufficientContractBalance((this_balance(asset.unwrap().id))),
+            );
         }
 
         assert(storage.queue.remove(id));
@@ -83,17 +117,28 @@ impl Timelock for Contract {
         data: Option<Bytes>,
         timestamp: u64,
     ) {
-        require(msg_sender().unwrap() == ADMIN, AccessControlError::AuthorizationError);
+        require(
+            msg_sender()
+                .unwrap() == ADMIN,
+            AccessControlError::AuthorizationError,
+        );
 
         let id = create_hash(recipient, asset, data, timestamp);
         let transaction = storage.queue.get(id).try_read();
 
-        require(transaction.is_none(), TransactionError::DuplicateTransaction(id));
+        require(
+            transaction
+                .is_none(),
+            TransactionError::DuplicateTransaction(id),
+        );
 
         let start = now() + MINIMUM_DELAY;
         let end = now() + MAXIMUM_DELAY;
 
-        require(start <= timestamp && timestamp <= end, TransactionError::TimestampNotInRange((start, end, timestamp)));
+        require(
+            start <= timestamp && timestamp <= end,
+            TransactionError::TimestampNotInRange((start, end, timestamp)),
+        );
 
         storage.queue.insert(id, ExecutionRange { start, end });
 
@@ -108,7 +153,7 @@ impl Timelock for Contract {
 }
 
 impl Info for Contract {
-    fn balance(asset_id: ContractId) -> u64 {
+    fn balance(asset_id: AssetId) -> u64 {
         this_balance(asset_id)
     }
 
