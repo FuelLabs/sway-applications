@@ -993,7 +993,7 @@ dependencies = [
 name = "distributor-contract"
 version = "0.0.0"
 dependencies = [
- "fuel-merkle 0.37.0",
+ "fuel-merkle 0.42.0",
  "fuels",
  "sha2 0.10.8",
  "tokio",
@@ -1528,16 +1528,16 @@ dependencies = [
 
 [[package]]
 name = "fuel-merkle"
-version = "0.37.0"
+version = "0.42.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8aef206a98a380615bf711dc6b4b7328dac4002c4df278f8a43d3d16c2bfa330"
+checksum = "ef8c8e4fe5d8f6fab234ccea69ef893df502b9a01af2d53e7a70e35d3ffa035a"
 dependencies = [
+ "derive_more",
  "digest 0.10.7",
- "fuel-storage 0.37.0",
+ "fuel-storage 0.42.0",
  "hashbrown 0.13.2",
  "hex",
  "sha2 0.10.8",
- "thiserror",
 ]
 
 [[package]]
@@ -1548,9 +1548,9 @@ checksum = "ae188b019be59dea7f6a036c46daca5de8414906df1bfb0009dd379810d1976d"
 
 [[package]]
 name = "fuel-storage"
-version = "0.37.0"
+version = "0.42.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a8e7a3bd721e8556c319af4c0e88d1f82ec54a48fa1b9136603f2fb0bb6ceb9"
+checksum = "5da0820260094843088c8612590ec052ceeef64b51ab96883f7678ce72552cb4"
 
 [[package]]
 name = "fuel-tx"

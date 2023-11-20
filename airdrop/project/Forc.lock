@@ -17,7 +17,7 @@ dependencies = [
 
 [[package]]
 name = "merkle_proof"
-source = "git+https://github.com/FuelLabs/sway-libs?tag=v0.14.0#6847dd9994c70834692c101a368ba1f69beca170"
+source = "git+https://github.com/FuelLabs/sway-libs?tag=v0.16.0#a58566009a364768640826fd78f0b84fe29b92cf"
 dependencies = ["std"]
 
 [[package]]
