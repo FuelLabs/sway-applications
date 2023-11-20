@@ -52,7 +52,11 @@ abi MultiSignatureWallet {
     /// * Reads: `3`
     /// * Writes: `2`
     #[storage(read, write)]
-    fn execute_transaction(signatures: Vec<SignatureInfo>, target: Identity, transaction_parameters: TransactionParameters);
+    fn execute_transaction(
+        signatures: Vec<SignatureInfo>,
+        target: Identity,
+        transaction_parameters: TransactionParameters,
+    );
 
     /// Updates the threshold required for execution.
     ///

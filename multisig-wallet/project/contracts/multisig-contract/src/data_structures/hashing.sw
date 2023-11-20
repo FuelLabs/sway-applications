@@ -10,12 +10,13 @@ impl Bytes {
         let mut bytes = Bytes::with_capacity(8);
         bytes.len = 8;
 
-        asm(buffer, ptr: value, dst: bytes.buf.ptr, len: 8) {
-            move buffer sp; // Make `buffer` point to the current top of the stack
-            cfei i8; // Grow stack by 1 word
-            sw   buffer ptr i0; // Save value in register at `ptr` to memory at `buffer`
-            mcp  dst buffer len; // Copy `len` bytes in memory starting from `buffer`, to `dst`
-            cfsi i8; // Shrink stack by 1 word
+        asm(buffer, ptr: value, dst: bytes.buf
+            .ptr, len: 8) {
+            move buffer sp;
+            cfei i8;
+            sw   buffer ptr i0;
+            mcp  dst buffer len;
+            cfsi i8;
         }
 
         bytes
@@ -58,8 +59,10 @@ impl IntoBytes for ContractCallParams {
         bytes.append(self.calldata);
         bytes.append(Bytes::from_copy_type(self.forwarded_gas));
         bytes.append(self.function_selector);
-        bytes.append(Bytes::from_copy_type(self.single_value_type_arg));
-        bytes.append(Bytes::from_reference_type(self.transfer_params));
+        bytes
+            .append(Bytes::from_copy_type(self.single_value_type_arg));
+        bytes
+            .append(Bytes::from_reference_type(self.transfer_params));
         bytes
     }
 }
@@ -141,7 +144,8 @@ impl IntoBytes for Transaction {
     // as such the whole struct must be serialised to [Bytes].
     fn into_bytes(self) -> Bytes {
         let mut bytes = Bytes::new();
-        bytes.append(Bytes::from_reference_type(self.contract_identifier));
+        bytes
+            .append(Bytes::from_reference_type(self.contract_identifier));
         bytes.append(Bytes::from_copy_type(self.nonce));
         bytes.append(Bytes::from_reference_type(self.target));
         bytes.append(self.transaction_parameters.into_bytes());

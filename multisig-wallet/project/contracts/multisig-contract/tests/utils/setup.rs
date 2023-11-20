@@ -167,7 +167,9 @@ pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, C
         })
         .collect::<Vec<_>>();
 
-    let provider = setup_test_provider(all_coins, vec![], None, None).await;
+    let provider = setup_test_provider(all_coins, vec![], None, None)
+        .await
+        .unwrap();
     deployer_wallet.set_provider(provider.clone());
     non_owner_wallet.set_provider(provider);
 
