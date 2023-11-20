@@ -2,7 +2,7 @@ use crate::utils::{
     interface::core::{create_escrow, deposit, propose_arbiter},
     setup::{create_arbiter, create_asset, setup},
 };
-use fuels::prelude::{AssetId, CallParameters, TxParameters};
+use fuels::{programs::call_utils::TxDependencyExtension, prelude::{AssetId, CallParameters, TxParameters}};
 
 mod success {
 
@@ -458,7 +458,7 @@ mod revert {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-        let tx_params = TxParameters::new(0, 10_000_000, 0);
+        let tx_params = TxParameters::new(Some(0), Some(10_000_000), 0);
         let call_params = CallParameters::new(
             arbiter_obj.fee_amount - 1,
             AssetId::from(*arbiter_obj.asset),
@@ -499,7 +499,7 @@ mod revert {
 
         let arbiter_obj_unequal =
             create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
-        let tx_params = TxParameters::new(0, 1_000_000, 0);
+        let tx_params = TxParameters::new(Some(0), Some(1_000_000), 0);
         let call_params = CallParameters::new(
             arbiter_obj_unequal.fee_amount,
             AssetId::from(*defaults.other_asset_id),
