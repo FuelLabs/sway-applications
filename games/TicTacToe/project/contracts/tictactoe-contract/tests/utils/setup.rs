@@ -35,8 +35,8 @@ pub(crate) async fn setup() -> (Player, Player) {
 
     let player_one_wallet = wallets.pop().unwrap();
     let player_two_wallet = wallets.pop().unwrap();
-    let contract_storage_configuration =
-        StorageConfiguration::default().add_slot_overrides_from_file(TICTACTOE_CONTRACT_STORAGE_PATH);
+    let contract_storage_configuration = StorageConfiguration::default()
+        .add_slot_overrides_from_file(TICTACTOE_CONTRACT_STORAGE_PATH);
 
     let contract_configuration = LoadConfiguration::default()
         .with_storage_configuration(contract_storage_configuration.unwrap());
