@@ -166,7 +166,7 @@ pub mod common {
             asset_parameters.amount_per_coin,
         );
 
-        let provider = setup_test_provider(coins.clone(), vec![], None, None).await;
+        let provider = setup_test_provider(coins.clone(), vec![], None, None).await.unwrap();
 
         wallet.set_provider(provider.clone());
 
