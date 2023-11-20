@@ -12,7 +12,7 @@ pub(crate) async fn new_game(
     contract
         .methods()
         .new_game(player_one.clone(), player_two.clone())
-        .tx_params(TxParameters::new(0, 2_000_000, 0))
+        .tx_params(TxParameters::new(Some(0), Some(2_000_000), 0))
         .call()
         .await
         .unwrap()
@@ -25,7 +25,7 @@ pub(crate) async fn make_move(
     contract
         .methods()
         .make_move(position)
-        .tx_params(TxParameters::new(0, 2_000_000, 0))
+        .tx_params(TxParameters::new(Some(0), Some(2_000_000), 0))
         .call()
         .await
         .unwrap()
