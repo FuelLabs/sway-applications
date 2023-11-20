@@ -8,8 +8,8 @@ use fuels::{
         abigen, launch_custom_provider_and_get_wallets, AssetId, Config, Contract, ContractId,
         LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
     },
+    tx::{self, ContractIdExt},
     types::{Bits256, Identity},
-    tx::{ContractIdExt, self},
 };
 use sha2::{Digest, Sha256};
 
@@ -287,15 +287,16 @@ pub(crate) async fn setup() -> (Metadata, Metadata, Metadata, Metadata, Asset) {
         Some(config),
         None,
     )
-    .await;
+    .await
+    .unwrap();
 
     let wallet1 = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
     let wallet3 = wallets.pop().unwrap();
     let wallet4 = wallets.pop().unwrap();
 
-    let airdrop_distributor_storage_configuration =
-        StorageConfiguration::default().add_slot_overrides_from_file(DISTRIBUTOR_CONTRACT_STORAGE_PATH);
+    let airdrop_distributor_storage_configuration = StorageConfiguration::default()
+        .add_slot_overrides_from_file(DISTRIBUTOR_CONTRACT_STORAGE_PATH);
     let airdrop_distributor_configuration = LoadConfiguration::default()
         .with_storage_configuration(airdrop_distributor_storage_configuration.unwrap());
 

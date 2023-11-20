@@ -1,7 +1,11 @@
-use fuels::{prelude::{
-    abigen, launch_custom_provider_and_get_wallets, Contract, ContractId, LoadConfiguration,
-    StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
-}, tx::{ContractIdExt, self}, types::AssetId};
+use fuels::{
+    prelude::{
+        abigen, launch_custom_provider_and_get_wallets, Contract, ContractId, LoadConfiguration,
+        StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+    },
+    tx::{self, ContractIdExt},
+    types::AssetId,
+};
 
 abigen!(Contract(
     name = "SimpleAsset",
@@ -32,12 +36,14 @@ pub(crate) async fn setup() -> (Metadata, Metadata, u64) {
         None,
         None,
     )
-    .await;
+    .await
+    .unwrap();
 
     let wallet1 = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
 
-    let storage_configuration = StorageConfiguration::default().add_slot_overrides_from_file(ASSET_CONTRACT_STORAGE_PATH);
+    let storage_configuration =
+        StorageConfiguration::default().add_slot_overrides_from_file(ASSET_CONTRACT_STORAGE_PATH);
     let configuration =
         LoadConfiguration::default().with_storage_configuration(storage_configuration.unwrap());
 

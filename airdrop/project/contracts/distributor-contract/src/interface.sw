@@ -52,7 +52,12 @@ abi AirdropDistributor {
     /// * When no tokens are sent to the airdrop contract.
     #[payable]
     #[storage(read, write)]
-    fn constructor(admin: Identity, claim_time: u64, merkle_root: b256, num_leaves: u64);
+    fn constructor(
+        admin: Identity,
+        claim_time: u64,
+        merkle_root: b256,
+        num_leaves: u64,
+    );
 }
 
 abi Info {

@@ -18,7 +18,10 @@ use std::{
         msg_amount,
         this_balance,
     },
-    hash::{Hash, sha256},
+    hash::{
+        Hash,
+        sha256,
+    },
     token::transfer,
 };
 
@@ -42,18 +45,45 @@ impl AirdropDistributor for Contract {
     #[storage(read, write)]
     fn claim(amount: u64, key: u64, proof: Vec<b256>, to: Identity) {
         // The claiming period must be open
-        require(storage.end_block.read() > height().as_u64(), StateError::ClaimPeriodNotActive);
+        require(
+            storage
+                .end_block
+                .read() > height()
+                .as_u64(),
+            StateError::ClaimPeriodNotActive,
+        );
 
         // Users cannot claim twice
         let sender = msg_sender().unwrap();
-        require(storage.claims.get(sender).try_read().unwrap_or(ClaimState::Unclaimed) == ClaimState::Unclaimed, AccessError::UserAlreadyClaimed);
+        require(
+            storage
+                .claims
+                .get(sender)
+                .try_read()
+                .unwrap_or(ClaimState::Unclaimed) == ClaimState::Unclaimed,
+            AccessError::UserAlreadyClaimed,
+        );
 
         // There must be enough tokens left in the contract
         let asset = storage.asset.read().unwrap();
         require(this_balance(asset) >= amount, AccessError::NotEnoughTokens);
 
         // Verify the merkle proof against the user and amount
-        require(verify_proof(key, leaf_digest(sha256((sender, amount))), storage.merkle_root.read().unwrap(), storage.number_of_leaves.read(), proof), VerificationError::MerkleProofFailed);
+        require(
+            verify_proof(
+                key,
+                leaf_digest(sha256((sender, amount))),
+                storage
+                    .merkle_root
+                    .read()
+                    .unwrap(),
+                storage
+                    .number_of_leaves
+                    .read(),
+                proof,
+            ),
+            VerificationError::MerkleProofFailed,
+        );
 
         storage.claims.insert(sender, ClaimState::Claimed(amount));
 
@@ -70,8 +100,20 @@ impl AirdropDistributor for Contract {
     #[storage(read)]
     fn clawback() {
         let admin = storage.admin.read();
-        require(admin.is_some() && admin.unwrap() == msg_sender().unwrap(), AccessError::CallerNotAdmin);
-        require(storage.end_block.read() <= height().as_u64(), StateError::ClaimPeriodActive);
+        require(
+            admin
+                .is_some() && admin
+                .unwrap() == msg_sender()
+                .unwrap(),
+            AccessError::CallerNotAdmin,
+        );
+        require(
+            storage
+                .end_block
+                .read() <= height()
+                .as_u64(),
+            StateError::ClaimPeriodActive,
+        );
 
         let asset = storage.asset.read().unwrap();
         let balance = this_balance(asset);
