@@ -29,7 +29,7 @@ pub async fn setup() -> (
     InteractionScript<WalletUnlocked>,
 ) {
     // The `launch_provider_and_get_wallet` function will launch a local provider and create a wallet for you.
-    let wallet = launch_provider_and_get_wallet().await;
+    let wallet = launch_provider_and_get_wallet().await.unwrap();
 
     // The following code will load the storage configuration (default storage values) from the contract and create a configuration object.
     let storage_configuration = StorageConfiguration::default()
