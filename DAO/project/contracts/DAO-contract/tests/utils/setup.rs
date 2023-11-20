@@ -60,7 +60,9 @@ pub(crate) async fn setup() -> (AssetId, AssetId, Metadata, Metadata, u64) {
     let assets = vec![base_asset, gov_token, other_token];
 
     let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
-    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None).await;
+    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None)
+        .await
+        .unwrap();
 
     let deployer_wallet = wallets.pop().unwrap();
     let user_wallet = wallets.pop().unwrap();
