@@ -51,7 +51,7 @@ mod success {
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(arbiter_obj2, escrows(&seller, 0).await.unwrap().arbiter);
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
 
         let log = response
             .decode_logs_with_type::<AcceptedArbiterEvent>()

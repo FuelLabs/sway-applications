@@ -58,7 +58,7 @@ mod success {
             ptr: 0,
             len: 0,
             digest: Default::default(),
-            data: 101u64.to_be_bytes().to_vec(),
+            data: Some(101u64.to_be_bytes().to_vec()),
             pc: 0,
             is: 0,
         }];
