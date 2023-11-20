@@ -8,7 +8,7 @@ mod success {
     #[tokio::test]
     async fn returns_none() {
         let (_arbiter, _buyer, seller, _defaults) = setup().await;
-        assert!(matches!(assets(&seller, 0).await, None));
+        assert!(assets(&seller, 0).await.is_none());
     }
 
     #[tokio::test]
@@ -17,7 +17,7 @@ mod success {
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
-        assert!(matches!(assets(&seller, 0).await, None));
+        assert!(assets(&seller, 0).await.is_none());
 
         create_escrow(
             defaults.asset_amount,
