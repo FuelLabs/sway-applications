@@ -455,9 +455,9 @@ checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
 
 [[package]]
 name = "bytes"
-version = "1.4.0"
+version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "89b2fd2a0dcf38d7971e2194b6b6eebab45ae01067456a7fd93d5547a61b70be"
+checksum = "a2bd12c1caf447e69cd4528f47f94d203fd2582878ecb9e9465484c4148a8223"
 dependencies = [
  "serde",
 ]
@@ -560,7 +560,7 @@ dependencies = [
  "k256",
  "lazy_static",
  "serde",
- "sha2 0.10.7",
+ "sha2 0.10.8",
  "thiserror",
 ]
 
@@ -577,7 +577,7 @@ dependencies = [
  "once_cell",
  "pbkdf2 0.12.2",
  "rand",
- "sha2 0.10.7",
+ "sha2 0.10.8",
  "thiserror",
 ]
 
@@ -596,7 +596,7 @@ dependencies = [
  "ripemd",
  "serde",
  "serde_derive",
- "sha2 0.10.7",
+ "sha2 0.10.8",
  "sha3",
  "thiserror",
 ]
@@ -1024,7 +1024,7 @@ checksum = "7277392b266383ef8396db7fdeb1e77b6c52fed775f5df15bb24f35b72156980"
 dependencies = [
  "curve25519-dalek",
  "ed25519",
- "sha2 0.10.7",
+ "sha2 0.10.8",
 ]
 
 [[package]]
@@ -1035,9 +1035,9 @@ checksum = "7fcaabb2fef8c910e7f4c7ce9f67a1283a1715879a7c230ca9d6d1ae31f16d91"
 
 [[package]]
 name = "elliptic-curve"
-version = "0.13.5"
+version = "0.13.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "968405c8fdc9b3bf4df0a6638858cc0b52462836ab6b1c87377785dd09cf1c0b"
+checksum = "e9775b22bc152ad86a0cf23f0f348b884b26add12bf741e7ffc4d4ab2ab4d205"
 dependencies = [
  "base16ct",
  "crypto-bigint",
@@ -1124,7 +1124,7 @@ dependencies = [
  "scrypt",
  "serde",
  "serde_json",
- "sha2 0.10.7",
+ "sha2 0.10.8",
  "sha3",
  "thiserror",
  "uuid",
@@ -1511,7 +1511,7 @@ dependencies = [
  "rand",
  "secp256k1",
  "serde",
- "sha2 0.10.7",
+ "sha2 0.10.8",
  "zeroize",
 ]
 
@@ -1525,7 +1525,7 @@ dependencies = [
  "fuel-storage",
  "hashbrown 0.13.2",
  "hex",
- "sha2 0.10.7",
+ "sha2 0.10.8",
  "thiserror",
 ]
 
@@ -1594,9 +1594,9 @@ dependencies = [
 
 [[package]]
 name = "fuels"
-version = "0.49.0"
+version = "0.50.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e1f341432e0ee313e75c7f66befc2e12231fc5b77a33b7f2a4f2ba0074dfe03"
+checksum = "6e44490a7d415295059f37a92c6f02f060d13b0293d4dd6c27b2f24d73321a0f"
 dependencies = [
  "fuel-core",
  "fuel-core-client",
@@ -1610,9 +1610,9 @@ dependencies = [
 
 [[package]]
 name = "fuels-accounts"
-version = "0.49.0"
+version = "0.50.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0540637b0744f447962020afd9aa27c7644f46b95275f3b9483f09a769abbc1a"
+checksum = "905e1b22d5c7b6ab01f05285ea61cb7e15cdcce762263db2019c192213b03c53"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1626,17 +1626,19 @@ dependencies = [
  "fuels-core",
  "hex",
  "rand",
+ "semver",
  "tai64",
  "thiserror",
  "tokio",
+ "tracing",
  "zeroize",
 ]
 
 [[package]]
 name = "fuels-code-gen"
-version = "0.49.0"
+version = "0.50.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3afd5ba59c905adfae0e8afc09588e2a3acf451520053e5e2cefb58d38ac3253"
+checksum = "99ee789e15eaff668fa41efbcd1b6e52daa1ae195c204e1c55b64dcbfc007823"
 dependencies = [
  "Inflector",
  "fuel-abi-types",
@@ -1650,9 +1652,9 @@ dependencies = [
 
 [[package]]
 name = "fuels-core"
-version = "0.49.0"
+version = "0.50.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e16971e154ed4faba1d548aae3767b56f70f6ba77d46b0b5567305334e876267"
+checksum = "8528f854c0e914445cefc3e5eefa7a494dd550f28b83ed965b8f9d94b5df8beb"
 dependencies = [
  "bech32 0.9.1",
  "chrono",
@@ -1669,7 +1671,7 @@ dependencies = [
  "itertools 0.11.0",
  "serde",
  "serde_json",
- "sha2 0.10.7",
+ "sha2 0.10.8",
  "thiserror",
  "uint",
  "zeroize",
@@ -1677,9 +1679,9 @@ dependencies = [
 
 [[package]]
 name = "fuels-macros"
-version = "0.49.0"
+version = "0.50.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c01910eb50f2781d57ca04bad11c43dce39d0490f33c9ce9c377cb1eaf890ed"
+checksum = "708b35dbbbc6167f7f9821e3eaad803af1327ca987f1190dc9e87b5c4872c571"
 dependencies = [
  "fuels-code-gen",
  "itertools 0.11.0",
@@ -1691,9 +1693,9 @@ dependencies = [
 
 [[package]]
 name = "fuels-programs"
-version = "0.49.0"
+version = "0.50.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85408bdf8b703f5905a3bcd222e0e00a8e8d31305c61e565063002d539072966"
+checksum = "612d79594053a247146b2fabb8a32a4c32a22e4d8fd9f57671d3ed5c3bfdd952"
 dependencies = [
  "async-trait",
  "bytes",
@@ -1711,13 +1713,15 @@ dependencies = [
 
 [[package]]
 name = "fuels-test-helpers"
-version = "0.49.0"
+version = "0.50.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "779a0951ed75ef1c98021ccd67cf5598d9cc5071831310982cc16137ae44bf57"
+checksum = "bff7c621bafd44735cdd5c1b3f73b7e1a153743ffcf035471fe30a63d23ddea2"
 dependencies = [
  "fuel-core",
  "fuel-core-chain-config",
  "fuel-core-client",
+ "fuel-core-poa",
+ "fuel-core-services",
  "fuel-tx",
  "fuel-types",
  "fuels-accounts",
@@ -1971,6 +1975,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c49c37c09c17a53d937dfbb742eb3a961d65a994e6bcdcf37e7399d0cc8ab5e"
 dependencies = [
  "digest 0.10.7",
+]
+
+[[package]]
+name = "home"
+version = "0.5.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5444c27eef6923071f7ebcc33e3444508466a76f7a2b93da00ed6e19f30c1ddb"
+dependencies = [
+ "windows-sys",
 ]
 
 [[package]]
@@ -2266,7 +2279,7 @@ dependencies = [
  "ecdsa",
  "elliptic-curve",
  "once_cell",
- "sha2 0.10.7",
+ "sha2 0.10.8",
  "signature",
 ]
 
@@ -2530,7 +2543,7 @@ dependencies = [
  "ecdsa",
  "elliptic-curve",
  "primeorder",
- "sha2 0.10.7",
+ "sha2 0.10.8",
 ]
 
 [[package]]
@@ -3159,7 +3172,7 @@ dependencies = [
  "hmac",
  "pbkdf2 0.11.0",
  "salsa20",
- "sha2 0.10.7",
+ "sha2 0.10.8",
 ]
 
 [[package]]
@@ -3249,9 +3262,9 @@ dependencies = [
 
 [[package]]
 name = "semver"
-version = "1.0.17"
+version = "1.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bebd363326d05ec3e2f532ab7660680f3b02130d780c299bca73469d521bc0ed"
+checksum = "836fa6a3e1e547f9a2c4040802ec865b5d85f4014efe00555d7090a3dcaa1090"
 
 [[package]]
 name = "serde"
@@ -3342,9 +3355,9 @@ dependencies = [
 
 [[package]]
 name = "sha2"
-version = "0.10.7"
+version = "0.10.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "479fb9d862239e610720565ca91403019f2f00410f1864c5aa7479b950a76ed8"
+checksum = "793db75ad2bcafc3ffa7c68b215fee268f537982cd901d132f89c6343f3a3dc8"
 dependencies = [
  "cfg-if",
  "cpufeatures",
@@ -4071,13 +4084,14 @@ dependencies = [
 
 [[package]]
 name = "which"
-version = "4.4.0"
+version = "4.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2441c784c52b289a054b7201fc93253e288f094e2f4be9058343127c4226a269"
+checksum = "87ba24419a2078cd2b0f2ede2691b6c66d8e47836da3b6db8265ebad47afbfc7"
 dependencies = [
  "either",
- "libc",
+ "home",
  "once_cell",
+ "rustix",
 ]
 
 [[package]]

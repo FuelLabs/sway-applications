@@ -52,7 +52,12 @@ storage {
 impl DaoVoting for Contract {
     #[storage(read, write)]
     fn constructor(token: AssetId) {
-        require(storage.state.read() == State::NotInitialized, InitializationError::CannotReinitialize);
+        require(
+            storage
+                .state
+                .read() == State::NotInitialized,
+            InitializationError::CannotReinitialize,
+        );
 
         storage.token.write(token);
         storage.state.write(State::Initialized);
@@ -70,12 +75,24 @@ impl DaoVoting for Contract {
         proposal_transaction: Proposal,
     ) {
         require(0 < duration, CreationError::DurationCannotBeZero);
-        require(0 < acceptance_percentage && acceptance_percentage <= 100, CreationError::InvalidAcceptancePercentage);
+        require(
+            0 < acceptance_percentage && acceptance_percentage <= 100,
+            CreationError::InvalidAcceptancePercentage,
+        );
 
         let author = msg_sender().unwrap();
-        let proposal = ProposalInfo::new(acceptance_percentage, author, duration, proposal_transaction);
-        storage.proposals.insert(storage.proposal_count.read(), proposal);
-        storage.proposal_count.write(storage.proposal_count.read() + 1);
+        let proposal = ProposalInfo::new(
+            acceptance_percentage,
+            author,
+            duration,
+            proposal_transaction,
+        );
+        storage
+            .proposals
+            .insert(storage.proposal_count.read(), proposal);
+        storage
+            .proposal_count
+            .write(storage.proposal_count.read() + 1);
 
         log(CreateProposalEvent {
             proposal_info: proposal,
@@ -86,13 +103,32 @@ impl DaoVoting for Contract {
     #[payable]
     #[storage(read, write)]
     fn deposit() {
-        require(storage.state.read() == State::Initialized, InitializationError::ContractNotInitialized);
-        require(storage.token.read() == msg_asset_id(), UserError::IncorrectAssetSent);
+        require(
+            storage
+                .state
+                .read() == State::Initialized,
+            InitializationError::ContractNotInitialized,
+        );
+        require(
+            storage
+                .token
+                .read() == msg_asset_id(),
+            UserError::IncorrectAssetSent,
+        );
         require(0 < msg_amount(), UserError::AmountCannotBeZero);
 
         let user = msg_sender().unwrap();
 
-        storage.balances.insert(user, msg_amount() + storage.balances.get(user).try_read().unwrap_or(0));
+        storage
+            .balances
+            .insert(
+                user,
+                msg_amount() + storage
+                    .balances
+                    .get(user)
+                    .try_read()
+                    .unwrap_or(0),
+            );
 
         log(DepositEvent {
             amount: msg_amount(),
@@ -122,7 +158,12 @@ impl DaoVoting for Contract {
         require(0 < vote_amount, UserError::VoteAmountCannotBeZero);
 
         let mut proposal = storage.proposals.get(proposal_id).try_read().unwrap();
-        require(proposal.deadline >= height().as_u64(), ProposalError::ProposalExpired);
+        require(
+            proposal
+                .deadline >= height()
+                .as_u64(),
+            ProposalError::ProposalExpired,
+        );
 
         let user = msg_sender().unwrap();
         let user_balance = storage.balances.get(user).try_read().unwrap_or(0);
@@ -155,18 +196,35 @@ impl DaoVoting for Contract {
 
         let mut proposal = storage.proposals.get(proposal_id).try_read().unwrap();
         require(!proposal.executed, ProposalError::ProposalExecuted);
-        require(proposal.deadline < height().as_u64(), ProposalError::ProposalStillActive);
+        require(
+            proposal
+                .deadline < height()
+                .as_u64(),
+            ProposalError::ProposalStillActive,
+        );
 
         // TODO figure out how to prevent approval percentage from overflowing
         // When close to the u64 max
         // https://github.com/FuelLabs/sway-applications/issues/106
         let acceptance_percentage = proposal.yes_votes * 100 / (proposal.yes_votes + proposal.no_votes);
-        require(proposal.acceptance_percentage <= acceptance_percentage, ProposalError::InsufficientApprovals);
+        require(
+            proposal
+                .acceptance_percentage <= acceptance_percentage,
+            ProposalError::InsufficientApprovals,
+        );
 
         proposal.executed = true;
         storage.proposals.insert(proposal_id, proposal);
 
-        asm(call_data: proposal.proposal_transaction.call_data, amount: proposal.proposal_transaction.amount, asset: proposal.proposal_transaction.asset, gas: proposal.proposal_transaction.gas) {
+        asm(call_data: proposal
+            .proposal_transaction
+            .call_data, amount: proposal
+            .proposal_transaction
+            .amount, asset: proposal
+            .proposal_transaction
+            .asset, gas: proposal
+            .proposal_transaction
+            .gas) {
             call call_data amount asset gas;
         }
 
@@ -183,7 +241,12 @@ impl DaoVoting for Contract {
         validate_id(proposal_id, storage.proposal_count.read());
 
         let proposal = storage.proposals.get(proposal_id).try_read().unwrap();
-        require(proposal.deadline < height().as_u64(), ProposalError::ProposalStillActive);
+        require(
+            proposal
+                .deadline < height()
+                .as_u64(),
+            ProposalError::ProposalStillActive,
+        );
 
         let user = msg_sender().unwrap();
         let votes = storage.votes.get((user, proposal_id)).try_read().unwrap_or(Votes::default());
@@ -191,7 +254,16 @@ impl DaoVoting for Contract {
         storage.votes.insert((user, proposal_id), Votes::default());
 
         let vote_amount = votes.yes_votes + votes.no_votes;
-        storage.balances.insert(user, storage.balances.get(user).try_read().unwrap_or(0) + vote_amount);
+        storage
+            .balances
+            .insert(
+                user,
+                storage
+                    .balances
+                    .get(user)
+                    .try_read()
+                    .unwrap_or(0) + vote_amount,
+            );
 
         log(UnlockVotesEvent {
             id: proposal_id,
@@ -226,7 +298,12 @@ impl Info for Contract {
 
     #[storage(read)]
     fn governance_token_id() -> AssetId {
-        require(storage.state.read() == State::Initialized, InitializationError::ContractNotInitialized);
+        require(
+            storage
+                .state
+                .read() == State::Initialized,
+            InitializationError::ContractNotInitialized,
+        );
         storage.token.read()
     }
 
