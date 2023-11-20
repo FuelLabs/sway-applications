@@ -33,7 +33,12 @@ abi Timelock {
     /// * When the execution occurs outside of the available time range.
     /// * When the contract does not have enough of the asset to transfer.
     #[storage(read, write)]
-    fn execute(recipient: Identity, asset: Option<Asset>, data: Option<Bytes>, timestamp: u64);
+    fn execute(
+        recipient: Identity,
+        asset: Option<Asset>,
+        data: Option<Bytes>,
+        timestamp: u64,
+    );
 
     /// Stores a transaction for future execution.
     ///
@@ -50,7 +55,12 @@ abi Timelock {
     /// * When the transaction id already exists.
     /// * When the timestamp is outside of the valid MINIMUM_DELAY / MAXIMUM_DELAY range.
     #[storage(read, write)]
-    fn queue(recipient: Identity, asset: Option<Asset>, data: Option<Bytes>, timestamp: u64);
+    fn queue(
+        recipient: Identity,
+        asset: Option<Asset>,
+        data: Option<Bytes>,
+        timestamp: u64,
+    );
 }
 
 abi Info {
@@ -97,5 +107,10 @@ abi Info {
     /// # Returns
     ///
     /// * [b256] - The hash of the transaction arguments.
-    fn transaction_hash(recipient: Identity, asset: Option<Asset>, data: Option<Bytes>, timestamp: u64) -> b256;
+    fn transaction_hash(
+        recipient: Identity,
+        asset: Option<Asset>,
+        data: Option<Bytes>,
+        timestamp: u64,
+    ) -> b256;
 }

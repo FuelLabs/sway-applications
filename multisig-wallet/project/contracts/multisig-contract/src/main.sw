@@ -69,13 +69,27 @@ impl MultiSignatureWallet for Contract {
         let mut user_index = 0;
         let mut total_weight = 0;
         while user_index < users.len() {
-            storage.weighting.insert(users.get(user_index).unwrap().address, users.get(user_index).unwrap().weight);
+            storage
+                .weighting
+                .insert(
+                    users
+                        .get(user_index)
+                        .unwrap()
+                        .address,
+                    users
+                        .get(user_index)
+                        .unwrap()
+                        .weight,
+                );
             total_weight += users.get(user_index).unwrap().weight;
 
             user_index += 1;
         }
 
-        require(THRESHOLD <= total_weight, InitError::TotalWeightCannotBeLessThanThreshold);
+        require(
+            THRESHOLD <= total_weight,
+            InitError::TotalWeightCannotBeLessThanThreshold,
+        );
 
         storage.nonce.write(1);
         storage.threshold.write(THRESHOLD);
@@ -102,12 +116,27 @@ impl MultiSignatureWallet for Contract {
                 };
 
                 if contract_call_params.transfer_params.value.is_some() {
-                    require(contract_call_params.transfer_params.value.unwrap() <= this_balance(contract_call_params.transfer_params.asset_id), ExecutionError::InsufficientAssetAmount);
+                    require(
+                        contract_call_params
+                            .transfer_params
+                            .value
+                            .unwrap() <= this_balance(contract_call_params.transfer_params.asset_id),
+                        ExecutionError::InsufficientAssetAmount,
+                    );
                 }
 
-                let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_id(), nonce, target, transaction_parameters)));
+                let transaction_hash = compute_hash(
+                    TypeToHash::Transaction(
+                        Transaction::new(contract_id(), nonce, target, transaction_parameters),
+                    ),
+                );
                 let approval_count = count_approvals(signatures, transaction_hash);
-                require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
+                require(
+                    storage
+                        .threshold
+                        .read() <= approval_count,
+                    ExecutionError::InsufficientApprovals,
+                );
 
                 storage.nonce.write(nonce + 1);
 
@@ -116,16 +145,42 @@ impl MultiSignatureWallet for Contract {
                     asset_id: contract_call_params.transfer_params.asset_id,
                     gas: contract_call_params.forwarded_gas,
                 };
-                call_with_function_selector(target_contract_id, contract_call_params.function_selector, contract_call_params.calldata, contract_call_params.single_value_type_arg, call_params);
+                call_with_function_selector(
+                    target_contract_id,
+                    contract_call_params
+                        .function_selector,
+                    contract_call_params
+                        .calldata,
+                    contract_call_params
+                        .single_value_type_arg,
+                    call_params,
+                );
             },
             TransactionParameters::Transfer(transfer_params) => {
-                require(transfer_params.value.is_some(), ExecutionError::TransferRequiresAValue);
+                require(
+                    transfer_params
+                        .value
+                        .is_some(),
+                    ExecutionError::TransferRequiresAValue,
+                );
                 let value = transfer_params.value.unwrap();
-                require(value <= this_balance(transfer_params.asset_id), ExecutionError::InsufficientAssetAmount);
+                require(
+                    value <= this_balance(transfer_params.asset_id),
+                    ExecutionError::InsufficientAssetAmount,
+                );
 
-                let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_id(), nonce, target, transaction_parameters)));
+                let transaction_hash = compute_hash(
+                    TypeToHash::Transaction(
+                        Transaction::new(contract_id(), nonce, target, transaction_parameters),
+                    ),
+                );
                 let approval_count = count_approvals(signatures, transaction_hash);
-                require(storage.threshold.read() <= approval_count, ExecutionError::InsufficientApprovals);
+                require(
+                    storage
+                        .threshold
+                        .read() <= approval_count,
+                    ExecutionError::InsufficientApprovals,
+                );
 
                 storage.nonce.write(nonce + 1);
 
@@ -143,13 +198,23 @@ impl MultiSignatureWallet for Contract {
         let nonce = storage.nonce.read();
         require(nonce != 0, InitError::NotInitialized);
         require(threshold != 0, InitError::ThresholdCannotBeZero);
-        require(threshold <= storage.total_weight.read(), InitError::TotalWeightCannotBeLessThanThreshold);
+        require(
+            threshold <= storage
+                .total_weight
+                .read(),
+            InitError::TotalWeightCannotBeLessThanThreshold,
+        );
 
-        let transaction_hash = compute_hash(TypeToHash::Threshold(Threshold::new(contract_id(), nonce, threshold)));
+        let transaction_hash = compute_hash(
+            TypeToHash::Threshold(Threshold::new(contract_id(), nonce, threshold)),
+        );
         let approval_count = count_approvals(signatures, transaction_hash);
 
         let previous_threshold = storage.threshold.read();
-        require(previous_threshold <= approval_count, ExecutionError::InsufficientApprovals);
+        require(
+            previous_threshold <= approval_count,
+            ExecutionError::InsufficientApprovals,
+        );
 
         storage.nonce.write(nonce + 1);
         storage.threshold.write(threshold);
@@ -169,17 +234,29 @@ impl MultiSignatureWallet for Contract {
         let approval_count = count_approvals(signatures, transaction_hash);
 
         let threshold = storage.threshold.read();
-        require(threshold <= approval_count, ExecutionError::InsufficientApprovals);
+        require(
+            threshold <= approval_count,
+            ExecutionError::InsufficientApprovals,
+        );
 
         let current_weight = storage.weighting.get(user.address).try_read().unwrap_or(0);
 
         if current_weight < user.weight {
-            storage.total_weight.write(storage.total_weight.read() + (user.weight - current_weight));
+            storage
+                .total_weight
+                .write(storage.total_weight.read() + (user.weight - current_weight));
         } else if user.weight < current_weight {
-            storage.total_weight.write(storage.total_weight.read() - (current_weight - user.weight));
+            storage
+                .total_weight
+                .write(storage.total_weight.read() - (current_weight - user.weight));
         }
 
-        require(threshold <= storage.total_weight.read(), InitError::TotalWeightCannotBeLessThanThreshold);
+        require(
+            threshold <= storage
+                .total_weight
+                .read(),
+            InitError::TotalWeightCannotBeLessThanThreshold,
+        );
 
         storage.weighting.insert(user.address, user.weight);
         storage.nonce.write(nonce + 1);
@@ -250,10 +327,17 @@ fn count_approvals(signatures: Vec<SignatureInfo>, transaction_hash: b256) -> u6
     while index < signatures.len() {
         let signer = recover_signer(transaction_hash, signatures.get(index).unwrap());
 
-        require(previous_signer < signer, ExecutionError::IncorrectSignerOrdering);
+        require(
+            previous_signer < signer,
+            ExecutionError::IncorrectSignerOrdering,
+        );
 
         previous_signer = signer;
-        approval_count += storage.weighting.get(signer).try_read().unwrap_or(0);
+        approval_count += storage
+            .weighting
+            .get(signer)
+            .try_read()
+            .unwrap_or(0);
 
         if storage.threshold.read() <= approval_count {
             break;

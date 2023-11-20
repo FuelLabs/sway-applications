@@ -13,7 +13,11 @@ use std::auth::msg_sender;
 
 configurable {
     /// Owner of the contract.
-    OWNER: Identity = Identity::Address(Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db)),
+    OWNER: Identity = Identity::Address(
+        Address::from(
+            0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db,
+        ),
+    ),
 }
 
 storage {
