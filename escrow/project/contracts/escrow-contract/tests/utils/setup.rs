@@ -114,7 +114,7 @@ pub(crate) async fn setup() -> (User, User, User, Defaults) {
         ..Config::local_node()
     };
     let mut wallets =
-        launch_custom_provider_and_get_wallets(wallet_config, Some(provider_config), None).await;
+        launch_custom_provider_and_get_wallets(wallet_config, Some(provider_config), None).await.unwrap();
 
     let deployer_wallet = wallets.pop().unwrap();
     let arbiter_wallet = wallets.pop().unwrap();
