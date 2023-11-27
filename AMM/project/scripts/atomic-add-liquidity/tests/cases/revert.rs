@@ -1,5 +1,5 @@
 use crate::utils::{expected_liquidity, setup};
-use fuels::prelude::TxParameters;
+use fuels::prelude::TxPolicies;
 use test_utils::interface::{
     abigen_bindings::shared_types::{Asset, AssetPair},
     LiquidityParameters, SCRIPT_GAS_LIMIT,
@@ -63,7 +63,7 @@ async fn when_desired_liquidity_too_high() {
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(Some(0), Some(SCRIPT_GAS_LIMIT), 0))
+        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap();
@@ -96,7 +96,7 @@ async fn when_one_deposit_is_zero() {
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(Some(0), Some(SCRIPT_GAS_LIMIT), 0))
+        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap();
@@ -129,7 +129,7 @@ async fn when_both_deposits_are_zero() {
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(Some(0), Some(SCRIPT_GAS_LIMIT), 0))
+        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap();

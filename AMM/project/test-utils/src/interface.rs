@@ -1,5 +1,5 @@
 use fuels::{
-    prelude::{abigen, AssetId, CallParameters, ContractId, TxParameters, WalletUnlocked},
+    prelude::{abigen, AssetId, CallParameters, ContractId, TxPolicies, WalletUnlocked},
     programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension,},
 };
 
@@ -107,7 +107,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
+            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap()
@@ -170,7 +170,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
+            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap()
@@ -198,7 +198,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
+            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap()
@@ -226,7 +226,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
+            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap()
@@ -281,7 +281,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
+            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap().value
@@ -305,7 +305,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
+            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap().value
@@ -329,7 +329,7 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.tx_params(TxParameters::new(Some(0), Some(estimated_gas), 0));
+            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap().value

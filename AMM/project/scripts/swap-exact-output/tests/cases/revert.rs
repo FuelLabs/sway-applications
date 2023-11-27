@@ -1,5 +1,5 @@
 use crate::utils::{expected_and_actual_input, expected_swap_input, setup};
-use fuels::prelude::{AssetId, TxParameters};
+use fuels::prelude::{AssetId, TxPolicies};
 use test_utils::{
     data_structures::{SwapParameters, NUMBER_OF_ASSETS},
     interface::SCRIPT_GAS_LIMIT,
@@ -74,7 +74,7 @@ async fn when_deadline_passed() {
         .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(Some(0), Some(SCRIPT_GAS_LIMIT), 0))
+        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap();
@@ -99,7 +99,7 @@ async fn when_maximum_input_not_satisfied() {
         .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(Some(0), Some(SCRIPT_GAS_LIMIT), 0))
+        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap();

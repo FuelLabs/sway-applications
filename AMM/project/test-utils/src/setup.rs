@@ -3,7 +3,7 @@ use super::data_structures::{
 };
 use fuels::prelude::{
     Address, AssetId, Bech32Address, Contract, ContractId, LoadConfiguration, Provider,
-    SettableContract, StorageConfiguration, TxParameters, WalletUnlocked,
+    SettableContract, StorageConfiguration, TxPolicies, WalletUnlocked,
 };
 
 pub mod common {
@@ -36,7 +36,7 @@ pub mod common {
 
         let contract_id = Contract::load_from(AMM_CONTRACT_BINARY_PATH, configuration)
             .unwrap()
-            .deploy(wallet, TxParameters::default())
+            .deploy(wallet, TxPolicies::default())
             .await
             .unwrap();
 
@@ -98,7 +98,7 @@ pub mod common {
 
         let contract_id = Contract::load_from(binary_path, configuration)
             .unwrap()
-            .deploy(wallet, TxParameters::default())
+            .deploy(wallet, TxPolicies::default())
             .await
             .unwrap();
 

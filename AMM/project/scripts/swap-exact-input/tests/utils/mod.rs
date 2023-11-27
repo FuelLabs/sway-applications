@@ -1,5 +1,5 @@
 use fuels::{
-    prelude::{AssetId, TxParameters, WalletUnlocked},
+    prelude::{AssetId, TxPolicies, WalletUnlocked},
     types::Bits256,
 };
 use test_utils::{
@@ -63,7 +63,7 @@ pub async fn expected_and_actual_output(swap_parameters: SwapParameters) -> Swap
         .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .tx_params(TxParameters::new(Some(0), Some(SCRIPT_GAS_LIMIT), 0))
+        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()
