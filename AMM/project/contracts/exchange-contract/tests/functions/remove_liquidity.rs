@@ -4,7 +4,10 @@ use test_utils::interface::exchange::{pool_info, remove_liquidity};
 mod success {
     use super::*;
     use crate::utils::wallet_balances;
-    use fuels::tx::{Bytes32, ContractIdExt};
+    use fuels::{
+        tx::{Bytes32, ContractIdExt},
+        types::AssetId,
+    };
     use test_utils::interface::{Asset, AssetPair, RemoveLiquidityEvent};
 
     #[tokio::test]
@@ -24,12 +27,11 @@ mod success {
 
         let response = remove_liquidity(
             &exchange.instance,
-            exchange.id,
+            AssetId::from(*exchange.id.default_asset()),
             liquidity_to_remove,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
-            true,
         )
         .await;
         let log = response
@@ -116,12 +118,11 @@ mod success {
 
         let response = remove_liquidity(
             &exchange.instance,
-            exchange.id,
+            AssetId::from(*exchange.id.default_asset()),
             liquidity_to_remove,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
-            true,
         )
         .await;
         let log = response
@@ -208,12 +209,11 @@ mod success {
 
         let response = remove_liquidity(
             &exchange.instance,
-            exchange.id,
+            AssetId::from(*exchange.id.default_asset()),
             liquidity_to_remove,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
-            true,
         )
         .await;
         let log = response
@@ -300,12 +300,11 @@ mod success {
 
         let response = remove_liquidity(
             &exchange.instance,
-            exchange.id,
+            AssetId::from(*exchange.id.default_asset()),
             liquidity_to_remove,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
-            true,
         )
         .await;
         let log = response
@@ -379,7 +378,7 @@ mod success {
 mod revert {
     use super::*;
     use crate::utils::setup;
-    use fuels::prelude::ContractId;
+    use fuels::{tx::ContractIdExt, types::AssetId};
 
     #[tokio::test]
     #[should_panic(expected = "AssetPairNotSet")]
@@ -391,12 +390,11 @@ mod revert {
 
         remove_liquidity(
             &exchange_instance,
-            ContractId::new(*assets.asset_3), // passing another asset since liquidity pool asset does not exist yet
+            AssetId::from(*assets.asset_3), // passing another asset since liquidity pool asset does not exist yet
             1,
             a_to_remove,
             b_to_remove,
             deadline,
-            false,
         )
         .await;
     }
@@ -412,12 +410,11 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            ContractId::new(*asset_c_id), // passing another asset since liquidity does not exist yet
+            AssetId::from(*asset_c_id), // passing another asset since liquidity does not exist yet
             1,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
-            false,
         )
         .await;
     }
@@ -433,12 +430,11 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            ContractId::new(*exchange.pair.0), // forwarding an asset other than pool asset
+            AssetId::from(*exchange.pair.0), // forwarding an asset other than pool asset
             liquidity_parameters.liquidity,
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
-            false,
         )
         .await;
     }
@@ -450,15 +446,13 @@ mod revert {
             setup_and_construct(true, true).await;
 
         let b_to_remove = 1;
-
         remove_liquidity(
             &exchange.instance,
-            exchange.id,
+            AssetId::from(*exchange.id.default_asset()),
             liquidity_parameters.liquidity,
             0, // passing 0 as min_asset_a
             b_to_remove,
             liquidity_parameters.deadline,
-            false,
         )
         .await;
     }
@@ -473,12 +467,11 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            exchange.id,
+            AssetId::from(*exchange.id.default_asset()),
             liquidity_parameters.liquidity,
             a_to_remove,
             0, // passing 0 as min_asset_b
             liquidity_parameters.deadline,
-            false,
         )
         .await;
     }
@@ -494,12 +487,11 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            exchange.id,
+            AssetId::from(*exchange.id.default_asset()),
             liquidity_parameters.liquidity,
             a_to_remove,
             b_to_remove,
             0, // passing 0 as deadline
-            false,
         )
         .await;
     }
@@ -515,12 +507,11 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            exchange.id,
+            AssetId::from(*exchange.id.default_asset()),
             0, // forwarding 0 as msg_amount
             a_to_remove,
             b_to_remove,
             liquidity_parameters.deadline,
-            false,
         )
         .await;
     }
@@ -541,12 +532,11 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            exchange.id,
+            AssetId::from(*exchange.id.default_asset()),
             liquidity_parameters.liquidity,
             asset_a_amount_to_remove + 10, // setting min_asset_a to be higher than what can be removed
             b_to_remove,
             liquidity_parameters.deadline,
-            true,
         )
         .await;
     }
@@ -567,12 +557,11 @@ mod revert {
 
         remove_liquidity(
             &exchange.instance,
-            exchange.id,
+            AssetId::from(*exchange.id.default_asset()),
             liquidity_parameters.liquidity,
             a_to_remove,
             asset_b_amount_to_remove + 10, // setting min_asset_b to be higher than what can be removed
             liquidity_parameters.deadline,
-            true,
         )
         .await;
     }

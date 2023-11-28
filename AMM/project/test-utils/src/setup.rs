@@ -115,7 +115,6 @@ pub mod common {
     pub async fn deposit_and_add_liquidity_with_response(
         liquidity_parameters: &LiquidityParameters,
         exchange: &ExchangeContract,
-        override_gas_limit: bool,
     ) -> FuelCallResponse<u64> {
         deposit(
             &exchange.instance,
@@ -135,7 +134,6 @@ pub mod common {
             &exchange.instance,
             liquidity_parameters.liquidity,
             liquidity_parameters.deadline,
-            override_gas_limit,
         )
         .await
     }
@@ -144,9 +142,8 @@ pub mod common {
     pub async fn deposit_and_add_liquidity(
         liquidity_parameters: &LiquidityParameters,
         exchange: &ExchangeContract,
-        override_gas_limit: bool,
     ) -> u64 {
-        deposit_and_add_liquidity_with_response(liquidity_parameters, exchange, override_gas_limit)
+        deposit_and_add_liquidity_with_response(liquidity_parameters, exchange)
             .await
             .value
     }
@@ -206,7 +203,7 @@ pub mod scripts {
     ) -> ExchangeContract {
         let exchange = deploy_and_construct_exchange(wallet, exchange_config).await;
 
-        deposit_and_add_liquidity(liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(liquidity_parameters, &exchange).await;
 
         exchange
     }

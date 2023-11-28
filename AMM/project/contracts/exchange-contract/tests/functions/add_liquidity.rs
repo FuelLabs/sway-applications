@@ -7,7 +7,10 @@ use test_utils::{
 mod success {
     use super::*;
     use crate::utils::{contract_balances, wallet_balances};
-    use fuels::{prelude::ContractId, tx::{ContractIdExt, Bytes32}};
+    use fuels::{
+        prelude::ContractId,
+        tx::{Bytes32, ContractIdExt},
+    };
     use test_utils::{
         interface::{
             exchange::{deposit, pool_info},
@@ -45,7 +48,6 @@ mod success {
             &exchange.instance,
             liquidity_parameters.liquidity,
             liquidity_parameters.deadline,
-            false,
         )
         .await;
         let log = response
@@ -134,14 +136,13 @@ mod success {
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
         let initial_contract_balances = contract_balances(&exchange).await;
 
-        deposit_and_add_liquidity(&liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(&liquidity_parameters, &exchange).await;
 
         let contract_balances_after_adding_liquidity_for_the_first_time =
             contract_balances(&exchange).await;
 
         let response =
-            deposit_and_add_liquidity_with_response(&second_liquidity_parameters, &exchange, true)
-                .await;
+            deposit_and_add_liquidity_with_response(&second_liquidity_parameters, &exchange).await;
         let log = response
             .decode_logs_with_type::<AddLiquidityEvent>()
             .unwrap();
@@ -234,14 +235,13 @@ mod success {
         let initial_wallet_balances = wallet_balances(&exchange, &wallet).await;
         let initial_contract_balances = contract_balances(&exchange).await;
 
-        deposit_and_add_liquidity(&liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(&liquidity_parameters, &exchange).await;
 
         let contract_balances_after_adding_liquidity_for_the_first_time =
             contract_balances(&exchange).await;
 
         let response =
-            deposit_and_add_liquidity_with_response(&second_liquidity_parameters, &exchange, true)
-                .await;
+            deposit_and_add_liquidity_with_response(&second_liquidity_parameters, &exchange).await;
         let log = response
             .decode_logs_with_type::<AddLiquidityEvent>()
             .unwrap();
@@ -329,7 +329,7 @@ mod revert {
         let (exchange_instance, _wallet, _assets, deadline) = setup().await;
         let min_liquidity = 20000;
 
-        add_liquidity(&exchange_instance, min_liquidity, deadline, false).await;
+        add_liquidity(&exchange_instance, min_liquidity, deadline).await;
     }
 
     #[tokio::test]
@@ -347,7 +347,7 @@ mod revert {
             Some(liquidity_parameters.liquidity),
         );
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
@@ -365,7 +365,7 @@ mod revert {
             Some(0), // expected_liquidity is less than MINIMUM_LIQUIDITY
         );
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
@@ -383,7 +383,7 @@ mod revert {
             Some(liquidity_parameters.liquidity),
         );
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
@@ -401,7 +401,7 @@ mod revert {
             Some(liquidity_parameters.liquidity),
         );
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
@@ -419,7 +419,7 @@ mod revert {
             Some(liquidity_parameters.liquidity + 100), // expected_liquidity is more than what can be provided with this setup
         );
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
@@ -437,7 +437,7 @@ mod revert {
             Some(liquidity_parameters.liquidity * 2), // expected_liquidity is more than what can be provided with this setup
         );
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, true).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 
     #[tokio::test]
@@ -455,6 +455,6 @@ mod revert {
             Some(liquidity_parameters.liquidity * 2), // expected_liquidity is more than what can be provided with this setup
         );
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, true).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
     }
 }

@@ -1,6 +1,7 @@
 use fuels::{
     accounts::ViewOnlyAccount,
-    prelude::{AssetId, WalletUnlocked}, tx::{ContractIdExt, Bytes32},
+    prelude::{AssetId, WalletUnlocked},
+    tx::{Bytes32, ContractIdExt},
 };
 use test_utils::{
     data_structures::{
@@ -128,7 +129,7 @@ pub async fn setup_and_construct(
     );
 
     if deposit_both && add_liquidity {
-        deposit_and_add_liquidity(&liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(&liquidity_parameters, &exchange).await;
     } else if deposit_both {
         deposit(
             &exchange.instance,

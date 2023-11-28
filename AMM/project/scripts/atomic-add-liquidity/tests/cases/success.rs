@@ -130,7 +130,7 @@ async fn adds_further_liquidity_without_extra_deposit_when_a_is_more_valuable() 
         Some(liquidity_parameters.deadline),
         Some(2000),
     );
-    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange, false).await;
+    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
 
     let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters, false).await;
 
@@ -175,7 +175,7 @@ async fn adds_further_liquidity_with_extra_a_deposit_when_a_is_more_valuable() {
         Some(liquidity_parameters.deadline),
         Some(2000),
     );
-    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange, false).await;
+    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
 
     let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters, false).await;
 
@@ -220,7 +220,7 @@ async fn adds_further_liquidity_with_extra_b_deposit_when_a_is_more_valuable() {
         Some(liquidity_parameters.deadline),
         Some(2000),
     );
-    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange, false).await;
+    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
 
     let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters, true).await;
 
@@ -265,7 +265,7 @@ async fn adds_further_liquidity_without_extra_deposit_when_b_is_more_valuable() 
         Some(liquidity_parameters.deadline),
         Some(2000),
     );
-    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange, false).await;
+    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
 
     let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters, false).await;
 
@@ -310,7 +310,7 @@ async fn adds_further_liquidity_with_extra_a_deposit_when_b_is_more_valuable() {
         Some(liquidity_parameters.deadline),
         Some(2000),
     );
-    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange, false).await;
+    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
 
     let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters, false).await;
 
@@ -355,7 +355,7 @@ async fn adds_further_liquidity_with_extra_b_deposit_when_b_is_more_valuable() {
         Some(liquidity_parameters.deadline),
         Some(2000),
     );
-    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange, false).await;
+    deposit_and_add_liquidity(&initial_liquidity_parameters, &exchange).await;
 
     let expected_liquidity = expected_liquidity(&exchange, &liquidity_parameters, true).await;
 

@@ -96,7 +96,7 @@ mod success {
             * override_liquidity_parameters.liquidity
             / override_liquidity_parameters.amounts.1;
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
 
         let preview =
             preview_add_liquidity(&exchange.instance, preview_amount_a, exchange.pair.0, true)
@@ -130,7 +130,7 @@ mod success {
             * override_liquidity_parameters.liquidity
             / override_liquidity_parameters.amounts.0;
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
 
         let preview =
             preview_add_liquidity(&exchange.instance, preview_amount_b, exchange.pair.1, true)
@@ -164,7 +164,7 @@ mod success {
             * override_liquidity_parameters.liquidity
             / override_liquidity_parameters.amounts.1;
 
-        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange, false).await;
+        deposit_and_add_liquidity(&override_liquidity_parameters, &exchange).await;
 
         let preview =
             preview_add_liquidity(&exchange.instance, preview_amount_b, exchange.pair.1, true)
