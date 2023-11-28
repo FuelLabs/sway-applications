@@ -170,7 +170,7 @@ The following sections provide a quickstart guide for navigating the issues in t
 <p>Notice that <code>App: DAO</code> is not the only label in the image below. If you wish to further reduce the number of presented issues then additional labels can be added in the same way.</p>
 <p><img src="documentation/issues/search/../../../images/app-filter.png" alt="Filtering issues by an app label image" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="checking-for-available-issues-1"><a class="header" href="#checking-for-available-issues-1">Checking for available issues</a></h1>
-<p>It's important to check if anyone else is currently working on an particular issue to avoid performing duplicate work. Not only would this be frustrating but also be an inefficient use of time.</p>
+<p>It's important to check if anyone else is currently working on a particular issue to avoid performing duplicate work. Not only would this be frustrating but also be an inefficient use of time.</p>
 <p>You can check whether someone is assigned to an issue by looking under the <code>Assignee</code> tab. If there is an icon, then someone is tasked with that issue. If there is no icon, then it's likely that no one is currently working on that issue and you're free to assign it to yourself or post a comment so that the author can assign you.</p>
 <p><img src="documentation/issues/search/../../../images/app-filter-assignee.png" alt="Filtering issues by an app label image" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="issue-summary-1"><a class="header" href="#issue-summary-1">Issue summary</a></h1>
@@ -435,7 +435,7 @@ pub struct Item2 {
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="naming-components"><a class="header" href="#naming-components">Naming Components</a></h1>
 <p>Documenting the interface and adding comments is important however the holy grail is writing code that is self-documenting. </p>
-<p>Self-documenting code refers to code that written in such a way that a regular user who has never seen a line of code before could interpret what it is doing.</p>
+<p>Self-documenting code refers to code that is written in such a way that a regular user who has never seen a line of code before could interpret what it is doing.</p>
 <p>One of the most difficult aspects of programming is coming up with meaningful names that describe the content without being overly verbose while also not being too concise.</p>
 <p>Naming components is both a skill and an art and there are many aspects to consider such as the context in which that variable may exist. In one context an abbreviated variable may be meaningful because of how fundamental that concept is while in another context it may be regarded as random characters.</p>
 <p>Here are some points to consider when coming up with a name for a component.</p>
@@ -449,10 +449,10 @@ pub struct Item2 {
 <ul>
 <li>Is this a throw away variable?</li>
 <li>What is the variable meant to represent where ever it is used?</li>
-<li>Does it make sense to call it by the chosen character e.g. <code>x</code> when referring to forumlas?</li>
+<li>Does it make sense to call it by the chosen character e.g. <code>x</code> when referring to formulas?</li>
 </ul>
-<h3 id="ambigious-abbreviations"><a class="header" href="#ambigious-abbreviations">Ambigious Abbreviations</a></h3>
-<p>A common mistake is to abbreviate a variable when it does not need to be abbreviated or when the abbreviation may be ambigious.</p>
+<h3 id="ambiguous-abbreviations"><a class="header" href="#ambiguous-abbreviations">Ambiguous Abbreviations</a></h3>
+<p>A common mistake is to abbreviate a variable when it does not need to be abbreviated or when the abbreviation may be ambiguous.</p>
 <p>For example, in the context of an industry that deals with temperature sensors what does the variable <code>temp</code> refer to?</p>
 <ul>
 <li><code>temperature</code></li>
@@ -480,7 +480,7 @@ pub struct Item2 {
 <p>Programming languages have different ways of styling code i.e. how variables, functions, structures etc. are written. These are not syntactical rules, but rather a set of conventions and best practices to encourage standardization and improve readability. Sway has a style guide which can be found in the <a href="https://fuellabs.github.io/sway/master/reference/">Sway Reference</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="specification"><a class="header" href="#specification">Specification</a></h1>
 <p>A specification is a document which outlines the requirements and design of the project. There are many ways to structure a specification and this number only grows when considering the industry and target audience.</p>
-<p>For simplicity, a specification can be broken into two levels of detail and the one you choose depends on your target audiance.</p>
+<p>For simplicity, a specification can be broken into two levels of detail and the one you choose depends on your target audience.</p>
 <h2 id="non-technical-specification"><a class="header" href="#non-technical-specification">Non-technical specification</a></h2>
 <p>A non-technical specification is aimed at an audience that may not have the expertise in an area to appreciate the technical challenges involved in achieving the goals and thus it can be seen as an overview or summary.</p>
 <p>As an example, this may be a developer explaining how a user would interact with the user interface in order to send a coin / token to someone, without revealing the functionality behind signing a transaction and why a transaction may take some amount of time to be confirmed.</p>
