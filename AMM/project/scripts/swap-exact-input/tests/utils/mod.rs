@@ -1,5 +1,5 @@
 use fuels::{
-    prelude::{AssetId, TxPolicies, WalletUnlocked},
+    prelude::{AssetId, WalletUnlocked},
     types::Bits256,
 };
 use test_utils::{
@@ -7,8 +7,7 @@ use test_utils::{
         AMMContract, SwapParameters, SwapResult, TransactionParameters, WalletAssetConfiguration,
     },
     interface::{
-        exchange::preview_swap_exact_input, SwapExactInputScript,
-        SwapExactInputScriptConfigurables, SCRIPT_GAS_LIMIT,
+        exchange::preview_swap_exact_input, SwapExactInputScript, SwapExactInputScriptConfigurables,
     },
     paths::SWAP_EXACT_INPUT_SCRIPT_BINARY_PATH,
     setup::{
@@ -54,16 +53,10 @@ pub async fn expected_and_actual_output(swap_parameters: SwapParameters) -> Swap
     };
 
     let actual = script_instance
-        .main(
-            route,
-            swap_parameters.amount,
-            expected,
-            deadline,
-        )
+        .main(route, swap_parameters.amount, expected, deadline)
         .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()

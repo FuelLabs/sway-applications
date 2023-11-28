@@ -1,8 +1,7 @@
 use fuels::{
     prelude::{abigen, AssetId, CallParameters, ContractId, TxPolicies, WalletUnlocked},
-    programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension,},
+    programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension},
 };
-
 
 abigen!(
     Contract(
@@ -27,7 +26,6 @@ abigen!(
     )
 );
 
-pub const SCRIPT_GAS_LIMIT: u64 = 100_000_000; // TODO: hardcoded until scripts have gas estimation
 const GAS_TOLERANCE: f64 = 20.0; // TODO: this should be closer to 0.0. gas estimation issue is under investigation
 
 pub mod amm {
@@ -53,13 +51,7 @@ pub mod amm {
     ) -> FuelCallResponse<()> {
         contract
             .methods()
-            .add_pool(
-                (
-                    asset_pair.0,
-                    asset_pair.1,
-                ),
-                pool,
-            )
+            .add_pool((asset_pair.0, asset_pair.1), pool)
             .with_contract_ids(&[pool.into()])
             .call()
             .await
@@ -72,10 +64,7 @@ pub mod amm {
     ) -> Option<ContractId> {
         contract
             .methods()
-            .pool((
-                asset_pair.0,
-                asset_pair.1,
-            ))
+            .pool((asset_pair.0, asset_pair.1))
             .call()
             .await
             .unwrap()
@@ -107,7 +96,8 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
+            call_handler = call_handler
+                .with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap()
@@ -119,10 +109,7 @@ pub mod exchange {
     ) -> FuelCallResponse<()> {
         contract
             .methods()
-            .constructor(
-                asset_pair.0,
-                asset_pair.1,
-            )
+            .constructor(asset_pair.0, asset_pair.1)
             .call()
             .await
             .unwrap()
@@ -170,7 +157,8 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
+            call_handler = call_handler
+                .with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap()
@@ -198,7 +186,8 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
+            call_handler = call_handler
+                .with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap()
@@ -226,7 +215,8 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
+            call_handler = call_handler
+                .with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap()
@@ -239,10 +229,7 @@ pub mod exchange {
     ) -> FuelCallResponse<()> {
         contract
             .methods()
-            .withdraw(Asset {
-                id: asset,
-                amount,
-            })
+            .withdraw(Asset { id: asset, amount })
             .append_variable_outputs(1)
             .call()
             .await
@@ -269,10 +256,9 @@ pub mod exchange {
         asset: AssetId,
         override_gas_limit: bool,
     ) -> PreviewAddLiquidityInfo {
-        let mut call_handler = contract.methods().preview_add_liquidity(Asset {
-            id: asset,
-            amount,
-        });
+        let mut call_handler = contract
+            .methods()
+            .preview_add_liquidity(Asset { id: asset, amount });
 
         if override_gas_limit {
             let estimated_gas = call_handler
@@ -281,7 +267,8 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
+            call_handler = call_handler
+                .with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap().value
@@ -305,7 +292,8 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
+            call_handler = call_handler
+                .with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap().value
@@ -329,7 +317,8 @@ pub mod exchange {
                 .unwrap()
                 .gas_used;
 
-            call_handler = call_handler.with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
+            call_handler = call_handler
+                .with_tx_policies(TxPolicies::default().with_script_gas_limit(estimated_gas));
         }
 
         call_handler.call().await.unwrap().value

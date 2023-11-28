@@ -1,5 +1,5 @@
 use fuels::{
-    prelude::{AssetId, TxPolicies, WalletUnlocked},
+    prelude::{AssetId, WalletUnlocked},
     types::Bits256,
 };
 use test_utils::{
@@ -8,7 +8,7 @@ use test_utils::{
     },
     interface::{
         exchange::preview_swap_exact_output, SwapExactOutputScript,
-        SwapExactOutputScriptConfigurables, SCRIPT_GAS_LIMIT,
+        SwapExactOutputScriptConfigurables,
     },
     paths::SWAP_EXACT_OUTPUT_SCRIPT_BINARY_PATH,
     setup::{
@@ -63,7 +63,6 @@ pub async fn expected_and_actual_input(swap_parameters: SwapParameters) -> SwapR
         .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()

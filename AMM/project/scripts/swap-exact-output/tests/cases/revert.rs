@@ -1,8 +1,7 @@
 use crate::utils::{expected_and_actual_input, expected_swap_input, setup};
-use fuels::prelude::{AssetId, TxPolicies};
+use fuels::prelude::AssetId;
 use test_utils::{
     data_structures::{SwapParameters, NUMBER_OF_ASSETS},
-    interface::SCRIPT_GAS_LIMIT,
     setup::scripts::contract_instances,
 };
 
@@ -41,12 +40,7 @@ async fn when_pair_exchange_not_registered() {
     route.push(not_registered_asset_id);
 
     script_instance
-        .main(
-            route,
-            output_amount,
-            maximum_input_amount,
-            deadline,
-        )
+        .main(route, output_amount, maximum_input_amount, deadline)
         .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
@@ -74,7 +68,6 @@ async fn when_deadline_passed() {
         .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap();
@@ -99,7 +92,6 @@ async fn when_maximum_input_not_satisfied() {
         .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap();

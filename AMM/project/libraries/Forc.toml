@@ -3,3 +3,6 @@ authors = ["Fuel Labs <contact@fuel.sh>"]
 entry = "interface.sw"
 license = "Apache-2.0"
 name = "libraries"
+
+[patch.'https://github.com/fuellabs/sway']
+std = { git = "https://github.com/fuellabs/sway", branch = "feat/transaction-policies" }

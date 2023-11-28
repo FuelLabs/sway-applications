@@ -29,8 +29,10 @@ pub mod common {
     use std::collections::HashMap;
 
     pub async fn deploy_amm(wallet: &WalletUnlocked) -> AMMContract {
-        let storage_configuration = StorageConfiguration::default().add_slot_overrides_from_file(AMM_CONTRACT_STORAGE_PATH).unwrap();
-        
+        let storage_configuration = StorageConfiguration::default()
+            .add_slot_overrides_from_file(AMM_CONTRACT_STORAGE_PATH)
+            .unwrap();
+
         let configuration =
             LoadConfiguration::default().with_storage_configuration(storage_configuration);
 
@@ -91,7 +93,9 @@ pub mod common {
         }
         .to_string();
 
-        let storage_configuration = StorageConfiguration::default().add_slot_overrides_from_file(&storage_path).unwrap();
+        let storage_configuration = StorageConfiguration::default()
+            .add_slot_overrides_from_file(&storage_path)
+            .unwrap();
         let configuration = LoadConfiguration::default()
             .with_storage_configuration(storage_configuration)
             .with_salt(config.salt);
@@ -166,7 +170,9 @@ pub mod common {
             asset_parameters.amount_per_coin,
         );
 
-        let provider = setup_test_provider(coins.clone(), vec![], None, None).await.unwrap();
+        let provider = setup_test_provider(coins.clone(), vec![], None, None)
+            .await
+            .unwrap();
 
         wallet.set_provider(provider.clone());
 
@@ -299,8 +305,8 @@ pub mod scripts {
                     provider,
                     wallet.address(),
                     *asset,
-                    if amounts.is_some() {
-                        *amounts.unwrap().get(asset_index).unwrap()
+                    if let Some(amounts) = amounts {
+                        *amounts.get(asset_index).unwrap()
                     } else {
                         MAXIMUM_INPUT_AMOUNT
                     },

@@ -7,3 +7,6 @@ members = [
   "./scripts/swap-exact-input",
   "./scripts/swap-exact-output",
 ]
+
+[patch.'https://github.com/fuellabs/sway']
+std = { git = "https://github.com/fuellabs/sway", branch = "feat/transaction-policies" }
