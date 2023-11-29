@@ -6,26 +6,14 @@ pub enum AccessError {
     AuctionIsNotClosed: (),
     /// The auction is not yet open.
     AuctionIsNotOpen: (),
-    /// The NFT transfer is not approved by the owner.
-    NFTTransferNotApproved: (),
     /// The sender is not the auction seller.
     SenderIsNotSeller: (),
-}
-
-/// Errors related to assets.
-pub enum AssetError {
-    /// The assets are not the same.
-    AssetsAreNotTheSame: (),
 }
 
 /// Errors related to the initialization of the auction.
 pub enum InitError {
     /// The auction duration is not provided.
     AuctionDurationNotProvided: (),
-    /// The amount of tokens being auctioned cannot be zero.
-    BidAssetAmountNotZero: (),
-    /// Only one NFT can be auctioned at a time.
-    CannotAcceptMoreThanOneNFT: (),
     /// The initial price cannot be zero.
     InitialPriceCannotBeZero: (),
     /// The reserve price cannot be lower than the initial price.
