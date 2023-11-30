@@ -2,7 +2,7 @@
 
 A specification is a document which outlines the requirements and design of the project. There are many ways to structure a specification and this number only grows when considering the industry and target audience.
 
-For simplicity, a specification can be broken into two levels of detail and the one you choose depends on your target audiance.
+For simplicity, a specification can be broken into two levels of detail and the one you choose depends on your target audience.
 
 ## Non-technical specification
 
