@@ -11,8 +11,7 @@ mod success {
 
     #[tokio::test]
     async fn cancels_auction_after_bid() {
-        let (_, seller, buyer1, _, _, sell_asset, _, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -30,7 +29,13 @@ mod success {
         )
         .await;
 
-        bid(auction_id, buy_asset.clone(), initial_price, &buyer1.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price,
+            &buyer1.auction,
+        )
+        .await;
 
         cancel(auction_id, &seller.auction).await;
 
@@ -41,8 +46,7 @@ mod success {
 
     #[tokio::test]
     async fn cancels_multiple_auctions() {
-        let (_, seller, _, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, _, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -93,8 +97,7 @@ mod success {
 
     #[tokio::test]
     async fn cancels_token_auction() {
-        let (_, seller, _, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, _, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -127,7 +130,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "AuctionDoesNotExist")]
     async fn when_auction_does_not_exist() {
-        let (_, seller, _, _, _, _, _, _, _) = setup().await;
+        let (_, seller, _, _, _, _, _) = setup().await;
 
         cancel(0, &seller.auction).await;
     }
@@ -135,8 +138,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "AuctionIsNotOpen")]
     async fn when_auction_bid_period_has_ended() {
-        let (deployer, seller, _, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (deployer, seller, _, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -155,7 +157,9 @@ mod revert {
         )
         .await;
 
-        let _result = provider.produce_blocks(duration + 1, Option::None).await;
+        let _result = provider
+            .produce_blocks((duration + 1).into(), Option::None)
+            .await;
 
         cancel(auction_id, &seller.auction).await;
     }
@@ -163,8 +167,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "AuctionIsNotOpen")]
     async fn when_auction_has_closed() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -182,7 +185,13 @@ mod revert {
         )
         .await;
 
-        bid(auction_id, buy_asset.clone(), reserve_price, &buyer1.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            reserve_price,
+            &buyer1.auction,
+        )
+        .await;
 
         cancel(auction_id, &seller.auction).await;
     }
@@ -190,8 +199,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "AuctionIsNotOpen")]
     async fn when_auction_already_canceled() {
-        let (_, seller, _, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, _, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -216,13 +224,12 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "SenderIsNotSeller")]
     async fn when_sender_is_not_seller() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
         let seller_identity = Identity::Address(seller.wallet.address().into());
-        
+
         let auction_id = create(
             buy_asset.clone(),
             &seller.auction,
@@ -231,7 +238,7 @@ mod revert {
             Some(reserve_price),
             seller_identity.clone(),
             sell_asset.clone(),
-            sell_amount
+            sell_amount,
         )
         .await;
 

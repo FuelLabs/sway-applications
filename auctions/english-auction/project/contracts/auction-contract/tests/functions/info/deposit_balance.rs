@@ -10,8 +10,7 @@ mod success {
 
     #[tokio::test]
     async fn returns_deposit_balance() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -34,18 +33,23 @@ mod success {
             deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
         assert!(buyer1_deposit.is_none());
 
-        bid(auction_id, buy_asset.clone(), initial_price, &buyer1.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price,
+            &buyer1.auction,
+        )
+        .await;
 
         let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
             .await
             .unwrap();
         assert_eq!(buyer1_deposit, initial_price);
     }
-    
+
     #[tokio::test]
     async fn returns_mutliple_deposits() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -83,7 +87,13 @@ mod success {
         assert!(buyer1_deposit1.is_none());
         assert!(buyer1_deposit2.is_none());
 
-        bid(auction_id1, buy_asset.clone(), initial_price, &buyer1.auction).await;
+        bid(
+            auction_id1,
+            buy_asset.clone(),
+            initial_price,
+            &buyer1.auction,
+        )
+        .await;
 
         let buyer1_deposit1 =
             deposit_balance(auction_id1, &buyer1.auction, buyer1_identity.clone())
@@ -94,7 +104,13 @@ mod success {
         assert_eq!(buyer1_deposit1, initial_price);
         assert!(buyer1_deposit2.is_none());
 
-        bid(auction_id2, buy_asset.clone(), initial_price + 1, &buyer1.auction).await;
+        bid(
+            auction_id2,
+            buy_asset.clone(),
+            initial_price + 1,
+            &buyer1.auction,
+        )
+        .await;
 
         let buyer1_deposit1 =
             deposit_balance(auction_id1, &buyer1.auction, buyer1_identity.clone())

@@ -1,5 +1,5 @@
 use crate::utils::setup::{Auction, EnglishAuction};
-use fuels::{prelude::{AssetId, WalletUnlocked}, types::Identity};
+use fuels::{prelude::WalletUnlocked, types::Identity};
 
 pub(crate) async fn auction_info(
     auction_id: u64,

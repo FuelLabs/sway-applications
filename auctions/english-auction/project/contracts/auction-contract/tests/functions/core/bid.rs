@@ -14,8 +14,7 @@ mod success {
 
     #[tokio::test]
     async fn overrides_bid() {
-        let (_, seller, buyer1, buyer2, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, buyer2, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -39,12 +38,17 @@ mod success {
             deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
         assert!(buyer1_deposit.is_none());
 
-        bid(auction_id, buy_asset.clone(), initial_price, &buyer1.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price,
+            &buyer1.auction,
+        )
+        .await;
 
-        let buyer1_deposit =
-            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
-                .await
-                .unwrap();
+        let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
+            .await
+            .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(buyer1_deposit, initial_price);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
@@ -54,12 +58,17 @@ mod success {
             deposit_balance(auction_id, &buyer2.auction, buyer2_identity.clone()).await;
         assert!(buyer2_deposit.is_none());
 
-        bid(auction_id, buy_asset.clone(), initial_price + 1, &buyer2.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price + 1,
+            &buyer2.auction,
+        )
+        .await;
 
-        let buyer2_deposit =
-            deposit_balance(auction_id, &buyer2.auction, buyer2_identity.clone())
-                .await
-                .unwrap();
+        let buyer2_deposit = deposit_balance(auction_id, &buyer2.auction, buyer2_identity.clone())
+            .await
+            .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(buyer2_deposit, initial_price + 1);
         assert_eq!(auction.highest_bidder.unwrap(), buyer2_identity);
@@ -68,8 +77,7 @@ mod success {
 
     #[tokio::test]
     async fn overrides_bid_to_reserve() {
-        let (_, seller, buyer1, buyer2, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, buyer2, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -77,97 +85,6 @@ mod success {
         let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
         let buyer2_identity = Identity::Address(buyer2.wallet.address().into());
 
-        let auction_id = create(
-            buy_asset.clone(),
-            &seller.auction,
-            duration,
-            initial_price,
-            Some(reserve_price),
-            seller_identity.clone(),
-            sell_asset.clone(),
-            sell_amount
-        )
-        .await;
-
-        let buyer1_deposit =
-            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
-        assert!(buyer1_deposit.is_none());
-
-        bid(auction_id, buy_asset.clone(), initial_price, &buyer1.auction).await;
-
-        let buyer1_deposit =
-            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
-                .await
-                .unwrap();
-        let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
-        assert_eq!(buyer1_deposit, initial_price);
-        assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Open);
-
-        let buyer2_deposit =
-            deposit_balance(auction_id, &buyer2.auction, buyer2_identity.clone()).await;
-        assert!(buyer2_deposit.is_none());
-
-        bid(auction_id, buy_asset.clone(), reserve_price, &buyer2.auction).await;
-
-        let buyer2_deposit =
-            deposit_balance(auction_id, &buyer2.auction, buyer2_identity.clone())
-                .await
-                .unwrap();
-        let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
-        assert_eq!(buyer2_deposit, reserve_price);
-        assert_eq!(auction.highest_bidder.unwrap(), buyer2_identity);
-        assert_eq!(auction.state, State::Closed);
-    }
-
-    #[tokio::test]
-    async fn places_bid_at_reserve() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
-        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
-            defaults().await;
-
-        let seller_identity = Identity::Address(seller.wallet.address().into());
-        let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
-
-        let auction_id = create(
-            buy_asset.clone(),
-            &seller.auction,
-            duration,
-            initial_price,
-            Some(reserve_price),
-            seller_identity.clone(),
-            sell_asset.clone(),
-            sell_amount
-        )
-        .await;
-
-        let buyer1_deposit =
-            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
-        assert!(buyer1_deposit.is_none());
-
-        bid(auction_id, buy_asset.clone(), reserve_price, &buyer1.auction).await;
-
-        let buyer1_deposit =
-            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
-                .await
-                .unwrap();
-        let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
-        assert_eq!(buyer1_deposit, reserve_price);
-        assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Closed);
-    }
-
-    #[tokio::test]
-    async fn places_multiple_bids() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
-        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
-            defaults().await;
-
-        let seller_identity = Identity::Address(seller.wallet.address().into());
-        let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
-    
         let auction_id = create(
             buy_asset.clone(),
             &seller.auction,
@@ -184,33 +101,46 @@ mod success {
             deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
         assert!(buyer1_deposit.is_none());
 
-        bid(auction_id, buy_asset.clone(), initial_price, &buyer1.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price,
+            &buyer1.auction,
+        )
+        .await;
 
-        let buyer1_deposit =
-            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
-                .await
-                .unwrap();
+        let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
+            .await
+            .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(buyer1_deposit, initial_price);
         assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
         assert_eq!(auction.state, State::Open);
 
-        bid(auction_id, buy_asset.clone(), 1, &buyer1.auction).await;
+        let buyer2_deposit =
+            deposit_balance(auction_id, &buyer2.auction, buyer2_identity.clone()).await;
+        assert!(buyer2_deposit.is_none());
 
-        let buyer1_deposit =
-            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
-                .await
-                .unwrap();
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            reserve_price,
+            &buyer2.auction,
+        )
+        .await;
+
+        let buyer2_deposit = deposit_balance(auction_id, &buyer2.auction, buyer2_identity.clone())
+            .await
+            .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
-        assert_eq!(buyer1_deposit, initial_price + 1);
-        assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        assert_eq!(auction.state, State::Open);
+        assert_eq!(buyer2_deposit, reserve_price);
+        assert_eq!(auction.highest_bidder.unwrap(), buyer2_identity);
+        assert_eq!(auction.state, State::Closed);
     }
 
     #[tokio::test]
-    async fn places_bid() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
+    async fn places_bid_at_reserve() {
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -225,7 +155,7 @@ mod success {
             Some(reserve_price),
             seller_identity.clone(),
             sell_asset.clone(),
-            sell_amount
+            sell_amount,
         )
         .await;
 
@@ -233,12 +163,111 @@ mod success {
             deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
         assert!(buyer1_deposit.is_none());
 
-        bid(auction_id, buy_asset.clone(), initial_price, &buyer1.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            reserve_price,
+            &buyer1.auction,
+        )
+        .await;
+
+        let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
+            .await
+            .unwrap();
+        let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
+        assert_eq!(buyer1_deposit, reserve_price);
+        assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
+        assert_eq!(auction.state, State::Closed);
+    }
+
+    #[tokio::test]
+    async fn places_multiple_bids() {
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults().await;
+
+        let seller_identity = Identity::Address(seller.wallet.address().into());
+        let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
+
+        let auction_id = create(
+            buy_asset.clone(),
+            &seller.auction,
+            duration,
+            initial_price,
+            Some(reserve_price),
+            seller_identity.clone(),
+            sell_asset.clone(),
+            sell_amount,
+        )
+        .await;
 
         let buyer1_deposit =
-            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
-                .await
-                .unwrap();
+            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
+        assert!(buyer1_deposit.is_none());
+
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price,
+            &buyer1.auction,
+        )
+        .await;
+
+        let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
+            .await
+            .unwrap();
+        let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
+        assert_eq!(buyer1_deposit, initial_price);
+        assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
+        assert_eq!(auction.state, State::Open);
+
+        bid(auction_id, buy_asset.clone(), 1, &buyer1.auction).await;
+
+        let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
+            .await
+            .unwrap();
+        let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
+        assert_eq!(buyer1_deposit, initial_price + 1);
+        assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
+        assert_eq!(auction.state, State::Open);
+    }
+
+    #[tokio::test]
+    async fn places_bid() {
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
+        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
+            defaults().await;
+
+        let seller_identity = Identity::Address(seller.wallet.address().into());
+        let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
+
+        let auction_id = create(
+            buy_asset.clone(),
+            &seller.auction,
+            duration,
+            initial_price,
+            Some(reserve_price),
+            seller_identity.clone(),
+            sell_asset.clone(),
+            sell_amount,
+        )
+        .await;
+
+        let buyer1_deposit =
+            deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone()).await;
+        assert!(buyer1_deposit.is_none());
+
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price,
+            &buyer1.auction,
+        )
+        .await;
+
+        let buyer1_deposit = deposit_balance(auction_id, &buyer1.auction, buyer1_identity.clone())
+            .await
+            .unwrap();
         let auction: Auction = auction_info(auction_id, &seller.auction).await.unwrap();
         assert_eq!(buyer1_deposit, initial_price);
         assert_eq!(auction.bid_asset, buy_asset);
@@ -250,12 +279,11 @@ mod success {
 mod revert {
 
     use super::*;
-    use fuels::prelude::{AssetId, CallParameters, TxParameters};
 
     #[tokio::test]
     #[should_panic(expected = "AuctionDoesNotExist")]
     async fn when_auction_id_does_not_map_to_existing_auction() {
-        let (_, _, buyer1, _, _, _, _, buy_asset, _) = setup().await;
+        let (_, _, buyer1, _, _, _, buy_asset) = setup().await;
         let (_, initial_price, _reserve_price, _, _) = defaults().await;
 
         bid(0, buy_asset.clone(), initial_price, &buyer1.auction).await;
@@ -264,8 +292,7 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "BidderIsSeller")]
     async fn when_sender_is_the_seller() {
-        let (_, seller, _buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, _buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -283,14 +310,19 @@ mod revert {
         )
         .await;
 
-        bid(auction_id, buy_asset.clone(), initial_price, &seller.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price,
+            &seller.auction,
+        )
+        .await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "AuctionIsNotOpen")]
     async fn when_auction_has_closed() {
-        let (_, seller, buyer1, buyer2, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, buyer2, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -308,15 +340,26 @@ mod revert {
         )
         .await;
 
-        bid(auction_id, buy_asset.clone(), reserve_price, &buyer1.auction).await;
-        bid(auction_id, buy_asset.clone(), reserve_price, &buyer2.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            reserve_price,
+            &buyer1.auction,
+        )
+        .await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            reserve_price,
+            &buyer2.auction,
+        )
+        .await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "AuctionIsNotOpen")]
     async fn when_bidding_period_has_ended() {
-        let (deployer, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (deployer, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -335,16 +378,23 @@ mod revert {
         )
         .await;
 
-        let _result = provider.produce_blocks(duration + 1, Option::None).await;
+        let _result = provider
+            .produce_blocks((duration + 1).into(), Option::None)
+            .await;
 
-        bid(auction_id, buy_asset.clone(), initial_price, &buyer1.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price,
+            &buyer1.auction,
+        )
+        .await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "IncorrectAssetProvided")]
     async fn when_asset_provided_not_accepted() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -362,14 +412,19 @@ mod revert {
         )
         .await;
 
-        bid(auction_id, buy_asset.clone(), initial_price, &buyer1.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price,
+            &buyer1.auction,
+        )
+        .await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "IncorrectAssetProvided")]
     async fn when_asset_type_and_struct_mismatch() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -387,14 +442,19 @@ mod revert {
         )
         .await;
 
-        bid(auction_id, sell_asset.clone(), initial_price, &buyer1.auction).await;
+        bid(
+            auction_id,
+            sell_asset.clone(),
+            initial_price,
+            &buyer1.auction,
+        )
+        .await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "InitialPriceNotMet")]
     async fn when_bid_is_less_than_initial_price() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -412,14 +472,19 @@ mod revert {
         )
         .await;
 
-        bid(auction_id, buy_asset.clone(), initial_price - 1, &buyer1.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price - 1,
+            &buyer1.auction,
+        )
+        .await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "IncorrectAmountProvided")]
     async fn when_bid_is_less_than_last_bid() {
-        let (_, seller, buyer1, buyer2, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, buyer2, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -437,16 +502,27 @@ mod revert {
         )
         .await;
 
-        bid(auction_id, buy_asset.clone(), initial_price, &buyer1.auction).await;
-        bid(auction_id, buy_asset.clone(), initial_price + 2, &buyer2.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price,
+            &buyer1.auction,
+        )
+        .await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            initial_price + 2,
+            &buyer2.auction,
+        )
+        .await;
         bid(auction_id, buy_asset.clone(), 1, &buyer1.auction).await;
     }
 
     #[tokio::test]
     #[should_panic(expected = "IncorrectAmountProvided")]
     async fn when_bid_is_greater_than_reserve_price() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) =
-            setup().await;
+        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
@@ -464,6 +540,12 @@ mod revert {
         )
         .await;
 
-        bid(auction_id, buy_asset.clone(), reserve_price + 1, &buyer1.auction).await;
+        bid(
+            auction_id,
+            buy_asset.clone(),
+            reserve_price + 1,
+            &buyer1.auction,
+        )
+        .await;
     }
 }

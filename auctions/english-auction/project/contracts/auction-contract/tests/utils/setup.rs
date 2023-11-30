@@ -1,18 +1,16 @@
 use fuels::{
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Bech32ContractId,
-        Config, Contract, ContractId, LoadConfiguration, StorageConfiguration, TxParameters,
-        WalletUnlocked, WalletsConfig, BASE_ASSET_ID,
+        abigen, launch_custom_provider_and_get_wallets, AssetConfig, Bech32ContractId, Config,
+        Contract, ContractId, LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked,
+        WalletsConfig, BASE_ASSET_ID,
     },
-    types::Identity,
+    types::{AssetId, Identity},
 };
 
-abigen!(
-    Contract(
-        name = "EnglishAuction",
-        abi = "./contracts/auction-contract/out/debug/auction-contract-abi.json"
-    ),
-);
+abigen!(Contract(
+    name = "EnglishAuction",
+    abi = "./contracts/auction-contract/out/debug/auction-contract-abi.json"
+),);
 
 const AUCTION_CONTRACT_BINARY_PATH: &str = "./out/debug/auction-contract.bin";
 const AUCTION_CONTRACT_STORAGE_PATH: &str = "./out/debug/auction-contract-storage_slots.json";
@@ -98,13 +96,9 @@ pub(crate) async fn setup() -> (
     let assets = vec![base_asset, buy_asset, sell_asset];
 
     let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
-
-    let provider_config = Config {
-        manual_blocks_enabled: true, // Necessary so the `produce_blocks` API can be used locally
-        ..Config::local_node()
-    };
-    let mut wallets =
-        launch_custom_provider_and_get_wallets(wallet_config, Some(provider_config), None).await;
+    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None)
+        .await
+        .unwrap();
 
     let wallet1 = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
@@ -112,13 +106,13 @@ pub(crate) async fn setup() -> (
     let wallet4 = wallets.pop().unwrap();
 
     let auction_storage_configuration =
-        StorageConfiguration::load_from(AUCTION_CONTRACT_STORAGE_PATH);
+        StorageConfiguration::default().add_slot_overrides_from_file(AUCTION_CONTRACT_STORAGE_PATH);
     let auction_configuration = LoadConfiguration::default()
-        .set_storage_configuration(auction_storage_configuration.unwrap());
+        .with_storage_configuration(auction_storage_configuration.unwrap());
 
     let auction_id = Contract::load_from(AUCTION_CONTRACT_BINARY_PATH, auction_configuration)
         .unwrap()
-        .deploy(&wallet1, TxParameters::default())
+        .deploy(&wallet1, TxPolicies::default())
         .await
         .unwrap();
 
@@ -138,10 +132,7 @@ pub(crate) async fn setup() -> (
     )
 }
 
-async fn user(
-    user_wallet: WalletUnlocked,
-    auction_id: Bech32ContractId,
-) -> Metadata {
+async fn user(user_wallet: WalletUnlocked, auction_id: Bech32ContractId) -> Metadata {
     Metadata {
         auction: EnglishAuction::new(auction_id, user_wallet.clone()),
         wallet: user_wallet,
