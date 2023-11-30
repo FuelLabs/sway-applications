@@ -16,13 +16,13 @@ mod success {
         assert_eq!(0, total_auctions(&seller.auction).await);
 
         create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
@@ -42,22 +42,20 @@ mod success {
         assert_eq!(0, total_auctions(&seller.auction).await);
 
         create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
 
         assert_eq!(1, total_auctions(&seller.auction).await);
 
-        let _result = provider
-            .produce_blocks((duration + 1).into(), Option::None)
-            .await;
+        let _result = provider.produce_blocks(duration + 1, Option::None).await;
 
         assert_eq!(1, total_auctions(&seller.auction).await);
     }
@@ -73,13 +71,13 @@ mod success {
         assert_eq!(0, total_auctions(&seller.auction).await);
 
         create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
@@ -87,13 +85,13 @@ mod success {
         assert_eq!(1, total_auctions(&seller.auction).await);
 
         create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
@@ -101,13 +99,13 @@ mod success {
         assert_eq!(2, total_auctions(&seller.auction).await);
 
         create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;

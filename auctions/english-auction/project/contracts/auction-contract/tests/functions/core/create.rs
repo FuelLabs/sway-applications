@@ -25,23 +25,23 @@ mod success {
         assert!(auction.is_none());
 
         let auction_id = create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
 
-        let total_duration = (provider.latest_block_height().await.unwrap() as u32) + duration;
+        let total_duration = provider.latest_block_height().await.unwrap() + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
         let auction_copy = create_auction_copy(
-            buy_asset.clone(),
+            buy_asset,
             0,
             None,
             total_duration,
@@ -69,29 +69,29 @@ mod success {
         assert!(auction.is_none());
 
         let auction_id1 = create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
 
-        let total_duration = (provider.latest_block_height().await.unwrap() as u32) + duration;
+        let total_duration = provider.latest_block_height().await.unwrap() + duration;
         let auction1 = auction_info(auction_id1, &seller.auction).await;
         assert!(auction1.is_some());
 
         let auction1_copy = create_auction_copy(
-            buy_asset.clone(),
+            buy_asset,
             0,
             None,
             total_duration,
             initial_price,
             Some(reserve_price),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
             seller_identity.clone(),
             State::Open,
@@ -100,29 +100,29 @@ mod success {
         assert_eq!(auction1.unwrap(), auction1_copy);
 
         let auction_id2 = create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
 
-        let total_duration = (provider.latest_block_height().await.unwrap() as u32) + duration;
+        let total_duration = provider.latest_block_height().await.unwrap() + duration;
         let auction2 = auction_info(auction_id2, &seller.auction).await;
         assert!(auction2.is_some());
 
         let auction2_copy = create_auction_copy(
-            buy_asset.clone(),
+            buy_asset,
             0,
             None,
             total_duration,
             initial_price,
             Some(reserve_price),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
             seller_identity.clone(),
             State::Open,
@@ -143,23 +143,23 @@ mod success {
         assert!(auction.is_none());
 
         let auction_id = create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             None,
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
 
-        let total_duration = (provider.latest_block_height().await.unwrap() as u32) + duration;
+        let total_duration = provider.latest_block_height().await.unwrap() + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
         let auction_copy = create_auction_copy(
-            buy_asset.clone(),
+            buy_asset,
             0,
             None,
             total_duration,
@@ -186,23 +186,23 @@ mod success {
         assert!(auction.is_none());
 
         let auction_id = create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(initial_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
 
-        let total_duration = (provider.latest_block_height().await.unwrap() as u32) + duration;
+        let total_duration = provider.latest_block_height().await.unwrap() + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
         let auction_copy = create_auction_copy(
-            buy_asset.clone(),
+            buy_asset,
             0,
             None,
             total_duration,
@@ -231,13 +231,13 @@ mod revert {
         let seller_identity = Identity::Address(seller.wallet.address().into());
 
         create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(initial_price - 1),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
@@ -252,13 +252,13 @@ mod revert {
         let seller_identity = Identity::Address(seller.wallet.address().into());
 
         create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(0),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
@@ -273,13 +273,13 @@ mod revert {
         let seller_identity = Identity::Address(seller.wallet.address().into());
 
         create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             0,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
@@ -294,13 +294,13 @@ mod revert {
         let seller_identity = Identity::Address(seller.wallet.address().into());
 
         create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             0,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;

@@ -1,7 +1,7 @@
 use fuels::{
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, AssetConfig, Bech32ContractId, Config,
-        Contract, ContractId, LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked,
+        abigen, launch_custom_provider_and_get_wallets, AssetConfig, Bech32ContractId, Contract,
+        ContractId, LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked,
         WalletsConfig, BASE_ASSET_ID,
     },
     types::{AssetId, Identity},

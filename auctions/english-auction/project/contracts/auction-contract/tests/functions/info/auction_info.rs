@@ -22,23 +22,23 @@ mod success {
         assert!(auction.is_none());
 
         let auction_id = create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
 
-        let total_duration = (provider.latest_block_height().await.unwrap() as u32) + duration;
+        let total_duration = provider.latest_block_height().await.unwrap() + duration;
         let auction = auction_info(auction_id, &seller.auction).await;
         assert!(auction.is_some());
 
         let auction_copy = create_auction_copy(
-            buy_asset.clone(),
+            buy_asset,
             0,
             None,
             total_duration,
@@ -52,18 +52,12 @@ mod success {
         .await;
         assert_eq!(auction.unwrap(), auction_copy);
 
-        bid(
-            auction_id,
-            buy_asset.clone(),
-            initial_price,
-            &buyer1.auction,
-        )
-        .await;
+        bid(auction_id, buy_asset, initial_price, &buyer1.auction).await;
 
-        // let auction = auction_info(auction_id, &seller.auction).await.unwrap();
-        // assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
-        // assert_eq!(auction.bid_asset, buy_asset);
-        // assert_eq!(auction.highest_bid, initial_price);
+        let auction = auction_info(auction_id, &seller.auction).await.unwrap();
+        assert_eq!(auction.highest_bidder.unwrap(), buyer1_identity);
+        assert_eq!(auction.bid_asset, buy_asset);
+        assert_eq!(auction.highest_bid, initial_price);
     }
 
     #[tokio::test]
@@ -81,31 +75,31 @@ mod success {
         assert!(auction2.is_none());
 
         let auction1_id = create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
 
-        let total_duration1 = (provider.latest_block_height().await.unwrap() as u32) + duration;
+        let total_duration1 = provider.latest_block_height().await.unwrap() + duration;
         let auction1 = auction_info(auction1_id, &seller.auction).await;
         let auction2 = auction_info(1, &seller.auction).await;
         assert!(auction1.is_some());
         assert!(auction2.is_none());
 
         let auction1_copy = create_auction_copy(
-            buy_asset.clone(),
+            buy_asset,
             0,
             None,
             total_duration1,
             initial_price,
             Some(reserve_price),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
             seller_identity.clone(),
             State::Open,
@@ -114,18 +108,18 @@ mod success {
         assert_eq!(auction1.unwrap(), auction1_copy);
 
         let auction2_id = create(
-            buy_asset.clone(),
+            buy_asset,
             &seller.auction,
             duration,
             initial_price,
             Some(reserve_price),
             seller_identity.clone(),
-            sell_asset.clone(),
+            sell_asset,
             sell_amount,
         )
         .await;
 
-        let total_duration2 = (provider.latest_block_height().await.unwrap() as u32) + duration;
+        let total_duration2 = provider.latest_block_height().await.unwrap() + duration;
         let auction1 = auction_info(auction1_id, &seller.auction).await;
         let auction2 = auction_info(auction2_id, &seller.auction).await;
         assert!(auction1.is_some());
@@ -133,7 +127,7 @@ mod success {
         assert_eq!(auction1.unwrap(), auction1_copy);
 
         let auction2_copy = create_auction_copy(
-            buy_asset.clone(),
+            buy_asset,
             0,
             None,
             total_duration2,

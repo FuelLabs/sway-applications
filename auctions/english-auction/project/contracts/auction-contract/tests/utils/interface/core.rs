@@ -34,6 +34,7 @@ pub(crate) mod auction {
         contract.methods().cancel(auction_id).call().await.unwrap()
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub(crate) async fn create(
         bid_asset: AssetId,
         contract: &EnglishAuction<WalletUnlocked>,
