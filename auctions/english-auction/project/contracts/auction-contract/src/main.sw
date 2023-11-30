@@ -61,10 +61,10 @@ impl EnglishAuction for Contract {
         // Combine the user's previous deposits and the current bid for the
         // total deposits to the auction the user has made
         let total_bid = match storage.deposits.get((sender, auction_id)).try_read() {
-            Option::Some(sender_deposit) => {
+            Some(sender_deposit) => {
                 bid_amount + sender_deposit
             },
-            Option::None => {
+            None => {
                 bid_amount
             }
         };
@@ -83,14 +83,13 @@ impl EnglishAuction for Contract {
         // Check if reserve has been met if there is one set
         if auction.reserve_price.is_some() {
             // The bid cannot be greater than the reserve price
+            let reserve_price = auction.reserve_price.unwrap();
             require(
-                auction
-                    .reserve_price
-                    .unwrap() >= total_bid,
+                reserve_price >= total_bid,
                 InputError::IncorrectAmountProvided,
             );
 
-            if auction.reserve_price.unwrap() == total_bid {
+            if reserve_price == total_bid {
                 auction.state = State::Closed;
             }
         }
@@ -223,11 +222,7 @@ impl EnglishAuction for Contract {
         let mut withdrawn_asset = auction.bid_asset;
 
         // Withdraw owed assets
-        if ((bidder.is_some()
-            && sender == bidder.unwrap())
-            || (bidder.is_none()
-            && sender == auction.seller))
-        {
+        if ((bidder.is_some() && sender == bidder.unwrap()) || (bidder.is_none() && sender == auction.seller)) {
             // Winning bidder or seller withdraws original sold assets
             transfer(sender, auction.sell_asset, auction.sell_asset_amount);
             withdrawn_asset = auction.sell_asset;
