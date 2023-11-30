@@ -298,8 +298,8 @@ pub mod scripts {
                     provider,
                     wallet.address(),
                     *asset,
-                    if amounts.is_some() {
-                        *amounts.unwrap().get(asset_index).unwrap()
+                    if let Some(amounts_) = amounts {
+                        *amounts_.get(asset_index).unwrap()
                     } else {
                         MAXIMUM_INPUT_AMOUNT
                     },
