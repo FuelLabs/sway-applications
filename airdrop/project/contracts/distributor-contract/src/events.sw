@@ -20,9 +20,9 @@ pub struct CreateAirdropEvent {
     /// The user which can claim any left over tokens after the claiming period.
     admin: Identity,
     /// The asset which is to be distributed.
-    asset: ContractId,
+    asset: AssetId,
     /// The block at which the claiming period will end.
-    end_block: u64,
+    end_block: u32,
     /// The computed merkle root that will be used to verify claims.
     merkle_root: b256,
     /// The total number of leaves in the merkle tree
