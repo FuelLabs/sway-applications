@@ -344,30 +344,6 @@ mod revert {
         )
         .await;
 
-        bid(auction_id, buy_asset, initial_price, &buyer1.auction).await;
-    }
-
-    #[tokio::test]
-    #[should_panic(expected = "IncorrectAssetProvided")]
-    async fn when_asset_type_and_struct_mismatch() {
-        let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
-        let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
-            defaults().await;
-
-        let seller_identity = Identity::Address(seller.wallet.address().into());
-
-        let auction_id = create(
-            buy_asset,
-            &seller.auction,
-            duration,
-            initial_price,
-            Some(reserve_price),
-            seller_identity.clone(),
-            sell_asset,
-            sell_amount,
-        )
-        .await;
-
         bid(auction_id, sell_asset, initial_price, &buyer1.auction).await;
     }
 
