@@ -69,6 +69,7 @@ impl AirdropDistributor for Contract {
         require(this_balance(asset) >= amount, AccessError::NotEnoughTokens);
 
         // Verify the merkle proof against the user and amount
+        // TODO: Remove assembly when https://github.com/FuelLabs/sway-libs/issues/186 is resolved
         let param = (sender, amount);
         let mut result_buffer: b256 = b256::min();
         let leaf = asm(hash: result_buffer, ptr: param, bytes: size_of_val(param)) {
