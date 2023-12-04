@@ -52,7 +52,11 @@ abi MultiSignatureWallet {
     /// * Reads: `3`
     /// * Writes: `2`
     #[storage(read, write)]
-    fn execute_transaction(signatures: Vec<SignatureInfo>, target: Identity, transaction_parameters: TransactionParameters);
+    fn execute_transaction(
+        signatures: Vec<SignatureInfo>,
+        target: Identity,
+        transaction_parameters: TransactionParameters,
+    );
 
     /// Updates the threshold required for execution.
     ///
@@ -120,12 +124,12 @@ abi Info {
     ///
     /// # Arguments
     ///
-    /// * `asset_id` : [ContractId] - The contract ID of the asset to check that balance of.
+    /// * `asset_id` : [AssetId] - The AssetId of the asset to check that balance of.
     ///
     /// # Returns
     ///
     /// * [u64] - The multisig wallet's balance of `asset_id`.
-    fn balance(asset_id: ContractId) -> u64;
+    fn balance(asset_id: AssetId) -> u64;
 
     /// Takes a struct comprised of transaction data and hashes it.
     ///

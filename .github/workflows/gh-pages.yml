@@ -8,7 +8,7 @@ on:
       - v*
 
 env:
-  RUST_VERSION: 1.63.0
+  RUST_VERSION: 1.74.0
 
 jobs:
   deploy:
