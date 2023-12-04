@@ -10,7 +10,6 @@ use ::errors::{AccessError, InitError, InputError, UserError};
 use ::events::{BidEvent, CancelAuctionEvent, CreateAuctionEvent, WithdrawEvent};
 use ::interface::{EnglishAuction, Info};
 use std::{
-    auth::msg_sender,
     block::height,
     call_frames::{
         contract_id,
@@ -157,7 +156,7 @@ impl EnglishAuction for Contract {
 
         let sell_asset = msg_asset_id();
         let sell_asset_amount = msg_amount();
-        require(msg_amount() != 0, InputError::IncorrectAmountProvided);
+        require(sell_asset_amount != 0, InputError::IncorrectAmountProvided);
 
         // Setup auction
         let auction = Auction::new(
@@ -176,6 +175,7 @@ impl EnglishAuction for Contract {
             .deposits
             .insert((seller, total_auctions), sell_asset_amount);
         storage.auctions.insert(total_auctions, auction);
+        storage.total_auctions.write(total_auctions + 1);
 
         log(CreateAuctionEvent {
             auction_id: total_auctions,
@@ -184,9 +184,6 @@ impl EnglishAuction for Contract {
             sell_asset_amount,
         });
 
-        storage
-            .total_auctions
-            .write(storage.total_auctions.read() + 1);
         total_auctions
     }
 

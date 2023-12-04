@@ -14,6 +14,8 @@ mod success {
         let (sell_amount, initial_price, reserve_price, duration, _initial_wallet_amount) =
             defaults().await;
 
+        assert!(initial_price > 0);
+
         let seller_identity = Identity::Address(seller.wallet.address().into());
         let buyer1_identity = Identity::Address(buyer1.wallet.address().into());
 

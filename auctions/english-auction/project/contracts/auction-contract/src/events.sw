@@ -26,7 +26,7 @@ pub struct BidEvent {
     amount: u64,
     /// The auction id of the auction that was bid on.
     auction_id: u64,
-    /// The bidder.7
+    /// The bidder.
     user: Identity,
 }
 
