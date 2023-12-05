@@ -165,7 +165,7 @@ impl NameRegistry for Contract {
     }
 
     #[storage(read, write)]
-    fn set_name_owner(name: String, owner: Identity) {
+    fn transfer_name_ownership(name: String, owner: Identity) {
         let name_hash = sha256(name);
         let record = storage.names.get(name_hash).try_read();
         require(

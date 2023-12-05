@@ -111,7 +111,7 @@ abi NameRegistry {
     /// * Reads: `1`
     /// * Writes: `1`
     #[storage(read, write)]
-    fn set_name_owner(name: String, new_owner: Identity);
+    fn transfer_name_ownership(name: String, new_owner: Identity);
 }
 
 abi Info {

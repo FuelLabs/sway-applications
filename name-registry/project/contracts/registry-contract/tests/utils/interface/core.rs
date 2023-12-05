@@ -111,7 +111,7 @@ pub(crate) async fn set_owner(
 ) -> FuelCallResponse<()> {
     instance
         .methods()
-        .set_name_owner(name, new_owner)
+        .transfer_name_ownership(name, new_owner)
         .call()
         .await
         .unwrap()
