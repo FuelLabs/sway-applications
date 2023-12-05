@@ -44,6 +44,7 @@ impl NameRegistry for Contract {
     #[payable]
     #[storage(read, write)]
     fn extend(name: String, duration: u64) {
+        // Get record
         let name_hash = sha256(name);
         let record = storage.names.get(name_hash).try_read();
         require(
@@ -52,6 +53,7 @@ impl NameRegistry for Contract {
             RegistrationValidityError::NameNotRegistered,
         );
 
+        // Verify payment
         let payment_asset = msg_asset_id();
         let rate = storage.assets.get(payment_asset).try_read();
         require(rate.unwrap().is_some(), AssetError::IncorrectAssetSent);
@@ -62,6 +64,7 @@ impl NameRegistry for Contract {
             AssetError::InsufficientPayment,
         );
 
+        // Update stored record
         let mut record = record.unwrap();
         record.expiry = record.expiry + duration;
         storage.names.insert(name_hash, record);
@@ -88,6 +91,7 @@ impl NameRegistry for Contract {
             RegistrationValidityError::NameTooShort,
         );
 
+        // Get record
         let name_hash = sha256(name);
         let record = storage.names.get(name_hash).try_read();
         if record.is_some() {
@@ -99,6 +103,7 @@ impl NameRegistry for Contract {
             );
         }
 
+        // Verify payment
         let payment_asset = msg_asset_id();
         let rate = storage.assets.get(payment_asset).try_read();
         require(rate.unwrap().is_some(), AssetError::IncorrectAssetSent);
@@ -109,6 +114,7 @@ impl NameRegistry for Contract {
             AssetError::InsufficientPayment,
         );
 
+        // Store record
         let record = Record::new(timestamp() + duration, identity, owner);
         storage.names.insert(name_hash, record);
 
@@ -133,6 +139,7 @@ impl NameRegistry for Contract {
 
     #[storage(read, write)]
     fn set_resolver(name: String, identity: Identity) {
+        // Get record
         let name_hash = sha256(name);
         let record = storage.names.get(name_hash).try_read();
         require(
@@ -141,6 +148,7 @@ impl NameRegistry for Contract {
             RegistrationValidityError::NameNotRegistered,
         );
 
+        // Verify record
         let previous_record = record.unwrap();
         require(
             timestamp() < previous_record
@@ -154,6 +162,7 @@ impl NameRegistry for Contract {
             AuthorizationError::SenderNotOwner,
         );
 
+        // Store updated record
         let new_record = Record::new(previous_record.expiry, identity, previous_record.owner);
         storage.names.insert(name_hash, new_record);
 
@@ -166,6 +175,7 @@ impl NameRegistry for Contract {
 
     #[storage(read, write)]
     fn transfer_name_ownership(name: String, owner: Identity) {
+        // Get record
         let name_hash = sha256(name);
         let record = storage.names.get(name_hash).try_read();
         require(
@@ -174,6 +184,7 @@ impl NameRegistry for Contract {
             RegistrationValidityError::NameNotRegistered,
         );
 
+        // Verify record
         let previous_record = record.unwrap();
         require(
             timestamp() < previous_record
@@ -187,6 +198,7 @@ impl NameRegistry for Contract {
             AuthorizationError::SenderNotOwner,
         );
 
+        // Store updated record
         let new_record = Record::new(previous_record.expiry, previous_record.identity, owner);
         storage.names.insert(name_hash, new_record);
 
