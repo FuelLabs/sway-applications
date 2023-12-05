@@ -7,7 +7,7 @@ mod success {
         setup::REGISTER_DURATION,
     };
     use fuels::{
-        prelude::{Address, ContractId},
+        prelude::{Address, AssetId},
         types::Identity,
     };
 
@@ -15,23 +15,23 @@ mod success {
     async fn can_get_identity() {
         let (instance, acc1, wallet2) = setup().await;
         let wallet_identity2 = Identity::Address(Address::from(wallet2.address()));
-        set_asset(&instance, ContractId::zeroed(), Some(1)).await;
+        set_asset(&instance, AssetId::default(), Some(1)).await;
 
         register(
             &instance,
-            &acc1.name,
+            acc1.name.clone(),
             REGISTER_DURATION,
             &acc1.identity(),
             &acc1.identity(),
-            ContractId::zeroed(),
+            AssetId::default(),
         )
         .await;
 
-        let previous_identity = identity(&instance, &acc1.name).await;
+        let previous_identity = identity(&instance, acc1.name.clone()).await;
 
-        set_identity(&instance, &acc1.name, wallet_identity2.clone()).await;
+        set_identity(&instance, acc1.name.clone(), wallet_identity2.clone()).await;
 
-        let new_identity = identity(&instance, &acc1.name).await;
+        let new_identity = identity(&instance, acc1.name.clone()).await;
 
         assert_eq!(previous_identity.value.unwrap(), acc1.identity());
         assert_eq!(new_identity.value.unwrap(), wallet_identity2);
@@ -48,7 +48,7 @@ mod revert {
     async fn cant_get_identity_when_not_registered() {
         let (instance, acc, _wallet2) = setup().await;
 
-        let identity = identity(&instance, &acc.name).await;
+        let identity = identity(&instance, acc.name.clone()).await;
         identity.value.unwrap();
     }
 }
