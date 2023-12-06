@@ -1,4 +1,4 @@
-use crate::utils::setup::{Auction, AuctionAsset, EnglishAuction};
+use crate::utils::setup::{Auction, EnglishAuction};
 use fuels::{prelude::WalletUnlocked, types::Identity};
 
 pub(crate) async fn auction_info(
@@ -18,7 +18,7 @@ pub(crate) async fn deposit_balance(
     auction_id: u64,
     contract: &EnglishAuction<WalletUnlocked>,
     identity: Identity,
-) -> Option<AuctionAsset> {
+) -> Option<u64> {
     contract
         .methods()
         .deposit_balance(auction_id, identity)
