@@ -1,7 +1,10 @@
-use fuels::prelude::{
-    abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Contract, ContractId,
-    LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
-    BASE_ASSET_ID,
+use fuels::{
+    prelude::{
+        abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Contract,
+        LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+        BASE_ASSET_ID,
+    },
+    types::ContractId,
 };
 
 abigen!(Contract(
@@ -17,9 +20,9 @@ pub(crate) struct Metadata {
 const DAO_CONTRACT_BINARY_PATH: &str = "./out/debug/DAO-contract.bin";
 const DAO_CONTRACT_STORAGE_PATH: &str = "./out/debug/DAO-contract-storage_slots.json";
 
-pub(crate) fn proposal_transaction(asset_id: ContractId) -> Proposal {
+pub(crate) fn proposal_transaction(asset_id: AssetId) -> Proposal {
     let call_data = CallData {
-        id: asset_id,
+        id: ContractId::from(*asset_id),
         function_selector: 0,
         arguments: 0,
     };
@@ -32,7 +35,7 @@ pub(crate) fn proposal_transaction(asset_id: ContractId) -> Proposal {
     }
 }
 
-pub(crate) async fn setup() -> (ContractId, ContractId, Metadata, Metadata, u64) {
+pub(crate) async fn setup() -> (AssetId, AssetId, Metadata, Metadata, u64) {
     let number_of_coins = 1;
     let coin_amount = 1_000_000;
     let number_of_wallets = 2;
@@ -57,14 +60,17 @@ pub(crate) async fn setup() -> (ContractId, ContractId, Metadata, Metadata, u64)
     let assets = vec![base_asset, gov_token, other_token];
 
     let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
-    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None).await;
+    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None)
+        .await
+        .unwrap();
 
     let deployer_wallet = wallets.pop().unwrap();
     let user_wallet = wallets.pop().unwrap();
 
-    let storage_configuration = StorageConfiguration::load_from(DAO_CONTRACT_STORAGE_PATH);
+    let storage_configuration =
+        StorageConfiguration::default().add_slot_overrides_from_file(DAO_CONTRACT_STORAGE_PATH);
     let configuration =
-        LoadConfiguration::default().set_storage_configuration(storage_configuration.unwrap());
+        LoadConfiguration::default().with_storage_configuration(storage_configuration.unwrap());
     let dao_voting_id = Contract::load_from(DAO_CONTRACT_BINARY_PATH, configuration)
         .unwrap()
         .deploy(&deployer_wallet, TxParameters::default())
@@ -82,11 +88,5 @@ pub(crate) async fn setup() -> (ContractId, ContractId, Metadata, Metadata, u64)
 
     let asset_amount = 10;
 
-    (
-        ContractId::from(*gov_token_id),
-        ContractId::from(*other_token_id),
-        deployer,
-        user,
-        asset_amount,
-    )
+    (gov_token_id, other_token_id, deployer, user, asset_amount)
 }

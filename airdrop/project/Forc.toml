@@ -1,2 +1,5 @@
 [workspace]
-members = ["./contracts/distributor-contract", "./contracts/asset-contract"]
+members = ["./contracts/distributor-contract"]
+
+[patch.'https://github.com/fuellabs/sway']
+std = { git = "https://github.com/fuellabs/sway", branch = "feat/transaction-policies" }

@@ -4,6 +4,8 @@ use std::{
     call_frames::contract_id,
     ecr::ec_recover_address,
     hash::{
+        Hash,
+        Hasher,
         keccak256,
         sha256,
     },
@@ -26,9 +28,9 @@ use ::data_structures::{
     user::User,
 };
 
-const EIP191_INITIAL_BYTE = 0x19u8;
-const EIP191_VERSION_BYTE = 0x45u8;
-const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
+const EIP191_INITIAL_BYTE = 0x19;
+const EIP191_VERSION_BYTE = 0x45;
+// const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32"; // TODO: Replace the use of string literal with this constant when compiler bug is fixed.
 
 /// Takes a struct comprised of transaction data and hashes it.
 ///
@@ -46,7 +48,7 @@ const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
 pub fn compute_hash(type_to_hash: TypeToHash) -> b256 {
     match type_to_hash {
         TypeToHash::Threshold(threshold) => sha256(threshold),
-        TypeToHash::Transaction(transaction) => transaction.into_bytes().sha256(),
+        TypeToHash::Transaction(transaction) => sha256(transaction.into_bytes()),
         TypeToHash::Weight(weight) => sha256(weight),
     }
 }
@@ -143,7 +145,10 @@ fn encode_and_pack_signed_data(
     // `message_1`, `message_2`, `message_3` and `message_4` are the four `u64`s that made up the `b256` `message_hash`.
     let (message_1, message_2, message_3, message_4) = decompose(message_hash);
 
-    data.push((initial_byte << 56) + (version_byte << 48) + (message_1 >> 16));
+    data
+        .push(
+            (initial_byte << 56) + (version_byte << 48) + (message_1 >> 16),
+        );
     data.push((message_1 << 48) + (message_2 >> 16));
     data.push((message_2 << 48) + (message_3 >> 16));
     data.push((message_3 << 48) + (message_4 >> 16));
@@ -175,5 +180,5 @@ fn decompose(value: b256) -> (u64, u64, u64, u64) {
 ///
 /// * [b256]- The prefixed hash.
 fn ethereum_prefix(msg_hash: b256) -> b256 {
-    keccak256((ETHEREUM_PREFIX, msg_hash))
+    keccak256(("\x19Ethereum Signed Message:\n32", msg_hash)) //// TODO: Replace the use of string literal with this constant when compiler bug is fixed.
 }

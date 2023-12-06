@@ -32,8 +32,8 @@ pub struct ExecuteEvent {
 pub struct InitializeEvent {
     /// User who initialized the contract.
     author: Identity,
-    /// Contract Id of the token used for DAO governance.
-    token: ContractId,
+    /// AssetId of the token used for DAO governance.
+    token: AssetId,
 }
 
 /// Event for unlocking of governance tokens.
