@@ -15,7 +15,7 @@ impl Record {
     ///
     /// # Arguments
     ///
-    /// * `expiry`: [u32] - The timestamp at which the name expires, and someone else can re-register the same name
+    /// * `expiry`: [u64] - The timestamp at which the name expires, and someone else can re-register the same name
     /// * `identity`: [Identity] - The identity to which the name resolves to
     /// * `owner`: [Identity] - The identity which controls the name, and can change the identity and owner
     ///
