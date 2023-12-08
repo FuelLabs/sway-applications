@@ -1,5 +1,2 @@
 [workspace]
 members = ["./contracts/registry-contract"]
-
-[patch.'https://github.com/fuellabs/sway']
-std = { git = "https://github.com/fuellabs/sway", branch = "feat/transaction-policies" }
