@@ -6,11 +6,11 @@
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.47.0" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.47.0-orange" />
+    <a href="https://crates.io/crates/forc/0.48.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.48.1-orange" />
     </a>
-    <a href="https://crates.io/crates/fuel-core/0.20.8" alt="fuel-core">
-        <img src="https://img.shields.io/badge/fuel--core-v0.20.8-yellow" />
+    <a href="https://crates.io/crates/fuel-core/0.21.0" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.21.0-yellow" />
     </a>
     <a href="https://crates.io/crates/fuels/0.50.1" alt="forc">
         <img src="https://img.shields.io/badge/fuels-v0.50.1-blue" />
