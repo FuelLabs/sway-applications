@@ -53,10 +53,10 @@ storage {
     /// Set to the value of the configurable `THRESHOLD`.
     threshold: u64 = 0,
     /// Number of approvals per user.
-    //
     /// # Additional Information
     ///
     /// Maps (user => weight).
+    //
     weighting: StorageMap<b256, u64> = StorageMap {},
 }
 
@@ -125,11 +125,7 @@ impl MultiSignatureWallet for Contract {
                     );
                 }
 
-                let transaction_hash = compute_hash(
-                    TypeToHash::Transaction(
-                        Transaction::new(contract_id(), nonce, target, transaction_parameters),
-                    ),
-                );
+                let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_id(), nonce, target, transaction_parameters)));
                 let approval_count = count_approvals(signatures, transaction_hash);
                 require(
                     storage
@@ -169,11 +165,7 @@ impl MultiSignatureWallet for Contract {
                     ExecutionError::InsufficientAssetAmount,
                 );
 
-                let transaction_hash = compute_hash(
-                    TypeToHash::Transaction(
-                        Transaction::new(contract_id(), nonce, target, transaction_parameters),
-                    ),
-                );
+                let transaction_hash = compute_hash(TypeToHash::Transaction(Transaction::new(contract_id(), nonce, target, transaction_parameters)));
                 let approval_count = count_approvals(signatures, transaction_hash);
                 require(
                     storage
@@ -205,9 +197,7 @@ impl MultiSignatureWallet for Contract {
             InitError::TotalWeightCannotBeLessThanThreshold,
         );
 
-        let transaction_hash = compute_hash(
-            TypeToHash::Threshold(Threshold::new(contract_id(), nonce, threshold)),
-        );
+        let transaction_hash = compute_hash(TypeToHash::Threshold(Threshold::new(contract_id(), nonce, threshold)));
         let approval_count = count_approvals(signatures, transaction_hash);
 
         let previous_threshold = storage.threshold.read();
