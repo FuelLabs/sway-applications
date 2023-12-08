@@ -10,7 +10,7 @@ use crate::utils::{
 };
 use fuels::{
     accounts::{fuel_crypto::Message, Account},
-    prelude::{TxParameters, BASE_ASSET_ID},
+    prelude::{TxPolicies, BASE_ASSET_ID},
 };
 
 mod success {
@@ -38,7 +38,7 @@ mod success {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();
@@ -184,7 +184,7 @@ mod success {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();
@@ -407,7 +407,7 @@ mod revert {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();
@@ -451,7 +451,7 @@ mod revert {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();

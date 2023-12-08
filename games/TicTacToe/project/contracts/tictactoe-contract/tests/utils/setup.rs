@@ -2,7 +2,7 @@ use fuels::{
     accounts::wallet::WalletUnlocked,
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Contract, LoadConfiguration,
-        StorageConfiguration, TxParameters, WalletsConfig,
+        StorageConfiguration, TxPolicies, WalletsConfig,
     },
     types::Identity,
 };
@@ -31,7 +31,7 @@ pub(crate) async fn setup() -> (Player, Player) {
         Some(amount_per_coin),
     );
 
-    let mut wallets = launch_custom_provider_and_get_wallets(config, None, None).await;
+    let mut wallets = launch_custom_provider_and_get_wallets(config, None, None).await.unwrap();
 
     let player_one_wallet = wallets.pop().unwrap();
     let player_two_wallet = wallets.pop().unwrap();
@@ -43,7 +43,7 @@ pub(crate) async fn setup() -> (Player, Player) {
 
     let contract_id = Contract::load_from(TICTACTOE_CONTRACT_BINARY_PATH, contract_configuration)
         .unwrap()
-        .deploy(&player_one_wallet, TxParameters::default())
+        .deploy(&player_one_wallet, TxPolicies::default())
         .await
         .unwrap();
 
