@@ -31,7 +31,9 @@ pub(crate) async fn setup() -> (Player, Player) {
         Some(amount_per_coin),
     );
 
-    let mut wallets = launch_custom_provider_and_get_wallets(config, None, None).await.unwrap();
+    let mut wallets = launch_custom_provider_and_get_wallets(config, None, None)
+        .await
+        .unwrap();
 
     let player_one_wallet = wallets.pop().unwrap();
     let player_two_wallet = wallets.pop().unwrap();
