@@ -50,7 +50,7 @@ If you are interested in a functional overview then this is the section for you.
 
 ### `withdraw()`
 
-1. Allows a user to withdraw their owed assests for an auction if:
+1. Allows a user to withdraw their owed assets for an auction if:
     1. The auction has passed the deadline, been cancelled, or the reserve has been met
     2. They are the seller or have placed a bid
     3. They have an outstanding balance

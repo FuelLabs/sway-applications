@@ -71,4 +71,4 @@ This function will mint new tokens using a sub-identifier.
 
 ### `burn()`
 
-This function will burns tokens with the given sub-identifier.
+This function will burn tokens with the given sub-identifier.

@@ -60,7 +60,7 @@ If there is an issue that the pull request is working off of then it's a good pr
 
 For example, issue number `123` would be referenced in the description as `closes #123`.
 
-Additionally, referencing the issue that the pull request is based on allows the reviewer to easily click on the link which will take them to the issue. This makes it easy to see the problem in detail and any discussion that occured.
+Additionally, referencing the issue that the pull request is based on allows the reviewer to easily click on the link which will take them to the issue. This makes it easy to see the problem in detail and any discussion that occurred.
 
 ### Merging the Pull Request
 
