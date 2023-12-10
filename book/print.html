@@ -162,7 +162,7 @@ The following sections provide a quickstart guide for navigating the issues in t
 <h2 id="issue-summary"><a class="header" href="#issue-summary"><a href="documentation/issues/search/./summary.html">Issue summary</a></a></h2>
 <p>Each issue should have a description which provides context into the problem and what may be done to resolve it. </p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="filtering-by-label-1"><a class="header" href="#filtering-by-label-1">Filtering by label</a></h1>
-<p>The default issues tab shows all of the issues that are currently open. GitHub already provides various search queries that can be made using the search bar however an easier way is to use the labels that the authors have provided to quickly filter for the relevant issues such as bugs, improvements, documentation, etc.</p>
+<p>The default issues tab shows all of the issues that are currently open. GitHub already provides various search queries that can be made using the search bar. However an easier way is to use the labels that the authors have provided to quickly filter for the relevant issues such as bugs, improvements, documentation, etc.</p>
 <p>Under the <code>Label</code> tab you can select any number of labels and any issue that matches those labels will be shown while the other issues will be hidden.</p>
 <p><img src="documentation/issues/search/../../../images/filter-dropdown.png" alt="Filter by label image" /></p>
 <br>
@@ -448,7 +448,7 @@ pub struct Item2 {
 <p>Using a single character to name a variable conveys little to no information to a developer.</p>
 <ul>
 <li>Is this a throw away variable?</li>
-<li>What is the variable meant to represent where ever it is used?</li>
+<li>What is the variable meant to represent wherever it is used?</li>
 <li>Does it make sense to call it by the chosen character e.g. <code>x</code> when referring to formulas?</li>
 </ul>
 <h3 id="ambiguous-abbreviations"><a class="header" href="#ambiguous-abbreviations">Ambiguous Abbreviations</a></h3>
@@ -533,7 +533,7 @@ pub struct Item2 {
 <h2 id="harnessrs"><a class="header" href="#harnessrs"><code>harness.rs</code></a></h2>
 <p>The <code>harness</code> file is the entry point for the tests, and thus it contains the <code>functions</code> and <code>utils</code> modules. This is what is executed when <code>cargo test</code> is run.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="pull-requests"><a class="header" href="#pull-requests">Pull Requests</a></h1>
-<p>A pull request is a term used to identify when a piece of work is ready to be pulled into and merged with another piece of work. This funtionality is especially useful when collaborating with others because it allows a review process to take place.</p>
+<p>A pull request is a term used to identify when a piece of work is ready to be pulled into and merged with another piece of work. This functionality is especially useful when collaborating with others because it allows a review process to take place.</p>
 <p>In order to create a high quality pull request there are a couple areas that need to be considered:</p>
 <ul>
 <li><a href="documentation/pull-requests/commit.html">Committing your work</a>
@@ -634,7 +634,7 @@ pub struct Item2 {
 <h3 id="the-issues"><a class="header" href="#the-issues">The Issues</a></h3>
 <p>If there is an issue that the pull request is working off of then it's a good practice to reference that issue so that it gets closed automatically when the pull request is merged. This can be done via the user interface or by reference in the description using a <a href="https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue">closing keyword</a>.</p>
 <p>For example, issue number <code>123</code> would be referenced in the description as <code>closes #123</code>.</p>
-<p>Additionally, referencing the issue that the pull request is based on allows the reviewer to easily click on the link which will take them to the issue. This makes it easy to see the problem in detail and any discussion that occured.</p>
+<p>Additionally, referencing the issue that the pull request is based on allows the reviewer to easily click on the link which will take them to the issue. This makes it easy to see the problem in detail and any discussion that occurred.</p>
 <h3 id="merging-the-pull-request"><a class="header" href="#merging-the-pull-request">Merging the Pull Request</a></h3>
 <p>Once the request has received enough approvals from the authors then either the authors or the contributor may merge the work in. When attempting to merge there may be an option to <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#squash-and-merge-your-commits">squash</a> the commits. It's a good idea to delete the previous commits in the optional description so that a single message summarizes the entire work that has been done. This makes it easier to parse the commit history.</p>
 
