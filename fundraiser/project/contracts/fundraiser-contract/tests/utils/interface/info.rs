@@ -1,6 +1,6 @@
 use crate::utils::setup::{AssetInfo, Campaign, CampaignInfo, Fundraiser, Pledge};
 use fuels::{
-    prelude::{ContractId, WalletUnlocked},
+    prelude::{AssetId, WalletUnlocked},
     programs::call_response::FuelCallResponse,
     types::Identity,
 };
@@ -11,7 +11,7 @@ pub(crate) async fn asset_count(contract: &Fundraiser<WalletUnlocked>) -> u64 {
 
 pub(crate) async fn asset_info_by_id(
     contract: &Fundraiser<WalletUnlocked>,
-    asset: &ContractId,
+    asset: &AssetId,
 ) -> FuelCallResponse<Option<AssetInfo>> {
     contract
         .methods()
