@@ -1,8 +1,7 @@
 use crate::utils::{
-    interface::core::{airdrop_constructor, asset_constructor, claim, mint_to},
+    interface::core::{airdrop_constructor, claim},
     setup::{build_tree, build_tree_manual, defaults, get_wallet_balance, setup},
 };
-use fuels::prelude::AssetId;
 
 mod success {
 
@@ -14,7 +13,7 @@ mod success {
 
     #[tokio::test]
     async fn claims() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
         let (
             identity_a,
             _,
@@ -26,17 +25,15 @@ mod success {
             airdrop_leaves,
             claim_time,
             _,
+            original_balance,
         ) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.to_vec()).await;
 
-        asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
-        mint_to(asset_supply, &asset.asset, minter.clone()).await;
-
         airdrop_constructor(
             minter,
             asset_supply,
-            asset.asset_id,
+            asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
@@ -45,8 +42,8 @@ mod success {
         .await;
 
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            0
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance
         );
         assert_eq!(
             claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone()).await,
@@ -74,8 +71,8 @@ mod success {
             }
         );
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            airdrop_leaves[key as usize].1
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance + airdrop_leaves[key as usize].1
         );
         assert_eq!(
             claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone()).await,
@@ -85,7 +82,7 @@ mod success {
 
     #[tokio::test]
     async fn claims_to_different_wallet() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
         let (
             identity_a,
             identity_b,
@@ -97,17 +94,15 @@ mod success {
             airdrop_leaves,
             claim_time,
             _,
+            original_balance,
         ) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.to_vec()).await;
 
-        asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
-        mint_to(asset_supply, &asset.asset, minter.clone()).await;
-
         airdrop_constructor(
             minter,
             asset_supply,
-            asset.asset_id,
+            asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
@@ -116,12 +111,12 @@ mod success {
         .await;
 
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            0
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance
         );
         assert_eq!(
-            get_wallet_balance(&wallet2.wallet, &AssetId::new(*asset.asset_id)).await,
-            0
+            get_wallet_balance(&wallet2.wallet, &asset_id).await,
+            original_balance
         );
         assert_eq!(
             claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone()).await,
@@ -153,12 +148,12 @@ mod success {
             }
         );
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            0
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance
         );
         assert_eq!(
-            get_wallet_balance(&wallet2.wallet, &AssetId::new(*asset.asset_id)).await,
-            airdrop_leaves[key as usize].1
+            get_wallet_balance(&wallet2.wallet, &asset_id).await,
+            original_balance + airdrop_leaves[key as usize].1
         );
         assert_eq!(
             claim_data(&deploy_wallet.airdrop_distributor, identity_a.clone()).await,
@@ -172,19 +167,27 @@ mod success {
 
     #[tokio::test]
     async fn claims_manual_tree() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, depth) =
-            defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
+        let (
+            _,
+            _,
+            _,
+            minter,
+            key,
+            num_leaves,
+            asset_supply,
+            airdrop_leaves,
+            claim_time,
+            depth,
+            original_balance,
+        ) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_leaf, proof, root) = build_tree_manual(airdrop_leaves.clone(), depth, key).await;
-
-        asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
-        mint_to(asset_supply, &asset.asset, minter.clone()).await;
 
         airdrop_constructor(
             minter,
             asset_supply,
-            asset.asset_id,
+            asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
@@ -193,8 +196,8 @@ mod success {
         .await;
 
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            0
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance
         );
         assert_eq!(
             claim_data(
@@ -226,8 +229,8 @@ mod success {
             }
         );
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            airdrop_leaves[key as usize].1
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance + airdrop_leaves[key as usize].1
         );
         assert_eq!(
             claim_data(
@@ -241,9 +244,20 @@ mod success {
 
     #[tokio::test]
     async fn claims_manual_tree_2_depth() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (identity_a, identity_b, identity_c, minter, key, _, asset_supply, _, claim_time, _) =
-            defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
+        let (
+            identity_a,
+            identity_b,
+            identity_c,
+            minter,
+            key,
+            _,
+            asset_supply,
+            _,
+            claim_time,
+            _,
+            original_balance,
+        ) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let identity_vec: Vec<Identity> =
             vec![identity_a.clone(), identity_b.clone(), identity_c.clone()];
@@ -253,13 +267,10 @@ mod success {
         let num_leaves = airdrop_leaves.len().try_into().unwrap();
         let (_leaf, proof, root) = build_tree_manual(airdrop_leaves.clone(), depth, key).await;
 
-        asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
-        mint_to(asset_supply, &asset.asset, minter.clone()).await;
-
         airdrop_constructor(
             minter,
             asset_supply,
-            asset.asset_id,
+            asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
@@ -268,8 +279,8 @@ mod success {
         .await;
 
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            0
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance
         );
         assert_eq!(
             claim_data(
@@ -300,8 +311,8 @@ mod success {
             }
         );
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            airdrop_leaves[key as usize].1
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance + airdrop_leaves[key as usize].1
         );
         assert_eq!(
             claim_data(
@@ -315,9 +326,20 @@ mod success {
 
     #[tokio::test]
     async fn claims_manual_tree_16_depth() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (identity_a, identity_b, identity_c, minter, key, _, asset_supply, _, claim_time, _) =
-            defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
+        let (
+            identity_a,
+            identity_b,
+            identity_c,
+            minter,
+            key,
+            _,
+            asset_supply,
+            _,
+            claim_time,
+            _,
+            original_balance,
+        ) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let identity_vec: Vec<Identity> =
             vec![identity_a.clone(), identity_b.clone(), identity_c.clone()];
@@ -327,13 +349,10 @@ mod success {
         let num_leaves = airdrop_leaves.len().try_into().unwrap();
         let (_leaf, proof, root) = build_tree_manual(airdrop_leaves.clone(), depth, key).await;
 
-        asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
-        mint_to(asset_supply, &asset.asset, minter.clone()).await;
-
         airdrop_constructor(
             minter,
             asset_supply,
-            asset.asset_id,
+            asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
@@ -342,8 +361,8 @@ mod success {
         .await;
 
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            0
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance
         );
         assert_eq!(
             claim_data(
@@ -374,8 +393,8 @@ mod success {
             }
         );
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            airdrop_leaves[key as usize].1
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance + airdrop_leaves[key as usize].1
         );
         assert_eq!(
             claim_data(
@@ -395,20 +414,17 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "ClaimPeriodNotActive")]
     async fn after_claim_period() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, _) =
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
+        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, _, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.clone()).await;
         let provider = deploy_wallet.wallet.provider().unwrap();
 
-        asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
-        mint_to(asset_supply, &asset.asset, minter.clone()).await;
-
         airdrop_constructor(
             minter,
             asset_supply,
-            asset.asset_id,
+            asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
@@ -431,19 +447,16 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "UserAlreadyClaimed")]
     async fn when_claim_twice() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, _) =
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
+        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, _, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.clone()).await;
 
-        asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
-        mint_to(asset_supply, &asset.asset, minter.clone()).await;
-
         airdrop_constructor(
             minter,
             asset_supply,
-            asset.asset_id,
+            asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
@@ -473,19 +486,27 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "UserAlreadyClaimed")]
     async fn when_claim_twice_manual_tree() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, depth) =
-            defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
+        let (
+            _,
+            _,
+            _,
+            minter,
+            key,
+            num_leaves,
+            asset_supply,
+            airdrop_leaves,
+            claim_time,
+            depth,
+            original_balance,
+        ) = defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_, proof, root) = build_tree_manual(airdrop_leaves.clone(), depth, key).await;
-
-        asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
-        mint_to(asset_supply, &asset.asset, minter.clone()).await;
 
         airdrop_constructor(
             minter,
             asset_supply,
-            asset.asset_id,
+            asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
@@ -494,8 +515,8 @@ mod revert {
         .await;
 
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            0
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance
         );
 
         claim(
@@ -508,8 +529,8 @@ mod revert {
         .await;
 
         assert_eq!(
-            get_wallet_balance(&wallet1.wallet, &AssetId::new(*asset.asset_id)).await,
-            airdrop_leaves[key as usize].1
+            get_wallet_balance(&wallet1.wallet, &asset_id).await,
+            original_balance + airdrop_leaves[key as usize].1
         );
 
         claim(
@@ -525,19 +546,16 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "MerkleProofFailed")]
     async fn when_failed_merkle_verification() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, _) =
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
+        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, _, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_tree, root, _leaf, proof) = build_tree(key, airdrop_leaves.clone()).await;
 
-        asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
-        mint_to(asset_supply, &asset.asset, minter.clone()).await;
-
         airdrop_constructor(
             minter,
             asset_supply,
-            asset.asset_id,
+            asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
@@ -559,19 +577,16 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "MerkleProofFailed")]
     async fn when_failed_merkle_verification_manual_tree() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, depth) =
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
+        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, depth, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_, proof, root) = build_tree_manual(airdrop_leaves.clone(), depth, key).await;
 
-        asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
-        mint_to(asset_supply, &asset.asset, minter.clone()).await;
-
         airdrop_constructor(
             minter,
             asset_supply,
-            asset.asset_id,
+            asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,
@@ -594,7 +609,7 @@ mod revert {
     #[should_panic(expected = "ClaimPeriodNotActive")]
     async fn when_not_initalized() {
         let (deploy_wallet, wallet1, wallet2, wallet3, _) = setup().await;
-        let (_, _, _, _minter, key, _, _, airdrop_leaves, _, _) =
+        let (_, _, _, _minter, key, _, _, airdrop_leaves, _, _, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_tree, _root, _leaf, proof) = build_tree(key, airdrop_leaves.clone()).await;
@@ -612,19 +627,16 @@ mod revert {
     #[tokio::test]
     #[should_panic(expected = "NotEnoughTokens")]
     async fn when_not_enough_tokens_to_claim() {
-        let (deploy_wallet, wallet1, wallet2, wallet3, asset) = setup().await;
-        let (_, _, _, minter, key, num_leaves, asset_supply, airdrop_leaves, claim_time, _) =
+        let (deploy_wallet, wallet1, wallet2, wallet3, asset_id) = setup().await;
+        let (_, _, _, minter, key, num_leaves, _asset_supply, airdrop_leaves, claim_time, _, _) =
             defaults(&deploy_wallet, &wallet1, &wallet2, &wallet3).await;
 
         let (_tree, root, _leaf, proof) = build_tree(key + 1, airdrop_leaves.clone()).await;
 
-        asset_constructor(asset_supply, &asset.asset, minter.clone()).await;
-        mint_to(asset_supply, &asset.asset, minter.clone()).await;
-
         airdrop_constructor(
             minter,
             1,
-            asset.asset_id,
+            asset_id,
             claim_time,
             &deploy_wallet.airdrop_distributor,
             root,

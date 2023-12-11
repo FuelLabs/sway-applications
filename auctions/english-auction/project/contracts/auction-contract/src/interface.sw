@@ -1,6 +1,6 @@
 library;
 
-use ::data_structures::{auction::Auction, auction_asset::AuctionAsset};
+use ::data_structures::auction::Auction;
 
 abi EnglishAuction {
     /// Places a bid on the specified auction.
@@ -8,7 +8,6 @@ abi EnglishAuction {
     /// # Arguments
     ///
     /// * `auction_id`: [u64] - The id number of the auction.
-    /// * `bid_asset`: [AuctionAsset] - An asset that is either a `TokenAsset` struct or a `NFTAsset` struct.
     ///
     /// # Reverts
     ///
@@ -25,7 +24,7 @@ abi EnglishAuction {
     /// * When the bidder's total deposits are greater than the reserve price.
     #[payable]
     #[storage(read, write)]
-    fn bid(auction_id: u64, bid_asset: AuctionAsset);
+    fn bid(auction_id: u64);
 
     /// Cancels the specified auction.
     ///
@@ -49,12 +48,11 @@ abi EnglishAuction {
     ///
     /// # Arguments
     ///
-    /// `bid_asset`: [AuctionAsset] - The asset the seller is willing to accept in return for the selling asset.
-    /// `duration`: [u64] - The duration of time the auction should be open.
+    /// `bid_asset`: [AssetId] - The asset the seller is willing to accept in return for the selling asset.
+    /// `duration`: [u32] - The duration of time the auction should be open.
     /// `initial_price`: [u64] - The starting price at which the auction should start.
     /// `reserve_price`: [Option<u64>] - The price at which a buyer may purchase the `sell_asset` outright.
     /// `seller`: [Identity] - The seller for this auction.
-    /// `sell_asset`: [AuctionAsset] - The enum that contains information about what is being auctioned off.
     ///
     /// # Returns
     ///
@@ -72,7 +70,13 @@ abi EnglishAuction {
     /// * When transfering of the NFT asset to the contract failed.
     #[payable]
     #[storage(read, write)]
-    fn create(bid_asset: AuctionAsset, duration: u64, inital_price: u64, reserve_price: Option<u64>, seller: Identity, sell_asset: AuctionAsset) -> u64;
+    fn create(
+        bid_asset: AssetId,
+        duration: u32,
+        inital_price: u64,
+        reserve_price: Option<u64>,
+        seller: Identity,
+    ) -> u64;
 
     /// Allows users to withdraw their owed assets if the auction's bid period has ended, the
     /// reserve has been met, or the auction has been canceled.
@@ -115,6 +119,11 @@ abi Info {
 
     /// Returns the balance of the user's deposits for the specified auction.
     ///
+    /// # Additional Information
+    ///
+    /// This amount will represent the bidding asset amount for bidders and the
+    /// selling asset for the seller.
+    ///
     /// # Arguments
     ///
     /// * `auction_id`: [u64] - The id number of the auction.
@@ -122,9 +131,9 @@ abi Info {
     ///
     /// # Returns
     ///
-    /// * [Option<AuctionAsset>] - The amount of assets the user has deposited.
+    /// * [Option<u64>] - The amount of assets the user has deposited for that auction.
     #[storage(read)]
-    fn deposit_balance(auction_id: u64, identity: Identity) -> Option<AuctionAsset>;
+    fn deposit_balance(auction_id: u64, identity: Identity) -> Option<u64>;
 
     /// Returns the total auctions which have been started using this auction contract.
     ///
