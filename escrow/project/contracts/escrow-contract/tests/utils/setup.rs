@@ -1,9 +1,9 @@
 use fuels::{
     accounts::ViewOnlyAccount,
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Address, AssetConfig, AssetId,
-        Contract, LoadConfiguration, StorageConfiguration, TxPolicies,
-        WalletUnlocked, WalletsConfig, BASE_ASSET_ID,
+        abigen, launch_custom_provider_and_get_wallets, Address, AssetConfig, AssetId, Contract,
+        LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked, WalletsConfig,
+        BASE_ASSET_ID,
     },
     types::Identity,
 };
@@ -30,11 +30,7 @@ pub(crate) struct User {
 }
 
 pub(crate) async fn asset_amount(asset: &AssetId, user: &User) -> u64 {
-    user.wallet
-        .clone()
-        .get_asset_balance(asset)
-        .await
-        .unwrap()
+    user.wallet.clone().get_asset_balance(asset).await.unwrap()
 }
 
 pub(crate) async fn create_arbiter(user: &User, asset: AssetId, fee_amount: u64) -> Arbiter {
@@ -109,8 +105,9 @@ pub(crate) async fn setup() -> (User, User, User, Defaults) {
 
     let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
 
-    let mut wallets =
-        launch_custom_provider_and_get_wallets(wallet_config, None, None).await.unwrap();
+    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None)
+        .await
+        .unwrap();
 
     let deployer_wallet = wallets.pop().unwrap();
     let arbiter_wallet = wallets.pop().unwrap();

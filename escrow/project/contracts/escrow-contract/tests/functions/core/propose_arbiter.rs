@@ -2,7 +2,10 @@ use crate::utils::{
     interface::core::{create_escrow, deposit, propose_arbiter},
     setup::{create_arbiter, create_asset, setup},
 };
-use fuels::{programs::call_utils::TxDependencyExtension, prelude::{AssetId, CallParameters, TxPolicies}};
+use fuels::{
+    prelude::{AssetId, CallParameters, TxPolicies},
+    programs::call_utils::TxDependencyExtension,
+};
 
 mod success {
 

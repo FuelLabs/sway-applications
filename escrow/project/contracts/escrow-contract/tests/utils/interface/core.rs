@@ -82,8 +82,7 @@ pub(crate) async fn propose_arbiter(
     identifier: u64,
 ) -> FuelCallResponse<()> {
     let tx_params = TxPolicies::new(Some(0), Some(2_000_000), None, None, None);
-    let call_params =
-        CallParameters::new(arbiter.fee_amount, arbiter.asset, 1_000_000);
+    let call_params = CallParameters::new(arbiter.fee_amount, arbiter.asset, 1_000_000);
 
     caller
         .contract

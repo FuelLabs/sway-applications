@@ -37,7 +37,12 @@ mod success {
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
         provider
-            .produce_blocks(((origin_block as u64) + defaults.deadline).try_into().unwrap(), None)
+            .produce_blocks(
+                ((origin_block as u64) + defaults.deadline)
+                    .try_into()
+                    .unwrap(),
+                None,
+            )
             .await
             .unwrap();
 
@@ -101,7 +106,12 @@ mod success {
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
         provider
-            .produce_blocks(((origin_block as u64) + defaults.deadline).try_into().unwrap(), None)
+            .produce_blocks(
+                ((origin_block as u64) + defaults.deadline)
+                    .try_into()
+                    .unwrap(),
+                None,
+            )
             .await
             .unwrap();
 
@@ -194,7 +204,12 @@ mod success {
         .await;
 
         provider
-            .produce_blocks(((origin_block as u64) + defaults.deadline).try_into().unwrap(), None)
+            .produce_blocks(
+                ((origin_block as u64) + defaults.deadline)
+                    .try_into()
+                    .unwrap(),
+                None,
+            )
             .await
             .unwrap();
 
@@ -330,7 +345,12 @@ mod revert {
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
         provider
-            .produce_blocks(((origin_block as u64) + defaults.deadline).try_into().unwrap(), None)
+            .produce_blocks(
+                ((origin_block as u64) + defaults.deadline)
+                    .try_into()
+                    .unwrap(),
+                None,
+            )
             .await
             .unwrap();
 
@@ -361,7 +381,12 @@ mod revert {
         deposit(defaults.asset_amount, &defaults.asset_id, &buyer, 0).await;
 
         provider
-            .produce_blocks(((origin_block as u64) + defaults.deadline).try_into().unwrap(), None)
+            .produce_blocks(
+                ((origin_block as u64) + defaults.deadline)
+                    .try_into()
+                    .unwrap(),
+                None,
+            )
             .await
             .unwrap();
 
@@ -390,7 +415,12 @@ mod revert {
         .await;
 
         provider
-            .produce_blocks(((origin_block as u64) + defaults.deadline).try_into().unwrap(), None)
+            .produce_blocks(
+                ((origin_block as u64) + defaults.deadline)
+                    .try_into()
+                    .unwrap(),
+                None,
+            )
             .await
             .unwrap();
 
