@@ -1,6 +1,6 @@
 use crate::utils::setup::{DaoVoting, Proposal};
 use fuels::{
-    prelude::{CallParameters, TxParameters, WalletUnlocked},
+    prelude::{CallParameters, TxPolicies, WalletUnlocked},
     programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension},
     types::AssetId,
 };
@@ -30,11 +30,10 @@ pub(crate) async fn deposit(
     contract: &DaoVoting<WalletUnlocked>,
     call_params: CallParameters,
 ) -> FuelCallResponse<()> {
-    let tx_params = TxParameters::new(Some(0), Some(1_000_000), 0);
     contract
         .methods()
         .deposit()
-        .tx_params(tx_params)
+        .with_tx_policies(TxPolicies::default().with_script_gas_limit(1_000_000))
         .call_params(call_params)
         .unwrap()
         .call()

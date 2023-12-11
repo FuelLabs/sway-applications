@@ -9,10 +9,6 @@ Table of Contents
       - [`claim_data()`](#claim_data)
       - [`end_block()`](#end_block)
       - [`merkle_root()`](#merkle_root)
-  - [Simple Asset](#simple-asset)
-    - [Core Functionality](#core-functionality-1)
-      - [`constructor()`](#constructor-1)
-      - [`mint_to()`](#mint_to)
   - [Sequence Diagram](#sequence-diagram)
 
 # Overview
@@ -61,20 +57,6 @@ If you are interested in a functional overview then this is the section for you.
 #### `merkle_root()`
 
 1. Returns the stored merkle root used for claim validation
-
-## Simple Asset 
-
-### Core Functionality
-
-#### `constructor()`
-
-1. Allows the owner to begin minting the asset and requires
-    1. An asset supply be given
-    2. A user that will be authorized to mint
-
-#### `mint_to()`
-
-TODO
 
 ## Sequence Diagram
 

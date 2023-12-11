@@ -23,11 +23,9 @@ use ::utils::create_hash;
 configurable {
     MAXIMUM_DELAY: u64 = 1000,
     MINIMUM_DELAY: u64 = 100,
-    ADMIN: Identity = Identity::Address(
-        Address::from(
-            0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db,
-        ),
-    ),
+    ADMIN: Identity = Identity::Address(Address::from(
+        0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db,
+    )),
 }
 
 storage {

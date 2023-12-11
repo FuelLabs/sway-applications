@@ -2,7 +2,7 @@
 
 Documenting the interface and adding comments is important however the holy grail is writing code that is self-documenting. 
 
-Self-documenting code refers to code that written in such a way that a regular user who has never seen a line of code before could interpret what it is doing.
+Self-documenting code refers to code that is written in such a way that a regular user who has never seen a line of code before could interpret what it is doing.
 
 One of the most difficult aspects of programming is coming up with meaningful names that describe the content without being overly verbose while also not being too concise.
 
@@ -26,11 +26,11 @@ Using a single character to name a variable conveys little to no information to 
 
 - Is this a throw away variable?
 - What is the variable meant to represent where ever it is used?
-- Does it make sense to call it by the chosen character e.g. `x` when referring to forumlas?
+- Does it make sense to call it by the chosen character e.g. `x` when referring to formulas?
 
-### Ambigious Abbreviations
+### Ambiguous Abbreviations
 
-A common mistake is to abbreviate a variable when it does not need to be abbreviated or when the abbreviation may be ambigious.
+A common mistake is to abbreviate a variable when it does not need to be abbreviated or when the abbreviation may be ambiguous.
 
 For example, in the context of an industry that deals with temperature sensors what does the variable `temp` refer to?
 

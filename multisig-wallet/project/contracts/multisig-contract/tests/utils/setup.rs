@@ -6,7 +6,7 @@ use fuels::{
     core::codec::{calldata, fn_selector},
     prelude::{
         abigen, setup_single_asset_coins, setup_test_provider, Address, Contract, Error,
-        LoadConfiguration, StorageConfiguration, TxParameters, BASE_ASSET_ID,
+        LoadConfiguration, StorageConfiguration, TxPolicies, BASE_ASSET_ID,
     },
     tx::Bytes32,
     types::{Bits256, Bytes, Identity, B512},
@@ -74,7 +74,7 @@ pub(crate) async fn deploy_target_contract(
     let target_contract_id =
         Contract::load_from(TARGET_CONTRACT_BINARY_PATH, target_contract_configuration)
             .unwrap()
-            .deploy(&deployer_wallet, TxParameters::default())
+            .deploy(&deployer_wallet, TxPolicies::default())
             .await?;
 
     Ok(TargetContract::new(target_contract_id, deployer_wallet))
@@ -180,7 +180,7 @@ pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, C
     let multisig_contract_id =
         Contract::load_from(MULTISIG_CONTRACT_BINARY_PATH, multisig_configuration)
             .unwrap()
-            .deploy(&deployer_wallet, TxParameters::default())
+            .deploy(&deployer_wallet, TxPolicies::default())
             .await?;
 
     let deployer = Caller {

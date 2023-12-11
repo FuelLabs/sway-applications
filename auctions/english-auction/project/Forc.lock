@@ -1,29 +1,13 @@
 [[package]]
-name = 'NFT'
-source = 'member'
-dependencies = [
-    'nft',
-    'std',
-]
+name = "auction-contract"
+source = "member"
+dependencies = ["std"]
 
 [[package]]
-name = 'auction-contract'
-source = 'member'
-dependencies = [
-    'nft',
-    'std',
-]
+name = "core"
+source = "path+from-root-B77DA2F383183718"
 
 [[package]]
-name = 'core'
-source = 'path+from-root-9BFE6D5D0CBDF740'
-
-[[package]]
-name = 'nft'
-source = 'git+https://github.com/FuelLabs/sway-libs?tag=v0.12.0#063f118a3104adb6a04207ca877993b5ad03a492'
-dependencies = ['std']
-
-[[package]]
-name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.42.1#3b66f8e424bd21e3ba467783b10b36e808cfa6ee'
-dependencies = ['core']
+name = "std"
+source = "git+https://github.com/fuellabs/sway?tag=v0.48.1#6886ef050ce62afd3fe3186ed562fd33bd76bffa"
+dependencies = ["core"]
