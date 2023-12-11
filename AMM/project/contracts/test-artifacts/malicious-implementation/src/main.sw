@@ -25,7 +25,9 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn constructor(asset_a: AssetId, asset_b: AssetId) {
-        storage.pair.write(Option::Some(AssetPair::new(Asset::new(asset_a, 0), Asset::new(asset_b, 0))));
+        storage
+            .pair
+            .write(Option::Some(AssetPair::new(Asset::new(asset_a, 0), Asset::new(asset_b, 0))));
     }
 
     #[payable, storage(read, write)]

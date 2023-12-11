@@ -40,12 +40,7 @@ async fn when_pair_exchange_not_registered() {
     route.insert(0, not_registered_asset_id);
 
     script_instance
-        .main(
-            route,
-            input_amount,
-            None,
-            deadline,
-        )
+        .main(route, input_amount, None, deadline)
         .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)

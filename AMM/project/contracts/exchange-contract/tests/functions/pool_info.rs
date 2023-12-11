@@ -29,29 +29,17 @@ mod success {
 
         let final_pool_info = pool_info(&exchange.instance).await;
 
-        assert_eq!(
-            initial_pool_info.reserves.a.id,
-            exchange.pair.0
-        );
+        assert_eq!(initial_pool_info.reserves.a.id, exchange.pair.0);
         assert_eq!(initial_pool_info.reserves.a.amount, 0);
-        assert_eq!(
-            initial_pool_info.reserves.b.id,
-            exchange.pair.1
-        );
+        assert_eq!(initial_pool_info.reserves.b.id, exchange.pair.1);
         assert_eq!(initial_pool_info.reserves.b.amount, 0);
         assert_eq!(initial_pool_info.liquidity, 0);
-        assert_eq!(
-            final_pool_info.reserves.a.id,
-            exchange.pair.0
-        );
+        assert_eq!(final_pool_info.reserves.a.id, exchange.pair.0);
         assert_eq!(
             final_pool_info.reserves.a.amount,
             liquidity_parameters.amounts.0
         );
-        assert_eq!(
-            final_pool_info.reserves.b.id,
-            exchange.pair.1
-        );
+        assert_eq!(final_pool_info.reserves.b.id, exchange.pair.1);
         assert_eq!(
             final_pool_info.reserves.b.amount,
             liquidity_parameters.amounts.1

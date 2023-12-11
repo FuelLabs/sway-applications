@@ -35,10 +35,12 @@ pub fn maximum_input_for_exact_output(
 ) -> u64 {
     assert(input_reserve > 0 && output_reserve > 0);
     let numerator = U128::from((0, input_reserve)) * U128::from((0, output_amount));
-    let denominator = U128::from((
-        0,
-        calculate_amount_with_fee(output_reserve - output_amount, liquidity_miner_fee),
-    ));
+    let denominator = U128::from(
+        (
+            0,
+            calculate_amount_with_fee(output_reserve - output_amount, liquidity_miner_fee),
+        ),
+    );
     let result_wrapped = (numerator / denominator).as_u64();
 
     if denominator > numerator {
@@ -115,7 +117,12 @@ pub fn proportional_value(b: u64, c: u64, a: u64) -> u64 {
 pub fn determine_assets(input_asset_id: AssetId, pair: Option<AssetPair>) -> (Asset, Asset) {
     require(pair.is_some(), InitError::AssetPairNotSet);
     let pair = pair.unwrap();
-    require(input_asset_id == pair.a.id || input_asset_id == pair.b.id, InputError::InvalidAsset);
+    require(
+        input_asset_id == pair.a
+            .id || input_asset_id == pair.b
+            .id,
+        InputError::InvalidAsset,
+    );
     (
         pair.this_asset(input_asset_id),
         pair.other_asset(input_asset_id),

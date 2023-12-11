@@ -54,12 +54,7 @@ pub async fn expected_and_actual_output(swap_parameters: SwapParameters) -> Swap
     };
 
     let actual = script_instance
-        .main(
-            route,
-            swap_parameters.amount,
-            expected,
-            deadline,
-        )
+        .main(route, swap_parameters.amount, expected, deadline)
         .with_contracts(&contract_instances(&amm))
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)

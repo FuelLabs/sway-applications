@@ -62,9 +62,15 @@ fn main(
         );
 
         // get the exchange contract id of asset pair.
-        let exchange_contract_id = amm_contract.pool { gas: 100_000 }(asset_pair);
+        let exchange_contract_id = amm_contract.pool {
+            gas: 100_000,
+        }(asset_pair);
 
-        require(exchange_contract_id.is_some(), SwapError::PairExchangeNotRegistered(asset_pair));
+        require(
+            exchange_contract_id
+                .is_some(),
+            SwapError::PairExchangeNotRegistered(asset_pair),
+        );
 
         let exchange_contract = abi(Exchange, exchange_contract_id.unwrap().into());
 
@@ -72,16 +78,20 @@ fn main(
         let sell_amount = preview.other_asset.amount;
 
         // swap by specifying the exact amount to buy.
-        latest_sold = exchange_contract.swap_exact_output {
-            gas: 10_000_000,
-            coins: sell_amount, // forward coins of asset to sell.
-            asset_id: asset_pair.0.into(), // identifier of asset to sell.
-        }(latest_sold, deadline);
+        latest_sold = exchange_contract
+            .swap_exact_output {
+                gas: 10_000_000,
+                coins: sell_amount, // forward coins of asset to sell.
+                asset_id: asset_pair.0.into(), // identifier of asset to sell.
+            }(latest_sold, deadline);
 
         bought_asset_index -= 1;
     }
 
-    require(latest_sold <= maximum_input_amount, SwapError::ExcessiveSlippage(latest_sold));
+    require(
+        latest_sold <= maximum_input_amount,
+        SwapError::ExcessiveSlippage(latest_sold),
+    );
 
     latest_sold
 }

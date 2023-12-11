@@ -7,7 +7,10 @@ use test_utils::{
 mod success {
     use super::*;
     use crate::utils::{contract_balances, wallet_balances};
-    use fuels::{prelude::ContractId, tx::{ContractIdExt, Bytes32}};
+    use fuels::{
+        prelude::ContractId,
+        tx::{Bytes32, ContractIdExt},
+    };
     use test_utils::{
         interface::{
             exchange::{deposit, pool_info},

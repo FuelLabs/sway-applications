@@ -66,8 +66,15 @@ impl Exchange for Contract {
     #[storage(read, write)]
     fn add_liquidity(desired_liquidity: u64, deadline: u64) -> u64 {
         require(storage.pair.read().is_some(), InitError::AssetPairNotSet);
-        require(deadline > height().as_u64(), InputError::DeadlinePassed(deadline));
-        require(MINIMUM_LIQUIDITY <= desired_liquidity, InputError::CannotAddLessThanMinimumLiquidity(desired_liquidity));
+        require(
+            deadline > height()
+                .as_u64(),
+            InputError::DeadlinePassed(deadline),
+        );
+        require(
+            MINIMUM_LIQUIDITY <= desired_liquidity,
+            InputError::CannotAddLessThanMinimumLiquidity(desired_liquidity),
+        );
 
         let sender = msg_sender().unwrap();
         let reserves = storage.pair.read().unwrap();
@@ -76,11 +83,24 @@ impl Exchange for Contract {
             storage.deposits.get((sender, reserves.a.id)).try_read().unwrap_or(0),
             storage.deposits.get((sender, reserves.b.id)).try_read().unwrap_or(0),
         );
-        let deposits = AssetPair::new(Asset::new(reserves.a.id, deposit_a), Asset::new(reserves.b.id, deposit_b));
+        let deposits = AssetPair::new(
+            Asset::new(reserves.a.id, deposit_a),
+            Asset::new(reserves.b.id, deposit_b),
+        );
 
         // checking this because this will either result in a math error or adding no liquidity at all.
-        require(deposits.a.amount != 0, TransactionError::ExpectedNonZeroDeposit(deposits.a.id));
-        require(deposits.b.amount != 0, TransactionError::ExpectedNonZeroDeposit(deposits.b.id));
+        require(
+            deposits
+                .a
+                .amount != 0,
+            TransactionError::ExpectedNonZeroDeposit(deposits.a.id),
+        );
+        require(
+            deposits
+                .b
+                .amount != 0,
+            TransactionError::ExpectedNonZeroDeposit(deposits.b.id),
+        );
 
         let total_liquidity = storage.liquidity_pool_supply.read();
 
@@ -90,8 +110,16 @@ impl Exchange for Contract {
         // adding liquidity for the first time
         // use up all the deposited amounts of assets to determine the ratio.
         if reserves.a.amount == 0 && reserves.b.amount == 0 {
-            added_liquidity = (deposits.a.amount * deposits.b.amount).sqrt();
-            require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
+            added_liquidity = (deposits
+                .a
+                .amount * deposits
+                .b
+                .amount)
+                .sqrt();
+            require(
+                desired_liquidity <= added_liquidity,
+                TransactionError::DesiredAmountTooHigh(desired_liquidity),
+            );
             added_assets.a.amount = deposits.a.amount;
             added_assets.b.amount = deposits.b.amount;
 
@@ -109,13 +137,19 @@ impl Exchange for Contract {
             // continue adding based on asset A if deposited asset B amount is sufficient.
             if b_to_attempt <= deposits.b.amount {
                 added_liquidity = proportional_value(b_to_attempt, total_liquidity, reserves.b.amount);
-                require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
+                require(
+                    desired_liquidity <= added_liquidity,
+                    TransactionError::DesiredAmountTooHigh(desired_liquidity),
+                );
                 added_assets.a.amount = deposits.a.amount;
                 added_assets.b.amount = b_to_attempt;
             } else { // attempt to add liquidity by using up the deposited asset B amount.
                 let a_to_attempt = proportional_value(deposits.b.amount, reserves.a.amount, reserves.b.amount);
                 added_liquidity = proportional_value(a_to_attempt, total_liquidity, reserves.a.amount);
-                require(desired_liquidity <= added_liquidity, TransactionError::DesiredAmountTooHigh(desired_liquidity));
+                require(
+                    desired_liquidity <= added_liquidity,
+                    TransactionError::DesiredAmountTooHigh(desired_liquidity),
+                );
                 added_assets.a.amount = a_to_attempt;
                 added_assets.b.amount = deposits.b.amount;
             }
@@ -125,7 +159,9 @@ impl Exchange for Contract {
 
             // mint liquidity pool asset and transfer to sender.
             mint(ZERO_B256, added_liquidity);
-            storage.liquidity_pool_supply.write(total_liquidity + added_liquidity);
+            storage
+                .liquidity_pool_supply
+                .write(total_liquidity + added_liquidity);
             transfer(sender, AssetId::default(), added_liquidity);
 
             // transfer remaining deposit amounts back to the sender.
@@ -153,10 +189,18 @@ impl Exchange for Contract {
 
     #[storage(read, write)]
     fn constructor(asset_a: AssetId, asset_b: AssetId) {
-        require(storage.pair.read().is_none(), InitError::AssetPairAlreadySet);
+        require(
+            storage
+                .pair
+                .read()
+                .is_none(),
+            InitError::AssetPairAlreadySet,
+        );
         require(asset_a != asset_b, InitError::IdenticalAssets);
 
-        storage.pair.write(Option::Some(AssetPair::new(Asset::new(asset_a, 0), Asset::new(asset_b, 0))));
+        storage
+            .pair
+            .write(Option::Some(AssetPair::new(Asset::new(asset_a, 0), Asset::new(asset_b, 0))));
 
         log(DefineAssetPairEvent {
             asset_a_id: asset_a,
@@ -171,12 +215,27 @@ impl Exchange for Contract {
 
         let deposit_asset = msg_asset_id();
 
-        require(deposit_asset == storage.pair.read().unwrap().a.id || deposit_asset == storage.pair.read().unwrap().b.id, InputError::InvalidAsset);
+        require(
+            deposit_asset == storage
+                .pair
+                .read()
+                .unwrap()
+                .a
+                .id || deposit_asset == storage
+                .pair
+                .read()
+                .unwrap()
+                .b
+                .id,
+            InputError::InvalidAsset,
+        );
 
         let sender = msg_sender().unwrap();
         let amount = msg_amount();
         let new_balance = storage.deposits.get((sender, deposit_asset)).try_read().unwrap_or(0) + amount;
-        storage.deposits.insert((sender, deposit_asset), new_balance);
+        storage
+            .deposits
+            .insert((sender, deposit_asset), new_balance);
 
         log(DepositEvent {
             deposited_asset: Asset::new(deposit_asset, amount),
@@ -194,24 +253,54 @@ impl Exchange for Contract {
 
         let reserves = storage.pair.read().unwrap();
 
-        require(min_asset_a > 0, InputError::ExpectedNonZeroParameter(reserves.a.id));
-        require(min_asset_b > 0, InputError::ExpectedNonZeroParameter(reserves.b.id));
-        require(deadline > height().as_u64(), InputError::DeadlinePassed(deadline));
+        require(
+            min_asset_a > 0,
+            InputError::ExpectedNonZeroParameter(reserves.a.id),
+        );
+        require(
+            min_asset_b > 0,
+            InputError::ExpectedNonZeroParameter(reserves.b.id),
+        );
+        require(
+            deadline > height()
+                .as_u64(),
+            InputError::DeadlinePassed(deadline),
+        );
 
         let burned_liquidity = Asset::new(AssetId::default(), msg_amount());
 
-        require(burned_liquidity.id == msg_asset_id(), InputError::InvalidAsset);
-        require(burned_liquidity.amount > 0, InputError::ExpectedNonZeroAmount(burned_liquidity.id));
+        require(
+            burned_liquidity
+                .id == msg_asset_id(),
+            InputError::InvalidAsset,
+        );
+        require(
+            burned_liquidity
+                .amount > 0,
+            InputError::ExpectedNonZeroAmount(burned_liquidity.id),
+        );
 
         let mut removed_assets = AssetPair::new(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
         removed_assets.a.amount = proportional_value(burned_liquidity.amount, reserves.a.amount, total_liquidity);
         removed_assets.b.amount = proportional_value(burned_liquidity.amount, reserves.b.amount, total_liquidity);
 
-        require(removed_assets.a.amount >= min_asset_a, TransactionError::DesiredAmountTooHigh(min_asset_a));
-        require(removed_assets.b.amount >= min_asset_b, TransactionError::DesiredAmountTooHigh(min_asset_b));
+        require(
+            removed_assets
+                .a
+                .amount >= min_asset_a,
+            TransactionError::DesiredAmountTooHigh(min_asset_a),
+        );
+        require(
+            removed_assets
+                .b
+                .amount >= min_asset_b,
+            TransactionError::DesiredAmountTooHigh(min_asset_b),
+        );
 
         burn(ZERO_B256, burned_liquidity.amount);
-        storage.liquidity_pool_supply.write(total_liquidity - burned_liquidity.amount);
+        storage
+            .liquidity_pool_supply
+            .write(total_liquidity - burned_liquidity.amount);
         storage.pair.write(Option::Some(reserves - removed_assets));
 
         let sender = msg_sender().unwrap();
@@ -232,25 +321,48 @@ impl Exchange for Contract {
     #[payable]
     #[storage(read, write)]
     fn swap_exact_input(min_output: Option<u64>, deadline: u64) -> u64 {
-        require(deadline >= height().as_u64(), InputError::DeadlinePassed(deadline));
+        require(
+            deadline >= height()
+                .as_u64(),
+            InputError::DeadlinePassed(deadline),
+        );
 
         let reserves = storage.pair.read();
         let (mut input_asset, mut output_asset) = determine_assets(msg_asset_id(), reserves);
 
         let exact_input = msg_amount();
-        require(exact_input > 0, InputError::ExpectedNonZeroAmount(input_asset.id));
+        require(
+            exact_input > 0,
+            InputError::ExpectedNonZeroAmount(input_asset.id),
+        );
 
-        let bought = minimum_output_given_exact_input(exact_input, input_asset.amount, output_asset.amount, LIQUIDITY_MINER_FEE);
+        let bought = minimum_output_given_exact_input(
+            exact_input,
+            input_asset
+                .amount,
+            output_asset
+                .amount,
+            LIQUIDITY_MINER_FEE,
+        );
 
         if min_output.is_some() {
-            require(bought >= min_output.unwrap(), TransactionError::DesiredAmountTooHigh(min_output.unwrap()));
+            require(
+                bought >= min_output
+                    .unwrap(),
+                TransactionError::DesiredAmountTooHigh(min_output.unwrap()),
+            );
         }
 
         transfer(msg_sender().unwrap(), output_asset.id, bought);
 
         input_asset.amount = input_asset.amount + exact_input;
         output_asset.amount = output_asset.amount - bought;
-        storage.pair.write(Option::Some(AssetPair::new(input_asset, output_asset).sort(reserves.unwrap())));
+        storage
+            .pair
+            .write(Option::Some(
+                AssetPair::new(input_asset, output_asset)
+                    .sort(reserves.unwrap()),
+            ));
 
         log(SwapEvent {
             input: input_asset,
@@ -266,17 +378,41 @@ impl Exchange for Contract {
         let reserves = storage.pair.read();
         let (mut input_asset, mut output_asset) = determine_assets(msg_asset_id(), reserves);
 
-        require(deadline > height().as_u64(), InputError::DeadlinePassed(deadline));
-        require(output > 0, InputError::ExpectedNonZeroParameter(output_asset.id));
-        require(output <= output_asset.amount, TransactionError::InsufficientReserve(output_asset.id));
+        require(
+            deadline > height()
+                .as_u64(),
+            InputError::DeadlinePassed(deadline),
+        );
+        require(
+            output > 0,
+            InputError::ExpectedNonZeroParameter(output_asset.id),
+        );
+        require(
+            output <= output_asset
+                .amount,
+            TransactionError::InsufficientReserve(output_asset.id),
+        );
 
         let input_amount = msg_amount();
-        require(input_amount > 0, InputError::ExpectedNonZeroAmount(input_asset.id));
+        require(
+            input_amount > 0,
+            InputError::ExpectedNonZeroAmount(input_asset.id),
+        );
 
-        let sold = maximum_input_for_exact_output(output, input_asset.amount, output_asset.amount, LIQUIDITY_MINER_FEE);
+        let sold = maximum_input_for_exact_output(
+            output,
+            input_asset
+                .amount,
+            output_asset
+                .amount,
+            LIQUIDITY_MINER_FEE,
+        );
 
         require(sold > 0, TransactionError::DesiredAmountTooLow(output));
-        require(input_amount >= sold, TransactionError::DesiredAmountTooHigh(input_amount));
+        require(
+            input_amount >= sold,
+            TransactionError::DesiredAmountTooHigh(input_amount),
+        );
 
         let sender = msg_sender().unwrap();
 
@@ -289,7 +425,12 @@ impl Exchange for Contract {
 
         input_asset.amount = input_asset.amount + sold;
         output_asset.amount = output_asset.amount - output;
-        storage.pair.write(Option::Some(AssetPair::new(input_asset, output_asset).sort(reserves.unwrap())));
+        storage
+            .pair
+            .write(Option::Some(
+                AssetPair::new(input_asset, output_asset)
+                    .sort(reserves.unwrap()),
+            ));
 
         log(SwapEvent {
             input: input_asset,
@@ -303,12 +444,28 @@ impl Exchange for Contract {
     fn withdraw(asset: Asset) {
         require(storage.pair.read().is_some(), InitError::AssetPairNotSet);
 
-        require(asset.id == storage.pair.read().unwrap().a.id || asset.id == storage.pair.read().unwrap().b.id, InputError::InvalidAsset);
+        require(
+            asset.id == storage
+                .pair
+                .read()
+                .unwrap()
+                .a
+                .id || asset.id == storage
+                .pair
+                .read()
+                .unwrap()
+                .b
+                .id,
+            InputError::InvalidAsset,
+        );
 
         let sender = msg_sender().unwrap();
         let deposited_amount = storage.deposits.get((sender, asset.id)).try_read().unwrap_or(0);
 
-        require(deposited_amount >= asset.amount, TransactionError::DesiredAmountTooHigh(asset.amount));
+        require(
+            deposited_amount >= asset.amount,
+            TransactionError::DesiredAmountTooHigh(asset.amount),
+        );
 
         let new_amount = deposited_amount - asset.amount;
         storage.deposits.insert((sender, asset.id), new_amount);
@@ -323,7 +480,20 @@ impl Exchange for Contract {
     #[storage(read)]
     fn balance(asset_id: AssetId) -> u64 {
         require(storage.pair.read().is_some(), InitError::AssetPairNotSet);
-        require(asset_id == storage.pair.read().unwrap().a.id || asset_id == storage.pair.read().unwrap().b.id, InputError::InvalidAsset);
+        require(
+            asset_id == storage
+                .pair
+                .read()
+                .unwrap()
+                .a
+                .id || asset_id == storage
+                .pair
+                .read()
+                .unwrap()
+                .b
+                .id,
+            InputError::InvalidAsset,
+        );
 
         storage.deposits.get((msg_sender().unwrap(), asset_id)).try_read().unwrap_or(0)
     }
@@ -350,7 +520,10 @@ impl Exchange for Contract {
             storage.deposits.get((sender, reserves.a.id)).try_read().unwrap_or(0),
             storage.deposits.get((sender, reserves.b.id)).try_read().unwrap_or(0),
         );
-        let deposits = AssetPair::new(Asset::new(reserves.a.id, deposit_a), Asset::new(reserves.b.id, deposit_b));
+        let deposits = AssetPair::new(
+            Asset::new(reserves.a.id, deposit_a),
+            Asset::new(reserves.b.id, deposit_b),
+        );
 
         let mut added_assets = AssetPair::new(Asset::new(reserves.a.id, 0), Asset::new(reserves.b.id, 0));
         let mut added_liquidity = 0;
@@ -392,7 +565,15 @@ impl Exchange for Contract {
     fn preview_swap_exact_input(exact_input_asset: Asset) -> PreviewSwapInfo {
         let (input_asset, mut output_asset) = determine_assets(exact_input_asset.id, storage.pair.read());
 
-        output_asset.amount = minimum_output_given_exact_input(exact_input_asset.amount, input_asset.amount, output_asset.amount, LIQUIDITY_MINER_FEE);
+        output_asset.amount = minimum_output_given_exact_input(
+            exact_input_asset
+                .amount,
+            input_asset
+                .amount,
+            output_asset
+                .amount,
+            LIQUIDITY_MINER_FEE,
+        );
         let sufficient_reserve = output_asset.amount <= output_asset.amount;
 
         PreviewSwapInfo {
@@ -405,10 +586,27 @@ impl Exchange for Contract {
     fn preview_swap_exact_output(exact_output_asset: Asset) -> PreviewSwapInfo {
         let (output_asset, mut input_asset) = determine_assets(exact_output_asset.id, storage.pair.read());
 
-        require(exact_output_asset.amount <= output_asset.amount, TransactionError::DesiredAmountTooHigh(exact_output_asset.amount));
+        require(
+            exact_output_asset
+                .amount <= output_asset
+                .amount,
+            TransactionError::DesiredAmountTooHigh(exact_output_asset.amount),
+        );
 
-        input_asset.amount = maximum_input_for_exact_output(exact_output_asset.amount, input_asset.amount, output_asset.amount, LIQUIDITY_MINER_FEE);
-        require(input_asset.amount > 0, TransactionError::DesiredAmountTooLow(exact_output_asset.amount));
+        input_asset.amount = maximum_input_for_exact_output(
+            exact_output_asset
+                .amount,
+            input_asset
+                .amount,
+            output_asset
+                .amount,
+            LIQUIDITY_MINER_FEE,
+        );
+        require(
+            input_asset
+                .amount > 0,
+            TransactionError::DesiredAmountTooLow(exact_output_asset.amount),
+        );
         let sufficient_reserve = exact_output_asset.amount <= output_asset.amount;
 
         PreviewSwapInfo {
