@@ -35,7 +35,7 @@ impl Exchange for Contract {
     fn remove_liquidity(min_asset_a: u64, min_asset_b: u64, deadline: u64) -> RemoveLiquidityInfo {
         RemoveLiquidityInfo {
             removed_amounts: storage.pair.read().unwrap(),
-            burned_liquidity: Asset::new(AssetId::default(contract_id()), 0),
+            burned_liquidity: Asset::new(AssetId::default(), 0),
         }
     }
 
@@ -69,7 +69,7 @@ impl Exchange for Contract {
     fn preview_add_liquidity(asset: Asset) -> PreviewAddLiquidityInfo {
         PreviewAddLiquidityInfo {
             other_asset_to_add: storage.pair.read().unwrap().other_asset(asset.id),
-            liquidity_asset_to_receive: Asset::new(AssetId::default(contract_id()), 0),
+            liquidity_asset_to_receive: Asset::new(AssetId::default(), 0),
         }
     }
 

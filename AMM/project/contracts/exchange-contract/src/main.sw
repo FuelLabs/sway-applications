@@ -101,7 +101,7 @@ impl Exchange for Contract {
             // mint liquidity pool asset and transfer to sender.
             mint(ZERO_B256, added_liquidity);
             storage.liquidity_pool_supply.write(added_liquidity);
-            transfer(sender, AssetId::default(contract_id()), added_liquidity);
+            transfer(sender, AssetId::default(), added_liquidity);
         } else { // adding further liquidity based on current ratio.
             // attempt to add liquidity by using up the deposited asset A amount.
             let b_to_attempt = proportional_value(deposits.a.amount, reserves.b.amount, reserves.a.amount);
@@ -126,7 +126,7 @@ impl Exchange for Contract {
             // mint liquidity pool asset and transfer to sender.
             mint(ZERO_B256, added_liquidity);
             storage.liquidity_pool_supply.write(total_liquidity + added_liquidity);
-            transfer(sender, AssetId::default(contract_id()), added_liquidity);
+            transfer(sender, AssetId::default(), added_liquidity);
 
             // transfer remaining deposit amounts back to the sender.
             let refund = deposits - added_assets;
@@ -145,7 +145,7 @@ impl Exchange for Contract {
 
         log(AddLiquidityEvent {
             added_assets,
-            liquidity: Asset::new(AssetId::default(contract_id()), added_liquidity),
+            liquidity: Asset::new(AssetId::default(), added_liquidity),
         });
 
         added_liquidity
@@ -198,7 +198,7 @@ impl Exchange for Contract {
         require(min_asset_b > 0, InputError::ExpectedNonZeroParameter(reserves.b.id));
         require(deadline > height().as_u64(), InputError::DeadlinePassed(deadline));
 
-        let burned_liquidity = Asset::new(AssetId::default(contract_id()), msg_amount());
+        let burned_liquidity = Asset::new(AssetId::default(), msg_amount());
 
         require(burned_liquidity.id == msg_asset_id(), InputError::InvalidAsset);
         require(burned_liquidity.amount > 0, InputError::ExpectedNonZeroAmount(burned_liquidity.id));
@@ -384,7 +384,7 @@ impl Exchange for Contract {
             } else {
                 added_assets.a
             },
-            liquidity_asset_to_receive: Asset::new(AssetId::default(contract_id()), added_liquidity),
+            liquidity_asset_to_receive: Asset::new(AssetId::default(), added_liquidity),
         }
     }
 
