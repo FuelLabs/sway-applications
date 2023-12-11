@@ -96,7 +96,7 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
     let asset2 = Coin { id: asset2_id };
 
     let defaults = DefaultParameters {
-        asset_id: asset_id,
+        asset_id,
         beneficiary: Identity::Address(user_wallet.address().into()),
         deadline: 100,
         initial_wallet_amount: coin_amount,
