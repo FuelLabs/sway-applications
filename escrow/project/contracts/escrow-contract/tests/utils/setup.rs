@@ -1,8 +1,8 @@
 use fuels::{
     accounts::ViewOnlyAccount,
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Address, AssetConfig, AssetId, Config,
-        Contract, LoadConfiguration, StorageConfiguration, TxParameters,
+        abigen, launch_custom_provider_and_get_wallets, Address, AssetConfig, AssetId,
+        Contract, LoadConfiguration, StorageConfiguration, TxPolicies,
         WalletUnlocked, WalletsConfig, BASE_ASSET_ID,
     },
     types::Identity,
@@ -109,12 +109,8 @@ pub(crate) async fn setup() -> (User, User, User, Defaults) {
 
     let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
 
-    let provider_config = Config {
-        manual_blocks_enabled: true,
-        ..Config::local_node()
-    };
     let mut wallets =
-        launch_custom_provider_and_get_wallets(wallet_config, Some(provider_config), None).await.unwrap();
+        launch_custom_provider_and_get_wallets(wallet_config, None, None).await.unwrap();
 
     let deployer_wallet = wallets.pop().unwrap();
     let arbiter_wallet = wallets.pop().unwrap();
@@ -127,7 +123,7 @@ pub(crate) async fn setup() -> (User, User, User, Defaults) {
         .with_storage_configuration(escrow_storage_configuration.unwrap());
     let escrow_id = Contract::load_from(ESCROW_CONTRACT_BINARY_PATH, escrow_configuration)
         .unwrap()
-        .deploy(&deployer_wallet, TxParameters::default())
+        .deploy(&deployer_wallet, TxPolicies::default())
         .await
         .unwrap();
 

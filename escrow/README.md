@@ -12,8 +12,8 @@
     <a href="https://crates.io/crates/fuel-core/0.20.8" alt="fuel-core">
         <img src="https://img.shields.io/badge/fuel--core-v0.20.8-yellow" />
     </a>
-    <a href="https://crates.io/crates/fuels/0.50.1" alt="forc">
-        <img src="https://img.shields.io/badge/fuels-v0.50.1-blue" />
+    <a href="https://crates.io/crates/fuels/0.53.0" alt="forc">
+        <img src="https://img.shields.io/badge/fuels-v0.53.0-blue" />
     </a>
 </p>
 
