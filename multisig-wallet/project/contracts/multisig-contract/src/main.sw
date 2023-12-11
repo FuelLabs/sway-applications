@@ -53,10 +53,10 @@ storage {
     /// Set to the value of the configurable `THRESHOLD`.
     threshold: u64 = 0,
     /// Number of approvals per user.
+    ///
     /// # Additional Information
     ///
     /// Maps (user => weight).
-    //
     weighting: StorageMap<b256, u64> = StorageMap {},
 }
 
