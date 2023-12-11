@@ -1,8 +1,10 @@
 use fuels::{
     accounts::wallet::WalletUnlocked,
-    prelude::{abigen, Contract, LoadConfiguration, StorageConfiguration, TxPolicies},
+    prelude::{
+        abigen, launch_provider_and_get_wallet, Contract, LoadConfiguration, StorageConfiguration,
+        TxPolicies,
+    },
     programs::contract::SettableContract,
-    test_helpers::launch_provider_and_get_wallet,
 };
 
 // The following macro will automatically generate some structs for you, to easily interact with contracts and scripts.
