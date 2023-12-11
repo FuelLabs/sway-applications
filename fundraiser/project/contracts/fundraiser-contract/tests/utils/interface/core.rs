@@ -1,6 +1,6 @@
 use fuels::{
-    prelude::{AssetId, CallParameters, ContractId, TxParameters, WalletUnlocked},
-    programs::call_response::FuelCallResponse,
+    prelude::{AssetId, CallParameters, TxPolicies, WalletUnlocked},
+    programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension},
     types::Identity,
 };
 
@@ -28,7 +28,7 @@ pub(crate) async fn claim_pledges(
 
 pub(crate) async fn create_campaign(
     contract: &Fundraiser<WalletUnlocked>,
-    asset: &ContractId,
+    asset: &AssetId,
     beneficiary: &Identity,
     deadline: u64,
     target_amount: u64,
@@ -47,13 +47,13 @@ pub(crate) async fn pledge(
     asset: &Coin,
     amount: u64,
 ) -> FuelCallResponse<()> {
-    let tx_params = TxParameters::new(0, 2_000_000, 0);
-    let call_params = CallParameters::new(amount, AssetId::from(*asset.id), 1_000_000);
+    let tx_params = TxPolicies::new(Some(0), Some(2_000_000), None, None, None);
+    let call_params = CallParameters::new(amount, asset.id, 1_000_000);
 
     contract
         .methods()
         .pledge(id)
-        .tx_params(tx_params)
+        .with_tx_policies(tx_params)
         .call_params(call_params)
         .unwrap()
         .call()

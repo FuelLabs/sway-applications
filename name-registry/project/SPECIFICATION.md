@@ -5,12 +5,12 @@ Table of Contents
     - [`register()`](#register)
     - [`extend()`](#extend)
     - [`set_asset()`](#set_asset)
-    - [`set_identity()`](#set_identity)
-    - [`set_owner()`](#set_owner)
+    - [`set_resolver()`](#set_resolver)
+    - [`transfer_name_ownership()`](#transfer_name_ownership)
   - [State Checks](#state-checks)
     - [`expiry()`](#expiry)
-    - [`identity()`](#identity)
-    - [`owner()`](#owner)
+    - [`resolver()`](#resolver)
+    - [`name_owner()`](#name_owner)
     - [`rate()`](#rate)
 
 # Overview
@@ -49,11 +49,11 @@ Any user can extend the registration duration of a given name
 
 Allows an owner to add, remove and alter the cost of an asset that the registry accepts
 
-### `set_identity()`
+### `set_resolver()`
 
 Allows the owner to change the resolving identity
 
-### `set_owner()`
+### `transfer_name_ownership()`
 
 Allows the owner to transfer ownership of the registered name
 
@@ -67,13 +67,13 @@ Returns the expiry timestamp of a given name
 
 1. If the name has been registered
 
-### `identity()`
+### `resolver()`
 
 Returns the identity to which the given name resolves to
 
 1. If the name has been registered
 
-### `owner()`
+### `name_owner()`
 
 Returns the owner of the given name
 
