@@ -1,7 +1,7 @@
 use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Bech32Address,
-        Config, Contract, LoadConfiguration, StorageConfiguration, TxParameters,
+        Contract, LoadConfiguration, StorageConfiguration, TxPolicies,
         WalletUnlocked, WalletsConfig, BASE_ASSET_ID,
     },
     types::Identity,
@@ -62,12 +62,8 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
 
     let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
 
-    let provider_config = Config {
-        manual_blocks_enabled: true,
-        ..Config::local_node()
-    };
     let mut wallets =
-        launch_custom_provider_and_get_wallets(wallet_config, Some(provider_config), None).await;
+        launch_custom_provider_and_get_wallets(wallet_config, None , None).await.unwrap();
 
     let deployer_wallet = wallets.pop().unwrap();
     let author_wallet = wallets.pop().unwrap();
@@ -80,7 +76,7 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
     let fundraiser_id =
         Contract::load_from(FUNDRAISER_CONTRACT_BINARY_PATH, fundraiser_configuration)
             .unwrap()
-            .deploy(&deployer_wallet, TxParameters::default())
+            .deploy(&deployer_wallet, TxPolicies::default())
             .await
             .unwrap();
 

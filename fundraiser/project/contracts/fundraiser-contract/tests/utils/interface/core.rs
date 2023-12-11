@@ -1,5 +1,5 @@
 use fuels::{
-    prelude::{AssetId, CallParameters, TxParameters, WalletUnlocked},
+    prelude::{AssetId, CallParameters, TxPolicies, WalletUnlocked},
     programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension},
     types::Identity,
 };
@@ -47,13 +47,13 @@ pub(crate) async fn pledge(
     asset: &Coin,
     amount: u64,
 ) -> FuelCallResponse<()> {
-    let tx_params = TxParameters::new(Some(0), Some(2_000_000), 0);
+    let tx_params = TxPolicies::new(Some(0), Some(2_000_000), None, None, None);
     let call_params = CallParameters::new(amount, asset.id, 1_000_000);
 
     contract
         .methods()
         .pledge(id)
-        .tx_params(tx_params)
+        .with_tx_policies(tx_params)
         .call_params(call_params)
         .unwrap()
         .call()
