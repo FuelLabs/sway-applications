@@ -14,18 +14,6 @@ use ::interface::Game;
 use std::{auth::msg_sender, hash::Hash};
 use ::utils::{draw, win_check};
 
-// This is needed for comparing the position when the cell is not empty.
-// We only need to check if there is an Identity in the cell but we don't care about its value.
-impl<T> Eq for Option<T> {
-    fn eq(self, other: Self) -> bool {
-        match (self, other) {
-            (Option::None, Option::None) => true,
-            (Option::Some(_), Option::Some(_)) => true,
-            _ => false,
-        }
-    }
-}
-
 storage {
     /// Keeps track of each player move.
     board: StorageMap<u64, Identity> = StorageMap {},

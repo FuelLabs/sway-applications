@@ -59,10 +59,8 @@ impl IntoBytes for ContractCallParams {
         bytes.append(self.calldata);
         bytes.append(Bytes::from_copy_type(self.forwarded_gas));
         bytes.append(self.function_selector);
-        bytes
-            .append(Bytes::from_copy_type(self.single_value_type_arg));
-        bytes
-            .append(Bytes::from_reference_type(self.transfer_params));
+        bytes.append(Bytes::from_copy_type(self.single_value_type_arg));
+        bytes.append(Bytes::from_reference_type(self.transfer_params));
         bytes
     }
 }
@@ -144,8 +142,7 @@ impl IntoBytes for Transaction {
     // as such the whole struct must be serialised to [Bytes].
     fn into_bytes(self) -> Bytes {
         let mut bytes = Bytes::new();
-        bytes
-            .append(Bytes::from_reference_type(self.contract_identifier));
+        bytes.append(Bytes::from_reference_type(self.contract_identifier));
         bytes.append(Bytes::from_copy_type(self.nonce));
         bytes.append(Bytes::from_reference_type(self.target));
         bytes.append(self.transaction_parameters.into_bytes());
