@@ -1,8 +1,8 @@
 use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Bech32Address,
-        Contract, LoadConfiguration, StorageConfiguration, TxPolicies,
-        WalletUnlocked, WalletsConfig, BASE_ASSET_ID,
+        Contract, LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked,
+        WalletsConfig, BASE_ASSET_ID,
     },
     types::Identity,
 };
@@ -62,15 +62,16 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
 
     let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
 
-    let mut wallets =
-        launch_custom_provider_and_get_wallets(wallet_config, None , None).await.unwrap();
+    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None)
+        .await
+        .unwrap();
 
     let deployer_wallet = wallets.pop().unwrap();
     let author_wallet = wallets.pop().unwrap();
     let user_wallet = wallets.pop().unwrap();
 
-    let fundraiser_storage_configuration =
-        StorageConfiguration::default().add_slot_overrides_from_file(FUNDRAISER_CONTRACT_STORAGE_PATH);
+    let fundraiser_storage_configuration = StorageConfiguration::default()
+        .add_slot_overrides_from_file(FUNDRAISER_CONTRACT_STORAGE_PATH);
     let fundraiser_configuration = LoadConfiguration::default()
         .with_storage_configuration(fundraiser_storage_configuration.unwrap());
     let fundraiser_id =
@@ -90,13 +91,9 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
         wallet: user_wallet.clone(),
     };
 
-    let asset = Coin {
-        id: asset_id,
-    };
+    let asset = Coin { id: asset_id };
 
-    let asset2 = Coin {
-        id: asset2_id,
-    };
+    let asset2 = Coin { id: asset2_id };
 
     let defaults = DefaultParameters {
         asset_id: asset_id,
