@@ -6,7 +6,7 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-fuels = { version = "0.50.1", features = ["fuel-core-lib"] }
+fuels = { version = "0.53.0", features = ["fuel-core-lib"] }
 
 [lib]
 test = false

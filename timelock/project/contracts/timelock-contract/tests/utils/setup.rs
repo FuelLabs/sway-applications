@@ -1,7 +1,7 @@
 use fuels::{
     accounts::wallet::WalletUnlocked,
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Contract, LoadConfiguration, TxParameters,
+        abigen, launch_custom_provider_and_get_wallets, Contract, LoadConfiguration, TxPolicies,
         WalletsConfig,
     },
 };
@@ -27,14 +27,15 @@ pub async fn setup() -> (Timelock<WalletUnlocked>, WalletUnlocked, WalletUnlocke
         None,
         None,
     )
-    .await;
+    .await
+    .unwrap();
 
     let wallet = wallets.pop().unwrap();
     let wallet2 = wallets.pop().unwrap();
 
     let id = Contract::load_from(TIMELOCK_CONTRACT_BINARY_PATH, LoadConfiguration::default())
         .unwrap()
-        .deploy(&wallet, TxParameters::default())
+        .deploy(&wallet, TxPolicies::default())
         .await
         .unwrap();
 

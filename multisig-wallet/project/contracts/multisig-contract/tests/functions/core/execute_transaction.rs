@@ -10,7 +10,7 @@ use crate::utils::{
 };
 use fuels::{
     accounts::{fuel_crypto::Message, Account},
-    prelude::{TxParameters, BASE_ASSET_ID},
+    prelude::{TxPolicies, BASE_ASSET_ID},
 };
 
 mod success {
@@ -38,7 +38,7 @@ mod success {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();
@@ -184,7 +184,7 @@ mod success {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();
@@ -256,7 +256,15 @@ mod success {
                 .value;
 
             // Check balances post-call
-            let final_multisig_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
+            // Uncomment when https://github.com/FuelLabs/fuel-core/issues/1535 is resolved
+            // let final_multisig_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
+            let final_multisig_balance = deployer
+                .wallet
+                .provider()
+                .unwrap()
+                .get_contract_asset_balance(deployer.contract.contract_id(), BASE_ASSET_ID)
+                .await
+                .unwrap();
             let final_target_contract_balance = deployer
                 .wallet
                 .provider()
@@ -407,7 +415,7 @@ mod revert {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();
@@ -451,7 +459,7 @@ mod revert {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();

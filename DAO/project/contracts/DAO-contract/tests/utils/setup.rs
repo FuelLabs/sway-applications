@@ -1,7 +1,7 @@
 use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Contract,
-        LoadConfiguration, StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
+        LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked, WalletsConfig,
         BASE_ASSET_ID,
     },
     types::ContractId,
@@ -73,7 +73,7 @@ pub(crate) async fn setup() -> (AssetId, AssetId, Metadata, Metadata, u64) {
         LoadConfiguration::default().with_storage_configuration(storage_configuration.unwrap());
     let dao_voting_id = Contract::load_from(DAO_CONTRACT_BINARY_PATH, configuration)
         .unwrap()
-        .deploy(&deployer_wallet, TxParameters::default())
+        .deploy(&deployer_wallet, TxPolicies::default())
         .await
         .unwrap();
 
