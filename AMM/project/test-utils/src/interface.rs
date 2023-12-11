@@ -26,7 +26,6 @@ abigen!(
     )
 );
 
-pub const SCRIPT_GAS_LIMIT: u64 = 100_000_000; // TODO: hardcoded until scripts have gas estimation
 const GAS_TOLERANCE: f64 = 20.0; // TODO: this should be closer to 0.0. gas estimation issue is under investigation
 
 pub mod amm {
@@ -74,6 +73,7 @@ pub mod amm {
 }
 
 pub mod exchange {
+
     use super::*;
 
     pub async fn add_liquidity(
@@ -133,7 +133,7 @@ pub mod exchange {
 
     pub async fn remove_liquidity(
         contract: &Exchange<WalletUnlocked>,
-        exchange_id: ContractId,
+        asset_id: AssetId,
         amount: u64,
         min_asset_a: u64,
         min_asset_b: u64,
@@ -143,11 +143,7 @@ pub mod exchange {
         let mut call_handler = contract
             .methods()
             .remove_liquidity(min_asset_a, min_asset_b, deadline)
-            .call_params(CallParameters::new(
-                amount,
-                AssetId::new(*exchange_id),
-                1_000_000,
-            ))
+            .call_params(CallParameters::new(amount, asset_id, 1_000_000))
             .unwrap()
             .append_variable_outputs(2);
 

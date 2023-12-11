@@ -1,10 +1,9 @@
 use crate::utils::{expected_liquidity, setup};
-use fuels::prelude::TxPolicies;
 use test_utils::{
     data_structures::LiquidityParameters as TestLiquidityParameters,
     interface::{
         abigen_bindings::shared_types::{Asset, AssetPair},
-        LiquidityParameters, SCRIPT_GAS_LIMIT,
+        LiquidityParameters,
     },
     setup::common::deposit_and_add_liquidity,
 };
@@ -38,7 +37,6 @@ async fn adds_liquidity_with_equal_deposit_amounts() {
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()
@@ -76,7 +74,6 @@ async fn adds_liquidity_to_make_a_more_valuable() {
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()
@@ -114,7 +111,6 @@ async fn adds_liquidity_to_make_b_more_valuable() {
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()
@@ -160,7 +156,6 @@ async fn adds_further_liquidity_without_extra_deposit_when_a_is_more_valuable() 
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()
@@ -206,7 +201,6 @@ async fn adds_further_liquidity_with_extra_a_deposit_when_a_is_more_valuable() {
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()
@@ -252,7 +246,6 @@ async fn adds_further_liquidity_with_extra_b_deposit_when_a_is_more_valuable() {
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()
@@ -298,7 +291,6 @@ async fn adds_further_liquidity_without_extra_deposit_when_b_is_more_valuable() 
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()
@@ -344,7 +336,6 @@ async fn adds_further_liquidity_with_extra_a_deposit_when_b_is_more_valuable() {
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()
@@ -390,7 +381,6 @@ async fn adds_further_liquidity_with_extra_b_deposit_when_b_is_more_valuable() {
         .with_contracts(&[&exchange.instance])
         .with_inputs(transaction_parameters.inputs)
         .with_outputs(transaction_parameters.outputs)
-        .with_tx_policies(TxPolicies::default().with_script_gas_limit(SCRIPT_GAS_LIMIT))
         .call()
         .await
         .unwrap()
