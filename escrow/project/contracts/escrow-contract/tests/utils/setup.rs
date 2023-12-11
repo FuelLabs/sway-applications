@@ -138,11 +138,11 @@ pub(crate) async fn setup() -> (User, User, User, Defaults) {
     };
 
     let defaults = Defaults {
-        asset_id: asset_id,
+        asset_id,
         asset_amount: 100,
         deadline: 100,
         initial_wallet_amount: coin_amount,
-        other_asset_id: other_asset_id,
+        other_asset_id,
     };
 
     (arbiter, buyer, seller, defaults)
