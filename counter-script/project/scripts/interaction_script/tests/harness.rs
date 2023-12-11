@@ -1,8 +1,10 @@
 use fuels::{
     accounts::wallet::WalletUnlocked,
-    prelude::{abigen, Contract, LoadConfiguration, StorageConfiguration, TxParameters},
+    prelude::{
+        abigen, launch_provider_and_get_wallet, Contract, LoadConfiguration, StorageConfiguration,
+        TxPolicies,
+    },
     programs::contract::SettableContract,
-    test_helpers::launch_provider_and_get_wallet,
 };
 
 // The following macro will automatically generate some structs for you, to easily interact with contracts and scripts.
@@ -41,7 +43,7 @@ pub async fn setup() -> (
     // The following code will deploy the contract and store the returned ContractId in the `id` variable.
     let id = Contract::load_from(CONTRACT_BIN_PATH, configuration)
         .unwrap()
-        .deploy(&wallet, TxParameters::default())
+        .deploy(&wallet, TxPolicies::default())
         .await
         .unwrap();
 

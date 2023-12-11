@@ -43,7 +43,7 @@ fn setup() -> (Oracle<WalletUnlocked>, reqwest::Client, Url) {
 
     let provider = Provider::new(
         env::var("FUEL_PROVIDER_URL").expect("FUEL_PROVIDER_URL must be set."),
-        ConsensusParameters::DEFAULT,
+        ConsensusParameters::default(),
     )
     .unwrap();
 

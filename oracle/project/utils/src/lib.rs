@@ -1,7 +1,7 @@
 use fuels::{
     accounts::wallet::{Wallet, WalletUnlocked},
     prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Contract, LoadConfiguration, TxParameters,
+        abigen, launch_custom_provider_and_get_wallets, Contract, LoadConfiguration, TxPolicies,
         WalletsConfig,
     },
     programs::call_response::FuelCallResponse,
@@ -60,7 +60,7 @@ pub mod test_helpers {
         let oracle_id =
             Contract::load_from(ORACLE_CONTRACT_BINARY_PATH, LoadConfiguration::default())
                 .unwrap()
-                .deploy(&wallets[0], TxParameters::default())
+                .deploy(&wallets[0], TxPolicies::default())
                 .await
                 .unwrap();
 
