@@ -25,10 +25,15 @@ use token::{
 use std::{call_frames::contract_id, hash::Hash, storage::storage_string::*, string::String};
 
 storage {
+    /// The total number of unique assets minted by this contract.
     total_assets: u64 = 0,
+    /// The total number of tokens minted for a particular asset.
     total_supply: StorageMap<AssetId, u64> = StorageMap {},
+    /// The name associated with a particular asset.
     name: StorageMap<AssetId, StorageString> = StorageMap {},
+    /// The symbol associated with a particular asset.
     symbol: StorageMap<AssetId, StorageString> = StorageMap {},
+    /// The decimals associated with a particular asset.
     decimals: StorageMap<AssetId, u8> = StorageMap {},
 }
 
@@ -215,8 +220,23 @@ impl SRC3 for Contract {
     #[storage(read, write)]
     fn mint(recipient: Identity, sub_id: SubId, amount: u64) {
         let asset = AssetId::new(contract_id(), sub_id);
-        require(storage.total_supply.get(asset).try_read().unwrap_or(0) + amount < 100_000_000, MintError::MaxMinted);
-        let _ = _mint(storage.total_assets, storage.total_supply, recipient, sub_id, amount);
+        require(
+            storage
+                .total_supply
+                .get(asset)
+                .try_read()
+                .unwrap_or(0) + amount < 100_000_000,
+            MintError::MaxMinted,
+        );
+        let _ = _mint(
+            storage
+                .total_assets,
+            storage
+                .total_supply,
+            recipient,
+            sub_id,
+            amount,
+        );
     }
     /// Burns tokens sent with the given `sub_id`.
     ///
@@ -289,7 +309,14 @@ impl SetTokenAttributes for Contract {
     /// ```
     #[storage(write)]
     fn set_name(asset: AssetId, name: String) {
-        require(storage.name.get(asset).read_slice().is_none(), SetError::ValueAlreadySet);
+        require(
+            storage
+                .name
+                .get(asset)
+                .read_slice()
+                .is_none(),
+            SetError::ValueAlreadySet,
+        );
         _set_name(storage.name, asset, name);
     }
     /// Sets the symbol of an asset.
@@ -325,7 +352,14 @@ impl SetTokenAttributes for Contract {
     /// ```
     #[storage(write)]
     fn set_symbol(asset: AssetId, symbol: String) {
-        require(storage.symbol.get(asset).read_slice().is_none(), SetError::ValueAlreadySet);
+        require(
+            storage
+                .symbol
+                .get(asset)
+                .read_slice()
+                .is_none(),
+            SetError::ValueAlreadySet,
+        );
         _set_symbol(storage.symbol, asset, symbol);
     }
     /// Sets the decimals of an asset.
@@ -360,7 +394,14 @@ impl SetTokenAttributes for Contract {
     /// ```
     #[storage(write)]
     fn set_decimals(asset: AssetId, decimals: u8) {
-        require(storage.decimals.get(asset).try_read().is_none(), SetError::ValueAlreadySet);
+        require(
+            storage
+                .decimals
+                .get(asset)
+                .try_read()
+                .is_none(),
+            SetError::ValueAlreadySet,
+        );
         _set_decimals(storage.decimals, asset, decimals);
     }
 }
@@ -436,7 +477,13 @@ fn test_name() {
     let name = String::from_ascii_str("Fuel Token");
     assert(src20_abi.name(asset_id).is_none());
     attributes_abi.set_name(asset_id, name);
-    assert(src20_abi.name(asset_id).unwrap().as_bytes() == name.as_bytes());
+    assert(
+        src20_abi
+            .name(asset_id)
+            .unwrap()
+            .as_bytes() == name
+            .as_bytes(),
+    );
 }
 #[test(should_revert)]
 fn test_revert_set_name_twice() {
@@ -458,7 +505,13 @@ fn test_symbol() {
     let symbol = String::from_ascii_str("FUEL");
     assert(src20_abi.symbol(asset_id).is_none());
     attributes_abi.set_symbol(asset_id, symbol);
-    assert(src20_abi.symbol(asset_id).unwrap().as_bytes() == symbol.as_bytes());
+    assert(
+        src20_abi
+            .symbol(asset_id)
+            .unwrap()
+            .as_bytes() == symbol
+            .as_bytes(),
+    );
 }
 #[test(should_revert)]
 fn test_revert_set_symbol_twice() {
