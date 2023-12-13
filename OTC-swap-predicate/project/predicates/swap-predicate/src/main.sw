@@ -2,8 +2,8 @@ predicate;
 
 use std::{
     inputs::{
+        input_coin_owner,
         input_count,
-        input_owner,
     },
     outputs::{
         Output,
@@ -42,8 +42,8 @@ fn main() -> bool {
 
     // Check if the transaction contains a single input coin from the receiver, to cancel their own order (in addition to this predicate)
     if input_count() == 2u8 {
-        if input_owner(0).unwrap() == RECEIVER
-            || input_owner(1).unwrap() == RECEIVER
+        if input_coin_owner(0).unwrap() == RECEIVER
+            || input_coin_owner(1).unwrap() == RECEIVER
         {
             return true;
         };
