@@ -2,7 +2,7 @@ use fuels::{
     accounts::{predicate::Predicate, Account},
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Address, AssetConfig, AssetId,
-        Bech32Address, Config, Provider, ResourceFilter, TxParameters, WalletUnlocked,
+        Bech32Address, Provider, ResourceFilter, TxPolicies, WalletUnlocked,
     },
     programs::script_calls::ScriptCallHandler,
     test_helpers::WalletsConfig,
@@ -49,16 +49,10 @@ pub async fn test_predicate_spend_with_parameters(
 ) {
     let receiver_address = receiver.parse().unwrap();
 
-    let wallets = &launch_custom_provider_and_get_wallets(
-        configure_wallets(asked_asset),
-        Some(Config {
-            utxo_validation: true,
-            ..Config::local_node()
-        }),
-        None,
-    )
-    .await
-    .unwrap();
+    let wallets =
+        &launch_custom_provider_and_get_wallets(configure_wallets(asked_asset), None, None)
+            .await
+            .unwrap();
 
     let receiver_wallet = &wallets[0];
     let taker_wallet = &wallets[1];
@@ -80,7 +74,7 @@ pub async fn test_predicate_spend_with_parameters(
             predicate.address(),
             offered_amount,
             OFFERED_ASSET,
-            TxParameters::default(),
+            TxPolicies::default(),
         )
         .await
         .unwrap();
@@ -165,8 +159,8 @@ pub async fn test_predicate_spend_with_parameters(
         output_to_receiver,
         output_to_taker,
         output_asked_change,
-    ])
-    .tx_params(TxParameters::new(Some(0), Some(10_000_000), 0));
+    ]);
+    //.tx_params(TxPolicies::default().with_script_gas_limit(10_000_000));
 
     let _response = script_call.call().await.unwrap();
 
@@ -197,16 +191,10 @@ pub async fn test_predicate_spend_with_parameters(
 // Tests that the predicate can be recovered by the owner
 // `correct_owner` is a boolean flag to set in order to test passing and failing conditions
 pub async fn recover_predicate_as_owner(correct_owner: bool) {
-    let wallets = &launch_custom_provider_and_get_wallets(
-        configure_wallets(BASE_ASSET),
-        Some(Config {
-            utxo_validation: true,
-            ..Config::local_node()
-        }),
-        None,
-    )
-    .await
-    .unwrap();
+    let wallets =
+        &launch_custom_provider_and_get_wallets(configure_wallets(BASE_ASSET), None, None)
+            .await
+            .unwrap();
 
     let wallet = match correct_owner {
         true => &wallets[0],
@@ -226,7 +214,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
             &predicate.address().clone(),
             offered_amount,
             OFFERED_ASSET,
-            TxParameters::default(),
+            TxPolicies::default(),
         )
         .await
         .unwrap();
@@ -257,6 +245,9 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         asset_id: OFFERED_ASSET,
     };
 
+    let tx_policies = TxPolicies::default()
+        .with_gas_price(1)
+        .with_script_gas_limit(10_000_000);
     let script_call = ScriptCallHandler::<WalletUnlocked, ()>::new(
         vec![],
         UnresolvedBytes::default(),
@@ -266,7 +257,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     )
     .with_inputs(vec![input_predicate])
     .with_outputs(vec![output_offered_change])
-    .tx_params(TxParameters::new(Some(1), Some(10_000_000), 0));
+    .with_tx_policies(tx_policies);
 
     let _response = script_call.call().await.unwrap();
 
