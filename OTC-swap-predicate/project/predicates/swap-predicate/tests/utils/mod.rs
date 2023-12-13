@@ -160,7 +160,6 @@ pub async fn test_predicate_spend_with_parameters(
         output_to_taker,
         output_asked_change,
     ]);
-    //.tx_params(TxPolicies::default().with_script_gas_limit(10_000_000));
 
     let _response = script_call.call().await.unwrap();
 
