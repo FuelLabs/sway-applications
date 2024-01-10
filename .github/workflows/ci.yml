@@ -51,6 +51,7 @@ jobs:
             "multisig-wallet",
             "name-registry",
             "native-assets/NFT",
+            "native-assets/fractional-NFT",
             "native-assets/token",
             "oracle",
             "OTC-swap-predicate",
