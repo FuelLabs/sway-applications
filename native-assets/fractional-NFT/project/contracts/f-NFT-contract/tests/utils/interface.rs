@@ -2,8 +2,8 @@ use crate::utils::setup::F_NFT;
 use fuels::{
     prelude::{AssetId, CallParameters, TxPolicies, WalletUnlocked},
     programs::call_utils::TxDependencyExtension,
-    types::{Bits256, Identity},
     tx::Bytes32,
+    types::{Bits256, Identity},
 };
 
 pub(crate) async fn deposit(
@@ -12,7 +12,7 @@ pub(crate) async fn deposit(
     reciever: Identity,
     vault_sub_id: Bytes32,
 ) -> u64 {
-    let call_params = CallParameters::new(1 , nft, 1_000_000);
+    let call_params = CallParameters::new(1, nft, 1_000_000);
 
     contract
         .methods()
@@ -93,9 +93,7 @@ pub(crate) async fn max_withdrawable(
         .value
 }
 
-pub(crate) async fn total_assets(
-    contract: &F_NFT<WalletUnlocked>,
-) -> u64 {
+pub(crate) async fn total_assets(contract: &F_NFT<WalletUnlocked>) -> u64 {
     contract
         .methods()
         .total_assets()

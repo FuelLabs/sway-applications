@@ -2,11 +2,7 @@ contract;
 
 mod errors;
 
-use errors::{
-    DepositError,
-    SubIdError,
-    WithdrawError,
-};
+use errors::{DepositError, SubIdError, WithdrawError,};
 use src6::{Deposit, SRC6, Withdraw};
 use src20::SRC20;
 use std::{
@@ -217,7 +213,7 @@ impl SRC6 for Contract {
         if vault_sub_id != ZERO_B256 {
             return None;
         }
-        
+
         match this_balance(underlying_asset) {
             0 => Some(0),
             1 => Some(1),

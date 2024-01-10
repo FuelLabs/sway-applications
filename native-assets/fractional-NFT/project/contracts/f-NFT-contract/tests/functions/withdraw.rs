@@ -11,75 +11,47 @@ mod success {
     async fn withdraw_from_vault() {
         let (_deployer, admin, f_nft_id, nft_id) = deploy().await;
         let (nft_1, nft_2) = setup_nft(&admin.wallet, &admin.nft, nft_id).await;
-        let (vault_sub_id, vault_admin, share_asset1, _share_asset2, share_supply) = defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
+        let (vault_sub_id, vault_admin, share_asset1, _share_asset2, share_supply) =
+            defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
 
-        deposit(
-            &admin.f_nft,
-            nft_1,
-            vault_admin.clone(),
-            vault_sub_id
-        )
-        .await;
+        deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
 
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset1).await,
             share_supply
         );
-        assert_eq!(
-            get_wallet_balance(&admin.wallet, &nft_1).await,
-            0
-        );
+        assert_eq!(get_wallet_balance(&admin.wallet, &nft_1).await, 0);
 
         withdraw(
             &admin.f_nft,
-            share_asset1, 
+            share_asset1,
             share_supply,
             vault_admin,
             nft_1,
-            vault_sub_id
+            vault_sub_id,
         )
         .await;
 
-        assert_eq!(
-            get_wallet_balance(&admin.wallet, &share_asset1).await,
-            0
-        );
-        assert_eq!(
-            get_wallet_balance(&admin.wallet, &nft_1).await,
-            1
-        );
+        assert_eq!(get_wallet_balance(&admin.wallet, &share_asset1).await, 0);
+        assert_eq!(get_wallet_balance(&admin.wallet, &nft_1).await, 1);
     }
 
     #[tokio::test]
     async fn withdraw_from_multiple_vaults() {
         let (_deployer, admin, f_nft_id, nft_id) = deploy().await;
         let (nft_1, nft_2) = setup_nft(&admin.wallet, &admin.nft, nft_id).await;
-        let (vault_sub_id, vault_admin, share_asset1, share_asset2, share_supply) = defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
+        let (vault_sub_id, vault_admin, share_asset1, share_asset2, share_supply) =
+            defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
 
-        deposit(
-            &admin.f_nft,
-            nft_1,
-            vault_admin.clone(),
-            vault_sub_id
-        )
-        .await;
+        deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
 
-        deposit(
-            &admin.f_nft,
-            nft_2,
-            vault_admin.clone(),
-            vault_sub_id
-        )
-        .await;
+        deposit(&admin.f_nft, nft_2, vault_admin.clone(), vault_sub_id).await;
 
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset1).await,
             share_supply
         );
-        assert_eq!(
-            get_wallet_balance(&admin.wallet, &nft_1).await,
-            0
-        );
+        assert_eq!(get_wallet_balance(&admin.wallet, &nft_1).await, 0);
 
         withdraw(
             &admin.f_nft,
@@ -87,26 +59,17 @@ mod success {
             share_supply,
             vault_admin.clone(),
             nft_1,
-            vault_sub_id
+            vault_sub_id,
         )
         .await;
 
-        assert_eq!(
-            get_wallet_balance(&admin.wallet, &share_asset1).await,
-            0
-        );
-        assert_eq!(
-            get_wallet_balance(&admin.wallet, &nft_1).await,
-            1
-        );
+        assert_eq!(get_wallet_balance(&admin.wallet, &share_asset1).await, 0);
+        assert_eq!(get_wallet_balance(&admin.wallet, &nft_1).await, 1);
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset2).await,
             share_supply
         );
-        assert_eq!(
-            get_wallet_balance(&admin.wallet, &nft_2).await,
-            0
-        );
+        assert_eq!(get_wallet_balance(&admin.wallet, &nft_2).await, 0);
 
         withdraw(
             &admin.f_nft,
@@ -114,18 +77,12 @@ mod success {
             share_supply,
             vault_admin,
             nft_2,
-            vault_sub_id
+            vault_sub_id,
         )
         .await;
 
-        assert_eq!(
-            get_wallet_balance(&admin.wallet, &share_asset2).await,
-            0
-        );
-        assert_eq!(
-            get_wallet_balance(&admin.wallet, &nft_2).await,
-            1
-        );
+        assert_eq!(get_wallet_balance(&admin.wallet, &share_asset2).await, 0);
+        assert_eq!(get_wallet_balance(&admin.wallet, &nft_2).await, 1);
     }
 }
 
@@ -143,16 +100,10 @@ mod revert {
     async fn when_invalid_asset_sent() {
         let (_deployer, admin, f_nft_id, nft_id) = deploy().await;
         let (nft_1, nft_2) = setup_nft(&admin.wallet, &admin.nft, nft_id).await;
-        let (vault_sub_id, vault_admin, _share_asset1, _share_asset2, share_supply) = defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
+        let (vault_sub_id, vault_admin, _share_asset1, _share_asset2, share_supply) =
+            defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
 
-        deposit(
-            &admin.f_nft,
-            nft_1,
-            vault_admin.clone(),
-            vault_sub_id
-        )
-        .await;
-
+        deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
 
         let call_params = CallParameters::new(share_supply, BASE_ASSET_ID, 1_000_000);
         let _ = admin
@@ -174,15 +125,10 @@ mod revert {
     async fn when_incorrect_amount_sent() {
         let (_deployer, admin, f_nft_id, nft_id) = deploy().await;
         let (nft_1, nft_2) = setup_nft(&admin.wallet, &admin.nft, nft_id).await;
-        let (vault_sub_id, vault_admin, share_asset1, _share_asset2, share_supply) = defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
+        let (vault_sub_id, vault_admin, share_asset1, _share_asset2, share_supply) =
+            defaults(&admin.wallet, nft_1, nft_2, f_nft_id);
 
-        deposit(
-            &admin.f_nft,
-            nft_1,
-            vault_admin.clone(),
-            vault_sub_id
-        )
-        .await;
+        deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
 
         withdraw(
             &admin.f_nft,
@@ -190,7 +136,7 @@ mod revert {
             share_supply - 1,
             vault_admin,
             nft_1,
-            vault_sub_id
+            vault_sub_id,
         )
         .await;
     }
