@@ -13,12 +13,12 @@ dependencies = [
 
 [[package]]
 name = "src20"
-source = "git+https://github.com/FuelLabs/sway-standards?tag=v0.3.0#718d51fdfdbdf4d399c8f281e31462a9f35f0304"
+source = "git+https://github.com/FuelLabs/sway-standards?tag=v0.3.1#96a223cd8bedb4be4600788af11cfbf3f00d0209"
 dependencies = ["std"]
 
 [[package]]
 name = "src6"
-source = "git+https://github.com/FuelLabs/sway-standards?tag=v0.3.0#718d51fdfdbdf4d399c8f281e31462a9f35f0304"
+source = "git+https://github.com/FuelLabs/sway-standards?tag=v0.3.1#96a223cd8bedb4be4600788af11cfbf3f00d0209"
 dependencies = ["std"]
 
 [[package]]
