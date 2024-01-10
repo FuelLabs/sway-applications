@@ -40,7 +40,17 @@ configurable {
 }
 
 storage {
+    /// The total number of unique assets minted by this contract.
+    ///
+    /// # Additional Information
+    ///
+    /// This is the number of fractional NFTs that have ever been deposited.
     total_assets: u64 = 0,
+    /// The validity of an asset as a share minted by this contract.
+    ///
+    /// # Additional Information
+    ///
+    /// maps(Fractional NFT Share) => valid share
     vault_asset: StorageMap<AssetId, bool> = StorageMap {},
 }
 
@@ -60,6 +70,27 @@ impl SRC6 for Contract {
     ///
     /// * When the `vault_sub_id` is the not ZERO_B256
     /// * When more than 1 asset amount is sent.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads: `1`
+    /// * Writes: `2`
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use src6::SRC6;
+    /// use std::constants::DEFAULT_SUB_ID;
+    ///
+    /// fn foo(vault_contract: ContractId, reciever: Identity, nft: AssetId) {
+    ///     let vault_abi = abi(SRC6, vault_contract);
+    ///     let _ = vault_abi {
+    ///         gas: 10000,
+    ///         coins: 1,
+    ///         asset_id: nft,
+    ///     }.deposit(reciever, DEFAULT_SUB_ID);
+    /// }
+    /// ```
     #[payable]
     #[storage(read, write)]
     fn deposit(receiver: Identity, vault_sub_id: SubId) -> u64 {
@@ -108,6 +139,22 @@ impl SRC6 for Contract {
     /// * When the `vault_sub_id` is the not ZERO_B256.
     /// * When the asset is not shares to an NFT.
     /// * When the amount sent isn't all shares of an NFT.
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use src6::SRC6;
+    /// use std::constants::DEFAULT_SUB_ID;
+    ///
+    /// fn foo(vault_contract: ContractId, reciever: Identity, nft: AssetId, shares: AssetId) {
+    ///     let vault_abi = abi(SRC6, vault_contract);
+    ///     let _ = vault_abi {
+    ///         gas: 10000,
+    ///         coins: 100_000_000,
+    ///         asset_id: shares,
+    ///     }.withdraw(reciever, nft, DEFAULT_SUB_ID);
+    /// }
+    /// ```
     #[payable]
     #[storage(read, write)]
     fn withdraw(
@@ -148,6 +195,19 @@ impl SRC6 for Contract {
     /// # Returns
     ///
     /// * [u64] - The amount of managed assets of the given asset.
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use src6::SRC6;
+    /// use std::constants::DEFAULT_SUB_ID;
+    ///
+    /// fn foo(vault_contract: ContractId, nft: AssetId) {
+    ///     let vault_abi = abi(SRC6, vault_contract);
+    ///     let managed_assets = vault_abi.managed_assets(nft, DEFAULT_SUB_ID);
+    ///     assert(managed_assets == 1);
+    /// }
+    /// ```
     #[storage(read)]
     fn managed_assets(underlying_asset: AssetId, vault_sub_id: SubId) -> u64 {
         if vault_sub_id != ZERO_B256 {
@@ -176,6 +236,19 @@ impl SRC6 for Contract {
     ///
     /// * [Some(u64)] - The maximum amount of assets that can be deposited into the contract, for the given NFT.
     /// * [None] - If the asset is not supported by the contract.
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use src6::SRC6;
+    /// use std::constants::DEFAULT_SUB_ID;
+    ///
+    /// fn foo(vault_contract: ContractId, receiver: Identity, nft: AssetId) {
+    ///     let vault_abi = abi(SRC6, vault_contract);
+    ///     let max_depositable = vault_abi.max_depositable(receiver, nft, DEFAULT_SUB_ID);
+    ///     assert(max_depositable == Some(0));
+    /// }
+    /// ```
     #[storage(read)]
     fn max_depositable(
         receiver: Identity,
@@ -208,6 +281,19 @@ impl SRC6 for Contract {
     ///
     /// * [Some(u64)] - The maximum amount of assets that can be withdrawn from the contract, for the given NFT.
     /// * [None] - If the asset is not supported by the contract.
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use src6::SRC6;
+    /// use std::constants::DEFAULT_SUB_ID;
+    ///
+    /// fn foo(vault_contract: ContractId, nft: AssetId) {
+    ///     let vault_abi = abi(SRC6, vault_contract);
+    ///     let max_withdrawable = vault_abi.max_withdrawable(nft, DEFAULT_SUB_ID);
+    ///     assert(max_withdrawable == Some(1));
+    /// }
+    /// ```
     #[storage(read)]
     fn max_withdrawable(underlying_asset: AssetId, vault_sub_id: SubId) -> Option<u64> {
         if vault_sub_id != ZERO_B256 {
@@ -223,11 +309,57 @@ impl SRC6 for Contract {
 }
 
 impl SRC20 for Contract {
+    /// Returns the total number of differentiating Fractional NFTs minted by this vault.
+    ///
+    /// # Returns
+    ///
+    /// * [u64] - The number of assets that this contract has minted.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads: `1`
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use src20::SRC20;
+    ///
+    /// fn foo(vault_contract: ContractId) {
+    ///     let vault_abi = abi(SRC20, vault_contract);
+    ///     let total_assets = vault_abi.total_assets();
+    ///     assert(total_assets != 0);
+    /// }
+    /// ```
     #[storage(read)]
     fn total_assets() -> u64 {
         storage.total_assets.read()
     }
 
+    /// Returns the total supply of tokens for an Fractional NFT share asset.
+    ///
+    /// # Arguments
+    ///
+    /// * `asset`: [AssetId] - The asset of which to query the total supply.
+    ///
+    /// # Returns
+    ///
+    /// * [Option<u64>] - The total supply of tokens for `asset`.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads: `1`
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use src20::SRC20;
+    ///
+    /// fn foo(vault_contract: ContractId, share: AssetId) {
+    ///     let vault_abi = abi(SRC20, vault_contract);
+    ///     let total_supply = vault_abi.total_supply(share);
+    ///     assert(total_supply.unwrap() != 0);
+    /// }
+    /// ```
     #[storage(read)]
     fn total_supply(asset: AssetId) -> Option<u64> {
         match storage.vault_asset.get(asset).try_read() {
@@ -236,6 +368,32 @@ impl SRC20 for Contract {
         }
     }
 
+    /// Returns the name of the asset.
+    ///
+    /// # Arguments
+    ///
+    /// * `asset`: [AssetId] - The asset of which to query the name.
+    ///
+    /// # Returns
+    ///
+    /// * [Option<String>] - The name of `asset`.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads: `1`
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use src20::SRC20;
+    /// use std::string::String;
+    ///
+    /// fn foo(vault_contract: ContractId, share: AssetId) {
+    ///     let vault_abi = abi(SRC20, vault_contract);
+    ///     let name = vault_abi.name(share);
+    ///     assert(name.is_some());
+    /// }
+    /// ```
     #[storage(read)]
     fn name(asset: AssetId) -> Option<String> {
         match storage.vault_asset.get(asset).try_read() {
@@ -244,6 +402,32 @@ impl SRC20 for Contract {
         }
     }
 
+    /// Returns the symbol of the asset.
+    ///
+    /// # Arguments
+    ///
+    /// * `asset`: [AssetId] - The asset of which to query the symbol.
+    ///
+    /// # Returns
+    ///
+    /// * [Option<String>] - The symbol of `asset`.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads: `1`
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use src20::SRC20;
+    /// use std::string::String;
+    ///
+    /// fn foo(vault_contract: ContractId, share: AssetId) {
+    ///     let vault_abi = abi(SRC20, vault_contract);
+    ///     let symbol = vault_abi.symbol(share);
+    ///     assert(symbol.is_some());
+    /// }
+    /// ```
     #[storage(read)]
     fn symbol(asset: AssetId) -> Option<String> {
         match storage.vault_asset.get(asset).try_read() {
@@ -252,6 +436,35 @@ impl SRC20 for Contract {
         }
     }
 
+    /// Returns the number of decimals the asset uses.
+    ///
+    /// # Additional Information
+    ///
+    /// e.g. 8, means to divide the token amount by 100000000 to get its user representation.
+    ///
+    /// # Arguments
+    ///
+    /// * `asset`: [AssetId] - The asset of which to query the decimals.
+    ///
+    /// # Returns
+    ///
+    /// * [Option<u8>] - The decimal precision used by `asset`.
+    ///
+    /// # Number of Storage Accesses
+    ///
+    /// * Reads: `1`
+    ///
+    /// # Examples
+    ///
+    /// ```sway
+    /// use src20::SRC20;
+    ///
+    /// fn foo(vault_contract: ContractId, share: AssedId) {
+    ///     let vault_abi = abi(SRC20, vault_contract);
+    ///     let decimals = vault_abi.decimals(share);
+    ///     assert(decimals.unwrap() == 8u8);
+    /// }
+    /// ```
     #[storage(read)]
     fn decimals(asset: AssetId) -> Option<u8> {
         match storage.vault_asset.get(asset).try_read() {
