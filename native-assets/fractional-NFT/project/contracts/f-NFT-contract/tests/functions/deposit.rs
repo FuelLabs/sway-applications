@@ -1,7 +1,8 @@
 use crate::utils::{
     interface::{deposit, total_assets, total_supply},
-    setup::{defaults, deploy, get_wallet_balance, setup_nft},
+    setup::{defaults, deploy, get_wallet_balance, setup_nft, Deposit},
 };
+use fuels::types::Bits256;
 
 mod success {
 
@@ -19,7 +20,7 @@ mod success {
         assert_eq!(total_assets(&admin.f_nft).await, 0);
         assert_eq!(total_supply(&admin.f_nft, share_asset1).await, None);
 
-        deposit(&admin.f_nft, nft_1, vault_admin, vault_sub_id).await;
+        let response = deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
 
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset1).await,
@@ -30,6 +31,20 @@ mod success {
         assert_eq!(
             total_supply(&admin.f_nft, share_asset1).await,
             Some(share_supply)
+        );
+
+        let log = response.decode_logs_with_type::<Deposit>().unwrap();
+        let event = log.get(0).unwrap();
+        assert_eq!(
+            *event,
+            Deposit {
+                caller: vault_admin.clone(),
+                receiver: vault_admin,
+                underlying_asset: nft_1,
+                vault_sub_id: Bits256(*vault_sub_id),
+                deposited_amount: 1,
+                minted_shares: 100_000_000,
+            }
         );
     }
 
@@ -45,7 +60,7 @@ mod success {
         assert_eq!(total_assets(&admin.f_nft).await, 0);
         assert_eq!(total_supply(&admin.f_nft, share_asset1).await, None);
 
-        deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
+        let response = deposit(&admin.f_nft, nft_1, vault_admin.clone(), vault_sub_id).await;
 
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset1).await,
@@ -58,11 +73,25 @@ mod success {
             Some(share_supply)
         );
 
+        let log = response.decode_logs_with_type::<Deposit>().unwrap();
+        let event = log.get(0).unwrap();
+        assert_eq!(
+            *event,
+            Deposit {
+                caller: vault_admin.clone(),
+                receiver: vault_admin.clone(),
+                underlying_asset: nft_1,
+                vault_sub_id: Bits256(*vault_sub_id),
+                deposited_amount: 1,
+                minted_shares: 100_000_000,
+            }
+        );
+
         assert_eq!(get_wallet_balance(&admin.wallet, &share_asset2).await, 0);
         assert_eq!(get_wallet_balance(&admin.wallet, &nft_2).await, 1);
         assert_eq!(total_supply(&admin.f_nft, share_asset2).await, None);
 
-        deposit(&admin.f_nft, nft_2, vault_admin, vault_sub_id).await;
+        let response = deposit(&admin.f_nft, nft_2, vault_admin.clone(), vault_sub_id).await;
 
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset2).await,
@@ -73,6 +102,20 @@ mod success {
         assert_eq!(
             total_supply(&admin.f_nft, share_asset2).await,
             Some(share_supply)
+        );
+
+        let log = response.decode_logs_with_type::<Deposit>().unwrap();
+        let event = log.get(0).unwrap();
+        assert_eq!(
+            *event,
+            Deposit {
+                caller: vault_admin.clone(),
+                receiver: vault_admin,
+                underlying_asset: nft_2,
+                vault_sub_id: Bits256(*vault_sub_id),
+                deposited_amount: 1,
+                minted_shares: 100_000_000,
+            }
         );
     }
 }

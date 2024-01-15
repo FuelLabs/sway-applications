@@ -9,7 +9,7 @@ mod success {
     use super::*;
 
     #[tokio::test]
-    async fn increments_on_depoist() {
+    async fn increments_on_deposit() {
         let (_deployer, admin, f_nft_id, nft_id) = deploy().await;
         let (nft_1, nft_2) = setup_nft(&admin.wallet, &admin.nft, nft_id).await;
         let (vault_sub_id, vault_admin, _share_asset1, _share_asset2, _share_supply) =

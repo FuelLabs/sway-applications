@@ -1,7 +1,8 @@
 use crate::utils::{
     interface::{deposit, withdraw},
-    setup::{defaults, deploy, get_wallet_balance, setup_nft},
+    setup::{defaults, deploy, get_wallet_balance, setup_nft, Withdraw},
 };
+use fuels::types::Bits256;
 
 mod success {
 
@@ -22,11 +23,11 @@ mod success {
         );
         assert_eq!(get_wallet_balance(&admin.wallet, &nft_1).await, 0);
 
-        withdraw(
+        let response = withdraw(
             &admin.f_nft,
             share_asset1,
             share_supply,
-            vault_admin,
+            vault_admin.clone(),
             nft_1,
             vault_sub_id,
         )
@@ -34,6 +35,20 @@ mod success {
 
         assert_eq!(get_wallet_balance(&admin.wallet, &share_asset1).await, 0);
         assert_eq!(get_wallet_balance(&admin.wallet, &nft_1).await, 1);
+
+        let log = response.decode_logs_with_type::<Withdraw>().unwrap();
+        let event = log.get(0).unwrap();
+        assert_eq!(
+            *event,
+            Withdraw {
+                caller: vault_admin.clone(),
+                receiver: vault_admin,
+                underlying_asset: nft_1,
+                vault_sub_id: Bits256(*vault_sub_id),
+                withdrawn_amount: 100_000_000,
+                burned_shares: 100_000_000,
+            }
+        );
     }
 
     #[tokio::test]
@@ -53,7 +68,7 @@ mod success {
         );
         assert_eq!(get_wallet_balance(&admin.wallet, &nft_1).await, 0);
 
-        withdraw(
+        let response = withdraw(
             &admin.f_nft,
             share_asset1,
             share_supply,
@@ -65,17 +80,31 @@ mod success {
 
         assert_eq!(get_wallet_balance(&admin.wallet, &share_asset1).await, 0);
         assert_eq!(get_wallet_balance(&admin.wallet, &nft_1).await, 1);
+        let log = response.decode_logs_with_type::<Withdraw>().unwrap();
+        let event = log.get(0).unwrap();
+        assert_eq!(
+            *event,
+            Withdraw {
+                caller: vault_admin.clone(),
+                receiver: vault_admin.clone(),
+                underlying_asset: nft_1,
+                vault_sub_id: Bits256(*vault_sub_id),
+                withdrawn_amount: 100_000_000,
+                burned_shares: 100_000_000,
+            }
+        );
+
         assert_eq!(
             get_wallet_balance(&admin.wallet, &share_asset2).await,
             share_supply
         );
         assert_eq!(get_wallet_balance(&admin.wallet, &nft_2).await, 0);
 
-        withdraw(
+        let response = withdraw(
             &admin.f_nft,
             share_asset2,
             share_supply,
-            vault_admin,
+            vault_admin.clone(),
             nft_2,
             vault_sub_id,
         )
@@ -83,6 +112,19 @@ mod success {
 
         assert_eq!(get_wallet_balance(&admin.wallet, &share_asset2).await, 0);
         assert_eq!(get_wallet_balance(&admin.wallet, &nft_2).await, 1);
+        let log = response.decode_logs_with_type::<Withdraw>().unwrap();
+        let event = log.get(0).unwrap();
+        assert_eq!(
+            *event,
+            Withdraw {
+                caller: vault_admin.clone(),
+                receiver: vault_admin,
+                underlying_asset: nft_2,
+                vault_sub_id: Bits256(*vault_sub_id),
+                withdrawn_amount: 100_000_000,
+                burned_shares: 100_000_000,
+            }
+        );
     }
 }
 
