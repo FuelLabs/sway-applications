@@ -2,11 +2,10 @@ contract;
 
 mod errors;
 
-use errors::{DepositError, SubIdError, WithdrawError,};
+use errors::{DepositError, SubIdError, WithdrawError};
 use src6::{Deposit, SRC6, Withdraw};
 use src20::SRC20;
 use std::{
-    auth::msg_sender,
     call_frames::{
         contract_id,
         msg_asset_id,
@@ -44,7 +43,7 @@ storage {
     ///
     /// # Additional Information
     ///
-    /// This is the number of fractional NFTs that have ever been deposited.
+    /// This is the number of NFTs that have ever been deposited.
     total_assets: u64 = 0,
     /// The validity of an asset as a share minted by this contract.
     ///
@@ -55,7 +54,7 @@ storage {
 }
 
 impl SRC6 for Contract {
-    /// Deposits a NFT into the contract and mints NFT shares to the receiver.
+    /// Deposits a NFT into the contract and mints F-NFT shares to the receiver.
     ///
     /// # Arguments
     ///
@@ -95,10 +94,9 @@ impl SRC6 for Contract {
     #[storage(read, write)]
     fn deposit(receiver: Identity, vault_sub_id: SubId) -> u64 {
         require(vault_sub_id == ZERO_B256, SubIdError::InvalidSubId);
-
-        let nft = msg_asset_id();
         require(msg_amount() == 1, DepositError::InvalidSRC20NFT);
 
+        let nft = msg_asset_id();
         let f_nft_asset_sub_id = sha256((nft, vault_sub_id));
         let f_nft_asset = AssetId::new(contract_id(), f_nft_asset_sub_id);
 
@@ -137,8 +135,8 @@ impl SRC6 for Contract {
     /// # Reverts
     ///
     /// * When the `vault_sub_id` is the not ZERO_B256.
-    /// * When the asset is not shares to an NFT.
     /// * When the amount sent isn't all shares of an NFT.
+    /// * When the asset is not shares to an NFT.
     ///
     /// # Examples
     ///
@@ -165,10 +163,11 @@ impl SRC6 for Contract {
         require(vault_sub_id == ZERO_B256, SubIdError::InvalidSubId);
 
         let sent_amount = msg_amount();
+        require(sent_amount == SHARES, WithdrawError::AllSharesNotReturned);
+
         let f_nft_asset_sub_id = sha256((underlying_asset, vault_sub_id));
         let f_nft_asset = AssetId::new(contract_id(), f_nft_asset_sub_id);
         require(msg_asset_id() == f_nft_asset, WithdrawError::InvalidAsset);
-        require(sent_amount == SHARES, WithdrawError::AllSharesNotReturned);
 
         burn(f_nft_asset_sub_id, SHARES);
         transfer(receiver, underlying_asset, 1);

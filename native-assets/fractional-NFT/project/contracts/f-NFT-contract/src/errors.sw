@@ -16,6 +16,6 @@ pub enum DepositError {
 pub enum WithdrawError {
     /// Logged when not all shares have been included in the transaction.
     AllSharesNotReturned: (),
-    /// Logged when the asset sent is not valid shares of an NFT.
+    /// Logged when the asset sent is not the issued shares of an NFT.
     InvalidAsset: (),
 }
