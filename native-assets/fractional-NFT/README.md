@@ -18,7 +18,7 @@
 
 A fractional non-fungible token (F-NFT) is a unique token that represents a share or portion of ownership over a non-fungible token (NFT). On the Fuel Network, all NFTs and F-NFTs are [Native Assets](https://docs.fuel.network/docs/sway/blockchain-development/native_assets). F-NFTs are often created to sell partial ownership of an NFT on a secondary market, espeically in royalty NFTs to split a profit.
 
-In this barebones F-NFT example project, where locking a NFT into the vault will issue 100,000,000 shares. When all shares are sent to the vault in the same transaction, the NFT unlocks and can be withdrawn.
+In this barebones F-NFT example project, where locking a NFT into the vault will issue 100,000,000 shares. When all shares are sent to the vault in the same transaction, the NFT is unlocked and can be withdrawn.
 
 ## Standards Implementations
 
@@ -47,7 +47,7 @@ abi SRC6 {
 
 ### SRC-20
 
-The [SRC-20](https://github.com/FuelLabs/sway-standards/tree/master/standards/src_20) standard has been implemented for the resulting minted shares when a NFT is locked into the vault. Information on the share assets can be queried with the [SRC-20](https://github.com/FuelLabs/sway-standards/tree/master/standards/src_20) standard.
+The [SRC-20](https://github.com/FuelLabs/sway-standards/tree/master/standards/src_20) standard has been implemented for the resulting minted shares when a NFT is locked in the vault. Information on the share assets can be queried with the [SRC-20](https://github.com/FuelLabs/sway-standards/tree/master/standards/src_20) standard.
 
 ```sway
 abi SRC20 {

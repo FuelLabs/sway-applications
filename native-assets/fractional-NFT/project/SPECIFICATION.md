@@ -39,7 +39,7 @@ This function will mint new shares when an NFT is deposited.
 
 ### `withdraw()`
 
-This function will burn shares and release the locked NFT.
+This function will burn all F-NFT shares and release the locked NFT.
 
 ### `managed_assets()`
 
