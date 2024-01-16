@@ -81,13 +81,13 @@ impl SRC6 for Contract {
     /// use src6::SRC6;
     /// use std::constants::DEFAULT_SUB_ID;
     ///
-    /// fn foo(vault_contract: ContractId, reciever: Identity, nft: AssetId) {
+    /// fn foo(vault_contract: ContractId, receiver: Identity, nft: AssetId) {
     ///     let vault_abi = abi(SRC6, vault_contract);
     ///     let _ = vault_abi {
     ///         gas: 10000,
     ///         coins: 1,
     ///         asset_id: nft,
-    ///     }.deposit(reciever, DEFAULT_SUB_ID);
+    ///     }.deposit(receiver, DEFAULT_SUB_ID);
     /// }
     /// ```
     #[payable]
@@ -144,13 +144,13 @@ impl SRC6 for Contract {
     /// use src6::SRC6;
     /// use std::constants::DEFAULT_SUB_ID;
     ///
-    /// fn foo(vault_contract: ContractId, reciever: Identity, nft: AssetId, shares: AssetId) {
+    /// fn foo(vault_contract: ContractId, receiver: Identity, nft: AssetId, shares: AssetId) {
     ///     let vault_abi = abi(SRC6, vault_contract);
     ///     let _ = vault_abi {
     ///         gas: 10000,
     ///         coins: 100_000_000,
     ///         asset_id: shares,
-    ///     }.withdraw(reciever, nft, DEFAULT_SUB_ID);
+    ///     }.withdraw(receiver, nft, DEFAULT_SUB_ID);
     /// }
     /// ```
     #[payable]
@@ -458,7 +458,7 @@ impl SRC20 for Contract {
     /// ```sway
     /// use src20::SRC20;
     ///
-    /// fn foo(vault_contract: ContractId, share: AssedId) {
+    /// fn foo(vault_contract: ContractId, share: AssetId) {
     ///     let vault_abi = abi(SRC20, vault_contract);
     ///     let decimals = vault_abi.decimals(share);
     ///     assert(decimals.unwrap() == 8u8);

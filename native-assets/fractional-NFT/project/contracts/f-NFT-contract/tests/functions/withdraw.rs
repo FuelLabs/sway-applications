@@ -37,7 +37,7 @@ mod success {
         assert_eq!(get_wallet_balance(&admin.wallet, &nft_1).await, 1);
 
         let log = response.decode_logs_with_type::<Withdraw>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
         assert_eq!(
             *event,
             Withdraw {
@@ -81,7 +81,7 @@ mod success {
         assert_eq!(get_wallet_balance(&admin.wallet, &share_asset1).await, 0);
         assert_eq!(get_wallet_balance(&admin.wallet, &nft_1).await, 1);
         let log = response.decode_logs_with_type::<Withdraw>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
         assert_eq!(
             *event,
             Withdraw {
@@ -113,7 +113,7 @@ mod success {
         assert_eq!(get_wallet_balance(&admin.wallet, &share_asset2).await, 0);
         assert_eq!(get_wallet_balance(&admin.wallet, &nft_2).await, 1);
         let log = response.decode_logs_with_type::<Withdraw>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
         assert_eq!(
             *event,
             Withdraw {

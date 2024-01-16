@@ -34,7 +34,7 @@ mod success {
         );
 
         let log = response.decode_logs_with_type::<Deposit>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
         assert_eq!(
             *event,
             Deposit {
@@ -74,7 +74,7 @@ mod success {
         );
 
         let log = response.decode_logs_with_type::<Deposit>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
         assert_eq!(
             *event,
             Deposit {
@@ -105,7 +105,7 @@ mod success {
         );
 
         let log = response.decode_logs_with_type::<Deposit>().unwrap();
-        let event = log.get(0).unwrap();
+        let event = log.first().unwrap();
         assert_eq!(
             *event,
             Deposit {

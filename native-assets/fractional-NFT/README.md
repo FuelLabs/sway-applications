@@ -103,5 +103,5 @@ forc build
 Before running the tests the programs must be compiled with the command above.
 
 ```bash
-forc test 
+cargo test 
 ```
