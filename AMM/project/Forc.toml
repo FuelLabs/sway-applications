@@ -1,9 +1,0 @@
-[workspace]
-members = [
-  "./contracts/AMM-contract",
-  "./contracts/exchange-contract",
-  "./contracts/test-artifacts/malicious-implementation",
-  "./scripts/atomic-add-liquidity",
-  "./scripts/swap-exact-input",
-  "./scripts/swap-exact-output",
-]
