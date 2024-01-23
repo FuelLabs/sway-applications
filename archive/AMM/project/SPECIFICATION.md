@@ -141,7 +141,7 @@ If you are interested in a functional overview then this is the section for you.
 1. Returns the amount of the other asset to input and the liquidity asset amount to receive after an add liquidity operation
     1. If the asset pair of the pool is set 
     2. Requires the amount of an asset to input to [`add_liquidity`](#add_liquidity) 
-        > **NOTE** If any liquidity in the contract already exists, than the amount of the other asset is calculated based on the ratio of the assets. Otherwise, the ratio is assumed to be 1.   
+        > **NOTE** If any liquidity in the contract already exists, then the amount of the other asset is calculated based on the ratio of the assets. Otherwise, the ratio is assumed to be 1.   
 
 #### `preview_swap_exact_input()`
 

@@ -41,7 +41,6 @@ jobs:
         project:
           [
             "airdrop",
-            "AMM",
             "auctions/english-auction",
             "counter-script",
             "DAO",
