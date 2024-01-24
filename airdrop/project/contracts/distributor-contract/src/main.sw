@@ -11,6 +11,7 @@ use ::events::{ClaimEvent, ClawbackEvent, CreateAirdropEvent};
 use ::interface::{AirdropDistributor, Info};
 use merkle_proof::binary_merkle_proof::{leaf_digest, verify_proof};
 use std::{
+    asset::transfer,
     auth::msg_sender,
     block::height,
     call_frames::msg_asset_id,
@@ -23,7 +24,6 @@ use std::{
         sha256,
     },
     intrinsics::size_of_val,
-    token::transfer,
 };
 
 storage {

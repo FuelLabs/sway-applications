@@ -7,6 +7,7 @@ mod interface;
 mod utils;
 
 use std::{
+    asset::transfer,
     auth::msg_sender,
     block::height,
     call_frames::msg_asset_id,
@@ -15,7 +16,6 @@ use std::{
         this_balance,
     },
     hash::Hash,
-    token::transfer,
 };
 
 use ::data_structures::{Proposal, ProposalInfo, State, Votes};
@@ -216,15 +216,12 @@ impl DaoVoting for Contract {
         proposal.executed = true;
         storage.proposals.insert(proposal_id, proposal);
 
-        asm(call_data: proposal
-            .proposal_transaction
-            .call_data, amount: proposal
-            .proposal_transaction
-            .amount, asset: proposal
-            .proposal_transaction
-            .asset, gas: proposal
-            .proposal_transaction
-            .gas) {
+        asm(
+            call_data: proposal.proposal_transaction.call_data,
+            amount: proposal.proposal_transaction.amount,
+            asset: proposal.proposal_transaction.asset,
+            gas: proposal.proposal_transaction.gas,
+        ) {
             call call_data amount asset gas;
         }
 
