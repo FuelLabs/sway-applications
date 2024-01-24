@@ -133,8 +133,8 @@ jobs:
       - name: Install Fuel toolchain
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
-          toolchain: nightly
-          date: 2024-01-24
+          toolchain: latest
+          date: 2023-09-29
 
       - name: Check Sway formatting
         run: forc fmt --check --path ${{ matrix.project }}
