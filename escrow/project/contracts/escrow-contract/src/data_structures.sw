@@ -7,7 +7,7 @@ pub struct Arbiter {
     /// Address identifying the arbiter.
     address: Identity,
     /// The asset that the arbiter will be paid in upon resolution.
-    asset: ContractId,
+    asset: AssetId,
     /// The quantity of asset to be taken as payment.
     fee_amount: u64,
 }
@@ -23,7 +23,7 @@ pub struct Asset {
     /// Amount of asset the user must deposit.
     amount: u64,
     /// The id used to identify the asset for deposit.
-    id: ContractId,
+    id: AssetId,
 }
 
 /// Represents the user who is buying the asset.
@@ -31,7 +31,7 @@ pub struct Buyer {
     /// Address identifying the buyer.
     address: Identity,
     /// The asset that the user has currently deposited in the contract.
-    asset: Option<ContractId>,
+    asset: Option<AssetId>,
     // Minor data duplication allows us to forego validating unique assets upon escrow creation
     // otherwise the same asset with different values can be added which, if handled incorrectly,
     // may allow the user to drain the contract

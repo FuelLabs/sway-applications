@@ -1,7 +1,7 @@
 library;
 
 use ::data_structures::user::User;
-use std::{bytes::Bytes, constants::ZERO_B256};
+use std::{bytes::Bytes, constants::ZERO_B256, hash::{Hash, Hasher}};
 
 impl Bytes {
     /// Converts a generic copy type into [Bytes].
@@ -11,11 +11,11 @@ impl Bytes {
         bytes.len = 8;
 
         asm(buffer, ptr: value, dst: bytes.buf.ptr, len: 8) {
-            move buffer sp; // Make `buffer` point to the current top of the stack
-            cfei i8; // Grow stack by 1 word
-            sw   buffer ptr i0; // Save value in register at `ptr` to memory at `buffer`
-            mcp  dst buffer len; // Copy `len` bytes in memory starting from `buffer`, to `dst`
-            cfsi i8; // Shrink stack by 1 word
+            move buffer sp;
+            cfei i8;
+            sw buffer ptr i0;
+            mcp dst buffer len;
+            cfsi i8;
         }
 
         bytes
@@ -152,7 +152,7 @@ impl IntoBytes for Transaction {
 /// Parameters for a transfer.
 pub struct TransferParams {
     /// The asset to transfer.
-    asset_id: ContractId,
+    asset_id: AssetId,
     /// The amount to transfer.
     value: Option<u64>,
 }
@@ -162,6 +162,38 @@ pub enum TypeToHash {
     Threshold: Threshold,
     Transaction: Transaction,
     Weight: Weight,
+}
+
+impl Hash for User {
+    fn hash(self, ref mut state: Hasher) {
+        self.address.hash(state);
+        self.weight.hash(state);
+    }
+}
+
+impl Hash for Threshold {
+    fn hash(self, ref mut state: Hasher) {
+        self.contract_identifier.hash(state);
+        self.nonce.hash(state);
+        self.threshold.hash(state);
+    }
+}
+
+impl Hash for Transaction {
+    fn hash(self, ref mut state: Hasher) {
+        self.contract_identifier.hash(state);
+        self.nonce.hash(state);
+        self.target.hash(state);
+        self.transaction_parameters.into_bytes().hash(state);
+    }
+}
+
+impl Hash for Weight {
+    fn hash(self, ref mut state: Hasher) {
+        self.contract_identifier.hash(state);
+        self.nonce.hash(state);
+        self.user.hash(state);
+    }
 }
 
 /// The data to be hashed and signed over when calling `set_weight`.

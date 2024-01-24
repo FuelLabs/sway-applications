@@ -2,7 +2,10 @@ use crate::utils::{
     interface::core::{create_escrow, deposit, propose_arbiter},
     setup::{create_arbiter, create_asset, setup},
 };
-use fuels::prelude::{AssetId, CallParameters, TxParameters};
+use fuels::{
+    prelude::{AssetId, CallParameters, TxPolicies},
+    programs::call_utils::TxDependencyExtension,
+};
 
 mod success {
 
@@ -33,7 +36,7 @@ mod success {
             defaults.initial_wallet_amount - defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
 
         let response = propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
 
@@ -80,7 +83,7 @@ mod success {
             defaults.initial_wallet_amount - defaults.asset_amount,
             asset_amount(&defaults.asset_id, &seller).await
         );
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
 
         let response1 = propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
 
@@ -154,8 +157,8 @@ mod success {
             defaults.initial_wallet_amount - (2 * defaults.asset_amount),
             asset_amount(&defaults.asset_id, &seller).await
         );
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
-        assert!(matches!(arbiter_proposal(&seller, 1).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
+        assert!(arbiter_proposal(&seller, 1).await.is_none());
 
         let response1 = propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
 
@@ -239,8 +242,8 @@ mod success {
             defaults.initial_wallet_amount - (2 * defaults.asset_amount),
             asset_amount(&defaults.asset_id, &seller).await
         );
-        assert!(matches!(arbiter_proposal(&seller, 0).await, None));
-        assert!(matches!(arbiter_proposal(&seller, 1).await, None));
+        assert!(arbiter_proposal(&seller, 0).await.is_none());
+        assert!(arbiter_proposal(&seller, 1).await.is_none());
 
         let response1 = propose_arbiter(arbiter_obj.clone(), &seller, 0).await;
 
@@ -458,7 +461,7 @@ mod revert {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj = create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
-        let tx_params = TxParameters::new(0, 10_000_000, 0);
+        let tx_params = TxPolicies::new(Some(0), Some(10_000_000), None, None, None);
         let call_params = CallParameters::new(
             arbiter_obj.fee_amount - 1,
             AssetId::from(*arbiter_obj.asset),
@@ -481,7 +484,7 @@ mod revert {
             .contract
             .methods()
             .propose_arbiter(arbiter_obj, 0)
-            .tx_params(tx_params)
+            .with_tx_policies(tx_params)
             .call_params(call_params)
             .unwrap()
             .append_variable_outputs(1)
@@ -499,7 +502,7 @@ mod revert {
 
         let arbiter_obj_unequal =
             create_arbiter(&arbiter, defaults.asset_id, defaults.asset_amount).await;
-        let tx_params = TxParameters::new(0, 1_000_000, 0);
+        let tx_params = TxPolicies::new(Some(0), Some(1_000_000), None, None, None);
         let call_params = CallParameters::new(
             arbiter_obj_unequal.fee_amount,
             AssetId::from(*defaults.other_asset_id),
@@ -522,7 +525,7 @@ mod revert {
             .contract
             .methods()
             .propose_arbiter(arbiter_obj_unequal, 0)
-            .tx_params(tx_params)
+            .with_tx_policies(tx_params)
             .call_params(call_params)
             .unwrap()
             .append_variable_outputs(1)

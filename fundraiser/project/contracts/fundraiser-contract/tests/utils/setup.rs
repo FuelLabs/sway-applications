@@ -1,8 +1,8 @@
 use fuels::{
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, AssetConfig, AssetId, Bech32Address,
-        Config, Contract, ContractId, LoadConfiguration, StorageConfiguration, TxParameters,
-        WalletUnlocked, WalletsConfig, BASE_ASSET_ID,
+        Contract, LoadConfiguration, StorageConfiguration, TxPolicies, WalletUnlocked,
+        WalletsConfig, BASE_ASSET_ID,
     },
     types::Identity,
 };
@@ -16,11 +16,11 @@ const FUNDRAISER_CONTRACT_BINARY_PATH: &str = "./out/debug/fundraiser-contract.b
 const FUNDRAISER_CONTRACT_STORAGE_PATH: &str = "./out/debug/fundraiser-contract-storage_slots.json";
 
 pub(crate) struct Coin {
-    pub(crate) id: ContractId,
+    pub(crate) id: AssetId,
 }
 
 pub(crate) struct DefaultParameters {
-    pub(crate) asset_id: ContractId,
+    pub(crate) asset_id: AssetId,
     pub(crate) beneficiary: Identity,
     pub(crate) deadline: u64,
     pub(crate) initial_wallet_amount: u64,
@@ -62,25 +62,22 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
 
     let wallet_config = WalletsConfig::new_multiple_assets(number_of_wallets, assets);
 
-    let provider_config = Config {
-        manual_blocks_enabled: true,
-        ..Config::local_node()
-    };
-    let mut wallets =
-        launch_custom_provider_and_get_wallets(wallet_config, Some(provider_config), None).await;
+    let mut wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None)
+        .await
+        .unwrap();
 
     let deployer_wallet = wallets.pop().unwrap();
     let author_wallet = wallets.pop().unwrap();
     let user_wallet = wallets.pop().unwrap();
 
-    let fundraiser_storage_configuration =
-        StorageConfiguration::load_from(FUNDRAISER_CONTRACT_STORAGE_PATH);
+    let fundraiser_storage_configuration = StorageConfiguration::default()
+        .add_slot_overrides_from_file(FUNDRAISER_CONTRACT_STORAGE_PATH);
     let fundraiser_configuration = LoadConfiguration::default()
-        .set_storage_configuration(fundraiser_storage_configuration.unwrap());
+        .with_storage_configuration(fundraiser_storage_configuration.unwrap());
     let fundraiser_id =
         Contract::load_from(FUNDRAISER_CONTRACT_BINARY_PATH, fundraiser_configuration)
             .unwrap()
-            .deploy(&deployer_wallet, TxParameters::default())
+            .deploy(&deployer_wallet, TxPolicies::default())
             .await
             .unwrap();
 
@@ -94,16 +91,12 @@ pub(crate) async fn setup() -> (User, User, Coin, Coin, DefaultParameters) {
         wallet: user_wallet.clone(),
     };
 
-    let asset = Coin {
-        id: ContractId::from(*asset_id),
-    };
+    let asset = Coin { id: asset_id };
 
-    let asset2 = Coin {
-        id: ContractId::from(*asset2_id),
-    };
+    let asset2 = Coin { id: asset2_id };
 
     let defaults = DefaultParameters {
-        asset_id: ContractId::from(*asset_id),
+        asset_id,
         beneficiary: Identity::Address(user_wallet.address().into()),
         deadline: 100,
         initial_wallet_amount: coin_amount,

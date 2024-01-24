@@ -1,7 +1,6 @@
 use dotenv::dotenv;
 use fuels::{
     accounts::{fuel_crypto::SecretKey, wallet::WalletUnlocked},
-    client::FuelClient,
     prelude::{Bech32ContractId, ContractId, Provider},
     tx::ConsensusParameters,
 };
@@ -43,10 +42,10 @@ fn setup() -> (Oracle<WalletUnlocked>, reqwest::Client, Url) {
     );
 
     let provider = Provider::new(
-        FuelClient::new(env::var("FUEL_PROVIDER_URL").expect("FUEL_PROVIDER_URL must be set."))
-            .unwrap(),
-        ConsensusParameters::DEFAULT,
-    );
+        env::var("FUEL_PROVIDER_URL").expect("FUEL_PROVIDER_URL must be set."),
+        ConsensusParameters::default(),
+    )
+    .unwrap();
 
     let key = SecretKey::from_str(&env::var("WALLET_SECRET").expect("WALLET_SECRET must be set."))
         .unwrap();
