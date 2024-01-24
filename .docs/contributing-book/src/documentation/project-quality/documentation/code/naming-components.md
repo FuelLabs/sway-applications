@@ -25,7 +25,7 @@ That being said, here are some examples that should be avoided.
 Using a single character to name a variable conveys little to no information to a developer.
 
 - Is this a throw away variable?
-- What is the variable meant to represent where ever it is used?
+- What is the variable meant to represent wherever it is used?
 - Does it make sense to call it by the chosen character e.g. `x` when referring to formulas?
 
 ### Ambiguous Abbreviations
