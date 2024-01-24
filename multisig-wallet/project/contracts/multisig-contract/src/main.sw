@@ -21,6 +21,7 @@ use ::data_structures::{
     user::User,
 };
 use std::{
+    asset::transfer,
     call_frames::contract_id,
     context::this_balance,
     error_signals::FAILED_REQUIRE_SIGNAL,
@@ -32,7 +33,6 @@ use std::{
         call_with_function_selector,
         CallParams,
     },
-    token::transfer,
 };
 use ::utils::{compute_hash, recover_signer};
 
@@ -323,11 +323,7 @@ fn count_approvals(signatures: Vec<SignatureInfo>, transaction_hash: b256) -> u6
         );
 
         previous_signer = signer;
-        approval_count += storage
-            .weighting
-            .get(signer)
-            .try_read()
-            .unwrap_or(0);
+        approval_count += storage.weighting.get(signer).try_read().unwrap_or(0);
 
         if storage.threshold.read() <= approval_count {
             break;
