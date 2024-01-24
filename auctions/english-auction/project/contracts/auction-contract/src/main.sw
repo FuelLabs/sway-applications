@@ -10,6 +10,7 @@ use ::errors::{AccessError, InitError, InputError, UserError};
 use ::events::{BidEvent, CancelAuctionEvent, CreateAuctionEvent, WithdrawEvent};
 use ::interface::{EnglishAuction, Info};
 use std::{
+    asset::transfer,
     block::height,
     call_frames::{
         contract_id,
@@ -17,7 +18,6 @@ use std::{
     },
     context::msg_amount,
     hash::Hash,
-    token::transfer,
 };
 
 storage {
@@ -147,8 +147,8 @@ impl EnglishAuction for Contract {
         require(
             reserve_price
                 .is_none() || (reserve_price
-                .is_some() && reserve_price
-                .unwrap() >= initial_price),
+                    .is_some() && reserve_price
+                    .unwrap() >= initial_price),
             InitError::ReserveLessThanInitialPrice,
         );
         require(duration != 0, InitError::AuctionDurationNotProvided);
