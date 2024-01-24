@@ -1,6 +1,6 @@
 [toolchain]
-channel = "nightly-2023-12-07"
+channel = "nightly-2024-01-24"
 
 [components]
-forc = "0.48.1"
-fuel-core = "0.21.0"
+forc = "0.49.1"
+fuel-core = "0.22.0"
