@@ -6,6 +6,11 @@ use errors::{DepositError, SubIdError, WithdrawError};
 use src6::{Deposit, SRC6, Withdraw};
 use src20::SRC20;
 use std::{
+    asset::{
+        burn,
+        mint_to,
+        transfer,
+    },
     call_frames::{
         contract_id,
         msg_asset_id,
@@ -20,11 +25,6 @@ use std::{
         sha256,
     },
     string::String,
-    token::{
-        burn,
-        mint_to,
-        transfer,
-    },
 };
 
 configurable {
@@ -334,7 +334,7 @@ impl SRC20 for Contract {
         storage.total_assets.read()
     }
 
-    /// Returns the total supply of tokens for an Fractional NFT share asset.
+    /// Returns the total supply of coins for an Fractional NFT share asset.
     ///
     /// # Arguments
     ///
@@ -342,7 +342,7 @@ impl SRC20 for Contract {
     ///
     /// # Returns
     ///
-    /// * [Option<u64>] - The total supply of tokens for `asset`.
+    /// * [Option<u64>] - The total supply of coins for `asset`.
     ///
     /// # Number of Storage Accesses
     ///
@@ -439,7 +439,7 @@ impl SRC20 for Contract {
     ///
     /// # Additional Information
     ///
-    /// e.g. 8, means to divide the token amount by 100000000 to get its user representation.
+    /// e.g. 8, means to divide the coins amount by 100000000 to get its user representation.
     ///
     /// # Arguments
     ///

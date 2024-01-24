@@ -6,23 +6,23 @@
 </p>
 
 <p align="center">
-    <a href="https://crates.io/crates/forc/0.48.1" alt="forc">
-        <img src="https://img.shields.io/badge/forc-v0.48.1-orange" />
+    <a href="https://crates.io/crates/forc/0.49.1" alt="forc">
+        <img src="https://img.shields.io/badge/forc-v0.49.1-orange" />
     </a>
-    <a href="https://crates.io/crates/fuel-core/0.21.0" alt="fuel-core">
-        <img src="https://img.shields.io/badge/fuel--core-v0.21.0-yellow" />
+    <a href="https://crates.io/crates/fuel-core/0.22.0" alt="fuel-core">
+        <img src="https://img.shields.io/badge/fuel--core-v0.22.0-yellow" />
     </a>
 </p>
 
 ## Overview
 
-A fractional non-fungible token (F-NFT) is a unique token that represents a share or portion of ownership over a non-fungible token (NFT). On the Fuel Network, all NFTs and F-NFTs are [Native Assets](https://docs.fuel.network/docs/sway/blockchain-development/native_assets). F-NFTs are often created to sell partial ownership of an NFT on a secondary market, espeically in royalty NFTs to split a profit.
+A fractional non-fungible token (F-NFT) is a unique asset that represents a share or portion of ownership over a non-fungible token (NFT). On the Fuel Network, all NFTs and F-NFTs are [Native Assets](https://docs.fuel.network/docs/sway/blockchain-development/native_assets). F-NFTs are often created to sell partial ownership of an NFT on a secondary market, espeically in royalty NFTs to split a profit.
 
 In this barebones F-NFT example project, where locking a NFT into the vault will issue 100,000,000 shares. When all shares are sent to the vault in the same transaction, the NFT is unlocked and can be withdrawn.
 
 ## Standards Implementations
 
-The project implements and follows the [SRC-6; Vault](https://github.com/FuelLabs/sway-standards/tree/master/standards/src6-vault) and [SRC-20; Token](https://github.com/FuelLabs/sway-standards/tree/master/standards/src20-token) standards. 
+The project implements and follows the [SRC-6; Vault](https://github.com/FuelLabs/sway-standards/tree/master/standards/src6-vault) and [SRC-20; Native Asset](https://github.com/FuelLabs/sway-standards/tree/master/standards/src20-native-asset) standards. 
 
 ### SRC-6
 

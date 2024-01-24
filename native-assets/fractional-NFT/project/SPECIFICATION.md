@@ -68,7 +68,7 @@ This function will return the total number of individual assets for a contract.
 
 ### `total_supply()`
 
-This function will return the total supply of tokens for an asset.
+This function will return the total supply of coins for an asset.
 
 ### `name()`
 
