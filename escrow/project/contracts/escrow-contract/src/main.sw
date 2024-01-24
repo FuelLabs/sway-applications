@@ -29,13 +29,13 @@ use events::{
 };
 use interface::{Escrow, Info};
 use std::{
+    asset::transfer,
     auth::msg_sender,
     block::height,
     call_frames::msg_asset_id,
     context::msg_amount,
     hash::Hash,
     storage::storage_vec::*,
-    token::transfer,
 };
 
 storage {
