@@ -3,10 +3,10 @@ contract;
 mod errors;
 
 use errors::{MintError, SetError};
-use src_20::SRC20;
-use src_3::SRC3;
-use src_7::{Metadata, SRC7};
-use token::{
+use src20::SRC20;
+use src3::SRC3;
+use src7::{Metadata, SRC7};
+use asset::{
     base::{
         _name,
         _set_name,
@@ -14,7 +14,7 @@ use token::{
         _symbol,
         _total_assets,
         _total_supply,
-        SetTokenAttributes,
+        SetAssetAttributes,
     },
     metadata::*,
     mint::{
@@ -338,7 +338,7 @@ impl SRC7 for Contract {
     }
 }
 
-impl SetTokenAttributes for Contract {
+impl SetAssetAttributes for Contract {
     /// Sets the name of an asset.
     ///
     /// # Arguments
@@ -442,7 +442,7 @@ impl SetTokenAttributes for Contract {
     }
 }
 
-impl SetTokenMetadata for Contract {
+impl SetAssetMetadata for Contract {
     /// Stores metadata for a specific asset and key pair.
     ///
     /// # Arguments
@@ -567,13 +567,7 @@ fn test_name() {
     let name = String::from_ascii_str("Fuel Token");
     assert(src20_abi.name(asset_id).is_none());
     attributes_abi.set_name(asset_id, name);
-    assert(
-        src20_abi
-            .name(asset_id)
-            .unwrap()
-            .as_bytes() == name
-            .as_bytes(),
-    );
+    assert(src20_abi.name(asset_id).unwrap().as_bytes() == name.as_bytes());
 }
 #[test(should_revert)]
 fn test_revert_set_name_twice() {
@@ -595,13 +589,7 @@ fn test_symbol() {
     let symbol = String::from_ascii_str("FUEL");
     assert(src20_abi.symbol(asset_id).is_none());
     attributes_abi.set_symbol(asset_id, symbol);
-    assert(
-        src20_abi
-            .symbol(asset_id)
-            .unwrap()
-            .as_bytes() == symbol
-            .as_bytes(),
-    );
+    assert(src20_abi.symbol(asset_id).unwrap().as_bytes() == symbol.as_bytes());
 }
 #[test(should_revert)]
 fn test_revert_set_symbol_twice() {
