@@ -52,7 +52,12 @@ abi AirdropDistributor {
     /// * When no tokens are sent to the airdrop contract.
     #[payable]
     #[storage(read, write)]
-    fn constructor(admin: Identity, claim_time: u64, merkle_root: b256, num_leaves: u64);
+    fn constructor(
+        admin: Identity,
+        claim_time: u32,
+        merkle_root: b256,
+        num_leaves: u64,
+    );
 }
 
 abi Info {
@@ -80,9 +85,9 @@ abi Info {
     ///
     /// # Returns
     ///
-    /// * [u64] - The block at which the airdrop ends.
+    /// * [u32] - The block at which the airdrop ends.
     #[storage(read)]
-    fn end_block() -> u64;
+    fn end_block() -> u32;
 
     /// Returns whether the airdrop is active and tokens can be claimed.
     ///

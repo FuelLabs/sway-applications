@@ -19,7 +19,7 @@ pub struct CreatedEscrowEvent {
 /// Event for when a deposit is made.
 pub struct DepositEvent {
     /// The asset that the user deposited.
-    asset: ContractId,
+    asset: AssetId,
     /// Unique escrow identifier.
     identifier: u64,
 }

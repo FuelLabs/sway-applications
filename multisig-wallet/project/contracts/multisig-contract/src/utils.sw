@@ -4,6 +4,8 @@ use std::{
     call_frames::contract_id,
     ecr::ec_recover_address,
     hash::{
+        Hash,
+        Hasher,
         keccak256,
         sha256,
     },
@@ -26,9 +28,9 @@ use ::data_structures::{
     user::User,
 };
 
-const EIP191_INITIAL_BYTE = 0x19u8;
-const EIP191_VERSION_BYTE = 0x45u8;
-const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
+const EIP191_INITIAL_BYTE = 0x19;
+const EIP191_VERSION_BYTE = 0x45;
+// const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32"; // TODO: Replace the use of string literal with this constant when compiler bug is fixed.
 
 /// Takes a struct comprised of transaction data and hashes it.
 ///
@@ -46,7 +48,7 @@ const ETHEREUM_PREFIX = "\x19Ethereum Signed Message:\n32";
 pub fn compute_hash(type_to_hash: TypeToHash) -> b256 {
     match type_to_hash {
         TypeToHash::Threshold(threshold) => sha256(threshold),
-        TypeToHash::Transaction(transaction) => transaction.into_bytes().sha256(),
+        TypeToHash::Transaction(transaction) => sha256(transaction.into_bytes()),
         TypeToHash::Weight(weight) => sha256(weight),
     }
 }
@@ -162,7 +164,9 @@ fn encode_and_pack_signed_data(
 ///
 /// * [(u64, u64, u64, u64)] - The [u64]s that comprised `value`.
 fn decompose(value: b256) -> (u64, u64, u64, u64) {
-    asm(r1: __addr_of(value)) { r1: (u64, u64, u64, u64) }
+    asm(r1: __addr_of(value)) {
+        r1: (u64, u64, u64, u64)
+    }
 }
 
 /// Applies the prefix "\x19Ethereum Signed Message:\n32" to a message hash.
@@ -175,5 +179,5 @@ fn decompose(value: b256) -> (u64, u64, u64, u64) {
 ///
 /// * [b256]- The prefixed hash.
 fn ethereum_prefix(msg_hash: b256) -> b256 {
-    keccak256((ETHEREUM_PREFIX, msg_hash))
+    keccak256(("\x19Ethereum Signed Message:\n32", msg_hash)) //// TODO: Replace the use of string literal with this constant when compiler bug is fixed.
 }

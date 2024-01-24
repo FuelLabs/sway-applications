@@ -1,6 +1,6 @@
 use fuels::{
-    accounts::wallet::WalletUnlocked, prelude::ContractId,
-    programs::call_response::FuelCallResponse, types::Bits256,
+    accounts::wallet::WalletUnlocked, prelude::AssetId, programs::call_response::FuelCallResponse,
+    types::Bits256,
 };
 
 use crate::utils::setup::{MultiSig, TypeToHash};
@@ -19,7 +19,7 @@ pub(crate) async fn approval_weight(
 
 pub(crate) async fn balance(
     contract: &MultiSig<WalletUnlocked>,
-    asset_id: ContractId,
+    asset_id: AssetId,
 ) -> FuelCallResponse<u64> {
     contract.methods().balance(asset_id).call().await.unwrap()
 }

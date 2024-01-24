@@ -7,13 +7,13 @@ abi DaoVoting {
     ///
     /// # Arguments
     ///
-    /// * `gov_token`: [ContractId] - contract id of the token used to vote on governance proposals.
+    /// * `gov_token`: [AssetId] - AssetId of the token used to vote on governance proposals.
     ///
     /// # Reverts
     ///
     /// * When the constructor is called more than once.
     #[storage(read, write)]
-    fn constructor(gov_token: ContractId);
+    fn constructor(gov_token: AssetId);
 
     /// Create a new proposal.
     ///
@@ -29,7 +29,11 @@ abi DaoVoting {
     /// * When the acceptance percentage is 0.
     /// * When the acceptance percentage is greater than 100.
     #[storage(read, write)]
-    fn create_proposal(acceptance_percentage: u64, duration: u64, proposal_transaction: Proposal);
+    fn create_proposal(
+        acceptance_percentage: u64,
+        duration: u64,
+        proposal_transaction: Proposal,
+    );
 
     /// Deposit governance tokens into contract.
     ///
@@ -168,13 +172,13 @@ abi Info {
     ///
     /// # Returns
     ///
-    /// * [ContractId] - AssetId of the token used to vote on governance proposals.
+    /// * [AssetId] - AssetId of the token used to vote on governance proposals.
     ///
     /// # Reverts
     ///
     /// * When the constructor has not been called to initialize
     #[storage(read)]
-    fn governance_token_id() -> ContractId;
+    fn governance_token_id() -> AssetId;
 
     /// Return proposal count
     ///

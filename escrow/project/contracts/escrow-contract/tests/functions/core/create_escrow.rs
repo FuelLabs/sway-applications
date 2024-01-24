@@ -2,7 +2,6 @@ use crate::utils::{
     interface::core::create_escrow,
     setup::{create_arbiter, create_asset, setup},
 };
-use fuels::prelude::ContractId;
 
 mod success {
 
@@ -23,8 +22,8 @@ mod success {
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(0, escrow_count(&seller).await);
-        assert!(matches!(assets(&seller, 0).await, None));
-        assert!(matches!(escrows(&seller, 0).await, None));
+        assert!(assets(&seller, 0).await.is_none());
+        assert!(escrows(&seller, 0).await.is_none());
 
         let response = create_escrow(
             defaults.asset_amount,
@@ -97,8 +96,8 @@ mod success {
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(0, escrow_count(&seller).await);
-        assert!(matches!(assets(&seller, 0).await, None));
-        assert!(matches!(escrows(&seller, 0).await, None));
+        assert!(assets(&seller, 0).await.is_none());
+        assert!(escrows(&seller, 0).await.is_none());
 
         let response = create_escrow(
             defaults.asset_amount,
@@ -173,8 +172,8 @@ mod success {
             asset_amount(&defaults.asset_id, &seller).await
         );
         assert_eq!(0, escrow_count(&seller).await);
-        assert!(matches!(assets(&seller, 0).await, None));
-        assert!(matches!(escrows(&seller, 0).await, None));
+        assert!(assets(&seller, 0).await.is_none());
+        assert!(escrows(&seller, 0).await.is_none());
 
         let response1 = create_escrow(
             defaults.asset_amount,
@@ -296,6 +295,8 @@ mod success {
 
 mod revert {
 
+    use fuels::types::AssetId;
+
     use super::*;
 
     #[tokio::test]
@@ -378,7 +379,7 @@ mod revert {
     async fn when_asset_used_for_arbiter_fee_is_unequal() {
         let (arbiter, buyer, seller, defaults) = setup().await;
         let arbiter_obj =
-            create_arbiter(&arbiter, ContractId::from([2u8; 32]), defaults.asset_amount).await;
+            create_arbiter(&arbiter, AssetId::from([2u8; 32]), defaults.asset_amount).await;
         let asset = create_asset(defaults.asset_amount, defaults.asset_id).await;
 
         create_escrow(

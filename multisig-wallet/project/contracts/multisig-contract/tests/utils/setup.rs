@@ -5,8 +5,8 @@ use fuels::{
     },
     core::codec::{calldata, fn_selector},
     prelude::{
-        abigen, setup_single_asset_coins, setup_test_provider, Address, Contract, ContractId,
-        Error, LoadConfiguration, StorageConfiguration, TxParameters, BASE_ASSET_ID,
+        abigen, setup_single_asset_coins, setup_test_provider, Address, Contract, Error,
+        LoadConfiguration, StorageConfiguration, TxPolicies, BASE_ASSET_ID,
     },
     tx::Bytes32,
     types::{Bits256, Bytes, Identity, B512},
@@ -46,10 +46,6 @@ pub(crate) struct Caller {
     pub(crate) wallet: WalletUnlocked,
 }
 
-pub(crate) fn base_asset_contract_id() -> ContractId {
-    ContractId::new(BASE_ASSET_ID.try_into().unwrap())
-}
-
 pub(crate) fn default_users() -> Vec<User> {
     let fuel_user_1 = User {
         address: Bits256::from_hex_str(
@@ -72,13 +68,13 @@ pub(crate) async fn deploy_target_contract(
     deployer_wallet: WalletUnlocked,
 ) -> Result<TargetContract<WalletUnlocked>, Error> {
     let target_contract_storage_configuration =
-        StorageConfiguration::load_from(TARGET_CONTRACT_STORAGE_PATH);
+        StorageConfiguration::default().add_slot_overrides_from_file(TARGET_CONTRACT_STORAGE_PATH);
     let target_contract_configuration = LoadConfiguration::default()
-        .set_storage_configuration(target_contract_storage_configuration.unwrap());
+        .with_storage_configuration(target_contract_storage_configuration.unwrap());
     let target_contract_id =
         Contract::load_from(TARGET_CONTRACT_BINARY_PATH, target_contract_configuration)
             .unwrap()
-            .deploy(&deployer_wallet, TxParameters::default())
+            .deploy(&deployer_wallet, TxPolicies::default())
             .await?;
 
     Ok(TargetContract::new(target_contract_id, deployer_wallet))
@@ -96,7 +92,7 @@ fn eip_191_personal_sign_format(message_hash: Message) -> Message {
 }
 
 fn ethereum_prefix(formatted_message: Message) -> Message {
-    let prefix = r#"\x19Ethereum Signed Message:\n32"#;
+    let prefix = r"\x19Ethereum Signed Message:\n32";
 
     let mut eth_prefix_data: Vec<u8> = Vec::new();
     eth_prefix_data.append(&mut prefix.as_bytes().to_vec());
@@ -171,18 +167,20 @@ pub(crate) async fn setup_env(private_key: &str) -> Result<(SecretKey, Caller, C
         })
         .collect::<Vec<_>>();
 
-    let (provider, _socket_addr) = setup_test_provider(all_coins, vec![], None, None).await;
+    let provider = setup_test_provider(all_coins, vec![], None, None)
+        .await
+        .unwrap();
     deployer_wallet.set_provider(provider.clone());
     non_owner_wallet.set_provider(provider);
 
-    let multisig_storage_configuration =
-        StorageConfiguration::load_from(MULTISIG_CONTRACT_STORAGE_PATH);
+    let multisig_storage_configuration = StorageConfiguration::default()
+        .add_slot_overrides_from_file(MULTISIG_CONTRACT_STORAGE_PATH);
     let multisig_configuration = LoadConfiguration::default()
-        .set_storage_configuration(multisig_storage_configuration.unwrap());
+        .with_storage_configuration(multisig_storage_configuration.unwrap());
     let multisig_contract_id =
         Contract::load_from(MULTISIG_CONTRACT_BINARY_PATH, multisig_configuration)
             .unwrap()
-            .deploy(&deployer_wallet, TxParameters::default())
+            .deploy(&deployer_wallet, TxPolicies::default())
             .await?;
 
     let deployer = Caller {
@@ -210,7 +208,7 @@ pub(crate) fn transfer_parameters(
         nonce,
         target: receiver.clone(),
         transaction_parameters: TransactionParameters::Transfer(TransferParams {
-            asset_id: base_asset_contract_id(),
+            asset_id: BASE_ASSET_ID,
             value: Some(DEFAULT_TRANSFER_AMOUNT),
         }),
     };
@@ -225,15 +223,18 @@ pub(crate) fn call_parameters(
     with_value: bool,
 ) -> Transaction {
     let contract_call_params = ContractCallParams {
-        calldata: Bytes(calldata!(
-            Address::from(deployer.wallet.address()),
-            DEFAULT_CALLDATA_VALUE
-        )),
+        calldata: Bytes(
+            calldata!(
+                Address::from(deployer.wallet.address()),
+                DEFAULT_CALLDATA_VALUE
+            )
+            .unwrap(),
+        ),
         forwarded_gas: DEFAULT_FORWARDED_GAS,
         function_selector: Bytes(fn_selector!(update_counter(Address, u64))),
         single_value_type_arg: false,
         transfer_params: TransferParams {
-            asset_id: base_asset_contract_id(),
+            asset_id: BASE_ASSET_ID,
             value: None,
         },
     };
@@ -249,7 +250,7 @@ pub(crate) fn call_parameters(
         transaction.transaction_parameters = TransactionParameters::Call(ContractCallParams {
             function_selector: Bytes(fn_selector!(update_deposit(Address, u64))),
             transfer_params: TransferParams {
-                asset_id: base_asset_contract_id(),
+                asset_id: BASE_ASSET_ID,
                 value: Some(DEFAULT_TRANSFER_AMOUNT),
             },
             ..contract_call_params

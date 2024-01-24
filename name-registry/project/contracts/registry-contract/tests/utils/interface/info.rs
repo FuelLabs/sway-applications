@@ -1,46 +1,31 @@
 use crate::utils::setup::{NameRegistry, RegistrationValidityError};
 use fuels::{
-    prelude::{ContractId, WalletUnlocked},
+    prelude::{AssetId, WalletUnlocked},
     programs::call_response::FuelCallResponse,
-    types::{Identity, SizedAsciiString},
+    types::Identity,
 };
 
-pub(crate) async fn rate(instance: &NameRegistry<WalletUnlocked>, id: ContractId) -> Option<u64> {
+pub(crate) async fn rate(instance: &NameRegistry<WalletUnlocked>, id: AssetId) -> Option<u64> {
     instance.methods().rate(id).call().await.unwrap().value
 }
 
 pub(crate) async fn expiry(
     instance: &NameRegistry<WalletUnlocked>,
-    name: &String,
+    name: String,
 ) -> FuelCallResponse<Result<u64, RegistrationValidityError>> {
-    instance
-        .methods()
-        .expiry(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
-        .call()
-        .await
-        .unwrap()
+    instance.methods().expiry(name).call().await.unwrap()
 }
 
 pub(crate) async fn identity(
     instance: &NameRegistry<WalletUnlocked>,
-    name: &String,
+    name: String,
 ) -> FuelCallResponse<Result<Identity, RegistrationValidityError>> {
-    instance
-        .methods()
-        .identity(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
-        .call()
-        .await
-        .unwrap()
+    instance.methods().resolver(name).call().await.unwrap()
 }
 
 pub(crate) async fn owner(
     instance: &NameRegistry<WalletUnlocked>,
-    name: &String,
+    name: String,
 ) -> FuelCallResponse<Result<Identity, RegistrationValidityError>> {
-    instance
-        .methods()
-        .owner(SizedAsciiString::<8>::new(name.to_owned()).unwrap())
-        .call()
-        .await
-        .unwrap()
+    instance.methods().name_owner(name).call().await.unwrap()
 }

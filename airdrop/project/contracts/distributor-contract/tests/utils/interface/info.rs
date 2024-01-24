@@ -21,7 +21,7 @@ pub(crate) async fn claim_data(
         .value
 }
 
-pub(crate) async fn end_block(contract: &AirdropDistributor<WalletUnlocked>) -> u64 {
+pub(crate) async fn end_block(contract: &AirdropDistributor<WalletUnlocked>) -> u32 {
     contract.methods().end_block().call().await.unwrap().value
 }
 

@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  RUST_VERSION: 1.71.1
+  RUST_VERSION: 1.74.0
 
 jobs:
   lint-toml-files:
@@ -41,7 +41,6 @@ jobs:
         project:
           [
             "airdrop",
-            "AMM",
             "auctions/english-auction",
             "counter-script",
             "DAO",
@@ -75,8 +74,8 @@ jobs:
       - name: Install Fuel toolchain
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
-          toolchain: latest
-          date: 2023-09-29
+          toolchain: nightly
+          date: 2024-01-24
 
       - name: Check Sway formatting
         run: |
@@ -135,11 +134,11 @@ jobs:
       - name: Install Fuel toolchain
         uses: FuelLabs/action-fuel-toolchain@v0.6.0
         with:
-          toolchain: latest
-          date: 2023-08-16
+          toolchain: nightly
+          date: 2024-01-24
 
       - name: Check Sway formatting
-        run: forc fmt --check --path ${{ matrix.project }}
+        run: cd ${{ matrix.project }} && forc fmt --check
 
       - name: Build Sway
-        run: forc build --locked --path ${{ matrix.project }}
+        run: cd ${{ matrix.project }} && forc build --locked

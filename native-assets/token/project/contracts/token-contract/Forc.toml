@@ -5,6 +5,6 @@ license = "Apache-2.0"
 name = "token-contract"
 
 [dependencies]
-src_20 = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.1.2" }
-src_3 = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.1.2" }
-token = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.15.0" }
+asset = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.18.0" }
+src20 = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.3.3" }
+src3 = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.3.3" }

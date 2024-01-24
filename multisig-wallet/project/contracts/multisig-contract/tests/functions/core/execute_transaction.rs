@@ -10,15 +10,12 @@ use crate::utils::{
 };
 use fuels::{
     accounts::{fuel_crypto::Message, Account},
-    prelude::{TxParameters, BASE_ASSET_ID},
+    prelude::{TxPolicies, BASE_ASSET_ID},
 };
 
 mod success {
     use super::*;
-    use crate::utils::{
-        interface::info::balance,
-        setup::{base_asset_contract_id, ExecuteTransactionEvent},
-    };
+    use crate::utils::{interface::info::balance, setup::ExecuteTransactionEvent};
 
     mod transfer {
 
@@ -41,15 +38,13 @@ mod success {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();
 
             // Check balances pre-transfer
-            let initial_contract_balance = balance(&deployer.contract, base_asset_contract_id())
-                .await
-                .value;
+            let initial_contract_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
             let initial_receiver_balance = deployer
                 .wallet
                 .provider()
@@ -89,9 +84,7 @@ mod success {
             );
 
             // check balances post-transfer
-            let final_contract_balance = balance(&deployer.contract, base_asset_contract_id())
-                .await
-                .value;
+            let final_contract_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
             let final_receiver_balance = deployer
                 .wallet
                 .provider()
@@ -191,7 +184,7 @@ mod success {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();
@@ -213,9 +206,7 @@ mod success {
                 .value;
 
             // Check balances pre-call
-            let initial_multisig_balance = balance(&deployer.contract, base_asset_contract_id())
-                .await
-                .value;
+            let initial_multisig_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
             let initial_target_contract_balance = deployer
                 .wallet
                 .provider()
@@ -265,9 +256,15 @@ mod success {
                 .value;
 
             // Check balances post-call
-            let final_multisig_balance = balance(&deployer.contract, base_asset_contract_id())
+            // Uncomment when https://github.com/FuelLabs/fuel-core/issues/1535 is resolved
+            // let final_multisig_balance = balance(&deployer.contract, BASE_ASSET_ID).await.value;
+            let final_multisig_balance = deployer
+                .wallet
+                .provider()
+                .unwrap()
+                .get_contract_asset_balance(deployer.contract.contract_id(), BASE_ASSET_ID)
                 .await
-                .value;
+                .unwrap();
             let final_target_contract_balance = deployer
                 .wallet
                 .provider()
@@ -298,7 +295,7 @@ mod success {
 
 mod revert {
     use super::*;
-    use crate::utils::setup::{base_asset_contract_id, TransactionParameters, TransferParams};
+    use crate::utils::setup::{TransactionParameters, TransferParams};
 
     #[tokio::test]
     #[should_panic(expected = "NotInitialized")]
@@ -346,7 +343,7 @@ mod revert {
                 transfer_parameters(&deployer, initial_nonce);
 
             transaction.transaction_parameters = TransactionParameters::Transfer(TransferParams {
-                asset_id: base_asset_contract_id(),
+                asset_id: BASE_ASSET_ID,
                 value: None,
             });
 
@@ -418,7 +415,7 @@ mod revert {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();
@@ -462,7 +459,7 @@ mod revert {
                     deployer.contract.contract_id(),
                     DEFAULT_TRANSFER_AMOUNT,
                     BASE_ASSET_ID,
-                    TxParameters::default(),
+                    TxPolicies::default(),
                 )
                 .await
                 .unwrap();
@@ -491,7 +488,10 @@ mod revert {
     mod call {
 
         use super::*;
-        use fuels::types::{Address, Identity};
+        use fuels::{
+            programs::call_utils::TxDependencyExtension,
+            types::{Address, Identity},
+        };
 
         #[tokio::test]
         #[should_panic(expected = "CanOnlyCallContracts")]
@@ -532,7 +532,7 @@ mod revert {
                     transaction.transaction_parameters,
                 )
                 .append_variable_outputs(1)
-                .set_contract_ids(&[target_as_contract_id.clone()])
+                .with_contract_ids(&[target_as_contract_id.clone()])
                 .call()
                 .await
                 .unwrap();

@@ -39,7 +39,12 @@ abi Escrow {
     /// * When the amount of any asset required for deposit is set to 0
     #[payable]
     #[storage(read, write)]
-    fn create_escrow(arbiter: Arbiter, assets: Vec<Asset>, buyer: Identity, deadline: u64);
+    fn create_escrow(
+        arbiter: Arbiter,
+        assets: Vec<Asset>,
+        buyer: Identity,
+        deadline: u64,
+    );
 
     /// Accepts a deposit from the buyer for any of the assets specified in the escrow
     ///
