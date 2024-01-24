@@ -137,7 +137,7 @@ jobs:
           date: 2024-01-24
 
       - name: Check Sway formatting
-        run: forc fmt --check --path ${{ matrix.project }}
+        run: cd .docs/contributing-book/src/code && forc fmt --check --path ${{ matrix.project }}
 
       - name: Build Sway
-        run: forc build --path ${{ matrix.project }}
+        run: forc build --locked
