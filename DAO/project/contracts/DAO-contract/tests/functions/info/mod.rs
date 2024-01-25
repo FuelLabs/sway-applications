@@ -1,5 +1,5 @@
 mod balance;
-mod governance_token_id;
+mod governance_asset_id;
 mod proposal;
 mod proposal_count;
 mod user_balance;

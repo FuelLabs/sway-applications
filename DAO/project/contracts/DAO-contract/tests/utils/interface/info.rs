@@ -39,10 +39,10 @@ pub(crate) async fn proposal(contract: &DaoVoting<WalletUnlocked>, id: u64) -> P
     contract.methods().proposal(id).call().await.unwrap().value
 }
 
-pub(crate) async fn governance_token_id(contract: &DaoVoting<WalletUnlocked>) -> AssetId {
+pub(crate) async fn governance_asset_id(contract: &DaoVoting<WalletUnlocked>) -> AssetId {
     contract
         .methods()
-        .governance_token_id()
+        .governance_asset_id()
         .call()
         .await
         .unwrap()
