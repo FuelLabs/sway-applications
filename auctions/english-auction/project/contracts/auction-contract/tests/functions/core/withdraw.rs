@@ -56,7 +56,7 @@ mod success {
     }
 
     #[tokio::test]
-    async fn buyer_withdraws_tokens() {
+    async fn buyer_withdraws_assets() {
         let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, initial_wallet_amount) =
             defaults().await;
@@ -98,7 +98,7 @@ mod success {
     }
 
     #[tokio::test]
-    async fn out_bid_withdraws_tokens() {
+    async fn out_bid_withdraws_assets() {
         let (_, seller, buyer1, buyer2, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, initial_wallet_amount) =
             defaults().await;
@@ -183,7 +183,7 @@ mod success {
     }
 
     #[tokio::test]
-    async fn seller_withdraws_tokens() {
+    async fn seller_withdraws_assets() {
         let (_, seller, buyer1, _, _, sell_asset, buy_asset) = setup().await;
         let (sell_amount, initial_price, reserve_price, duration, initial_wallet_amount) =
             defaults().await;
